@@ -1,0 +1,324 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Арифметический квадратный корень — алгебра 8 класс</title>
+<style>
+  :root{
+    --paper:#F7F6FB; --card:#FFFFFF; --ink:#20222E; --muted:#63667A; --line:#E6E4F0;
+    --brand:#5B47D6; --brand-soft:#ECE9FB;      /* тема: корень */
+    --pos:#1E8E5A; --pos-soft:#E1F3EA;          /* неотрицательное — существует */
+    --neg:#C4402C; --neg-soft:#FBE7E2;          /* под корнем минус — нет */
+    --warn:#C77A16; --warn-soft:#FBEFDC;        /* модуль / ловушка */
+    --ok:#1E8E5A; --no:#C4402C;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper)}
+  .page{max-width:720px;margin:0 auto;padding:clamp(1.4rem,4vw,3rem) clamp(1.1rem,4vw,2rem) 4.5rem;
+    color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:17.5px;line-height:1.68;-webkit-font-smoothing:antialiased}
+  .mono{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-variant-numeric:tabular-nums;font-weight:600}
+  sup{font-size:.72em}
+
+  /* радикал */
+  .root{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-weight:700;white-space:nowrap}
+  .root .rad{border-top:2px solid currentColor;padding:0 .18em 0 .06em;margin-left:-.04em}
+
+  .hero{border-bottom:3px solid var(--brand);padding-bottom:1.4rem;margin-bottom:1.8rem}
+  .eyebrow{font-size:.74rem;letter-spacing:.15em;text-transform:uppercase;color:var(--brand);font-weight:700;margin:0 0 .55rem}
+  h1{font-size:clamp(1.9rem,6vw,2.8rem);line-height:1.05;margin:0;font-weight:800;letter-spacing:-.02em;text-wrap:balance}
+  .tagline{font-size:1.12rem;color:var(--muted);margin:.85rem 0 0;text-wrap:pretty}
+
+  section{margin-top:2.4rem}
+  h2{font-size:1.5rem;margin:0 0 .3rem;font-weight:780;letter-spacing:-.015em;text-wrap:balance}
+  h2 .em{color:var(--brand)}
+  p{margin:.7rem 0}
+  strong{font-weight:680}
+  .pw{color:var(--pos);font-weight:800} .nw{color:var(--neg);font-weight:800} .ww{color:var(--warn);font-weight:800}
+
+  .lead-in{background:var(--brand-soft);border-radius:14px;padding:1.1rem 1.3rem;font-size:1.02rem}
+  .lead-in p{margin:.4rem 0}
+  .lead-in b{color:var(--brand)}
+
+  .formula-box{background:var(--ink);color:#fff;border-radius:14px;padding:1.4rem 1.3rem;text-align:center;margin-top:1rem}
+  .formula-box .eq{font-family:ui-monospace,Menlo,monospace;font-size:clamp(1.5rem,5.5vw,2rem);font-weight:700}
+  .formula-box .eq .r{color:#B7A9F5}
+  .formula-box .note{font-size:.9rem;color:#AEB0C4;margin:.8rem 0 0}
+
+  .note{border-left:4px solid var(--brand);background:var(--brand-soft);border-radius:0 10px 10px 0;padding:.8rem 1.1rem;margin-top:1rem;font-size:.98rem}
+  .note b{color:var(--brand)}
+  .note.pos{border-color:var(--pos);background:var(--pos-soft)} .note.pos b{color:var(--pos)}
+  .note.neg{border-color:var(--neg);background:var(--neg-soft)} .note.neg b{color:var(--neg)}
+  .note.warn{border-color:var(--warn);background:var(--warn-soft)} .note.warn b{color:var(--warn)}
+
+  .split{display:grid;gap:.9rem;margin-top:1rem}
+  @media(min-width:600px){.split{grid-template-columns:1fr 1fr}}
+  .term{border-radius:14px;padding:1rem 1.2rem;border:2px solid var(--line);background:var(--card)}
+  .term .lab{font-size:.78rem;letter-spacing:.05em;text-transform:uppercase;font-weight:700;color:var(--muted)}
+  .term .big{font-family:ui-monospace,Menlo,monospace;font-weight:800;font-size:1.5rem;margin:.25rem 0}
+  .term p{margin:.2rem 0;font-size:.94rem}
+
+  .walk{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.15rem 1.3rem;margin-top:1rem}
+  .walk .q{font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.08rem;margin:0 0 .9rem;padding-bottom:.7rem;border-bottom:1px solid var(--line)}
+  .walk ol{margin:0;padding-left:1.2rem;display:flex;flex-direction:column;gap:.5rem}
+  .walk li{font-size:.96rem}
+  .walk b{font-weight:700}
+  .verdict{margin-top:1rem;padding:.7rem 1rem;background:var(--pos-soft);border-radius:10px;font-weight:650;color:var(--pos)}
+
+  /* Тренажёр */
+  .trainer{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.2rem 1.3rem;margin-top:1rem}
+  .tr-task{font-family:ui-monospace,Menlo,monospace;font-weight:800;font-size:clamp(1.2rem,5vw,1.55rem);text-align:center;padding:1.1rem;background:var(--brand-soft);border-radius:10px;color:var(--ink)}
+  .tr-ctl{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.9rem;align-items:center}
+  .tr-ctl button{font:inherit;font-weight:700;font-size:.9rem;cursor:pointer;border:none;border-radius:9px;padding:.55rem .95rem;color:#fff;background:var(--brand)}
+  .tr-ctl button.sec{background:var(--pos)}
+  .tr-ctl button.ghost{background:transparent;color:var(--brand);border:1px solid var(--brand)}
+  .tr-ctl input{flex:1;min-width:130px;font:inherit;padding:.5rem .7rem;border:1px solid var(--line);border-radius:9px;background:#fff;color:var(--ink)}
+  .tr-ctl button:focus-visible,.tr-ctl input:focus-visible{outline:3px solid var(--brand);outline-offset:2px}
+  .tr-hint{font-size:.82rem;color:var(--muted);margin:.55rem 0 0}
+  .tr-result{margin-top:.9rem;font-size:.96rem;min-height:1.2rem}
+  .tr-result .ok{color:var(--ok);font-weight:700} .tr-result .bad{color:var(--no);font-weight:700}
+  .tr-result .sol{margin-top:.6rem;padding:.8rem 1rem;background:#FBFBFE;border:1px solid var(--line);border-radius:10px;font-family:ui-monospace,Menlo,monospace;font-size:.9rem;line-height:1.85}
+
+  details{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:.9rem 1.1rem;margin-top:.7rem}
+  details[open]{border-color:var(--brand)}
+  summary{cursor:pointer;font-weight:650;list-style:none;display:flex;justify-content:space-between;gap:1rem;align-items:center}
+  summary::-webkit-details-marker{display:none}
+  summary::after{content:"ответ";font-size:.8rem;color:var(--brand);font-weight:700;white-space:nowrap}
+  details[open] summary::after{content:"скрыть"}
+  .ans{margin-top:.75rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.96rem;color:var(--muted)}
+  .ans b{color:var(--ink)}
+  .drill{display:flex;flex-direction:column;gap:.2rem;margin-top:1rem}
+
+  ul.traps{list-style:none;margin:1rem 0 0;padding:0;display:flex;flex-direction:column;gap:.7rem}
+  ul.traps li{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:.85rem 1.05rem;padding-left:2.5rem;position:relative;font-size:.97rem}
+  ul.traps li::before{content:"⚠";position:absolute;left:1rem;top:.85rem;color:var(--warn)}
+  ul.traps b{font-weight:700}
+
+  .wrapup{background:var(--brand);color:#fff;border-radius:16px;padding:1.4rem 1.5rem;margin-top:2.4rem}
+  .wrapup h2{color:#fff;margin:0 0 .5rem}
+  .wrapup p{color:#E7E3FA;margin:.4rem 0;font-size:1rem}
+  .wrapup .big-rule{font-size:1.1rem;font-weight:700;color:#fff;margin:.6rem 0}
+  .wrapup .next{font-size:.95rem;color:#D8D2F4;margin-top:1rem;padding-top:1rem;border-top:1px solid rgba(255,255,255,.22)}
+  .wrapup .next b{color:#fff}
+
+  @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="page">
+
+  <header class="hero">
+    <p class="eyebrow">Алгебра · 8 класс · квадратные корни</p>
+    <h1>Арифметический квадратный корень</h1>
+    <p class="tagline">Возводить в квадрат ты уже умеешь: 7² = 49. Корень — обратное действие: по площади он находит сторону.</p>
+  </header>
+
+  <div class="lead-in">
+    <p><b>Где встречается.</b> Пол комнаты — квадрат площадью 16 м². Какова сторона? Площадь — это сторона в квадрате, значит сторону мы «расквадрачиваем»: <span class="root">√<span class="rad">16</span></span> = 4 м.</p>
+    <p>Без корня не решить ни одного квадратного уравнения и не найти длину по теореме Пифагора. А ещё запомни сразу: <b>корень — это не «поделить пополам»</b>. <span class="root">√<span class="rad">16</span></span> = 4, а вовсе не 8.</p>
+  </div>
+
+  <section>
+    <h2>Суть простыми словами</h2>
+    <p>Возведение в квадрат мы знаем: берём число и умножаем само на себя. Квадратный корень задаёт <strong>обратный вопрос</strong>: «какое число, умноженное само на себя, даёт вот это?»</p>
+    <p>Арифметический квадратный корень из числа <span class="mono">a</span> — это <span class="pw">неотрицательное</span> число, квадрат которого равен <span class="mono">a</span>. Два слова тут главные: «<span class="pw">неотрицательное</span>» и «квадрат равен <span class="mono">a</span>».</p>
+    <p>Поэтому <span class="root">√<span class="rad">25</span></span> = 5, а <strong>не</strong> −5 — хотя <span class="mono">(−5)² = 25</span> тоже верно. Кандидатов на роль корня двое (5 и −5), но значок <span class="mono">√</span> по договорённости выбирает только <span class="pw">неотрицательный</span>. Так ответ получается единственным, без путаницы.</p>
+  </section>
+
+  <section>
+    <h2>Определение и обозначения</h2>
+    <div class="formula-box">
+      <div class="eq">если&nbsp; b = <span class="r">√</span>a &nbsp;→&nbsp; b ≥ 0&nbsp; и&nbsp; b² = a</div>
+      <div class="note">корень — неотрицателен · и в квадрате даёт подкоренное число</div>
+    </div>
+    <div class="split">
+      <div class="term">
+        <div class="lab">радикал</div>
+        <div class="big">√a</div>
+        <p>Сам корень. Значок <span class="mono">√</span> называют радикалом.</p>
+      </div>
+      <div class="term">
+        <div class="lab">подкоренное</div>
+        <div class="big">a</div>
+        <p>Число под корнем. Его результат <span class="root">√<span class="rad">a</span></span> всегда <span class="pw">≥ 0</span>.</p>
+      </div>
+    </div>
+    <div class="note neg">
+      <p><b>Условие (ОДЗ):</b> под корнем может стоять только <b>неотрицательное</b> число, <span class="mono">a ≥ 0</span>. Из отрицательного числа арифметического корня <b>не существует</b> — ведь никакое число в квадрате не даёт отрицательный результат.</p>
+    </div>
+    <div class="note warn">
+      <p><b>Два тождества, которые надо знать:</b></p>
+      <p>• <span class="mono">(<span class="root">√<span class="rad">a</span></span>)² = a</span> при <span class="mono">a ≥ 0</span> — возвести корень в квадрат значит вернуться к подкоренному числу.</p>
+      <p>• <span class="root">√<span class="rad">a²</span></span> = <span class="ww">|a|</span> (модуль!). Корень обязан быть неотрицательным, поэтому <span class="root">√<span class="rad">(−6)²</span></span> = <span class="root">√<span class="rad">36</span></span> = 6 = |−6|.</p>
+      <p>Частные значения: <span class="root">√<span class="rad">0</span></span> = 0, &nbsp;<span class="root">√<span class="rad">1</span></span> = 1.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Разбор «<span class="em">думаю вслух</span>»</h2>
+    <p>Первый — самый частый тип: корень из точного квадрата.</p>
+    <div class="walk">
+      <p class="q">Вычислить √81</p>
+      <ol>
+        <li>По определению ищу <b>неотрицательное</b> число, квадрат которого равен 81.</li>
+        <li>Перебираю знакомые квадраты: <span class="mono">9 · 9 = 81</span>. И <span class="mono">9 ≥ 0</span> — подходит.</li>
+        <li>А как же −9? <span class="mono">(−9)² = 81</span> тоже, но <span class="mono">−9 &lt; 0</span>, и значок <span class="mono">√</span> его отбрасывает.</li>
+      </ol>
+      <div class="verdict">Ответ: √81 = 9.</div>
+    </div>
+    <p>Второй тип — где под корнем уже стоит квадрат. Тут работает модуль.</p>
+    <div class="walk">
+      <p class="q">Вычислить √((−6)²)</p>
+      <ol>
+        <li>Соблазн написать сразу «−6» — но результат корня <b>не бывает отрицательным</b>.</li>
+        <li>Применяю тождество <span class="root">√<span class="rad">a²</span></span> = |a|: значит <span class="root">√<span class="rad">(−6)²</span></span> = |−6| = 6.</li>
+        <li>Проверка по-другому: сначала считаю квадрат <span class="mono">(−6)² = 36</span>, потом <span class="root">√<span class="rad">36</span></span> = 6. Сходится.</li>
+      </ol>
+      <div class="verdict">Ответ: √((−6)²) = 6.</div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Тренажёр · считай сколько хочешь</h2>
+    <p>Нажми «Новое задание» и вычисли корень. Если под корнем окажется отрицательное число — в ответ пиши <span class="mono">нет</span>.</p>
+    <div class="trainer">
+      <div class="tr-task" id="trTask">√49</div>
+      <div class="tr-ctl">
+        <button id="trNew" type="button">🎲 Новое задание</button>
+        <input id="trAns" type="text" placeholder="число или «нет»" aria-label="Ответ" autocomplete="off">
+        <button id="trCheck" type="button" class="sec">Проверить</button>
+        <button id="trShow" type="button" class="ghost">Решение</button>
+      </div>
+      <p class="tr-hint">Дробные ответы пиши через запятую или точку (0,7 или 0.7).</p>
+      <div id="trResult" class="tr-result"></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Проверь себя</h2>
+    <div class="drill">
+      <details><summary>1) Вычисли: <span class="root">√<span class="rad">49</span></span>, <span class="root">√<span class="rad">100</span></span>, <span class="root">√<span class="rad">0</span></span>.</summary>
+        <div class="ans"><b>√49 = 7</b> (7²=49), &nbsp;<b>√100 = 10</b> (10²=100), &nbsp;<b>√0 = 0</b> (0²=0).</div></details>
+      <details><summary>2) Почему <span class="root">√<span class="rad">25</span></span> = 5, а не −5 и не ±5?</summary>
+        <div class="ans">Радикал по договорённости даёт только <b>неотрицательное</b> значение. Из двух чисел с квадратом 25 (это 5 и −5) корень выбирает <b>5</b>. Знак ± появится позже — при решении уравнения <span class="mono">x² = 25</span>, но это другое действие.</div></details>
+      <details><summary>3) Чему равно <span class="root">√<span class="rad">(−7)²</span></span> и почему ответ не −7?</summary>
+        <div class="ans">По тождеству <span class="root">√<span class="rad">a²</span></span> = |a|: &nbsp;<span class="root">√<span class="rad">(−7)²</span></span> = |−7| = <b>7</b>. Результат корня неотрицателен, поэтому −7 не подходит.</div></details>
+      <details><summary>4) Существует ли <span class="root">√<span class="rad">−9</span></span>? Объясни.</summary>
+        <div class="ans"><b>Не существует.</b> Нужно число, квадрат которого −9, но квадрат любого числа ≥ 0. Отрицательного результата в квадрате не бывает — значит корня нет.</div></details>
+      <details><summary>5) Сторона квадрата равна <span class="root">√<span class="rad">20</span></span> (иррациональное число). Какова площадь этого квадрата?</summary>
+        <div class="ans">Площадь = сторона в квадрате = <span class="mono">(<span class="root">√<span class="rad">20</span></span>)² = 20</span>. По тождеству <span class="mono">(√a)² = a</span>. Ответ: <b>20</b>.</div></details>
+    </div>
+  </section>
+
+  <section>
+    <h2>Ловушки</h2>
+    <ul class="traps">
+      <li><b>Корень из отрицательного.</b> Пишут <span class="root">√<span class="rad">−9</span></span> = −3. Неверно: <span class="mono">(−3)² = 9</span>, а не −9. Из отрицательного числа арифметического корня нет вовсе. Проверяй: возведи ответ в квадрат и сверь знак.</li>
+      <li><b>Дают ±.</b> Пишут <span class="root">√<span class="rad">25</span></span> = ±5. Неверно: радикал даёт только <span class="pw">неотрицательное</span> значение, <span class="root">√<span class="rad">25</span></span> = 5. Два знака — это про уравнение <span class="mono">x² = 25</span>, не про значение корня.</li>
+      <li><b>Путают √(a²) с a.</b> Пишут <span class="root">√<span class="rad">(−6)²</span></span> = −6. Неверно: результат неотрицателен, поэтому <span class="root">√<span class="rad">(a)²</span></span> = <span class="ww">|a|</span> = 6. Всегда смотри на знак основания.</li>
+    </ul>
+  </section>
+
+  <div class="wrapup">
+    <h2>Запомни главное</h2>
+    <p class="big-rule">√a — это неотрицательное число, которое в квадрате даёт a.</p>
+    <p>Под корнем — только <span style="color:#fff;font-weight:700">a ≥ 0</span>. Результат — всегда <span style="color:#fff;font-weight:700">≥ 0</span>. И держи в голове <span class="mono" style="color:#fff">√(a²) = |a|</span>.</p>
+    <p class="next">👉 Дальше — <b>свойства квадратного корня</b> (корень из произведения и дроби), а потом главное применение — <b>квадратные уравнения</b>.</p>
+  </div>
+
+</div>
+
+<script>
+(function(){
+  var taskEl=document.getElementById('trTask'), ansEl=document.getElementById('trAns'), resEl=document.getElementById('trResult');
+  if(!taskEl) return;
+
+  // точные квадраты целых 1..15
+  var ints=[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15];
+  // десятичные: [строка d, значение d, строка d² , значение d²]
+  var decs=[
+    ['0,1',0.1,'0,01',0.01],['0,2',0.2,'0,04',0.04],['0,3',0.3,'0,09',0.09],
+    ['0,4',0.4,'0,16',0.16],['0,5',0.5,'0,25',0.25],['0,6',0.6,'0,36',0.36],
+    ['0,7',0.7,'0,49',0.49],['0,8',0.8,'0,64',0.64],['0,9',0.9,'0,81',0.81],
+    ['1,1',1.1,'1,21',1.21],['1,2',1.2,'1,44',1.44],['1,3',1.3,'1,69',1.69]
+  ];
+  var cur=null;
+  function ri(min,max){ return Math.floor(Math.random()*(max-min+1))+min; }
+  function pick(a){ return a[ri(0,a.length-1)]; }
+  function rad(inner){ return '<span class="root">√<span class="rad">'+inner+'</span></span>'; }
+
+  function generate(){
+    // веса типов; краевые (модуль, минус, ноль) подмешиваем
+    var r=Math.random(), t;
+    if(r<0.42) t='plain';        // √(точный квадрат)
+    else if(r<0.66) t='square';  // √((±n)²) → |n|
+    else if(r<0.84) t='neg';     // √(−m) → нет
+    else t='dec';                // √(десятичный квадрат)
+
+    if(t==='plain'){
+      // иногда 0
+      var useZero = Math.random()<0.12;
+      var n = useZero?0:pick(ints);
+      var v = n*n;
+      cur={type:'plain', ans:n, show:rad(v)};
+    } else if(t==='square'){
+      var n2=pick(ints);
+      var negBase=Math.random()<0.6;
+      var inner = negBase ? '(−'+n2+')²' : n2+'²';
+      cur={type:'square', ans:n2, base:(negBase?-n2:n2), show:rad(inner)};
+    } else if(t==='neg'){
+      var m=pick(ints); // положительное m, под корнем −m
+      cur={type:'neg', ans:null, m:m, show:rad('−'+m)};
+    } else {
+      var d=pick(decs); // [dStr,dNum,vStr,vNum]
+      cur={type:'dec', ans:d[1], dStr:d[0], vStr:d[2], show:rad(d[2])};
+    }
+    taskEl.innerHTML='Вычислить &nbsp;'+cur.show;
+    resEl.innerHTML=''; ansEl.value=''; ansEl.focus();
+  }
+
+  function isNoWord(s){
+    s=s.toLowerCase().replace(/\s+/g,'');
+    return s==='нет'||s==='-'||s==='—'||s.indexOf('несущест')>-1||s.indexOf('нетреш')>-1||s.indexOf('неткор')>-1;
+  }
+
+  function solHTML(){
+    var c=cur, h='<div class="sol">';
+    if(c.type==='plain'){
+      if(c.ans===0){ h+='Ищем неотрицательное число, квадрат которого = 0.<br>0² = 0.<br>Ответ: <b>0</b>.'; }
+      else{ h+='Ищем неотрицательное число, квадрат которого = '+(c.ans*c.ans)+'.<br>'+c.ans+' · '+c.ans+' = '+(c.ans*c.ans)+', и '+c.ans+' ≥ 0.<br>Ответ: <b>'+c.ans+'</b>.'; }
+    } else if(c.type==='square'){
+      h+='√(a²) = |a|.<br>Здесь a = '+(c.base<0?'−'+c.ans:c.ans)+', значит |'+(c.base<0?'−'+c.ans:c.ans)+'| = '+c.ans+'.<br>';
+      h+='Проверка: сначала квадрат ('+(c.base<0?'−'+c.ans:c.ans)+')² = '+(c.ans*c.ans)+', потом √'+(c.ans*c.ans)+' = '+c.ans+'.<br>Ответ: <b>'+c.ans+'</b>.';
+    } else if(c.type==='neg'){
+      h+='Под корнем −'+c.m+' &lt; 0.<br>Квадрат любого числа ≥ 0, поэтому числа с квадратом −'+c.m+' не бывает.<br>Ответ: <b>не существует</b>.';
+    } else {
+      h+='Ищем неотрицательное число, квадрат которого = '+c.vStr+'.<br>'+c.dStr+' · '+c.dStr+' = '+c.vStr+'.<br>Ответ: <b>'+c.dStr+'</b>.';
+    }
+    return h+'</div>';
+  }
+
+  function check(){
+    var raw=ansEl.value.trim();
+    if(raw===''){ resEl.innerHTML='<span class="bad">Введи число или «нет», либо нажми «Решение».</span>'; return; }
+    var correct=false;
+    if(cur.type==='neg'){
+      correct=isNoWord(raw);
+    } else {
+      if(isNoWord(raw)){ correct=false; }
+      else{
+        var got=parseFloat(raw.replace(',','.'));
+        correct = !isNaN(got) && Math.abs(got-cur.ans)<0.0005;
+      }
+    }
+    if(correct){ resEl.innerHTML='<span class="ok">✓ Верно!</span>'+solHTML(); }
+    else{ resEl.innerHTML='<span class="bad">✗ Пока не то — смотри решение.</span>'+solHTML(); }
+  }
+
+  document.getElementById('trNew').addEventListener('click',generate);
+  document.getElementById('trCheck').addEventListener('click',check);
+  document.getElementById('trShow').addEventListener('click',function(){ resEl.innerHTML=solHTML(); });
+  ansEl.addEventListener('keydown',function(e){ if(e.key==='Enter') check(); });
+
+  // первичное задание
+  cur={type:'plain', ans:7, show:rad(49)};
+  taskEl.innerHTML='Вычислить &nbsp;'+rad(49);
+})();
+</script>

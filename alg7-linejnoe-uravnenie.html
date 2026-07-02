@@ -1,0 +1,275 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Линейное уравнение ax = b — алгебра 7 класс</title>
+<style>
+  :root{
+    --paper:#F6F5FB; --card:#FFFFFF; --ink:#211B33; --muted:#655E78; --line:#E7E4F0;
+    --brand:#5B3FD6; --brand-soft:#EBE6FB;   /* индиго — «уравнение» */
+    --x:#D6642F; --x-soft:#FBEADE;           /* переменная x */
+    --num:#2E8560; --num-soft:#E1F2EA;       /* числа */
+    --ok:#1E8E5A; --no:#C23B3B; --amber:#C8891A;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper)}
+  .page{max-width:720px;margin:0 auto;padding:clamp(1.4rem,4vw,3rem) clamp(1.1rem,4vw,2rem) 4.5rem;
+    color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:17.5px;line-height:1.68;-webkit-font-smoothing:antialiased}
+  .mono{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-variant-numeric:tabular-nums;font-weight:600}
+  .xw{color:var(--x);font-weight:800} .nw{color:var(--num);font-weight:800}
+
+  .hero{border-bottom:3px solid var(--brand);padding-bottom:1.4rem;margin-bottom:1.8rem}
+  .eyebrow{font-size:.74rem;letter-spacing:.15em;text-transform:uppercase;color:var(--brand);font-weight:700;margin:0 0 .55rem}
+  h1{font-size:clamp(1.9rem,6vw,2.8rem);line-height:1.05;margin:0;font-weight:800;letter-spacing:-.02em;text-wrap:balance}
+  .tagline{font-size:1.12rem;color:var(--muted);margin:.85rem 0 0;text-wrap:pretty}
+
+  section{margin-top:2.4rem}
+  h2{font-size:1.5rem;margin:0 0 .3rem;font-weight:780;letter-spacing:-.015em;text-wrap:balance}
+  h2 .em{color:var(--brand)}
+  p{margin:.7rem 0}
+  strong{font-weight:680}
+
+  .lead-in{background:var(--brand-soft);border-radius:14px;padding:1.1rem 1.3rem;font-size:1.02rem}
+  .lead-in p{margin:.4rem 0}
+  .lead-in b{color:var(--brand)}
+
+  .formula-box{background:var(--ink);color:#fff;border-radius:14px;padding:1.3rem;text-align:center;margin-top:1rem}
+  .formula-box .eq{font-family:ui-monospace,Menlo,monospace;font-size:clamp(1.6rem,6vw,2.2rem);font-weight:700}
+  .formula-box .eq .xx{color:#F0A45E} .formula-box .eq .nn{color:#6FD3A6}
+  .formula-box .note{font-size:.9rem;color:#B7B0CC;margin:.6rem 0 0}
+
+  .note{border-left:4px solid var(--brand);background:var(--brand-soft);border-radius:0 10px 10px 0;padding:.8rem 1.1rem;margin-top:1rem;font-size:.98rem}
+  .note b{color:var(--brand)}
+
+  /* Алгоритм — шаги */
+  .steps{list-style:none;counter-reset:st;margin:1rem 0 0;padding:0;display:flex;flex-direction:column;gap:.55rem}
+  .steps li{position:relative;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:.85rem 1rem .85rem 3rem;font-size:.98rem}
+  .steps li::before{counter-increment:st;content:counter(st);position:absolute;left:.7rem;top:.8rem;width:1.6rem;height:1.6rem;border-radius:50%;background:var(--brand);color:#fff;font-weight:800;font-size:.85rem;display:flex;align-items:center;justify-content:center}
+
+  .walk{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.15rem 1.3rem;margin-top:1rem}
+  .walk .q{font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.05rem;margin:0 0 .9rem;padding-bottom:.7rem;border-bottom:1px solid var(--line)}
+  .walk ol{margin:0;padding-left:1.2rem;display:flex;flex-direction:column;gap:.5rem}
+  .walk li{font-size:.96rem}
+  .walk b{font-weight:700}
+  .verdict{margin-top:1rem;padding:.7rem 1rem;background:var(--brand-soft);border-radius:10px;font-weight:650;color:var(--brand)}
+
+  /* Тренажёр */
+  .trainer{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.2rem 1.3rem;margin-top:1rem}
+  .tr-task{font-family:ui-monospace,Menlo,monospace;font-weight:800;font-size:clamp(1.2rem,5vw,1.55rem);text-align:center;padding:1.1rem;background:var(--brand-soft);border-radius:10px;color:var(--ink);overflow-wrap:break-word}
+  .tr-ctl{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.9rem;align-items:center}
+  .tr-ctl button{font:inherit;font-weight:700;font-size:.9rem;cursor:pointer;border:none;border-radius:9px;padding:.55rem .95rem;color:#fff;background:var(--brand)}
+  .tr-ctl button.sec{background:var(--x)}
+  .tr-ctl button.ghost{background:transparent;color:var(--brand);border:1px solid var(--brand)}
+  .tr-ctl input{flex:1;min-width:120px;font:inherit;padding:.5rem .7rem;border:1px solid var(--line);border-radius:9px;background:#fff;color:var(--ink)}
+  .tr-ctl button:focus-visible,.tr-ctl input:focus-visible{outline:3px solid var(--brand);outline-offset:2px}
+  .tr-result{margin-top:.9rem;font-size:.96rem;min-height:1.2rem}
+  .tr-result .ok{color:var(--ok);font-weight:700} .tr-result .bad{color:var(--no);font-weight:700}
+  .tr-result .sol{margin-top:.6rem;padding:.8rem 1rem;background:#FCFBFF;border:1px solid var(--line);border-radius:10px;font-family:ui-monospace,Menlo,monospace;font-size:.92rem;line-height:1.9}
+  .tr-result .sol b{color:var(--brand)}
+
+  details{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:.9rem 1.1rem;margin-top:.7rem}
+  details[open]{border-color:var(--brand)}
+  summary{cursor:pointer;font-weight:650;list-style:none;display:flex;justify-content:space-between;gap:1rem;align-items:center}
+  summary::-webkit-details-marker{display:none}
+  summary::after{content:"ответ";font-size:.8rem;color:var(--brand);font-weight:700;white-space:nowrap}
+  details[open] summary::after{content:"скрыть"}
+  summary:focus-visible{outline:3px solid var(--brand);outline-offset:3px;border-radius:6px}
+  .ans{margin-top:.75rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.96rem;color:var(--muted)}
+  .ans b{color:var(--ink)}
+  .drill{display:flex;flex-direction:column;gap:.2rem;margin-top:1rem}
+
+  ul.traps{list-style:none;margin:1rem 0 0;padding:0;display:flex;flex-direction:column;gap:.7rem}
+  ul.traps li{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:.85rem 1.05rem;padding-left:2.5rem;position:relative;font-size:.97rem}
+  ul.traps li::before{content:"⚠";position:absolute;left:1rem;top:.85rem;color:var(--x)}
+  ul.traps b{font-weight:700}
+
+  .wrapup{background:var(--brand);color:#fff;border-radius:16px;padding:1.4rem 1.5rem;margin-top:2.4rem}
+  .wrapup h2{color:#fff;margin:0 0 .5rem}
+  .wrapup p{color:#E7E1FA;margin:.4rem 0;font-size:1rem}
+  .wrapup .big-rule{font-size:1.15rem;font-weight:700;color:#fff;margin:.6rem 0;font-family:ui-monospace,Menlo,monospace}
+  .wrapup .next{font-size:.95rem;color:#D2C9F2;margin-top:1rem;padding-top:1rem;border-top:1px solid rgba(255,255,255,.2)}
+  .wrapup .next b{color:#fff}
+
+  @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="page">
+
+  <header class="hero">
+    <p class="eyebrow">Алгебра · 7 класс · уравнения</p>
+    <h1>Линейное уравнение ax = b</h1>
+    <p class="tagline">Не угадать число, а надёжно его найти. Один алгоритм, который потом откроет и текстовые задачи, и системы, и квадратные уравнения.</p>
+  </header>
+
+  <div class="lead-in">
+    <p><b>Где встречается.</b> «Билет стоит x рублей, 4 билета — 480. Сколько стоит один?» Это уравнение <span class="mono">4x = 480</span>. Задачи «на сколько», «во сколько раз», про деньги, скорость, проценты — почти все сводятся к нему.</p>
+    <p>Уравнение — это вопрос <b>«какое число подходит?»</b>, записанный на языке математики. И «решить» его — не угадать, а провести <b>цепочку честных преобразований</b>, которая гарантированно приводит к ответу.</p>
+  </div>
+
+  <section>
+    <h2>Суть простыми словами</h2>
+    <p>Линейное уравнение — это то, что можно привести к виду <span class="mono"><span class="nw">a</span>·<span class="xw">x</span> = <span class="nw">b</span></span>: «какое-то число, умноженное на <span class="xw">x</span>, равно другому числу». Переменная <span class="xw">x</span> стоит <strong>только в первой степени</strong> — нет <span class="mono">x²</span>, нет <span class="mono">x</span> под корнем, нет <span class="mono">x</span> в знаменателе.</p>
+    <p>Представь <strong>весы в равновесии</strong>: левая часть = правой части. Что бы ты ни делал — делай <b>с обеими чашами одинаково</b>, тогда равновесие (а значит, и корень) не изменится. Мы шаг за шагом «освобождаем» <span class="xw">x</span>: собираем всё с иксом слева, числа справа, а потом делим на число перед иксом.</p>
+  </section>
+
+  <section>
+    <h2>Определение и формула</h2>
+    <div class="formula-box">
+      <div class="eq"><span class="nn">a</span><span class="xx">x</span> = <span class="nn">b</span> &nbsp;⟶&nbsp; <span class="xx">x</span> = <span class="nn">b</span>/<span class="nn">a</span></div>
+      <div class="note">a — коэффициент при x · b — свободный член · делить можно только при a ≠ 0</div>
+    </div>
+    <div class="note">
+      <p><b>Правило.</b> При <span class="mono">a ≠ 0</span> уравнение <span class="mono">ax = b</span> имеет <strong>ровно один корень</strong>: <span class="mono">x = b/a</span>. Коэффициент перед x — это <b>множитель</b>, поэтому убираем его <b>делением</b>, а не вычитанием.</p>
+    </div>
+    <p style="font-weight:700;margin-top:1.4rem">Алгоритм решения — по шагам:</p>
+    <ol class="steps">
+      <li><b>Раскрой скобки</b>, если они есть.</li>
+      <li><b>Перенеси</b> всё с <span class="xw">x</span> влево, числа — вправо. При переносе через знак «=» слагаемое <b>меняет знак</b>.</li>
+      <li><b>Приведи подобные</b> — получи чистый вид <span class="mono">ax = b</span>.</li>
+      <li><b>Раздели</b> обе части на коэффициент <span class="mono">a</span>: <span class="mono">x = b/a</span>.</li>
+      <li><b>Проверь</b>: подставь найденный <span class="xw">x</span> в исходное уравнение.</li>
+    </ol>
+  </section>
+
+  <section>
+    <h2>Разбор «думаю вслух»</h2>
+    <p>Решаем <span class="mono">5x − 7 = 2x + 8</span>. Смотри, как каждый шаг сохраняет равновесие весов:</p>
+    <div class="walk">
+      <p class="q">5x − 7 = 2x + 8</p>
+      <ol>
+        <li><b>Переносим</b> <span class="mono">2x</span> влево (станет <span class="mono">−2x</span>), а <span class="mono">−7</span> вправо (станет <span class="mono">+7</span>): <span class="mono">5x − 2x = 8 + 7</span>.</li>
+        <li><b>Приводим подобные:</b> <span class="mono">5x − 2x = 3x</span>, а <span class="mono">8 + 7 = 15</span>. Получили чистый вид: <span class="mono">3x = 15</span>.</li>
+        <li><b>Делим</b> обе части на коэффициент 3 (можно, ведь 3 ≠ 0): <span class="mono">x = 15 / 3 = 5</span>.</li>
+        <li><b>Проверка:</b> слева <span class="mono">5·5 − 7 = 18</span>, справа <span class="mono">2·5 + 8 = 18</span>. Совпало — значит, корень верный.</li>
+      </ol>
+      <div class="verdict">Ответ: x = 5.</div>
+    </div>
+    <p style="font-size:.95rem;color:var(--muted)">Ещё пример со скобками: <span class="mono">4(x − 3) = x + 6</span>. Раскрываем: <span class="mono">4x − 12 = x + 6</span>; переносим: <span class="mono">4x − x = 6 + 12</span>; приводим: <span class="mono">3x = 18</span>; делим: <span class="mono">x = 6</span>. Проверка: <span class="mono">4·(6−3) = 12</span> и <span class="mono">6 + 6 = 12</span>. Верно.</p>
+  </section>
+
+  <section>
+    <h2>Тренажёр · решай сколько хочешь</h2>
+    <p>Нажми «Новое», реши уравнение и введи корень. Проверь себя или посмотри пошаговое решение. Ответы всегда целые.</p>
+    <div class="trainer">
+      <div class="tr-task" id="trTask">3x = 15</div>
+      <div class="tr-ctl">
+        <button id="trNew" type="button">🎲 Новое</button>
+        <input id="trAns" type="text" inputmode="numeric" placeholder="x = ?" aria-label="Корень уравнения">
+        <button id="trCheck" type="button" class="sec">Проверить</button>
+        <button id="trShow" type="button" class="ghost">Решение</button>
+      </div>
+      <div id="trResult" class="tr-result"></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Проверь себя</h2>
+    <div class="drill">
+      <details><summary>1) Реши: <span class="mono">8x = 56</span>.</summary>
+        <div class="ans">Делим на коэффициент 8: <span class="mono">x = 56 / 8 = 7</span>. <b>x = 7</b>.</div></details>
+      <details><summary>2) Реши: <span class="mono">3x + 5 = 20</span>.</summary>
+        <div class="ans">Переносим 5: <span class="mono">3x = 20 − 5 = 15</span>; делим: <span class="mono">x = 15 / 3 = 5</span>. <b>x = 5</b>.</div></details>
+      <details><summary>3) Реши: <span class="mono">9 − 2x = 1</span>.</summary>
+        <div class="ans">Переносим: <span class="mono">−2x = 1 − 9 = −8</span>; делим на −2: <span class="mono">x = −8 / (−2) = 4</span>. <b>x = 4</b>.</div></details>
+      <details><summary>4) Найди ошибку: ученик решал <span class="mono">5x = −15</span> и записал <span class="mono">x = 3</span>.</summary>
+        <div class="ans">Потеряли минус. <span class="mono">x = −15 / 5 = −3</span>. Верный ответ <b>x = −3</b> — проверка это ловит: <span class="mono">5·(−3) = −15</span>.</div></details>
+      <details><summary>5) Реши: <span class="mono">7x + 4 = 3x − 8</span>.</summary>
+        <div class="ans">Переносим: <span class="mono">7x − 3x = −8 − 4</span> → <span class="mono">4x = −12</span>; делим: <span class="mono">x = −12 / 4 = −3</span>. <b>x = −3</b>.</div></details>
+    </div>
+  </section>
+
+  <section>
+    <h2>Ловушки</h2>
+    <ul class="traps">
+      <li><b>Перенос без смены знака.</b> Из <span class="mono">x + 5 = 12</span> нельзя писать <span class="mono">x = 12 + 5</span>. Слагаемое «переходит границу» знака «=» и <b>меняет знак</b>: <span class="mono">x = 12 − 5 = 7</span>.</li>
+      <li><b>Убирают коэффициент вычитанием.</b> Из <span class="mono">3x = 12</span> нельзя <span class="mono">x = 12 − 3</span>. Коэффициент — множитель, снимаем его <b>делением</b>: <span class="mono">x = 12 / 3 = 4</span>.</li>
+      <li><b>Теряют минус.</b> Из <span class="mono">−2x = 6</span> получается не 3, а <span class="mono">x = 6 / (−2) = −3</span>. Всегда делай проверку — она ловит знак.</li>
+      <li><b>Делят раньше времени.</b> В <span class="mono">2x + 4 = 8</span> нельзя сразу делить: сперва <b>перенеси</b> <span class="mono">+4</span> (<span class="mono">2x = 4</span>), и только потом дели (<span class="mono">x = 2</span>).</li>
+      <li><b>Дробный коэффициент.</b> Из <span class="mono">(1/2)x = 5</span> ответ не <span class="mono">5/2</span>: чтобы убрать <span class="mono">1/2</span>, надо <b>умножить</b> на 2 → <span class="mono">x = 10</span>.</li>
+    </ul>
+  </section>
+
+  <div class="wrapup">
+    <h2>Запомни главное</h2>
+    <p class="big-rule">ax = b  ⟶  x = b / a  (при a ≠ 0)</p>
+    <p>Приводи уравнение к чистому виду <b>ax = b</b> равносильными шагами (перенос со сменой знака, приведение подобных), а потом <b>дели</b> на коэффициент. И всегда делай проверку подстановкой.</p>
+    <p class="next">👉 Дальше — <b>особые случаи</b>, когда x пропадает (нет корней или бесконечно много), <b>текстовые задачи</b>, которые сводятся к уравнению, и <b>системы уравнений</b>.</p>
+  </div>
+
+</div>
+
+<script>
+(function(){
+  var taskEl=document.getElementById('trTask'), ansEl=document.getElementById('trAns'), resEl=document.getElementById('trResult');
+  if(!taskEl) return;
+  var cur=null;
+
+  function ri(min,max){ return Math.floor(Math.random()*(max-min+1))+min; }
+  function nz(min,max){ var v; do{ v=ri(min,max); }while(v===0); return v; }
+  // терм "kx": 1x -> x, -1x -> -x
+  function xt(k){ return k===1?'x':(k===-1?'−x':(neg(k)+'x')); }
+  // добавить " + c" / " − c"
+  function pc(c){ return c===0?'':(c<0?' − '+(-c):' + '+c); }
+  // число со знаком минус красиво
+  function neg(n){ return n<0?('−'+(-n)):(''+n); }
+
+  function generate(){
+    var type=ri(1,4), x=nz(-8,8), q={x:x};
+    if(type===1){                       // a·x = b (один шаг), краевой: b=0 при x любом? нет — b=a*x
+      var a=nz(-9,9); q.type=1; q.a=a; q.b=a*x;
+      q.text=xt(a)+' = '+neg(a*x);
+    } else if(type===2){                // a·x + c = d
+      var a2=nz(-8,8), c=nz(-9,9), d=a2*x+c; q.type=2; q.a=a2; q.c=c; q.d=d;
+      q.text=xt(a2)+pc(c)+' = '+neg(d);
+    } else if(type===3){                // a·x + c = e·x + f  (обе части)
+      var a3=nz(-8,8), e; do{ e=nz(-8,8);}while(e===a3);
+      var c3=nz(-9,9), f=(a3-e)*x+c3; q.type=3; q.a=a3; q.e=e; q.c=c3; q.f=f;
+      q.text=xt(a3)+pc(c3)+' = '+xt(e)+pc(f);
+    } else {                            // a(x + m) = n  (скобка)
+      var a4=nz(2,7), m=nz(-6,6), n=a4*(x+m); q.type=4; q.a=a4; q.m=m; q.n=n;
+      q.text=a4+'(x'+(m<0?' − '+(-m):' + '+m)+') = '+neg(n);
+    }
+    cur=q; taskEl.textContent=q.text; resEl.innerHTML=''; ansEl.value='';
+  }
+
+  function solHTML(){
+    var q=cur, h='<div class="sol">';
+    if(q.type===1){
+      h+=xt(q.a)+' = '+neg(q.b)+'<br>';
+      h+='x = '+neg(q.b)+' / '+neg(q.a)+' = <b>'+neg(q.x)+'</b>';
+    } else if(q.type===2){
+      var d1=q.d-q.c;
+      h+=xt(q.a)+pc(q.c)+' = '+neg(q.d)+'<br>';
+      h+=xt(q.a)+' = '+neg(q.d)+(q.c<0?' + '+(-q.c):' − '+q.c)+' = '+neg(d1)+'<br>';
+      h+='x = '+neg(d1)+' / '+neg(q.a)+' = <b>'+neg(q.x)+'</b>';
+    } else if(q.type===3){
+      var A=q.a-q.e, B=q.f-q.c;
+      h+=xt(q.a)+pc(q.c)+' = '+xt(q.e)+pc(q.f)+'<br>';
+      h+='переносим: '+xt(A)+' = '+neg(B)+'<br>';
+      h+='x = '+neg(B)+' / '+neg(A)+' = <b>'+neg(q.x)+'</b>';
+    } else {
+      var prod=q.a*q.m;
+      h+=q.a+'(x'+(q.m<0?' − '+(-q.m):' + '+q.m)+') = '+neg(q.n)+'<br>';
+      h+='раскрываем: '+q.a+'x'+(prod<0?' − '+(-prod):' + '+prod)+' = '+neg(q.n)+'<br>';
+      var rr=q.n-prod;
+      h+=q.a+'x = '+neg(q.n)+(prod<0?' + '+(-prod):' − '+prod)+' = '+neg(rr)+'<br>';
+      h+='x = '+neg(rr)+' / '+q.a+' = <b>'+neg(q.x)+'</b>';
+    }
+    return h+'</div>';
+  }
+
+  function check(){
+    var raw=ansEl.value.trim().replace(',','.').replace('−','-');
+    if(raw===''){ resEl.innerHTML='<span class="bad">Введи корень или нажми «Решение».</span>'; return; }
+    var got=parseFloat(raw);
+    if(isNaN(got)){ resEl.innerHTML='<span class="bad">Это не число. Введи корень.</span>'; return; }
+    if(Math.abs(got-cur.x)<0.001){ resEl.innerHTML='<span class="ok">✓ Верно! x = '+neg(cur.x)+'</span>'+solHTML(); }
+    else{ resEl.innerHTML='<span class="bad">✗ Пока не то — глянь решение.</span>'+solHTML(); }
+  }
+
+  document.getElementById('trNew').addEventListener('click',generate);
+  document.getElementById('trCheck').addEventListener('click',check);
+  document.getElementById('trShow').addEventListener('click',function(){ resEl.innerHTML=solHTML(); });
+  ansEl.addEventListener('keydown',function(e){ if(e.key==='Enter') check(); });
+  generate();
+})();
+</script>

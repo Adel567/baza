@@ -1,0 +1,333 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Линейная функция y = kx + b — алгебра 7 класс</title>
+<style>
+  :root{
+    --paper:#F7F8F6; --card:#FFFFFF; --ink:#1E2430; --muted:#616B7A; --line:#E5E8EC;
+    --brand:#0E9A7F; --brand-soft:#E1F4EF;
+    --k:#E27C2C; --k-soft:#FBEEDF;      /* наклон k */
+    --b:#2E6FB6; --b-soft:#E4EDF8;      /* сдвиг b */
+    --ok:#1E8E5A; --no:#C23B3B;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper)}
+  .page{max-width:720px;margin:0 auto;padding:clamp(1.4rem,4vw,3rem) clamp(1.1rem,4vw,2rem) 4.5rem;
+    color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:17.5px;line-height:1.68;-webkit-font-smoothing:antialiased}
+  .mono{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-variant-numeric:tabular-nums;font-weight:600}
+
+  .hero{border-bottom:3px solid var(--brand);padding-bottom:1.4rem;margin-bottom:1.8rem}
+  .eyebrow{font-size:.74rem;letter-spacing:.15em;text-transform:uppercase;color:var(--brand);font-weight:700;margin:0 0 .55rem}
+  h1{font-size:clamp(1.9rem,6vw,2.8rem);line-height:1.05;margin:0;font-weight:800;letter-spacing:-.02em;text-wrap:balance}
+  .tagline{font-size:1.12rem;color:var(--muted);margin:.85rem 0 0;text-wrap:pretty}
+
+  section{margin-top:2.4rem}
+  h2{font-size:1.5rem;margin:0 0 .3rem;font-weight:780;letter-spacing:-.015em;text-wrap:balance}
+  h2 .em{color:var(--brand)}
+  p{margin:.7rem 0}
+  strong{font-weight:680}
+  .kw{color:var(--k);font-weight:800} .bw{color:var(--b);font-weight:800}
+
+  .lead-in{background:var(--brand-soft);border-radius:14px;padding:1.1rem 1.3rem;font-size:1.02rem}
+  .lead-in p{margin:.4rem 0}
+  .lead-in b{color:var(--brand)}
+
+  .split{display:grid;gap:.9rem;margin-top:1rem}
+  @media(min-width:600px){.split{grid-template-columns:1fr 1fr}}
+  .role{border-radius:16px;padding:1.2rem 1.3rem;border:2px solid}
+  .role.k{background:var(--k-soft);border-color:#F0D4B4} .role.b{background:var(--b-soft);border-color:#C3D6EC}
+  .role .sym{font-family:ui-monospace,Menlo,monospace;font-weight:800;font-size:1.8rem}
+  .role.k .sym{color:var(--k)} .role.b .sym{color:var(--b)}
+  .role h3{margin:.1rem 0 .4rem;font-size:1.15rem;font-weight:800}
+  .role p{margin:.2rem 0;font-size:.96rem}
+
+  .formula-box{background:var(--ink);color:#fff;border-radius:14px;padding:1.3rem;text-align:center;margin-top:1rem}
+  .formula-box .eq{font-family:ui-monospace,Menlo,monospace;font-size:clamp(1.6rem,6vw,2.2rem);font-weight:700}
+  .formula-box .eq .kk{color:#F0A45E} .formula-box .eq .bb{color:#7FB0E6}
+  .formula-box .note{font-size:.9rem;color:#AEB8C6;margin:.6rem 0 0}
+
+  .note{border-left:4px solid var(--brand);background:var(--brand-soft);border-radius:0 10px 10px 0;padding:.8rem 1.1rem;margin-top:1rem;font-size:.98rem}
+  .note b{color:var(--brand)}
+
+  /* График */
+  .graph{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:1.2rem 1.2rem 1rem;margin-top:1rem}
+  .graph canvas{width:100%;height:auto;display:block;border-radius:10px;background:#FCFDFC}
+  .sliders{display:grid;gap:.6rem;margin-top:.9rem}
+  @media(min-width:520px){.sliders{grid-template-columns:1fr 1fr}}
+  .sliders label{display:flex;align-items:center;gap:.5rem;font-weight:700;font-family:ui-monospace,Menlo,monospace}
+  .sliders label.lk{color:var(--k)} .sliders label.lb{color:var(--b)}
+  .sliders input[type=range]{flex:1}
+  .sliders input.rk{accent-color:var(--k)} .sliders input.rb{accent-color:var(--b)}
+  .sliders .sval{min-width:2.4ch;text-align:right;font-variant-numeric:tabular-nums}
+  .graph-eq{text-align:center;font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.15rem;margin:.8rem 0 0}
+  .graph-eq .kk{color:var(--k)} .graph-eq .bb{color:var(--b)}
+  .graph-tip{text-align:center;font-size:.88rem;color:var(--muted);margin:.5rem 0 0}
+
+  .walk{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.15rem 1.3rem;margin-top:1rem}
+  .walk .q{font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.05rem;margin:0 0 .9rem;padding-bottom:.7rem;border-bottom:1px solid var(--line)}
+  .walk ol{margin:0;padding-left:1.2rem;display:flex;flex-direction:column;gap:.5rem}
+  .walk li{font-size:.96rem}
+  .walk b{font-weight:700}
+  .verdict{margin-top:1rem;padding:.7rem 1rem;background:var(--brand-soft);border-radius:10px;font-weight:650;color:var(--brand)}
+
+  /* Тренажёр */
+  .trainer{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.2rem 1.3rem;margin-top:1rem}
+  .tabs{display:flex;gap:.4rem;margin-bottom:.9rem}
+  .tabs button{font:inherit;font-weight:700;font-size:.85rem;cursor:pointer;border:1px solid var(--line);background:var(--paper);color:var(--muted);border-radius:20px;padding:.35rem .9rem}
+  .tabs button.on{background:var(--brand);color:#fff;border-color:var(--brand)}
+  .tr-task{font-family:ui-monospace,Menlo,monospace;font-weight:800;font-size:clamp(1.1rem,4.5vw,1.4rem);text-align:center;padding:1rem;background:var(--brand-soft);border-radius:10px;color:var(--ink)}
+  .tr-ctl{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.9rem;align-items:center}
+  .tr-ctl button{font:inherit;font-weight:700;font-size:.9rem;cursor:pointer;border:none;border-radius:9px;padding:.55rem .95rem;color:#fff;background:var(--brand)}
+  .tr-ctl button.sec{background:var(--k)}
+  .tr-ctl button.ghost{background:transparent;color:var(--brand);border:1px solid var(--brand)}
+  .tr-ctl input{flex:1;min-width:120px;font:inherit;padding:.5rem .7rem;border:1px solid var(--line);border-radius:9px;background:#fff;color:var(--ink)}
+  .tr-ctl button:focus-visible,.tr-ctl input:focus-visible{outline:3px solid var(--brand);outline-offset:2px}
+  .tr-result{margin-top:.9rem;font-size:.96rem;min-height:1.2rem}
+  .tr-result .ok{color:var(--ok);font-weight:700} .tr-result .bad{color:var(--no);font-weight:700}
+  .tr-result .sol{margin-top:.6rem;padding:.8rem 1rem;background:#FCFDFC;border:1px solid var(--line);border-radius:10px;font-family:ui-monospace,Menlo,monospace;font-size:.9rem;line-height:1.8}
+
+  details{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:.9rem 1.1rem;margin-top:.7rem}
+  details[open]{border-color:var(--brand)}
+  summary{cursor:pointer;font-weight:650;list-style:none;display:flex;justify-content:space-between;gap:1rem;align-items:center}
+  summary::-webkit-details-marker{display:none}
+  summary::after{content:"проверить";font-size:.8rem;color:var(--brand);font-weight:700;white-space:nowrap}
+  details[open] summary::after{content:"скрыть"}
+  .ans{margin-top:.75rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.96rem;color:var(--muted)}
+  .ans b{color:var(--ink)}
+  .drill{display:flex;flex-direction:column;gap:.2rem;margin-top:1rem}
+
+  ul.traps{list-style:none;margin:1rem 0 0;padding:0;display:flex;flex-direction:column;gap:.7rem}
+  ul.traps li{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:.85rem 1.05rem;padding-left:2.5rem;position:relative;font-size:.97rem}
+  ul.traps li::before{content:"⚠";position:absolute;left:1rem;top:.85rem;color:var(--k)}
+  ul.traps b{font-weight:700}
+
+  .wrapup{background:var(--brand);color:#fff;border-radius:16px;padding:1.4rem 1.5rem;margin-top:2.4rem}
+  .wrapup h2{color:#fff;margin:0 0 .5rem}
+  .wrapup p{color:#E4F4EF;margin:.4rem 0;font-size:1rem}
+  .wrapup .big-rule{font-size:1.1rem;font-weight:700;color:#fff;margin:.6rem 0}
+  .wrapup .next{font-size:.95rem;color:#CFEAE2;margin-top:1rem;padding-top:1rem;border-top:1px solid rgba(255,255,255,.2)}
+  .wrapup .next b{color:#fff}
+
+  @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="page">
+
+  <header class="hero">
+    <p class="eyebrow">Алгебра · 7 класс · функции</p>
+    <h1>Линейная функция y = kx + b</h1>
+    <p class="tagline">«Есть старт, и за каждый шаг — своя прибавка». Одна формула описывает такси, вклад, доставку и сотни других зависимостей.</p>
+  </header>
+
+  <div class="lead-in">
+    <p><b>Где встречается.</b> Такси: посадка 100 ₽ плюс 30 ₽ за километр. Вклад: было 5000 ₽, каждый месяц +500. Печать: 40 ₽ за оформление плюс 2 ₽ за лист.</p>
+    <p>Во всех случаях одно и то же: <b>стартовое число</b> и <b>прибавка за каждый шаг</b>. Это и есть линейная функция — научишься с ней работать, и по любому числу шагов сразу посчитаешь результат.</p>
+  </div>
+
+  <section>
+    <h2>Два числа, которые всё решают</h2>
+    <p>В формуле <span class="mono">y = <span class="kw">k</span>x + <span class="bw">b</span></span> живут ровно два коэффициента, и у каждого свой смысл:</p>
+    <div class="split">
+      <div class="role b">
+        <div class="sym">b</div>
+        <h3>🔵 Старт</h3>
+        <p>Значение при <span class="mono">x = 0</span> — то, с чего всё начинается. У такси это <strong>стоимость посадки</strong> (100 ₽, ещё не проехав ни метра).</p>
+      </div>
+      <div class="role k">
+        <div class="sym">k</div>
+        <h3>🟠 Скорость</h3>
+        <p>На сколько меняется <span class="mono">y</span>, когда <span class="mono">x</span> вырастает на 1. У такси это <strong>цена за километр</strong> (30 ₽ за каждый следующий).</p>
+      </div>
+    </div>
+    <p>Формула просто переводит фразу «было <span class="bw">b</span>, и за каждый шаг добавляется <span class="kw">k</span>» на язык математики.</p>
+  </section>
+
+  <section>
+    <h2>Определение</h2>
+    <div class="formula-box">
+      <div class="eq">y = <span class="kk">k</span>x + <span class="bb">b</span></div>
+      <div class="note"><span class="kk">k</span> — угловой коэффициент (при x) · <span class="bb">b</span> — свободный член (без x)</div>
+    </div>
+    <div class="note">
+      <p><b>Главное условие:</b> <span class="mono">x</span> стоит в <strong>первой степени</strong> — его просто умножают на число. Никаких <span class="mono">x²</span>, корней или <span class="mono">x</span> в знаменателе.</p>
+      <p>Поэтому <span class="mono">y = x²</span> — <span style="color:var(--no);font-weight:700">не</span> линейная функция, хотя там тоже есть <span class="mono">x</span>. Её график — не прямая.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Покрути график <span class="em">сам</span></h2>
+    <p>Двигай ползунки и смотри, за что отвечает каждый коэффициент: <span class="bw">b</span> поднимает и опускает прямую (точка на оси Y), <span class="kw">k</span> меняет её наклон.</p>
+    <div class="graph">
+      <canvas id="lin" width="640" height="420" aria-label="График линейной функции"></canvas>
+      <div class="sliders">
+        <label class="lk">k <span id="vk" class="sval">2</span><input id="sk" class="rk" type="range" min="-5" max="5" step="0.5" value="2"></label>
+        <label class="lb">b <span id="vb" class="sval">1</span><input id="sb" class="rb" type="range" min="-9" max="9" step="1" value="1"></label>
+      </div>
+      <p class="graph-eq" id="linEq">y = 2x + 1</p>
+      <p class="graph-tip" id="linTip"></p>
+    </div>
+    <p style="font-size:.9rem;color:var(--muted)">Заметь: при <span class="kw">k &gt; 0</span> прямая идёт вверх (функция растёт), при <span class="kw">k &lt; 0</span> — вниз. А точка, где прямая пересекает ось Y, — это всегда <span class="bw">b</span>.</p>
+  </section>
+
+  <section>
+    <h2>Как считать значение</h2>
+    <p>Самое частое задание: дана функция и значение <span class="mono">x</span> — найди <span class="mono">y</span>. Главное — порядок действий:</p>
+    <div class="walk">
+      <p class="q">y = 3x − 5. Найти y при x = 4.</p>
+      <ol>
+        <li>Здесь <span class="kw">k = 3</span>, <span class="bw">b = −5</span> (минус приклеен к свободному члену).</li>
+        <li>Подставляем <b>вместо x</b> число 4 (k и b не трогаем): <span class="mono">y = 3 · 4 − 5</span>.</li>
+        <li><b>Сначала умножение:</b> 3 · 4 = 12. Стало <span class="mono">y = 12 − 5</span>.</li>
+        <li>Потом вычитание: 12 − 5 = 7.</li>
+      </ol>
+      <div class="verdict">Ответ: при x = 4 значение y = 7.</div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Тренажёр · считай сколько хочешь</h2>
+    <p>Нажми «Новое задание» и вычисли. Введи ответ и проверь себя или посмотри решение.</p>
+    <div class="trainer">
+      <div class="tabs">
+        <button id="tabY" class="on" type="button">Найти y</button>
+        <button id="tabX" type="button">Найти x</button>
+      </div>
+      <div class="tr-task" id="trTask">y = 2x + 1,&nbsp; найди y при x = 3</div>
+      <div class="tr-ctl">
+        <button id="trNew" type="button">🎲 Новое задание</button>
+        <input id="trAns" type="text" placeholder="ответ — число" aria-label="Ответ">
+        <button id="trCheck" type="button" class="sec">Проверить</button>
+        <button id="trShow" type="button" class="ghost">Решение</button>
+      </div>
+      <div id="trResult" class="tr-result"></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Проверь себя</h2>
+    <div class="drill">
+      <details><summary>1) В функции <span class="mono">y = 7x − 2</span> назови k и b.</summary>
+        <div class="ans"><b>k = 7</b> (множитель при x), <b>b = −2</b> (число без x, вместе со знаком).</div></details>
+      <details><summary>2) Какая запись — линейная функция: <span class="mono">y = 4x + 1</span>, <span class="mono">y = x²</span>, <span class="mono">y = 5/x</span>?</summary>
+        <div class="ans">Только <b>y = 4x + 1</b>: x в первой степени. В <span class="mono">y = x²</span> вторая степень, в <span class="mono">y = 5/x</span> — x в знаменателе.</div></details>
+      <details><summary>3) Найди ошибку: y = 4x − 3 при x = 5, ученик написал 4 · 5 − 3 = 4 · 2 = 8.</summary>
+        <div class="ans">Нарушен порядок действий — сначала умножение: <span class="mono">4 · 5 = 20</span>, потом <span class="mono">20 − 3 = 17</span>. Верно <b>y = 17</b>.</div></details>
+      <details><summary>4) Обратная задача: y = 2x + 1, известно y = 11. Чему равен x?</summary>
+        <div class="ans"><span class="mono">2x + 1 = 11 → 2x = 10 → x = 5</span>. Значит <b>x = 5</b>.</div></details>
+    </div>
+  </section>
+
+  <section>
+    <h2>Ловушки</h2>
+    <ul class="traps">
+      <li><b>«Есть x — значит линейная».</b> Нет: в <span class="mono">y = x²</span> тоже есть x. Линейная — только когда x в первой степени.</li>
+      <li><b>Путают k и b.</b> В <span class="mono">y = 5 − 2x</span> будь внимателен: <span class="kw">k = −2</span> (при x), <span class="bw">b = 5</span> (без x).</li>
+      <li><b>Порядок действий.</b> Сначала <span class="mono">k · x</span>, только потом прибавляешь b. Не наоборот.</li>
+      <li><b>Теряют минус.</b> Знак приклеен к числу — переписывай его вместе с числом.</li>
+    </ul>
+  </section>
+
+  <div class="wrapup">
+    <h2>Запомни главное</h2>
+    <p class="big-rule">y = <span style="color:#F0A45E">k</span>x + <span style="color:#9Fc4ee">b</span> — это «умножь x на k и прибавь b».</p>
+    <p><span style="color:#fff;font-weight:700">b</span> — начальное значение (при x = 0), <span style="color:#fff;font-weight:700">k</span> — на сколько меняется y за каждый шаг. График — всегда прямая.</p>
+    <p class="next">👉 Дальше — как <b>строить график</b> линейной функции по двум точкам, и особый случай <b>прямой пропорциональности</b> (когда b = 0).</p>
+  </div>
+
+</div>
+
+<script>
+(function(){
+  var canvas=document.getElementById('lin'); if(!canvas) return;
+  var ctx=canvas.getContext('2d'), sk=document.getElementById('sk'), sb=document.getElementById('sb');
+  var vk=document.getElementById('vk'), vb=document.getElementById('vb'), eqEl=document.getElementById('linEq'), tipEl=document.getElementById('linTip');
+  var W=640,H=420,dpr=1,RANGE=10;
+  function fmt(n){ n=Math.round(n*10)/10; return (n<0?'−':'')+Math.abs(n); }
+  function resize(){ var c=canvas.clientWidth||640; dpr=Math.min(window.devicePixelRatio||1,2); W=c; H=Math.round(c*0.66);
+    canvas.width=W*dpr; canvas.height=H*dpr; canvas.style.height=H+'px'; ctx.setTransform(dpr,0,0,dpr,0,0); }
+  function X(x){ return W/2 + x*(W/(2*RANGE)); }
+  function Y(y){ var yr=RANGE*(H/W); return H/2 - y*(H/(2*yr)); }
+  function css(v){ return getComputedStyle(document.documentElement).getPropertyValue(v).trim(); }
+  function draw(){
+    var k=parseFloat(sk.value), b=parseFloat(sb.value);
+    vk.textContent=fmt(k); vb.textContent=fmt(b);
+    ctx.clearRect(0,0,W,H);
+    ctx.strokeStyle='#EDF0EE'; ctx.lineWidth=1;
+    for(var gx=-RANGE;gx<=RANGE;gx++){ ctx.beginPath(); ctx.moveTo(X(gx),0); ctx.lineTo(X(gx),H); ctx.stroke(); }
+    var yr=Math.round(RANGE*(H/W));
+    for(var gy=-yr;gy<=yr;gy++){ ctx.beginPath(); ctx.moveTo(0,Y(gy)); ctx.lineTo(W,Y(gy)); ctx.stroke(); }
+    ctx.strokeStyle='#9AA3AE'; ctx.lineWidth=1.5;
+    ctx.beginPath(); ctx.moveTo(0,Y(0)); ctx.lineTo(W,Y(0)); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(X(0),0); ctx.lineTo(X(0),H); ctx.stroke();
+    // прямая
+    ctx.strokeStyle=css('--brand'); ctx.lineWidth=3;
+    ctx.beginPath(); ctx.moveTo(X(-RANGE), Y(k*(-RANGE)+b)); ctx.lineTo(X(RANGE), Y(k*RANGE+b)); ctx.stroke();
+    // индикатор наклона: от (0,b) вправо 1, вверх k
+    if(Math.abs(k)>0.01){
+      ctx.strokeStyle=css('--k'); ctx.lineWidth=2; ctx.setLineDash([4,3]);
+      ctx.beginPath(); ctx.moveTo(X(0),Y(b)); ctx.lineTo(X(1),Y(b)); ctx.lineTo(X(1),Y(k+b)); ctx.stroke();
+      ctx.setLineDash([]);
+    }
+    // точка (0,b)
+    ctx.fillStyle=css('--b'); ctx.beginPath(); ctx.arc(X(0),Y(b),6,0,7); ctx.fill();
+    ctx.fillStyle='#fff'; ctx.beginPath(); ctx.arc(X(0),Y(b),2.4,0,7); ctx.fill();
+    // формула
+    var f='y = ';
+    f += (k===1?'':(k===-1?'−':fmt(k).replace('−','-')))+'x';
+    if(Math.abs(b)>=0.01) f += (b<0?' − ':' + ')+Math.abs(b);
+    else if(k===0) f='y = '+fmt(b).replace('−','-');
+    eqEl.textContent = f;
+    tipEl.textContent = (k>0?'k > 0 → функция растёт': k<0?'k < 0 → функция убывает':'k = 0 → постоянная') + ' · пересекает ось Y в точке ('+'0, '+fmt(b)+')';
+  }
+  [sk,sb].forEach(function(s){ s.addEventListener('input',draw); });
+  window.addEventListener('resize',function(){ resize(); draw(); });
+  resize(); draw();
+})();
+</script>
+
+<script>
+(function(){
+  var taskEl=document.getElementById('trTask'), ansEl=document.getElementById('trAns'), resEl=document.getElementById('trResult');
+  if(!taskEl) return;
+  var mode='y', cur={k:2,b:1,x:3};
+  var tabY=document.getElementById('tabY'), tabX=document.getElementById('tabX');
+  function ri(min,max){ return Math.floor(Math.random()*(max-min+1))+min; }
+  function fmtK(k){ return k===1?'':(k===-1?'−':''+k); }
+  function fmtFn(k,b){ var s='y = '+fmtK(k)+'x'; if(b!==0) s+=(b<0?' − ':' + ')+Math.abs(b); return s; }
+  function generate(){
+    var k; do{ k=ri(-5,5);}while(k===0);
+    var b=ri(-9,9), x=ri(-6,6);
+    cur={k:k,b:b,x:x};
+    if(mode==='y'){ taskEl.textContent = fmtFn(k,b)+',  найди y при x = '+x; }
+    else { var y=k*x+b; cur.y=y; taskEl.textContent = fmtFn(k,b)+',  при каком x значение y = '+y+' ?'; }
+    resEl.innerHTML=''; ansEl.value='';
+  }
+  function solHTML(){
+    var q=cur, h='<div class="sol">';
+    if(mode==='y'){ var y=q.k*q.x+q.b;
+      h+='y = '+fmtK(q.k)+'·('+q.x+')'+(q.b<0?' − '+(-q.b):' + '+q.b)+'<br>';
+      h+='y = '+(q.k*q.x)+(q.b<0?' − '+(-q.b):' + '+q.b)+' = <b>'+y+'</b>'; }
+    else { var xv=(q.y-q.b)/q.k;
+      h+=fmtK(q.k)+'x'+(q.b<0?' − '+(-q.b):' + '+q.b)+' = '+q.y+'<br>';
+      h+=fmtK(q.k)+'x = '+q.y+(q.b<0?' + '+(-q.b):' − '+q.b)+' = '+(q.y-q.b)+'<br>';
+      h+='x = '+(q.y-q.b)+' / '+q.k+' = <b>'+(Math.round(xv*100)/100)+'</b>'; }
+    return h+'</div>';
+  }
+  function check(){
+    var raw=ansEl.value.trim().replace(',','.');
+    if(raw===''){ resEl.innerHTML='<span class="bad">Введи число или нажми «Решение».</span>'; return; }
+    var got=parseFloat(raw);
+    var right = mode==='y' ? (cur.k*cur.x+cur.b) : ((cur.y-cur.b)/cur.k);
+    right=Math.round(right*100)/100;
+    if(!isNaN(got) && Math.abs(got-right)<0.02){ resEl.innerHTML='<span class="ok">✓ Верно!</span>'+solHTML(); }
+    else{ resEl.innerHTML='<span class="bad">✗ Пока не то — глянь решение.</span>'+solHTML(); }
+  }
+  function setMode(m){ mode=m; tabY.className=m==='y'?'on':''; tabX.className=m==='x'?'on':''; generate(); }
+  tabY.addEventListener('click',function(){ setMode('y'); });
+  tabX.addEventListener('click',function(){ setMode('x'); });
+  document.getElementById('trNew').addEventListener('click',generate);
+  document.getElementById('trCheck').addEventListener('click',check);
+  document.getElementById('trShow').addEventListener('click',function(){ resEl.innerHTML=solHTML(); });
+  ansEl.addEventListener('keydown',function(e){ if(e.key==='Enter') check(); });
+})();
+</script>

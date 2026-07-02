@@ -1,0 +1,472 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Квадратичная функция и парабола — алгебра 9 класс</title>
+<style>
+  :root{
+    --paper:#F7F6FB; --card:#FFFFFF; --ink:#211B2E; --muted:#66607A; --line:#E7E3F0;
+    --brand:#7A34C4; --brand-soft:#EFE6FA;
+    --a:#DE6A16; --a-soft:#FBEBDA;      /* старший коэффициент a */
+    --b:#1F9E8C; --b-soft:#DCF3EF;      /* коэффициент b */
+    --c:#3B6BC9; --c-soft:#E3EAF9;      /* свободный член c */
+    --up:#1E8E5A; --up-soft:#DEF2E7;    /* ветви вверх */
+    --down:#C23B3B; --down-soft:#FBE6E6;/* ветви вниз */
+    --ok:#1E8E5A; --no:#C23B3B;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper)}
+  .page{max-width:720px;margin:0 auto;padding:clamp(1.4rem,4vw,3rem) clamp(1.1rem,4vw,2rem) 4.5rem;
+    color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:17.5px;line-height:1.68;-webkit-font-smoothing:antialiased}
+  .mono{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-variant-numeric:tabular-nums;font-weight:600}
+  sup{font-size:.72em}
+
+  .hero{border-bottom:3px solid var(--brand);padding-bottom:1.4rem;margin-bottom:1.8rem}
+  .eyebrow{font-size:.74rem;letter-spacing:.15em;text-transform:uppercase;color:var(--brand);font-weight:700;margin:0 0 .55rem}
+  h1{font-size:clamp(1.9rem,6vw,2.8rem);line-height:1.05;margin:0;font-weight:800;letter-spacing:-.02em;text-wrap:balance}
+  .tagline{font-size:1.12rem;color:var(--muted);margin:.85rem 0 0;text-wrap:pretty}
+
+  section{margin-top:2.4rem}
+  h2{font-size:1.5rem;margin:0 0 .3rem;font-weight:780;letter-spacing:-.015em;text-wrap:balance}
+  h2 .em{color:var(--brand)}
+  p{margin:.7rem 0}
+  strong{font-weight:680}
+  .aw{color:var(--a);font-weight:800} .bw{color:var(--b);font-weight:800} .cw{color:var(--c);font-weight:800}
+
+  .lead-in{background:var(--brand-soft);border-radius:14px;padding:1.1rem 1.3rem;font-size:1.02rem}
+  .lead-in p{margin:.4rem 0}
+  .lead-in b{color:var(--brand)}
+
+  .formula-box{background:var(--ink);color:#fff;border-radius:14px;padding:1.3rem;text-align:center;margin-top:1rem}
+  .formula-box .eq{font-family:ui-monospace,Menlo,monospace;font-size:clamp(1.6rem,6vw,2.2rem);font-weight:700}
+  .formula-box .eq .a{color:#F2954B} .formula-box .eq .b{color:#5FCBBB} .formula-box .eq .c{color:#82A6EC}
+  .formula-box .note{font-size:.9rem;color:#B7B0C8;margin:.6rem 0 0}
+
+  .split{display:grid;gap:.9rem;margin-top:1rem}
+  @media(min-width:560px){.split{grid-template-columns:1fr 1fr 1fr}}
+  .role{border-radius:14px;padding:1rem 1.1rem;border:2px solid}
+  .role.a{background:var(--a-soft);border-color:#F1CDA6} .role.b{background:var(--b-soft);border-color:#B7E1DA} .role.c{background:var(--c-soft);border-color:#C2D2F0}
+  .role .sym{font-family:ui-monospace,Menlo,monospace;font-weight:800;font-size:1.7rem}
+  .role.a .sym{color:var(--a)} .role.b .sym{color:var(--b)} .role.c .sym{color:var(--c)}
+  .role h3{margin:.1rem 0 .35rem;font-size:1.02rem;font-weight:800}
+  .role p{margin:.2rem 0;font-size:.92rem}
+
+  .dir{display:grid;gap:.8rem;margin-top:1rem}
+  @media(min-width:520px){.dir{grid-template-columns:1fr 1fr}}
+  .dir div{border-radius:14px;padding:1rem 1.2rem;font-size:.98rem}
+  .dir .up{background:var(--up-soft);border:2px solid #B4E0C6}
+  .dir .down{background:var(--down-soft);border:2px solid #F2C4C4}
+  .dir .cap{font-weight:800;font-size:1.05rem;display:flex;align-items:center;gap:.5rem}
+  .dir .up .cap{color:var(--up)} .dir .down .cap{color:var(--down)}
+  .dir .glyph{font-size:1.6rem;font-weight:800;font-family:ui-monospace,Menlo,monospace}
+
+  .note{border-left:4px solid var(--brand);background:var(--brand-soft);border-radius:0 10px 10px 0;padding:.8rem 1.1rem;margin-top:1rem;font-size:.98rem}
+  .note b{color:var(--brand)}
+
+  /* График */
+  .graph{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:1.2rem 1.2rem 1rem;margin-top:1rem}
+  .graph canvas{width:100%;height:auto;display:block;border-radius:10px;background:#FCFBFE}
+  .sliders{display:grid;gap:.6rem;margin-top:.9rem}
+  @media(min-width:520px){.sliders{grid-template-columns:1fr 1fr 1fr}}
+  .sliders label{display:flex;align-items:center;gap:.5rem;font-weight:700;font-family:ui-monospace,Menlo,monospace}
+  .sliders label.la{color:var(--a)} .sliders label.lb{color:var(--b)} .sliders label.lc{color:var(--c)}
+  .sliders input[type=range]{flex:1;min-width:0}
+  .sliders input.ra{accent-color:var(--a)} .sliders input.rb{accent-color:var(--b)} .sliders input.rc{accent-color:var(--c)}
+  .sliders .sval{min-width:3ch;text-align:right;font-variant-numeric:tabular-nums}
+  .sliders input:focus-visible{outline:3px solid var(--brand);outline-offset:2px}
+  .graph-eq{text-align:center;font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.12rem;margin:.85rem 0 0}
+  .graph-eq .a{color:var(--a)} .graph-eq .b{color:var(--b)} .graph-eq .c{color:var(--c)}
+  .graph-tip{text-align:center;font-size:.9rem;color:var(--muted);margin:.5rem 0 0;min-height:1.2rem}
+
+  .walk{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.15rem 1.3rem;margin-top:1rem}
+  .walk .q{font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.02rem;margin:0 0 .9rem;padding-bottom:.7rem;border-bottom:1px solid var(--line)}
+  .walk ol{margin:0;padding-left:1.2rem;display:flex;flex-direction:column;gap:.5rem}
+  .walk li{font-size:.95rem}
+  .walk li .why{color:var(--muted);font-size:.9rem}
+  .walk b{font-weight:700}
+  .verdict{margin-top:1rem;padding:.7rem 1rem;background:var(--brand-soft);border-radius:10px;font-weight:650;color:var(--brand)}
+
+  /* Тренажёр */
+  .trainer{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.2rem 1.3rem;margin-top:1rem}
+  .tr-task{font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:clamp(1rem,4vw,1.25rem);text-align:center;padding:1rem;background:var(--brand-soft);border-radius:10px;color:var(--ink)}
+  .tr-task .qlabel{display:block;font-family:system-ui,sans-serif;font-weight:700;font-size:.9rem;color:var(--brand);margin-top:.55rem}
+  .tr-ctl{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.9rem;align-items:center}
+  .tr-ctl button{font:inherit;font-weight:700;font-size:.9rem;cursor:pointer;border:none;border-radius:9px;padding:.55rem .95rem;color:#fff;background:var(--brand)}
+  .tr-ctl button.sec{background:var(--a)}
+  .tr-ctl button.ghost{background:transparent;color:var(--brand);border:1px solid var(--brand)}
+  .tr-ctl input{flex:1;min-width:120px;font:inherit;padding:.5rem .7rem;border:1px solid var(--line);border-radius:9px;background:#fff;color:var(--ink)}
+  .tr-ctl button:focus-visible,.tr-ctl input:focus-visible{outline:3px solid var(--brand);outline-offset:2px}
+  .tr-result{margin-top:.9rem;font-size:.96rem;min-height:1.2rem}
+  .tr-result .ok{color:var(--ok);font-weight:700} .tr-result .bad{color:var(--no);font-weight:700}
+  .tr-result .sol{margin-top:.6rem;padding:.8rem 1rem;background:#FCFBFE;border:1px solid var(--line);border-radius:10px;font-family:ui-monospace,Menlo,monospace;font-size:.9rem;line-height:1.8}
+
+  details{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:.9rem 1.1rem;margin-top:.7rem}
+  details[open]{border-color:var(--brand)}
+  summary{cursor:pointer;font-weight:650;list-style:none;display:flex;justify-content:space-between;gap:1rem;align-items:center}
+  summary::-webkit-details-marker{display:none}
+  summary:focus-visible{outline:3px solid var(--brand);outline-offset:3px;border-radius:6px}
+  summary::after{content:"проверить";font-size:.8rem;color:var(--brand);font-weight:700;white-space:nowrap}
+  details[open] summary::after{content:"скрыть"}
+  .ans{margin-top:.75rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.96rem;color:var(--muted)}
+  .ans b{color:var(--ink)}
+  .drill{display:flex;flex-direction:column;gap:.2rem;margin-top:1rem}
+
+  ul.traps{list-style:none;margin:1rem 0 0;padding:0;display:flex;flex-direction:column;gap:.7rem}
+  ul.traps li{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:.85rem 1.05rem;padding-left:2.5rem;position:relative;font-size:.97rem}
+  ul.traps li::before{content:"⚠";position:absolute;left:1rem;top:.85rem;color:var(--a)}
+  ul.traps b{font-weight:700}
+
+  .wrapup{background:var(--brand);color:#fff;border-radius:16px;padding:1.4rem 1.5rem;margin-top:2.4rem}
+  .wrapup h2{color:#fff;margin:0 0 .5rem}
+  .wrapup p{color:#EADDF7;margin:.4rem 0;font-size:1rem}
+  .wrapup .big-rule{font-size:1.15rem;font-weight:800;color:#fff;margin:.6rem 0;font-family:ui-monospace,Menlo,monospace}
+  .wrapup .next{font-size:.95rem;color:#D6C4EE;margin-top:1rem;padding-top:1rem;border-top:1px solid rgba(255,255,255,.2)}
+  .wrapup .next b{color:#fff}
+
+  table.vals{border-collapse:collapse;margin:1rem auto 0;font-family:ui-monospace,Menlo,monospace;font-variant-numeric:tabular-nums}
+  table.vals td,table.vals th{border:1px solid var(--line);padding:.35rem .8rem;text-align:center}
+  table.vals th{background:var(--brand-soft);color:var(--brand)}
+
+  @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="page">
+
+  <header class="hero">
+    <p class="eyebrow">Алгебра · 9 класс · функции</p>
+    <h1>Квадратичная функция и парабола</h1>
+    <p class="tagline">Где появляется «x в квадрате» — там кривая-чаша. Научись узнавать её с одного взгляда и читать три коэффициента.</p>
+  </header>
+
+  <div class="lead-in">
+    <p><b>Где встречается.</b> Высота брошенного мяча над землёй, струя воды в фонтане, форма спутниковой «тарелки» и подвесного троса моста, площадь квадрата от его стороны — всё это парабола. Везде, где одна величина зависит от <b>квадрата</b> другой.</p>
+    <p>С этой темы начинается большая глава 9 класса: дальше — вершина параболы, её свойства и квадратные неравенства по графику. Не научишься уверенно узнавать квадратичную функцию — вся глава посыплется.</p>
+  </div>
+
+  <section>
+    <h2>Суть простыми словами</h2>
+    <p>Квадратичная функция — это правило, где <strong>главная, самая «сильная» часть — это число, умноженное на <span class="mono">x²</span></strong>. К нему могут добавляться слагаемое с <span class="mono">x</span> и просто число, но слагаемое с <span class="mono">x²</span> быть обязано.</p>
+    <p>Именно <span class="mono">x²</span> «сгибает» прямую в кривую: график перестаёт быть прямой линией и становится <strong>параболой</strong> — плавной симметричной «чашей» или «куполом».</p>
+    <div class="note">
+      <p><b>Осторожно с мифом:</b> «раз есть <span class="mono">x²</span> — значит парабола» — не всегда правда. У <span class="mono">y = x² + 1/x</span> тоже есть <span class="mono">x²</span>, но там ещё и деление на <span class="mono">x</span> — это <span style="color:var(--no);font-weight:700">не</span> квадратичная функция. Парабола получается только у «чистого» вида <span class="mono">y = ax² + bx + c</span>.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Определение и три коэффициента</h2>
+    <p><strong>Определение.</strong> Функция вида <span class="mono">y = ax² + bx + c</span>, где <span class="mono">a, b, c</span> — заданные числа и <strong><span class="mono">a ≠ 0</span></strong>, называется <strong>квадратичной</strong>. Её график — <strong>парабола</strong>.</p>
+    <div class="formula-box">
+      <div class="eq">y = <span class="a">a</span>x² + <span class="b">b</span>x + <span class="c">c</span></div>
+      <div class="note">обязательно <span class="a">a</span> ≠ 0 — иначе слагаемое с x² исчезнет и останется прямая</div>
+    </div>
+    <div class="split">
+      <div class="role a">
+        <div class="sym">a</div>
+        <h3>Старший</h3>
+        <p>Множитель при <span class="mono">x²</span>. Главный: должен быть <b>≠ 0</b> и решает, куда смотрят ветви.</p>
+      </div>
+      <div class="role b">
+        <div class="sym">b</div>
+        <h3>При x</h3>
+        <p>Множитель при <span class="mono">x</span> (первая степень). Может быть <b>0</b>.</p>
+      </div>
+      <div class="role c">
+        <div class="sym">c</div>
+        <h3>Свободный</h3>
+        <p>Число без <span class="mono">x</span>. Это <span class="mono">y</span> при <span class="mono">x = 0</span> — точка пересечения с осью <span class="mono">Oy</span>. Может быть <b>0</b>.</p>
+      </div>
+    </div>
+    <p>А знак старшего коэффициента <span class="aw">a</span> задаёт направление ветвей:</p>
+    <div class="dir">
+      <div class="up">
+        <div class="cap"><span class="glyph">∪</span> a &gt; 0 — ветви вверх</div>
+        <p>Парабола-«чаша». У функции есть <b>наименьшее</b> значение.</p>
+      </div>
+      <div class="down">
+        <div class="cap"><span class="glyph">∩</span> a &lt; 0 — ветви вниз</div>
+        <p>Парабола-«купол». У функции есть <b>наибольшее</b> значение.</p>
+      </div>
+    </div>
+    <div class="note">
+      <p><b>Область определения:</b> любой <span class="mono">x</span> — никаких ОДЗ. Но выражение должно быть <b>целым многочленом</b> степени 2: без деления на <span class="mono">x</span>, без <span class="mono">x</span> под корнем, без <span class="mono">x</span> в знаменателе. Иначе это уже не квадратичная функция.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Разбор — <span class="em">читаю коэффициенты вслух</span></h2>
+    <p>Главное задание темы: узнать квадратичную функцию и назвать <span class="mono">a, b, c</span> вместе со знаками.</p>
+    <div class="walk">
+      <p class="q">y = 3x² − 5x + 2 — квадратичная? Назвать a, b, c и ветви.</p>
+      <ol>
+        <li>Сравниваю с шаблоном <span class="mono">y = ax² + bx + c</span>. <span class="why">— сопоставляю слагаемые по степеням x.</span></li>
+        <li>Слагаемое с <span class="mono">x²</span> — это <span class="mono">3x²</span>, значит <span class="aw">a = 3</span>.</li>
+        <li>Слагаемое с <span class="mono">x</span> — это <span class="mono">−5x</span>, значит <span class="bw">b = −5</span>. <span class="why">— минус входит в коэффициент!</span></li>
+        <li>Число без <span class="mono">x</span>: <span class="cw">c = 2</span>.</li>
+        <li><span class="mono">a = 3 ≠ 0</span> — функция квадратичная. <span class="mono">a = 3 &gt; 0</span> → ветви вверх ∪.</li>
+      </ol>
+      <div class="verdict">Ответ: да, квадратичная; a = 3, b = −5, c = 2; ветви вверх.</div>
+    </div>
+    <div class="walk" style="margin-top:.8rem">
+      <p class="q">y = −x² + 4 — определить a, b, c и ветви.</p>
+      <ol>
+        <li>При <span class="mono">x²</span> стоит <span class="mono">−x²</span>, то есть множитель <span class="mono">−1</span> → <span class="aw">a = −1</span>.</li>
+        <li>Слагаемого с <span class="mono">x</span> в записи <b>нет</b> → коэффициент при <span class="mono">x</span> равен нулю: <span class="bw">b = 0</span>.</li>
+        <li>Число без <span class="mono">x</span>: <span class="cw">c = 4</span>.</li>
+        <li><span class="mono">a = −1 &lt; 0</span> → ветви направлены вниз ∩.</li>
+      </ol>
+      <div class="verdict">Ответ: a = −1, b = 0, c = 4; ветви вниз.</div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Покрути параболу <span class="em">сам</span></h2>
+    <p>Двигай ползунки <span class="aw">a</span>, <span class="bw">b</span>, <span class="cw">c</span> и смотри: знак <span class="aw">a</span> переворачивает ветви, <span class="cw">c</span> — это точка на оси <span class="mono">Oy</span>. Пунктиром показаны ось симметрии и вершина.</p>
+    <div class="graph">
+      <canvas id="par" width="640" height="480" aria-label="Парабола y = ax² + bx + c"></canvas>
+      <div class="sliders">
+        <label class="la">a <span id="va" class="sval">1</span><input id="sa" class="ra" type="range" min="-3" max="3" step="0.5" value="1"></label>
+        <label class="lb">b <span id="vb" class="sval">0</span><input id="sb" class="rb" type="range" min="-5" max="5" step="1" value="0"></label>
+        <label class="lc">c <span id="vc" class="sval">0</span><input id="sc" class="rc" type="range" min="-5" max="5" step="1" value="0"></label>
+      </div>
+      <p class="graph-eq" id="parEq">y = x²</p>
+      <p class="graph-tip" id="parTip"></p>
+    </div>
+    <p style="font-size:.9rem;color:var(--muted)">Поставь <span class="aw">a = 0</span> — и график честно перестаёт быть параболой: получается прямая. Это и есть смысл условия <span class="mono">a ≠ 0</span>.</p>
+  </section>
+
+  <section>
+    <h2>Таблица и симметрия</h2>
+    <p>Одну функцию полезно видеть в трёх видах: формула, таблица, график. Возьмём самую простую параболу <span class="mono">y = x²</span>:</p>
+    <table class="vals">
+      <tr><th>x</th><td>−2</td><td>−1</td><td>0</td><td>1</td><td>2</td></tr>
+      <tr><th>y</th><td>4</td><td>1</td><td>0</td><td>1</td><td>4</td></tr>
+    </table>
+    <p>Отметь точки и соедини плавной линией — выйдет «чаша» с самой нижней точкой в начале координат. Заметь <strong>симметрию</strong>: слева и справа от нуля значения одинаковые (при <span class="mono">x = −2</span> и <span class="mono">x = 2</span> одно и то же <span class="mono">y = 4</span>).</p>
+  </section>
+
+  <section>
+    <h2>Тренажёр · читай коэффициенты</h2>
+    <p>Нажимай «Новое» — генерируются бесконечные задания трёх типов: назвать коэффициент, определить ветви, отличить квадратичную от других. Впиши ответ и проверь себя.</p>
+    <div class="trainer">
+      <div class="tr-task" id="trTask">y = x²<span class="qlabel">задание</span></div>
+      <div class="tr-ctl">
+        <button id="trNew" type="button">🎲 Новое</button>
+        <input id="trAns" type="text" placeholder="ответ" aria-label="Ответ">
+        <button id="trCheck" type="button" class="sec">Проверить</button>
+        <button id="trShow" type="button" class="ghost">Решение</button>
+      </div>
+      <div id="trResult" class="tr-result"></div>
+    </div>
+    <p style="font-size:.88rem;color:var(--muted)">Для коэффициента впиши число со знаком (например <span class="mono">−5</span> или <span class="mono">0</span>). Для ветвей — слово <span class="mono">вверх</span> или <span class="mono">вниз</span>. Для «квадратичная ли» — <span class="mono">да</span> или <span class="mono">нет</span>.</p>
+  </section>
+
+  <section>
+    <h2>Проверь себя</h2>
+    <div class="drill">
+      <details><summary>1) В функции <span class="mono">y = 2x² − 3x + 6</span> назови a, b, c.</summary>
+        <div class="ans"><b>a = 2</b> (при x²), <b>b = −3</b> (при x, со знаком минус), <b>c = 6</b> (без x).</div></details>
+      <details><summary>2) <span class="mono">y = −0,5x² + 2x − 1</span>: назови a, b, c и куда направлены ветви.</summary>
+        <div class="ans"><b>a = −0,5</b>, <b>b = 2</b>, <b>c = −1</b>. Так как <span class="mono">a = −0,5 &lt; 0</span> — ветви направлены <b>вниз</b> ∩.</div></details>
+      <details><summary>3) Найди ошибку: «У функции <span class="mono">y = −2x² + 7</span> коэффициент a = 2».</summary>
+        <div class="ans">Потерян знак минус. При <span class="mono">x²</span> стоит <span class="mono">−2x²</span>, значит <b>a = −2</b> (а не 2). И раз <span class="mono">a &lt; 0</span> — ветви вниз.</div></details>
+      <details><summary>4) Почему <span class="mono">y = 4x − 1</span> не квадратичная?</summary>
+        <div class="ans">В записи <b>нет слагаемого с x²</b>, то есть <span class="mono">a = 0</span>. Это линейная функция, её график — прямая, а не парабола.</div></details>
+      <details><summary>5) Обратная задача: придумай квадратичную функцию с ветвями вниз, график которой пересекает ось Oy в точке (0; 5).</summary>
+        <div class="ans">Ветви вниз → нужно <span class="mono">a &lt; 0</span>. Пересечение с Oy в 5 → <span class="mono">c = 5</span>. Подойдёт, например, <b>y = −x² + 5</b> (можно взять любое отрицательное a и b по вкусу, но c = 5).</div></details>
+    </div>
+  </section>
+
+  <section>
+    <h2>Ловушки</h2>
+    <ul class="traps">
+      <li><b>«Любая функция с x² — парабола».</b> Нет: <span class="mono">y = x² + 1/x</span> или <span class="mono">y = √(x²+1)</span> содержат x², но не квадратичные. Нужен <b>целый многочлен ровно 2-й степени</b> — без деления на x и без x под корнем.</li>
+      <li><b>Теряют знак коэффициента.</b> В <span class="mono">y = 3x² − 5x + 2</span> пишут b = 5 вместо <b>b = −5</b>. Минус приклеен к числу справа — бери коэффициент вместе со знаком.</li>
+      <li><b>Путают роли a, b, c.</b> Запомни: <span class="aw">a</span> — при x², <span class="bw">b</span> — при x, <span class="cw">c</span> — без x (и это пересечение с Oy).</li>
+      <li><b>Забывают про a ≠ 0.</b> Считают <span class="mono">y = 5x + 3</span> квадратичной. Нет слагаемого с x² — это уже линейная функция.</li>
+      <li><b>Путают параболу с гиперболой.</b> Гипербола <span class="mono">y = k/x</span> — две отдельные ветви и x в знаменателе. Парабола — единая симметричная «чаша», x во второй степени.</li>
+    </ul>
+  </section>
+
+  <div class="wrapup">
+    <h2>Запомни главное</h2>
+    <p class="big-rule">y = ax² + bx + c,  a ≠ 0</p>
+    <p>Это <b>квадратичная функция</b>, её график — <b>парабола</b>. <b>a</b> — при x² (главный, ≠ 0), <b>b</b> — при x, <b>c</b> — свободный член (пересечение с Oy). Знак <b>a</b> решает: <b>a &gt; 0</b> ветви вверх ∪, <b>a &lt; 0</b> ветви вниз ∩.</p>
+    <p class="next">👉 Дальше — как найти <b>вершину параболы</b> (самую нижнюю или верхнюю точку) и читать её <b>свойства</b>: возрастание, убывание, наибольшее и наименьшее значение.</p>
+  </div>
+
+</div>
+
+<script>
+/* ── Интерактивная парабола ── */
+(function(){
+  var cv=document.getElementById('par'); if(!cv) return;
+  var ctx=cv.getContext('2d');
+  var sa=document.getElementById('sa'), sb=document.getElementById('sb'), sc=document.getElementById('sc');
+  var va=document.getElementById('va'), vb=document.getElementById('vb'), vc=document.getElementById('vc');
+  var eqEl=document.getElementById('parEq'), tipEl=document.getElementById('parTip');
+  var W=640,H=480,dpr=1,RX=8;
+  function css(v){ return getComputedStyle(document.documentElement).getPropertyValue(v).trim(); }
+  function fmt(n){ n=Math.round(n*100)/100; return (n<0?'−':'')+Math.abs(n); }
+  function resize(){ var c=cv.clientWidth||640; dpr=Math.min(window.devicePixelRatio||1,2); W=c; H=Math.round(c*0.75);
+    cv.width=W*dpr; cv.height=H*dpr; cv.style.height=H+'px'; ctx.setTransform(dpr,0,0,dpr,0,0); }
+  function RY(){ return RX*(H/W); }
+  function X(x){ return W/2 + x*(W/(2*RX)); }
+  function Y(y){ return H/2 - y*(H/(2*RY())); }
+  function quadStr(a,b,c){
+    var s='y = ';
+    if(a===0){ s+='0·x²'; }
+    else if(a===1) s+='x²';
+    else if(a===-1) s+='−x²';
+    else s+=(a<0?'−':'')+Math.abs(a)+'x²';
+    if(b!==0){ s+= (b<0?' − ':' + ')+(Math.abs(b)===1?'':Math.abs(b))+'x'; }
+    if(c!==0){ s+= (c<0?' − ':' + ')+Math.abs(c); }
+    return s;
+  }
+  function draw(){
+    var a=parseFloat(sa.value), b=parseFloat(sb.value), c=parseFloat(sc.value);
+    va.textContent=fmt(a); vb.textContent=fmt(b); vc.textContent=fmt(c);
+    var ry=RY();
+    ctx.clearRect(0,0,W,H);
+    // сетка
+    ctx.strokeStyle='#EDE8F4'; ctx.lineWidth=1;
+    for(var gx=-RX;gx<=RX;gx++){ ctx.beginPath(); ctx.moveTo(X(gx),0); ctx.lineTo(X(gx),H); ctx.stroke(); }
+    var yr=Math.round(ry);
+    for(var gy=-yr;gy<=yr;gy++){ ctx.beginPath(); ctx.moveTo(0,Y(gy)); ctx.lineTo(W,Y(gy)); ctx.stroke(); }
+    // оси
+    ctx.strokeStyle='#A79FB8'; ctx.lineWidth=1.5;
+    ctx.beginPath(); ctx.moveTo(0,Y(0)); ctx.lineTo(W,Y(0)); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(X(0),0); ctx.lineTo(X(0),H); ctx.stroke();
+
+    if(a===0){
+      // прямая y = bx + c
+      ctx.strokeStyle=css('--down'); ctx.lineWidth=3;
+      ctx.beginPath(); ctx.moveTo(X(-RX),Y(b*(-RX)+c)); ctx.lineTo(X(RX),Y(b*RX+c)); ctx.stroke();
+      eqEl.textContent=quadStr(a,b,c);
+      tipEl.innerHTML='<b style="color:'+css('--down')+'">a = 0 — это уже не парабола, а прямая!</b>';
+    } else {
+      // ось симметрии и вершина
+      var xv=-b/(2*a), yv=a*xv*xv+b*xv+c;
+      ctx.strokeStyle=css('--muted'); ctx.lineWidth=1.4; ctx.setLineDash([5,4]);
+      ctx.beginPath(); ctx.moveTo(X(xv),0); ctx.lineTo(X(xv),H); ctx.stroke();
+      ctx.setLineDash([]);
+      // парабола
+      ctx.strokeStyle=css('--brand'); ctx.lineWidth=3;
+      ctx.beginPath();
+      var started=false;
+      for(var px=0;px<=W;px++){
+        var xm=(px-W/2)/(W/(2*RX));
+        var ym=a*xm*xm+b*xm+c;
+        var py=Y(ym);
+        if(!started){ ctx.moveTo(px,py); started=true; } else ctx.lineTo(px,py);
+      }
+      ctx.stroke();
+      // точка пересечения с Oy (0,c)
+      ctx.fillStyle=css('--c'); ctx.beginPath(); ctx.arc(X(0),Y(c),5.5,0,7); ctx.fill();
+      // вершина
+      ctx.fillStyle=css('--a'); ctx.beginPath(); ctx.arc(X(xv),Y(yv),6,0,7); ctx.fill();
+      ctx.fillStyle='#fff'; ctx.beginPath(); ctx.arc(X(xv),Y(yv),2.4,0,7); ctx.fill();
+      eqEl.textContent=quadStr(a,b,c);
+      var dir = a>0 ? '<b style="color:'+css('--up')+'">a &gt; 0 → ветви вверх ∪</b>'
+                    : '<b style="color:'+css('--down')+'">a &lt; 0 → ветви вниз ∩</b>';
+      tipEl.innerHTML = dir + ' · вершина ('+fmt(xv)+'; '+fmt(yv)+') · пересекает Oy в ('+'0; '+fmt(c)+')';
+    }
+  }
+  [sa,sb,sc].forEach(function(s){ s.addEventListener('input',draw); });
+  window.addEventListener('resize',function(){ resize(); draw(); });
+  resize(); draw();
+})();
+</script>
+
+<script>
+/* ── Тренажёр-генератор ── */
+(function(){
+  var taskEl=document.getElementById('trTask'), ansEl=document.getElementById('trAns'), resEl=document.getElementById('trResult');
+  if(!taskEl) return;
+  var cur=null, started=false;
+  function ri(min,max){ return Math.floor(Math.random()*(max-min+1))+min; }
+  function nz(min,max){ var v; do{ v=ri(min,max);}while(v===0); return v; }
+  function quadStr(a,b,c){
+    var s='y = ';
+    if(a===1) s+='x²'; else if(a===-1) s+='−x²'; else s+=(a<0?'−':'')+Math.abs(a)+'x²';
+    if(b!==0) s+=(b<0?' − ':' + ')+(Math.abs(b)===1?'':Math.abs(b))+'x';
+    if(c!==0) s+=(c<0?' − ':' + ')+Math.abs(c);
+    return s;
+  }
+  function linStr(b,c){
+    var s='y = ';
+    s+= b===1?'x' : b===-1?'−x' : (b<0?'−':'')+Math.abs(b)+'x';
+    if(c!==0) s+=(c<0?' − ':' + ')+Math.abs(c);
+    return s;
+  }
+  function num(n){ return (n<0?'−':'')+Math.abs(n); }
+  function setTask(html,label){ taskEl.innerHTML=html+'<span class="qlabel">'+label+'</span>'; resEl.innerHTML=''; ansEl.value=''; if(started) ansEl.focus(); }
+
+  function generate(){
+    var t=ri(0,4); // 0,1 coef  2 branch  3,4 isq
+    if(t<=1){
+      var a=nz(-5,5), b=ri(-9,9), c=ri(-9,9);
+      var which=['a','b','c'][ri(0,2)];
+      var val = which==='a'?a : which==='b'?b : c;
+      cur={type:'coef',a:a,b:b,c:c,which:which,val:val};
+      setTask(quadStr(a,b,c), 'назови коэффициент '+which);
+    } else if(t===2){
+      var a2=nz(-5,5), b2=ri(-9,9), c2=ri(-9,9);
+      cur={type:'branch',a:a2,b:b2,c:c2,val:(a2>0?'вверх':'вниз')};
+      setTask(quadStr(a2,b2,c2), 'куда направлены ветви?');
+    } else {
+      var r=Math.random();
+      if(r<0.5){ // квадратичная
+        var a3=nz(-5,5), b3=ri(-9,9), c3=ri(-9,9);
+        cur={type:'isq',val:'да',why:'есть слагаемое с x² и a = '+num(a3)+' ≠ 0 — это квадратичная функция.'};
+        setTask(quadStr(a3,b3,c3), 'это квадратичная функция?');
+      } else if(r<0.78){ // линейная
+        var b4=nz(-6,6), c4=ri(-9,9);
+        cur={type:'isq',val:'нет',why:'нет слагаемого с x² (a = 0) — это линейная функция, её график прямая.'};
+        setTask(linStr(b4,c4), 'это квадратичная функция?');
+      } else { // с делением на x
+        var a5=nz(-5,5), k5=nz(-6,6);
+        var s='y = '+((a5===1)?'x²':(a5===-1)?'−x²':(a5<0?'−':'')+Math.abs(a5)+'x²');
+        s+=(k5<0?' − ':' + ')+Math.abs(k5)+'/x';
+        cur={type:'isq',val:'нет',why:'есть деление на x (слагаемое '+num(k5)+'/x) — это не целый многочлен, значит не квадратичная.'};
+        setTask(s, 'это квадратичная функция?');
+      }
+    }
+  }
+
+  function norm(s){ return s.trim().toLowerCase().replace('ё','е').replace(/\s+/g,'').replace(',','.').replace('-','−'); }
+
+  function solHTML(){
+    var q=cur, h='<div class="sol">';
+    if(q.type==='coef'){
+      var role = q.which==='a'?'при x² (старший коэффициент)' : q.which==='b'?'при x' : 'без x (свободный член, пересечение с Oy)';
+      h+='Коэффициент '+q.which+' — это множитель '+role+'.<br>';
+      h+=q.which+' = <b>'+num(q.val)+'</b> (со своим знаком).';
+    } else if(q.type==='branch'){
+      h+='Смотрю на знак a: a = '+num(q.a)+'.<br>';
+      h+= q.a>0 ? 'a &gt; 0 → ветви направлены <b>вверх</b> ∪.' : 'a &lt; 0 → ветви направлены <b>вниз</b> ∩.';
+    } else {
+      h+='Ответ: <b>'+q.val+'</b>. '+q.why;
+    }
+    return h+'</div>';
+  }
+
+  function check(){
+    var raw=ansEl.value;
+    if(raw.trim()===''){ resEl.innerHTML='<span class="bad">Впиши ответ или нажми «Решение».</span>'; return; }
+    var ok=false;
+    if(cur.type==='coef'){
+      var got=parseFloat(raw.trim().replace(',','.').replace('−','-'));
+      ok = !isNaN(got) && got===cur.val;
+    } else {
+      ok = norm(raw)===norm(cur.val);
+    }
+    if(ok){ resEl.innerHTML='<span class="ok">✓ Верно!</span>'+solHTML(); }
+    else{ resEl.innerHTML='<span class="bad">✗ Пока не то — глянь решение.</span>'+solHTML(); }
+  }
+
+  document.getElementById('trNew').addEventListener('click',generate);
+  document.getElementById('trCheck').addEventListener('click',check);
+  document.getElementById('trShow').addEventListener('click',function(){ resEl.innerHTML=solHTML(); });
+  ansEl.addEventListener('keydown',function(e){ if(e.key==='Enter') check(); });
+  generate(); started=true;
+})();
+</script>

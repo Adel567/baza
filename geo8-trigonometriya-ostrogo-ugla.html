@@ -1,0 +1,397 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Синус, косинус, тангенс острого угла — геометрия 8 класс</title>
+<style>
+  :root{
+    --paper:#F7F6FB; --card:#FFFFFF; --ink:#1F2233; --muted:#5F667A; --line:#E6E4F0;
+    --brand:#6B47C4; --brand-soft:#EAE3FA;         /* трига — фиолетовый */
+    --opp:#D6403C; --opp-soft:#FBE4E3;             /* противолежащий — красный */
+    --adj:#159A6E; --adj-soft:#DDF3EB;             /* прилежащий — зелёный */
+    --hyp:#2E6FB6; --hyp-soft:#E1ECF8;             /* гипотенуза — синий */
+    --ok:#1E8E5A; --no:#C23B3B;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper)}
+  .page{max-width:720px;margin:0 auto;padding:clamp(1.4rem,4vw,3rem) clamp(1.1rem,4vw,2rem) 4.5rem;
+    color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:17.5px;line-height:1.68;-webkit-font-smoothing:antialiased}
+  .mono{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-variant-numeric:tabular-nums;font-weight:600}
+  sup{font-size:.72em}
+
+  .hero{border-bottom:3px solid var(--brand);padding-bottom:1.4rem;margin-bottom:1.8rem}
+  .eyebrow{font-size:.74rem;letter-spacing:.15em;text-transform:uppercase;color:var(--brand);font-weight:700;margin:0 0 .55rem}
+  h1{font-size:clamp(1.7rem,5.6vw,2.6rem);line-height:1.06;margin:0;font-weight:800;letter-spacing:-.02em;text-wrap:balance}
+  .tagline{font-size:1.12rem;color:var(--muted);margin:.85rem 0 0;text-wrap:pretty}
+
+  section{margin-top:2.4rem}
+  h2{font-size:1.5rem;margin:0 0 .3rem;font-weight:780;letter-spacing:-.015em;text-wrap:balance}
+  h2 .em{color:var(--brand)}
+  p{margin:.7rem 0}
+  strong{font-weight:680}
+  .oppw{color:var(--opp);font-weight:800} .adjw{color:var(--adj);font-weight:800} .hypw{color:var(--hyp);font-weight:800}
+
+  .lead-in{background:var(--brand-soft);border-radius:14px;padding:1.1rem 1.3rem;font-size:1.02rem}
+  .lead-in p{margin:.4rem 0}
+  .lead-in b{color:var(--brand)}
+
+  /* три роли сторон */
+  .roles{display:grid;gap:.7rem;margin-top:1rem}
+  @media(min-width:560px){.roles{grid-template-columns:1fr 1fr 1fr}}
+  .role{border-radius:14px;padding:1rem 1.05rem;border:2px solid}
+  .role.h{background:var(--hyp-soft);border-color:#C2D7EE}
+  .role.o{background:var(--opp-soft);border-color:#F1C6C4}
+  .role.a{background:var(--adj-soft);border-color:#BBE3D3}
+  .role h3{margin:.1rem 0 .35rem;font-size:1.02rem;font-weight:800}
+  .role.h h3{color:var(--hyp)} .role.o h3{color:var(--opp)} .role.a h3{color:var(--adj)}
+  .role p{margin:.2rem 0;font-size:.93rem}
+
+  .formula-box{background:var(--ink);color:#fff;border-radius:14px;padding:1.3rem 1rem;margin-top:1rem}
+  .formula-box .eq{font-family:ui-monospace,Menlo,monospace;font-size:clamp(.82rem,3.4vw,1.25rem);font-weight:700;display:flex;flex-direction:column;gap:.75rem;align-items:center}
+  .formula-box .eq .row{max-width:100%;text-align:center}
+  .formula-box .op{color:#F09A96} .formula-box .ad{color:#6FD3AE} .formula-box .hy{color:#8FB6E6}
+  .formula-box .fn{color:#C9B8F0}
+  .formula-box .note{font-size:.86rem;color:#AEB2C4;margin:.9rem 0 0;text-align:center}
+
+  .note{border-left:4px solid var(--brand);background:var(--brand-soft);border-radius:0 10px 10px 0;padding:.8rem 1.1rem;margin-top:1rem;font-size:.98rem}
+  .note b{color:var(--brand)}
+
+  /* Чертёж */
+  .diagram{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:1.2rem;margin-top:1rem}
+  .diagram canvas{width:100%;height:auto;display:block;border-radius:10px;background:#FCFBFE}
+  .sliders{display:grid;gap:.6rem;margin-top:.9rem}
+  @media(min-width:520px){.sliders{grid-template-columns:1fr 1fr}}
+  .sliders label{display:flex;align-items:center;gap:.5rem;font-weight:700;font-family:ui-monospace,Menlo,monospace;font-size:.95rem}
+  .sliders label.la{color:var(--brand)} .sliders label.ls{color:var(--muted)}
+  .sliders input[type=range]{flex:1}
+  .sliders input.ra{accent-color:var(--brand)} .sliders input.rs{accent-color:var(--muted)}
+  .sliders .sval{min-width:3.2ch;text-align:right;font-variant-numeric:tabular-nums}
+  .ratios{display:grid;gap:.5rem;margin:.9rem 0 0}
+  @media(min-width:480px){.ratios{grid-template-columns:1fr 1fr 1fr}}
+  .rt{border-radius:10px;padding:.6rem .5rem;text-align:center;font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:.9rem}
+  .rt.o{background:var(--opp-soft);color:var(--opp)} .rt.a{background:var(--adj-soft);color:var(--adj)} .rt.t{background:var(--brand-soft);color:var(--brand)}
+  .rt .val{display:block;font-size:1.15rem;margin-top:.15rem}
+  .diag-tip{text-align:center;font-size:.88rem;color:var(--muted);margin:.7rem 0 0}
+
+  .walk{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.15rem 1.3rem;margin-top:1rem}
+  .walk .q{font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1rem;margin:0 0 .9rem;padding-bottom:.7rem;border-bottom:1px solid var(--line)}
+  .walk ol{margin:0;padding-left:1.2rem;display:flex;flex-direction:column;gap:.5rem}
+  .walk li{font-size:.95rem}
+  .walk b{font-weight:700}
+  .verdict{margin-top:1rem;padding:.7rem 1rem;background:var(--brand-soft);border-radius:10px;font-weight:650;color:var(--brand);font-family:ui-monospace,Menlo,monospace}
+
+  /* Тренажёр */
+  .trainer{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.2rem 1.3rem;margin-top:1rem}
+  .tr-task{font-size:clamp(1rem,3.8vw,1.12rem);text-align:center;padding:1rem;background:var(--brand-soft);border-radius:10px;font-weight:600;line-height:1.5}
+  .tr-task b{font-family:ui-monospace,Menlo,monospace;color:var(--ink)}
+  .tr-ctl{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:1rem;align-items:center;justify-content:center}
+  .tr-ctl input{flex:1;min-width:110px;max-width:190px;font:inherit;padding:.5rem .7rem;border:1px solid var(--line);border-radius:9px;text-align:center;background:#fff;color:var(--ink)}
+  .tr-ctl button{font:inherit;font-weight:700;font-size:.9rem;cursor:pointer;border:none;border-radius:9px;padding:.55rem .95rem;color:#fff;background:var(--brand)}
+  .tr-ctl button.sec{background:var(--opp)}
+  .tr-ctl button.ghost{background:transparent;color:var(--brand);border:1px solid var(--brand)}
+  .tr-ctl button:focus-visible,.tr-ctl input:focus-visible,.sliders input:focus-visible,summary:focus-visible{outline:3px solid var(--brand);outline-offset:2px}
+  .tr-result{margin-top:.9rem;font-size:.96rem;min-height:1.2rem;text-align:center}
+  .tr-result .ok{color:var(--ok);font-weight:700} .tr-result .bad{color:var(--no);font-weight:700}
+  .tr-result .sol{margin-top:.6rem;padding:.8rem 1rem;background:#FCFBFE;border:1px solid var(--line);border-radius:10px;font-family:ui-monospace,Menlo,monospace;font-size:.9rem;line-height:1.8;text-align:left}
+  .tr-hint{text-align:center;font-size:.85rem;color:var(--muted);margin:.6rem 0 0}
+
+  details{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:.9rem 1.1rem;margin-top:.7rem}
+  details[open]{border-color:var(--brand)}
+  summary{cursor:pointer;font-weight:650;list-style:none;display:flex;justify-content:space-between;gap:1rem;align-items:center}
+  summary::-webkit-details-marker{display:none}
+  summary::after{content:"ответ";font-size:.8rem;color:var(--brand);font-weight:700;white-space:nowrap}
+  details[open] summary::after{content:"скрыть"}
+  .ans{margin-top:.75rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.96rem;color:var(--muted)}
+  .ans b{color:var(--ink)}
+  .drill{display:flex;flex-direction:column;gap:.2rem;margin-top:1rem}
+
+  ul.traps{list-style:none;margin:1rem 0 0;padding:0;display:flex;flex-direction:column;gap:.7rem}
+  ul.traps li{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:.85rem 1.05rem;padding-left:2.5rem;position:relative;font-size:.97rem}
+  ul.traps li::before{content:"⚠";position:absolute;left:1rem;top:.85rem;color:var(--opp)}
+  ul.traps b{font-weight:700}
+
+  .wrapup{background:var(--brand);color:#fff;border-radius:16px;padding:1.4rem 1.5rem;margin-top:2.4rem}
+  .wrapup h2{color:#fff;margin:0 0 .5rem}
+  .wrapup p{color:#E7DEFB;margin:.4rem 0;font-size:1rem}
+  .wrapup .big-rule{font-size:1.05rem;font-weight:700;color:#fff;margin:.6rem 0;font-family:ui-monospace,Menlo,monospace}
+  .wrapup .next{font-size:.95rem;color:#D3C6F2;margin-top:1rem;padding-top:1rem;border-top:1px solid rgba(255,255,255,.2)}
+  .wrapup .next b{color:#fff}
+
+  @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="page">
+
+  <header class="hero">
+    <p class="eyebrow">Геометрия · 8 класс · подобие</p>
+    <h1>Синус, косинус и тангенс острого угла</h1>
+    <p class="tagline">Три отношения сторон, которые зависят только от угла. С их помощью находят высоту, до которой не дотянуться рулеткой.</p>
+  </header>
+
+  <div class="lead-in">
+    <p><b>Где встречается.</b> Нужно узнать высоту дерева или столба, до верхушки которого не добраться. Измеряешь расстояние до основания и угол, под которым видишь макушку, — и по этому углу вычисляешь высоту. Так работают геодезисты, строители, штурманы.</p>
+    <p>Сердце такого расчёта — <b>синус, косинус и тангенс</b> острого угла. Сегодня разберёмся, что это за числа и откуда они берутся.</p>
+  </div>
+
+  <section>
+    <h2>Главная идея простыми словами</h2>
+    <p>Возьми прямоугольный треугольник. Один угол в нём прямой (90°), два других — острые. Выбери один острый угол и назови его <span class="mono">α</span> (альфа).</p>
+    <p>Синус, косинус и тангенс — это просто <strong>отношения (дроби) сторон</strong> этого треугольника. И вот что удивительно: такое отношение зависит <strong>только от величины угла</strong> α, а не от размера самого треугольника. Большой треугольник и маленький, но с тем же углом, дадут <strong>одно и то же</strong> отношение.</p>
+    <div class="note">
+      <p><b>Частый миф:</b> «если треугольник больше, то и синус больше». Нет. Синус угла 30° равен 0,5 и в крошечном, и в огромном треугольнике. <b>Размер не важен — важен угол.</b> Почему так — увидишь на чертеже ниже.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Сначала назови стороны <span class="em">относительно угла α</span></h2>
+    <p>Прежде чем считать отношения, каждая сторона получает имя — и имя это зависит от того, какой острый угол мы выбрали:</p>
+    <div class="roles">
+      <div class="role h">
+        <h3>Гипотенуза</h3>
+        <p>Самая длинная сторона, лежит <strong>напротив прямого угла</strong>. Для обоих острых углов она одна и та же.</p>
+      </div>
+      <div class="role o">
+        <h3>Противолежащий катет</h3>
+        <p>Катет <strong>напротив</strong> угла α — тот, что этого угла <strong>не касается</strong>.</p>
+      </div>
+      <div class="role a">
+        <h3>Прилежащий катет</h3>
+        <p>Катет, который <strong>прилегает</strong> к углу α — образует его вместе с гипотенузой.</p>
+      </div>
+    </div>
+    <div class="note"><p><b>Важно:</b> имена «противолежащий» и «прилежащий» — не навсегда. Для <b>второго</b> острого угла того же треугольника эти два катета <b>меняются местами</b>. Сторона получает имя только относительно выбранного угла.</p></div>
+  </section>
+
+  <section>
+    <h2>Определения: три отношения</h2>
+    <p>Пусть α — острый угол прямоугольного треугольника. Тогда:</p>
+    <div class="formula-box">
+      <div class="eq">
+        <span class="row"><span class="fn">sin&nbsp;α</span> = <span class="op">противолежащий</span> / <span class="hy">гипотенуза</span></span>
+        <span class="row"><span class="fn">cos&nbsp;α</span> = <span class="ad">прилежащий</span> / <span class="hy">гипотенуза</span></span>
+        <span class="row"><span class="fn">tg&nbsp;α</span> = <span class="op">противолежащий</span> / <span class="ad">прилежащий</span></span>
+      </div>
+      <div class="note">sin и cos делятся на гипотенузу · tg — это «противолежащий на прилежащий»</div>
+    </div>
+    <div class="note">
+      <p><b>Подсказка для памяти:</b> «<b>с</b>инус — противолежащий», а косинус — прилежащий; оба делятся на гипотенузу. А тангенс можно получить и так: <span class="mono">tg α = sin α / cos α</span>.</p>
+    </div>
+    <p style="font-size:.94rem;color:var(--muted)">Работает это <strong>только в прямоугольном треугольнике</strong> и только для острого угла (0° &lt; α &lt; 90°). Так как катет всегда короче гипотенузы, для острого угла всегда <span class="mono">0 &lt; sin α &lt; 1</span> и <span class="mono">0 &lt; cos α &lt; 1</span>. А тангенс может быть любым положительным числом. Единиц измерения у этих величин нет — длины сокращаются, остаётся чистое число.</p>
+  </section>
+
+  <section>
+    <h2>Почему отношение <span class="em">не зависит</span> от размера</h2>
+    <p>Двигай ползунок <span class="mono">α</span> — треугольник меняет форму, и отношения меняются. А теперь двигай ползунок <b>размера</b>: треугольник растёт, но три числа внизу <strong>стоят на месте</strong>. Всё потому, что треугольники с одинаковым острым углом <strong>подобны</strong>, а у подобных отношения сторон равны.</p>
+    <div class="diagram">
+      <canvas id="tri" width="640" height="440" aria-label="Прямоугольный треугольник с изменяемым острым углом"></canvas>
+      <div class="sliders">
+        <label class="la">угол α <span id="va" class="sval">30°</span><input id="sa" class="ra" type="range" min="10" max="80" step="1" value="30"></label>
+        <label class="ls">размер <span id="vs" class="sval">1.0×</span><input id="ss" class="rs" type="range" min="60" max="100" step="1" value="80"></label>
+      </div>
+      <div class="ratios">
+        <div class="rt o">sin α<span class="val" id="rSin">0.50</span></div>
+        <div class="rt a">cos α<span class="val" id="rCos">0.87</span></div>
+        <div class="rt t">tg α<span class="val" id="rTan">0.58</span></div>
+      </div>
+      <p class="diag-tip" id="diagTip"></p>
+    </div>
+    <p style="font-size:.9rem;color:var(--muted)"><span class="oppw">Красный</span> — противолежащий катет, <span class="adjw">зелёный</span> — прилежащий, <span class="hypw">синий</span> — гипотенуза. Меняешь размер — стороны становятся длиннее, но их <em>отношения</em> те же. Значит sin, cos, tg — это функции угла, а не размера.</p>
+  </section>
+
+  <section>
+    <h2>Разбор «думаю вслух»</h2>
+    <p>Классическая задача: даны стороны — найди отношения. Идём по шагам.</p>
+    <div class="walk">
+      <p class="q">Катеты 3 и 4, угол α — против катета 3. Найти sin α, cos α, tg α.</p>
+      <ol>
+        <li><b>Ищем гипотенузу</b> по теореме Пифагора (sin и cos делятся на неё): <span class="mono">√(3² + 4²) = √(9 + 16) = √25 = 5</span>.</li>
+        <li><b>Называем стороны для α.</b> Угол α против катета 3 → <span class="oppw">противолежащий = 3</span>, <span class="adjw">прилежащий = 4</span>, <span class="hypw">гипотенуза = 5</span>.</li>
+        <li><b>Подставляем в определения:</b><br>
+          <span class="mono">sin α = 3/5 = 0,6</span><br>
+          <span class="mono">cos α = 4/5 = 0,8</span><br>
+          <span class="mono">tg α = 3/4 = 0,75</span></li>
+        <li>Проверка смысла: sin и cos меньше 1 — как и должно быть у острого угла. ✓</li>
+      </ol>
+      <div class="verdict">Ответ: sin α = 0,6; cos α = 0,8; tg α = 0,75</div>
+    </div>
+    <div class="walk" style="margin-top:.8rem">
+      <p class="q">Гипотенуза 13, катет против угла β равен 5. Найти cos β.</p>
+      <ol>
+        <li>Синус находится сразу: <span class="mono">sin β = 5/13</span> (против / гип).</li>
+        <li>Для косинуса нужен <b>прилежащий катет</b>. Найдём его через Пифагора: <span class="mono">√(13² − 5²) = √(169 − 25) = √144 = 12</span>.</li>
+        <li>Теперь <span class="mono">cos β = 12/13</span> (прилеж / гип).</li>
+      </ol>
+      <div class="verdict">Ответ: cos β = 12/13</div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Тренажёр · найди отношение</h2>
+    <p>Читай задачу, определяй нужные стороны и вписывай ответ. Можно <b>дробью</b> (например <span class="mono">3/5</span>) или <b>десятичным числом</b> (<span class="mono">0.6</span>). Заданий — бесконечно.</p>
+    <div class="trainer">
+      <div class="tr-task" id="trTask">Загрузка…</div>
+      <div class="tr-ctl">
+        <button id="trNew" type="button">🎲 Новая</button>
+        <input id="trAns" type="text" placeholder="дробь или число" aria-label="Ответ">
+        <button id="trCheck" type="button" class="sec">Проверить</button>
+        <button id="trShow" type="button" class="ghost">Решение</button>
+      </div>
+      <div id="trResult" class="tr-result"></div>
+      <p class="tr-hint">Сначала сообрази, какой катет противолежащий, а какой прилежащий для указанного угла.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Проверь себя</h2>
+    <div class="drill">
+      <details><summary>1) Дай определение тангенса острого угла через стороны.</summary>
+        <div class="ans">Тангенс острого угла — это отношение <b>противолежащего</b> катета к <b>прилежащему</b>: <span class="mono">tg α = противолежащий / прилежащий</span>.</div></details>
+      <details><summary>2) Прилежащий к углу α катет равен 12, гипотенуза 15. Найди cos α.</summary>
+        <div class="ans"><span class="mono">cos α = прилежащий / гипотенуза = 12/15 = 4/5 = 0,8</span>. Ответ <b>0,8</b>.</div></details>
+      <details><summary>3) Найди ошибку: для угла α (противолежащий 4, прилежащий 3, гипотенуза 5) ученик написал cos α = 4/5.</summary>
+        <div class="ans">Косинус — это <b>прилежащий</b> / гипотенуза = <span class="mono">3/5 = 0,6</span>. Ученик взял противолежащий катет (4) вместо прилежащего. Верно <b>cos α = 3/5</b>.</div></details>
+      <details><summary>4) Обратная задача: tg α = 3/4, прилежащий катет равен 8. Найди противолежащий.</summary>
+        <div class="ans"><span class="mono">tg α = против / прилеж = 3/4</span>. Значит против / 8 = 3/4 → против = <span class="mono">8 · 3/4 = 6</span>. Ответ <b>6</b> (проверка: 6/8 = 3/4 ✓).</div></details>
+      <details><summary>5) Зависит ли значение sin 40° от размера треугольника? Почему?</summary>
+        <div class="ans"><b>Нет.</b> Все прямоугольные треугольники с углом 40° подобны, а у подобных отношения соответственных сторон равны. Увеличили треугольник в 3 раза — sin 40° не изменился.</div></details>
+    </div>
+  </section>
+
+  <section>
+    <h2>Ловушки</h2>
+    <ul class="traps">
+      <li><b>Путают синус и косинус.</b> Держи в голове связку «<b>синус — противолежащий</b>»; оба (sin и cos) делятся на гипотенузу. Каждый раз сначала подпиши на чертеже, где какой катет.</li>
+      <li><b>Делят не на ту сторону.</b> Проговаривай определение целиком: «противолежащий <b>к гипотенузе</b>», а не просто «противолежащий». Для синуса и косинуса знаменатель — всегда гипотенуза.</li>
+      <li><b>Забывают привязать сторону к углу.</b> Один и тот же катет для <b>другого</b> острого угла становится прилежащим. Имя стороны — только относительно выбранного угла.</li>
+      <li><b>Думают, что синус зависит от размера.</b> Больше треугольник, но угол тот же → отношение то же. Вспомни про подобие.</li>
+    </ul>
+  </section>
+
+  <div class="wrapup">
+    <h2>Запомни главное</h2>
+    <p class="big-rule">sin α = против/гип · cos α = прилеж/гип · tg α = против/прилеж</p>
+    <p>Синус, косинус и тангенс острого угла — это отношения сторон прямоугольного треугольника. Они зависят <b>только от величины угла</b>, а не от размера треугольника (спасибо подобию). Стороны получают имена «противолежащий / прилежащий» относительно выбранного угла.</p>
+    <p class="next">👉 Дальше — <b>значения тригонометрических функций</b> для углов 30°, 45°, 60° (их стоит запомнить), а потом эти отношения приведут к <b>векторам</b> и координатам.</p>
+  </div>
+
+</div>
+
+<script>
+/* ── Интерактивный чертёж: прямоугольный треугольник ── */
+(function(){
+  var cv=document.getElementById('tri'); if(!cv) return;
+  var ctx=cv.getContext('2d');
+  var sa=document.getElementById('sa'), ss=document.getElementById('ss');
+  var va=document.getElementById('va'), vs=document.getElementById('vs');
+  var rSin=document.getElementById('rSin'), rCos=document.getElementById('rCos'), rTan=document.getElementById('rTan');
+  var tip=document.getElementById('diagTip');
+  var W=640,H=440,dpr=1;
+  function css(v){ return getComputedStyle(document.documentElement).getPropertyValue(v).trim(); }
+  function resize(){ var c=cv.clientWidth||640; dpr=Math.min(window.devicePixelRatio||1,2); W=c; H=Math.round(c*0.68);
+    cv.width=W*dpr; cv.height=H*dpr; cv.style.height=H+'px'; ctx.setTransform(dpr,0,0,dpr,0,0); }
+  function draw(){
+    var deg=+sa.value, sizePct=+ss.value;
+    var rad=deg*Math.PI/180, s=Math.sin(rad), c=Math.cos(rad);
+    va.textContent=deg+'°'; vs.textContent=(sizePct/80).toFixed(1)+'×';
+    // гипотенуза фиксированной длины R (в пикселях), поэтому катеты = R·cos, R·sin
+    var pad=54;
+    var maxR=Math.min(W-pad*2, H-pad*1.4);
+    var R=maxR*(sizePct/100);
+    // вершины (экранные): A слева-внизу (угол α), B справа-внизу (прямой угол), C сверху
+    var baseY=H-pad*0.9;
+    var Ax=pad, Ay=baseY;
+    var Bx=Ax + R*c, By=baseY;                 // прилежащий вдоль основания
+    var Cx=Bx,       Cy=baseY - R*s;           // противолежащий вверх
+    ctx.clearRect(0,0,W,H);
+    // заливка треугольника
+    ctx.beginPath(); ctx.moveTo(Ax,Ay); ctx.lineTo(Bx,By); ctx.lineTo(Cx,Cy); ctx.closePath();
+    ctx.fillStyle='rgba(107,71,196,0.06)'; ctx.fill();
+    // стороны с цветом
+    function seg(x1,y1,x2,y2,col){ ctx.strokeStyle=col; ctx.lineWidth=4; ctx.lineCap='round';
+      ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(x2,y2); ctx.stroke(); }
+    seg(Ax,Ay,Bx,By, css('--adj'));   // прилежащий (низ)
+    seg(Bx,By,Cx,Cy, css('--opp'));   // противолежащий (вертикаль)
+    seg(Ax,Ay,Cx,Cy, css('--hyp'));   // гипотенуза
+    // прямой угол при B
+    var m=Math.min(16,R*0.14); ctx.strokeStyle=css('--muted'); ctx.lineWidth=1.6;
+    ctx.beginPath(); ctx.moveTo(Bx-m,By); ctx.lineTo(Bx-m,By-m); ctx.lineTo(Bx,By-m); ctx.stroke();
+    // дуга угла α при A
+    var ar=Math.min(34,R*0.30); ctx.strokeStyle=css('--brand'); ctx.lineWidth=2;
+    ctx.beginPath(); ctx.arc(Ax,Ay,ar,-rad,0); ctx.stroke();
+    ctx.fillStyle=css('--brand'); ctx.font='700 15px ui-monospace,Menlo,monospace'; ctx.textAlign='left'; ctx.textBaseline='middle';
+    ctx.fillText('α', Ax+ar+6, Ay-ar*0.5-2);
+    // подписи сторон
+    ctx.font='700 13px ui-monospace,Menlo,monospace'; ctx.textBaseline='middle';
+    ctx.fillStyle=css('--adj'); ctx.textAlign='center'; ctx.fillText('прилежащий', (Ax+Bx)/2, By+16);
+    ctx.fillStyle=css('--opp'); ctx.textAlign='left'; ctx.fillText('против.', Bx+8, (By+Cy)/2);
+    ctx.fillStyle=css('--hyp'); ctx.textAlign='center';
+    ctx.save(); ctx.translate((Ax+Cx)/2, (Ay+Cy)/2); ctx.rotate(-rad); ctx.fillText('гипотенуза', 0, -12); ctx.restore();
+    // числа внизу
+    rSin.textContent=s.toFixed(2); rCos.textContent=c.toFixed(2); rTan.textContent=Math.tan(rad).toFixed(2);
+    tip.innerHTML='sin '+deg+'° = '+s.toFixed(2)+' &nbsp;·&nbsp; cos '+deg+'° = '+c.toFixed(2)+' &nbsp;·&nbsp; tg '+deg+'° = '+Math.tan(rad).toFixed(2);
+  }
+  [sa,ss].forEach(function(el){ el.addEventListener('input',draw); });
+  window.addEventListener('resize',function(){ resize(); draw(); });
+  resize(); draw();
+})();
+</script>
+
+<script>
+/* ── Тренажёр-генератор: найди отношение ── */
+(function(){
+  var taskEl=document.getElementById('trTask'), ansEl=document.getElementById('trAns'), resEl=document.getElementById('trResult');
+  if(!taskEl) return;
+  var triples=[[3,4,5],[5,12,13],[8,15,17],[7,24,25],[20,21,29]];
+  var cur=null;
+  function ri(min,max){ return Math.floor(Math.random()*(max-min+1))+min; }
+  function gcd(a,b){ a=Math.abs(a); b=Math.abs(b); while(b){ var t=b; b=a%b; a=t; } return a||1; }
+  function frac(n,d){ var g=gcd(n,d); return (n/g)+'/'+(d/g); }
+  function generate(){
+    var t=triples[ri(0,triples.length-1)], k=ri(1,2);
+    var leg1=t[0]*k, leg2=t[1]*k, hyp=t[2]*k;
+    // против какого катета лежит α: 0 → против leg1, 1 → против leg2
+    var against=ri(0,1);
+    var opp = against===0?leg1:leg2;   // противолежащий
+    var adj = against===0?leg2:leg1;   // прилежащий
+    var fn=['sin','cos','tg'][ri(0,2)];
+    var num,den;
+    if(fn==='sin'){ num=opp; den=hyp; }
+    else if(fn==='cos'){ num=adj; den=hyp; }
+    else { num=opp; den=adj; }
+    cur={leg1:leg1,leg2:leg2,hyp:hyp,opp:opp,adj:adj,fn:fn,num:num,den:den,val:num/den};
+    taskEl.innerHTML='Прямоугольный треугольник: катеты <b>'+leg1+'</b> и <b>'+leg2+'</b>, гипотенуза <b>'+hyp+'</b>.<br>'
+      +'Угол α лежит против катета <b>'+opp+'</b>. Найди <b>'+fn+' α</b>.';
+    resEl.innerHTML=''; ansEl.value=''; ansEl.focus();
+  }
+  function parseAns(raw){
+    raw=raw.trim().replace(',','.');
+    if(raw==='') return NaN;
+    if(raw.indexOf('/')>-1){ var p=raw.split('/'); var a=parseFloat(p[0]), b=parseFloat(p[1]);
+      if(isNaN(a)||isNaN(b)||b===0) return NaN; return a/b; }
+    return parseFloat(raw);
+  }
+  function solHTML(){
+    var q=cur, name={sin:'sin',cos:'cos',tg:'tg'}[q.fn];
+    var rule = q.fn==='sin' ? 'противолежащий / гипотенуза'
+             : q.fn==='cos' ? 'прилежащий / гипотенуза'
+             : 'противолежащий / прилежащий';
+    var reduced=frac(q.num,q.den);
+    var h='<div class="sol">';
+    h+='угол α против катета '+q.opp+' → противолежащий = '+q.opp+', прилежащий = '+q.adj+', гип = '+q.hyp+'<br>';
+    h+=name+' α = '+rule+' = '+q.num+'/'+q.den;
+    if(reduced!==q.num+'/'+q.den) h+=' = '+reduced;
+    h+=' = <b>'+(Math.round(q.val*1000)/1000)+'</b>';
+    return h+'</div>';
+  }
+  function check(){
+    var got=parseAns(ansEl.value);
+    if(isNaN(got)){ resEl.innerHTML='<span class="bad">Введи дробь (3/5) или число (0.6), либо нажми «Решение».</span>'; return; }
+    if(Math.abs(got-cur.val)<0.02){ resEl.innerHTML='<span class="ok">✓ Верно!</span>'+solHTML(); }
+    else { resEl.innerHTML='<span class="bad">✗ Пока не то — глянь решение.</span>'+solHTML(); }
+  }
+  document.getElementById('trNew').addEventListener('click',generate);
+  document.getElementById('trCheck').addEventListener('click',check);
+  document.getElementById('trShow').addEventListener('click',function(){ resEl.innerHTML=solHTML(); });
+  ansEl.addEventListener('keydown',function(e){ if(e.key==='Enter') check(); });
+  generate();
+})();
+</script>

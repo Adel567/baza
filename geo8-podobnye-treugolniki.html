@@ -1,0 +1,374 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Подобные треугольники — геометрия 8 класс</title>
+<style>
+  :root{
+    --paper:#F7F6FB; --card:#FFFFFF; --ink:#211B33; --muted:#645C78; --line:#E7E3F0;
+    --brand:#6D46C9; --brand-soft:#EBE4FA;      /* подобие / коэффициент k */
+    --t1:#1F8A8A; --t1-soft:#DCF0EF;            /* треугольник ABC */
+    --t2:#E07B2C; --t2-soft:#FBEBDB;            /* треугольник A₁B₁C₁ */
+    --ok:#1E8E5A; --no:#C23B3B;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper)}
+  .page{max-width:720px;margin:0 auto;padding:clamp(1.4rem,4vw,3rem) clamp(1.1rem,4vw,2rem) 4.5rem;
+    color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:17.5px;line-height:1.68;-webkit-font-smoothing:antialiased}
+  .mono{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-variant-numeric:tabular-nums;font-weight:600}
+  sup{font-size:.72em}
+
+  .hero{border-bottom:3px solid var(--brand);padding-bottom:1.4rem;margin-bottom:1.8rem}
+  .eyebrow{font-size:.74rem;letter-spacing:.15em;text-transform:uppercase;color:var(--brand);font-weight:700;margin:0 0 .55rem}
+  h1{font-size:clamp(1.9rem,6vw,2.8rem);line-height:1.05;margin:0;font-weight:800;letter-spacing:-.02em;text-wrap:balance}
+  .tagline{font-size:1.12rem;color:var(--muted);margin:.85rem 0 0;text-wrap:pretty}
+
+  section{margin-top:2.4rem}
+  h2{font-size:1.5rem;margin:0 0 .3rem;font-weight:780;letter-spacing:-.015em;text-wrap:balance}
+  h2 .em{color:var(--brand)}
+  p{margin:.7rem 0}
+  strong{font-weight:680}
+  .t1w{color:var(--t1);font-weight:800} .t2w{color:var(--t2);font-weight:800} .kw{color:var(--brand);font-weight:800}
+
+  .lead-in{background:var(--brand-soft);border-radius:14px;padding:1.1rem 1.3rem;font-size:1.02rem}
+  .lead-in p{margin:.4rem 0}
+  .lead-in b{color:var(--brand)}
+
+  .formula-box{background:var(--ink);color:#fff;border-radius:14px;padding:1.3rem;text-align:center;margin-top:1rem}
+  .formula-box .eq{font-family:ui-monospace,Menlo,monospace;font-size:clamp(1.3rem,5vw,1.9rem);font-weight:700;line-height:1.5}
+  .formula-box .eq .k{color:#B79AF0}
+  .formula-box .note{font-size:.9rem;color:#B7AEC9;margin:.8rem 0 0}
+
+  .note{border-left:4px solid var(--brand);background:var(--brand-soft);border-radius:0 10px 10px 0;padding:.8rem 1.1rem;margin-top:1rem;font-size:.98rem}
+  .note b{color:var(--brand)}
+
+  .split{display:grid;gap:.9rem;margin-top:1rem}
+  @media(min-width:600px){.split{grid-template-columns:1fr 1fr}}
+  .role{border-radius:16px;padding:1.1rem 1.2rem;border:2px solid}
+  .role.a{background:var(--brand-soft);border-color:#CDBBF0} .role.b{background:var(--t2-soft);border-color:#EFCFA9}
+  .role h3{margin:.1rem 0 .4rem;font-size:1.1rem;font-weight:800}
+  .role.a h3{color:var(--brand)} .role.b h3{color:var(--t2)}
+  .role p{margin:.2rem 0;font-size:.95rem}
+
+  /* Чертёж */
+  .diagram{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:1.2rem;margin-top:1rem}
+  .diagram canvas{width:100%;height:auto;display:block;border-radius:10px;background:#FCFBFE}
+  .sliders{display:grid;gap:.6rem;margin-top:.9rem}
+  .sliders label{display:flex;align-items:center;gap:.6rem;font-weight:700;font-family:ui-monospace,Menlo,monospace;color:var(--brand)}
+  .sliders input[type=range]{flex:1;accent-color:var(--brand)}
+  .sliders .sval{min-width:2.6ch;text-align:right;font-variant-numeric:tabular-nums}
+  .diag-eq{text-align:center;font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.02rem;margin:.9rem 0 0;line-height:1.7}
+  .diag-eq .t1{color:var(--t1)} .diag-eq .t2{color:var(--t2)} .diag-eq .k{color:var(--brand)}
+  .diag-tip{text-align:center;font-size:.88rem;color:var(--muted);margin:.5rem 0 0}
+
+  .walk{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.15rem 1.3rem;margin-top:1rem}
+  .walk .q{font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1rem;margin:0 0 .9rem;padding-bottom:.7rem;border-bottom:1px solid var(--line);line-height:1.5}
+  .walk ol{margin:0;padding-left:1.2rem;display:flex;flex-direction:column;gap:.5rem}
+  .walk li{font-size:.96rem}
+  .walk b{font-weight:700}
+  .verdict{margin-top:1rem;padding:.7rem 1rem;background:var(--brand-soft);border-radius:10px;font-weight:650;color:var(--brand)}
+
+  /* Тренажёр */
+  .trainer{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.2rem 1.3rem;margin-top:1rem}
+  .tr-task{font-size:clamp(1rem,4vw,1.12rem);text-align:center;padding:1rem;background:var(--brand-soft);border-radius:10px;font-weight:600;line-height:1.6}
+  .tr-task b{font-family:ui-monospace,Menlo,monospace;color:var(--ink)}
+  .tr-task .find{color:var(--t2);font-weight:800}
+  .tr-ctl{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:1rem;align-items:center;justify-content:center}
+  .tr-ctl input{flex:1;min-width:110px;max-width:180px;font:inherit;padding:.5rem .7rem;border:1px solid var(--line);border-radius:9px;text-align:center;background:#fff;color:var(--ink)}
+  .tr-ctl button{font:inherit;font-weight:700;font-size:.9rem;cursor:pointer;border:none;border-radius:9px;padding:.55rem .95rem;color:#fff;background:var(--brand)}
+  .tr-ctl button.sec{background:var(--t2)}
+  .tr-ctl button.ghost{background:transparent;color:var(--brand);border:1px solid var(--brand)}
+  .tr-ctl button:focus-visible,.tr-ctl input:focus-visible{outline:3px solid var(--brand);outline-offset:2px}
+  .tr-result{margin-top:.9rem;font-size:.96rem;min-height:1.2rem;text-align:center}
+  .tr-result .ok{color:var(--ok);font-weight:700} .tr-result .bad{color:var(--no);font-weight:700}
+  .tr-result .sol{margin-top:.6rem;padding:.8rem 1rem;background:#FCFBFE;border:1px solid var(--line);border-radius:10px;font-family:ui-monospace,Menlo,monospace;font-size:.9rem;line-height:1.9;text-align:left}
+
+  details{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:.9rem 1.1rem;margin-top:.7rem}
+  details[open]{border-color:var(--brand)}
+  summary{cursor:pointer;font-weight:650;list-style:none;display:flex;justify-content:space-between;gap:1rem;align-items:center}
+  summary::-webkit-details-marker{display:none}
+  summary::after{content:"ответ";font-size:.8rem;color:var(--brand);font-weight:700;white-space:nowrap}
+  details[open] summary::after{content:"скрыть"}
+  .ans{margin-top:.75rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.96rem;color:var(--muted)}
+  .ans b{color:var(--ink)}
+  .drill{display:flex;flex-direction:column;gap:.2rem;margin-top:1rem}
+
+  ul.traps{list-style:none;margin:1rem 0 0;padding:0;display:flex;flex-direction:column;gap:.7rem}
+  ul.traps li{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:.85rem 1.05rem;padding-left:2.5rem;position:relative;font-size:.97rem}
+  ul.traps li::before{content:"⚠";position:absolute;left:1rem;top:.85rem;color:var(--t2)}
+  ul.traps b{font-weight:700}
+
+  .wrapup{background:var(--brand);color:#fff;border-radius:16px;padding:1.4rem 1.5rem;margin-top:2.4rem}
+  .wrapup h2{color:#fff;margin:0 0 .5rem}
+  .wrapup p{color:#E6DEF7;margin:.4rem 0;font-size:1rem}
+  .wrapup .big-rule{font-size:1.05rem;font-weight:700;color:#fff;margin:.6rem 0;font-family:ui-monospace,Menlo,monospace}
+  .wrapup .next{font-size:.95rem;color:#D3C7F0;margin-top:1rem;padding-top:1rem;border-top:1px solid rgba(255,255,255,.2)}
+  .wrapup .next b{color:#fff}
+
+  @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="page">
+
+  <header class="hero">
+    <p class="eyebrow">Геометрия · 8 класс · подобие</p>
+    <h1>Подобные треугольники</h1>
+    <p class="tagline">«Такая же форма, но другой размер». Так по тени находят высоту дерева, а по чертежу — размер настоящей детали.</p>
+  </header>
+
+  <div class="lead-in">
+    <p><b>Где встречается.</b> Карта и город, фотография и её увеличенная копия, чертёж детали и сама деталь — форма сохраняется, меняется только масштаб. По подобию находят недоступные расстояния и высоты: высоту дерева по его тени, ширину реки — не залезая и не переплывая.</p>
+    <p>А ещё подобие — фундамент под синус, косинус и тангенс: вся тригонометрия стоит на подобии прямоугольных треугольников.</p>
+  </div>
+
+  <section>
+    <h2>Суть простыми словами</h2>
+    <p>Два треугольника <strong>подобны</strong>, если один можно получить из другого <strong>равномерным</strong> увеличением или уменьшением — растянуть или сжать в одно и то же число раз во все стороны, не искажая форму.</p>
+    <p>Слово «равномерно» — ключевое. Если растянуть фигуру только по ширине, углы поедут и подобия не будет. Поэтому в подобии срабатывают сразу <b>две вещи</b>:</p>
+    <div class="split">
+      <div class="role a">
+        <h3>Углы не меняются</h3>
+        <p>Форма сохраняется, значит соответственные <span class="kw">углы равны</span>: ∠A = ∠A₁, ∠B = ∠B₁, ∠C = ∠C₁.</p>
+      </div>
+      <div class="role b">
+        <h3>Стороны — в k раз</h3>
+        <p>Все стороны меняются в <b>одно и то же</b> число раз. Этот множитель — <span class="t2w">коэффициент подобия k</span>.</p>
+      </div>
+    </div>
+    <div class="note"><p><b>Подобие — это «равенство с точностью до масштаба».</b> Равные треугольники — частный случай подобия с <span class="mono">k = 1</span>.</p></div>
+  </section>
+
+  <section>
+    <h2>Определение и запись</h2>
+    <p>Два треугольника называются подобными, если их углы соответственно равны, а сходственные стороны пропорциональны. Записывают значком <span class="mono">∼</span>:</p>
+    <div class="formula-box">
+      <div class="eq">△ABC ∼ △A₁B₁C₁</div>
+      <div class="eq" style="margin-top:.7rem">AB/A₁B₁ = BC/B₁C₁ = CA/C₁A₁ = <span class="k">k</span></div>
+      <div class="note"><span class="k">k</span> — коэффициент подобия: во сколько раз стороны первого треугольника больше сходственных сторон второго</div>
+    </div>
+    <div class="note">
+      <p><b>Порядок букв важен!</b> Запись <span class="mono">△ABC ∼ △A₁B₁C₁</span> означает, что вершина A соответствует A₁, B — B₁, C — C₁. Поэтому сходственные (пропорциональные) стороны — те, что лежат <strong>против равных углов</strong>, а не просто «верхняя с верхней».</p>
+      <p>Подобие взаимно: если <span class="mono">△ABC ∼ △A₁B₁C₁</span> с коэффициентом k, то обратно <span class="mono">△A₁B₁C₁ ∼ △ABC</span> с коэффициентом <span class="mono">1/k</span>.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Разбор по шагам</h2>
+    <p>Самый частый тип задачи: даны стороны одного треугольника и одна сторона подобного ему — найди остальные.</p>
+    <div class="walk">
+      <p class="q">△ABC ∼ △A₁B₁C₁, где AB = 6, BC = 8, CA = 10, а сходственная сторона A₁B₁ = 9. Найти B₁C₁ и C₁A₁.</p>
+      <ol>
+        <li>Находим коэффициент по паре сходственных сторон AB и A₁B₁ (ведь A↔A₁, B↔B₁): <span class="mono">k = AB/A₁B₁ = 6/9 = 2/3</span>.</li>
+        <li>Все сходственные стороны связаны одним и тем же k. Значит <span class="mono">B₁C₁ = BC : k = 8 : (2/3) = 8 · 3/2 = 12</span>.</li>
+        <li>Так же <span class="mono">C₁A₁ = CA : k = 10 : (2/3) = 10 · 3/2 = 15</span>.</li>
+        <li>Здравый смысл: k = 2/3 меньше 1 → первый треугольник <b>меньше</b>, поэтому стороны второго <b>больше</b>. Так и вышло. ✓</li>
+      </ol>
+      <div class="verdict">Ответ: B₁C₁ = 12, C₁A₁ = 15. Проверка: 6/9 = 8/12 = 10/15 = 2/3 — все три отношения равны.</div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Двигай коэффициент <span class="em">k</span> сам</h2>
+    <p>Слева — треугольник <span class="t1w">ABC</span>, справа — подобный ему <span class="t2w">A₁B₁C₁</span>. Тяни ползунок и смотри: меняется только размер, <b>углы остаются теми же</b>, а все стороны умножаются на один и тот же k.</p>
+    <div class="diagram">
+      <canvas id="sim" width="660" height="360" aria-label="Два подобных треугольника с коэффициентом подобия k"></canvas>
+      <div class="sliders">
+        <label>k <span id="vk" class="sval">1.5</span><input id="sk" type="range" min="0.5" max="2" step="0.1" value="1.5"></label>
+      </div>
+      <p class="diag-eq" id="simEq"></p>
+      <p class="diag-tip">Одинаковыми дужками отмечены равные углы — они не зависят от k. При <span class="mono">k = 1</span> треугольники стали бы равными.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Тренажёр · найди сторону</h2>
+    <p>Даны все стороны △ABC и одна сторона подобного △A₁B₁C₁. Найди указанную сторону и впиши ответ (все ответы — целые числа).</p>
+    <div class="trainer">
+      <div class="tr-task" id="trTask"></div>
+      <div class="tr-ctl">
+        <button id="trNew" type="button">🎲 Новая</button>
+        <input id="trAns" type="text" inputmode="decimal" placeholder="ответ" aria-label="Ответ">
+        <button id="trCheck" type="button" class="sec">Проверить</button>
+        <button id="trShow" type="button" class="ghost">Решение</button>
+      </div>
+      <div id="trResult" class="tr-result"></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Проверь себя</h2>
+    <div class="drill">
+      <details>
+        <summary>1) Дана запись △XYZ ∼ △KLM. Какому углу равен ∠Y? Какая сторона сходственна стороне XZ?</summary>
+        <div class="ans">Буквы идут в порядке соответствия: X↔K, Y↔L, Z↔M. Значит <b>∠Y = ∠L</b>, а XZ сходственна <b>KM</b>.</div>
+      </details>
+      <details>
+        <summary>2) △ABC ∼ △A₁B₁C₁, AB = 3, A₁B₁ = 9, BC = 4. Найди B₁C₁.</summary>
+        <div class="ans"><span class="mono">k = AB/A₁B₁ = 3/9 = 1/3</span>, значит <span class="mono">B₁C₁ = BC : k = 4 : (1/3) = 4 · 3 = 12</span>. Ответ <b>12</b>.</div>
+      </details>
+      <details>
+        <summary>3) У двух треугольников все углы по 60°, но стороны первого 2, 2, 2, а второго 5, 5, 5. Подобны ли они и чему равен k?</summary>
+        <div class="ans">Да, подобны: углы равны, а стороны пропорциональны — <span class="mono">2/5 = 2/5 = 2/5</span>. Коэффициент <b>k = 2/5</b>.</div>
+      </details>
+      <details>
+        <summary>4) Чем подобие отличается от равенства?</summary>
+        <div class="ans">Равные фигуры совпадают при наложении — это подобие с <b>k = 1</b>. Подобные одинаковы по форме, но могут отличаться размером. Равенство — <b>частный случай</b> подобия, не наоборот.</div>
+      </details>
+      <details>
+        <summary>5) △ABC ∼ △DEF, коэффициент подобия △ABC к △DEF равен 2. Дано DE = 5, EF = 6. Найди AB и BC.</summary>
+        <div class="ans">k = AB/DE = 2, значит стороны первого <b>вдвое больше</b>: <span class="mono">AB = 2 · 5 = 10</span>, <span class="mono">BC = 2 · 6 = 12</span>. Ответ <b>AB = 10, BC = 12</b>.</div>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <h2>Ловушки</h2>
+    <ul class="traps">
+      <li><b>«Углы равны — значит подобны, стороны можно не смотреть».</b> В самом определении нужны <strong>оба</strong> условия: и равные углы, и пропорциональные стороны. (То, что для треугольников хватает углов, — это уже отдельная тема «признаки подобия».)</li>
+      <li><b>Путают подобие и равенство.</b> Равные — совпадают при наложении (k = 1). Подобные — совпадают по форме, но могут быть разного размера.</li>
+      <li><b>Неверно записывают соответствие вершин.</b> Буквы в записи △ABC ∼ △A₁B₁C₁ идут строго в порядке соответствия. Перепутал — возьмёшь несходственные стороны и получишь неверный k.</li>
+      <li><b>Берут «большую к большей» на глаз.</b> Сходственные стороны — те, что против равных углов (по соответствию вершин), а не «которая длиннее».</li>
+      <li><b>Путают, умножать или делить на k.</b> Держи смысл: если k = 2/3 (меньше 1), первый треугольник меньше — значит стороны второго <b>больше</b>, их получаем умножением на 3/2. Меньшее не может стать «ещё меньше».</li>
+    </ul>
+  </section>
+
+  <div class="wrapup">
+    <h2>Запомни главное</h2>
+    <p class="big-rule">△ABC ∼ △A₁B₁C₁ ⟺ углы равны И AB/A₁B₁ = BC/B₁C₁ = CA/C₁A₁ = k</p>
+    <p>Подобные треугольники — одинаковой формы: соответственные углы равны, а сходственные стороны пропорциональны с одним коэффициентом k. Равенство — это подобие с k = 1.</p>
+    <p class="next">👉 Дальше — <b>признаки подобия</b> (как доказать подобие, не измеряя все стороны) и <b>отношение площадей</b> подобных треугольников (площади относятся как k², а не как k).</p>
+  </div>
+
+</div>
+
+<script>
+/* ── Чертёж: два подобных треугольника ───────────────────────── */
+(function(){
+  var cv=document.getElementById('sim'); if(!cv) return;
+  var ctx=cv.getContext('2d'), sk=document.getElementById('sk'), vk=document.getElementById('vk'), eq=document.getElementById('simEq');
+  var W=660,H=360,dpr=1;
+  // базовый треугольник в условных единицах: AB=6, BC=5, CA=4
+  var AB=6, BC=5, CA=4;
+  var A=[0,0], B=[AB,0];
+  var cx=(AB*AB+CA*CA-BC*BC)/(2*AB);          // = (36+16-25)/12 = 2.25
+  var cy=Math.sqrt(CA*CA-cx*cx);              // высота C
+  var C=[cx,cy];
+  var base=[A,B,C];
+  var sides=[[0,1,AB],[1,2,BC],[2,0,CA]];     // рёбра: [i,j,длина]
+  var vnames1=['A','B','C'], vnames2=['A₁','B₁','C₁'];
+  var angCol=['#6D46C9','#1F8A8A','#E07B2C'];  // цвет дужки для угла A/B/C — одинаков в обоих треугольниках
+  function css(v){ return getComputedStyle(document.documentElement).getPropertyValue(v).trim(); }
+  function fmt(n){ n=Math.round(n*10)/10; return (n%1===0)?String(n):n.toFixed(1); }
+  function resize(){ var c=cv.clientWidth||660; dpr=Math.min(window.devicePixelRatio||1,2); W=c; H=Math.round(c*0.55);
+    cv.width=W*dpr; cv.height=H*dpr; cv.style.height=H+'px'; ctx.setTransform(dpr,0,0,dpr,0,0); }
+
+  function drawTri(pts, vnames, sideVals, col, soft){
+    // ребра + заливка
+    ctx.beginPath();
+    pts.forEach(function(p,i){ i?ctx.lineTo(p[0],p[1]):ctx.moveTo(p[0],p[1]); });
+    ctx.closePath();
+    ctx.fillStyle=soft; ctx.fill();
+    ctx.strokeStyle=col; ctx.lineWidth=2.4; ctx.stroke();
+    // центроид (для вынесения подписей наружу)
+    var gx=(pts[0][0]+pts[1][0]+pts[2][0])/3, gy=(pts[0][1]+pts[1][1]+pts[2][1])/3;
+    // дужки углов
+    var minEdge=Math.min(dist(pts[0],pts[1]),dist(pts[1],pts[2]),dist(pts[2],pts[0]));
+    var r=Math.min(15,minEdge*0.26);
+    for(var v=0;v<3;v++){
+      var V=pts[v], P=pts[(v+2)%3], Q=pts[(v+1)%3];
+      var a1=Math.atan2(P[1]-V[1],P[0]-V[0]), a2=Math.atan2(Q[1]-V[1],Q[0]-V[0]);
+      var d=a2-a1; while(d>Math.PI)d-=2*Math.PI; while(d<-Math.PI)d+=2*Math.PI;
+      ctx.beginPath(); ctx.strokeStyle=angCol[v]; ctx.lineWidth=2.2;
+      ctx.arc(V[0],V[1],r,a1,a1+d,d<0); ctx.stroke();
+    }
+    // подписи сторон (у середины ребра, вынесены наружу от центроида)
+    ctx.font='700 13px ui-monospace,Menlo,monospace'; ctx.textAlign='center'; ctx.textBaseline='middle';
+    sides.forEach(function(s,idx){
+      var P=pts[s[0]], Q=pts[s[1]], mx=(P[0]+Q[0])/2, my=(P[1]+Q[1])/2;
+      var dx=mx-gx, dy=my-gy, L=Math.hypot(dx,dy)||1;
+      var lx=mx+dx/L*16, ly=my+dy/L*16;
+      ctx.fillStyle=col; ctx.fillText(fmt(sideVals[idx]), lx, ly);
+    });
+    // подписи вершин
+    ctx.font='800 14px system-ui,sans-serif';
+    for(var w=0;w<3;w++){
+      var Vp=pts[w], dx2=Vp[0]-gx, dy2=Vp[1]-gy, L2=Math.hypot(dx2,dy2)||1;
+      ctx.fillStyle=col; ctx.fillText(vnames[w], Vp[0]+dx2/L2*15, Vp[1]+dy2/L2*15);
+    }
+  }
+  function dist(p,q){ return Math.hypot(p[0]-q[0],p[1]-q[1]); }
+
+  function draw(){
+    var k=parseFloat(sk.value); vk.textContent=fmt(k);
+    ctx.clearRect(0,0,W,H);
+    var gap=1.4;                                     // зазор между треугольниками, в ед.
+    var totW=AB + gap + AB*k;                        // общая ширина в единицах
+    var totH=Math.max(cy, cy*k);
+    var pad=34;
+    var unit=Math.min((W-2*pad)/totW,(H-2*pad)/totH);
+    var baseY=H-pad;                                 // нижняя линия (обе стороны AB на ней)
+    function proj(p,scale,ox){ return [pad+(ox+p[0]*scale)*unit, baseY - p[1]*scale*unit]; }
+    var tri1=base.map(function(p){ return proj(p,1,0); });
+    var tri2=base.map(function(p){ return proj(p,k,AB+gap); });
+    var v1=[AB,BC,CA], v2=[AB*k,BC*k,CA*k];
+    drawTri(tri1, vnames1, v1, css('--t1'), css('--t1-soft'));
+    drawTri(tri2, vnames2, v2, css('--t2'), css('--t2-soft'));
+    eq.innerHTML='<span class="k">k = '+fmt(k)+'</span> &nbsp; '+
+      '<span class="t1">AB='+fmt(AB)+'</span>→<span class="t2">'+fmt(AB*k)+'</span> · '+
+      '<span class="t1">BC='+fmt(BC)+'</span>→<span class="t2">'+fmt(BC*k)+'</span> · '+
+      '<span class="t1">CA='+fmt(CA)+'</span>→<span class="t2">'+fmt(CA*k)+'</span>';
+  }
+  sk.addEventListener('input',draw);
+  window.addEventListener('resize',function(){ resize(); draw(); });
+  resize(); draw();
+})();
+</script>
+
+<script>
+/* ── Тренажёр: найди сходственную сторону ────────────────────── */
+(function(){
+  var taskEl=document.getElementById('trTask'), ansEl=document.getElementById('trAns'), resEl=document.getElementById('trResult');
+  if(!taskEl) return;
+  var units=[[3,4,5],[6,8,10],[4,5,6],[5,6,7],[6,7,8],[7,8,9],[5,12,13]];
+  var cur=null;
+  function ri(min,max){ return Math.floor(Math.random()*(max-min+1))+min; }
+  function gcd(a,b){ a=Math.abs(a); b=Math.abs(b); while(b){ var t=b; b=a%b; a=t; } return a||1; }
+  function generate(){
+    var u=units[ri(0,units.length-1)];
+    var f=ri(1,3), g;
+    if(Math.random()<0.15) g=f;                 // краевой случай: k = 1 (равные треугольники)
+    else { do{ g=ri(1,3); }while(g===f && Math.random()<0.5); }
+    var AB=u[0]*f, BC=u[1]*f, CA=u[2]*f;         // все стороны △ABC
+    var A1B1=u[0]*g;                             // известная сторона △A₁B₁C₁
+    // что ищем: B₁C₁ (индекс 1) или C₁A₁ (индекс 2)
+    var idx=Math.random()<0.5?1:2;
+    var corr=u[idx]*f;                           // сходственная сторона в △ABC
+    var answer=u[idx]*g;                         // ответ = сторона △A₁B₁C₁
+    var findName=idx===1?'B₁C₁':'C₁A₁', corrName=idx===1?'BC':'CA';
+    cur={AB:AB,BC:BC,CA:CA,A1B1:A1B1,corr:corr,corrName:corrName,answer:answer,findName:findName};
+    taskEl.innerHTML='△ABC ∼ △A₁B₁C₁.<br>Стороны △ABC: <b>AB='+AB+'</b>, <b>BC='+BC+'</b>, <b>CA='+CA+'</b>.'+
+      '<br>Известно <b>A₁B₁='+A1B1+'</b>. Найди <span class="find">'+findName+'</span>.';
+    resEl.innerHTML=''; ansEl.value='';
+  }
+  function solHTML(){
+    var q=cur, g=gcd(q.AB,q.A1B1), p=q.AB/g, r=q.A1B1/g;   // k = AB/A₁B₁ = p/r (сокращённая)
+    var h='<div class="sol">';
+    h+='k = AB/A₁B₁ = '+q.AB+'/'+q.A1B1+' = '+p+'/'+r+'<br>';
+    h+=q.findName+' = '+q.corrName+' : k = '+q.corr+' : ('+p+'/'+r+') = '+q.corr+'·'+r+'/'+p+' = <b>'+q.answer+'</b><br>';
+    h+='проверка: '+q.AB+'/'+q.A1B1+' = '+q.corr+'/'+q.answer+' ✓';
+    if(p===r) h+='<br>(k = 1 → треугольники равны)';
+    return h+'</div>';
+  }
+  function check(){
+    var raw=ansEl.value.trim().replace(',','.');
+    if(raw===''){ resEl.innerHTML='<span class="bad">Введи ответ или нажми «Решение».</span>'; return; }
+    var got=parseFloat(raw);
+    if(!isNaN(got) && Math.abs(got-cur.answer)<0.02){ resEl.innerHTML='<span class="ok">✓ Верно!</span>'+solHTML(); }
+    else{ resEl.innerHTML='<span class="bad">✗ Пока не то — глянь решение.</span>'+solHTML(); }
+  }
+  document.getElementById('trNew').addEventListener('click',generate);
+  document.getElementById('trCheck').addEventListener('click',check);
+  document.getElementById('trShow').addEventListener('click',function(){ resEl.innerHTML=solHTML(); });
+  ansEl.addEventListener('keydown',function(e){ if(e.key==='Enter') check(); });
+  generate();
+})();
+</script>

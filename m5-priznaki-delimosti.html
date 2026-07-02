@@ -1,0 +1,283 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Признаки делимости на 2, 3, 5, 9, 10 — 5 класс</title>
+<style>
+  :root{
+    --paper:#FBF9F5;
+    --card:#FFFFFF;
+    --ink:#26202E;
+    --muted:#6B6473;
+    --line:#E7E2E8;
+    --brand:#6A3EA1;
+    --brand-soft:#EFE7F6;
+    --tail:#CF5A34;         /* хвост: 2,5,10 */
+    --tail-soft:#FBEADF;
+    --tail-line:#F0CDB8;
+    --sum:#3A5AA0;          /* сумма цифр: 3,9 */
+    --sum-soft:#E5EBF6;
+    --sum-line:#C6D3EC;
+    --ok:#2E8B57;
+    --no:#C23B3B;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper)}
+  .page{
+    max-width:720px;margin:0 auto;
+    padding:clamp(1.4rem,4vw,3rem) clamp(1.1rem,4vw,2rem) 4.5rem;
+    color:var(--ink);
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    font-size:17.5px;line-height:1.68;-webkit-font-smoothing:antialiased;
+  }
+  .mono{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-variant-numeric:tabular-nums;font-weight:600}
+
+  .hero{border-bottom:3px solid var(--brand);padding-bottom:1.4rem;margin-bottom:1.8rem}
+  .eyebrow{font-size:.74rem;letter-spacing:.15em;text-transform:uppercase;color:var(--brand);font-weight:700;margin:0 0 .55rem}
+  h1{font-size:clamp(2rem,6.5vw,3rem);line-height:1.03;margin:0;font-weight:800;letter-spacing:-.02em;text-wrap:balance}
+  .tagline{font-size:1.12rem;color:var(--muted);margin:.85rem 0 0;text-wrap:pretty}
+
+  section{margin-top:2.4rem}
+  h2{font-size:1.5rem;margin:0 0 .3rem;font-weight:780;letter-spacing:-.015em;text-wrap:balance}
+  h2 .em{color:var(--brand)}
+  p{margin:.7rem 0}
+  strong{font-weight:680}
+
+  .lead-in{background:var(--brand-soft);border-radius:14px;padding:1.1rem 1.3rem;font-size:1.02rem}
+  .lead-in p{margin:.4rem 0}
+  .lead-in b{color:var(--brand)}
+
+  /* Два пути — крупная развилка */
+  .split{display:grid;gap:.9rem;margin-top:1rem}
+  @media(min-width:600px){.split{grid-template-columns:1fr 1fr}}
+  .path{border-radius:16px;padding:1.2rem 1.3rem;border:2px solid}
+  .path.tail{background:var(--tail-soft);border-color:var(--tail-line)}
+  .path.sum{background:var(--sum-soft);border-color:var(--sum-line)}
+  .path .cap{font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;font-weight:700;margin:0}
+  .path.tail .cap{color:var(--tail)} .path.sum .cap{color:var(--sum)}
+  .path h3{margin:.2rem 0 .5rem;font-size:1.35rem;font-weight:800}
+  .path p{margin:.3rem 0;font-size:.97rem}
+  .path .who{font-weight:800;font-family:ui-monospace,Menlo,monospace}
+  .path.tail .who{color:var(--tail)} .path.sum .who{color:var(--sum)}
+
+  /* Плитки правил */
+  .rules{display:flex;flex-direction:column;gap:.7rem;margin-top:1rem}
+  .rule{display:flex;align-items:center;gap:1rem;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:.85rem 1.05rem}
+  .rule .big{font-family:ui-monospace,Menlo,monospace;font-weight:800;font-size:1.5rem;flex:none;width:2.6rem;text-align:center}
+  .rule.t .big{color:var(--tail)} .rule.s .big{color:var(--sum)}
+  .rule .txt{flex:1}
+  .rule .txt b{font-weight:700}
+  .digits{display:flex;gap:.35rem;flex-wrap:wrap;margin-top:.35rem}
+  .digits span{font-family:ui-monospace,Menlo,monospace;font-weight:700;background:var(--paper);border:1px solid var(--line);border-radius:7px;padding:.12rem .5rem;font-size:.95rem}
+  .rule .ex{font-size:.87rem;color:var(--muted);margin-top:.3rem}
+  .rule .ex .mono{color:var(--ink)}
+
+  .note{border-left:4px solid var(--brand);background:var(--brand-soft);border-radius:0 10px 10px 0;padding:.8rem 1.1rem;margin-top:1rem;font-size:.98rem}
+  .note b{color:var(--brand)}
+
+  /* Разбор по шагам */
+  .walk{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.15rem 1.3rem;margin-top:1rem}
+  .walk .q{font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.1rem;margin:0 0 .9rem;padding-bottom:.7rem;border-bottom:1px solid var(--line)}
+  .walk ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:.55rem}
+  .walk li{font-size:.98rem;display:flex;gap:.6rem;align-items:baseline}
+  .tag{font-size:.66rem;font-weight:700;padding:.08rem .42rem;border-radius:5px;flex:none;letter-spacing:.02em}
+  .tag.t{background:var(--tail-soft);color:var(--tail)} .tag.s{background:var(--sum-soft);color:var(--sum)}
+  .yes{color:var(--ok);font-weight:800} .no{color:var(--no);font-weight:800}
+  .verdict{margin-top:1rem;padding:.75rem 1rem;background:var(--brand-soft);border-radius:10px;font-weight:650;color:var(--brand);font-size:1rem}
+
+  /* Шпаргалка */
+  .tblwrap{overflow-x:auto;margin-top:1rem}
+  table{border-collapse:collapse;width:100%;min-width:420px;font-size:.96rem}
+  th,td{border:1px solid var(--line);padding:.6rem .75rem;text-align:left}
+  thead th{background:#F7F5F9;font-weight:700}
+  td.d{font-family:ui-monospace,Menlo,monospace;font-weight:800;text-align:center;width:3rem;font-size:1.15rem}
+  td.d.t{color:var(--tail);background:var(--tail-soft)} td.d.s{color:var(--sum);background:var(--sum-soft)}
+  td .mono{color:var(--ink)}
+
+  /* Практика */
+  .drill{display:flex;flex-direction:column;gap:.7rem;margin-top:1rem}
+  details{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:.9rem 1.1rem}
+  details[open]{border-color:var(--brand)}
+  summary{cursor:pointer;font-weight:650;list-style:none;display:flex;justify-content:space-between;gap:1rem;align-items:center}
+  summary::-webkit-details-marker{display:none}
+  summary .q{font-size:1rem}
+  summary::after{content:"проверить";font-size:.8rem;color:var(--brand);font-weight:700;white-space:nowrap}
+  details[open] summary::after{content:"скрыть"}
+  .ans{margin-top:.75rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.96rem;color:var(--muted)}
+  .ans b{color:var(--ink)}
+
+  /* Ловушки */
+  ul.traps{list-style:none;margin:1rem 0 0;padding:0;display:flex;flex-direction:column;gap:.7rem}
+  ul.traps li{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:.85rem 1.05rem;padding-left:2.5rem;position:relative;font-size:.97rem}
+  ul.traps li::before{content:"⚠";position:absolute;left:1rem;top:.85rem;color:var(--tail);font-size:1.05rem}
+  ul.traps b{font-weight:700}
+
+  .wrapup{background:var(--brand);color:#fff;border-radius:16px;padding:1.4rem 1.5rem;margin-top:2.4rem}
+  .wrapup h2{color:#fff;margin:0 0 .5rem}
+  .wrapup p{color:#EEE6F6;margin:.4rem 0;font-size:1rem}
+  .wrapup .big-rule{font-size:1.1rem;font-weight:700;color:#fff;margin:.6rem 0}
+  .wrapup .next{font-size:.95rem;color:#D9C9EC;margin-top:1rem;padding-top:1rem;border-top:1px solid rgba(255,255,255,.2)}
+
+  @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="page">
+
+  <header class="hero">
+    <p class="eyebrow">Математика · 5 класс</p>
+    <h1>Признаки делимости<br>на 2, 3, 5, 9 и 10</h1>
+    <p class="tagline">Как за пару секунд узнать, делится ли число — вообще <em>не выполняя деление</em>.</p>
+  </header>
+
+  <div class="lead-in">
+    <p><b>Зачем это уметь.</b> Признак делимости — это быстрый трюк: посмотрел на число и сразу понял, делится оно или нет.</p>
+    <p>Это нужно постоянно: разделить <strong>245 наклеек</strong> на 5 друзей поровну (да, ведь число кончается на 5), сократить дробь, быстро проверить чётность цены или номера. Кажется, что большое число можно проверить только делением столбиком — но нет: для 2, 3, 5, 9 и 10 хватает взгляда на цифры.</p>
+  </div>
+
+  <section>
+    <h2>Главный секрет: <span class="em">два разных пути</span></h2>
+    <p>Делимость числа спрятана в его цифрах. Но добывают её двумя разными способами — и это самое важное, что нужно понять в теме:</p>
+    <div class="split">
+      <div class="path tail">
+        <p class="cap">Путь 1</p>
+        <h3>🟠 Смотри на хвост</h3>
+        <p>Решает <strong>только последняя цифра</strong> числа. На остальные можно даже не смотреть.</p>
+        <p>Так проверяют делимость на <span class="who">2, 5 и 10</span>.</p>
+      </div>
+      <div class="path sum">
+        <p class="cap">Путь 2</p>
+        <h3>🔵 Складывай цифры</h3>
+        <p>Решает <strong>сумма всех цифр</strong>. Последняя цифра тут ничего не значит.</p>
+        <p>Так проверяют делимость на <span class="who">3 и 9</span>.</p>
+      </div>
+    </div>
+    <p>Дальше разберём оба пути по очереди.</p>
+  </section>
+
+  <section>
+    <h2>Путь 1 — смотрим на хвост <span style="color:var(--tail)">(2, 5, 10)</span></h2>
+    <p>Хвост — это последняя цифра числа. Только она и важна:</p>
+    <div class="rules">
+      <div class="rule t">
+        <div class="big">÷2</div>
+        <div class="txt">
+          <b>Делится на 2</b>, если хвост — чётная цифра:
+          <div class="digits"><span>0</span><span>2</span><span>4</span><span>6</span><span>8</span></div>
+          <div class="ex"><span class="mono">3 574</span> кончается на 4 → делится. <span class="mono">581</span> кончается на 1 → нет.</div>
+        </div>
+      </div>
+      <div class="rule t">
+        <div class="big">÷5</div>
+        <div class="txt">
+          <b>Делится на 5</b>, если хвост — это:
+          <div class="digits"><span>0</span><span>5</span></div>
+          <div class="ex"><span class="mono">245</span> кончается на 5 → делится. <span class="mono">312</span> → нет.</div>
+        </div>
+      </div>
+      <div class="rule t">
+        <div class="big">÷10</div>
+        <div class="txt">
+          <b>Делится на 10</b>, если хвост — это только:
+          <div class="digits"><span>0</span></div>
+          <div class="ex"><span class="mono">4 070</span> кончается на 0 → делится. <span class="mono">4 075</span> → нет.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Путь 2 — складываем цифры <span style="color:var(--sum)">(3, 9)</span></h2>
+    <p>Здесь на хвост смотреть <strong>бесполезно</strong>. Нужно сложить все цифры числа и посмотреть уже на эту сумму:</p>
+    <div class="rules">
+      <div class="rule s">
+        <div class="big">÷3</div>
+        <div class="txt">
+          <b>Делится на 3</b>, если <b>сумма всех цифр</b> делится на 3.
+          <div class="ex">Возьмём <span class="mono">744</span>: сумма <span class="mono">7+4+4 = 15</span>, а 15 делится на 3 → значит и 744 делится на 3.</div>
+        </div>
+      </div>
+      <div class="rule s">
+        <div class="big">÷9</div>
+        <div class="txt">
+          <b>Делится на 9</b>, если <b>сумма всех цифр</b> делится на 9.
+          <div class="ex">Возьмём <span class="mono">522</span>: сумма <span class="mono">5+2+2 = 9</span>, а 9 делится на 9 → значит и 522 делится на 9.</div>
+        </div>
+      </div>
+    </div>
+    <div class="note">
+      <p><b>Тонкость про 3 и 9.</b> Правила похожи, но не путай: для <strong>3</strong> сумма должна делиться на 3, а для <strong>9</strong> — именно на 9.</p>
+      <p>Например, у <span class="mono">48</span> сумма <span class="mono">4+8 = 12</span>. Число 12 делится на 3, но не на 9 → значит <span class="mono">48</span> делится на 3, но <span class="no">не</span> на 9. А ещё запомни: <strong>если число делится на 9, то оно точно делится и на 3</strong> (но не наоборот).</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Разберём одно число целиком</h2>
+    <p>Посмотри, как рассуждать, когда спрашивают сразу про все признаки. Проверим число <span class="mono">7 245</span>:</p>
+    <div class="walk">
+      <p class="q">Делится ли 7 245 на 2, 3, 5, 9, 10?</p>
+      <ul>
+        <li><span class="tag t">хвост</span><span>На <b>2</b>? Хвост 5 — нечётный. <span class="no">Не делится.</span></span></li>
+        <li><span class="tag t">хвост</span><span>На <b>5</b>? Хвост 5. <span class="yes">Делится!</span></span></li>
+        <li><span class="tag t">хвост</span><span>На <b>10</b>? Хвост не 0. <span class="no">Не делится.</span></span></li>
+        <li><span class="tag s">сумма</span><span>На <b>3</b>? Сумма <span class="mono">7+2+4+5 = 18</span>, а 18 делится на 3. <span class="yes">Делится!</span></span></li>
+        <li><span class="tag s">сумма</span><span>На <b>9</b>? Та же сумма 18 делится на 9. <span class="yes">Делится!</span></span></li>
+      </ul>
+      <div class="verdict">Итог: 7 245 делится на 3, 5 и 9; не делится на 2 и 10.</div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Шпаргалка — все пять признаков</h2>
+    <div class="tblwrap">
+      <table>
+        <thead><tr><th>Делится на…</th><th>Когда</th><th>Пример</th></tr></thead>
+        <tbody>
+          <tr><td class="d t">2</td><td>хвост чётный (0,2,4,6,8)</td><td><span class="mono">158</span> → да</td></tr>
+          <tr><td class="d t">5</td><td>хвост 0 или 5</td><td><span class="mono">90</span> → да</td></tr>
+          <tr><td class="d t">10</td><td>хвост 0</td><td><span class="mono">600</span> → да</td></tr>
+          <tr><td class="d s">3</td><td>сумма цифр делится на 3</td><td><span class="mono">744</span> (15) → да</td></tr>
+          <tr><td class="d s">9</td><td>сумма цифр делится на 9</td><td><span class="mono">522</span> (9) → да</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2>Проверь себя</h2>
+    <p>Реши сам, потом нажми «проверить». Не подглядывай раньше времени 🙂</p>
+    <div class="drill">
+      <details>
+        <summary><span class="q">1) Делится ли <span class="mono">1 530</span> на 2, 5, 9 и 10?</span></summary>
+        <div class="ans">Хвост 0 → делится на <b>2, 5 и 10</b> сразу. Сумма <span class="mono">1+5+3+0 = 9</span> → делится и на <b>9</b>. Значит на все четыре — да!</div>
+      </details>
+      <details>
+        <summary><span class="q">2) Из чисел <span class="mono">24, 35, 90, 117, 200</span> выпиши те, что делятся на 5, и те, что на 9.</span></summary>
+        <div class="ans">На <b>5</b> (хвост 0 или 5): <span class="mono">35, 90, 200</span>. На <b>9</b> (сумма делится на 9): <span class="mono">90</span> (сумма 9) и <span class="mono">117</span> (1+1+7=9).</div>
+      </details>
+      <details>
+        <summary><span class="q">3) Найди ошибку: «738 не делится на 3, ведь кончается на 8».</span></summary>
+        <div class="ans">Ошибка в том, что для 3 <b>нельзя смотреть на хвост</b> — надо складывать цифры. <span class="mono">7+3+8 = 18</span>, а 18 делится на 3 → значит <b>738 делится на 3</b>.</div>
+      </details>
+      <details>
+        <summary><span class="q">4) Подбери цифру вместо ★, чтобы <span class="mono">4★2</span> делилось на 3. Найди все варианты.</span></summary>
+        <div class="ans">Сумма цифр: <span class="mono">4 + ★ + 2 = 6 + ★</span>. Нужно, чтобы она делилась на 3. Подходят ★ = <b>0, 3, 6, 9</b> (числа 402, 432, 462, 492).</div>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <h2>Ловушки — не попадись</h2>
+    <ul class="traps">
+      <li><b>Не проверяй 3 и 9 по хвосту.</b> «744 не делится на 3, ведь хвост 4» — неверно. Для 3 и 9 всегда складывай ВСЕ цифры.</li>
+      <li><b>Не путай 3 и 9.</b> Сумма делится на 3 → число делится на 3. А на 9 нужно, чтобы сумма делилась именно на 9.</li>
+      <li><b>Помни про 0.</b> Если число кончается на 0 — оно сразу делится и на 2, и на 5, и на 10.</li>
+    </ul>
+  </section>
+
+  <div class="wrapup">
+    <h2>Запомни главное</h2>
+    <p class="big-rule">На 2, 5, 10 — смотри на хвост.<br>На 3 и 9 — складывай цифры.</p>
+    <p>Это всё, что нужно, чтобы проверять делимость мгновенно, без деления столбиком.</p>
+    <p class="next">👉 Дальше эти признаки пригодятся, чтобы находить <strong>простые и составные числа</strong> и <strong>сокращать дроби</strong> — например, сразу увидеть, что <span class="mono" style="color:#fff">6/8</span> можно сократить на 2.</p>
+  </div>
+
+</div>

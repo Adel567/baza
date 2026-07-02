@@ -1,0 +1,319 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Теорема Виета — алгебра 8 класс</title>
+<style>
+  :root{
+    --paper:#F7F6FA; --card:#FFFFFF; --ink:#21202B; --muted:#635F73; --line:#E7E4EF;
+    --brand:#6B3FA0; --brand-soft:#EDE6F6;      /* фиолетовый — тема */
+    --sum:#C2622A; --sum-soft:#FBEEDF;          /* сумма корней = −p */
+    --prod:#1C8C7A; --prod-soft:#DDF2EE;        /* произведение = q */
+    --ok:#1E8E5A; --no:#C23B3B;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper)}
+  .page{max-width:720px;margin:0 auto;padding:clamp(1.4rem,4vw,3rem) clamp(1.1rem,4vw,2rem) 4.5rem;
+    color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:17.5px;line-height:1.68;-webkit-font-smoothing:antialiased}
+  .mono{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-variant-numeric:tabular-nums;font-weight:600}
+  sub{font-size:.72em}
+
+  .hero{border-bottom:3px solid var(--brand);padding-bottom:1.4rem;margin-bottom:1.8rem}
+  .eyebrow{font-size:.74rem;letter-spacing:.15em;text-transform:uppercase;color:var(--brand);font-weight:700;margin:0 0 .55rem}
+  h1{font-size:clamp(1.9rem,6vw,2.8rem);line-height:1.05;margin:0;font-weight:800;letter-spacing:-.02em;text-wrap:balance}
+  .tagline{font-size:1.12rem;color:var(--muted);margin:.85rem 0 0;text-wrap:pretty}
+
+  section{margin-top:2.4rem}
+  h2{font-size:1.5rem;margin:0 0 .3rem;font-weight:780;letter-spacing:-.015em;text-wrap:balance}
+  h2 .em{color:var(--brand)}
+  p{margin:.7rem 0}
+  strong{font-weight:680}
+  .sumw{color:var(--sum);font-weight:800} .prodw{color:var(--prod);font-weight:800}
+
+  .lead-in{background:var(--brand-soft);border-radius:14px;padding:1.1rem 1.3rem;font-size:1.02rem}
+  .lead-in p{margin:.4rem 0}
+  .lead-in b{color:var(--brand)}
+
+  .split{display:grid;gap:.9rem;margin-top:1rem}
+  @media(min-width:600px){.split{grid-template-columns:1fr 1fr}}
+  .role{border-radius:16px;padding:1.1rem 1.25rem;border:2px solid}
+  .role.s{background:var(--sum-soft);border-color:#EBD2B4} .role.p{background:var(--prod-soft);border-color:#B7DED7}
+  .role .sym{font-family:ui-monospace,Menlo,monospace;font-weight:800;font-size:1.35rem}
+  .role.s .sym{color:var(--sum)} .role.p .sym{color:var(--prod)}
+  .role h3{margin:.25rem 0 .4rem;font-size:1.1rem;font-weight:800}
+  .role p{margin:.2rem 0;font-size:.95rem}
+
+  .formula-box{background:var(--ink);color:#fff;border-radius:14px;padding:1.3rem;text-align:center;margin-top:1rem}
+  .formula-box .eq{font-family:ui-monospace,Menlo,monospace;font-size:clamp(1.35rem,5.2vw,1.9rem);font-weight:700;line-height:1.9}
+  .formula-box .eq .s{color:#EBA86A} .formula-box .eq .p{color:#6FCBBB}
+  .formula-box .note{font-size:.9rem;color:#B4AEC4;margin:.7rem 0 0}
+
+  .note{border-left:4px solid var(--brand);background:var(--brand-soft);border-radius:0 10px 10px 0;padding:.8rem 1.1rem;margin-top:1rem;font-size:.98rem}
+  .note b{color:var(--brand)}
+
+  .tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  table.pick{width:100%;min-width:320px;border-collapse:collapse;margin-top:1rem;font-size:.95rem}
+  table.pick th,table.pick td{border:1px solid var(--line);padding:.5rem .7rem;text-align:center}
+  table.pick th{background:var(--brand-soft);font-weight:700;color:var(--brand)}
+  table.pick td.hit{background:var(--prod-soft);font-weight:700}
+  table.pick .mono{font-weight:700}
+
+  .walk{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.15rem 1.3rem;margin-top:1rem}
+  .walk .q{font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.02rem;margin:0 0 .9rem;padding-bottom:.7rem;border-bottom:1px solid var(--line)}
+  .walk ol{margin:0;padding-left:1.2rem;display:flex;flex-direction:column;gap:.5rem}
+  .walk li{font-size:.95rem}
+  .walk b{font-weight:700}
+  .verdict{margin-top:1rem;padding:.7rem 1rem;background:var(--brand-soft);border-radius:10px;font-weight:650;color:var(--brand);font-family:ui-monospace,Menlo,monospace}
+
+  /* Тренажёр */
+  .trainer{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.2rem 1.3rem;margin-top:1rem}
+  .tr-task{font-size:clamp(1.05rem,4.2vw,1.3rem);text-align:center;padding:1rem;background:var(--brand-soft);border-radius:10px;font-weight:600}
+  .tr-task b{font-family:ui-monospace,Menlo,monospace;color:var(--ink)}
+  .tr-ctl{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:1rem;align-items:center;justify-content:center}
+  .tr-ctl input{flex:1;min-width:110px;max-width:200px;font:inherit;padding:.5rem .7rem;border:1px solid var(--line);border-radius:9px;text-align:center;background:#fff;color:var(--ink)}
+  .tr-ctl button{font:inherit;font-weight:700;font-size:.9rem;cursor:pointer;border:none;border-radius:9px;padding:.55rem .95rem;color:#fff;background:var(--brand)}
+  .tr-ctl button.sec{background:var(--sum)}
+  .tr-ctl button.ghost{background:transparent;color:var(--brand);border:1px solid var(--brand)}
+  .tr-ctl button:focus-visible,.tr-ctl input:focus-visible{outline:3px solid var(--brand);outline-offset:2px}
+  .tr-hint{text-align:center;font-size:.85rem;color:var(--muted);margin:.6rem 0 0}
+  .tr-result{margin-top:.9rem;font-size:.96rem;min-height:1.2rem;text-align:center}
+  .tr-result .ok{color:var(--ok);font-weight:700} .tr-result .bad{color:var(--no);font-weight:700}
+  .tr-result .sol{margin-top:.6rem;padding:.8rem 1rem;background:#FCFBFE;border:1px solid var(--line);border-radius:10px;font-family:ui-monospace,Menlo,monospace;font-size:.9rem;line-height:1.8;text-align:left}
+
+  details{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:.9rem 1.1rem;margin-top:.7rem}
+  details[open]{border-color:var(--brand)}
+  summary{cursor:pointer;font-weight:650;list-style:none;display:flex;justify-content:space-between;gap:1rem;align-items:center}
+  summary::-webkit-details-marker{display:none}
+  summary::after{content:"ответ";font-size:.8rem;color:var(--brand);font-weight:700;white-space:nowrap}
+  details[open] summary::after{content:"скрыть"}
+  .ans{margin-top:.75rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.96rem;color:var(--muted)}
+  .ans b{color:var(--ink)}
+  .drill{display:flex;flex-direction:column;gap:.2rem;margin-top:1rem}
+
+  ul.traps{list-style:none;margin:1rem 0 0;padding:0;display:flex;flex-direction:column;gap:.7rem}
+  ul.traps li{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:.85rem 1.05rem;padding-left:2.5rem;position:relative;font-size:.97rem}
+  ul.traps li::before{content:"⚠";position:absolute;left:1rem;top:.85rem;color:var(--sum)}
+  ul.traps b{font-weight:700}
+
+  .wrapup{background:var(--brand);color:#fff;border-radius:16px;padding:1.4rem 1.5rem;margin-top:2.4rem}
+  .wrapup h2{color:#fff;margin:0 0 .5rem}
+  .wrapup p{color:#E6DEF3;margin:.4rem 0;font-size:1rem}
+  .wrapup .big-rule{font-size:1.15rem;font-weight:800;color:#fff;margin:.6rem 0;font-family:ui-monospace,Menlo,monospace}
+  .wrapup .next{font-size:.95rem;color:#D3C6EA;margin-top:1rem;padding-top:1rem;border-top:1px solid rgba(255,255,255,.2)}
+  .wrapup .next b{color:#fff}
+
+  @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="page">
+
+  <header class="hero">
+    <p class="eyebrow">Алгебра · 8 класс · квадратные уравнения</p>
+    <h1>Теорема Виета</h1>
+    <p class="tagline">Короткий путь к корням: для многих уравнений их видно «в уме» — без дискриминанта и длинных вычислений.</p>
+  </header>
+
+  <div class="lead-in">
+    <p><b>Зачем это нужно.</b> Формула корней через дискриминант работает всегда, но она длинная. Теорема Виета — быстрый путь: корни многих уравнений подбираются устно за пару секунд. На контрольной и на ОГЭ это экономит время.</p>
+    <p>И это не просто «ещё одна формула вместо дискриминанта». Это <b>связь корней с коэффициентами</b>: она нужна дальше, чтобы раскладывать квадратный трёхчлен на множители, сокращать дроби и исследовать квадратичную функцию.</p>
+  </div>
+
+  <section>
+    <h2>Суть простыми словами</h2>
+    <p>Возьмём <strong>приведённое</strong> квадратное уравнение — то, где перед <span class="mono">x²</span> стоит единица: <span class="mono">x² + px + q = 0</span>. Пусть у него есть два корня <span class="mono">x<sub>1</sub></span> и <span class="mono">x<sub>2</sub></span>.</p>
+    <p>Оказывается, коэффициенты <span class="mono">p</span> и <span class="mono">q</span> «хранят» информацию о корнях:</p>
+    <div class="split">
+      <div class="role s">
+        <div class="sym">x<sub>1</sub> + x<sub>2</sub> = −p</div>
+        <h3>🟠 Сумма</h3>
+        <p>Сумма корней равна второму коэффициенту, но с <strong>противоположным знаком</strong>.</p>
+      </div>
+      <div class="role p">
+        <div class="sym">x<sub>1</sub> · x<sub>2</sub> = q</div>
+        <h3>🟢 Произведение</h3>
+        <p>Произведение корней равно <strong>свободному члену</strong> — просто <span class="mono">q</span>, без изменений.</p>
+      </div>
+    </div>
+    <p>Поэтому решать можно наоборот: подобрать два числа, которые в сумме дают <span class="sumw">−p</span>, а в произведении <span class="prodw">q</span>. Эти два числа и есть корни.</p>
+  </section>
+
+  <section>
+    <h2>Правило и формула</h2>
+    <p><strong>Теорема Виета</strong> (для приведённого уравнения). Если <span class="mono">x² + px + q = 0</span> имеет корни <span class="mono">x<sub>1</sub></span> и <span class="mono">x<sub>2</sub></span>, то:</p>
+    <div class="formula-box">
+      <div class="eq"><span class="s">x<sub>1</sub> + x<sub>2</sub> = −p</span><br><span class="p">x<sub>1</sub> · x<sub>2</sub> = q</span></div>
+      <div class="note">p — коэффициент при x (второй) · q — свободный член · x<sub>1</sub>, x<sub>2</sub> — корни</div>
+    </div>
+    <div class="note">
+      <p><b>Уравнение должно быть приведённым</b> (перед x² стоит 1). Если коэффициент другой, например <span class="mono">2x² − 10x + 8 = 0</span> — сначала <strong>раздели всё уравнение на этот коэффициент</strong>: <span class="mono">x² − 5x + 4 = 0</span>. И ещё: подбирать корни есть смысл, только когда они существуют (дискриминант <span class="mono">D ≥ 0</span>).</p>
+    </div>
+    <div class="note" style="border-color:var(--prod);background:var(--prod-soft)">
+      <p style="color:var(--prod)"><b>Хитрость со знаками.</b> Сначала посмотри на знак <span class="mono">q</span>: если <span class="mono">q &gt; 0</span> — корни одного знака, если <span class="mono">q &lt; 0</span> — разных. Потом по сумме поймёшь, какой знак «перевешивает». Это сильно сужает перебор.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Разбор по шагам</h2>
+    <p>Решаем <span class="mono">x² − 5x + 6 = 0</span> по Виету. Удобно выписать пары множителей числа <span class="prodw">6</span> и проверить их сумму:</p>
+    <div class="tbl-wrap">
+      <table class="pick">
+        <tr><th>Пара множителей</th><th>Произведение (= q)</th><th>Сумма (= −p)</th></tr>
+        <tr><td class="mono">1 и 6</td><td class="mono">6</td><td class="mono">7</td></tr>
+        <tr><td class="mono hit">2 и 3</td><td class="mono hit">6</td><td class="mono hit">5 ← подходит</td></tr>
+      </table>
+    </div>
+    <div class="walk" style="margin-top:1rem">
+      <p class="q">x² − 5x + 6 = 0</p>
+      <ol>
+        <li>Уравнение приведённое (перед x² единица). Здесь <span class="mono">p = −5</span>, <span class="mono">q = 6</span>.</li>
+        <li>Сумму берём с обратным знаком: <span class="mono">x<sub>1</sub> + x<sub>2</sub> = −p = −(−5) = <b>5</b></span>. Произведение равно q: <span class="mono">x<sub>1</sub> · x<sub>2</sub> = <b>6</b></span>.</li>
+        <li>Ищем два числа: произведение 6, сумма 5. Из таблицы — это <b>2 и 3</b>.</li>
+        <li>Проверка: <span class="mono">2 + 3 = 5</span> ✓ и <span class="mono">2 · 3 = 6</span> ✓.</li>
+      </ol>
+      <div class="verdict">Ответ: x₁ = 2, x₂ = 3</div>
+    </div>
+    <div class="walk" style="margin-top:.8rem">
+      <p class="q">x² + 4x − 5 = 0  (корни разных знаков)</p>
+      <ol>
+        <li>Здесь <span class="mono">p = 4</span>, <span class="mono">q = −5</span>. Значит <span class="mono">x<sub>1</sub> + x<sub>2</sub> = −4</span>, <span class="mono">x<sub>1</sub> · x<sub>2</sub> = −5</span>.</li>
+        <li>Произведение <b>отрицательное</b> → корни разных знаков. Нужны числа: произведение −5, сумма −4.</li>
+        <li>Подходит пара <b>1 и −5</b>: <span class="mono">1 · (−5) = −5</span> ✓, <span class="mono">1 + (−5) = −4</span> ✓.</li>
+      </ol>
+      <div class="verdict">Ответ: x₁ = 1, x₂ = −5</div>
+    </div>
+    <div class="walk" style="margin-top:.8rem">
+      <p class="q">Обратная задача: составь уравнение с корнями 2 и −7</p>
+      <ol>
+        <li>Сумма корней: <span class="mono">2 + (−7) = −5</span>, значит <span class="mono">−p = −5 → p = 5</span>.</li>
+        <li>Произведение: <span class="mono">2 · (−7) = −14</span>, значит <span class="mono">q = −14</span>.</li>
+        <li>Собираем: <span class="mono">x² + px + q = 0 → x² + 5x − 14 = 0</span>.</li>
+      </ol>
+      <div class="verdict">Ответ: x² + 5x − 14 = 0</div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Тренажёр · <span class="em">подбери корни</span></h2>
+    <p>Дано приведённое уравнение — подбери его корни по сумме и произведению. Впиши оба корня через запятую или пробел (порядок неважен).</p>
+    <div class="trainer">
+      <div class="tr-task" id="trTask">x² − 5x + 6 = 0</div>
+      <div class="tr-ctl">
+        <button id="trNew" type="button">🎲 Новое</button>
+        <input id="trAns" type="text" placeholder="например: 2, 3" aria-label="Корни">
+        <button id="trCheck" type="button" class="sec">Проверить</button>
+        <button id="trShow" type="button" class="ghost">Решение</button>
+      </div>
+      <p class="tr-hint" id="trHint"></p>
+      <div id="trResult" class="tr-result"></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Проверь себя</h2>
+    <div class="drill">
+      <details><summary>1) Не решая, назови сумму и произведение корней <span class="mono">x² − 9x + 20 = 0</span>.</summary>
+        <div class="ans">Сумма <span class="mono">= −p = 9</span>, произведение <span class="mono">= q = 20</span>. (Сами корни: <b>4 и 5</b>.)</div></details>
+      <details><summary>2) Реши подбором <span class="mono">x² − 6x + 8 = 0</span>.</summary>
+        <div class="ans">Сумма 6, произведение 8. Пара <span class="mono">2 и 4</span>: <span class="mono">2+4=6</span> ✓, <span class="mono">2·4=8</span> ✓. Ответ <b>x₁ = 2, x₂ = 4</b>.</div></details>
+      <details><summary>3) Реши <span class="mono">x² + x − 12 = 0</span>.</summary>
+        <div class="ans"><span class="mono">q = −12 &lt; 0</span> → корни разных знаков. Сумма <span class="mono">= −1</span>, произведение <span class="mono">= −12</span>. Пара <span class="mono">3 и −4</span>. Ответ <b>x₁ = 3, x₂ = −4</b>.</div></details>
+      <details><summary>4) Обратная задача: составь приведённое уравнение с корнями −2 и 6.</summary>
+        <div class="ans">Сумма <span class="mono">−2 + 6 = 4 → p = −4</span>; произведение <span class="mono">−2 · 6 = −12 → q = −12</span>. Уравнение <b>x² − 4x − 12 = 0</b>.</div></details>
+      <details><summary>5) Найди ошибку: для <span class="mono">2x² − 10x + 8 = 0</span> ученик написал «сумма = 10, произведение = 8».</summary>
+        <div class="ans">Уравнение <b>неприведённое</b> — так брать нельзя. Сначала делим на 2: <span class="mono">x² − 5x + 4 = 0</span>. Тогда сумма <span class="mono">= 5</span>, произведение <span class="mono">= 4</span> (корни <b>1 и 4</b>).</div></details>
+    </div>
+  </section>
+
+  <section>
+    <h2>Ловушки</h2>
+    <ul class="traps">
+      <li><b>Знак у суммы.</b> Сумма корней — это <span class="mono">−p</span>, а не <span class="mono">p</span>. Произведение — просто <span class="mono">q</span>. Сразу делай проверку сложением корней.</li>
+      <li><b>Неприведённое уравнение.</b> Если перед <span class="mono">x²</span> стоит не 1 — сначала раздели всё на этот коэффициент, иначе <span class="mono">p</span> и <span class="mono">q</span> будут неверными.</li>
+      <li><b>Проверяй оба условия.</b> Пара должна давать нужное произведение <b>и</b> нужную сумму одновременно. Нашёл по произведению — обязательно проверь сумму.</li>
+      <li><b>Корней может не быть.</b> Если <span class="mono">D &lt; 0</span>, подбирать нечего — целых корней не существует.</li>
+      <li><b>Знаки подсказывают.</b> <span class="mono">q &gt; 0</span> → корни одного знака; <span class="mono">q &lt; 0</span> → разных. Не пренебрегай этим — сэкономишь перебор.</li>
+    </ul>
+  </section>
+
+  <div class="wrapup">
+    <h2>Запомни главное</h2>
+    <p class="big-rule">x₁ + x₂ = −p&nbsp;&nbsp;·&nbsp;&nbsp;x₁ · x₂ = q</p>
+    <p>Для приведённого уравнения <span class="mono">x² + px + q = 0</span> сумма корней равна <span class="mono">−p</span>, а произведение равно <span class="mono">q</span>. Это позволяет подбирать корни устно и решать обратные задачи.</p>
+    <p class="next">👉 Дальше — <b>разложение квадратного трёхчлена на множители</b> (Виета даёт корни за секунды) и <b>квадратичная функция</b>: как корни связаны с графиком параболы.</p>
+  </div>
+
+</div>
+
+<script>
+(function(){
+  var taskEl=document.getElementById('trTask'), ansEl=document.getElementById('trAns'),
+      resEl=document.getElementById('trResult'), hintEl=document.getElementById('trHint');
+  if(!taskEl) return;
+  var cur=null;
+
+  function ri(min,max){ return Math.floor(Math.random()*(max-min+1))+min; }
+  function fmt(n){ return n<0 ? '−'+Math.abs(n) : ''+n; }   // настоящий минус (−), не дефис
+  // формат приведённого уравнения x² + px + q = 0
+  function eqStr(p,q){
+    var s='x²';
+    if(p!==0) s += (p<0?' − ':' + ') + (Math.abs(p)===1?'':Math.abs(p)) + 'x';
+    if(q!==0) s += (q<0?' − ':' + ') + Math.abs(q);
+    return s + ' = 0';
+  }
+  function generate(){
+    var x1,x2,r=Math.random();
+    if(r<0.15){                       // краевой случай: совпавшие корни (D=0)
+      x1=ri(-6,6); if(x1===0) x1=3; x2=x1;
+    } else {
+      do{ x1=ri(-8,8); x2=ri(-8,8); }while((x1===0&&x2===0)||(x1===x2));
+    }
+    var p=-(x1+x2), q=x1*x2;
+    cur={x1:x1,x2:x2,p:p,q:q};
+    taskEl.textContent=eqStr(p,q);
+    hintEl.textContent = (x1===x2) ? 'подсказка: здесь корни совпадают' :
+                         (q===0 ? 'подсказка: свободный член q = 0 → один из корней равен 0'
+                              : (q<0 ? 'подсказка: произведение q < 0 → корни разных знаков'
+                                     : 'подсказка: произведение q > 0 → корни одного знака'));
+    resEl.innerHTML=''; ansEl.value='';
+  }
+  function solHTML(){
+    var q=cur, sum=-q.p, prod=q.q, h='<div class="sol">';
+    h+='p = '+fmt(q.p)+',  q = '+fmt(q.q)+'<br>';
+    h+='x₁ + x₂ = −p = '+fmt(sum)+'<br>';
+    h+='x₁ · x₂ = q = '+fmt(prod)+'<br>';
+    if(q.x1===q.x2){
+      h+='два одинаковых числа с суммой '+fmt(sum)+' и произведением '+fmt(prod)+': это '+fmt(q.x1)+' и '+fmt(q.x2)+'<br>';
+    } else {
+      h+='два числа: сумма '+fmt(sum)+', произведение '+fmt(prod)+' → это '+fmt(q.x1)+' и '+fmt(q.x2)+'<br>';
+    }
+    h+='<b>Ответ: x₁ = '+fmt(q.x1)+', x₂ = '+fmt(q.x2)+'</b>';
+    return h+'</div>';
+  }
+  function parseNums(raw){
+    return raw.replace(/,/g,' ').split(/[\s;]+/).filter(function(t){return t!=='';})
+              .map(function(t){return parseFloat(t);});
+  }
+  function check(){
+    var raw=ansEl.value.trim();
+    if(raw===''){ resEl.innerHTML='<span class="bad">Впиши корни или нажми «Решение».</span>'; return; }
+    var got=parseNums(raw);
+    if(got.some(isNaN)){ resEl.innerHTML='<span class="bad">Не понял ответ — впиши числа через запятую.</span>'; return; }
+    var exp=[cur.x1,cur.x2].sort(function(a,b){return a-b;});
+    var ok=false;
+    if(cur.x1===cur.x2){
+      ok = got.length>=1 && got.every(function(v){return Math.abs(v-cur.x1)<0.001;});
+    } else {
+      var g=got.slice().sort(function(a,b){return a-b;});
+      ok = g.length===2 && Math.abs(g[0]-exp[0])<0.001 && Math.abs(g[1]-exp[1])<0.001;
+    }
+    if(ok){ resEl.innerHTML='<span class="ok">✓ Верно!</span>'+solHTML(); }
+    else{ resEl.innerHTML='<span class="bad">✗ Пока не то — проверь сумму и произведение.</span>'+solHTML(); }
+  }
+  document.getElementById('trNew').addEventListener('click',generate);
+  document.getElementById('trCheck').addEventListener('click',check);
+  document.getElementById('trShow').addEventListener('click',function(){ resEl.innerHTML=solHTML(); });
+  ansEl.addEventListener('keydown',function(e){ if(e.key==='Enter') check(); });
+  // стартовое состояние совпадает с показанным примером
+  cur={x1:2,x2:3,p:-5,q:6};
+  hintEl.textContent='подсказка: произведение q > 0 → корни одного знака';
+})();
+</script>

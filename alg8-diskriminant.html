@@ -1,0 +1,617 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Дискриминант — урок, алгебра 8 класс</title>
+<style>
+  :root{
+    --paper:#F6F7F9;
+    --card:#FFFFFF;
+    --ink:#1B2333;
+    --muted:#5A6478;
+    --line:#E2E5EC;
+    --accent:#3B4FD0;
+    --accent-soft:#EAEDFB;
+    --pos:#1E8E5A;   /* D>0 */
+    --pos-bg:#E7F4EC;
+    --zero:#B9791A;  /* D=0 */
+    --zero-bg:#FBF1DC;
+    --neg:#C0455B;   /* D<0 */
+    --neg-bg:#F9E9EC;
+  }
+  *{box-sizing:border-box}
+  body{margin:0}
+  .wrap{
+    max-width:760px;
+    margin:0 auto;
+    padding:clamp(1.4rem,4vw,3rem) clamp(1.1rem,4vw,2rem) 4rem;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    font-size:17px;
+    line-height:1.62;
+    -webkit-font-smoothing:antialiased;
+  }
+  .eyebrow{
+    font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--accent);font-weight:600;margin:0 0 .5rem;
+  }
+  h1{
+    font-family:Georgia,"Times New Roman",serif;
+    font-size:clamp(2.1rem,7vw,3rem);
+    line-height:1.05;margin:0;font-weight:700;letter-spacing:-.01em;
+    text-wrap:balance;
+  }
+  .lede{
+    font-size:1.08rem;color:var(--muted);margin:.7rem 0 0;max-width:60ch;
+    text-wrap:pretty;
+  }
+  h2{
+    font-family:Georgia,serif;font-size:1.32rem;font-weight:700;
+    margin:0 0 .1rem;letter-spacing:-.005em;
+  }
+  section{margin-top:2.6rem}
+  .kicker{
+    font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--muted);font-weight:600;margin:0 0 .8rem;
+    display:flex;align-items:center;gap:.6rem;
+  }
+  .kicker::before{
+    content:"";width:1.4rem;height:2px;background:var(--accent);border-radius:2px;
+  }
+  p{margin:.65rem 0}
+  strong{font-weight:650}
+  .math{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-weight:600}
+  sup{font-size:.72em}
+
+  /* Главная формула */
+  .hero-formula{
+    margin-top:2.2rem;
+    background:var(--ink);color:#fff;border-radius:14px;
+    padding:1.6rem 1.4rem;text-align:center;
+  }
+  .hero-formula .lbl{
+    font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;
+    color:#9aa6c9;margin:0 0 .7rem;
+  }
+  .hero-formula .eq{
+    font-family:ui-monospace,"SF Mono",Menlo,monospace;
+    font-size:clamp(1.7rem,6vw,2.4rem);font-weight:700;letter-spacing:.01em;
+  }
+  .hero-formula .eq b{color:#8ea0ff;font-weight:700}
+  .hero-formula .note{font-size:.86rem;color:#9aa6c9;margin:.8rem 0 0}
+
+  /* Пререквизит */
+  .recall{
+    background:var(--accent-soft);border-radius:12px;padding:1rem 1.15rem;
+    font-size:.96rem;
+  }
+  .recall p{margin:.3rem 0}
+
+  /* Три случая */
+  .cases{display:grid;gap:.85rem;margin-top:.4rem}
+  @media(min-width:620px){.cases{grid-template-columns:repeat(3,1fr)}}
+  .case{
+    border-radius:12px;padding:1.05rem 1.1rem;border:1px solid var(--line);
+    background:var(--card);display:flex;flex-direction:column;gap:.35rem;
+  }
+  .case .sign{font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.15rem}
+  .case .count{font-weight:650;font-size:1rem}
+  .case .desc{font-size:.9rem;color:var(--muted)}
+  .case.pos{border-top:4px solid var(--pos);background:var(--pos-bg)}
+  .case.pos .sign{color:var(--pos)}
+  .case.zero{border-top:4px solid var(--zero);background:var(--zero-bg)}
+  .case.zero .sign{color:var(--zero)}
+  .case.neg{border-top:4px solid var(--neg);background:var(--neg-bg)}
+  .case.neg .sign{color:var(--neg)}
+
+  /* Разбор */
+  .worked{
+    background:var(--card);border:1px solid var(--line);border-radius:12px;
+    padding:1.2rem 1.3rem;
+  }
+  .worked .task{
+    font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.05rem;
+    margin:0 0 1rem;padding-bottom:.8rem;border-bottom:1px solid var(--line);
+  }
+  ol.steps{margin:0;padding:0;list-style:none;counter-reset:s;display:flex;flex-direction:column;gap:.7rem}
+  ol.steps li{
+    position:relative;padding-left:2.1rem;counter-increment:s;
+  }
+  ol.steps li::before{
+    content:counter(s);position:absolute;left:0;top:.05rem;
+    width:1.5rem;height:1.5rem;border-radius:50%;
+    background:var(--accent-soft);color:var(--accent);
+    font-size:.82rem;font-weight:700;display:flex;align-items:center;justify-content:center;
+  }
+  ol.steps .m{font-family:ui-monospace,Menlo,monospace;font-weight:600;color:var(--ink)}
+  .verdict{
+    margin-top:1rem;padding:.7rem 1rem;background:var(--pos-bg);
+    border-radius:9px;font-weight:600;color:var(--pos);font-size:.98rem;
+  }
+
+  /* Практика */
+  .drill{display:flex;flex-direction:column;gap:.7rem}
+  details{
+    background:var(--card);border:1px solid var(--line);border-radius:10px;
+    padding:.85rem 1.05rem;
+  }
+  details[open]{border-color:var(--accent)}
+  summary{
+    cursor:pointer;font-weight:600;list-style:none;
+    display:flex;justify-content:space-between;align-items:center;gap:1rem;
+  }
+  summary::-webkit-details-marker{display:none}
+  summary .q{font-family:ui-monospace,Menlo,monospace}
+  summary .tag{
+    font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);
+    border:1px solid var(--line);border-radius:20px;padding:.1rem .55rem;white-space:nowrap;
+  }
+  summary::after{
+    content:"показать ответ";font-size:.78rem;color:var(--accent);font-weight:600;white-space:nowrap;
+  }
+  details[open] summary::after{content:"скрыть"}
+  .ans{margin-top:.7rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.96rem;color:var(--muted)}
+  .ans .m{font-family:ui-monospace,Menlo,monospace;color:var(--ink);font-weight:600}
+
+  /* Ошибки */
+  ul.pitfalls{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:.6rem}
+  ul.pitfalls li{
+    padding-left:1.5rem;position:relative;font-size:.98rem;
+  }
+  ul.pitfalls li::before{
+    content:"×";position:absolute;left:0;top:-.05rem;color:var(--neg);font-weight:700;font-size:1.1rem;
+  }
+  ul.pitfalls b{color:var(--ink)}
+
+  .next{
+    background:var(--accent);color:#fff;border-radius:12px;padding:1.2rem 1.3rem;
+  }
+  .next h2{color:#fff}
+  .next .eq{
+    font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.25rem;
+    margin:.6rem 0 .3rem;
+  }
+  .next p{color:#dfe4fb;font-size:.96rem;margin:.4rem 0 0}
+  .foot{margin-top:2.4rem;font-size:.82rem;color:var(--muted);text-align:center}
+
+  /* Живые примеры по случаям */
+  .triset{display:grid;gap:.85rem;margin-top:.5rem}
+  @media(min-width:640px){.triset{grid-template-columns:repeat(3,1fr)}}
+  .col{border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--card);display:flex;flex-direction:column}
+  .col > header{
+    font-weight:700;font-size:.95rem;padding:.7rem .9rem;color:#fff;
+    font-family:ui-monospace,Menlo,monospace;
+  }
+  .col.pos > header{background:var(--pos)}
+  .col.zero > header{background:var(--zero)}
+  .col.neg > header{background:var(--neg)}
+  .col .ex{padding:.75rem .9rem;border-top:1px solid var(--line)}
+  .col .ex:first-of-type{border-top:none}
+  .ex .eq{font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:.98rem}
+  .ex .calc{font-family:ui-monospace,Menlo,monospace;font-size:.86rem;color:var(--muted);margin-top:.25rem}
+  .ex .calc b{color:var(--ink)}
+
+  /* Семейство: меняем только c */
+  .family{
+    margin-top:1.1rem;background:var(--card);border:1px solid var(--line);
+    border-radius:12px;padding:1.1rem 1.2rem;
+  }
+  .family .cap{font-size:.94rem;color:var(--muted);margin:0 0 .85rem}
+  .family .cap b{color:var(--ink)}
+  .frow{
+    display:flex;align-items:center;gap:.7rem;flex-wrap:wrap;
+    padding:.55rem 0;border-top:1px dashed var(--line);
+    font-family:ui-monospace,Menlo,monospace;
+  }
+  .frow:first-of-type{border-top:none}
+  .frow .fe{font-weight:700;font-size:1rem;min-width:11ch}
+  .frow .fe u{text-decoration:none;padding:0 .12em;border-radius:4px;font-weight:800}
+  .frow .fd{font-size:.86rem;color:var(--muted);flex:1;min-width:9ch}
+  .frow .fd b{color:var(--ink)}
+  .pill{
+    font-size:.72rem;font-weight:700;letter-spacing:.03em;text-transform:uppercase;
+    padding:.18rem .55rem;border-radius:20px;white-space:nowrap;
+  }
+  .pill.pos{background:var(--pos-bg);color:var(--pos)}
+  .pill.zero{background:var(--zero-bg);color:var(--zero)}
+  .pill.neg{background:var(--neg-bg);color:var(--neg)}
+
+  @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="wrap">
+
+  <header>
+    <p class="eyebrow">Алгебра · 8 класс</p>
+    <h1>Дискриминант</h1>
+    <p class="lede">Одно число, которое заранее говорит, сколько корней у квадратного уравнения — <em>ещё до того, как мы начнём их искать.</em></p>
+  </header>
+
+  <div class="hero-formula">
+    <p class="lbl">Формула дискриминанта</p>
+    <div class="eq">D = <b>b</b><sup>2</sup> − 4<b>a</b><b>c</b></div>
+    <p class="note">a, b, c — коэффициенты уравнения a·x² + b·x + c = 0</p>
+  </div>
+
+  <section>
+    <p class="kicker">Зачем он нужен</p>
+    <h2>Дискриминант — это «разведчик»</h2>
+    <p>Слово «дискриминант» значит <strong>«различающий»</strong>. Он различает три ситуации: у уравнения будет <strong>два</strong> корня, <strong>один</strong> или <strong>ни одного</strong>.</p>
+    <p>Главное заблуждение: «раз уравнение квадратное — значит, корня всегда два». Это не так. Подставил три числа, посчитал одно выражение — и сразу ясно, чего ждать. Не нужно гадать и подбирать.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Что вспомнить с прошлого шага</p>
+    <div class="recall">
+      <p>Уравнение сначала приводим к виду <span class="math">a·x² + b·x + c = 0</span>.</p>
+      <p><strong>a</strong> — число при x², <strong>b</strong> — при x, <strong>c</strong> — свободное число.</p>
+      <p>Коэффициенты берём <strong>вместе со знаком</strong>: если стоит <span class="math">−7x</span>, то <span class="math">b = −7</span>.</p>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Три случая — вся суть темы</p>
+    <h2>Смотрим на знак D</h2>
+    <p>Посчитали <span class="math">D</span> — и по его знаку сразу называем число корней:</p>
+    <div class="cases">
+      <div class="case pos">
+        <div class="sign">D &gt; 0</div>
+        <div class="count">Два корня</div>
+        <div class="desc">Парабола пересекает ось в двух точках.</div>
+      </div>
+      <div class="case zero">
+        <div class="sign">D = 0</div>
+        <div class="count">Один корень</div>
+        <div class="desc">Парабола касается оси в одной точке.</div>
+      </div>
+      <div class="case neg">
+        <div class="sign">D &lt; 0</div>
+        <div class="count">Нет корней</div>
+        <div class="desc">Парабола не достаёт до оси.</div>
+      </div>
+    </div>
+    <p style="font-size:.92rem;color:var(--muted);margin-top:.9rem">Запомни как считалочку: <strong>плюс — два, ноль — один, минус — ни одного.</strong></p>
+  </section>
+
+  <section>
+    <p class="kicker">Каждый случай на живых уравнениях</p>
+    <h2>Считаем D и смотрим на знак</h2>
+    <p>По два примера на каждый случай — посчитай <span class="math">D</span> сам и сверься:</p>
+    <div class="triset">
+      <div class="col pos">
+        <header>D &gt; 0 · два корня</header>
+        <div class="ex">
+          <div class="eq">x² − 7x + 10 = 0</div>
+          <div class="calc">D = (−7)² − 4·1·10 = 49 − 40 = <b>9</b></div>
+        </div>
+        <div class="ex">
+          <div class="eq">2x² + 5x − 3 = 0</div>
+          <div class="calc">D = 5² − 4·2·(−3) = 25 + 24 = <b>49</b></div>
+        </div>
+      </div>
+      <div class="col zero">
+        <header>D = 0 · один корень</header>
+        <div class="ex">
+          <div class="eq">x² + 4x + 4 = 0</div>
+          <div class="calc">D = 4² − 4·1·4 = 16 − 16 = <b>0</b></div>
+        </div>
+        <div class="ex">
+          <div class="eq">9x² + 6x + 1 = 0</div>
+          <div class="calc">D = 6² − 4·9·1 = 36 − 36 = <b>0</b></div>
+        </div>
+      </div>
+      <div class="col neg">
+        <header>D &lt; 0 · нет корней</header>
+        <div class="ex">
+          <div class="eq">x² + 2x + 5 = 0</div>
+          <div class="calc">D = 2² − 4·1·5 = 4 − 20 = <b>−16</b></div>
+        </div>
+        <div class="ex">
+          <div class="eq">3x² − 2x + 5 = 0</div>
+          <div class="calc">D = (−2)² − 4·3·5 = 4 − 60 = <b>−56</b></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="family">
+      <p class="cap">Одно семейство, меняем <b>только последнее число</b> (c) — а&nbsp;<span class="math">a = 1</span>, <span class="math">b = −6</span> держим теми&nbsp;же. Смотри, как <span class="math">D</span> «съезжает» через ноль:</p>
+      <div class="frow">
+        <span class="fe">x² − 6x + <u style="background:var(--pos-bg);color:var(--pos)">5</u></span>
+        <span class="fd">D = 36 − 20 = <b>16</b></span>
+        <span class="pill pos">D &gt; 0 · два</span>
+      </div>
+      <div class="frow">
+        <span class="fe">x² − 6x + <u style="background:var(--zero-bg);color:var(--zero)">9</u></span>
+        <span class="fd">D = 36 − 36 = <b>0</b></span>
+        <span class="pill zero">D = 0 · один</span>
+      </div>
+      <div class="frow">
+        <span class="fe">x² − 6x + <u style="background:var(--neg-bg);color:var(--neg)">13</u></span>
+        <span class="fd">D = 36 − 52 = <b>−16</b></span>
+        <span class="pill neg">D &lt; 0 · нет</span>
+      </div>
+      <p class="cap" style="margin:.85rem 0 0">Чем больше свободный член, тем меньше <span class="math">D</span> — и в какой-то момент корни пропадают. Вот эту границу дискриминант и ловит.</p>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Покрути сам · интерактив</p>
+    <h2>D и парабола — это одно и то же</h2>
+    <p>Двигай ползунки <span class="math">a</span>, <span class="math">b</span>, <span class="math">c</span> и смотри: корни уравнения — это точки, где парабола пересекает ось. Дискриминант заранее говорит, сколько таких точек будет.</p>
+    <div class="para">
+      <canvas id="parabola" width="640" height="360" aria-label="Интерактивная парабола"></canvas>
+      <div id="paraVerdict" class="para-verdict">D = 25 &gt; 0 · два корня</div>
+      <div class="sliders">
+        <label>a <span id="va" class="sval">1</span><input id="sa" type="range" min="-3" max="3" step="0.1" value="1"></label>
+        <label>b <span id="vb" class="sval">−7</span><input id="sb" type="range" min="-10" max="10" step="0.5" value="-7"></label>
+        <label>c <span id="vc" class="sval">3</span><input id="sc" type="range" min="-10" max="10" step="0.5" value="3"></label>
+      </div>
+      <p class="para-eq"><span id="paraFormula">y = x² − 7x + 3</span></p>
+    </div>
+    <p style="font-size:.9rem;color:var(--muted)">Поймай момент, когда парабола только касается оси — это и есть <span class="math">D = 0</span>, граница между «два корня» и «ни одного». (При <span class="math">a = 0</span> это уже не парабola, а прямая — потому дискриминант и требует <span class="math">a ≠ 0</span>.)</p>
+  </section>
+
+  <section>
+    <p class="kicker">Разбираем вместе</p>
+    <h2>Эталонный пример</h2>
+    <div class="worked">
+      <p class="task">2x² − 7x + 3 = 0 &nbsp;→&nbsp; сколько корней?</p>
+      <ol class="steps">
+        <li>Выписываем коэффициенты со знаками: <span class="m">a = 2, b = −7, c = 3</span>.</li>
+        <li>Возводим b в квадрат: <span class="m">(−7)² = 49</span>. Квадрат минуса — плюс, поэтому 49, а не −49.</li>
+        <li>Считаем 4ac: <span class="m">4 · 2 · 3 = 24</span>.</li>
+        <li>Дискриминант: <span class="m">D = 49 − 24 = 25</span>.</li>
+      </ol>
+      <div class="verdict">D = 25 &gt; 0 → у уравнения два корня.</div>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Теперь ты · нажми, чтобы проверить</p>
+    <h2>Мини-практика</h2>
+    <div class="drill">
+      <details>
+        <summary><span class="q">x² − 5x + 6 = 0</span><span class="tag">применение</span></summary>
+        <div class="ans"><span class="m">a=1, b=−5, c=6; &nbsp;D = 25 − 24 = 1 &gt; 0</span> → <strong>два корня.</strong></div>
+      </details>
+      <details>
+        <summary><span class="q">4x² + 4x + 1 = 0</span><span class="tag">применение</span></summary>
+        <div class="ans"><span class="m">a=4, b=4, c=1; &nbsp;D = 16 − 16 = 0</span> → <strong>один корень.</strong></div>
+      </details>
+      <details>
+        <summary><span class="q">x² + x + 1 = 0</span><span class="tag">применение</span></summary>
+        <div class="ans"><span class="m">a=1, b=1, c=1; &nbsp;D = 1 − 4 = −3 &lt; 0</span> → <strong>корней нет.</strong></div>
+      </details>
+      <details>
+        <summary><span class="q">Найди ошибку: x² − 3x − 4 = 0</span><span class="tag">анализ</span></summary>
+        <div class="ans">Ученик написал <span class="m">D = (−3)² − 4·1·(−4) = 9 − 16 = −7</span>. Ошибка в знаке: <span class="m">−4·1·(−4) = +16</span>, значит <span class="m">D = 9 + 16 = 25</span> → <strong>два корня.</strong></div>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Тренажёр · бесконечная практика</p>
+    <h2>Реши квадратное уравнение сам</h2>
+    <p>Нажми «Новое уравнение» и реши его через дискриминант. Введи корни через <b>точку с запятой</b> (дробные — с точкой), или напиши «нет», если корней нет. Потом проверь себя или посмотри пошаговое решение.</p>
+    <div class="trainer">
+      <div class="tr-eq" id="trEq">2x² − 7x + 3 = 0</div>
+      <div class="tr-ctl">
+        <button id="trNew" type="button">🎲 Новое уравнение</button>
+        <input id="trAns" type="text" placeholder="напр.  3; 0.5   или   нет" aria-label="Ответ">
+        <button id="trCheck" type="button" class="sec">Проверить</button>
+        <button id="trShow" type="button" class="ghost">Показать решение</button>
+      </div>
+      <div id="trResult" class="tr-result"></div>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Где чаще всего ошибаются</p>
+    <h2>Лови эти три ловушки</h2>
+    <ul class="pitfalls">
+      <li><b>Теряют знак у b.</b> Если <span class="math">b = −7</span>, то <span class="math">b² = 49</span>, а не −49. Квадрат любого числа неотрицателен.</li>
+      <li><b>Думают, что при D = 0 корней нет.</b> При <span class="math">D = 0</span> корень <em>есть</em> — один. «Ноль корней» — это только при <span class="math">D &lt; 0</span>.</li>
+      <li><b>Забывают возвести b в квадрат.</b> В формуле именно <span class="math">b²</span>, а не <span class="math">b</span>. Проверяй, что у b стоит степень.</li>
+    </ul>
+  </section>
+
+  <section>
+    <div class="next">
+      <h2>Что дальше</h2>
+      <p>Дискриминант — это половина пути. Когда знаем, что корни есть, находим их по формуле:</p>
+      <div class="eq">x = (−b ± √D) / (2a)</div>
+      <p>Тот же D, только теперь из-под корня — и знак ± даёт сразу два корня.</p>
+    </div>
+  </section>
+
+  <p class="foot">Проверка на выходе: запиши формулу D по памяти · сколько корней при D = 0? · назови a, b, c в 2x² − x − 6 = 0.</p>
+
+</div>
+
+<style>
+  .para{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.1rem 1.1rem 1rem;margin:1rem 0}
+  .para canvas{width:100%;height:auto;display:block;border-radius:10px;background:#FCFDFF}
+  .para-verdict{text-align:center;font-weight:700;font-size:1.05rem;margin:.8rem 0 0;padding:.5rem;border-radius:9px;font-family:ui-monospace,Menlo,monospace}
+  .para-verdict.pos{background:var(--pos-bg);color:var(--pos)}
+  .para-verdict.zero{background:var(--zero-bg);color:var(--zero)}
+  .para-verdict.neg{background:var(--neg-bg);color:var(--neg)}
+  .para-verdict.lin{background:var(--accent-soft);color:var(--accent)}
+  .sliders{display:grid;gap:.6rem;margin-top:.9rem}
+  @media(min-width:520px){.sliders{grid-template-columns:repeat(3,1fr)}}
+  .sliders label{display:flex;align-items:center;gap:.5rem;font-weight:700;font-family:ui-monospace,Menlo,monospace}
+  .sliders input[type=range]{flex:1;accent-color:var(--accent)}
+  .sliders .sval{min-width:2.6ch;text-align:right;color:var(--accent);font-variant-numeric:tabular-nums}
+  .para-eq{text-align:center;font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.1rem;margin:.9rem 0 0;color:var(--ink)}
+</style>
+
+<script>
+(function(){
+  var canvas=document.getElementById('parabola'); if(!canvas) return;
+  var ctx=canvas.getContext('2d');
+  var sa=document.getElementById('sa'), sb=document.getElementById('sb'), sc=document.getElementById('sc');
+  var va=document.getElementById('va'), vb=document.getElementById('vb'), vc=document.getElementById('vc');
+  var verdict=document.getElementById('paraVerdict'), formula=document.getElementById('paraFormula');
+  var W=640,H=360,dpr=1;
+  var RANGE=10; // ось x от -10 до 10
+
+  function fmt(n){ n=Math.round(n*10)/10; return (n<0?'−':'')+Math.abs(n); }
+  function term(coef,tail){ // для формулы
+    if(Math.abs(coef)<0.05) return '';
+    var s=(coef<0?' − ':' + ')+ (Math.abs(coef)===1&&tail!==''?'':fmtAbs(Math.abs(coef)))+tail;
+    return s;
+  }
+  function fmtAbs(n){ n=Math.round(n*10)/10; return ''+n; }
+
+  function resize(){
+    var cssW=canvas.clientWidth||640; dpr=Math.min(window.devicePixelRatio||1,2);
+    W=cssW; H=Math.round(cssW*0.56);
+    canvas.width=W*dpr; canvas.height=H*dpr; canvas.style.height=H+'px';
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+  }
+
+  function X(x){ return W/2 + x*(W/(2*RANGE)); }
+  function Y(y){ var yr=RANGE*(H/W); return H/2 - y*(H/(2*yr)); }
+
+  function draw(){
+    var a=parseFloat(sa.value), b=parseFloat(sb.value), c=parseFloat(sc.value);
+    va.textContent=fmt(a); vb.textContent=fmt(b); vc.textContent=fmt(c);
+    ctx.clearRect(0,0,W,H);
+    // сетка
+    ctx.strokeStyle='#EDEFF4'; ctx.lineWidth=1;
+    for(var gx=-RANGE;gx<=RANGE;gx++){ ctx.beginPath(); ctx.moveTo(X(gx),0); ctx.lineTo(X(gx),H); ctx.stroke(); }
+    var yr=Math.round(RANGE*(H/W));
+    for(var gy=-yr;gy<=yr;gy++){ ctx.beginPath(); ctx.moveTo(0,Y(gy)); ctx.lineTo(W,Y(gy)); ctx.stroke(); }
+    // оси
+    ctx.strokeStyle='#9AA3B2'; ctx.lineWidth=1.5;
+    ctx.beginPath(); ctx.moveTo(0,Y(0)); ctx.lineTo(W,Y(0)); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(X(0),0); ctx.lineTo(X(0),H); ctx.stroke();
+
+    var D=b*b-4*a*c, isLin=Math.abs(a)<0.05;
+    var col = isLin ? getCSS('--accent') : (D>0.001?getCSS('--pos'):(D<-0.001?getCSS('--neg'):getCSS('--zero')));
+
+    // кривая
+    ctx.strokeStyle=col; ctx.lineWidth=3; ctx.beginPath();
+    var first=true;
+    for(var px=0;px<=W;px+=2){
+      var x=(px-W/2)/(W/(2*RANGE));
+      var y=a*x*x+b*x+c;
+      var py=Y(y);
+      if(first){ ctx.moveTo(px,py); first=false; } else ctx.lineTo(px,py);
+    }
+    ctx.stroke();
+
+    // корни (точки на оси x)
+    if(!isLin && D>=-0.001){
+      var sq=Math.sqrt(Math.max(D,0));
+      var roots = D<0.001 ? [-b/(2*a)] : [(-b-sq)/(2*a),(-b+sq)/(2*a)];
+      roots.forEach(function(r){
+        ctx.fillStyle=col; ctx.beginPath(); ctx.arc(X(r),Y(0),6,0,7); ctx.fill();
+        ctx.fillStyle='#fff'; ctx.beginPath(); ctx.arc(X(r),Y(0),2.4,0,7); ctx.fill();
+      });
+    }
+
+    // формула
+    var f='y = ';
+    if(isLin){ f += (Math.abs(b)<0.05?'':fmt(b).replace('−','-')+'x'); }
+    else { f += (a===1?'':(a===-1?'−':fmt(a).replace('−','-')))+'x²'; }
+    // b-член
+    if(!isLin && Math.abs(b)>=0.05){ f += (b<0?' − ':' + ')+(Math.abs(b)===1?'':fmtAbs(Math.abs(b)))+'x'; }
+    if(Math.abs(c)>=0.05){ f += (c<0?' − ':' + ')+fmtAbs(Math.abs(c)); }
+    formula.textContent=f;
+
+    // вердикт
+    verdict.className='para-verdict';
+    if(isLin){ verdict.classList.add('lin'); verdict.textContent='a = 0 · это прямая, не парабола'; }
+    else if(D>0.001){ verdict.classList.add('pos'); verdict.textContent='D = '+fmtAbs(D)+' > 0 · два корня'; }
+    else if(D<-0.001){ verdict.classList.add('neg'); verdict.textContent='D = '+fmt(D)+' < 0 · нет корней'; }
+    else { verdict.classList.add('zero'); verdict.textContent='D = 0 · один корень (касание)'; }
+  }
+
+  function getCSS(v){ return getComputedStyle(document.documentElement).getPropertyValue(v).trim()||'#3B4FD0'; }
+
+  [sa,sb,sc].forEach(function(s){ s.addEventListener('input',draw); });
+  window.addEventListener('resize',function(){ resize(); draw(); });
+  resize(); draw();
+})();
+</script>
+
+<style>
+  .trainer{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.2rem 1.3rem;margin-top:1rem}
+  .tr-eq{font-family:ui-monospace,Menlo,monospace;font-weight:800;font-size:clamp(1.3rem,5vw,1.7rem);text-align:center;padding:1rem;background:var(--accent-soft);border-radius:10px;color:var(--ink)}
+  .tr-ctl{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.9rem;align-items:center}
+  .tr-ctl button{font:inherit;font-weight:700;font-size:.9rem;cursor:pointer;border:none;border-radius:9px;padding:.55rem .95rem;color:#fff;background:var(--accent)}
+  .tr-ctl button.sec{background:var(--pos)}
+  .tr-ctl button.ghost{background:transparent;color:var(--accent);border:1px solid var(--accent)}
+  .tr-ctl input{flex:1;min-width:150px;font:inherit;padding:.5rem .7rem;border:1px solid var(--line);border-radius:9px;background:#fff;color:var(--ink)}
+  .tr-ctl button:focus-visible,.tr-ctl input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+  .tr-result{margin-top:.9rem;font-size:.96rem;min-height:1.2rem}
+  .tr-result .ok{color:var(--pos);font-weight:700}
+  .tr-result .bad{color:var(--neg);font-weight:700}
+  .tr-result .sol{margin-top:.7rem;padding:.85rem 1rem;background:#FCFBFE;border:1px solid var(--line);border-radius:10px;font-family:ui-monospace,Menlo,monospace;font-size:.9rem;line-height:1.8}
+  .tr-result .sol b{color:var(--accent)}
+</style>
+
+<script>
+(function(){
+  var eqEl=document.getElementById('trEq'), ansEl=document.getElementById('trAns'), resEl=document.getElementById('trResult');
+  if(!eqEl) return;
+  var cur={a:2,b:-7,c:3};
+  function ri(min,max){ return Math.floor(Math.random()*(max-min+1))+min; }
+  function fmtNum(x){ var n=Math.round(x*100)/100; if(n===0)n=0; return (n<0?'−':'')+Math.abs(n); }
+
+  function fmtEq(q){
+    var s = (q.a===1?'':(q.a===-1?'−':q.a))+'x²';
+    if(q.b!==0) s += (q.b<0?' − ':' + ')+(Math.abs(q.b)===1?'':Math.abs(q.b))+'x';
+    if(q.c!==0) s += (q.c<0?' − ':' + ')+Math.abs(q.c);
+    return s+' = 0';
+  }
+  function solve(q){
+    var D=q.b*q.b-4*q.a*q.c;
+    if(D>0){ var s=Math.sqrt(D); return {D:D,n:2,roots:[(-q.b-s)/(2*q.a),(-q.b+s)/(2*q.a)]}; }
+    if(D===0){ return {D:0,n:1,roots:[-q.b/(2*q.a)]}; }
+    return {D:D,n:0,roots:[]};
+  }
+  function generate(){
+    if(Math.random()<0.72){
+      var a=ri(1,3), x1=ri(-6,6), x2=ri(-6,6);
+      cur={a:a, b:-a*(x1+x2), c:a*x1*x2};
+    } else {
+      var a2,b2,c2,tries=0;
+      do{ a2=ri(1,3); b2=ri(-5,5); c2=ri(1,7); tries++; } while(b2*b2-4*a2*c2>=0 && tries<60);
+      cur={a:a2,b:b2,c:c2};
+    }
+    eqEl.textContent=fmtEq(cur); resEl.innerHTML=''; ansEl.value='';
+  }
+  function solutionHTML(){
+    var q=cur, sol=solve(q), h='<div class="sol">';
+    h+='a = '+q.a+', b = '+fmtNum(q.b)+', c = '+fmtNum(q.c)+'<br>';
+    h+='D = b² − 4ac = ('+fmtNum(q.b)+')² − 4·'+q.a+'·('+fmtNum(q.c)+') = <b>'+sol.D+'</b><br>';
+    if(sol.n===2){ h+='D > 0 → два корня. √D = '+fmtNum(Math.sqrt(sol.D))+'<br>';
+      h+='x₁ = '+fmtNum(sol.roots[0])+',  x₂ = '+fmtNum(sol.roots[1]); }
+    else if(sol.n===1){ h+='D = 0 → один корень.<br>x = −b / (2a) = '+fmtNum(sol.roots[0]); }
+    else { h+='D < 0 → действительных корней нет.'; }
+    return h+'</div>';
+  }
+  function check(){
+    var sol=solve(cur), raw=ansEl.value.trim().toLowerCase();
+    if(!raw){ resEl.innerHTML='<span class="bad">Введи ответ или нажми «Показать решение».</span>'; return; }
+    if(sol.n===0){
+      if(/нет|net|∅|отсут/.test(raw) || raw==='-'){ resEl.innerHTML='<span class="ok">✓ Верно — D < 0, корней нет.</span>'+solutionHTML(); }
+      else{ resEl.innerHTML='<span class="bad">✗ Посчитай D — здесь он отрицательный, значит корней нет.</span>'+solutionHTML(); }
+      return;
+    }
+    var got=raw.split(/[;,]/).map(function(s){return parseFloat(s.replace(',','.'));}).filter(function(x){return !isNaN(x);}).map(function(x){return Math.round(x*100)/100;}).sort(function(a,b){return a-b;});
+    var exp=sol.roots.map(function(x){return Math.round(x*100)/100;}).sort(function(a,b){return a-b;});
+    var ok = got.length===exp.length && exp.every(function(v,i){return Math.abs(v-got[i])<0.02;});
+    if(ok){ resEl.innerHTML='<span class="ok">✓ Верно! Отлично.</span>'+solutionHTML(); }
+    else{
+      var hint = (got.length<exp.length)?' Подсказка: не забудь про знак ± — корней два.':'';
+      resEl.innerHTML='<span class="bad">✗ Пока не то.'+hint+'</span>'+solutionHTML();
+    }
+  }
+  document.getElementById('trNew').addEventListener('click',generate);
+  document.getElementById('trCheck').addEventListener('click',check);
+  document.getElementById('trShow').addEventListener('click',function(){ resEl.innerHTML=solutionHTML(); });
+  ansEl.addEventListener('keydown',function(e){ if(e.key==='Enter') check(); });
+})();
+</script>

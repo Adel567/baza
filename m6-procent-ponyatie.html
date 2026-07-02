@@ -1,0 +1,378 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Процент как сотая часть — математика 6 класс</title>
+<style>
+  :root{
+    --paper:#F7F6FB; --card:#FFFFFF; --ink:#211D2E; --muted:#645D74; --line:#E7E4F0;
+    --brand:#6C4FD8; --brand-soft:#ECE8FB;      /* фиолетовый — процент */
+    --fill:#F2A03D; --fill-soft:#FCEEDB;        /* закрашенная доля */
+    --whole:#EEF0F6;                             /* пустая клетка */
+    --ok:#1E8E5A; --no:#C23B3B;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper)}
+  .page{max-width:720px;margin:0 auto;padding:clamp(1.4rem,4vw,3rem) clamp(1.1rem,4vw,2rem) 4.5rem;
+    color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:17.5px;line-height:1.68;-webkit-font-smoothing:antialiased}
+  .mono{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-variant-numeric:tabular-nums;font-weight:600}
+
+  .hero{border-bottom:3px solid var(--brand);padding-bottom:1.4rem;margin-bottom:1.8rem}
+  .eyebrow{font-size:.74rem;letter-spacing:.15em;text-transform:uppercase;color:var(--brand);font-weight:700;margin:0 0 .55rem}
+  h1{font-size:clamp(1.9rem,6vw,2.8rem);line-height:1.05;margin:0;font-weight:800;letter-spacing:-.02em;text-wrap:balance}
+  .tagline{font-size:1.12rem;color:var(--muted);margin:.85rem 0 0;text-wrap:pretty}
+
+  section{margin-top:2.4rem}
+  h2{font-size:1.5rem;margin:0 0 .3rem;font-weight:780;letter-spacing:-.015em;text-wrap:balance}
+  h2 .em{color:var(--brand)}
+  p{margin:.7rem 0}
+  strong{font-weight:680}
+  .pw{color:var(--brand);font-weight:800} .fw{color:var(--fill);font-weight:800}
+
+  .lead-in{background:var(--brand-soft);border-radius:14px;padding:1.1rem 1.3rem;font-size:1.02rem}
+  .lead-in p{margin:.4rem 0}
+  .lead-in b{color:var(--brand)}
+  .chips{display:flex;flex-wrap:wrap;gap:.45rem;margin:.7rem 0 0}
+  .chips span{background:#fff;border:1px solid var(--line);border-radius:20px;padding:.28rem .8rem;font-size:.9rem;font-weight:600}
+
+  .formula-box{background:var(--ink);color:#fff;border-radius:14px;padding:1.3rem;text-align:center;margin-top:1rem}
+  .formula-box .eq{font-family:ui-monospace,Menlo,monospace;font-size:clamp(1.5rem,6vw,2.1rem);font-weight:700}
+  .formula-box .eq .p{color:#B7A2F5} .formula-box .eq .f{color:#F3B36A}
+  .formula-box .note{font-size:.9rem;color:#B4AEC4;margin:.7rem 0 0}
+
+  .note{border-left:4px solid var(--brand);background:var(--brand-soft);border-radius:0 10px 10px 0;padding:.8rem 1.1rem;margin-top:1rem;font-size:.98rem}
+  .note b{color:var(--brand)}
+
+  .split{display:grid;gap:.9rem;margin-top:1rem}
+  @media(min-width:560px){.split{grid-template-columns:1fr 1fr}}
+  .card2{border:2px solid var(--line);border-radius:16px;padding:1.1rem 1.2rem;background:var(--card)}
+  .card2 h3{margin:.1rem 0 .4rem;font-size:1.08rem;font-weight:800}
+  .card2 .big{font-family:ui-monospace,Menlo,monospace;font-weight:800;font-size:1.5rem;color:var(--brand)}
+  .card2 p{margin:.25rem 0;font-size:.95rem}
+  .card2.o{border-color:#F3D6AE} .card2.o .big{color:var(--fill)}
+
+  /* Визуализация — квадрат 100 клеток */
+  .viz{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:1.2rem;margin-top:1rem}
+  .viz canvas{width:100%;max-width:360px;height:auto;display:block;margin:0 auto;border-radius:8px}
+  .viz .row{display:flex;align-items:center;gap:.6rem;margin-top:1rem;font-family:ui-monospace,Menlo,monospace;font-weight:700}
+  .viz input[type=range]{flex:1;accent-color:var(--brand)}
+  .viz .pval{min-width:4.2ch;text-align:right;color:var(--brand)}
+  .presets{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:.8rem;justify-content:center}
+  .presets button{font:inherit;font-weight:700;font-size:.85rem;cursor:pointer;border:1px solid var(--line);background:var(--paper);color:var(--ink);border-radius:20px;padding:.35rem .85rem}
+  .presets button:hover{border-color:var(--brand);color:var(--brand)}
+  .viz .readout{text-align:center;font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.12rem;margin:1rem 0 0}
+  .viz .readout .p{color:var(--brand)} .viz .readout .f{color:var(--fill)}
+  .viz .cap{text-align:center;font-size:.88rem;color:var(--muted);margin:.5rem 0 0}
+
+  .walk{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.15rem 1.3rem;margin-top:1rem}
+  .walk .q{font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.02rem;margin:0 0 .9rem;padding-bottom:.7rem;border-bottom:1px solid var(--line)}
+  .walk ol{margin:0;padding-left:1.2rem;display:flex;flex-direction:column;gap:.55rem}
+  .walk li{font-size:.96rem}
+  .walk b{font-weight:700}
+  .walk .why{color:var(--muted);font-size:.9rem}
+  .verdict{margin-top:1rem;padding:.7rem 1rem;background:var(--brand-soft);border-radius:10px;font-weight:650;color:var(--brand);font-family:ui-monospace,Menlo,monospace}
+
+  /* Тренажёр */
+  .trainer{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.2rem 1.3rem;margin-top:1rem}
+  .tabs{display:flex;gap:.4rem;margin-bottom:.9rem;flex-wrap:wrap}
+  .tabs button{font:inherit;font-weight:700;font-size:.82rem;cursor:pointer;border:1px solid var(--line);background:var(--paper);color:var(--muted);border-radius:20px;padding:.35rem .85rem}
+  .tabs button.on{background:var(--brand);color:#fff;border-color:var(--brand)}
+  .tr-task{font-family:ui-monospace,Menlo,monospace;font-weight:800;font-size:clamp(1.05rem,4.5vw,1.35rem);text-align:center;padding:1rem;background:var(--brand-soft);border-radius:10px;color:var(--ink)}
+  .tr-ctl{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.9rem;align-items:center}
+  .tr-ctl button{font:inherit;font-weight:700;font-size:.9rem;cursor:pointer;border:none;border-radius:9px;padding:.55rem .95rem;color:#fff;background:var(--brand)}
+  .tr-ctl button.sec{background:var(--fill)}
+  .tr-ctl button.ghost{background:transparent;color:var(--brand);border:1px solid var(--brand)}
+  .tr-ctl input{flex:1;min-width:130px;font:inherit;padding:.5rem .7rem;border:1px solid var(--line);border-radius:9px;background:#fff;color:var(--ink)}
+  .tr-ctl button:focus-visible,.tr-ctl input:focus-visible{outline:3px solid var(--brand);outline-offset:2px}
+  .tr-result{margin-top:.9rem;font-size:.96rem;min-height:1.2rem}
+  .tr-result .ok{color:var(--ok);font-weight:700} .tr-result .bad{color:var(--no);font-weight:700}
+  .tr-result .sol{margin-top:.6rem;padding:.8rem 1rem;background:#FCFBFF;border:1px solid var(--line);border-radius:10px;font-family:ui-monospace,Menlo,monospace;font-size:.9rem;line-height:1.85}
+
+  details{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:.9rem 1.1rem;margin-top:.7rem}
+  details[open]{border-color:var(--brand)}
+  summary{cursor:pointer;font-weight:650;list-style:none;display:flex;justify-content:space-between;gap:1rem;align-items:center}
+  summary::-webkit-details-marker{display:none}
+  summary::after{content:"ответ";font-size:.8rem;color:var(--brand);font-weight:700;white-space:nowrap}
+  details[open] summary::after{content:"скрыть"}
+  .ans{margin-top:.75rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.96rem;color:var(--muted)}
+  .ans b{color:var(--ink)}
+  .drill{display:flex;flex-direction:column;gap:.2rem;margin-top:1rem}
+
+  ul.traps{list-style:none;margin:1rem 0 0;padding:0;display:flex;flex-direction:column;gap:.7rem}
+  ul.traps li{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:.85rem 1.05rem;padding-left:2.5rem;position:relative;font-size:.97rem}
+  ul.traps li::before{content:"⚠";position:absolute;left:1rem;top:.85rem;color:var(--fill)}
+  ul.traps b{font-weight:700}
+
+  .wrapup{background:var(--brand);color:#fff;border-radius:16px;padding:1.4rem 1.5rem;margin-top:2.4rem}
+  .wrapup h2{color:#fff;margin:0 0 .5rem}
+  .wrapup p{color:#E7E1FA;margin:.4rem 0;font-size:1rem}
+  .wrapup .big-rule{font-size:1.12rem;font-weight:700;color:#fff;margin:.6rem 0;font-family:ui-monospace,Menlo,monospace}
+  .wrapup .next{font-size:.95rem;color:#D6CCF5;margin-top:1rem;padding-top:1rem;border-top:1px solid rgba(255,255,255,.25)}
+  .wrapup .next b{color:#fff}
+
+  .presets button:focus-visible,.tabs button:focus-visible,.viz input[type=range]:focus-visible,summary:focus-visible{outline:3px solid var(--brand);outline-offset:2px;border-radius:8px}
+
+  @media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+<div class="page">
+
+  <header class="hero">
+    <p class="eyebrow">Математика · 6 класс · проценты</p>
+    <h1>Процент — это сотая часть</h1>
+    <p class="tagline">Скидка 30%, заряд 80%, кэшбэк 5%. Один значок «%» — и любые части становятся сравнимыми. Разберёмся, что он на самом деле означает.</p>
+  </header>
+
+  <div class="lead-in">
+    <p><b>Где встречается.</b> Проценты повсюду: «скидка 30%», «батарея заряжена на 80%», «налог 13%», «кэшбэк 5%», «успеваемость 95%».</p>
+    <p>Зачем они нужны? Чтобы <b>сравнивать части в едином масштабе</b>. Вместо разных дробей все договорились мерить части в сотых долях — тогда любые величины легко ставить рядом.</p>
+    <div class="chips"><span>скидка 30%</span><span>заряд 80%</span><span>налог 13%</span><span>кэшбэк 5%</span></div>
+  </div>
+
+  <section>
+    <h2>Суть простыми словами</h2>
+    <p>Возьми <strong>что угодно</strong> целиком — рубль, метр, торт, класс из учеников — и раздели на <strong>100 равных частей</strong>. Одна такая часть и есть <span class="pw">один процент</span>.</p>
+    <p>Значит, запись «25%» — это <strong>25 частей из 100</strong>. Это не какое-то новое число «с потолка», а просто другой способ записать дробь со знаменателем 100. Поэтому <strong>всё целое — это всегда 100%</strong>.</p>
+    <div class="note"><p><b>Развеем миф.</b> Многие думают, что «100% — это максимум, больше не бывает». Бывает! 100% — это просто всё целое. А цена может вырасти и на 150% (это полтора целого) — и это нормально.</p></div>
+  </section>
+
+  <section>
+    <h2>Правило и формула</h2>
+    <p>Знак процента — это <span class="mono">%</span>, и он всегда читается как «сотых частей целого». Главное равенство:</p>
+    <div class="formula-box">
+      <div class="eq">1<span class="f">%</span> = <span class="p">1/100</span> = 0,01</div>
+      <div class="note">один процент — это одна сотая</div>
+    </div>
+    <div class="split">
+      <div class="card2">
+        <h3>Из процентов → в дробь</h3>
+        <div class="big">p% = p/100</div>
+        <p>Число процентов <strong>делим на 100</strong>.</p>
+        <p class="mono">7% = 7/100 = 0,07</p>
+      </div>
+      <div class="card2 o">
+        <h3>Из дроби → в проценты</h3>
+        <div class="big">0,4 = 40%</div>
+        <p>Десятичную дробь <strong>умножаем на 100</strong> и приписываем «%».</p>
+        <p class="mono">0,4 · 100 = 40 → 40%</p>
+      </div>
+    </div>
+    <div class="note"><p><b>Ориентиры, которые стоит помнить наизусть:</b> половина = 50%, четверть = 25%, пятая часть = 20%, десятая = 10%, всё целое = 100%.</p></div>
+  </section>
+
+  <section>
+    <h2>Разбор по шагам <span class="em">«думаю вслух»</span></h2>
+    <p>Переведём <span class="mono">35%</span> в десятичную дробь.</p>
+    <div class="walk">
+      <p class="q">35% = ?</p>
+      <ol>
+        <li>По определению <span class="mono">35% = 35/100</span>. <span class="why">Почему: процент — это сотые, значит знаменатель 100.</span></li>
+        <li><span class="mono">35/100 = 0,35</span>. <span class="why">Почему: деление на 100 сдвигает запятую на два знака влево.</span></li>
+      </ol>
+      <div class="verdict">Ответ: 35% = 0,35</div>
+    </div>
+    <p>А теперь обратно — переведём <span class="mono">0,6</span> в проценты.</p>
+    <div class="walk">
+      <p class="q">0,6 = ? %</p>
+      <ol>
+        <li>Умножаем на 100: <span class="mono">0,6 · 100 = 60</span>. <span class="why">Почему: умножение на 100 сдвигает запятую на два знака вправо.</span></li>
+        <li>Приписываем знак процента: <span class="mono">0,6 = 60%</span>.</li>
+      </ol>
+      <div class="verdict">Ответ: 0,6 = 60%</div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Посмотри <span class="em">своими глазами</span></h2>
+    <p>Большой квадрат — это <strong>целое = 100%</strong>. В нём ровно <strong>100 клеток</strong>, и одна клетка — это <span class="fw">1%</span>. Двигай ползунок и смотри, какую долю целого закрашивает процент.</p>
+    <div class="viz">
+      <canvas id="grid" width="360" height="360" aria-label="Квадрат из 100 клеток: закрашенные клетки показывают процент"></canvas>
+      <div class="row"><span class="pval" id="pval">25%</span><input id="slider" type="range" min="0" max="100" step="1" value="25" aria-label="Процент"></div>
+      <div class="presets">
+        <button type="button" data-p="1">1%</button>
+        <button type="button" data-p="10">10%</button>
+        <button type="button" data-p="20">20%</button>
+        <button type="button" data-p="25">25%</button>
+        <button type="button" data-p="50">50%</button>
+        <button type="button" data-p="100">100%</button>
+      </div>
+      <p class="readout" id="readout"></p>
+      <p class="cap" id="cap"></p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Тренажёр · переводи сколько хочешь</h2>
+    <p>Выбери направление перевода, нажми «Новое», реши в уме и проверь себя. Дробь пиши через запятую или точку.</p>
+    <div class="trainer">
+      <div class="tabs">
+        <button id="tabDec" class="on" type="button">% → дробь</button>
+        <button id="tabPct" type="button">дробь → %</button>
+      </div>
+      <div class="tr-task" id="trTask">35% = ? (десятичной дробью)</div>
+      <div class="tr-ctl">
+        <button id="trNew" type="button">🎲 Новое</button>
+        <input id="trAns" type="text" placeholder="твой ответ" aria-label="Ответ">
+        <button id="trCheck" type="button" class="sec">Проверить</button>
+        <button id="trShow" type="button" class="ghost">Решение</button>
+      </div>
+      <div id="trResult" class="tr-result"></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Проверь себя</h2>
+    <div class="drill">
+      <details><summary>1) Прочитай запись «12%»: сколько это сотых частей? Сколько процентов во всём целом?</summary>
+        <div class="ans">12% — это <b>двенадцать сотых</b> частей. Всё целое — это <b>100%</b>.</div></details>
+      <details><summary>2) Запиши десятичной дробью: 50%, 25%, 4%, 100%.</summary>
+        <div class="ans"><span class="mono">50% = 0,5</span> · <span class="mono">25% = 0,25</span> · <span class="mono">4% = 0,04</span> · <span class="mono">100% = 1</span>.</div></details>
+      <details><summary>3) Чему равно 1% в виде десятичной дроби — 0,1 или 0,01? Почему?</summary>
+        <div class="ans"><b>0,01</b>. Процент — это деление на <b>100</b> (сотая часть), а 0,1 — это десятая, то есть 10%.</div></details>
+      <details><summary>4) Анализ: что изменится, если в «8%» убрать знак процента и оставить «8»? Во сколько раз отличаются?</summary>
+        <div class="ans"><span class="mono">8% = 0,08</span>, а просто <span class="mono">8 = 800%</span>. Отличаются в <b>100 раз</b> (знак «%» и есть деление на 100).</div></details>
+      <details><summary>5) Найди ошибку: ученик написал «3% = 0,3». В чём он неправ?</summary>
+        <div class="ans">Он поделил на 10 вместо 100. Правильно <span class="mono">3% = 3/100 = <b>0,03</b></span>.</div></details>
+    </div>
+  </section>
+
+  <section>
+    <h2>Ловушки</h2>
+    <ul class="traps">
+      <li><b>«1% = 0,1».</b> Самая частая ошибка — путают сотую с десятой. Процент — это деление на <b>100</b>, а не на 10: <span class="mono">1% = 0,01</span>. Проговаривай «сотая»; помни, что 0,1 — это 10%.</li>
+      <li><b>Не переводят процент в дробь перед счётом.</b> Нельзя брать «25% от числа», умножая прямо на 25 — сначала <span class="mono">25% = 0,25</span>. Увидел «%» — мысленно подели на 100.</li>
+      <li><b>Путают проценты с долями без приведения к 100.</b> «Съел 1 кусок из 4 — значит 1%». Нет: <span class="mono">1/4 = 25/100 = 25%</span>. Доля становится процентом только после приведения целого к 100 частям.</li>
+      <li><b>«Больше 100% не бывает».</b> Бывает: <span class="mono">150%</span> — это полтора целого.</li>
+    </ul>
+  </section>
+
+  <div class="wrapup">
+    <h2>Запомни главное</h2>
+    <p class="big-rule">1% = 1/100 = 0,01</p>
+    <p>Процент — это <strong style="color:#fff">сотая часть целого</strong>. Поэтому перевод — это просто деление на 100 (из % в дробь) или умножение на 100 (из дроби в %). Всё целое — это 100%.</p>
+    <p class="next">👉 Дальше — <b>три типа задач на проценты</b>: найти процент от числа, найти число по его проценту и узнать, сколько процентов одно число составляет от другого.</p>
+  </div>
+
+</div>
+
+<script>
+/* Визуализация: квадрат 10×10 = 100 клеток */
+(function(){
+  var canvas=document.getElementById('grid'); if(!canvas) return;
+  var ctx=canvas.getContext('2d');
+  var slider=document.getElementById('slider'), pval=document.getElementById('pval');
+  var readout=document.getElementById('readout'), cap=document.getElementById('cap');
+  var N=10, SIZE=360, dpr=1;
+  function css(v){ return getComputedStyle(document.documentElement).getPropertyValue(v).trim(); }
+  function setup(){
+    dpr=Math.min(window.devicePixelRatio||1,2);
+    canvas.width=SIZE*dpr; canvas.height=SIZE*dpr;
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+  }
+  function fmtDec(p){
+    var s=(p/100).toFixed(2);
+    if(s.indexOf('.')>=0) s=s.replace(/0+$/,'').replace(/\.$/,'');
+    return s.replace('.',',');
+  }
+  function draw(p){
+    var pad=6, gap=3, avail=SIZE-pad*2;
+    var cell=(avail-gap*(N-1))/N;
+    ctx.clearRect(0,0,SIZE,SIZE);
+    var fillC=css('--fill'), emptyC=css('--whole');
+    for(var i=0;i<100;i++){
+      // заполняем снизу вверх, слева направо (как «наливаем» долю)
+      var row=N-1-Math.floor(i/N), col=i%N;
+      var idx=i; // порядковый номер закрашивания
+      var x=pad+col*(cell+gap), y=pad+row*(cell+gap);
+      ctx.fillStyle = (idx<p) ? fillC : emptyC;
+      roundRect(x,y,cell,cell,3); ctx.fill();
+    }
+    // рамка целого
+    ctx.strokeStyle=css('--brand'); ctx.lineWidth=2;
+    roundRect(pad-2,pad-2,avail+4,avail+4,6); ctx.stroke();
+    pval.textContent=p+'%';
+    readout.innerHTML='<span class="p">'+p+'%</span> = '+p+'/100 = <span class="f">'+fmtDec(p)+'</span>';
+    cap.textContent = p+' клеток из 100 закрашено' + (p===0?'' : (p===100?' — это всё целое':''));
+  }
+  function roundRect(x,y,w,h,r){
+    if(w<0)w=0; if(h<0)h=0; var rr=Math.min(r,w/2,h/2);
+    ctx.beginPath();
+    ctx.moveTo(x+rr,y);
+    ctx.arcTo(x+w,y,x+w,y+h,rr);
+    ctx.arcTo(x+w,y+h,x,y+h,rr);
+    ctx.arcTo(x,y+h,x,y,rr);
+    ctx.arcTo(x,y,x+w,y,rr);
+    ctx.closePath();
+  }
+  slider.addEventListener('input',function(){ draw(parseInt(slider.value,10)); });
+  Array.prototype.forEach.call(document.querySelectorAll('.presets button'),function(b){
+    b.addEventListener('click',function(){ slider.value=b.getAttribute('data-p'); draw(parseInt(slider.value,10)); });
+  });
+  setup(); draw(25);
+})();
+</script>
+
+<script>
+/* Тренажёр: перевод % ↔ десятичная дробь */
+(function(){
+  var taskEl=document.getElementById('trTask'), ansEl=document.getElementById('trAns'), resEl=document.getElementById('trResult');
+  if(!taskEl) return;
+  var tabDec=document.getElementById('tabDec'), tabPct=document.getElementById('tabPct');
+  var mode='dec', cur={p:35};
+  function ri(min,max){ return Math.floor(Math.random()*(max-min+1))+min; }
+  function genP(){
+    var r=Math.random();
+    if(r<0.18) return ri(1,9);            // однозначные: 5% = 0,05
+    if(r<0.72) return ri(1,99);           // основной диапазон
+    if(r<0.88) return ri(2,20)*5;         // круглые, вкл. 100
+    return ri(11,20)*10;                  // краевой случай: больше 100%
+  }
+  function fmtDec(p){
+    var s=(p/100).toFixed(2);
+    if(s.indexOf('.')>=0) s=s.replace(/0+$/,'').replace(/\.$/,'');
+    return s.replace('.',',');
+  }
+  function generate(){
+    cur={p:genP()};
+    if(mode==='dec') taskEl.textContent = cur.p+'% = ?  (десятичной дробью)';
+    else taskEl.textContent = fmtDec(cur.p)+' = ?  (в процентах)';
+    resEl.innerHTML=''; ansEl.value=''; ansEl.focus();
+  }
+  function solHTML(){
+    var p=cur.p, h='<div class="sol">';
+    if(mode==='dec'){
+      h+=p+'% = '+p+'/100<br>';
+      h+='делим на 100 (запятая на 2 знака влево)<br>';
+      h+=p+'% = <b>'+fmtDec(p)+'</b>';
+    } else {
+      h+=fmtDec(p)+' · 100 = '+p+'<br>';
+      h+='приписываем знак процента<br>';
+      h+=fmtDec(p)+' = <b>'+p+'%</b>';
+    }
+    return h+'</div>';
+  }
+  function check(){
+    var raw=ansEl.value.trim().toLowerCase().replace('%','').replace(',','.');
+    if(raw===''){ resEl.innerHTML='<span class="bad">Введи ответ или нажми «Решение».</span>'; return; }
+    var got=parseFloat(raw);
+    if(isNaN(got)){ resEl.innerHTML='<span class="bad">Это не похоже на число. Попробуй ещё.</span>'; return; }
+    var right = mode==='dec' ? cur.p/100 : cur.p;
+    var eps = mode==='dec' ? 0.0001 : 0.001;
+    if(Math.abs(got-right)<eps){ resEl.innerHTML='<span class="ok">✓ Верно!</span>'+solHTML(); }
+    else { resEl.innerHTML='<span class="bad">✗ Пока не то — посмотри решение.</span>'+solHTML(); }
+  }
+  function setMode(m){
+    mode=m;
+    tabDec.className = m==='dec'?'on':'';
+    tabPct.className = m==='pct'?'on':'';
+    generate();
+  }
+  tabDec.addEventListener('click',function(){ setMode('dec'); });
+  tabPct.addEventListener('click',function(){ setMode('pct'); });
+  document.getElementById('trNew').addEventListener('click',generate);
+  document.getElementById('trCheck').addEventListener('click',check);
+  document.getElementById('trShow').addEventListener('click',function(){ resEl.innerHTML=solHTML(); });
+  ansEl.addEventListener('keydown',function(e){ if(e.key==='Enter') check(); });
+  // старт
+  taskEl.textContent='35% = ?  (десятичной дробью)';
+})();
+</script>
