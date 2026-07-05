@@ -1,0 +1,497 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Дробно-рациональные уравнения — урок, алгебра 8 класс</title>
+<style>
+  :root{
+    --paper:#F6F7F9;
+    --card:#FFFFFF;
+    --ink:#1B2333;
+    --muted:#5A6478;
+    --line:#E2E5EC;
+    --accent:#3B4FD0;
+    --accent-soft:#EAEDFB;
+    --ok:#1E8E5A;      /* корень годится */
+    --ok-bg:#E7F4EC;
+    --bad:#C0455B;     /* посторонний / запрещено */
+    --bad-bg:#F9E9EC;
+    --warn:#B9791A;
+    --warn-bg:#FBF1DC;
+  }
+  *{box-sizing:border-box}
+  body{margin:0}
+  .wrap{
+    max-width:760px;
+    margin:0 auto;
+    padding:clamp(1.4rem,4vw,3rem) clamp(1.1rem,4vw,2rem) 4rem;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    font-size:17px;
+    line-height:1.62;
+    -webkit-font-smoothing:antialiased;
+  }
+  .eyebrow{font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);font-weight:600;margin:0 0 .5rem}
+  h1{
+    font-family:Georgia,"Times New Roman",serif;
+    font-size:clamp(2rem,6.5vw,2.9rem);
+    line-height:1.05;margin:0;font-weight:700;letter-spacing:-.01em;text-wrap:balance;
+  }
+  .lede{font-size:1.08rem;color:var(--muted);margin:.7rem 0 0;max-width:60ch;text-wrap:pretty}
+  h2{font-family:Georgia,serif;font-size:1.32rem;font-weight:700;margin:0 0 .1rem;letter-spacing:-.005em}
+  section{margin-top:2.6rem}
+  .kicker{
+    font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:600;
+    margin:0 0 .8rem;display:flex;align-items:center;gap:.6rem;
+  }
+  .kicker::before{content:"";width:1.4rem;height:2px;background:var(--accent);border-radius:2px}
+  p{margin:.65rem 0}
+  strong{font-weight:650}
+  em{font-style:italic}
+  .math{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-weight:600}
+  sup{font-size:.72em}
+
+  /* CSS-дробь */
+  .frac{display:inline-flex;flex-direction:column;text-align:center;vertical-align:middle;margin:0 .18em}
+  .frac .num{padding:0 .45em .05em}
+  .frac .den{padding:.05em .45em 0;border-top:2px solid currentColor}
+
+  /* Главное правило */
+  .hero-rule{margin-top:2.2rem;background:var(--ink);color:#fff;border-radius:14px;padding:1.6rem 1.4rem;text-align:center}
+  .hero-rule .lbl{font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:#9aa6c9;margin:0 0 .9rem}
+  .hero-rule .eq{font-family:ui-monospace,"SF Mono",Menlo,monospace;font-size:clamp(1.1rem,4.2vw,1.55rem);font-weight:700;line-height:1.5}
+  .hero-rule .eq b{color:#8ea0ff}
+  .hero-rule .g{color:#7fd7a4}
+  .hero-rule .r{color:#f2a3b0}
+  .hero-rule .note{font-size:.86rem;color:#9aa6c9;margin:1rem 0 0}
+
+  /* Пререквизит */
+  .recall{background:var(--accent-soft);border-radius:12px;padding:1rem 1.15rem;font-size:.96rem}
+  .recall p{margin:.35rem 0}
+  .recall b{color:var(--ink)}
+
+  /* Алгоритм */
+  ol.steps{margin:0;padding:0;list-style:none;counter-reset:s;display:flex;flex-direction:column;gap:.7rem}
+  ol.steps li{position:relative;padding-left:2.1rem;counter-increment:s}
+  ol.steps li::before{
+    content:counter(s);position:absolute;left:0;top:.05rem;width:1.5rem;height:1.5rem;border-radius:50%;
+    background:var(--accent-soft);color:var(--accent);font-size:.82rem;font-weight:700;
+    display:flex;align-items:center;justify-content:center;
+  }
+  ol.steps .m{font-family:ui-monospace,Menlo,monospace;font-weight:600;color:var(--ink)}
+  .algo{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:1.2rem 1.3rem;margin-top:.4rem}
+  .flag{
+    margin-top:1rem;padding:.7rem 1rem;background:var(--bad-bg);border-radius:9px;
+    font-size:.95rem;color:var(--bad);font-weight:600;
+  }
+  .flag b{color:var(--bad)}
+
+  /* Разбор «думаю вслух» */
+  .worked{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:1.2rem 1.3rem}
+  .worked .task{
+    font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.05rem;margin:0 0 1rem;
+    padding-bottom:.8rem;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:.4rem;flex-wrap:wrap;
+  }
+  .worked ol.steps .why{color:var(--muted);font-weight:400;font-family:inherit}
+  .verdict{margin-top:1rem;padding:.7rem 1rem;background:var(--ok-bg);border-radius:9px;font-weight:600;color:var(--ok);font-size:.98rem}
+
+  /* Наглядность — ось ОДЗ */
+  .nlbox{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.1rem 1.1rem 1rem;margin-top:.4rem}
+  svg.nl{width:100%;height:auto;display:block}
+  .legend{display:flex;gap:1.1rem;flex-wrap:wrap;margin-top:.7rem;font-size:.86rem;color:var(--muted)}
+  .legend span{display:inline-flex;align-items:center;gap:.4rem}
+  .dot{width:.85rem;height:.85rem;border-radius:50%;display:inline-block}
+  .dot.ok{background:var(--ok)}
+  .dot.ring{background:#fff;border:2.5px solid var(--bad)}
+
+  /* Тренажёр */
+  .trainer{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.2rem 1.3rem;margin-top:1rem}
+  .tr-eq{
+    font-family:ui-monospace,Menlo,monospace;font-weight:800;font-size:clamp(1.25rem,5vw,1.6rem);
+    text-align:center;padding:1rem;background:var(--accent-soft);border-radius:10px;color:var(--ink);
+    display:flex;align-items:center;justify-content:center;gap:.3rem;overflow-x:auto;
+  }
+  .tr-ctl{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.9rem;align-items:center}
+  .tr-ctl button{font:inherit;font-weight:700;font-size:.9rem;cursor:pointer;border:none;border-radius:9px;padding:.55rem .95rem;color:#fff;background:var(--accent)}
+  .tr-ctl button.sec{background:var(--ok)}
+  .tr-ctl button.ghost{background:transparent;color:var(--accent);border:1px solid var(--accent)}
+  .tr-ctl input{flex:1;min-width:150px;font:inherit;padding:.5rem .7rem;border:1px solid var(--line);border-radius:9px;background:#fff;color:var(--ink)}
+  .tr-ctl button:focus-visible,.tr-ctl input:focus-visible,summary:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+  .tr-result{margin-top:.9rem;font-size:.96rem;min-height:1.2rem}
+  .tr-result .ok{color:var(--ok);font-weight:700}
+  .tr-result .bad{color:var(--bad);font-weight:700}
+  .tr-result .sol{margin-top:.7rem;padding:.9rem 1rem;background:#FCFBFE;border:1px solid var(--line);border-radius:10px;font-family:ui-monospace,Menlo,monospace;font-size:.9rem;line-height:1.85}
+  .tr-result .sol b{color:var(--accent)}
+  .pill{font-size:.74rem;font-weight:700;letter-spacing:.02em;padding:.14rem .5rem;border-radius:20px;white-space:nowrap;font-family:system-ui,sans-serif}
+  .pill.ok{background:var(--ok-bg);color:var(--ok)}
+  .pill.bad{background:var(--bad-bg);color:var(--bad)}
+  .bad-t{color:var(--bad);font-weight:700}
+
+  /* Практика */
+  .drill{display:flex;flex-direction:column;gap:.7rem}
+  details{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:.85rem 1.05rem}
+  details[open]{border-color:var(--accent)}
+  summary{cursor:pointer;font-weight:600;list-style:none;display:flex;justify-content:space-between;align-items:center;gap:1rem}
+  summary::-webkit-details-marker{display:none}
+  summary .q{font-family:ui-monospace,Menlo,monospace}
+  summary .tag{font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);border:1px solid var(--line);border-radius:20px;padding:.1rem .55rem;white-space:nowrap}
+  summary::after{content:"показать ответ";font-size:.78rem;color:var(--accent);font-weight:600;white-space:nowrap}
+  details[open] summary::after{content:"скрыть"}
+  .ans{margin-top:.7rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.96rem;color:var(--muted)}
+  .ans .m{font-family:ui-monospace,Menlo,monospace;color:var(--ink);font-weight:600}
+
+  /* Ошибки */
+  ul.pitfalls{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:.6rem}
+  ul.pitfalls li{padding-left:1.5rem;position:relative;font-size:.98rem}
+  ul.pitfalls li::before{content:"×";position:absolute;left:0;top:-.05rem;color:var(--bad);font-weight:700;font-size:1.1rem}
+  ul.pitfalls b{color:var(--ink)}
+
+  .next{background:var(--accent);color:#fff;border-radius:12px;padding:1.2rem 1.3rem}
+  .next h2{color:#fff}
+  .next p{color:#dfe4fb;font-size:.96rem;margin:.4rem 0 0}
+  .next .eqline{font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.05rem;margin:.7rem 0 .2rem;display:flex;align-items:center;gap:.3rem;flex-wrap:wrap}
+  .foot{margin-top:2.4rem;font-size:.82rem;color:var(--muted);text-align:center}
+
+  @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="wrap">
+
+  <header>
+    <p class="eyebrow">Алгебра · 8 класс</p>
+    <h1>Дробно-рациональные уравнения</h1>
+    <p class="lede">Уравнения, где неизвестная спряталась <em>в знаменателе</em>. Решать их умеешь — но есть один шаг, без которого ответ почти всегда лишний.</p>
+  </header>
+
+  <div class="hero-rule">
+    <p class="lbl">Главное правило темы</p>
+    <div class="eq">
+      <span class="frac"><span class="num"><b>P(x)</b></span><span class="den"><b>Q(x)</b></span></span> = 0
+      &nbsp;⟺&nbsp; <span class="g">P(x) = 0</span> &nbsp;И&nbsp; <span class="r">Q(x) ≠ 0</span>
+    </div>
+    <p class="note">Дробь равна нулю, только когда числитель = 0, <b>а знаменатель НЕ ноль.</b> На ноль делить нельзя.</p>
+  </div>
+
+  <section>
+    <p class="kicker">Зачем это нужно</p>
+    <h2>Где прячутся такие уравнения</h2>
+    <p>Дробно-рациональное уравнение — это уравнение, в котором <strong>неизвестная стоит в знаменателе</strong>. Они постоянно возникают в текстовых задачах, где величины связаны делением: движение (<span class="math">время = расстояние / скорость</span>), совместная работа, концентрация и проценты. «Двое рабочих вместе делают работу за столько-то часов» — это оно.</p>
+    <p>Типичное заблуждение: <em>«раз тут дроби — надо просто их сложить и всё»</em>. На самом деле идея другая: <strong>избавиться от знаменателей</strong> умножением, а потом обязательно проверить, что найденные корни <strong>не обращают знаменатель в ноль</strong>. Именно эта проверка отличает дробные уравнения от обычных — и именно её чаще всего забывают.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Что вспомнить перед стартом</p>
+    <div class="recall">
+      <p><b>Обыкновенные дроби.</b> На ноль делить нельзя — значит, знаменатель <em>никогда</em> не должен равняться нулю.</p>
+      <p><b>Дробь равна нулю</b> тогда и только тогда, когда её <b>числитель равен нулю</b>, а знаменатель — нет.</p>
+      <p><b>Квадратные уравнения.</b> После умножения на знаменатель почти всегда получается квадратное — решаем его через дискриминант <span class="math">D = b² − 4ac</span> и <span class="math">x = (−b ± √D)/(2a)</span>, либо раскладываем на множители.</p>
+      <p><b>Линейные уравнения.</b> Иногда получается совсем простое <span class="math">kx + b = 0</span> — решаем за один шаг.</p>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Ядро — алгоритм решения</p>
+    <h2>Шесть шагов, и последний — главный</h2>
+    <p>Решить дробное уравнение — значит найти такие <span class="math">x</span>, при которых равенство верно <strong>И</strong> ни один знаменатель не равен нулю. Все допустимые <span class="math">x</span> называют <strong>ОДЗ</strong> — область допустимых значений.</p>
+    <div class="algo">
+      <ol class="steps">
+        <li><b>Найди ОДЗ.</b> Приравняй <span class="m">каждый знаменатель к нулю</span> и выпиши <span class="bad-t">запрещённые значения</span> x. Делай это <em>первым действием</em>.</li>
+        <li><b>Приведи к общему знаменателю</b> (или перенеси всё в одну часть, чтобы слева осталась одна дробь = 0).</li>
+        <li><b>Умножь обе части</b> на общий знаменатель — дробное уравнение превращается в <span class="m">целое</span> (обычно квадратное).</li>
+        <li><b>Реши</b> полученное уравнение (дискриминант или разложение на множители).</li>
+        <li><b>Проверь каждый корень по ОДЗ.</b> Если корень попал в запрещённые значения — он <span class="bad-t">посторонний</span>, отбрось его.</li>
+        <li><b>Запиши ответ</b> из оставшихся корней.</li>
+      </ol>
+      <div class="flag"><b>Шаг 5 — сердце темы.</b> При умножении на знаменатель уравнение может «приобрести» лишний корень. Пропустишь проверку — впишешь чужой ответ.</div>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Разбираем вместе · думаю вслух</p>
+    <h2>Эталонный пример</h2>
+    <div class="worked">
+      <p class="task">
+        <span class="frac"><span class="num">x² − 9</span><span class="den">x − 3</span></span> = 0
+        &nbsp;→&nbsp; найди x
+      </p>
+      <ol class="steps">
+        <li>Смотрю на знаменатель: <span class="m">x − 3</span>. Приравниваю к нулю → <span class="m">x = 3</span> запрещён. <span class="why">Значит ОДЗ: x ≠ 3 — на ноль делить нельзя.</span></li>
+        <li>Дробь равна нулю, когда числитель равен нулю: <span class="m">x² − 9 = 0</span>. <span class="why">Знаменатель я пока не трогаю — я его уже «обработал» в шаге 1.</span></li>
+        <li>Решаю: <span class="m">x² = 9</span> → <span class="m">x = 3</span> или <span class="m">x = −3</span>. <span class="why">Два корня, потому что и 3², и (−3)² дают 9.</span></li>
+        <li>Проверяю по ОДЗ: <span class="m">x = 3</span> — запрещён, он зануляет знаменатель → <span class="bad-t">посторонний, выбрасываю</span>. <span class="m">x = −3</span> — допустим. <span class="why">Вот тот самый шаг 5.</span></li>
+      </ol>
+      <div class="verdict">Ответ: x = −3. &nbsp;(Без проверки ОДЗ записали бы лишний корень x = 3 — самая частая ошибка.)</div>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Наглядность · схема ОДЗ</p>
+    <h2>Смотри, какой корень «падает в дырку»</h2>
+    <p>Отметим на числовой оси <strong>запрещённую точку</strong> (корень знаменателя) <em>выколотым</em> кружком, а найденные корни — точками. Сразу видно: корень, попавший в дырку, — посторонний.</p>
+    <div class="nlbox">
+      <svg viewBox="0 0 320 80" class="nl" role="img" aria-label="Числовая ось: запрещённая точка x=3 выколота, корень −3 годится, корень 3 посторонний">
+        <line x1="16" y1="48" x2="304" y2="48" stroke="#9AA3B2" stroke-width="1.5"/>
+        <polygon points="304,48 296,44 296,52" fill="#9AA3B2"/>
+        <!-- ticks -6..6 -->
+        <g font-family="ui-monospace,Menlo,monospace" font-size="10" fill="#5A6478" text-anchor="middle">
+          <line x1="40"  y1="44" x2="40"  y2="52" stroke="#9AA3B2"/><text x="40"  y="66">−5</text>
+          <line x1="62"  y1="44" x2="62"  y2="52" stroke="#9AA3B2"/><text x="62"  y="66">−4</text>
+          <line x1="84"  y1="44" x2="84"  y2="52" stroke="#9AA3B2"/><text x="84"  y="66">−3</text>
+          <line x1="106" y1="44" x2="106" y2="52" stroke="#9AA3B2"/><text x="106" y="66">−2</text>
+          <line x1="128" y1="44" x2="128" y2="52" stroke="#9AA3B2"/><text x="128" y="66">−1</text>
+          <line x1="150" y1="44" x2="150" y2="52" stroke="#9AA3B2"/><text x="150" y="66">0</text>
+          <line x1="172" y1="44" x2="172" y2="52" stroke="#9AA3B2"/><text x="172" y="66">1</text>
+          <line x1="194" y1="44" x2="194" y2="52" stroke="#9AA3B2"/><text x="194" y="66">2</text>
+          <line x1="216" y1="44" x2="216" y2="52" stroke="#9AA3B2"/><text x="216" y="66">3</text>
+          <line x1="238" y1="44" x2="238" y2="52" stroke="#9AA3B2"/><text x="238" y="66">4</text>
+          <line x1="260" y1="44" x2="260" y2="52" stroke="#9AA3B2"/><text x="260" y="66">5</text>
+        </g>
+        <!-- корень x = -3: годится -->
+        <circle cx="84" cy="48" r="6.5" fill="#1E8E5A"/>
+        <circle cx="84" cy="48" r="2.2" fill="#fff"/>
+        <text x="84" y="30" text-anchor="middle" font-size="10" font-weight="700" fill="#1E8E5A" font-family="system-ui,sans-serif">x = −3 · годится</text>
+        <!-- x = 3: выколото (запрещено) + корень посторонний -->
+        <circle cx="216" cy="48" r="7.5" fill="#fff" stroke="#C0455B" stroke-width="2.6"/>
+        <circle cx="216" cy="48" r="3" fill="#C0455B"/>
+        <text x="216" y="30" text-anchor="middle" font-size="10" font-weight="700" fill="#C0455B" font-family="system-ui,sans-serif">x = 3 · посторонний</text>
+      </svg>
+      <div class="legend">
+        <span><i class="dot ok"></i> корень годится (в ОДЗ)</span>
+        <span><i class="dot ring"></i> выколото — знаменатель = 0, запрещено</span>
+      </div>
+    </div>
+    <p style="font-size:.92rem;color:var(--muted)">Полезно и вести решение таблицей: слева «найденные корни», справа «проверка по ОДЗ (входит / посторонний)». Так шаг 5 не проскочит мимо.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Тренажёр · бесконечная практика</p>
+    <h2>Реши дробное уравнение сам</h2>
+    <p>Нажми «Новое уравнение». Найди ОДЗ, реши числитель и <strong>отсей посторонние корни</strong>. Введи ответ через <b>точку с запятой</b> (например <span class="math">2; −5</span>), или напиши <b>нет</b>, если корней не осталось. Осторожно: иногда один из корней совпадает с запрещённым значением — его надо выбросить.</p>
+    <div class="trainer">
+      <div class="tr-eq" id="trEq"></div>
+      <div class="tr-ctl">
+        <button id="trNew" type="button">🎲 Новое уравнение</button>
+        <input id="trAns" type="text" placeholder="напр.  −3   или   2; 5   или   нет" aria-label="Ответ: корни через точку с запятой">
+        <button id="trCheck" type="button" class="sec">Проверить</button>
+        <button id="trShow" type="button" class="ghost">Показать решение</button>
+      </div>
+      <div id="trResult" class="tr-result"></div>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Теперь ты · нажми, чтобы проверить</p>
+    <h2>Практика по нарастанию</h2>
+    <div class="drill">
+      <details>
+        <summary><span class="q">ОДЗ уравнения 3 / (x − 7) = 0 ?</span><span class="tag">понимание</span></summary>
+        <div class="ans">Знаменатель <span class="m">x − 7 = 0</span> при <span class="m">x = 7</span> → <span class="m">ОДЗ: x ≠ 7</span>. Посторонний корень — это значение, которое получилось при решении, но нарушает ОДЗ (зануляет знаменатель), поэтому в ответ не идёт. <em>(Кстати, у этого уравнения корней нет: числитель 3 никогда не равен нулю.)</em></div>
+      </details>
+      <details>
+        <summary><span class="q">(2x − 6) / (x + 1) = 0</span><span class="tag">применение</span></summary>
+        <div class="ans"><span class="m">ОДЗ: x + 1 ≠ 0 → x ≠ −1.</span> Числитель: <span class="m">2x − 6 = 0 → x = 3</span>. Проверка: <span class="m">3 ≠ −1</span> — годится. → <strong>Ответ: x = 3.</strong></div>
+      </details>
+      <details>
+        <summary><span class="q">(x + 5) / (x² − 25) = 0</span><span class="tag">применение</span></summary>
+        <div class="ans"><span class="m">ОДЗ: x² − 25 ≠ 0 → x ≠ 5 и x ≠ −5.</span> Числитель: <span class="m">x + 5 = 0 → x = −5</span>. Но <span class="m">x = −5</span> запрещён по ОДЗ → посторонний. → <strong>Корней нет.</strong></div>
+      </details>
+      <details>
+        <summary><span class="q">1/(x − 2) + 1/(x + 2) = 1</span><span class="tag">применение</span></summary>
+        <div class="ans"><span class="m">ОДЗ: x ≠ 2 и x ≠ −2.</span> Общий знаменатель <span class="m">(x − 2)(x + 2) = x² − 4</span>, умножаем: <span class="m">(x + 2) + (x − 2) = x² − 4</span>, то есть <span class="m">2x = x² − 4 → x² − 2x − 4 = 0</span>. <span class="m">D = 4 + 16 = 20</span>, <span class="m">x = 1 ± √5</span>. Оба корня не равны ±2 → <strong>Ответ: x = 1 ± √5.</strong></div>
+      </details>
+      <details>
+        <summary><span class="q">Найди ошибку: x/(x − 4) = 4/(x − 4)</span><span class="tag">анализ</span></summary>
+        <div class="ans">Ученик сократил на <span class="m">(x − 4)</span> и получил <span class="m">x = 4</span>. Ошибка: <span class="m">x = 4</span> не входит в ОДЗ (<span class="m">x ≠ 4</span>) — это посторонний корень. Сокращать на выражение с <span class="m">x</span> опасно: так теряют или приобретают корни. Верно: перенести всё влево → <span class="m">(x − 4)/(x − 4) = 0</span>, числитель <span class="m">x − 4 = 0 → x = 4</span> — запрещён. → <strong>Корней нет.</strong></div>
+      </details>
+      <details>
+        <summary><span class="q">При каком a у (x − a)/(x − 3) = 0 нет корней?</span><span class="tag">анализ</span></summary>
+        <div class="ans"><span class="m">ОДЗ: x ≠ 3.</span> Числитель даёт <span class="m">x = a</span>. Этот корень станет посторонним ровно тогда, когда он совпадёт с запрещённым значением, то есть <span class="m">a = 3</span>. → <strong>При a = 3 уравнение корней не имеет.</strong></div>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Где чаще всего ошибаются</p>
+    <h2>Лови эти ловушки</h2>
+    <ul class="pitfalls">
+      <li><b>Не находят ОДЗ и оставляют посторонний корень.</b> Главная ошибка темы: решили числитель, выписали все корни, а проверку по знаменателю пропустили. Лекарство — писать ОДЗ <em>первым</em> действием и держать перед глазами до конца.</li>
+      <li><b>Теряют корни при умножении.</b> Не сокращай уравнение на выражение с <span class="math">x</span> — можно потерять корень. Лучше перенеси всё в одну часть и приведи к общему знаменателю.</li>
+      <li><b>Забывают, что ОДЗ надо вычислить.</b> Запрещённые значения — это не «что-то формальное», а именно корни знаменателя: найти их = решить <span class="math">Q(x) = 0</span>.</li>
+      <li><b>Сокращают дробь через слагаемое.</b> В <span class="math">(x + 3)/(x + 5)</span> нельзя «сократить x с x». Сокращать можно только общий <em>множитель</em> всего числителя и всего знаменателя, а не отдельное слагаемое.</li>
+    </ul>
+  </section>
+
+  <section>
+    <p class="kicker">Проверь себя · объясни своими словами</p>
+    <h2>Три вопроса на понимание</h2>
+    <div class="drill">
+      <details>
+        <summary><span class="q">Когда дробь P(x)/Q(x) равна нулю?</span><span class="tag">проверка</span></summary>
+        <div class="ans">Когда <span class="m">числитель = 0</span> <b>И одновременно</b> <span class="m">знаменатель ≠ 0</span>. Одного «числитель = 0» мало.</div>
+      </details>
+      <details>
+        <summary><span class="q">Зачем вообще проверять корни по ОДЗ?</span><span class="tag">проверка</span></summary>
+        <div class="ans">Потому что корень, зануляющий знаменатель, недопустим — деление на ноль не определено. При умножении на знаменатель такой «фальшивый» корень мог появиться, и его надо отсеять.</div>
+      </details>
+      <details>
+        <summary><span class="q">В какое уравнение чаще всего превращается дробное в 8 классе?</span><span class="tag">проверка</span></summary>
+        <div class="ans">В <strong>квадратное</strong> — после умножения на общий знаменатель. Дальше решаем его привычными способами.</div>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <div class="next">
+      <h2>Что дальше</h2>
+      <p>Теперь метод под контролем — пора применить его к <strong>текстовым задачам</strong>. Там дробные уравнения появляются сами: из условия про движение, работу или проценты.</p>
+      <div class="eqline">
+        время = <span class="frac"><span class="num">расстояние</span><span class="den">скорость</span></span>
+      </div>
+      <p>Составляешь уравнение по условию → получаешь дробное → решаешь по нашему алгоритму → и не забываешь про ОДЗ (отрицательное время или нулевая скорость — тоже «посторонние корни» по смыслу задачи).</p>
+    </div>
+  </section>
+
+  <p class="foot">Проверка на выходе: назови ОДЗ у 5/(x − 2) = 0 · когда дробь равна нулю? · какой шаг алгоритма отсеивает лишние корни?</p>
+
+</div>
+
+<script>
+(function(){
+  var eqEl=document.getElementById('trEq'), ansEl=document.getElementById('trAns'), resEl=document.getElementById('trResult');
+  if(!eqEl) return;
+  var MIN='−'; // настоящий минус U+2212
+  var cur=null;
+
+  function ri(a,b){ return Math.floor(Math.random()*(b-a+1))+a; }
+  function sgn(n){ return (n<0?MIN:'')+Math.abs(n); }           // число с настоящим минусом
+  function den(f){ return f===0 ? 'x' : (f>0 ? 'x '+MIN+' '+f : 'x + '+Math.abs(f)); }
+  function quad(b,c){
+    var s='x²';
+    if(b!==0) s += (b<0?' '+MIN+' ':' + ') + (Math.abs(b)===1?'':Math.abs(b)) + 'x';
+    if(c!==0) s += (c<0?' '+MIN+' ':' + ') + Math.abs(c);
+    return s;
+  }
+  function factor(r){ // (x - r)
+    if(r===0) return 'x';
+    return '(x '+(r<0?'+ '+Math.abs(r):MIN+' '+r)+')';
+  }
+
+  function generate(){
+    var m=Math.random(), x1,x2,f;
+    if(m<0.15){                    // нет корней: числитель (x - f)^2, единственный корень = запрещён
+      f=ri(-6,6); x1=f; x2=f;
+    } else if(m<0.60){             // один корень посторонний
+      do{ x1=ri(-6,6); x2=ri(-6,6); }while(x1===x2);
+      f = (Math.random()<0.5)?x1:x2;
+    } else {                       // оба корня годятся
+      do{ x1=ri(-6,6); x2=ri(-6,6); }while(x1===x2);
+      do{ f=ri(-6,6); }while(f===x1||f===x2);
+    }
+    cur={x1:x1,x2:x2,f:f};
+    render();
+  }
+
+  function data(){
+    var b=-(cur.x1+cur.x2), c=cur.x1*cur.x2;
+    var roots = (cur.x1===cur.x2)?[cur.x1]:[cur.x1,cur.x2];
+    var valid = roots.filter(function(r){ return r!==cur.f; });
+    return {b:b,c:c,roots:roots,valid:valid,f:cur.f,dbl:(cur.x1===cur.x2)};
+  }
+
+  function render(){
+    var d=data();
+    eqEl.innerHTML='<span class="frac"><span class="num">'+quad(d.b,d.c)+'</span><span class="den">'+den(d.f)+'</span></span> = 0';
+    resEl.innerHTML=''; ansEl.value='';
+  }
+
+  function lineSVG(f, roots){
+    var pts=roots.concat([f]);
+    var lo=Math.min.apply(null,pts)-1, hi=Math.max.apply(null,pts)+1;
+    var L=24,R=296,by=42;
+    function X(v){ return L+(v-lo)/(hi-lo)*(R-L); }
+    var s='<svg viewBox="0 0 320 72" class="nl" role="img" aria-label="Числовая ось ОДЗ">';
+    s+='<line x1="'+(L-8)+'" y1="'+by+'" x2="'+(R+8)+'" y2="'+by+'" stroke="#9AA3B2" stroke-width="1.5"/>';
+    s+='<polygon points="'+(R+8)+','+by+' '+(R)+','+(by-4)+' '+(R)+','+(by+4)+'" fill="#9AA3B2"/>';
+    for(var t=Math.ceil(lo);t<=Math.floor(hi);t++){
+      var x=X(t);
+      s+='<line x1="'+x+'" y1="'+(by-4)+'" x2="'+x+'" y2="'+(by+4)+'" stroke="#9AA3B2"/>';
+      s+='<text x="'+x+'" y="'+(by+16)+'" text-anchor="middle" font-size="9" fill="#5A6478" font-family="ui-monospace,Menlo,monospace">'+sgn(t)+'</text>';
+    }
+    // запрещённая точка
+    var xf=X(f);
+    s+='<circle cx="'+xf+'" cy="'+by+'" r="7" fill="#fff" stroke="#C0455B" stroke-width="2.5"/>';
+    // корни
+    var seen={};
+    roots.forEach(function(r){
+      if(seen[r]) return; seen[r]=1;
+      var xr=X(r);
+      if(r===f){
+        s+='<circle cx="'+xr+'" cy="'+by+'" r="3" fill="#C0455B"/>';
+        s+='<text x="'+xr+'" y="'+(by-13)+'" text-anchor="middle" font-size="8.5" font-weight="700" fill="#C0455B" font-family="system-ui,sans-serif">посторонний</text>';
+      } else {
+        s+='<circle cx="'+xr+'" cy="'+by+'" r="6" fill="#1E8E5A"/><circle cx="'+xr+'" cy="'+by+'" r="2" fill="#fff"/>';
+        s+='<text x="'+xr+'" y="'+(by-13)+'" text-anchor="middle" font-size="8.5" font-weight="700" fill="#1E8E5A" font-family="system-ui,sans-serif">'+sgn(r)+' годится</text>';
+      }
+    });
+    return s+'</svg>';
+  }
+
+  function solutionHTML(){
+    var d=data(), h='<div class="sol">';
+    h+='<b>1. ОДЗ.</b> Знаменатель '+den(d.f)+' = 0 при x = '+sgn(d.f)+' → запрещено <span class="bad-t">x ≠ '+sgn(d.f)+'</span>.<br>';
+    h+='<b>2.</b> Дробь = 0, когда числитель = 0: '+quad(d.b,d.c)+' = 0.<br>';
+    if(d.dbl){
+      h+='<b>3.</b> '+quad(d.b,d.c)+' = '+factor(cur.x1)+'² = 0 → x = '+sgn(cur.x1)+' (двойной корень).<br>';
+    } else {
+      h+='<b>3.</b> '+factor(cur.x1)+factor(cur.x2)+' = 0 → x = '+sgn(cur.x1)+' или x = '+sgn(cur.x2)+'.<br>';
+    }
+    h+='<b>4. Проверка по ОДЗ:</b> ';
+    h+=d.roots.map(function(r){
+      return r===d.f
+        ? 'x = '+sgn(r)+' <span class="pill bad">посторонний</span>'
+        : 'x = '+sgn(r)+' <span class="pill ok">годится</span>';
+    }).join(' &nbsp; ');
+    h+='<br>';
+    h+='<b>5. Ответ:</b> '+(d.valid.length ? 'x = '+d.valid.map(sgn).join(', ') : 'корней нет (единственный корень посторонний).');
+    h+='</div>';
+    h+='<div style="margin-top:.7rem">'+lineSVG(d.f, d.roots)+'</div>';
+    return h;
+  }
+
+  function check(){
+    var d=data(), raw=ansEl.value.trim().toLowerCase();
+    if(!raw){ resEl.innerHTML='<span class="bad">Введи корни или «нет», либо нажми «Показать решение».</span>'; return; }
+    if(d.valid.length===0){
+      if(/нет|net|∅|отсут|никак/.test(raw)){
+        resEl.innerHTML='<span class="ok">✓ Верно! Единственный корень попал в запрещённое значение — корней нет.</span>'+solutionHTML();
+      } else {
+        resEl.innerHTML='<span class="bad">✗ Не то. Проверь корень по ОДЗ — он зануляет знаменатель, значит посторонний, и корней не остаётся.</span>'+solutionHTML();
+      }
+      return;
+    }
+    var got=raw.split(/[;,]/).map(function(s){return parseFloat(s.replace(',','.').replace(/−/g,'-'));})
+              .filter(function(x){return !isNaN(x);})
+              .map(function(x){return Math.round(x);});
+    got=got.filter(function(v,i){return got.indexOf(v)===i;}).sort(function(a,b){return a-b;});
+    var exp=d.valid.slice().sort(function(a,b){return a-b;});
+    var ok = got.length===exp.length && exp.every(function(v,i){return v===got[i];});
+    if(ok){
+      resEl.innerHTML='<span class="ok">✓ Верно! Корни найдены и лишнее отсеяно.</span>'+solutionHTML();
+    } else {
+      var hint='';
+      // подсказка, если ученик вписал посторонний корень
+      if(got.indexOf(d.f)>=0) hint=' Похоже, ты оставил x = '+sgn(d.f)+' — а он запрещён по ОДЗ.';
+      resEl.innerHTML='<span class="bad">✗ Пока не то.'+hint+'</span>'+solutionHTML();
+    }
+  }
+
+  document.getElementById('trNew').addEventListener('click',function(){ generate(); ansEl.focus(); });
+  document.getElementById('trCheck').addEventListener('click',check);
+  document.getElementById('trShow').addEventListener('click',function(){ resEl.innerHTML=solutionHTML(); });
+  ansEl.addEventListener('keydown',function(e){ if(e.key==='Enter') check(); });
+
+  // стартовая задача = эталонный тип (посторонний корень), БЕЗ фокуса
+  cur={x1:3,x2:-3,f:3};
+  render();
+})();
+</script>

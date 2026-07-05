@@ -1,0 +1,431 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Центральный угол и дуга — геометрия 8 класс</title>
+<style>
+  :root{
+    --paper:#F6F7F9;
+    --card:#FFFFFF;
+    --ink:#1B2333;
+    --muted:#5A6478;
+    --line:#E2E5EC;
+    --brand:#2E5AAC;
+    --brand-soft:#E4EBF7;
+    --arc:#E27C2C;         /* дуга */
+    --arc-soft:#FBEEDF;
+    --rad:#159A8A;         /* радиусы / угол */
+    --rad-soft:#DEF3F0;
+    --ok:#1E8E5A;
+    --no:#C0455B;
+  }
+  *{box-sizing:border-box}
+  body{margin:0}
+  .wrap{
+    max-width:760px;margin:0 auto;
+    padding:clamp(1.4rem,4vw,3rem) clamp(1.1rem,4vw,2rem) 4rem;
+    background:var(--paper);color:var(--ink);
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    font-size:17px;line-height:1.62;-webkit-font-smoothing:antialiased;
+  }
+  .eyebrow{font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--brand);font-weight:600;margin:0 0 .5rem}
+  h1{font-family:Georgia,"Times New Roman",serif;font-size:clamp(2rem,7vw,2.9rem);line-height:1.05;margin:0;font-weight:700;letter-spacing:-.01em;text-wrap:balance}
+  .lede{font-size:1.08rem;color:var(--muted);margin:.7rem 0 0;max-width:60ch;text-wrap:pretty}
+  h2{font-family:Georgia,serif;font-size:1.32rem;font-weight:700;margin:0 0 .1rem;letter-spacing:-.005em;text-wrap:balance}
+  section{margin-top:2.6rem}
+  .kicker{font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:600;margin:0 0 .8rem;display:flex;align-items:center;gap:.6rem}
+  .kicker::before{content:"";width:1.4rem;height:2px;background:var(--brand);border-radius:2px}
+  p{margin:.65rem 0}
+  strong{font-weight:650}
+  .math{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-weight:600;font-variant-numeric:tabular-nums}
+  .arcw{color:var(--arc);font-weight:700}
+  .radw{color:var(--rad);font-weight:700}
+
+  .lead-in{background:var(--brand-soft);border-radius:12px;padding:1.05rem 1.25rem;font-size:1rem}
+  .lead-in p{margin:.4rem 0}
+  .lead-in b{color:var(--brand)}
+
+  /* Пререквизит */
+  .recall{background:var(--rad-soft);border-radius:12px;padding:1rem 1.15rem;font-size:.96rem;margin-top:1rem}
+  .recall p{margin:.3rem 0}
+  .recall b{color:var(--rad)}
+
+  /* Главное правило */
+  .hero-rule{margin-top:1.2rem;background:var(--ink);color:#fff;border-radius:14px;padding:1.5rem 1.4rem;text-align:center}
+  .hero-rule .lbl{font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:#9aa6c9;margin:0 0 .7rem}
+  .hero-rule .eq{font-family:ui-monospace,"SF Mono",Menlo,monospace;font-size:clamp(1.35rem,5.2vw,2rem);font-weight:700}
+  .hero-rule .eq .u{color:#7fdccf} .hero-rule .eq .d{color:#f0a45e}
+  .hero-rule .note{font-size:.86rem;color:#9aa6c9;margin:.85rem 0 0}
+
+  .note{border-left:4px solid var(--brand);background:var(--brand-soft);border-radius:0 10px 10px 0;padding:.8rem 1.1rem;margin-top:1rem;font-size:.97rem}
+  .note b{color:var(--brand)}
+
+  /* Диаграмма-симуляция */
+  .diagram{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.15rem;margin-top:1rem}
+  .diagram canvas{width:100%;height:auto;display:block;border-radius:8px}
+  .sliders{margin-top:.9rem}
+  .sliders label{display:flex;align-items:center;gap:.6rem;font-weight:700;font-family:ui-monospace,Menlo,monospace;color:var(--rad)}
+  .sliders input[type=range]{flex:1;accent-color:var(--arc)}
+  .sliders input[type=range]:focus-visible{outline:3px solid var(--brand);outline-offset:3px}
+  .sliders .sval{min-width:3.5ch;text-align:right;color:var(--ink)}
+  .diag-eq{text-align:center;font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.02rem;margin:.9rem 0 0}
+  .diag-eq .d{color:var(--arc)}
+
+  /* Разбор «думаю вслух» */
+  .worked{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:1.15rem 1.3rem;margin-top:1rem}
+  .worked .task{font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1rem;margin:0 0 1rem;padding-bottom:.8rem;border-bottom:1px solid var(--line)}
+  ol.steps{margin:0;padding:0;list-style:none;counter-reset:s;display:flex;flex-direction:column;gap:.7rem}
+  ol.steps li{position:relative;padding-left:2.1rem;counter-increment:s;font-size:.96rem}
+  ol.steps li::before{content:counter(s);position:absolute;left:0;top:-.05rem;width:1.5rem;height:1.5rem;background:var(--brand);color:#fff;border-radius:50%;font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:.8rem;display:flex;align-items:center;justify-content:center}
+  ol.steps li .why{color:var(--muted);font-size:.88rem}
+  .verdict{margin-top:1rem;padding:.7rem 1rem;background:var(--brand-soft);border-radius:10px;font-weight:650;color:var(--brand);font-family:ui-monospace,Menlo,monospace}
+
+  /* Тренажёр */
+  .trainer{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:1.2rem 1.3rem;margin-top:1rem}
+  .tr-task{font-size:clamp(1rem,4vw,1.12rem);text-align:center;padding:1rem;background:var(--brand-soft);border-radius:10px;font-weight:600;line-height:1.5}
+  .tr-task b{font-family:ui-monospace,Menlo,monospace;color:var(--ink)}
+  .tr-ctl{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:1rem;align-items:center;justify-content:center}
+  .tr-ctl input{flex:1;min-width:110px;max-width:180px;font:inherit;padding:.5rem .7rem;border:1px solid var(--line);border-radius:9px;text-align:center;background:#fff;color:var(--ink)}
+  .tr-ctl button{font:inherit;font-weight:700;font-size:.9rem;cursor:pointer;border:none;border-radius:9px;padding:.55rem .95rem;color:#fff;background:var(--brand)}
+  .tr-ctl button.sec{background:var(--arc)}
+  .tr-ctl button.ghost{background:transparent;color:var(--brand);border:1px solid var(--brand)}
+  .tr-ctl button:focus-visible,.tr-ctl input:focus-visible{outline:3px solid var(--brand);outline-offset:2px}
+  .tr-result{margin-top:.9rem;font-size:.96rem;min-height:1.2rem;text-align:center}
+  .tr-result .ok{color:var(--ok);font-weight:700} .tr-result .bad{color:var(--no);font-weight:700}
+  .tr-result .sol{margin-top:.6rem;padding:.8rem 1rem;background:#FCFDFE;border:1px solid var(--line);border-radius:10px;font-family:ui-monospace,Menlo,monospace;font-size:.9rem;line-height:1.85;text-align:left}
+
+  /* Практика */
+  details{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:.9rem 1.1rem;margin-top:.7rem}
+  details[open]{border-color:var(--brand)}
+  summary{cursor:pointer;font-weight:600;list-style:none;display:flex;justify-content:space-between;gap:1rem;align-items:center}
+  summary::-webkit-details-marker{display:none}
+  summary::after{content:"ответ";font-size:.8rem;color:var(--brand);font-weight:700;white-space:nowrap}
+  details[open] summary::after{content:"скрыть"}
+  summary:focus-visible{outline:3px solid var(--brand);outline-offset:3px;border-radius:6px}
+  .ans{margin-top:.75rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.95rem;color:var(--muted)}
+  .ans b{color:var(--ink)}
+  .lvl{font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:700;margin:1.4rem 0 .3rem}
+  .drill{display:flex;flex-direction:column;gap:.2rem}
+
+  /* Ловушки */
+  ul.traps{list-style:none;margin:1rem 0 0;padding:0;display:flex;flex-direction:column;gap:.7rem}
+  ul.traps li{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:.85rem 1.05rem;padding-left:2.5rem;position:relative;font-size:.96rem}
+  ul.traps li::before{content:"!";position:absolute;left:.95rem;top:.8rem;width:1.1rem;height:1.1rem;background:var(--arc);color:#fff;border-radius:50%;font-weight:700;font-size:.8rem;display:flex;align-items:center;justify-content:center}
+  ul.traps b{font-weight:700}
+
+  /* Проверка понимания */
+  .selfcheck{background:var(--rad-soft);border-radius:12px;padding:1.1rem 1.25rem;margin-top:1rem}
+  .selfcheck ol{margin:.4rem 0 0;padding-left:1.2rem}
+  .selfcheck li{margin:.35rem 0}
+
+  .wrapup{background:var(--brand);color:#fff;border-radius:16px;padding:1.4rem 1.5rem;margin-top:2.6rem}
+  .wrapup h2{color:#fff;margin:0 0 .5rem}
+  .wrapup p{color:#DEE7F5;margin:.4rem 0;font-size:1rem}
+  .wrapup .big-rule{font-size:1.12rem;font-weight:800;color:#fff;margin:.6rem 0;font-family:ui-monospace,Menlo,monospace}
+  .wrapup .next{font-size:.95rem;color:#C6D5EE;margin-top:1rem;padding-top:1rem;border-top:1px solid rgba(255,255,255,.2)}
+  .wrapup .next b{color:#fff}
+
+  @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="wrap">
+
+  <header>
+    <p class="eyebrow">Геометрия · 8 класс</p>
+    <h1>Центральный угол и дуга</h1>
+    <p class="lede">Как измерить кусок окружности? Тем же, чем и угол в её центре — в градусах. Насколько раскрыт угол, настолько же велика дуга.</p>
+  </header>
+
+  <div class="lead-in" style="margin-top:1.6rem">
+    <p><b>Где встречается.</b> Окружность — это циферблат часов, руль, колесо обозрения, круговая диаграмма. Везде, где есть круг, мы делим его на «куски» — <span class="arcw">дуги</span>: сектор пиццы, доля бюджета на диаграмме, поворот стрелки часов. Чтобы сказать, <em>какая</em> это часть, дугу нужно измерять.</p>
+    <p>Центральный угол — главный «измеритель» дуги. А ещё это фундамент следующей большой темы — <b>вписанного угла</b>, через которую решают почти все задачи на окружность в ОГЭ.</p>
+  </div>
+
+  <section>
+    <p class="kicker">Что вспомнить</p>
+    <h2>Опора: окружность и радиус</h2>
+    <div class="recall">
+      <p>· <b>Окружность</b> — все точки на одинаковом расстоянии от центра. Этот центр обозначаем буквой <span class="math">O</span>.</p>
+      <p>· <b>Радиус</b> — отрезок от центра <span class="math">O</span> до точки на окружности. Все радиусы одной окружности равны.</p>
+      <p>· <b>Угол</b> измеряем в градусах. Полный оборот — <span class="math">360°</span>, развёрнутый (прямая) — <span class="math">180°</span>.</p>
+    </div>
+    <p style="font-size:.95rem;color:var(--muted)">Всё, что нужно дальше: провести из центра два радиуса и посмотреть на угол между ними.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Ядро темы</p>
+    <h2>Центральный угол = его дуга</h2>
+    <p>Проведём из центра <span class="math">O</span> два радиуса в разные точки <span class="math">A</span> и <span class="math">B</span>. Между ними — угол с вершиной в центре. Это и есть <strong>центральный угол</strong> <span class="math">∠AOB</span>. Заодно два радиуса «вырезают» на окружности кусок — <span class="arcw">дугу AB</span>.</p>
+    <p>Главная идея: насколько «раскрыт» центральный угол — ровно настолько же «велика» дуга, на которую он опирается. Поэтому дугу и <em>измеряют</em> в градусах, теми же, что и угол.</p>
+
+    <div class="hero-rule">
+      <p class="lbl">Правило</p>
+      <div class="eq"><span class="d">дуга AB</span> = <span class="u">∠AOB</span></div>
+      <p class="note">O — центр окружности · градусная мера дуги равна центральному углу, который на неё опирается</p>
+    </div>
+
+    <div class="note">
+      <p><b>Не путай два измерения дуги.</b> <strong>Градусная мера</strong> — какую <em>долю</em> полного круга (<span class="math">360°</span>) занимает дуга. <strong>Длина</strong> — сколько сантиметров «верёвки» в дуге. Дуга <span class="math">90°</span> — это <em>всегда</em> четверть окружности, а вот её длина зависит от радиуса: на большом колесе она длиннее, но градусов всё те же <span class="math">90°</span>.</p>
+    </div>
+
+    <p>Два важных факта, которые всё держат:</p>
+    <ul>
+      <li>Вся окружность — <span class="math">360°</span>. Поэтому <strong>две дуги</strong> между точками <span class="math">A</span> и <span class="math">B</span> (меньшая и большая) в сумме дают <span class="math">360°</span>.</li>
+      <li>Полуокружность (концы на диаметре) — <span class="math">180°</span>, ей отвечает развёрнутый угол.</li>
+    </ul>
+  </section>
+
+  <section>
+    <p class="kicker">Увидь глазами</p>
+    <h2>Двигай угол — дуга едет за ним</h2>
+    <p>Тяни ползунок: центральный угол <span class="radw">∠AOB</span> меняется, а <span class="arcw">дуга AB</span> (оранжевая) — вместе с ним, и число на ней всегда то же самое. Это и значит «дуга = угол».</p>
+    <div class="diagram">
+      <canvas id="circ" width="640" height="440" aria-label="Окружность с центром, центральным углом между двумя радиусами и подсвеченной дугой"></canvas>
+      <div class="sliders">
+        <label>угол ∠AOB <input id="sang" type="range" min="10" max="350" step="5" value="70"> <span id="vang" class="sval">70°</span></label>
+      </div>
+      <p class="diag-eq" id="diagEq"></p>
+    </div>
+    <p style="font-size:.9rem;color:var(--muted)">Обрати внимание: чем шире угол, тем длиннее подсвеченная дуга — но подписаны они <em>одним</em> числом градусов. А оставшаяся (большая) дуга дополняет её до <span class="math">360°</span>.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Думаю вслух</p>
+    <h2>Эталонный разбор</h2>
+    <p>Разберём по шагам, проговаривая <em>почему</em> на каждом.</p>
+    <div class="worked">
+      <p class="task">∠AOB = 110°. Найди градусную меру большей дуги AB.</p>
+      <ol class="steps">
+        <li>Меньшая дуга <span class="math">AB</span> опирается на угол <span class="math">∠AOB</span>, значит меньшая <span class="arcw">дуга = 110°</span>. <span class="why">(почему: градусная мера дуги равна центральному углу)</span></li>
+        <li>Вся окружность — <span class="math">360°</span>, и обе дуги между <span class="math">A</span> и <span class="math">B</span> вместе её составляют. <span class="why">(почему: меньшая + большая = полный круг)</span></li>
+        <li>Большая дуга <span class="math">= 360° − 110° = 250°</span>. <span class="why">(почему: из полного круга вычли меньшую дугу)</span></li>
+      </ol>
+      <div class="verdict">Ответ: большая дуга = 250°</div>
+    </div>
+    <div class="worked" style="margin-top:.8rem">
+      <p class="task">Дуга — пятая часть окружности. Найди опирающийся на неё ∠AOB.</p>
+      <ol class="steps">
+        <li>«Пятая часть» — это <span class="math">360° : 5</span>. <span class="why">(почему: вся окружность 360°, делим на 5 равных частей)</span></li>
+        <li><span class="math">360° : 5 = 72°</span> — такова градусная мера дуги.</li>
+        <li>Угол равен дуге, значит <span class="math">∠AOB = 72°</span>. <span class="why">(почему: центральный угол = своей дуге)</span></li>
+      </ol>
+      <div class="verdict">Ответ: ∠AOB = 72°</div>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Тренажёр · бесконечные задачи</p>
+    <h2>Реши и проверь себя</h2>
+    <p>Все ответы — целые градусы. Впиши число (без значка <span class="math">°</span>) и проверь, либо посмотри пошаговое решение. Кнопка «Новая» даёт свежую задачу.</p>
+    <div class="trainer">
+      <div class="tr-task" id="trTask">—</div>
+      <div class="tr-ctl">
+        <button id="trNew" type="button">Новая</button>
+        <input id="trAns" type="text" inputmode="numeric" placeholder="ответ в °" aria-label="Ответ в градусах">
+        <button id="trCheck" type="button" class="sec">Проверить</button>
+        <button id="trShow" type="button" class="ghost">Решение</button>
+      </div>
+      <div id="trResult" class="tr-result"></div>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Практика</p>
+    <h2>По нарастанию сложности</h2>
+
+    <p class="lvl">Понимание</p>
+    <div class="drill">
+      <details><summary>1) Вершина угла — в центре окружности, стороны — радиусы. Как называется такой угол?</summary><div class="ans"><b>Центральный</b> угол.</div></details>
+      <details><summary>2) Центральный угол равен 45°. Чему равна дуга, на которую он опирается?</summary><div class="ans">Дуга равна углу: <b>45°</b>.</div></details>
+    </div>
+
+    <p class="lvl">Применение</p>
+    <div class="drill">
+      <details><summary>3) ∠AOB = 130°. Найди меньшую и большую дуги AB.</summary><div class="ans">Меньшая = углу = <b>130°</b>. Большая <span class="math">= 360° − 130° = <b>230°</b></span>.</div></details>
+      <details><summary>4) На какой угол повернётся часовая стрелка от 12 к 3?</summary><div class="ans">Циферблат = 12 равных дуг по <span class="math">360° : 12 = 30°</span>. От 12 к 3 — три деления: <span class="math">3 · 30° = <b>90°</b></span>.</div></details>
+      <details><summary>5) Сектор «25% бюджета» на круговой диаграмме — это дуга во сколько градусов?</summary><div class="ans">25% от полного круга: <span class="math">0,25 · 360° = <b>90°</b></span> (четверть окружности).</div></details>
+    </div>
+
+    <p class="lvl">Анализ</p>
+    <div class="drill">
+      <details><summary>6) Найди ошибку: «Дуга равна 90°, значит её длина 90 см».</summary><div class="ans">Смешаны <b>два разных понятия</b>. <span class="math">90°</span> — это градусная мера (доля круга, четверть). Длина дуги в сантиметрах зависит от радиуса и в общем случае не равна 90 см. Градусы ≠ сантиметры.</div></details>
+      <details><summary>7) Что изменится у дуги в 90°, если радиус увеличить вдвое: её градусная мера? её длина?</summary><div class="ans">Градусная мера <b>не изменится</b> — так и останется <span class="math">90°</span> (это всё та же четверть круга). А <b>длина</b> дуги станет <b>вдвое больше</b> — длина зависит от радиуса.</div></details>
+      <details><summary>8) Обратная задача: меньшая дуга AB втрое меньше большей. Найди угол, опирающийся на меньшую дугу.</summary><div class="ans">Пусть меньшая <span class="math">= x</span>, большая <span class="math">= 3x</span>. Вместе полный круг: <span class="math">x + 3x = 360°</span> → <span class="math">4x = 360°</span> → <span class="math">x = 90°</span>. Угол на меньшую дугу = <b>90°</b>.</div></details>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Осторожно</p>
+    <h2>Частые ошибки</h2>
+    <ul class="traps">
+      <li><b>Путают градусы и сантиметры.</b> «Дуга 60° = 60 см» — неверно. Градусы — доля круга, длина зависит от радиуса. Спроси себя: меня спрашивают про <em>долю</em> (градусы) или про <em>длину</em> (см)?</li>
+      <li><b>Центральный ≠ вписанный.</b> Правило «угол = дуге» работает, только если вершина строго в <em>центре</em> O. Вершина <em>на окружности</em> — это уже другой (вписанный) угол, и правило для него иное. Сначала найди вершину.</li>
+      <li><b>Берут не ту дугу.</b> Меньший угол (до 180°) опирается на <em>меньшую</em> дугу. Чтобы получить вторую (большую) дугу — вычти из <span class="math">360°</span>, а не из <span class="math">180°</span>.</li>
+      <li><b>Забывают, что круг — 360°.</b> Вторую дугу ищут вычитанием из <span class="math">180°</span>. Помни: полный круг — <span class="math">360°</span>, полукруг — <span class="math">180°</span>.</li>
+    </ul>
+  </section>
+
+  <section>
+    <p class="kicker">Проверка понимания</p>
+    <h2>Объясни своими словами</h2>
+    <div class="selfcheck">
+      <ol>
+        <li>Где находится вершина центрального угла?</li>
+        <li>Центральный угол равен 80°. Чему равна дуга, на которую он опирается?</li>
+        <li>Одна дуга равна «360° минус другая дуга» — про какие две дуги речь?</li>
+      </ol>
+      <p style="font-size:.9rem;color:var(--muted);margin-top:.7rem">Если на все три отвечаешь не задумываясь — тему держишь.</p>
+    </div>
+  </section>
+
+  <div class="wrapup">
+    <h2>Запомни главное</h2>
+    <p class="big-rule">дуга AB = ∠AOB &nbsp;·&nbsp; вся окружность = 360°</p>
+    <p>Градусная мера дуги равна центральному углу, который на неё опирается. Две дуги между двумя точками вместе дают 360°. Градусы измеряют долю круга, а не длину.</p>
+    <p class="next">👉 Дальше — <b>вписанный угол</b>: его вершина уже на самой окружности, и он равен <em>половине</em> дуги, на которую опирается. Именно на этой связке строятся почти все задачи на окружность в ОГЭ.</p>
+  </div>
+
+</div>
+
+<script>
+/* ── Симуляция: окружность, центральный угол, подсвеченная дуга ── */
+(function(){
+  var cv=document.getElementById('circ'); if(!cv) return;
+  var ctx=cv.getContext('2d');
+  var slider=document.getElementById('sang'), vang=document.getElementById('vang'), eq=document.getElementById('diagEq');
+  var W=640,H=440,dpr=1;
+  function css(v){ return getComputedStyle(document.documentElement).getPropertyValue(v).trim(); }
+  function resize(){
+    var c=cv.clientWidth||640; dpr=Math.min(window.devicePixelRatio||1,2);
+    W=c; H=Math.round(c*0.72);
+    cv.width=W*dpr; cv.height=H*dpr; cv.style.height=H+'px';
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+  }
+  function draw(){
+    var a=+slider.value;                    // угол в градусах
+    vang.textContent=a+'°';
+    var rad=a*Math.PI/180;
+    var cx=W/2, cy=H/2;
+    var R=Math.min(W,H)*0.34;
+    // экранная точка для мат. угла t (ccw, вверх)
+    function px(t){ return cx+R*Math.cos(t); }
+    function py(t){ return cy-R*Math.sin(t); }
+    ctx.clearRect(0,0,W,H);
+
+    // сектор меньшей дуги (заливка)
+    ctx.beginPath();
+    ctx.moveTo(cx,cy);
+    ctx.arc(cx,cy,R,0,-rad,true);           // canvas-угол = -t
+    ctx.closePath();
+    ctx.fillStyle=css('--arc-soft'); ctx.fill();
+
+    // окружность
+    ctx.beginPath(); ctx.arc(cx,cy,R,0,Math.PI*2);
+    ctx.strokeStyle=css('--ink'); ctx.lineWidth=2; ctx.stroke();
+
+    // подсвеченная дуга (толстая, оранжевая)
+    ctx.beginPath(); ctx.arc(cx,cy,R,0,-rad,true);
+    ctx.strokeStyle=css('--arc'); ctx.lineWidth=6; ctx.lineCap='round'; ctx.stroke();
+
+    // радиусы OA (t=0) и OB (t=rad)
+    ctx.strokeStyle=css('--rad'); ctx.lineWidth=3; ctx.lineCap='round';
+    ctx.beginPath(); ctx.moveTo(cx,cy); ctx.lineTo(px(0),py(0)); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(cx,cy); ctx.lineTo(px(rad),py(rad)); ctx.stroke();
+
+    // дуга-метка угла у центра
+    var ra=Math.min(R*0.34,30);
+    ctx.beginPath(); ctx.arc(cx,cy,ra,0,-rad,true);
+    ctx.strokeStyle=css('--rad'); ctx.lineWidth=2; ctx.stroke();
+
+    // точки O, A, B
+    function dot(x,y){ ctx.beginPath(); ctx.arc(x,y,4,0,Math.PI*2); ctx.fillStyle=css('--ink'); ctx.fill(); }
+    dot(cx,cy); dot(px(0),py(0)); dot(px(rad),py(rad));
+
+    // подписи точек
+    ctx.fillStyle=css('--ink');
+    ctx.font='italic 700 '+Math.max(13,R*0.11)+'px Georgia,serif';
+    ctx.textAlign='left';  ctx.textBaseline='middle';
+    ctx.fillText('O', cx-18, cy+14);
+    ctx.fillText('A', px(0)+9, py(0));
+    ctx.textAlign='center';
+    ctx.fillText('B', px(rad)+10*Math.cos(rad), py(rad)-10*Math.sin(rad)-2);
+
+    // подпись угла у центра
+    ctx.fillStyle=css('--rad');
+    ctx.font='700 '+Math.max(12,R*0.10)+'px ui-monospace,Menlo,monospace';
+    ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.fillText(a+'°', cx+(ra+16)*Math.cos(rad/2), cy-(ra+16)*Math.sin(rad/2));
+
+    // подпись дуги (снаружи, у середины дуги)
+    ctx.fillStyle=css('--arc');
+    ctx.font='700 '+Math.max(13,R*0.12)+'px ui-monospace,Menlo,monospace';
+    ctx.fillText(a+'°', cx+(R+20)*Math.cos(rad/2), cy-(R+20)*Math.sin(rad/2));
+
+    eq.innerHTML='∠AOB = <span class="d">дуга AB = '+a+'°</span> &nbsp;·&nbsp; большая дуга = 360° − '+a+'° = '+(360-a)+'°';
+  }
+  slider.addEventListener('input',draw);
+  window.addEventListener('resize',function(){ resize(); draw(); });
+  resize(); draw();
+})();
+</script>
+
+<script>
+/* ── Тренажёр-генератор ── */
+(function(){
+  var taskEl=document.getElementById('trTask'), ansEl=document.getElementById('trAns'), resEl=document.getElementById('trResult');
+  if(!taskEl) return;
+  var M='−';                                   // настоящий минус
+  var cur=null;
+  function ri(min,max){ return Math.floor(Math.random()*(max-min+1))+min; }
+
+  function generate(){
+    var type=['arc','angle','part','bigarc','sum'][ri(0,4)];
+    if(type==='arc'){
+      var a=ri(2,17)*10;                            // 20..170
+      cur={ans:a,
+        q:'Центральный угол <b>∠AOB = '+a+'°</b>. Найди меньшую дугу AB.',
+        sol:'Дуга равна центральному углу, который на неё опирается.<br>дуга AB = ∠AOB = <b>'+a+'°</b>'};
+    } else if(type==='angle'){
+      var d=ri(2,17)*10;
+      cur={ans:d,
+        q:'Меньшая дуга AB равна <b>'+d+'°</b>. Найди центральный угол ∠AOB, опирающийся на неё.',
+        sol:'Центральный угол равен своей дуге.<br>∠AOB = дуга AB = <b>'+d+'°</b>'};
+    } else if(type==='part'){
+      var ns=[2,3,4,5,6,8,9,10,12], n=ns[ri(0,ns.length-1)], v=360/n;
+      cur={ans:v,
+        q:'Дуга составляет <b>1/'+n+'</b> часть окружности. Найди её градусную меру.',
+        sol:'Вся окружность — 360°. Одна из '+n+' равных частей:<br>360° : '+n+' = <b>'+v+'°</b>'};
+    } else if(type==='bigarc'){
+      var s=ri(2,17)*10;
+      cur={ans:360-s,
+        q:'Меньшая дуга AB равна <b>'+s+'°</b>. Найди большую дугу AB (с теми же концами).',
+        sol:'Обе дуги вместе — полная окружность 360°.<br>большая = 360° '+M+' '+s+'° = <b>'+(360-s)+'°</b>'};
+    } else { // sum
+      var a1,a2,rem;
+      do{ a1=ri(3,13)*10; a2=ri(3,13)*10; rem=360-a1-a2; }while(rem<20);
+      cur={ans:rem,
+        q:'Точки A, B, C делят окружность на три дуги: ⌣AB = <b>'+a1+'°</b>, ⌣BC = <b>'+a2+'°</b>. Найди ⌣CA.',
+        sol:'Три дуги вместе — полная окружность 360°.<br>⌣CA = 360° '+M+' '+a1+'° '+M+' '+a2+'° = <b>'+rem+'°</b>'};
+    }
+    taskEl.innerHTML=cur.q;
+    resEl.innerHTML=''; ansEl.value='';
+  }
+  function solHTML(){ return '<div class="sol">'+cur.sol+'</div>'; }
+  function check(){
+    var raw=ansEl.value.trim().replace(',','.').replace('°','');
+    if(raw===''){ resEl.innerHTML='<span class="bad">Впиши ответ или нажми «Решение».</span>'; return; }
+    var got=parseFloat(raw);
+    if(!isNaN(got) && Math.abs(got-cur.ans)<0.001){ resEl.innerHTML='<span class="ok">✓ Верно!</span>'+solHTML(); }
+    else{ resEl.innerHTML='<span class="bad">✗ Пока не то — посмотри решение.</span>'+solHTML(); }
+  }
+  document.getElementById('trNew').addEventListener('click',function(){ generate(); ansEl.focus(); });
+  document.getElementById('trCheck').addEventListener('click',check);
+  document.getElementById('trShow').addEventListener('click',function(){ resEl.innerHTML=solHTML(); });
+  ansEl.addEventListener('keydown',function(e){ if(e.key==='Enter') check(); });
+
+  // стартовая задача (без focus): совпадает с типом 'arc'
+  cur={ans:70,
+    q:'Центральный угол <b>∠AOB = 70°</b>. Найди меньшую дугу AB.',
+    sol:'Дуга равна центральному углу, который на неё опирается.<br>дуга AB = ∠AOB = <b>70°</b>'};
+  taskEl.innerHTML=cur.q;
+})();
+</script>

@@ -1,0 +1,557 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Текстовые задачи через системы — алгебра 7 класс</title>
+<style>
+  :root{
+    --paper:#F6F7F9;
+    --card:#FFFFFF;
+    --ink:#1B2333;
+    --muted:#5A6478;
+    --line:#E2E5EC;
+    --accent:#3B4FD0;
+    --accent-soft:#EAEDFB;
+    --vx:#3B4FD0;      /* переменная x */
+    --vx-bg:#EAEDFB;
+    --vy:#B9791A;      /* переменная y */
+    --vy-bg:#FBF1DC;
+    --cond:#1E8E5A;    /* условие / проверка */
+    --cond-bg:#E7F4EC;
+    --neg:#C0455B;     /* ошибка */
+    --neg-bg:#F9E9EC;
+  }
+  *{box-sizing:border-box}
+  body{margin:0}
+  .wrap{
+    max-width:760px;
+    margin:0 auto;
+    padding:clamp(1.4rem,4vw,3rem) clamp(1.1rem,4vw,2rem) 4rem;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    font-size:17px;
+    line-height:1.62;
+    -webkit-font-smoothing:antialiased;
+  }
+  .eyebrow{
+    font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--accent);font-weight:600;margin:0 0 .5rem;
+  }
+  h1{
+    font-family:Georgia,"Times New Roman",serif;
+    font-size:clamp(1.9rem,6vw,2.7rem);
+    line-height:1.06;margin:0;font-weight:700;letter-spacing:-.01em;
+    text-wrap:balance;
+  }
+  .lede{
+    font-size:1.08rem;color:var(--muted);margin:.7rem 0 0;max-width:60ch;
+    text-wrap:pretty;
+  }
+  h2{
+    font-family:Georgia,serif;font-size:1.32rem;font-weight:700;
+    margin:0 0 .1rem;letter-spacing:-.005em;
+  }
+  section{margin-top:2.6rem}
+  .kicker{
+    font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--muted);font-weight:600;margin:0 0 .8rem;
+    display:flex;align-items:center;gap:.6rem;
+  }
+  .kicker::before{
+    content:"";width:1.4rem;height:2px;background:var(--accent);border-radius:2px;
+  }
+  p{margin:.65rem 0}
+  strong{font-weight:650}
+  .math{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-weight:600}
+  .vx{color:var(--vx);font-weight:700}
+  .vy{color:var(--vy);font-weight:700}
+
+  /* Hero: 2 неизвестных → 2 уравнения */
+  .hero{
+    margin-top:2.2rem;background:var(--ink);color:#fff;border-radius:14px;
+    padding:1.5rem 1.4rem;text-align:center;
+  }
+  .hero .lbl{font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:#9aa6c9;margin:0 0 .8rem}
+  .hero .sys{
+    display:inline-flex;align-items:center;gap:.6rem;
+    font-family:ui-monospace,"SF Mono",Menlo,monospace;
+    font-size:clamp(1.15rem,4.4vw,1.55rem);font-weight:700;
+  }
+  .hero .brace{font-size:2.6em;line-height:.7;color:#5b6ee0;font-weight:400}
+  .hero .rows{display:flex;flex-direction:column;gap:.35rem;text-align:left}
+  .hero .rows b{color:#8ea0ff}
+  .hero .note{font-size:.86rem;color:#9aa6c9;margin:1rem 0 0}
+
+  /* recall */
+  .recall{background:var(--accent-soft);border-radius:12px;padding:1rem 1.15rem;font-size:.96rem}
+  .recall p{margin:.35rem 0}
+  .recall .two{display:grid;gap:.7rem;margin-top:.6rem}
+  @media(min-width:560px){.recall .two{grid-template-columns:1fr 1fr}}
+  .recall .mini{background:#fff;border:1px solid var(--line);border-radius:9px;padding:.7rem .85rem}
+  .recall .mini h4{margin:0 0 .3rem;font-size:.9rem}
+  .recall .mini .math{font-size:.9rem}
+
+  /* Ядро — алгоритм */
+  .algo{margin:0;padding:0;list-style:none;counter-reset:s;display:flex;flex-direction:column;gap:.7rem}
+  .algo li{
+    position:relative;padding:.85rem 1rem .85rem 3rem;
+    background:var(--card);border:1px solid var(--line);border-radius:11px;counter-increment:s;
+  }
+  .algo li::before{
+    content:counter(s);position:absolute;left:.85rem;top:.85rem;
+    width:1.6rem;height:1.6rem;border-radius:50%;
+    background:var(--accent);color:#fff;
+    font-size:.85rem;font-weight:700;display:flex;align-items:center;justify-content:center;
+  }
+  .algo li b{color:var(--ink)}
+  .algo li .sub{display:block;font-size:.9rem;color:var(--muted);margin-top:.15rem}
+
+  /* Схема перевода текст→буквы→система */
+  .schema{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.2rem 1.3rem}
+  .schema .src{font-size:1rem;line-height:1.8}
+  .hl{border-radius:5px;padding:.05em .3em;font-weight:600}
+  .hl.c1{background:var(--cond-bg);color:var(--cond)}
+  .hl.c2{background:var(--vy-bg);color:var(--vy)}
+  .hl.want{background:var(--vx-bg);color:var(--vx)}
+  .arrow{text-align:center;color:var(--muted);font-size:1.4rem;margin:.6rem 0;line-height:1}
+  .defs{display:grid;gap:.5rem;margin:.2rem 0 .9rem}
+  @media(min-width:520px){.defs{grid-template-columns:1fr 1fr}}
+  .def{border-radius:9px;padding:.55rem .8rem;font-size:.95rem;font-weight:600}
+  .def.x{background:var(--vx-bg);color:var(--vx)}
+  .def.y{background:var(--vy-bg);color:var(--vy)}
+  .sysbox{
+    display:flex;align-items:stretch;gap:.7rem;
+    font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.05rem;
+    background:var(--paper);border-radius:10px;padding:.9rem 1rem;
+  }
+  .sysbox .brace{font-size:2.6em;line-height:.75;color:var(--accent);font-weight:400}
+  .sysbox .eqs{display:flex;flex-direction:column;justify-content:center;gap:.4rem}
+  .sysbox .eqs .t1{color:var(--cond)}
+  .sysbox .eqs .t2{color:var(--vy)}
+
+  /* Таблица условий */
+  .tblwrap{overflow-x:auto;margin-top:1.1rem;-webkit-overflow-scrolling:touch}
+  table.cond{border-collapse:collapse;width:100%;min-width:420px;font-size:.95rem}
+  table.cond th,table.cond td{border:1px solid var(--line);padding:.55rem .7rem;text-align:center}
+  table.cond thead th{background:var(--accent-soft);color:var(--ink);font-weight:700}
+  table.cond .rh{background:var(--paper);font-weight:700;text-align:left}
+  table.cond .cx{color:var(--vx);font-weight:700}
+  table.cond .cy{color:var(--vy);font-weight:700}
+  table.cond tbody tr:last-child td{border-bottom:1px solid var(--line)}
+  .tblnote{font-size:.9rem;color:var(--muted);margin:.6rem 0 0}
+
+  /* Разбор */
+  .worked{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:1.2rem 1.3rem}
+  .worked .task{
+    font-weight:600;font-size:1rem;margin:0 0 1rem;padding-bottom:.8rem;border-bottom:1px solid var(--line);
+  }
+  ol.steps{margin:0;padding:0;list-style:none;counter-reset:s;display:flex;flex-direction:column;gap:.75rem}
+  ol.steps li{position:relative;padding-left:2.1rem;counter-increment:s}
+  ol.steps li::before{
+    content:counter(s);position:absolute;left:0;top:.05rem;
+    width:1.5rem;height:1.5rem;border-radius:50%;
+    background:var(--accent-soft);color:var(--accent);
+    font-size:.82rem;font-weight:700;display:flex;align-items:center;justify-content:center;
+  }
+  ol.steps .m{font-family:ui-monospace,Menlo,monospace;font-weight:600;color:var(--ink)}
+  ol.steps .why{color:var(--muted);font-style:italic}
+  .verdict{margin-top:1rem;padding:.7rem 1rem;background:var(--cond-bg);border-radius:9px;font-weight:600;color:var(--cond);font-size:.98rem}
+
+  /* Бар-модель */
+  .barmodel{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:1.2rem 1.3rem}
+  .bars{display:flex;flex-direction:column;gap:.6rem;margin:.4rem 0 .3rem}
+  .brow{display:flex;align-items:center;gap:.7rem}
+  .brow .tag{min-width:1.4rem;font-family:ui-monospace,Menlo,monospace;font-weight:700}
+  .brow .tag.x{color:var(--vx)}
+  .brow .tag.y{color:var(--vy)}
+  .track{flex:1;display:flex;height:2.3rem;border-radius:7px;overflow:hidden;background:var(--paper);border:1px solid var(--line)}
+  .seg{display:flex;align-items:center;justify-content:center;font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:.9rem;color:#fff}
+  .seg.base{background:var(--vy)}
+  .seg.extra{background:var(--neg)}
+  .barnote{font-size:.94rem;color:var(--muted);margin:.7rem 0 0}
+  .barnote b{color:var(--ink)}
+  .barnote .m{font-family:ui-monospace,Menlo,monospace;color:var(--ink);font-weight:600}
+
+  /* Тренажёр */
+  .trainer{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.2rem 1.3rem;margin-top:1rem}
+  .tr-eq{font-size:1.02rem;line-height:1.7;padding:1rem 1.1rem;background:var(--accent-soft);border-radius:10px;color:var(--ink)}
+  .tr-eq b{color:var(--accent)}
+  .tr-eq .twrap{overflow-x:auto;margin-top:.7rem}
+  .tr-eq table{border-collapse:collapse;width:100%;min-width:340px;font-family:ui-monospace,Menlo,monospace;font-size:.92rem}
+  .tr-eq table th,.tr-eq table td{border:1px solid #cdd3ec;padding:.35rem .55rem;text-align:center;background:#fff}
+  .tr-eq table th{background:#fff;font-weight:700}
+  .tr-eq table .rh{text-align:left;font-weight:700}
+  .tr-ctl{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.9rem;align-items:center}
+  .tr-ctl button{font:inherit;font-weight:700;font-size:.9rem;cursor:pointer;border:none;border-radius:9px;padding:.55rem .95rem;color:#fff;background:var(--accent)}
+  .tr-ctl button.sec{background:var(--cond)}
+  .tr-ctl button.ghost{background:transparent;color:var(--accent);border:1px solid var(--accent)}
+  .tr-ctl input{flex:1;min-width:160px;font:inherit;padding:.5rem .7rem;border:1px solid var(--line);border-radius:9px;background:#fff;color:var(--ink)}
+  .tr-hint{font-size:.86rem;color:var(--muted);margin:.6rem 0 0}
+  .tr-ctl button:focus-visible,.tr-ctl input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+  .tr-result{margin-top:.9rem;font-size:.96rem;min-height:1.2rem}
+  .tr-result .ok{color:var(--cond);font-weight:700}
+  .tr-result .bad{color:var(--neg);font-weight:700}
+  .tr-result .sol{margin-top:.7rem;padding:.85rem 1rem;background:#FCFBFE;border:1px solid var(--line);border-radius:10px;font-family:ui-monospace,Menlo,monospace;font-size:.88rem;line-height:1.85}
+  .tr-result .sol b{color:var(--accent)}
+
+  /* Практика */
+  .drill{display:flex;flex-direction:column;gap:.7rem}
+  details{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:.85rem 1.05rem}
+  details[open]{border-color:var(--accent)}
+  summary{cursor:pointer;font-weight:600;list-style:none;display:flex;justify-content:space-between;align-items:center;gap:1rem}
+  summary::-webkit-details-marker{display:none}
+  summary:focus-visible{outline:3px solid var(--accent);outline-offset:2px;border-radius:6px}
+  summary .q{max-width:80%}
+  summary .tag{
+    font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);
+    border:1px solid var(--line);border-radius:20px;padding:.1rem .55rem;white-space:nowrap;
+  }
+  summary::after{content:"показать";font-size:.78rem;color:var(--accent);font-weight:600;white-space:nowrap}
+  details[open] summary::after{content:"скрыть"}
+  .ans{margin-top:.7rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.96rem;color:var(--muted)}
+  .ans .m{font-family:ui-monospace,Menlo,monospace;color:var(--ink);font-weight:600}
+  .ans strong{color:var(--ink)}
+
+  /* Ошибки */
+  ul.pitfalls{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:.6rem}
+  ul.pitfalls li{padding-left:1.5rem;position:relative;font-size:.98rem}
+  ul.pitfalls li::before{content:"\00D7";position:absolute;left:0;top:-.05rem;color:var(--neg);font-weight:700;font-size:1.1rem}
+  ul.pitfalls b{color:var(--ink)}
+
+  /* Проверка себя */
+  .selfcheck{display:flex;flex-direction:column;gap:.6rem}
+
+  .next{background:var(--accent);color:#fff;border-radius:12px;padding:1.2rem 1.3rem}
+  .next h2{color:#fff}
+  .next p{color:#dfe4fb;font-size:.96rem;margin:.4rem 0 0}
+  .foot{margin-top:2.4rem;font-size:.82rem;color:var(--muted);text-align:center}
+
+  @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="wrap">
+
+  <header>
+    <p class="eyebrow">Алгебра · 7 класс</p>
+    <h1>Текстовые задачи через системы уравнений</h1>
+    <p class="lede">Когда в задаче <em>две</em> неизвестные величины и <em>два</em> условия — не гадай. Переведи слова в две буквы и два уравнения, а дальше реши знакомым способом.</p>
+  </header>
+
+  <div class="hero">
+    <p class="lbl">Главная идея темы</p>
+    <div class="sys">
+      <span class="brace">&#123;</span>
+      <span class="rows">
+        <span><b>a&#8321;</b>&#183;x + <b>b&#8321;</b>&#183;y = <b>c&#8321;</b></span>
+        <span><b>a&#8322;</b>&#183;x + <b>b&#8322;</b>&#183;y = <b>c&#8322;</b></span>
+      </span>
+    </div>
+    <p class="note">Два неизвестных (x и y) &rarr; два уравнения (два условия задачи). Система задаёт обе величины однозначно.</p>
+  </div>
+
+  <section>
+    <p class="kicker">Зачем это нужно</p>
+    <h2>Одной буквы иногда мало</h2>
+    <p>Смотри на задачу: <em>«Купили 3 ручки и 2 тетради за 130 р., а 1 ручку и 4 тетради за 160 р. Сколько стоит каждая вещь?»</em> Здесь <strong>две</strong> неизвестные цены и <strong>два</strong> факта о покупке.</p>
+    <p>Если взять только одну букву, вторую величину придётся «держать в голове» — легко запутаться. Система из двух уравнений позволяет <strong>записать оба условия честно и по отдельности</strong>, а потом решить их вместе.</p>
+    <p>Главный миф: <em>«раз неизвестных два — задача нерешаемая, надо угадывать».</em> Неправда. Если условий тоже два, ответ определён однозначно — угадывать не нужно.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Что вспомнить с прошлых шагов</p>
+    <div class="recall">
+      <p>Систему решаешь тем, что <strong>уже умеешь</strong>. Сложность темы не в решении, а в <strong>переводе текста в уравнения</strong>.</p>
+      <div class="two">
+        <div class="mini">
+          <h4>Метод подстановки</h4>
+          <p>Из одного уравнения выражаешь одну букву (<span class="math">x = &#8230;</span>) и подставляешь во второе.</p>
+        </div>
+        <div class="mini">
+          <h4>Метод сложения</h4>
+          <p>Складываешь (или вычитаешь) уравнения так, чтобы одна буква ушла.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Ядро · алгоритм</p>
+    <h2>Пять шагов от текста к ответу</h2>
+    <ol class="algo">
+      <li><b>Что найти?</b> Обозначь две искомые величины буквами <span class="vx">x</span> и <span class="vy">y</span>.<span class="sub">Сразу запиши, что значит каждая буква и в каких единицах: рубли, штуки, км, км/ч.</span></li>
+      <li><b>Что дано?</b> Найди в тексте ровно <b>два независимых условия</b>.</li>
+      <li><b>Составь систему.</b> Каждое условие &rarr; одно уравнение.<span class="sub">Сколько условий — столько уравнений. Их должно быть два.</span></li>
+      <li><b>Реши систему</b> подстановкой или сложением.</li>
+      <li><b>Истолкуй ответ.</b> Подставь обратно, проверь по смыслу.<span class="sub">Цена &gt; 0, число людей — целое. Ответ пиши с единицами.</span></li>
+    </ol>
+  </section>
+
+  <section>
+    <p class="kicker">Наглядность · как переводить</p>
+    <h2>Текст &rarr; две буквы &rarr; система</h2>
+    <p>Возьмём разбор по цветам. <span class="hl want">Синим</span> — что ищем, <span class="hl c1">зелёным</span> — первое условие, <span class="hl c2">жёлтым</span> — второе.</p>
+    <div class="schema">
+      <p class="src">За <span class="hl c1">3 тетради и 2 ручки заплатили 210 р.</span>, а за <span class="hl c2">1 тетрадь и 4 ручки — 220 р.</span> Найти <span class="hl want">цену тетради и цену ручки</span>.</p>
+      <div class="arrow">&darr;</div>
+      <div class="defs">
+        <div class="def x">x — цена тетради (р.)</div>
+        <div class="def y">y — цена ручки (р.)</div>
+      </div>
+      <div class="sysbox">
+        <span class="brace">&#123;</span>
+        <span class="eqs">
+          <span class="t1">3x + 2y = 210</span>
+          <span class="t2">1x + 4y = 220</span>
+        </span>
+      </div>
+    </div>
+
+    <div class="tblwrap">
+      <table class="cond">
+        <thead>
+          <tr><th></th><th class="cx">тетради (x)</th><th class="cy">ручки (y)</th><th>сумма</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="rh">чек&nbsp;1</td><td>3</td><td>2</td><td>210</td></tr>
+          <tr><td class="rh">чек&nbsp;2</td><td>1</td><td>4</td><td>220</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="tblnote">Каждая <b>строка таблицы</b> — это одно уравнение системы. Сколько строк — столько уравнений.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Разбираем вместе · думаю вслух</p>
+    <h2>Эталонный пример</h2>
+    <div class="worked">
+      <p class="task">За 3 тетради и 2 ручки заплатили 210 р., а за 1 тетрадь и 4 ручки — 220 р. Найти цену тетради и ручки.</p>
+      <ol class="steps">
+        <li>Неизвестных ровно две, поэтому беру две буквы: <span class="m">x</span> — цена тетради, <span class="m">y</span> — цена ручки. <span class="why">Сразу подписал, что есть что — чтобы не перепутать.</span></li>
+        <li>Первый чек &rarr; первое уравнение: <span class="m">3x + 2y = 210</span>. <span class="why">3 тетради по x плюс 2 ручки по y дают всю сумму.</span></li>
+        <li>Второй чек &rarr; второе уравнение: <span class="m">x + 4y = 220</span>. <span class="why">Второй чек — второе условие.</span></li>
+        <li>Из второго выражаю x (там коэффициент 1, удобно): <span class="m">x = 220 &minus; 4y</span>.</li>
+        <li>Подставляю в первое: <span class="m">3(220 &minus; 4y) + 2y = 210</span> &rarr; <span class="m">660 &minus; 12y + 2y = 210</span> &rarr; <span class="m">660 &minus; 10y = 210</span>.</li>
+        <li>Отсюда <span class="m">&minus;10y = &minus;450</span>, значит <span class="m">y = 45</span>. Тогда <span class="m">x = 220 &minus; 4&#183;45 = 40</span>.</li>
+        <li><b>Проверка по смыслу:</b> цены 40 р. и 45 р. — положительные, разумные. В первое уравнение: <span class="m">3&#183;40 + 2&#183;45 = 120 + 90 = 210</span> &#10003;.</li>
+      </ol>
+      <div class="verdict">Ответ: тетрадь — 40 р., ручка — 45 р.</div>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Наглядность · сумма и разность</p>
+    <h2>Бар-модель: почему делим пополам</h2>
+    <p>Задача: <em>сумма двух чисел равна 28, а разность равна 6.</em> Нарисуем две полоски — длинную <span class="vx">x</span> и короткую <span class="vy">y</span>.</p>
+    <div class="barmodel">
+      <div class="bars">
+        <div class="brow">
+          <span class="tag x">x</span>
+          <span class="track">
+            <span class="seg base" style="flex:11">11</span>
+            <span class="seg extra" style="flex:6">6</span>
+          </span>
+        </div>
+        <div class="brow">
+          <span class="tag y">y</span>
+          <span class="track" style="max-width:64.3%">
+            <span class="seg base" style="flex:11">11</span>
+          </span>
+        </div>
+      </div>
+      <p class="barnote">Обе полоски вместе — это сумма <b>28</b>. Красный кусок — это разность <b>6</b>, на которую длинная полоска выступает. Если «отрезать выступ», останутся <b>две одинаковые</b> полоски: <span class="m">(28 &minus; 6) : 2 = 11</span> &rarr; это меньшее число <span class="vy">y</span>. Тогда <span class="m">x = 11 + 6 = 17</span>. Тот же ответ даёт и система.</p>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Тренажёр · бесконечная практика</p>
+    <h2>Собери систему и реши</h2>
+    <p>Нажми «Новая задача», прочитай условие, введи <b>две величины через точку с запятой</b> в подписанном порядке. Потом проверь себя или посмотри пошаговое решение.</p>
+    <div class="trainer">
+      <div class="tr-eq" id="trEq"></div>
+      <div class="tr-ctl">
+        <button id="trNew" type="button">&#127922; Новая задача</button>
+        <input id="trAns" type="text" placeholder="напр.  40; 45" aria-label="Ответ: две величины через точку с запятой">
+        <button id="trCheck" type="button" class="sec">Проверить</button>
+        <button id="trShow" type="button" class="ghost">Показать решение</button>
+      </div>
+      <p class="tr-hint" id="trHint"></p>
+      <div id="trResult" class="tr-result"></div>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Теперь ты · раскрой ответ</p>
+    <h2>Практика по нарастанию</h2>
+    <div class="drill">
+      <details>
+        <summary><span class="q">2 кг яблок и 3 кг груш стоят 500 р. Что удобно обозначить буквами?</span><span class="tag">понимание</span></summary>
+        <div class="ans">Обозначаем цены: <span class="m">x</span> — цена 1 кг яблок (р.), <span class="m">y</span> — цена 1 кг груш (р.). Одно условие про покупку даёт одно уравнение <span class="m">2x + 3y = 500</span>. <strong>Для решения нужно второе условие</strong> — с одним уравнением обе цены не найти.</div>
+      </details>
+      <details>
+        <summary><span class="q">Сумма двух чисел равна 28, разность равна 6. Найди числа.</span><span class="tag">применение</span></summary>
+        <div class="ans"><span class="m">x + y = 28</span>, <span class="m">x &minus; y = 6</span>. Сложим: <span class="m">2x = 34</span> &rarr; <span class="m">x = 17</span>, тогда <span class="m">y = 28 &minus; 17 = 11</span>. <strong>Ответ: 17 и 11.</strong></div>
+      </details>
+      <details>
+        <summary><span class="q">В классе 30 человек, девочек на 4 больше, чем мальчиков. Сколько тех и других?</span><span class="tag">применение</span></summary>
+        <div class="ans">Пусть <span class="m">m</span> — мальчики, <span class="m">d</span> — девочки. <span class="m">m + d = 30</span>, <span class="m">d = m + 4</span>. Подставим: <span class="m">m + (m + 4) = 30</span> &rarr; <span class="m">2m = 26</span> &rarr; <span class="m">m = 13</span>, <span class="m">d = 17</span>. <strong>Ответ: 13 мальчиков, 17 девочек.</strong></div>
+      </details>
+      <details>
+        <summary><span class="q">Что изменится, если во втором чеке эталона было бы 1 тетрадь и 4 ручки за 180 р.?</span><span class="tag">анализ</span></summary>
+        <div class="ans">Пересобираем: <span class="m">3x + 2y = 210</span>, <span class="m">x + 4y = 180</span>. Из второго <span class="m">x = 180 &minus; 4y</span>, подставим: <span class="m">3(180 &minus; 4y) + 2y = 210</span> &rarr; <span class="m">540 &minus; 10y = 210</span> &rarr; <span class="m">y = 33</span>, <span class="m">x = 180 &minus; 132 = 48</span>. <strong>Ответ: тетрадь 48 р., ручка 33 р.</strong> Изменилось второе условие — изменился и ответ.</div>
+      </details>
+      <details>
+        <summary><span class="q">Найди ошибку: для «сумма 28, разность 6» ученик написал систему x+y=28, x+y=6.</span><span class="tag">анализ</span></summary>
+        <div class="ans">Второе уравнение неверно: разность — это <span class="m">x &minus; y</span>, а не <span class="m">x + y</span>. У ученика два одинаковых левых части, но разные суммы — <strong>такая система вообще не имеет решения</strong> (число не может равняться и 28, и 6). Правильно: <span class="m">x + y = 28</span>, <span class="m">x &minus; y = 6</span>.</div>
+      </details>
+      <details>
+        <summary><span class="q">Обратная задача: придумай условие для системы x+y=20, x−y=4.</span><span class="tag">анализ</span></summary>
+        <div class="ans">Например: <em>«Сумма двух чисел равна 20, а их разность равна 4. Найди числа.»</em> Решение: <span class="m">2x = 24</span> &rarr; <span class="m">x = 12</span>, <span class="m">y = 8</span>. Подойдёт любой сюжет с суммой 20 и разностью 4 (возраст, деньги, длины).</div>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Где чаще всего ошибаются</p>
+    <h2>Лови эти ловушки</h2>
+    <ul class="pitfalls">
+      <li><b>Вводят одну букву вместо двух.</b> Если ищешь две независимые величины — сразу <span class="math">x</span> и <span class="math">y</span>, иначе потеряешь одно условие.</li>
+      <li><b>Составляют только одно уравнение.</b> Система требует <b>двух</b>. Правило: сколько условий — столько уравнений.</li>
+      <li><b>Не истолковывают ответ.</b> Получил <span class="math">y = 45</span> — это не финал. Напиши «ручка стоит 45 р.» и проверь разумность (знак, целость).</li>
+      <li><b>Путают, какая буква что значит.</b> Выпиши расшифровку букв в начале и держи перед глазами.</li>
+      <li><b>Ошибка знака в «на 4 больше».</b> «d на 4 больше m» — это <span class="math">d = m + 4</span>, а не <span class="math">m = d + 4</span>. Проговори словами и проверь на числах.</li>
+    </ul>
+  </section>
+
+  <section>
+    <p class="kicker">Проверь, что понял</p>
+    <h2>Ответь своими словами</h2>
+    <div class="selfcheck">
+      <details>
+        <summary><span class="q">Сколько уравнений в системе, если в задаче две неизвестные и два условия?</span><span class="tag">вопрос</span></summary>
+        <div class="ans"><strong>Два.</strong> Каждое условие превращается в отдельное уравнение.</div>
+      </details>
+      <details>
+        <summary><span class="q">Почему нельзя обойтись одной буквой, если ищем и цену тетради, и цену ручки?</span><span class="tag">вопрос</span></summary>
+        <div class="ans">Это две разные независимые величины. Одна буква описывает только одну из них — вторую пришлось бы угадывать, и одно условие осталось бы неиспользованным.</div>
+      </details>
+      <details>
+        <summary><span class="q">Какой шаг идёт после того, как нашли x и y?</span><span class="tag">вопрос</span></summary>
+        <div class="ans"><strong>Интерпретация:</strong> записать ответ с единицами и проверить по смыслу задачи (знаки, целость, разумность).</div>
+      </details>
+    </div>
+    <p style="font-size:.95rem;color:var(--muted);margin-top:1rem"><b>Итог одной фразой:</b> введи две буквы для двух искомых величин, переведи два условия в два уравнения, реши систему и истолкуй ответ по смыслу.</p>
+  </section>
+
+  <section>
+    <div class="next">
+      <h2>Что дальше</h2>
+      <p>Ты научился переводить текст в систему <em>линейных</em> уравнений. Дальше — уравнения, где неизвестное стоит в квадрате: <strong>квадратные уравнения</strong>. Там та же идея «перевести условие в уравнение», но само уравнение решается уже через дискриминант.</p>
+    </div>
+  </section>
+
+  <p class="foot">Проверка на выходе: сколько букв вводить при двух неизвестных? · сколько уравнений в системе? · какой самый последний шаг решения?</p>
+
+</div>
+
+<script>
+(function(){
+  var eqEl=document.getElementById('trEq'),
+      ansEl=document.getElementById('trAns'),
+      resEl=document.getElementById('trResult'),
+      hintEl=document.getElementById('trHint');
+  if(!eqEl) return;
+
+  var MINUS='−';
+  function ri(a,b){ return Math.floor(Math.random()*(b-a+1))+a; }
+  function esc(){ return; }
+
+  // seed = эталонный пример, чтобы старт совпадал с решением
+  var cur={type:'pu',a1:3,b1:2,a2:1,b2:4,c1:210,c2:220,ans:[40,45]};
+
+  function genSumDiff(){
+    var x=ri(8,25), y=ri(2,x-2);        // x>y, оба целые положительные
+    return {type:'sd', sum:x+y, diff:x-y, ans:[x,y]};
+  }
+  function genPurchase(){
+    var a1,b1,a2,b2;
+    do{ a1=ri(1,4); b1=ri(1,4); a2=ri(1,4); b2=ri(1,4); }
+    while(a1*b2-a2*b1===0 || (a1===a2 && b1===b2));
+    var p1=ri(12,80), p2=ri(12,80);
+    return {type:'pu', a1:a1,b1:b1,a2:a2,b2:b2, c1:a1*p1+b1*p2, c2:a2*p1+b2*p2, ans:[p1,p2]};
+  }
+
+  function renderTask(q){
+    if(q.type==='sd'){
+      hintEl.textContent='Порядок: большее число; меньшее число.';
+      return 'Сумма двух чисел равна <b>'+q.sum+'</b>, а их разность равна <b>'+q.diff+
+             '</b>.<br>Найди эти числа — сначала большее, потом меньшее.';
+    }
+    hintEl.textContent='Порядок: цена товара А; цена товара Б. (штук × цена = сумма)';
+    return 'Покупали два товара по двум чекам. Сколько стоит одна штука каждого?'+
+      '<div class="twrap"><table>'+
+      '<tr><th></th><th>товар А</th><th>товар Б</th><th>сумма, р.</th></tr>'+
+      '<tr><td class="rh">чек 1</td><td>'+q.a1+' шт.</td><td>'+q.b1+' шт.</td><td>'+q.c1+'</td></tr>'+
+      '<tr><td class="rh">чек 2</td><td>'+q.a2+' шт.</td><td>'+q.b2+' шт.</td><td>'+q.c2+'</td></tr>'+
+      '</table></div>';
+  }
+
+  function solutionHTML(q){
+    var h='<div class="sol">';
+    if(q.type==='sd'){
+      var X=q.ans[0], Y=q.ans[1];
+      h+='Пусть <b>x</b> — большее число, <b>y</b> — меньшее.<br>';
+      h+='Система:  x + y = '+q.sum+' ;  x '+MINUS+' y = '+q.diff+'<br>';
+      h+='Сложим уравнения: 2x = '+(q.sum+q.diff)+' &rarr; <b>x = '+X+'</b><br>';
+      h+='Тогда y = '+q.sum+' '+MINUS+' '+X+' = <b>'+Y+'</b><br>';
+      h+='Проверка: '+X+' + '+Y+' = '+q.sum+' ;  '+X+' '+MINUS+' '+Y+' = '+q.diff+'  ✓<br>';
+      h+='Ответ: '+X+' и '+Y+'.';
+    } else {
+      var P1=q.ans[0], P2=q.ans[1];
+      h+='Пусть <b>x</b> — цена товара А, <b>y</b> — цена товара Б (руб.).<br>';
+      h+='Система:  '+q.a1+'x + '+q.b1+'y = '+q.c1+' ;  '+q.a2+'x + '+q.b2+'y = '+q.c2+'<br>';
+      h+='Уравняем множители при x: умножим 1-е на '+q.a2+', 2-е на '+q.a1+' и вычтем — x уйдёт, найдём <b>y = '+P2+'</b>.<br>';
+      h+='Подставим обратно: <b>x = '+P1+'</b>.<br>';
+      h+='Проверка: '+q.a1+'·'+P1+' + '+q.b1+'·'+P2+' = '+q.c1+'  ✓ ;  '+
+         q.a2+'·'+P1+' + '+q.b2+'·'+P2+' = '+q.c2+'  ✓<br>';
+      h+='Ответ: товар А — '+P1+' р., товар Б — '+P2+' р.';
+    }
+    return h+'</div>';
+  }
+
+  function show(q){ eqEl.innerHTML=renderTask(q); resEl.innerHTML=''; ansEl.value=''; }
+
+  function generate(){
+    cur = Math.random()<0.5 ? genSumDiff() : genPurchase();
+    show(cur);
+    ansEl.focus();   // фокус только по действию пользователя, не при первичной загрузке
+  }
+
+  function check(){
+    var raw=ansEl.value.trim();
+    if(!raw){ resEl.innerHTML='<span class="bad">Введи две величины через точку с запятой или нажми «Показать решение».</span>'; return; }
+    var got=raw.split(/[;,]/).map(function(s){ return parseFloat(s.replace(',','.')); }).filter(function(x){ return !isNaN(x); });
+    var exp=cur.ans;
+    if(got.length<2){
+      resEl.innerHTML='<span class="bad">Нужны две величины, например «'+exp[0]+'; '+exp[1]+'».</span>';
+      return;
+    }
+    var okOrder = Math.abs(got[0]-exp[0])<0.001 && Math.abs(got[1]-exp[1])<0.001;
+    var okSwap  = Math.abs(got[0]-exp[1])<0.001 && Math.abs(got[1]-exp[0])<0.001;
+    if(okOrder){
+      resEl.innerHTML='<span class="ok">✓ Верно! Обе величины найдены правильно.</span>'+solutionHTML(cur);
+    } else if(okSwap){
+      resEl.innerHTML='<span class="bad">✓ Числа те же, но перепутан порядок. Смотри подсказку под условием.</span>'+solutionHTML(cur);
+    } else {
+      resEl.innerHTML='<span class="bad">✗ Пока не то. Составь систему из двух условий и реши её.</span>'+solutionHTML(cur);
+    }
+  }
+
+  document.getElementById('trNew').addEventListener('click',generate);
+  document.getElementById('trCheck').addEventListener('click',check);
+  document.getElementById('trShow').addEventListener('click',function(){ resEl.innerHTML=solutionHTML(cur); });
+  ansEl.addEventListener('keydown',function(e){ if(e.key==='Enter') check(); });
+
+  // первичный рендер БЕЗ фокуса
+  show(cur);
+})();
+</script>

@@ -1,0 +1,703 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Метод интервалов — урок, алгебра 9 класс</title>
+<style>
+  :root{
+    --paper:#F6F7F9;
+    --card:#FFFFFF;
+    --ink:#1B2333;
+    --muted:#5A6478;
+    --line:#E2E5EC;
+    --accent:#3B4FD0;
+    --accent-soft:#EAEDFB;
+    --pos:#1E8E5A;   /* знак + / точка включена */
+    --pos-bg:#E7F4EC;
+    --zero:#B9791A;  /* знаменатель / кратность */
+    --zero-bg:#FBF1DC;
+    --neg:#C0455B;   /* знак − / точка выколота */
+    --neg-bg:#F9E9EC;
+  }
+  *{box-sizing:border-box}
+  body{margin:0}
+  .wrap{
+    max-width:760px;
+    margin:0 auto;
+    padding:clamp(1.4rem,4vw,3rem) clamp(1.1rem,4vw,2rem) 4rem;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    font-size:17px;
+    line-height:1.62;
+    -webkit-font-smoothing:antialiased;
+  }
+  .eyebrow{
+    font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--accent);font-weight:600;margin:0 0 .5rem;
+  }
+  h1{
+    font-family:Georgia,"Times New Roman",serif;
+    font-size:clamp(2.1rem,7vw,3rem);
+    line-height:1.05;margin:0;font-weight:700;letter-spacing:-.01em;
+    text-wrap:balance;
+  }
+  .lede{
+    font-size:1.08rem;color:var(--muted);margin:.7rem 0 0;max-width:60ch;
+    text-wrap:pretty;
+  }
+  h2{
+    font-family:Georgia,serif;font-size:1.32rem;font-weight:700;
+    margin:0 0 .1rem;letter-spacing:-.005em;
+  }
+  section{margin-top:2.6rem}
+  .kicker{
+    font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--muted);font-weight:600;margin:0 0 .8rem;
+    display:flex;align-items:center;gap:.6rem;
+  }
+  .kicker::before{
+    content:"";width:1.4rem;height:2px;background:var(--accent);border-radius:2px;
+  }
+  p{margin:.65rem 0}
+  strong{font-weight:650}
+  em{font-style:italic}
+  .math{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-weight:600}
+  sup{font-size:.72em}
+
+  /* Главная идея */
+  .hero-formula{
+    margin-top:2.2rem;
+    background:var(--ink);color:#fff;border-radius:14px;
+    padding:1.6rem 1.4rem;text-align:center;
+  }
+  .hero-formula .lbl{
+    font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;
+    color:#9aa6c9;margin:0 0 .7rem;
+  }
+  .hero-formula .eq{
+    font-family:ui-monospace,"SF Mono",Menlo,monospace;
+    font-size:clamp(1.5rem,5.4vw,2.1rem);font-weight:700;letter-spacing:.01em;
+  }
+  .hero-formula .eq b{color:#8ea0ff;font-weight:700}
+  .hero-formula .note{font-size:.86rem;color:#9aa6c9;margin:.8rem 0 0}
+
+  /* Пререквизит */
+  .recall{
+    background:var(--accent-soft);border-radius:12px;padding:1rem 1.15rem;
+    font-size:.96rem;
+  }
+  .recall p{margin:.3rem 0}
+
+  /* Алгоритм */
+  ol.algo{margin:.4rem 0 0;padding:0;list-style:none;counter-reset:s;display:flex;flex-direction:column;gap:.7rem}
+  ol.algo li{
+    position:relative;padding-left:2.4rem;counter-increment:s;
+    background:var(--card);border:1px solid var(--line);border-radius:10px;
+    padding:.75rem 1rem .75rem 2.9rem;
+  }
+  ol.algo li::before{
+    content:counter(s);position:absolute;left:.7rem;top:.7rem;
+    width:1.6rem;height:1.6rem;border-radius:50%;
+    background:var(--accent-soft);color:var(--accent);
+    font-size:.85rem;font-weight:700;display:flex;align-items:center;justify-content:center;
+  }
+  ol.algo .m{font-family:ui-monospace,Menlo,monospace;font-weight:600;color:var(--ink)}
+
+  /* Три вида точек */
+  .cases{display:grid;gap:.85rem;margin-top:.4rem}
+  @media(min-width:640px){.cases{grid-template-columns:repeat(3,1fr)}}
+  .case{
+    border-radius:12px;padding:1.05rem 1.1rem;border:1px solid var(--line);
+    background:var(--card);display:flex;flex-direction:column;gap:.35rem;
+  }
+  .case .dot{font-size:1.5rem;line-height:1}
+  .case .ttl{font-weight:700;font-size:1rem}
+  .case .desc{font-size:.9rem;color:var(--muted)}
+  .case.pos{border-top:4px solid var(--pos);background:var(--pos-bg)}
+  .case.pos .ttl{color:var(--pos)}
+  .case.neg{border-top:4px solid var(--neg);background:var(--neg-bg)}
+  .case.neg .ttl{color:var(--neg)}
+  .case.zero{border-top:4px solid var(--zero);background:var(--zero-bg)}
+  .case.zero .ttl{color:var(--zero)}
+
+  /* Разбор */
+  .worked{
+    background:var(--card);border:1px solid var(--line);border-radius:12px;
+    padding:1.2rem 1.3rem;margin-top:.6rem;
+  }
+  .worked .task{
+    font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.05rem;
+    margin:0 0 1rem;padding-bottom:.8rem;border-bottom:1px solid var(--line);
+  }
+  ol.steps{margin:0;padding:0;list-style:none;counter-reset:s;display:flex;flex-direction:column;gap:.7rem}
+  ol.steps li{position:relative;padding-left:2.1rem;counter-increment:s}
+  ol.steps li::before{
+    content:counter(s);position:absolute;left:0;top:.05rem;
+    width:1.5rem;height:1.5rem;border-radius:50%;
+    background:var(--accent-soft);color:var(--accent);
+    font-size:.82rem;font-weight:700;display:flex;align-items:center;justify-content:center;
+  }
+  ol.steps .m{font-family:ui-monospace,Menlo,monospace;font-weight:600;color:var(--ink)}
+  .verdict{
+    margin-top:1rem;padding:.7rem 1rem;background:var(--pos-bg);
+    border-radius:9px;font-weight:600;color:var(--pos);font-size:.98rem;
+    font-family:ui-monospace,Menlo,monospace;
+  }
+
+  /* Практика */
+  .drill{display:flex;flex-direction:column;gap:.7rem}
+  details{
+    background:var(--card);border:1px solid var(--line);border-radius:10px;
+    padding:.85rem 1.05rem;
+  }
+  details[open]{border-color:var(--accent)}
+  summary{
+    cursor:pointer;font-weight:600;list-style:none;
+    display:flex;justify-content:space-between;align-items:center;gap:1rem;
+  }
+  summary::-webkit-details-marker{display:none}
+  summary:focus-visible{outline:3px solid var(--accent);outline-offset:3px;border-radius:6px}
+  summary .q{font-family:ui-monospace,Menlo,monospace}
+  summary .tag{
+    font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);
+    border:1px solid var(--line);border-radius:20px;padding:.1rem .55rem;white-space:nowrap;
+  }
+  summary::after{
+    content:"ответ";font-size:.78rem;color:var(--accent);font-weight:600;white-space:nowrap;
+  }
+  details[open] summary::after{content:"скрыть"}
+  .ans{margin-top:.7rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.96rem;color:var(--muted)}
+  .ans .m{font-family:ui-monospace,Menlo,monospace;color:var(--ink);font-weight:600}
+
+  /* Ошибки */
+  ul.pitfalls{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:.6rem}
+  ul.pitfalls li{padding-left:1.5rem;position:relative;font-size:.98rem}
+  ul.pitfalls li::before{
+    content:"\00d7";position:absolute;left:0;top:-.05rem;color:var(--neg);font-weight:700;font-size:1.1rem;
+  }
+  ul.pitfalls b{color:var(--ink)}
+
+  .callout{
+    margin-top:1rem;background:var(--zero-bg);border:1px solid #EBD5A6;border-radius:12px;
+    padding:1rem 1.15rem;font-size:.96rem;
+  }
+  .callout .h{font-weight:700;color:var(--zero);margin:0 0 .3rem;font-size:.95rem}
+  .callout .m{font-family:ui-monospace,Menlo,monospace;color:var(--ink);font-weight:600}
+
+  .check{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:1.1rem 1.3rem}
+  ol.check-list{margin:0;padding-left:1.2rem;display:flex;flex-direction:column;gap:.5rem}
+  ol.check-list li{padding-left:.2rem}
+
+  .next{background:var(--accent);color:#fff;border-radius:12px;padding:1.2rem 1.3rem}
+  .next h2{color:#fff}
+  .next p{color:#dfe4fb;font-size:.96rem;margin:.4rem 0 0}
+  .next .eq{font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.15rem;margin:.6rem 0 .3rem}
+  .foot{margin-top:2.4rem;font-size:.82rem;color:var(--muted);text-align:center}
+
+  /* Визуализация — числовая ось */
+  .viz{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.1rem 1.1rem 1rem;margin:1rem 0}
+  .viz canvas{width:100%;height:auto;display:block;border-radius:10px;background:#FCFDFF}
+  .viz-btns{display:flex;gap:.45rem;flex-wrap:wrap;margin:.9rem 0 0;justify-content:center}
+  .viz-btns button{
+    font:inherit;font-weight:700;font-size:1rem;cursor:pointer;border:1px solid var(--line);
+    border-radius:9px;padding:.45rem .85rem;background:#fff;color:var(--ink);
+    font-family:ui-monospace,Menlo,monospace;min-width:3.4rem;
+  }
+  .viz-btns button.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .viz-btns button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+  .viz-verdict{text-align:center;font-weight:700;font-size:1rem;margin:.9rem 0 0;padding:.6rem;border-radius:9px;
+    background:var(--pos-bg);color:var(--pos);font-family:ui-monospace,Menlo,monospace;word-break:break-word}
+
+  /* Тренажёр */
+  .trainer{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.2rem 1.3rem;margin-top:1rem}
+  .tr-eq{font-family:ui-monospace,Menlo,monospace;font-weight:800;font-size:clamp(1.15rem,4.6vw,1.55rem);
+    text-align:center;padding:1rem .7rem;background:var(--accent-soft);border-radius:10px;color:var(--ink);
+    word-break:break-word}
+  .tr-ctl{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.9rem;align-items:center}
+  .tr-ctl button{font:inherit;font-weight:700;font-size:.9rem;cursor:pointer;border:none;border-radius:9px;padding:.55rem .95rem;color:#fff;background:var(--accent)}
+  .tr-ctl button.sec{background:var(--pos)}
+  .tr-ctl button.ghost{background:transparent;color:var(--accent);border:1px solid var(--accent)}
+  .tr-ctl input{flex:1;min-width:170px;font:inherit;padding:.5rem .7rem;border:1px solid var(--line);border-radius:9px;background:#fff;color:var(--ink)}
+  .tr-ctl button:focus-visible,.tr-ctl input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+  .tr-hint{font-size:.85rem;color:var(--muted);margin:.7rem 0 0}
+  .tr-hint code{font-family:ui-monospace,Menlo,monospace;background:var(--accent-soft);padding:.05rem .35rem;border-radius:5px;color:var(--ink)}
+  .tr-result{margin-top:.9rem;font-size:.96rem;min-height:1.2rem}
+  .tr-result .ok{color:var(--pos);font-weight:700}
+  .tr-result .bad{color:var(--neg);font-weight:700}
+  .tr-result .sol{margin-top:.7rem;padding:.85rem 1rem;background:#FCFBFE;border:1px solid var(--line);border-radius:10px;font-family:ui-monospace,Menlo,monospace;font-size:.9rem;line-height:1.85}
+  .tr-result .sol b{color:var(--accent)}
+  .tr-result .sol .pos{color:var(--pos);font-weight:700}
+  .tr-result .sol .neg{color:var(--neg);font-weight:700}
+
+  @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="wrap">
+
+  <header>
+    <p class="eyebrow">Алгебра · 9 класс</p>
+    <h1>Метод интервалов</h1>
+    <p class="lede">Быстрый и надёжный способ решить неравенство вроде <span class="math">(x − 1)(x + 3) &gt; 0</span> — сразу <em>все</em> решения, без перебора чисел и без угадывания.</p>
+  </header>
+
+  <div class="hero-formula">
+    <p class="lbl">Что решаем</p>
+    <div class="eq"><b>f(x)</b> &gt; 0 &nbsp;·&nbsp; &lt; 0 &nbsp;·&nbsp; ≥ 0 &nbsp;·&nbsp; ≤ 0</div>
+    <p class="note">где f(x) разложена на множители (скобки) — возможно, в виде дроби</p>
+  </div>
+
+  <section>
+    <p class="kicker">Зачем это нужно</p>
+    <h2>Перебирать числа невозможно</h2>
+    <p>Как решить <span class="math">(x − 1)(x + 3) &gt; 0</span>? Подставлять все числа подряд нельзя — их бесконечно много. А главное заблуждение звучит так: <em>«если произведение больше нуля, то каждый множитель больше нуля»</em>.</p>
+    <p>Это неправда. Произведение положительно и тогда, когда <strong>оба множителя отрицательны</strong> (минус на минус даёт плюс). Именно эту тонкость метод интервалов обрабатывает <strong>автоматически</strong>: он ловит все случаи сразу.</p>
+    <p>Метод — рабочий инструмент на ОГЭ и ЕГЭ, при исследовании функций (где функция положительна или отрицательна) и при поиске области определения. Освой его один раз — пригодится и дальше.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Что вспомнить с прошлых шагов</p>
+    <div class="recall">
+      <p><strong>Разложение на множители.</strong> Метод работает, когда левая часть — это произведение скобок: <span class="math">(x − a)(x − b)</span> или дробь из таких скобок.</p>
+      <p><strong>Корень уравнения.</strong> Произведение равно нулю тогда, когда <em>хотя бы один</em> множитель равен нулю. Скобка <span class="math">(x − a)</span> обнуляется при <span class="math">x = a</span>.</p>
+      <p><strong>Знак числа.</strong> Плюс на плюс и минус на минус дают плюс; плюс на минус — минус.</p>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Ядро темы · алгоритм</p>
+    <h2>Пять шагов метода интервалов</h2>
+    <p>Идея: между «особыми» точками (где выражение равно нулю или не определено) знак <strong>не меняется</strong>. Непрерывная функция не может перескочить с плюса на минус, не пройдя через нуль. Значит, достаточно проверить один знак на каждом промежутке.</p>
+    <ol class="algo">
+      <li>Перенести всё в левую часть, чтобы <strong>справа стоял 0</strong>, и разложить левую часть на множители.</li>
+      <li>Найти <strong>нули</strong>: где числитель <span class="m">= 0</span> (корни) и где знаменатель <span class="m">= 0</span> (там дробь не определена — это ОДЗ).</li>
+      <li>Отметить все эти точки на числовой прямой. Они разбивают её на <strong>промежутки</strong>.</li>
+      <li>Определить <strong>знак</strong> на каждом промежутке: подставить одну пробную точку, дальше знаки чередуются.</li>
+      <li>Выбрать промежутки с нужным знаком и записать ответ.</li>
+    </ol>
+  </section>
+
+  <section>
+    <p class="kicker">Закрашивать точку или выкалывать</p>
+    <h2>Три вида точек — цвет решает</h2>
+    <p>От того, откуда точка и какой знак у неравенства, зависит — <strong>входит</strong> она в ответ или нет:</p>
+    <div class="cases">
+      <div class="case pos">
+        <div class="dot" style="color:var(--pos)">●</div>
+        <div class="ttl">Закрашена</div>
+        <div class="desc">Нуль <strong>числителя</strong> при нестрогом знаке (≥ или ≤). Точка входит в ответ — квадратная скобка.</div>
+      </div>
+      <div class="case neg">
+        <div class="dot" style="color:var(--neg)">○</div>
+        <div class="ttl">Выколота</div>
+        <div class="desc">Нуль <strong>числителя</strong> при строгом знаке (&gt; или &lt;). Точка не входит — круглая скобка.</div>
+      </div>
+      <div class="case zero">
+        <div class="dot" style="color:var(--zero)">○</div>
+        <div class="ttl">Знаменатель</div>
+        <div class="desc">Нуль <strong>знаменателя</strong> — выколот <strong>всегда</strong>. На нуль делить нельзя, знак неравенства тут не важен.</div>
+      </div>
+    </div>
+    <p style="font-size:.92rem;color:var(--muted);margin-top:.9rem">Считалочка: <strong>из числителя</strong> — смотри на знак неравенства; <strong>из знаменателя</strong> — всегда дырка.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Покрути сам · числовая ось</p>
+    <h2>Знаки чередуются «змейкой»</h2>
+    <p>Возьмём <span class="math">(x + 1)(x − 2)(x − 4)</span>. Нули: <span class="math">−1, 2, 4</span>. Справа от самого большого нуля знак всегда <strong>«+»</strong>, а дальше влево знаки чередуются. Переключай знак неравенства — и смотри, какие промежутки попадают в ответ и как точки становятся закрашенными или выколотыми.</p>
+    <div class="viz">
+      <canvas id="numline" width="700" height="230" aria-label="Числовая ось со знаками на промежутках"></canvas>
+      <div class="viz-btns" role="group" aria-label="Знак неравенства">
+        <button type="button" data-dir="&gt;" class="on">&gt; 0</button>
+        <button type="button" data-dir="&lt;">&lt; 0</button>
+        <button type="button" data-dir="&gt;=">≥ 0</button>
+        <button type="button" data-dir="&lt;=">≤ 0</button>
+      </div>
+      <div id="vizVerdict" class="viz-verdict"></div>
+    </div>
+    <p style="font-size:.9rem;color:var(--muted)">Зелёным подсвечен ответ. Обрати внимание: у <span class="math">&gt;</span> и <span class="math">&lt;</span> все точки выколоты, а у <span class="math">≥</span> и <span class="math">≤</span> нули числителя закрашиваются и входят в ответ.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Разбираем вместе · думаю вслух</p>
+    <h2>Эталонный пример</h2>
+    <div class="worked">
+      <p class="task">(x − 1)(x + 3)(x − 4) &gt; 0</p>
+      <ol class="steps">
+        <li>Справа уже 0, скобки разложены. Нули — там, где обнуляется каждая скобка: <span class="m">x = 1, x = −3, x = 4</span>.</li>
+        <li>Знак <strong>строгий</strong> (&gt;), точки из числителя — значит все <strong>выколоты</strong>. Отмечаю на прямой: <span class="m">−3, 1, 4</span>.</li>
+        <li>Получились промежутки <span class="m">(−∞; −3), (−3; 1), (1; 4), (4; +∞)</span>. Беру пробную точку справа, <span class="m">x = 5</span>: <span class="m">(5−1)(5+3)(5−4) = 4·8·1 = 32 &gt; 0</span> — плюс.</li>
+        <li>Корни простые, поэтому знаки <strong>чередуются</strong>: справа <span class="m">+</span>, тогда <span class="m">(1;4)</span> — минус, <span class="m">(−3;1)</span> — плюс, <span class="m">(−∞;−3)</span> — минус.</li>
+        <li>Нужен знак <strong>«+»</strong>: это промежутки <span class="m">(−3; 1)</span> и <span class="m">(4; +∞)</span>.</li>
+      </ol>
+      <div class="verdict">Ответ: x ∈ (−3; 1) ∪ (4; +∞)</div>
+    </div>
+
+    <h2 style="margin-top:2rem">Пример с дробью</h2>
+    <div class="worked">
+      <p class="task">(x − 2) / (x + 5) ≤ 0</p>
+      <ol class="steps">
+        <li>Нуль числителя: <span class="m">x = 2</span>. Знак нестрогий (≤), точка из числителя — значит <strong>закрашена</strong>.</li>
+        <li>Нуль знаменателя: <span class="m">x = −5</span>. Знаменатель <strong>выколот всегда</strong> — при <span class="m">x = −5</span> дробь не определена.</li>
+        <li>Отмечаю <span class="m">−5</span> (○) и <span class="m">2</span> (●). Пробная точка <span class="m">x = 0</span>: <span class="m">(0−2)/(0+5) = −2/5 &lt; 0</span> — минус на промежутке <span class="m">(−5; 2)</span>.</li>
+        <li>Нужен знак <strong>«≤ 0»</strong> — это минус вместе с нулём. Беру промежуток со знаком «−», присоединяю закрашенную точку <span class="m">2</span>, но <strong>не</strong> присоединяю <span class="m">−5</span>.</li>
+      </ol>
+      <div class="verdict">Ответ: x ∈ (−5; 2]</div>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Тренажёр · бесконечная практика</p>
+    <h2>Реши неравенство сам</h2>
+    <p>Нажми «Новое», найди нули, расставь знаки и запиши ответ промежутками. Проверь себя или посмотри пошаговое решение.</p>
+    <div class="trainer">
+      <div class="tr-eq" id="trEq"></div>
+      <div class="tr-ctl">
+        <button id="trNew" type="button">🎲 Новое</button>
+        <input id="trAns" type="text" placeholder="напр.  (-3; 1) U (4; +inf)" aria-label="Ответ — промежутки">
+        <button id="trCheck" type="button" class="sec">Проверить</button>
+        <button id="trShow" type="button" class="ghost">Показать решение</button>
+      </div>
+      <p class="tr-hint">Формат: скобки <code>(</code> <code>)</code> — точка выколота, <code>[</code> <code>]</code> — закрашена; концы через <code>;</code>; объединение через <code>U</code>; бесконечность — <code>inf</code>. Пример: <code>[-3; 0) U (2; +inf)</code>.</p>
+      <div id="trResult" class="tr-result"></div>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Практика по нарастанию</p>
+    <h2>От понимания к анализу</h2>
+    <div class="drill">
+      <details>
+        <summary><span class="q">На прямой: −2 выколота, 4 закрашена. Какое неравенство?</span><span class="tag">понимание</span></summary>
+        <div class="ans">У точки <span class="m">−2</span> — круглая скобка, значит там строгая граница: либо это нуль числителя при строгом знаке, либо нуль знаменателя. У точки <span class="m">4</span> — квадратная скобка: это нуль <strong>числителя</strong> при <strong>нестрогом</strong> знаке (≥ или ≤). Нуль знаменателя всегда выколот — на нуль делить нельзя ни при каком знаке.</div>
+      </details>
+      <details>
+        <summary><span class="q">(x − 5)(x + 1)(x − 2) ≤ 0</span><span class="tag">применение</span></summary>
+        <div class="ans">Нули <span class="m">−1, 2, 5</span>, знак нестрогий — все закрашены. Пробная <span class="m">x = 6</span>: <span class="m">(1)(7)(4) &gt; 0</span> — плюс справа, дальше чередуем: <span class="m">(2;5)</span> минус, <span class="m">(−1;2)</span> плюс, <span class="m">(−∞;−1)</span> минус. Нужен «≤ 0» (минус и нули): <span class="m">x ∈ (−∞; −1] ∪ [2; 5]</span>.</div>
+      </details>
+      <details>
+        <summary><span class="q">(x − 1)²(x + 4) &gt; 0 — что даёт квадрат?</span><span class="tag">анализ</span></summary>
+        <div class="ans">Множитель <span class="m">(x − 1)²</span> в <strong>чётной</strong> степени: через точку <span class="m">x = 1</span> знак <strong>не меняется</strong>. Нули <span class="m">−4</span> и <span class="m">1</span>. Пробная <span class="m">x = 2</span>: <span class="m">(1)(6) &gt; 0</span>. Слева от 1 знак тот же (плюс), а через <span class="m">−4</span> меняется. Знак строгий, сама <span class="m">x = 1</span> не входит: <span class="m">x ∈ (−4; 1) ∪ (1; +∞)</span>.</div>
+      </details>
+      <details>
+        <summary><span class="q">Найди ошибку: (x − 2)/(x − 6) ≥ 0, ученик включил 6</span><span class="tag">анализ</span></summary>
+        <div class="ans">Ошибка: <span class="m">x = 6</span> — нуль <strong>знаменателя</strong>. При <span class="m">x = 6</span> дробь не определена (деление на нуль), поэтому точка <strong>выколота всегда</strong>, даже при нестрогом знаке ≥. Включать её в ответ нельзя.</div>
+      </details>
+      <details>
+        <summary><span class="q">Обратная задача: придумай дробь с ответом [−3; 0)</span><span class="tag">анализ</span></summary>
+        <div class="ans">Годится <span class="m">(x + 3) / x ≤ 0</span>. Нуль числителя <span class="m">−3</span> (закрашен при ≤), нуль знаменателя <span class="m">0</span> (выколот всегда). Пробная <span class="m">x = −1</span>: <span class="m">(2)/(−1) &lt; 0</span> — минус на <span class="m">(−3; 0)</span>. Нужен «≤ 0»: <span class="m">x ∈ [−3; 0)</span>. ✓</div>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Где чаще всего ошибаются</p>
+    <h2>Четыре ловушки</h2>
+    <ul class="pitfalls">
+      <li><b>Забывают перенести всё в одну часть.</b> Метод работает <em>только</em> при сравнении с нулём. Сначала привести к виду <span class="math">f(x) ⋛ 0</span>, и лишь потом искать нули.</li>
+      <li><b>Ставят знак «на глаз».</b> Всегда подставляй пробную точку хотя бы в один промежуток, а дальше опирайся на чередование — не угадывай.</li>
+      <li><b>Путают числитель и знаменатель.</b> Нули числителя закрашиваются при ≥ / ≤; нули знаменателя выколоты <strong>всегда</strong>. Отмечай отдельно, откуда каждая точка.</li>
+      <li><b>Сокращают дробь и теряют ОДЗ.</b> В <span class="math">(x−2)/(x+5)</span> нельзя «забыть» про <span class="math">x = −5</span> — эта точка всё равно выколота.</li>
+    </ul>
+    <div class="callout">
+      <p class="h">⚠ Знаки чередуются НЕ всегда</p>
+      <p style="margin:.2rem 0 0">Чередование работает, пока все корни <strong>простые</strong> (степень 1). Если множитель в <strong>чётной</strong> степени — например <span class="m">(x − 2)²</span> — то через эту точку знак <strong>не меняется</strong>. Правило: смотри на степень множителя. Чётная — знак сохраняется, нечётная — меняется.</p>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Проверка понимания</p>
+    <h2>Объясни своими словами</h2>
+    <div class="check">
+      <ol class="check-list">
+        <li>Почему точка из знаменателя выколота <strong>всегда</strong>, даже если неравенство нестрогое?</li>
+        <li>Через корень какой кратности знак выражения <strong>не</strong> меняется?</li>
+        <li>Зачем перед методом нужно перенести всё в одну часть и сравнить с нулём?</li>
+      </ol>
+    </div>
+  </section>
+
+  <section>
+    <div class="next">
+      <h2>Что дальше</h2>
+      <p>Метод интервалов — это база, которая держит всю старшую школу. Дальше те же пять шагов работают на более сложных выражениях:</p>
+      <div class="eq">дробно-рациональные · с квадратными множителями</div>
+      <p>Его же используют в исследовании функций (где функция положительна или отрицательна) и при поиске области определения на ЕГЭ. Разложил на множители — и вперёд по прямой.</p>
+    </div>
+  </section>
+
+  <p class="foot">Проверка на выходе: назови три вида точек и когда каждая входит в ответ · какой знак справа от самого большого нуля? · сколько промежутков дают 3 точки?</p>
+
+</div>
+
+<script>
+/* ===== Визуализация: числовая ось со знаками ===== */
+(function(){
+  var canvas=document.getElementById('numline'); if(!canvas) return;
+  var ctx=canvas.getContext('2d');
+  var verdict=document.getElementById('vizVerdict');
+  var btns=[].slice.call(document.querySelectorAll('.viz-btns button'));
+  var MINUS='−';
+  var C={pos:'#1E8E5A',neg:'#C0455B',accent:'#3B4FD0',ink:'#1B2333',line:'#D4D8E0',muted:'#5A6478',posbg:'#E7F4EC'};
+
+  // фиксированный пример: (x+1)(x-2)(x-4), все нули из числителя
+  var roots=[{v:-1,den:false},{v:2,den:false},{v:4,den:false}];
+  var dir='>';
+  var xmin=-4, xmax=7;
+  var W=700,H=230,dpr=1;
+
+  function fmt(n){ return (n<0?MINUS:'')+Math.abs(n); }
+
+  function buildAnswer(pts,d){
+    var n=pts.length, strict=(d==='>'||d==='<'), wantPos=(d==='>'||d==='>=');
+    var ivs=[];
+    for(var i=0;i<=n;i++){
+      var lo=(i===0)?-Infinity:pts[i-1].v;
+      var hi=(i===n)?Infinity:pts[i].v;
+      var signPos=(((n-i)%2)===0);   // самый правый промежуток (i=n) — плюс
+      if(signPos===wantPos){
+        var lc=(lo!==-Infinity)&&!strict&&!pts[i-1].den;
+        var rc=(hi!==Infinity)&&!strict&&!pts[i].den;
+        ivs.push({lo:lo,hi:hi,lc:lc,rc:rc});
+      }
+    }
+    return ivs;
+  }
+  function ivStr(iv){
+    var l=(iv.lo===-Infinity)?(MINUS+'∞'):fmt(iv.lo);
+    var r=(iv.hi===Infinity)?('+∞'):fmt(iv.hi);
+    return (iv.lc?'[':'(')+l+'; '+r+(iv.rc?']':')');
+  }
+  function ansStr(ivs){ return ivs.length? ivs.map(ivStr).join(' ∪ ') : '∅'; }
+
+  function resize(){
+    var cssW=canvas.clientWidth||700; dpr=Math.min(window.devicePixelRatio||1,2);
+    W=cssW; H=Math.max(200,Math.round(cssW*0.34));
+    canvas.width=W*dpr; canvas.height=H*dpr; canvas.style.height=H+'px';
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+  }
+  var ML=30, MR=30;
+  function X(x){ x=Math.max(xmin,Math.min(xmax,x)); return ML + (x-xmin)/(xmax-xmin)*(W-ML-MR); }
+
+  function draw(){
+    var baseY=Math.round(H*0.46);
+    var amp=Math.min(34,H*0.20);
+    var strict=(dir==='>'||dir==='<'), wantPos=(dir==='>'||dir==='>=');
+    var ans=buildAnswer(roots,dir);
+    ctx.clearRect(0,0,W,H);
+
+    // подсветка ответа на оси
+    ctx.strokeStyle=C.pos; ctx.lineWidth=7; ctx.lineCap='round';
+    ans.forEach(function(iv){
+      ctx.globalAlpha=.28; ctx.beginPath();
+      ctx.moveTo(X(iv.lo),baseY); ctx.lineTo(X(iv.hi),baseY); ctx.stroke();
+      ctx.globalAlpha=1;
+    });
+
+    // ось
+    ctx.strokeStyle=C.ink; ctx.lineWidth=1.6; ctx.lineCap='butt';
+    ctx.beginPath(); ctx.moveTo(ML-14,baseY); ctx.lineTo(W-MR+14,baseY); ctx.stroke();
+    // стрелка
+    ctx.fillStyle=C.ink; ctx.beginPath();
+    ctx.moveTo(W-MR+14,baseY); ctx.lineTo(W-MR+6,baseY-4); ctx.lineTo(W-MR+6,baseY+4); ctx.closePath(); ctx.fill();
+    ctx.font='600 12px ui-monospace,Menlo,monospace'; ctx.fillStyle=C.muted;
+    ctx.textAlign='left'; ctx.fillText('x',W-MR+8,baseY-8);
+
+    // границы промежутков в пикселях
+    var n=roots.length;
+    var bnd=[ML]; for(var i=0;i<n;i++) bnd.push(X(roots[i].v)); bnd.push(W-MR);
+
+    // змейка + знаки
+    for(var k=0;k<=n;k++){
+      var signPos=(((n-k)%2)===0);
+      var x0=bnd[k], x1=bnd[k+1], mid=(x0+x1)/2;
+      var col=signPos?C.pos:C.neg;
+      // дуга
+      ctx.strokeStyle=col; ctx.lineWidth=2.4; ctx.beginPath();
+      ctx.moveTo(x0,baseY);
+      ctx.quadraticCurveTo(mid, baseY+(signPos?-amp:amp)*1.35, x1,baseY);
+      ctx.stroke();
+      // знак
+      ctx.font='700 20px ui-monospace,Menlo,monospace'; ctx.fillStyle=col; ctx.textAlign='center';
+      ctx.fillText(signPos?'+':MINUS, mid, baseY+(signPos?-amp-6:amp+16));
+    }
+
+    // точки-нули и подписи
+    for(var j=0;j<n;j++){
+      var px=X(roots[j].v);
+      var closed=!strict && !roots[j].den;
+      ctx.lineWidth=2.4;
+      if(closed){ ctx.fillStyle=C.pos; ctx.strokeStyle=C.pos;
+        ctx.beginPath(); ctx.arc(px,baseY,6.5,0,7); ctx.fill(); }
+      else { ctx.fillStyle='#fff'; ctx.strokeStyle=C.neg;
+        ctx.beginPath(); ctx.arc(px,baseY,6.5,0,7); ctx.fill(); ctx.stroke(); }
+      ctx.font='700 14px ui-monospace,Menlo,monospace'; ctx.fillStyle=C.ink; ctx.textAlign='center';
+      ctx.fillText(fmt(roots[j].v), px, baseY+amp+34);
+    }
+
+    // вердикт
+    var sym = dir==='>'?'&gt; 0':dir==='<'?'&lt; 0':dir==='>='?'≥ 0':'≤ 0';
+    var symTxt = dir==='>'?'> 0':dir==='<'?'< 0':dir==='>='?'≥ 0':'≤ 0';
+    verdict.textContent='(x+1)(x'+MINUS+'2)(x'+MINUS+'4) '+symTxt+'  →  x ∈ '+ansStr(ans);
+  }
+
+  btns.forEach(function(b){
+    b.addEventListener('click',function(){
+      dir=b.getAttribute('data-dir');
+      btns.forEach(function(o){o.classList.remove('on');});
+      b.classList.add('on');
+      draw();
+    });
+  });
+  window.addEventListener('resize',function(){ resize(); draw(); });
+  resize(); draw();
+})();
+</script>
+
+<script>
+/* ===== Тренажёр-генератор ===== */
+(function(){
+  var eqEl=document.getElementById('trEq'), ansEl=document.getElementById('trAns'), resEl=document.getElementById('trResult');
+  if(!eqEl) return;
+  var MINUS='−', UNION='∪', INF='∞';
+  var cur=null;
+
+  function ri(a,b){ return Math.floor(Math.random()*(b-a+1))+a; }
+  function fmt(n){ return (n<0?MINUS:'')+Math.abs(n); }
+
+  function factorStr(v){
+    if(v===0) return 'x';
+    return '(x '+(v>0?(MINUS+' '+v):('+ '+(-v)))+')';
+  }
+  function symOf(d){ return d==='>'?'> 0':d==='<'?'< 0':d==='>='?'≥ 0':'≤ 0'; }
+
+  function generate(){
+    var n=ri(2,3);
+    // различные целые нули
+    var vals=[];
+    while(vals.length<n){ var v=ri(-6,6); if(vals.indexOf(v)===-1) vals.push(v); }
+    vals.sort(function(a,b){return a-b;});
+    // возможно один нуль — знаменатель
+    var denIdx=-1;
+    if(Math.random()<0.45) denIdx=ri(0,n-1);
+    var pts=vals.map(function(v,i){ return {v:v,den:(i===denIdx)}; });
+    var dirs=['>','<','>=','<=']; var dir=dirs[ri(0,3)];
+    cur={pts:pts,dir:dir};
+
+    var numer=pts.filter(function(p){return !p.den;});
+    var denom=pts.filter(function(p){return p.den;});
+    var s=numer.map(function(p){return factorStr(p.v);}).join('');
+    if(denom.length) s+=' / '+denom.map(function(p){return factorStr(p.v);}).join('');
+    s+=' '+symOf(dir);
+    eqEl.textContent=s;
+    resEl.innerHTML=''; ansEl.value='';
+  }
+
+  function buildAnswer(pts,d){
+    var n=pts.length, strict=(d==='>'||d==='<'), wantPos=(d==='>'||d==='>=');
+    var ivs=[];
+    for(var i=0;i<=n;i++){
+      var lo=(i===0)?-Infinity:pts[i-1].v;
+      var hi=(i===n)?Infinity:pts[i].v;
+      var signPos=(((n-i)%2)===0);
+      if(signPos===wantPos){
+        var lc=(lo!==-Infinity)&&!strict&&!pts[i-1].den;
+        var rc=(hi!==Infinity)&&!strict&&!pts[i].den;
+        ivs.push({lo:lo,hi:hi,lc:lc,rc:rc});
+      }
+    }
+    return ivs;
+  }
+  function ivStr(iv){
+    var l=(iv.lo===-Infinity)?(MINUS+INF):fmt(iv.lo);
+    var r=(iv.hi===Infinity)?('+'+INF):fmt(iv.hi);
+    return (iv.lc?'[':'(')+l+'; '+r+(iv.rc?']':')');
+  }
+  function ansStr(ivs){ return ivs.length? ivs.map(ivStr).join(' '+UNION+' ') : '∅'; }
+
+  function inIv(iv,x){
+    var okL=(iv.lo===-Infinity)||(x>iv.lo)||(x===iv.lo&&iv.lc);
+    var okR=(iv.hi===Infinity)||(x<iv.hi)||(x===iv.hi&&iv.rc);
+    return okL&&okR;
+  }
+  function inSet(ivs,x){ for(var i=0;i<ivs.length;i++) if(inIv(ivs[i],x)) return true; return false; }
+
+  function parseEnd(s){
+    s=s.replace(/−/g,'-').replace(/\s+/g,'').toLowerCase();
+    if(/^[+]?(inf|infty|infinity|∞|беск|бесконечность)/.test(s)) return Infinity;
+    if(/^-(inf|infty|infinity|∞|беск|бесконечность)/.test(s)) return -Infinity;
+    var v=parseFloat(s.replace(',','.'));
+    return isNaN(v)?null:v;
+  }
+  function parseIntervals(str){
+    if(!str) return null;
+    str=str.replace(/∪/g,'U').replace(/или/gi,'U').replace(/\bor\b/gi,'U');
+    str=str.replace(/([\)\]])\s*([\(\[])/g,'$1 U $2');
+    var parts=str.split(/U/i).map(function(s){return s.trim();}).filter(Boolean);
+    if(!parts.length) return null;
+    var out=[];
+    for(var i=0;i<parts.length;i++){
+      var m=parts[i].match(/^([\[\(])(.+);(.+)([\]\)])$/);
+      if(!m) return null;
+      var lo=parseEnd(m[2]), hi=parseEnd(m[3]);
+      if(lo===null||hi===null) return null;
+      if(!(hi>lo)) return null;
+      out.push({lo:lo,hi:hi,lc:(m[1]==='[')&&lo!==-Infinity,rc:(m[4]===']')&&hi!==Infinity});
+    }
+    return out;
+  }
+
+  function testPoints(pts){
+    var vs=pts.map(function(p){return p.v;}).sort(function(a,b){return a-b;});
+    var tp=[vs[0]-1, vs[vs.length-1]+1, -1e5, 1e5];
+    vs.forEach(function(v){ tp.push(v, v-0.5, v+0.5, v-0.25, v+0.25); });
+    for(var i=0;i+1<vs.length;i++) tp.push((vs[i]+vs[i+1])/2);
+    return tp;
+  }
+
+  function signSeqHTML(pts){
+    var n=pts.length, out=[];
+    for(var i=0;i<=n;i++){
+      var lo=(i===0)?(MINUS+INF):fmt(pts[i-1].v);
+      var hi=(i===n)?('+'+INF):fmt(pts[i].v);
+      var signPos=(((n-i)%2)===0);
+      var cls=signPos?'pos':'neg', sg=signPos?'+':MINUS;
+      out.push('('+lo+'; '+hi+') <span class="'+cls+'">'+sg+'</span>');
+    }
+    return out.join('  ');
+  }
+
+  function solutionHTML(){
+    var pts=cur.pts, d=cur.dir;
+    var ans=buildAnswer(pts,d);
+    var h='<div class="sol">';
+    var nulls=pts.map(function(p){
+      return fmt(p.v)+' ('+(p.den?'знаменатель → ○ выколот':( (d==='>'||d==='<')?'числитель, строгий → ○':'числитель, нестрогий → ●'))+')';
+    }).join(';  ');
+    h+='<b>Нули:</b> '+nulls+'<br>';
+    h+='<b>Знаки</b> (справа <span class="pos">+</span>, чередуем):<br>'+signSeqHTML(pts)+'<br>';
+    var want=(d==='>'||d==='>=')?'<span class="pos">+</span>':'<span class="neg">'+MINUS+'</span>';
+    h+='<b>Нужен знак</b> '+want+((d==='>='||d==='<=')?' (и сами нули числителя)':'')+'<br>';
+    h+='<b>Ответ:</b> x ∈ '+ansStr(ans);
+    return h+'</div>';
+  }
+
+  function check(){
+    var raw=ansEl.value.trim();
+    if(!raw){ resEl.innerHTML='<span class="bad">Введи ответ промежутками или нажми «Показать решение».</span>'; return; }
+    var stu=parseIntervals(raw);
+    if(stu===null){ resEl.innerHTML='<span class="bad">Не разобрал запись. Формат: (a; b) U [c; d), бесконечность — inf.</span>'; return; }
+    var correct=buildAnswer(cur.pts,cur.dir);
+    var tp=testPoints(cur.pts), ok=true;
+    for(var i=0;i<tp.length;i++){ if(inSet(correct,tp[i])!==inSet(stu,tp[i])){ ok=false; break; } }
+    if(ok){ resEl.innerHTML='<span class="ok">✓ Верно! Отлично.</span>'+solutionHTML(); }
+    else { resEl.innerHTML='<span class="bad">✗ Пока не то. Проверь знаки на промежутках и закрашенные/выколотые точки.</span>'+solutionHTML(); }
+  }
+
+  document.getElementById('trNew').addEventListener('click',generate);
+  document.getElementById('trCheck').addEventListener('click',check);
+  document.getElementById('trShow').addEventListener('click',function(){ resEl.innerHTML=solutionHTML(); });
+  ansEl.addEventListener('keydown',function(e){ if(e.key==='Enter') check(); });
+
+  generate();  // старт — валидная задача, без focus()
+})();
+</script>

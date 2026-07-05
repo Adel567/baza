@@ -1,0 +1,815 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Системы линейных неравенств — урок, алгебра 8 класс</title>
+<style>
+  :root{
+    --paper:#F6F7F9;
+    --card:#FFFFFF;
+    --ink:#1B2333;
+    --muted:#5A6478;
+    --line:#E2E5EC;
+    --accent:#3B4FD0;
+    --accent-soft:#EAEDFB;
+    --c1:#3B4FD0;      /* неравенство 1 */
+    --c1-bg:#EAEDFB;
+    --c2:#B5561E;      /* неравенство 2 */
+    --c2-bg:#FBEBDF;
+    --inter:#1E8E5A;   /* пересечение = ответ */
+    --inter-bg:#E7F4EC;
+    --empty:#C0455B;   /* пустое решение */
+    --empty-bg:#F9E9EC;
+    --edge:#B9791A;
+    --edge-bg:#FBF1DC;
+  }
+  *{box-sizing:border-box}
+  body{margin:0}
+  .wrap{
+    max-width:760px;
+    margin:0 auto;
+    padding:clamp(1.4rem,4vw,3rem) clamp(1.1rem,4vw,2rem) 4rem;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    font-size:17px;
+    line-height:1.62;
+    -webkit-font-smoothing:antialiased;
+  }
+  .eyebrow{
+    font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--accent);font-weight:600;margin:0 0 .5rem;
+  }
+  h1{
+    font-family:Georgia,"Times New Roman",serif;
+    font-size:clamp(2rem,6.6vw,2.9rem);
+    line-height:1.06;margin:0;font-weight:700;letter-spacing:-.01em;
+    text-wrap:balance;
+  }
+  .lede{
+    font-size:1.08rem;color:var(--muted);margin:.7rem 0 0;max-width:60ch;
+    text-wrap:pretty;
+  }
+  h2{
+    font-family:Georgia,serif;font-size:1.32rem;font-weight:700;
+    margin:0 0 .1rem;letter-spacing:-.005em;
+  }
+  section{margin-top:2.6rem}
+  .kicker{
+    font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--muted);font-weight:600;margin:0 0 .8rem;
+    display:flex;align-items:center;gap:.6rem;
+  }
+  .kicker::before{
+    content:"";width:1.4rem;height:2px;background:var(--accent);border-radius:2px;
+  }
+  p{margin:.65rem 0}
+  strong{font-weight:650}
+  .math{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-weight:600}
+  sup{font-size:.72em}
+
+  /* Главное правило */
+  .hero-formula{
+    margin-top:2.2rem;
+    background:var(--ink);color:#fff;border-radius:14px;
+    padding:1.6rem 1.4rem;text-align:center;
+  }
+  .hero-formula .lbl{
+    font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;
+    color:#9aa6c9;margin:0 0 .7rem;
+  }
+  .hero-formula .eq{
+    font-family:ui-monospace,"SF Mono",Menlo,monospace;
+    font-size:clamp(1.3rem,5vw,1.9rem);font-weight:700;letter-spacing:.01em;
+  }
+  .hero-formula .eq b{color:#8ea0ff;font-weight:800}
+  .hero-formula .eq i{color:#79d3a3;font-style:normal;font-weight:800}
+  .hero-formula .note{font-size:.86rem;color:#9aa6c9;margin:.9rem 0 0}
+
+  /* Пререквизит */
+  .recall{
+    background:var(--accent-soft);border-radius:12px;padding:1rem 1.15rem;
+    font-size:.96rem;
+  }
+  .recall p{margin:.3rem 0}
+
+  /* Алгоритм */
+  .algo{
+    background:var(--card);border:1px solid var(--line);border-radius:12px;
+    padding:1.2rem 1.3rem;
+  }
+  ol.steps{margin:0;padding:0;list-style:none;counter-reset:s;display:flex;flex-direction:column;gap:.75rem}
+  ol.steps li{position:relative;padding-left:2.1rem;counter-increment:s}
+  ol.steps li::before{
+    content:counter(s);position:absolute;left:0;top:.05rem;
+    width:1.5rem;height:1.5rem;border-radius:50%;
+    background:var(--accent-soft);color:var(--accent);
+    font-size:.82rem;font-weight:700;display:flex;align-items:center;justify-content:center;
+  }
+  ol.steps .m{font-family:ui-monospace,Menlo,monospace;font-weight:600;color:var(--ink)}
+  ol.steps .why{color:var(--muted);font-size:.9rem}
+  li.hi::before{background:var(--inter-bg);color:var(--inter)}
+
+  /* Таблица скобок */
+  .tbl-wrap{overflow-x:auto;margin-top:1rem;border:1px solid var(--line);border-radius:12px}
+  table.signs{border-collapse:collapse;width:100%;min-width:460px;background:var(--card);font-size:.95rem}
+  table.signs th,table.signs td{padding:.6rem .8rem;text-align:left;border-bottom:1px solid var(--line)}
+  table.signs th{font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:700}
+  table.signs tr:last-child td{border-bottom:none}
+  table.signs .s{font-family:ui-monospace,Menlo,monospace;font-weight:800;font-size:1.05rem}
+  table.signs .dot{font-size:1.15rem;line-height:1}
+  table.signs .in{color:var(--inter);font-weight:700}
+  table.signs .out{color:var(--empty);font-weight:700}
+
+  /* Визуализация — числовая ось */
+  .viz{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.1rem 1.1rem 1.2rem;margin:1rem 0}
+  .viz canvas{width:100%;height:auto;display:block;background:#FCFDFF;border-radius:10px}
+  .viz .sysline{text-align:center;font-family:ui-monospace,Menlo,monospace;font-weight:800;font-size:1.05rem;margin:.1rem 0 .8rem}
+  .viz .sysline .r1{color:var(--c1)}
+  .viz .sysline .r2{color:var(--c2)}
+  .viz .sysline .rr{color:var(--inter)}
+  .legend{display:flex;flex-wrap:wrap;gap:.6rem 1.1rem;justify-content:center;margin:.7rem 0 .2rem;font-size:.82rem;color:var(--muted)}
+  .legend span{display:inline-flex;align-items:center;gap:.4rem}
+  .legend i{width:1.1rem;height:.35rem;border-radius:3px;display:inline-block}
+  .viz-row{display:flex;flex-wrap:wrap;gap:.5rem;align-items:center;justify-content:center;margin-top:.7rem}
+  .viz-row .lab{font-family:ui-monospace,Menlo,monospace;font-weight:800;min-width:5.5ch}
+  .viz-row.r1 .lab{color:var(--c1)}
+  .viz-row.r2 .lab{color:var(--c2)}
+  .grp{display:inline-flex;gap:.3rem;background:var(--paper);border-radius:10px;padding:.25rem}
+  .grp button{font:inherit;font-weight:700;cursor:pointer;border:1px solid var(--line);background:#fff;color:var(--ink);border-radius:8px;padding:.35rem .6rem;font-family:ui-monospace,Menlo,monospace}
+  .viz-row.r1 .grp button.on{background:var(--c1);color:#fff;border-color:var(--c1)}
+  .viz-row.r2 .grp button.on{background:var(--c2);color:#fff;border-color:var(--c2)}
+  .stepper{display:inline-flex;gap:.3rem;align-items:center;background:var(--paper);border-radius:10px;padding:.25rem}
+  .stepper button{font:inherit;font-weight:800;cursor:pointer;border:1px solid var(--line);background:#fff;color:var(--ink);border-radius:8px;padding:.35rem .6rem}
+  .stepper .num{font-family:ui-monospace,Menlo,monospace;font-weight:800;min-width:2.4ch;text-align:center;font-size:1.05rem}
+  .viz-preset{display:flex;justify-content:center;margin-top:.8rem}
+  .viz-preset button{font:inherit;font-weight:600;font-size:.85rem;cursor:pointer;border:1px dashed var(--empty);background:var(--empty-bg);color:var(--empty);border-radius:9px;padding:.4rem .8rem}
+  .viz-verdict{text-align:center;font-weight:700;font-size:1.02rem;margin:.9rem 0 0;padding:.55rem;border-radius:9px;font-family:ui-monospace,Menlo,monospace}
+  .viz-verdict.ok{background:var(--inter-bg);color:var(--inter)}
+  .viz-verdict.empty{background:var(--empty-bg);color:var(--empty)}
+  .viz button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+
+  /* Разбор */
+  .worked{
+    background:var(--card);border:1px solid var(--line);border-radius:12px;
+    padding:1.2rem 1.3rem;
+  }
+  .worked .task{
+    font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.05rem;
+    margin:0 0 1rem;padding-bottom:.8rem;border-bottom:1px solid var(--line);
+    display:flex;align-items:center;gap:.6rem;justify-content:center;
+  }
+  .worked .task .brace{font-size:2.4rem;line-height:.9;color:var(--muted)}
+  .worked .task .sys{display:flex;flex-direction:column;gap:.15rem;text-align:left}
+  .verdict{
+    margin-top:1rem;padding:.7rem 1rem;background:var(--inter-bg);
+    border-radius:9px;font-weight:600;color:var(--inter);font-size:.98rem;
+  }
+  .verdict .m{font-family:ui-monospace,Menlo,monospace}
+
+  /* Практика */
+  .drill{display:flex;flex-direction:column;gap:.7rem}
+  details{
+    background:var(--card);border:1px solid var(--line);border-radius:10px;
+    padding:.85rem 1.05rem;
+  }
+  details[open]{border-color:var(--accent)}
+  summary{
+    cursor:pointer;font-weight:600;list-style:none;
+    display:flex;justify-content:space-between;align-items:center;gap:1rem;
+  }
+  summary::-webkit-details-marker{display:none}
+  summary:focus-visible{outline:3px solid var(--accent);outline-offset:3px;border-radius:4px}
+  summary .q{font-family:ui-monospace,Menlo,monospace}
+  summary .tg{
+    font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);
+    border:1px solid var(--line);border-radius:20px;padding:.1rem .55rem;white-space:nowrap;
+  }
+  summary::after{
+    content:"показать";font-size:.78rem;color:var(--accent);font-weight:600;white-space:nowrap;
+  }
+  details[open] summary::after{content:"скрыть"}
+  .ans{margin-top:.7rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.96rem;color:var(--muted)}
+  .ans .m{font-family:ui-monospace,Menlo,monospace;color:var(--ink);font-weight:600}
+
+  /* Ошибки */
+  ul.pitfalls{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:.6rem}
+  ul.pitfalls li{padding-left:1.5rem;position:relative;font-size:.98rem}
+  ul.pitfalls li::before{content:"×";position:absolute;left:0;top:-.05rem;color:var(--empty);font-weight:700;font-size:1.1rem}
+  ul.pitfalls b{color:var(--ink)}
+
+  /* Проверка */
+  .check-self{background:var(--edge-bg);border:1px solid #EAD9B4;border-radius:12px;padding:1rem 1.2rem}
+  .check-self ol{margin:.4rem 0 0;padding-left:1.2rem}
+  .check-self li{margin:.35rem 0}
+
+  .next{background:var(--accent);color:#fff;border-radius:12px;padding:1.2rem 1.3rem}
+  .next h2{color:#fff}
+  .next .eq{font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.1rem;margin:.6rem 0 .3rem}
+  .next p{color:#dfe4fb;font-size:.96rem;margin:.4rem 0 0}
+  .foot{margin-top:2.4rem;font-size:.82rem;color:var(--muted);text-align:center}
+
+  /* Тренажёр */
+  .trainer{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.2rem 1.3rem;margin-top:1rem}
+  .tr-eq{display:flex;align-items:center;gap:.7rem;justify-content:center;padding:1rem;background:var(--accent-soft);border-radius:10px}
+  .tr-eq .brace{font-size:2.8rem;line-height:.85;color:var(--accent);font-family:Georgia,serif}
+  .tr-eq .sys{display:flex;flex-direction:column;gap:.2rem;font-family:ui-monospace,Menlo,monospace;font-weight:800;font-size:clamp(1.05rem,4vw,1.4rem);color:var(--ink)}
+  .tr-hint{font-size:.9rem;color:var(--muted);margin:.9rem 0 .2rem}
+  .tr-build{display:flex;flex-wrap:wrap;gap:.4rem;align-items:center;margin-top:.6rem}
+  .tr-brk{display:inline-flex;gap:.3rem;background:var(--paper);border-radius:10px;padding:.25rem}
+  .tr-brk button{font:inherit;font-family:ui-monospace,Menlo,monospace;font-weight:800;cursor:pointer;border:1px solid var(--line);background:#fff;color:var(--ink);border-radius:8px;padding:.4rem .6rem;min-width:2.2rem}
+  .tr-brk button.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .tr-build input{width:76px;font:inherit;padding:.5rem .6rem;border:1px solid var(--line);border-radius:9px;background:#fff;color:var(--ink);text-align:center}
+  .tr-build input:disabled{background:var(--paper);color:#B7BECC}
+  .tr-build .sep{font-family:ui-monospace,Menlo,monospace;font-weight:800;color:var(--muted)}
+  .tr-special{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.6rem}
+  .tr-special button{font:inherit;font-weight:600;font-size:.85rem;cursor:pointer;border:1px dashed var(--line);background:#fff;color:var(--muted);border-radius:9px;padding:.4rem .8rem}
+  .tr-special button.on{border-style:solid;border-color:var(--empty);color:var(--empty);background:var(--empty-bg)}
+  .tr-ctl{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.9rem;align-items:center}
+  .tr-ctl button{font:inherit;font-weight:700;font-size:.9rem;cursor:pointer;border:none;border-radius:9px;padding:.55rem .95rem;color:#fff;background:var(--accent)}
+  .tr-ctl button.sec{background:var(--inter)}
+  .tr-ctl button.ghost{background:transparent;color:var(--accent);border:1px solid var(--accent)}
+  .trainer button:focus-visible,.trainer input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+  .tr-result{margin-top:.9rem;font-size:.96rem;min-height:1.2rem}
+  .tr-result .ok{color:var(--inter);font-weight:700}
+  .tr-result .bad{color:var(--empty);font-weight:700}
+  .tr-result .sol{margin-top:.7rem;padding:.85rem 1rem;background:#FCFBFE;border:1px solid var(--line);border-radius:10px;font-family:ui-monospace,Menlo,monospace;font-size:.88rem;line-height:1.85}
+  .tr-result .sol b{color:var(--accent)}
+  .tr-result .sol .r1{color:var(--c1);font-weight:700}
+  .tr-result .sol .r2{color:var(--c2);font-weight:700}
+  .tr-result .sol .fl{color:var(--empty);font-weight:700}
+  .tr-result .sol hr{border:none;border-top:1px dashed var(--line);margin:.5rem 0}
+  .tr-result canvas{width:100%;height:auto;display:block;margin-top:.7rem;background:#FCFDFF;border-radius:10px}
+
+  @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="wrap">
+
+  <header>
+    <p class="eyebrow">Алгебра · 8 класс</p>
+    <h1>Системы линейных неравенств с одной переменной</h1>
+    <p class="lede">Два условия про одно и то же число, соединённых словом «<em>и</em>». Решаешь каждое отдельно — а потом ищешь, где они выполняются <em>одновременно</em>.</p>
+  </header>
+
+  <div class="hero-formula">
+    <p class="lbl">Главная мысль темы</p>
+    <div class="eq">Система = «<b>И</b>» = <i>ПЕРЕСЕЧЕНИЕ</i> решений</div>
+    <p class="note">Ответ — только те числа, что подходят в оба неравенства сразу. На оси это участок, закрашенный обоими.</p>
+  </div>
+
+  <section>
+    <p class="kicker">Зачем это нужно</p>
+    <h2>Когда одному числу нужно угодить сразу двум условиям</h2>
+    <p>Часто одна величина обязана выполнять несколько требований одновременно. Рост для аттракциона: «<strong>не ниже</strong> 120 см <strong>и не выше</strong> 180 см». Температура хранения лекарства: «<strong>от</strong> 2 <strong>до</strong> 8 градусов». Каждое такое «и» — это система неравенств про одно и то же число.</p>
+    <p>Житейское заблуждение: <em>«раз условий два, подойдёт число, которое годится хоть для одного из них»</em>. Нет. Слово «и» требует, чтобы выполнялись <strong>оба</strong> условия сразу. Рост 100 см годится «не выше 180», но проваливает «не ниже 120» — значит, на аттракцион не пускают.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Что вспомнить с прошлых шагов</p>
+    <div class="recall">
+      <p><strong>Линейные неравенства.</strong> Умеешь решить одно неравенство: перенести слагаемые, разделить на число. Помни правило: <span class="math">делишь на отрицательное — разворачивай знак</span>.</p>
+      <p><strong>Числовые промежутки.</strong> <span class="math">(a; b)</span> — концы не входят, <span class="math">[a; b]</span> — входят; <span class="math">±∞</span> всегда с круглой скобкой.</p>
+      <p><strong>Точка на оси.</strong> Строгий знак (<span class="math">&lt;, &gt;</span>) — кружок пустой <span class="math">○</span>; нестрогий (<span class="math">≤, ≥</span>) — закрашенный <span class="math">●</span>.</p>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Ядро — как решать</p>
+    <h2>Реши каждое → наложи на одну ось → возьми общую часть</h2>
+    <p>Система записывается фигурной скобкой слева — она и означает «<strong>и</strong>»:</p>
+    <div class="worked" style="margin-bottom:1rem">
+      <p class="task"><span class="brace">{</span><span class="sys"><span>x &gt; 1</span><span>x ≤ 5</span></span></p>
+      <p style="text-align:center;margin:0;color:var(--muted);font-size:.95rem">«икс больше 1 <b>и</b> икс меньше либо равно 5» &nbsp;→&nbsp; ответ <span class="math" style="color:var(--inter)">(1; 5]</span></p>
+    </div>
+    <div class="algo">
+      <ol class="steps">
+        <li>Реши <strong>каждое</strong> неравенство системы по отдельности — как обычное линейное. <span class="why">Не забудь разворачивать знак при делении на отрицательное.</span></li>
+        <li>Отметь решение каждого на <strong>одной</strong> числовой прямой — своим цветом (или своей штриховкой).</li>
+        <li class="hi">Найди <strong>пересечение</strong> — участок, попавший в <em>оба</em> решения. Это и есть ответ. <span class="why">Только «двойная зона», где закрашено и тем, и другим.</span></li>
+        <li>Запиши ответ числовым промежутком. Если общей части нет — ответ <span class="math">∅</span> (система решений не имеет), и это законный ответ.</li>
+      </ol>
+    </div>
+    <p style="font-size:.92rem;color:var(--muted);margin-top:.9rem">Считалочка: <strong style="color:var(--inter)">решил оба → наложил на ось → взял, где перекрылось</strong>.</p>
+
+    <h2 style="margin-top:2rem">Скобка и кружок на границе</h2>
+    <p>От знака каждого неравенства зависит, входит ли его граница в ответ:</p>
+    <div class="tbl-wrap">
+      <table class="signs">
+        <tr><th>Знак</th><th>Читается</th><th>Граница входит?</th><th>Точка на оси</th><th>Скобка</th></tr>
+        <tr><td class="s">&lt;</td><td>меньше</td><td class="out">нет</td><td><span class="dot">○</span> выколотая</td><td class="s">( )</td></tr>
+        <tr><td class="s">&gt;</td><td>больше</td><td class="out">нет</td><td><span class="dot">○</span> выколотая</td><td class="s">( )</td></tr>
+        <tr><td class="s">≤</td><td>не больше</td><td class="in">да</td><td><span class="dot">●</span> закрашенная</td><td class="s">[ ]</td></tr>
+        <tr><td class="s">≥</td><td>не меньше</td><td class="in">да</td><td><span class="dot">●</span> закрашенная</td><td class="s">[ ]</td></tr>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Покрути сам · интерактив</p>
+    <h2>Два неравенства на одной оси</h2>
+    <p>Синий луч — <span class="math" style="color:var(--c1)">первое неравенство</span>, оранжевый — <span class="math" style="color:var(--c2)">второе</span>. Зелёным на самой оси подсвечено <strong>пересечение</strong> — где выполняются оба, это и есть ответ системы. Меняй знаки и границы и смотри, как ответ то сужается, то исчезает совсем.</p>
+    <div class="viz">
+      <div class="sysline" id="vizSys"></div>
+      <canvas id="vizCanvas" width="700" height="180" aria-label="Числовая ось: два неравенства и их пересечение"></canvas>
+      <div class="legend">
+        <span><i style="background:var(--c1)"></i>неравенство 1</span>
+        <span><i style="background:var(--c2)"></i>неравенство 2</span>
+        <span><i style="background:var(--inter)"></i>пересечение — ответ</span>
+      </div>
+      <div class="viz-row r1">
+        <span class="lab">x</span>
+        <div class="grp" role="group" aria-label="Знак первого неравенства">
+          <button data-viz="1" data-rel="&gt;" class="on">&gt;</button>
+          <button data-viz="1" data-rel="&gt;=">≥</button>
+          <button data-viz="1" data-rel="&lt;">&lt;</button>
+          <button data-viz="1" data-rel="&lt;=">≤</button>
+        </div>
+        <div class="stepper">
+          <button data-viz="1" data-step="-1" aria-label="Уменьшить границу первого">−</button>
+          <span class="num" id="vizN1">2</span>
+          <button data-viz="1" data-step="1" aria-label="Увеличить границу первого">+</button>
+        </div>
+      </div>
+      <div class="viz-row r2">
+        <span class="lab">x</span>
+        <div class="grp" role="group" aria-label="Знак второго неравенства">
+          <button data-viz="2" data-rel="&gt;">&gt;</button>
+          <button data-viz="2" data-rel="&gt;=">≥</button>
+          <button data-viz="2" data-rel="&lt;">&lt;</button>
+          <button data-viz="2" data-rel="&lt;=" class="on">≤</button>
+        </div>
+        <div class="stepper">
+          <button data-viz="2" data-step="-1" aria-label="Уменьшить границу второго">−</button>
+          <span class="num" id="vizN2">6</span>
+          <button data-viz="2" data-step="1" aria-label="Увеличить границу второго">+</button>
+        </div>
+      </div>
+      <div class="viz-preset">
+        <button id="vizEmpty" type="button">показать пустой случай ∅</button>
+      </div>
+      <div class="viz-verdict" id="vizVerdict"></div>
+    </div>
+    <p style="font-size:.9rem;color:var(--muted)">Приём «предскажи → проверь»: перед тем как двигать, скажи вслух, пересекутся лучи или нет. Особенно ярко на пустом случае <span class="math">x &gt; 5</span> и <span class="math">x &lt; 2</span> — лучи смотрят в разные стороны, общей зоны нет.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Разбираем вместе · думаю вслух</p>
+    <h2>Эталонный пример</h2>
+    <div class="worked">
+      <p class="task"><span class="brace">{</span><span class="sys"><span>2x − 1 &gt; 3</span><span>x + 4 ≤ 10</span></span></p>
+      <ol class="steps">
+        <li>Решаю <span style="color:var(--c1)">первое</span>: <span class="m">2x − 1 &gt; 3 → 2x &gt; 4 → x &gt; 2</span>. <span class="why">Перенёс −1 вправо, разделил на 2 (положительное) — знак неравенства не трогаю.</span></li>
+        <li>Решаю <span style="color:var(--c2)">второе</span>: <span class="m">x + 4 ≤ 10 → x ≤ 6</span>. <span class="why">Перенёс 4 вправо.</span></li>
+        <li>Рисую оба на одной оси: <span class="m">x &gt; 2</span> — луч вправо от 2 (кружок пустой), <span class="m">x ≤ 6</span> — луч влево от 6 (кружок закрашен). Общая часть — между 2 и 6.</li>
+        <li class="hi">Беру <strong>пересечение</strong>: <span class="m">2 &lt; x ≤ 6</span>. Слева граница строгая (○), справа входит (●).</li>
+      </ol>
+      <div class="verdict">Ответ: <span class="m">(2; 6]</span>. Проверка: <span class="m">x = 5</span> → в первом <span class="m">2·5−1=9&gt;3</span> ✓, во втором <span class="m">5+4=9≤10</span> ✓ — оба верны, 5 лежит в промежутке.</div>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Теперь ты · нажми, чтобы проверить</p>
+    <h2>Мини-практика</h2>
+    <div class="drill">
+      <details>
+        <summary><span class="q">{ x ≥ −1 ; x &lt; 3 } — прочитай и назови решения из −2, −1, 0, 3</span><span class="tg">понимание</span></summary>
+        <div class="ans">«икс не меньше −1 <b>и</b> икс меньше 3». Решения — те, что подходят в оба: <span class="m">−1</span> (входит, знак нестрогий) и <span class="m">0</span>. Число <span class="m">−2</span> проваливает первое, <span class="m">3</span> — второе (строгий знак). Ответ системы: <span class="m">[−1; 3)</span>.</div>
+      </details>
+      <details>
+        <summary><span class="q">Для решения системы ищут объединение или пересечение?</span><span class="tg">понимание</span></summary>
+        <div class="ans"><strong>Пересечение.</strong> Система — это «и», нужны числа, подходящие сразу в оба неравенства.</div>
+      </details>
+      <details>
+        <summary><span class="q">{ 3x ≥ 6 ; x − 1 &lt; 4 }</span><span class="tg">применение</span></summary>
+        <div class="ans">Первое: <span class="m">3x ≥ 6 → x ≥ 2</span>. Второе: <span class="m">x − 1 &lt; 4 → x &lt; 5</span>. Пересечение: <span class="m">2 ≤ x &lt; 5</span>, то есть <span class="m">[2; 5)</span>.</div>
+      </details>
+      <details>
+        <summary><span class="q">{ 4x − 2 ≥ 6 ; x + 1 &lt; 7 }</span><span class="tg">применение</span></summary>
+        <div class="ans">Первое: <span class="m">4x ≥ 8 → x ≥ 2</span>. Второе: <span class="m">x &lt; 6</span>. Пересечение: <span class="m">2 ≤ x &lt; 6</span>, то есть <span class="m">[2; 6)</span>.</div>
+      </details>
+      <details>
+        <summary><span class="q">{ x + 3 &gt; 5 ; 2x ≤ 8 }</span><span class="tg">применение</span></summary>
+        <div class="ans">Первое: <span class="m">x &gt; 2</span>. Второе: <span class="m">2x ≤ 8 → x ≤ 4</span>. Пересечение: <span class="m">2 &lt; x ≤ 4</span>, то есть <span class="m">(2; 4]</span>.</div>
+      </details>
+      <details>
+        <summary><span class="q">Что изменится: в { x &gt; 1 ; x &lt; 4 } второе заменили на x &lt; 0. Сколько решений?</span><span class="tg">анализ</span></summary>
+        <div class="ans">Стало <span class="m">x &gt; 1</span> и <span class="m">x &lt; 0</span>. Первое просит числа правее 1, второе — левее 0. Общих нет: лучи расходятся. Ответ <span class="m">∅</span> — <strong>ни одного</strong> решения.</div>
+      </details>
+      <details>
+        <summary><span class="q">Найди ошибку: для { x &gt; 2 ; x &lt; 5 } написали «x &gt; 2 или x &lt; 5 — подходят все числа»</span><span class="tg">анализ</span></summary>
+        <div class="ans">Ученик взял <b>объединение</b> вместо пересечения (заменил «и» на «или»). В системе нужны числа, подходящие в <em>оба</em>. Правильно: <span class="m">2 &lt; x &lt; 5</span>, то есть <span class="m">(2; 5)</span> — а вовсе не «все числа».</div>
+      </details>
+      <details>
+        <summary><span class="q">Обратная задача: придумай систему двух неравенств с ответом [0; 3)</span><span class="tg">анализ</span></summary>
+        <div class="ans">Левый конец входит (●, нестрогий), правый нет (○, строгий). Например: <span class="m">{ x ≥ 0 ; x &lt; 3 }</span>. Проверь пересечение — получится ровно <span class="m">[0; 3)</span>.</div>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Тренажёр · бесконечная практика</p>
+    <h2>Реши систему сам</h2>
+    <p>Нажми «Новое», реши каждое неравенство и собери ответ-промежуток: выбери <b>левую скобку</b> и число, <b>правую скобку</b> и число. Если решений нет — жми «∅». Для бесконечной стороны выбери <b>−∞</b> или <b>+∞</b>. Потом проверь себя или посмотри решение с числовой осью.</p>
+    <div class="trainer">
+      <div class="tr-eq">
+        <span class="brace">{</span>
+        <span class="sys" id="trSys"><span>2x − 1 &gt; 3</span><span>x + 4 ≤ 10</span></span>
+      </div>
+      <p class="tr-hint">Собери ответ. Пример: <b>( 2 ; 6 ]</b> &nbsp;или&nbsp; <b>[ −∞ ; 3 )</b></p>
+      <div class="tr-build">
+        <div class="tr-brk" data-side="L" role="group" aria-label="Левая скобка">
+          <button data-brk="(">(</button>
+          <button data-brk="[">[</button>
+          <button data-brk="-inf">−∞</button>
+        </div>
+        <input id="trLo" type="text" inputmode="numeric" placeholder="число" aria-label="Левая граница">
+        <span class="sep">;</span>
+        <input id="trHi" type="text" inputmode="numeric" placeholder="число" aria-label="Правая граница">
+        <div class="tr-brk" data-side="R" role="group" aria-label="Правая скобка">
+          <button data-brk=")">)</button>
+          <button data-brk="]">]</button>
+          <button data-brk="+inf">+∞</button>
+        </div>
+      </div>
+      <div class="tr-special">
+        <button id="trNone" type="button">решений нет (∅)</button>
+      </div>
+      <div class="tr-ctl">
+        <button id="trCheck" type="button" class="sec">Проверить</button>
+        <button id="trShow" type="button" class="ghost">Показать решение</button>
+        <button id="trNew" type="button">🎲 Новое</button>
+      </div>
+      <div id="trResult" class="tr-result"></div>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Где чаще всего ошибаются</p>
+    <h2>Лови эти ловушки</h2>
+    <ul class="pitfalls">
+      <li><b>Берут объединение вместо пересечения.</b> Закрашивают всё, что попало хоть в одно решение. Помни: система = «и» = только <em>общее</em>. Ответ — там, где закрашено <strong>дважды</strong>.</li>
+      <li><b>Неверно находят пересечение промежутков.</b> Путают, где левая граница, где правая, какой кружок. Защита: рисуй обе границы на <em>одной</em> оси и бери участок, где лучи накладываются.</li>
+      <li><b>Теряют пустое решение.</b> Когда промежутки не пересекаются (<span class="math">x &gt; 5</span> и <span class="math">x &lt; 2</span>), пишут «ошибка» или выдумывают число. Нет общей части — это нормальный ответ <span class="math">∅</span>.</li>
+      <li><b>Забывают сменить знак.</b> При делении неравенства на отрицательное не переворачивают знак — и получают неправильное решение уже на первом шаге. Проговаривай: «делю на минус — разворачиваю».</li>
+      <li><b>Путают тип кружка / скобки.</b> Для <span class="math">≤, ≥</span> ставят пустой кружок. Есть черта под знаком → точка закрашена ●, скобка квадратная.</li>
+    </ul>
+  </section>
+
+  <section>
+    <p class="kicker">Проверь себя · объясни своими словами</p>
+    <h2>Три вопроса на понимание</h2>
+    <div class="check-self">
+      <ol>
+        <li>Система неравенств — это объединение или пересечение решений? Почему?</li>
+        <li>Чему равен ответ системы <span class="math">{ x &gt; 3 ; x &lt; 1 }</span> и почему?</li>
+        <li>Когда конец промежутка обозначают квадратной скобкой?</li>
+      </ol>
+    </div>
+  </section>
+
+  <section>
+    <div class="next">
+      <h2>Что дальше</h2>
+      <p>Приём «найди, где выполняются <em>оба</em> условия» — фундамент старших классов. В 9 классе он превращается в <strong>метод интервалов</strong> для квадратичных неравенств: там ось тоже делят на участки и смотрят, где выражение подходит.</p>
+      <div class="eq">{ x &gt; 2 &nbsp;и&nbsp; x ≤ 6 } → (2; 6] &nbsp; →→ &nbsp; (x − 2)(x − 6) на интервалах</div>
+      <p>Тот же навык — решить, отметить на оси, взять нужные участки. Ты уже умеешь главное.</p>
+    </div>
+  </section>
+
+  <p class="foot">Проверка на выходе: система — это пересечение или объединение? · ответ { x &gt; 5 ; x &lt; 2 } · когда ставим квадратную скобку?</p>
+
+</div>
+
+<script>
+/* ===== Общие помощники: числовая ось с двумя неравенствами ===== */
+var MINUS='−';
+function fmtNum(n){ n=Math.round(n); return (n<0?MINUS:'')+Math.abs(n); }
+
+function ineqBounds(s){ /* s={rel,x0} → {lo,hi} с флагом c (включена ли граница) */
+  if(s.rel==='>')  return {lo:{v:s.x0,c:false}, hi:{v:Infinity,c:false}};
+  if(s.rel==='>=') return {lo:{v:s.x0,c:true},  hi:{v:Infinity,c:false}};
+  if(s.rel==='<')  return {lo:{v:-Infinity,c:false}, hi:{v:s.x0,c:false}};
+  return {lo:{v:-Infinity,c:false}, hi:{v:s.x0,c:true}}; /* '<=' */
+}
+function intersect(a,b){
+  var A=ineqBounds(a), B=ineqBounds(b);
+  var lo = (A.lo.v>B.lo.v)?A.lo : (B.lo.v>A.lo.v)?B.lo : {v:A.lo.v, c:A.lo.c&&B.lo.c};
+  var hi = (A.hi.v<B.hi.v)?A.hi : (B.hi.v<A.hi.v)?B.hi : {v:A.hi.v, c:A.hi.c&&B.hi.c};
+  var empty=false, single=false;
+  if(lo.v>hi.v) empty=true;
+  else if(lo.v===hi.v){ if(lo.c&&hi.c) single=true; else empty=true; }
+  return {lo:lo,hi:hi,empty:empty,single:single};
+}
+function intervalStr(res){
+  if(res.empty) return '∅';
+  if(res.single) return 'x = '+fmtNum(res.lo.v);
+  var L = res.lo.v===-Infinity ? '('+MINUS+'∞' : (res.lo.c?'[':'(')+fmtNum(res.lo.v);
+  var R = res.hi.v===Infinity ? '+∞)' : fmtNum(res.hi.v)+(res.hi.c?']':')');
+  return L+'; '+R;
+}
+function relSym(rel){ return {'<':'<','<=':'≤','>':'>','>=':'≥'}[rel]; }
+
+function arrow(ctx,x,y,dir,color){
+  ctx.fillStyle=color||'#9AA3B2';
+  ctx.beginPath(); ctx.moveTo(x,y); ctx.lineTo(x-dir*9,y-5); ctx.lineTo(x-dir*9,y+5); ctx.closePath(); ctx.fill();
+}
+function endpoint(ctx,x,y,filled,col){
+  ctx.lineWidth=2.5; ctx.strokeStyle=col;
+  ctx.beginPath(); ctx.arc(x,y,6,0,7);
+  ctx.fillStyle=filled?col:'#FCFDFF'; ctx.fill(); ctx.stroke();
+}
+function drawSystem(canvas,a,b){
+  var ctx=canvas.getContext('2d');
+  var dpr=Math.min(window.devicePixelRatio||1,2);
+  var W=canvas.clientWidth||660, H=180;
+  canvas.width=W*dpr; canvas.height=H*dpr; canvas.style.height=H+'px';
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  ctx.clearRect(0,0,W,H);
+
+  var c1='#3B4FD0', c2='#B5561E', inter='#1E8E5A', empt='#C0455B', axisCol='#9AA3B2', muted='#8892A6';
+  var margin=30, axisY=138, yA=46, yB=88;
+  var res=intersect(a,b);
+
+  /* окно обзора вокруг обеих границ */
+  var lo=Math.min(a.x0,b.x0)-2, hi=Math.max(a.x0,b.x0)+2;
+  if(hi-lo<6){ var m=(a.x0+b.x0)/2; lo=Math.round(m-3); hi=Math.round(m+3); }
+  var span=hi-lo, step=span>14?2:1;
+  function px(x){ return margin+(x-lo)*(W-2*margin)/span; }
+
+  /* пунктирные направляющие от границ вниз к оси */
+  ctx.setLineDash([3,4]); ctx.lineWidth=1; ctx.strokeStyle='#CFD5E2';
+  [a.x0,b.x0].forEach(function(v){ ctx.beginPath(); ctx.moveTo(px(v),28); ctx.lineTo(px(v),axisY); ctx.stroke(); });
+  ctx.setLineDash([]);
+
+  /* ось + штрихи + подписи */
+  ctx.textAlign='center';
+  for(var x=Math.ceil(lo);x<=Math.floor(hi);x++){
+    var X=px(x);
+    ctx.strokeStyle='#C7CDDA'; ctx.lineWidth=1;
+    ctx.beginPath(); ctx.moveTo(X,axisY-4); ctx.lineTo(X,axisY+4); ctx.stroke();
+    if((x-Math.ceil(lo))%step===0){
+      ctx.fillStyle=muted; ctx.font='12px ui-monospace,Menlo,monospace';
+      ctx.fillText(fmtNum(x),X,axisY+20);
+    }
+  }
+  ctx.strokeStyle=axisCol; ctx.lineWidth=1.6;
+  ctx.beginPath(); ctx.moveTo(margin,axisY); ctx.lineTo(W-margin,axisY); ctx.stroke();
+  arrow(ctx,W-margin,axisY,1,axisCol); arrow(ctx,margin,axisY,-1,axisCol);
+
+  /* два луча */
+  drawRay(ctx,a,px,yA,c1,W,margin);
+  drawRay(ctx,b,px,yB,c2,W,margin);
+
+  /* пересечение на оси */
+  if(res.empty){
+    ctx.fillStyle=empt; ctx.font='700 15px ui-monospace,Menlo,monospace'; ctx.textAlign='center';
+    ctx.fillText('∅  пересечения нет', W/2, axisY+40);
+  } else {
+    var xL = res.lo.v===-Infinity? margin+2 : px(res.lo.v);
+    var xR = res.hi.v===Infinity? W-margin-2 : px(res.hi.v);
+    ctx.strokeStyle=inter; ctx.lineWidth=7; ctx.lineCap='round';
+    ctx.beginPath(); ctx.moveTo(xL,axisY); ctx.lineTo(xR,axisY); ctx.stroke();
+    ctx.lineCap='butt';
+    if(res.lo.v===-Infinity) arrow(ctx,margin+2,axisY,-1,inter);
+    if(res.hi.v===Infinity) arrow(ctx,W-margin-2,axisY,1,inter);
+    if(res.lo.v!==-Infinity) endpoint(ctx,px(res.lo.v),axisY,res.lo.c,inter);
+    if(res.hi.v!==Infinity) endpoint(ctx,px(res.hi.v),axisY,res.hi.c,inter);
+  }
+}
+function drawRay(ctx,s,px,y,col,W,margin){
+  var right=(s.rel==='>'||s.rel==='>=');
+  var filled=(s.rel==='<='||s.rel==='>=');
+  var X0=px(s.x0);
+  ctx.strokeStyle=col; ctx.lineWidth=5; ctx.lineCap='round'; ctx.beginPath();
+  if(right){ ctx.moveTo(X0,y); ctx.lineTo(W-margin-2,y); }
+  else { ctx.moveTo(X0,y); ctx.lineTo(margin+2,y); }
+  ctx.stroke(); ctx.lineCap='butt';
+  arrow(ctx, right?W-margin-2:margin+2, y, right?1:-1, col);
+  endpoint(ctx,X0,y,filled,col);
+}
+</script>
+
+<script>
+/* ===== Интерактивная визуализация ===== */
+(function(){
+  var canvas=document.getElementById('vizCanvas'); if(!canvas) return;
+  var sysEl=document.getElementById('vizSys'), verdictEl=document.getElementById('vizVerdict');
+  var n1El=document.getElementById('vizN1'), n2El=document.getElementById('vizN2');
+  var A={rel:'>',x0:2}, B={rel:'<=',x0:6};
+
+  function render(){
+    n1El.textContent=fmtNum(A.x0); n2El.textContent=fmtNum(B.x0);
+    sysEl.innerHTML='<span class="r1">x '+relSym(A.rel)+' '+fmtNum(A.x0)+'</span>'
+      +' &nbsp;и&nbsp; '
+      +'<span class="r2">x '+relSym(B.rel)+' '+fmtNum(B.x0)+'</span>'
+      +' &nbsp;→&nbsp; <span class="rr">'+intervalStr(intersect(A,B))+'</span>';
+    var res=intersect(A,B);
+    verdictEl.className='viz-verdict '+(res.empty?'empty':'ok');
+    verdictEl.textContent = res.empty
+      ? 'Общей части нет → ответ ∅'
+      : 'Пересечение (ответ): '+intervalStr(res);
+    drawSystem(canvas,A,B);
+  }
+  Array.prototype.forEach.call(document.querySelectorAll('[data-rel]'),function(btn){
+    btn.addEventListener('click',function(){
+      var which=btn.getAttribute('data-viz');
+      var grp=btn.parentNode;
+      grp.querySelectorAll('button').forEach(function(x){x.classList.remove('on');});
+      btn.classList.add('on');
+      (which==='1'?A:B).rel=btn.getAttribute('data-rel');
+      render();
+    });
+  });
+  Array.prototype.forEach.call(document.querySelectorAll('[data-step]'),function(btn){
+    btn.addEventListener('click',function(){
+      var which=btn.getAttribute('data-viz');
+      var d=parseInt(btn.getAttribute('data-step'),10);
+      var t=(which==='1'?A:B);
+      t.x0=Math.max(-8,Math.min(8,t.x0+d));
+      render();
+    });
+  });
+  document.getElementById('vizEmpty').addEventListener('click',function(){
+    A.rel='>'; A.x0=5; B.rel='<'; B.x0=2;
+    document.querySelectorAll('.viz-row.r1 [data-rel]').forEach(function(x){x.classList.toggle('on',x.getAttribute('data-rel')==='>');});
+    document.querySelectorAll('.viz-row.r2 [data-rel]').forEach(function(x){x.classList.toggle('on',x.getAttribute('data-rel')==='<');});
+    render();
+  });
+  window.addEventListener('resize',render);
+  render();
+})();
+</script>
+
+<script>
+/* ===== Тренажёр-генератор ===== */
+(function(){
+  var sysEl=document.getElementById('trSys'), resEl=document.getElementById('trResult');
+  if(!sysEl) return;
+  var loEl=document.getElementById('trLo'), hiEl=document.getElementById('trHi');
+  function ri(a,b){ return Math.floor(Math.random()*(b-a+1))+a; }
+  function pick(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+  function flip(r){ return {'<':'>','>':'<','<=':'>=','>=':'<='}[r]; }
+  function coefX(k){ return k===1?'x':k===-1?MINUS+'x':fmtNum(k)+'x'; }
+  function fmtLin(coef,c){
+    var s=coefX(coef);
+    if(c!==0) s+=(c<0?' '+MINUS+' ':' + ')+Math.abs(c);
+    return s;
+  }
+  /* превращает решённое (rel,x0) в показанное линейное неравенство */
+  function buildIneq(finalRel,x0){
+    var d=pick([1,2,3,4])*pick([1,-1]);
+    var shownRel=d>0?finalRel:flip(finalRel);
+    var p=ri(-6,6);
+    var rhs=d*x0+p;
+    return {d:d,p:p,rhs:rhs,shownRel:shownRel,rel:finalRel,x0:x0,
+            text:fmtLin(d,p)+' '+relSym(shownRel)+' '+fmtNum(rhs)};
+  }
+
+  var cur=null, brkL=null, brkR=null, special=null;
+
+  function resetUI(){
+    brkL=null; brkR=null; special=null;
+    document.querySelectorAll('.tr-brk button').forEach(function(b){b.classList.remove('on');});
+    document.getElementById('trNone').classList.remove('on');
+    loEl.value=''; hiEl.value=''; loEl.disabled=false; hiEl.disabled=false;
+    resEl.innerHTML='';
+  }
+
+  function makeTask(){
+    var scenario=pick(['bounded','bounded','bounded','empty','ray','ray','point']);
+    var aSol,bSol;
+    if(scenario==='bounded'){
+      var lo=ri(-5,3), hi=lo+ri(1,4);
+      aSol={rel:pick(['>','>=']),x0:lo};
+      bSol={rel:pick(['<','<=']),x0:hi};
+    } else if(scenario==='empty'){
+      var loE=ri(0,5), hiE=loE-ri(1,3);
+      aSol={rel:pick(['>','>=']),x0:loE};   /* x > loE */
+      bSol={rel:pick(['<','<=']),x0:hiE};   /* x < hiE, hiE<loE → пусто */
+    } else if(scenario==='ray'){
+      if(pick([true,false])){ /* оба вправо → ответ = более правая граница */
+        var p1=ri(-5,2), p2=p1+ri(1,4);
+        aSol={rel:pick(['>','>=']),x0:p1};
+        bSol={rel:pick(['>','>=']),x0:p2};
+      } else { /* оба влево → ответ = более левая граница */
+        var q1=ri(-2,5), q2=q1+ri(1,4);
+        aSol={rel:pick(['<','<=']),x0:q1};
+        bSol={rel:pick(['<','<=']),x0:q2};
+      }
+    } else { /* point: [k;k] */
+      var k=ri(-4,4);
+      aSol={rel:'>=',x0:k};
+      bSol={rel:'<=',x0:k};
+    }
+    var A=buildIneq(aSol.rel,aSol.x0), B=buildIneq(bSol.rel,bSol.x0);
+    cur={A:A,B:B,aSol:aSol,bSol:bSol,res:intersect(aSol,bSol)};
+    sysEl.innerHTML='<span>'+A.text+'</span><span>'+B.text+'</span>';
+  }
+  function generate(){ resetUI(); makeTask(); }
+
+  function stepLines(one,cls){
+    var R2=one.d*one.x0, s='<span class="'+cls+'">'+one.text+'</span><br>';
+    if(one.p!==0){
+      s+='→ '+coefX(one.d)+' '+relSym(one.shownRel)+' '+fmtNum(one.rhs)
+         +' '+(one.p<0?'+':MINUS)+' '+Math.abs(one.p)+'<br>';
+      s+='→ '+coefX(one.d)+' '+relSym(one.shownRel)+' '+fmtNum(R2)+'<br>';
+    }
+    if(one.d===1){
+      s+='→ <b>x '+relSym(one.rel)+' '+fmtNum(one.x0)+'</b>';
+    } else if(one.d>0){
+      s+='→ делим на '+one.d+': <b>x '+relSym(one.rel)+' '+fmtNum(one.x0)+'</b>';
+    } else {
+      s+='→ делим на '+fmtNum(one.d)+' <span class="fl">(отриц. — разворот знака)</span>: '
+         +'<b>x '+relSym(one.rel)+' '+fmtNum(one.x0)+'</b>';
+    }
+    return s;
+  }
+  function solutionHTML(){
+    var r=cur.res, h='<div class="sol">';
+    h+='<b>Неравенство 1:</b><br>'+stepLines(cur.A,'r1')+'<hr>';
+    h+='<b>Неравенство 2:</b><br>'+stepLines(cur.B,'r2')+'<hr>';
+    h+='На одной оси: <span class="r1">x '+relSym(cur.aSol.rel)+' '+fmtNum(cur.aSol.x0)+'</span>'
+       +' и <span class="r2">x '+relSym(cur.bSol.rel)+' '+fmtNum(cur.bSol.x0)+'</span>.<br>';
+    if(r.empty){
+      h+='Лучи не перекрываются → <span class="fl">пересечения нет</span>.<br>Ответ: <b>∅</b>';
+    } else {
+      h+='Берём <b>пересечение</b> (где верно и то, и другое):<br>Ответ: <b>'+intervalStr(r)+'</b>';
+    }
+    return h+'</div>';
+  }
+  function drawSol(){
+    var c=document.createElement('canvas'); c.width=660; c.height=180;
+    c.setAttribute('aria-label','Система на числовой оси');
+    resEl.appendChild(c);
+    drawSystem(c,cur.aSol,cur.bSol);
+  }
+
+  function studentInterval(){
+    if(special==='none') return {empty:true};
+    if(!brkL||!brkR) return null;
+    var lo,hi;
+    if(brkL==='-inf'){ lo={v:-Infinity,c:false}; }
+    else { var nl=parseFloat((loEl.value||'').replace(',','.').replace(/−/g,'-'));
+           if(isNaN(nl)) return null; lo={v:nl,c:brkL==='['}; }
+    if(brkR==='+inf'){ hi={v:Infinity,c:false}; }
+    else { var nh=parseFloat((hiEl.value||'').replace(',','.').replace(/−/g,'-'));
+           if(isNaN(nh)) return null; hi={v:nh,c:brkR===']'}; }
+    return {empty:false,lo:lo,hi:hi};
+  }
+  function boundEq(x,y){
+    if(x.v===Infinity||x.v===-Infinity) return x.v===y.v;
+    return x.v===y.v && x.c===y.c;
+  }
+  function check(){
+    var stu=studentInterval();
+    if(stu===null){ resEl.innerHTML='<span class="bad">Собери ответ: скобки + числа, либо нажми ∅.</span>'; return; }
+    var r=cur.res, correct;
+    if(r.empty){ correct = stu.empty===true; }
+    else if(stu.empty){ correct=false; }
+    else { correct = boundEq(stu.lo,r.lo) && boundEq(stu.hi,r.hi); }
+    resEl.innerHTML = correct
+      ? '<span class="ok">✓ Верно!</span>'
+      : '<span class="bad">✗ Пока не то — смотри решение.</span>';
+    resEl.innerHTML += solutionHTML();
+    drawSol();
+  }
+
+  /* скобки */
+  document.querySelectorAll('.tr-brk').forEach(function(grp){
+    var side=grp.getAttribute('data-side');
+    grp.querySelectorAll('button').forEach(function(b){
+      b.addEventListener('click',function(){
+        grp.querySelectorAll('button').forEach(function(x){x.classList.remove('on');});
+        b.classList.add('on');
+        var val=b.getAttribute('data-brk');
+        if(side==='L'){ brkL=val; loEl.disabled=(val==='-inf'); if(loEl.disabled) loEl.value=''; }
+        else { brkR=val; hiEl.disabled=(val==='+inf'); if(hiEl.disabled) hiEl.value=''; }
+        special=null; document.getElementById('trNone').classList.remove('on');
+      });
+    });
+  });
+  document.getElementById('trNone').addEventListener('click',function(){
+    special = (special==='none')?null:'none';
+    this.classList.toggle('on',special==='none');
+    if(special==='none'){
+      brkL=null; brkR=null;
+      document.querySelectorAll('.tr-brk button').forEach(function(x){x.classList.remove('on');});
+      loEl.value=''; hiEl.value=''; loEl.disabled=true; hiEl.disabled=true;
+    } else { loEl.disabled=false; hiEl.disabled=false; }
+  });
+
+  document.getElementById('trCheck').addEventListener('click',check);
+  document.getElementById('trShow').addEventListener('click',function(){ resEl.innerHTML=solutionHTML(); drawSol(); });
+  document.getElementById('trNew').addEventListener('click',generate);
+  [loEl,hiEl].forEach(function(el){ el.addEventListener('keydown',function(e){ if(e.key==='Enter') check(); }); });
+
+  /* стартовое состояние = эталонный пример { 2x−1>3 ; x+4≤10 } → (2;6] */
+  cur={
+    A:{d:2,p:-1,rhs:3,shownRel:'>',rel:'>',x0:2,text:'2x '+MINUS+' 1 > 3'},
+    B:{d:1,p:4,rhs:10,shownRel:'<=',rel:'<=',x0:6,text:'x + 4 ≤ 10'},
+    aSol:{rel:'>',x0:2}, bSol:{rel:'<=',x0:6},
+    res:intersect({rel:'>',x0:2},{rel:'<=',x0:6})
+  };
+  sysEl.innerHTML='<span>'+cur.A.text+'</span><span>'+cur.B.text+'</span>';
+})();
+</script>

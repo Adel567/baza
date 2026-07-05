@@ -1,0 +1,481 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Вписанный угол — геометрия 8 класс</title>
+<style>
+  :root{
+    --paper:#F6F7F9;
+    --card:#FFFFFF;
+    --ink:#1B2333;
+    --muted:#5A6478;
+    --line:#E2E5EC;
+    --accent:#2E5AAC;      /* вписанный угол */
+    --accent-soft:#E4EBF7;
+    --cen:#E27C2C;         /* центральный угол / дуга */
+    --cen-soft:#FBEEDF;
+    --dia:#1E8E5A;         /* прямой угол на диаметр */
+    --dia-soft:#E7F4EC;
+    --no:#C0455B;
+    --no-bg:#F9E9EC;
+  }
+  *{box-sizing:border-box}
+  body{margin:0}
+  .wrap{
+    max-width:760px;margin:0 auto;
+    padding:clamp(1.4rem,4vw,3rem) clamp(1.1rem,4vw,2rem) 4rem;
+    background:var(--paper);color:var(--ink);
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    font-size:17px;line-height:1.62;-webkit-font-smoothing:antialiased;
+  }
+  .eyebrow{font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);font-weight:600;margin:0 0 .5rem}
+  h1{font-family:Georgia,"Times New Roman",serif;font-size:clamp(2.1rem,7vw,3rem);line-height:1.05;margin:0;font-weight:700;letter-spacing:-.01em;text-wrap:balance}
+  .lede{font-size:1.08rem;color:var(--muted);margin:.7rem 0 0;max-width:60ch;text-wrap:pretty}
+  h2{font-family:Georgia,serif;font-size:1.32rem;font-weight:700;margin:0 0 .1rem;letter-spacing:-.005em}
+  section{margin-top:2.6rem}
+  .kicker{font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:600;margin:0 0 .8rem;display:flex;align-items:center;gap:.6rem}
+  .kicker::before{content:"";width:1.4rem;height:2px;background:var(--accent);border-radius:2px}
+  p{margin:.65rem 0}
+  strong{font-weight:650}
+  .math{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-weight:600}
+  sup{font-size:.72em}
+  .ins{color:var(--accent);font-weight:700}
+  .cen{color:var(--cen);font-weight:700}
+  .dia{color:var(--dia);font-weight:700}
+
+  /* Главная формула */
+  .hero-formula{margin-top:2.2rem;background:var(--ink);color:#fff;border-radius:14px;padding:1.6rem 1.4rem;text-align:center}
+  .hero-formula .lbl{font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:#9aa6c9;margin:0 0 .7rem}
+  .hero-formula .eq{font-family:ui-monospace,"SF Mono",Menlo,monospace;font-size:clamp(1.5rem,5.4vw,2.2rem);font-weight:700}
+  .hero-formula .eq b{color:#8fb2e6;font-weight:700}
+  .hero-formula .eq i{color:#f0a45e;font-style:normal;font-weight:700}
+  .hero-formula .note{font-size:.86rem;color:#9aa6c9;margin:.8rem 0 0}
+
+  /* Пререквизит */
+  .recall{background:var(--accent-soft);border-radius:12px;padding:1rem 1.15rem;font-size:.96rem}
+  .recall p{margin:.35rem 0}
+  .recall b{color:var(--accent)}
+
+  /* Следствия — карточки */
+  .facts{display:grid;gap:.85rem;margin-top:.6rem}
+  @media(min-width:620px){.facts{grid-template-columns:1fr 1fr}}
+  .fact{border-radius:12px;padding:1.05rem 1.1rem;border:1px solid var(--line);background:var(--card);display:flex;flex-direction:column;gap:.35rem}
+  .fact .h{font-weight:700;font-size:1rem}
+  .fact .d{font-size:.92rem;color:var(--muted)}
+  .fact.one{border-top:4px solid var(--accent)}
+  .fact.one .h{color:var(--accent)}
+  .fact.two{border-top:4px solid var(--dia)}
+  .fact.two .h{color:var(--dia)}
+
+  /* Разбор */
+  .worked{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:1.2rem 1.3rem}
+  .worked .task{font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.02rem;margin:0 0 1rem;padding-bottom:.8rem;border-bottom:1px solid var(--line)}
+  ol.steps{margin:0;padding:0;list-style:none;counter-reset:s;display:flex;flex-direction:column;gap:.7rem}
+  ol.steps li{position:relative;padding-left:2.1rem;counter-increment:s}
+  ol.steps li::before{content:counter(s);position:absolute;left:0;top:.05rem;width:1.5rem;height:1.5rem;border-radius:50%;background:var(--accent-soft);color:var(--accent);font-size:.82rem;font-weight:700;display:flex;align-items:center;justify-content:center}
+  ol.steps .m{font-family:ui-monospace,Menlo,monospace;font-weight:600;color:var(--ink)}
+  ol.steps em{color:var(--muted);font-style:italic}
+  .verdict{margin-top:1rem;padding:.7rem 1rem;background:var(--accent-soft);border-radius:9px;font-weight:600;color:var(--accent);font-size:.98rem;font-family:ui-monospace,Menlo,monospace}
+
+  /* Визуализация */
+  .viz{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.1rem 1.1rem 1rem;margin:1rem 0}
+  .viz canvas{width:100%;height:auto;display:block;border-radius:10px;background:#FCFDFF}
+  .viz-read{text-align:center;font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.02rem;margin:.85rem 0 0;padding:.55rem;border-radius:9px;background:var(--accent-soft)}
+  .viz-read .c1{color:var(--cen)} .viz-read .c2{color:var(--accent)}
+  .viz-read.dia{background:var(--dia-soft)}
+  .viz-read.dia .c2{color:var(--dia)}
+  .sliders{display:grid;gap:.7rem;margin-top:.95rem}
+  .sliders label{display:flex;align-items:center;gap:.55rem;font-weight:700;font-family:ui-monospace,Menlo,monospace;font-size:.92rem}
+  .sliders label .nm{min-width:11.5ch}
+  .sliders input[type=range]{flex:1}
+  .sliders input.rB{accent-color:var(--accent)}
+  .sliders input.rA{accent-color:var(--cen)}
+  .sliders .sval{min-width:3.5ch;text-align:right;color:var(--muted);font-variant-numeric:tabular-nums}
+  .viz-btn{margin-top:.85rem;display:flex;gap:.5rem;flex-wrap:wrap}
+  .viz-btn button{font:inherit;font-weight:700;font-size:.86rem;cursor:pointer;border:none;border-radius:9px;padding:.5rem .9rem;background:var(--dia);color:#fff}
+  .viz-btn button.reset{background:transparent;color:var(--accent);border:1px solid var(--accent)}
+  .viz-btn button:focus-visible,.sliders input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+
+  /* Практика */
+  .drill{display:flex;flex-direction:column;gap:.7rem}
+  details{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:.85rem 1.05rem}
+  details[open]{border-color:var(--accent)}
+  summary{cursor:pointer;font-weight:600;list-style:none;display:flex;justify-content:space-between;align-items:center;gap:1rem}
+  summary::-webkit-details-marker{display:none}
+  summary:focus-visible{outline:3px solid var(--accent);outline-offset:3px;border-radius:6px}
+  summary .q{font-family:ui-monospace,Menlo,monospace;font-size:.95rem}
+  summary .tag{font-size:.66rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);border:1px solid var(--line);border-radius:20px;padding:.1rem .55rem;white-space:nowrap}
+  summary::after{content:"показать ответ";font-size:.76rem;color:var(--accent);font-weight:600;white-space:nowrap}
+  details[open] summary::after{content:"скрыть"}
+  .ans{margin-top:.7rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.96rem;color:var(--muted)}
+  .ans .m{font-family:ui-monospace,Menlo,monospace;color:var(--ink);font-weight:600}
+  .ans b{color:var(--ink)}
+
+  /* Тренажёр */
+  .trainer{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.2rem 1.3rem;margin-top:1rem}
+  .tr-task{font-size:clamp(1rem,3.6vw,1.12rem);text-align:center;padding:1rem;background:var(--accent-soft);border-radius:10px;font-weight:600;line-height:1.5}
+  .tr-task b{font-family:ui-monospace,Menlo,monospace;color:var(--ink)}
+  .tr-ctl{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:1rem;align-items:center;justify-content:center}
+  .tr-ctl input{flex:1;min-width:130px;max-width:200px;font:inherit;padding:.5rem .7rem;border:1px solid var(--line);border-radius:9px;text-align:center;background:#fff;color:var(--ink)}
+  .tr-ctl button{font:inherit;font-weight:700;font-size:.9rem;cursor:pointer;border:none;border-radius:9px;padding:.55rem .95rem;color:#fff;background:var(--accent)}
+  .tr-ctl button.sec{background:var(--cen)}
+  .tr-ctl button.ghost{background:transparent;color:var(--accent);border:1px solid var(--accent)}
+  .tr-ctl button:focus-visible,.tr-ctl input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+  .tr-result{margin-top:.9rem;font-size:.96rem;min-height:1.2rem;text-align:center}
+  .tr-result .ok{color:var(--dia);font-weight:700}
+  .tr-result .bad{color:var(--no);font-weight:700}
+  .tr-result .sol{margin-top:.6rem;padding:.85rem 1rem;background:#FCFDFE;border:1px solid var(--line);border-radius:10px;font-family:ui-monospace,Menlo,monospace;font-size:.9rem;line-height:1.85;text-align:left}
+  .tr-result .sol b{color:var(--accent)}
+
+  /* Ошибки */
+  ul.pitfalls{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:.6rem}
+  ul.pitfalls li{padding-left:1.5rem;position:relative;font-size:.98rem}
+  ul.pitfalls li::before{content:"×";position:absolute;left:0;top:-.05rem;color:var(--no);font-weight:700;font-size:1.1rem}
+  ul.pitfalls b{color:var(--ink)}
+
+  /* Проверка */
+  .selfcheck{background:var(--cen-soft);border-radius:12px;padding:1rem 1.2rem}
+  .selfcheck ol{margin:.3rem 0 0;padding-left:1.2rem;display:flex;flex-direction:column;gap:.4rem;font-size:.98rem}
+
+  .next{background:var(--accent);color:#fff;border-radius:12px;padding:1.2rem 1.3rem}
+  .next h2{color:#fff}
+  .next p{color:#dfe6f5;font-size:.96rem;margin:.4rem 0 0}
+  .next b{color:#fff}
+  .foot{margin-top:2.4rem;font-size:.82rem;color:var(--muted);text-align:center}
+
+  @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="wrap">
+
+  <header>
+    <p class="eyebrow">Геометрия · 8 класс · ОГЭ</p>
+    <h1>Вписанный угол</h1>
+    <p class="lede">Одна теорема — и ты быстро находишь углы в любой фигуре, вписанной в окружность. Это одна из самых частых тем в задачах ОГЭ.</p>
+  </header>
+
+  <div class="hero-formula">
+    <p class="lbl">Теорема о вписанном угле</p>
+    <div class="eq"><b>∠ABC</b> = ½ · <i>∪AC</i> = ½ · <i>∠AOC</i></div>
+    <p class="note">вписанный угол = половине своей дуги = половине центрального угла на ту же дугу</p>
+  </div>
+
+  <section>
+    <p class="kicker">Зачем это нужно</p>
+    <h2>Угол, под которым «виден» отрезок</h2>
+    <p>Зная всего одну теорему, ты находишь углы в треугольниках и четырёхугольниках, вписанных в окружность, доказываешь равенство углов и решаешь задачи ОГЭ, где напрямую угол не дан.</p>
+    <p>Житейское заблуждение: «чем дальше точка от хорды, тем меньше под ней виден отрезок». На самом деле <strong>из всех точек одной дуги</strong> хорда видна под <strong>одним и тем же углом</strong>. В этом вся «магия» вписанного угла — и мы сейчас увидим её глазами.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Что вспомнить с прошлого шага</p>
+    <div class="recall">
+      <p><b>Хорда</b> — отрезок, соединяющий две точки окружности. <b>Дуга</b> — часть окружности между этими точками; её тоже мерят в градусах (вся окружность = 360°).</p>
+      <p><b>Центральный угол</b> ∠AOC — угол с вершиной <b>в центре O</b>. Он равен дуге, на которую опирается: если дуга AC = 80°, то и ∠AOC = 80°.</p>
+      <p>Теперь двигаем вершину из центра <b>на саму окружность</b> — и получаем вписанный угол.</p>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Ядро темы</p>
+    <h2>Что такое вписанный угол</h2>
+    <p><strong>Вписанный угол</strong> — это угол, вершина которого лежит <strong>на окружности</strong>, а стороны — <strong>хорды</strong>. Он «опирается» на дугу, которая лежит внутри угла и не содержит вершину.</p>
+    <p>Главная идея: вписанный угол всегда ровно <strong>в два раза меньше</strong> центрального, опирающегося на ту же дугу. Центральный угол из центра «измеряет» дугу целиком, а вписанный с вершиной на окружности «видит» её как бы наполовину. Поэтому величина вписанного угла зависит <strong>только от дуги</strong>, а не от того, где на окружности стоит вершина.</p>
+
+    <div class="facts">
+      <div class="fact one">
+        <div class="h">Следствие 1 — углы на одну дугу равны</div>
+        <div class="d">Все вписанные углы, опирающиеся на одну и ту же дугу (с одной стороны от хорды), <strong>равны</strong> между собой — ведь каждый равен половине этой дуги.</div>
+      </div>
+      <div class="fact two">
+        <div class="h">Следствие 2 — на диаметр = 90°</div>
+        <div class="d">Угол, опирающийся на <strong>диаметр</strong> (на полуокружность), — <strong>прямой</strong>. Полуокружность = 180°, а половина от 180° = 90°.</div>
+      </div>
+    </div>
+    <p style="font-size:.9rem;color:var(--muted);margin-top:.9rem">Условие: вершина обязана лежать <strong>на окружности</strong>, а обе стороны — хорды. Если вершина внутри или вне круга — теорема в таком виде не работает.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Разбираем вместе · думаю вслух</p>
+    <h2>Эталонный пример</h2>
+    <div class="worked">
+      <p class="task">Центральный угол ∠AOC = 80°. Точка B на большей дуге. Найти ∠ABC.</p>
+      <ol class="steps">
+        <li>Оба угла — <span class="m">∠ABC</span> и <span class="m">∠AOC</span> — опираются на <b>одну и ту же дугу AC</b>. <em>Это важно: теорема связывает именно углы на одну дугу.</em></li>
+        <li>По теореме вписанный угол = половине центрального: <span class="m">∠ABC = ½ · ∠AOC</span>. <em>Вписанный вдвое меньше центрального.</em></li>
+        <li>Считаем: <span class="m">∠ABC = ½ · 80° = 40°</span>.</li>
+        <li>Проверка смыслом: вписанный (40°) меньше центрального (80°) — так и должно быть. ✓</li>
+      </ol>
+      <div class="verdict">Ответ: ∠ABC = 40°</div>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Увидь глазами · интерактив</p>
+    <h2>Двигай вершину — угол не меняется</h2>
+    <p>Дуга <span class="cen">AC</span> подсвечена. Из центра идёт <span class="cen">центральный угол ∠AOC</span>, с окружности — <span class="ins">вписанный ∠ABC</span> на ту же дугу. Тяни ползунок <b>«вершина B»</b>: точка B бежит по окружности, а вписанный угол <strong>остаётся тем же</strong> — это и есть следствие 1. Ползунком <b>«дуга AC»</b> меняй саму дугу и следи за соотношением 2 : 1.</p>
+    <div class="viz">
+      <canvas id="viz" width="640" height="500" aria-label="Окружность: центральный угол из центра и вписанный угол с вершиной на окружности, опирающиеся на одну дугу"></canvas>
+      <div id="vizRead" class="viz-read"></div>
+      <div class="sliders">
+        <label><span class="nm">вершина B</span><input id="sB" class="rB" type="range" min="8" max="92" step="1" value="50" aria-label="Положение вершины B на окружности"><span id="vB" class="sval">50</span></label>
+        <label><span class="nm">дуга AC</span><input id="sA" class="rA" type="range" min="40" max="180" step="10" value="100" aria-label="Градусная мера дуги AC"><span id="vA" class="sval">100°</span></label>
+      </div>
+      <div class="viz-btn">
+        <button id="vizDia" type="button">Опереть на диаметр (90°)</button>
+        <button id="vizReset" type="button" class="reset">Сбросить</button>
+      </div>
+    </div>
+    <p style="font-size:.9rem;color:var(--muted)">Поставь дугу на <b>180°</b> (или нажми кнопку) — концы A и C станут концами диаметра, и вписанный угол ровно <span class="dia">90°</span>, где бы ни стояла вершина B.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Теперь ты · бесконечная практика</p>
+    <h2>Тренажёр</h2>
+    <p>Нажми «Новая», реши задачу и впиши ответ в градусах (число, можно без значка °). Проверь себя или посмотри пошаговое решение по теореме.</p>
+    <div class="trainer">
+      <div class="tr-task" id="trTask">Центральный угол <b>∠AOC = 80°</b>. Точка B на окружности опирается на ту же дугу AC. Найди вписанный угол <b>∠ABC</b>.</div>
+      <div class="tr-ctl">
+        <button id="trNew" type="button">🎲 Новая</button>
+        <input id="trAns" type="text" inputmode="numeric" placeholder="ответ в °" aria-label="Ответ в градусах">
+        <button id="trCheck" type="button" class="sec">Проверить</button>
+        <button id="trShow" type="button" class="ghost">Решение</button>
+      </div>
+      <div id="trResult" class="tr-result"></div>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Проверь себя · от простого к анализу</p>
+    <h2>Мини-практика</h2>
+    <div class="drill">
+      <details>
+        <summary><span class="q">Чему равен вписанный угол, опирающийся на диаметр?</span><span class="tag">понимание</span></summary>
+        <div class="ans">Всегда <b>90°</b>: дуга-полуокружность = 180°, а вписанный угол = её половине.</div>
+      </details>
+      <details>
+        <summary><span class="q">Центральный угол = 120°. Найди вписанный на ту же дугу.</span><span class="tag">применение</span></summary>
+        <div class="ans"><span class="m">∠ = ½ · 120° = 60°</span>. Ответ <b>60°</b>.</div>
+      </details>
+      <details>
+        <summary><span class="q">Вписанный угол = 45°. Найди дугу, на которую он опирается.</span><span class="tag">применение</span></summary>
+        <div class="ans">Вписанный = половине дуги, значит дуга вдвое больше: <span class="m">∪ = 2 · 45° = 90°</span>. Ответ <b>90°</b>.</div>
+      </details>
+      <details>
+        <summary><span class="q">Что изменится, если вершину B передвинуть по той же дуге в другую точку?</span><span class="tag">анализ</span></summary>
+        <div class="ans"><b>Ничего не изменится</b> — все вписанные углы на одну дугу равны, ведь каждый равен половине этой дуги. Величина угла зависит только от дуги, а не от места вершины.</div>
+      </details>
+      <details>
+        <summary><span class="q">Найди ошибку: «центральный угол 70°, значит вписанный = 70° · 2 = 140°».</span><span class="tag">анализ</span></summary>
+        <div class="ans">Перепутано направление: вписанный — это <b>половина</b>, а не удвоение. Правильно <span class="m">∠ = ½ · 70° = 35°</span>. Проверка смыслом: вписанный обязан быть <b>меньше</b> центрального.</div>
+      </details>
+      <details>
+        <summary><span class="q">В окружность вписан треугольник; один его угол оказался прямым. Что за сторона напротив него?</span><span class="tag">анализ</span></summary>
+        <div class="ans">Прямой вписанный угол опирается на диаметр. Значит сторона напротив него — <b>диаметр</b> окружности.</div>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Где чаще всего ошибаются</p>
+    <h2>Лови эти ловушки</h2>
+    <ul class="pitfalls">
+      <li><b>Забывают поделить на 2</b> (или, наоборот, умножают). Запомни направление: вписанный — это «половинка». Проверка здравым смыслом: вписанный угол всегда меньше своего центрального.</li>
+      <li><b>Не видят, что углы на одну дугу равны.</b> В сложном чертеже отметь дугу — все углы, «смотрящие» на неё с одной стороны, равны. Это часто сразу даёт ответ.</li>
+      <li><b>Не используют диаметр.</b> Есть в условии диаметр и точка на окружности — почти всегда там спрятан угол <b>90°</b>. Ищи его специально.</li>
+      <li><b>Путают вписанный угол с центральным.</b> У центрального вершина в центре O, у вписанного — на окружности. Сначала найди вершину, потом применяй формулу.</li>
+      <li><b>Берут «не ту» дугу.</b> Угол опирается на дугу, лежащую <em>внутри</em> угла (без вершины). Проверь, что концы хорды — это стороны угла.</li>
+    </ul>
+  </section>
+
+  <section>
+    <p class="kicker">Объясни своими словами</p>
+    <div class="selfcheck">
+      <ol>
+        <li>Где лежит вершина вписанного угла и из чего состоят его стороны?</li>
+        <li>Как связаны вписанный и центральный углы на одну дугу?</li>
+        <li>Почему угол, опирающийся на диаметр, всегда прямой?</li>
+      </ol>
+    </div>
+  </section>
+
+  <section>
+    <div class="next">
+      <h2>Что дальше</h2>
+      <p>Вписанный угол — ключ к следующим темам. Через него доказывается свойство <b>вписанного четырёхугольника</b> (сумма противоположных углов = 180°) и разбираются <b>замечательные точки треугольника</b>.</p>
+      <p><b>Запомни одним предложением:</b> вписанный угол = половине центрального (и половине своей дуги), поэтому углы на одну дугу равны, а угол на диаметр — прямой.</p>
+    </div>
+  </section>
+
+  <p class="foot">Проверка на выходе: где лежит вершина вписанного угла? · центральный 100° → вписанный? · чему равен угол на диаметр?</p>
+
+</div>
+
+<script>
+/* ВИЗУАЛИЗАЦИЯ: окружность, дуга, центральный и вписанный углы на одну дугу */
+(function(){
+  var cv=document.getElementById('viz'); if(!cv) return;
+  var ctx=cv.getContext('2d');
+  var sB=document.getElementById('sB'), sA=document.getElementById('sA');
+  var vB=document.getElementById('vB'), vA=document.getElementById('vA');
+  var read=document.getElementById('vizRead');
+  var W=640,H=500,dpr=1,cx,cy,R;
+  var D2R=Math.PI/180;
+
+  function css(v){ return getComputedStyle(document.documentElement).getPropertyValue(v).trim(); }
+  function resize(){
+    var c=cv.clientWidth||640; dpr=Math.min(window.devicePixelRatio||1,2);
+    W=c; H=Math.round(c*0.80);
+    cv.width=W*dpr; cv.height=H*dpr; cv.style.height=H+'px';
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+    cx=W/2; cy=H*0.47; R=Math.min(W,H)*0.36;
+  }
+  /* точка на окружности по «математическому» углу (против часовой, 0 = вправо) */
+  function P(deg){ return [cx+R*Math.cos(deg*D2R), cy-R*Math.sin(deg*D2R)]; }
+
+  function angMark(V, P1, P2, rad, col){
+    var t1=Math.atan2(P1[1]-V[1],P1[0]-V[0]), t2=Math.atan2(P2[1]-V[1],P2[0]-V[0]);
+    var d=t2-t1; while(d>Math.PI)d-=2*Math.PI; while(d<-Math.PI)d+=2*Math.PI;
+    ctx.beginPath();
+    for(var i=0;i<=26;i++){ var t=t1+d*i/26, x=V[0]+rad*Math.cos(t), y=V[1]+rad*Math.sin(t); i?ctx.lineTo(x,y):ctx.moveTo(x,y); }
+    ctx.strokeStyle=col; ctx.lineWidth=2.5; ctx.stroke();
+    var tm=t1+d/2; return [V[0]+(rad+15)*Math.cos(tm), V[1]+(rad+15)*Math.sin(tm)];
+  }
+  function dot(p,col,r){ ctx.beginPath(); ctx.arc(p[0],p[1],r,0,7); ctx.fillStyle=col; ctx.fill(); ctx.beginPath(); ctx.arc(p[0],p[1],r-2.4,0,7); ctx.fillStyle='#fff'; ctx.fill(); }
+  function lab(p,txt,col,dx,dy){ ctx.fillStyle=col; ctx.font='700 '+Math.max(13,R*0.11)+'px system-ui,sans-serif'; ctx.textAlign='center'; ctx.textBaseline='middle'; ctx.fillText(txt,p[0]+dx,p[1]+dy); }
+
+  function draw(){
+    var m=+sA.value;                 // дуга AC = центральный угол
+    var pB=+sB.value/100;            // положение B по большой дуге (0..1)
+    vA.textContent=m+'°'; vB.textContent=+sB.value;
+    var isDia=(m>=180);
+
+    // A и C симметричны сверху; дуга AC (сверху) = m
+    var aA=90+m/2, aC=90-m/2;
+    var A=P(aA), C=P(aC), O=[cx,cy];
+    // B бежит по нижней (большой) дуге: от C по часовой на pB долю (360-m)
+    var aB=aC-pB*(360-m);
+    var B=P(aB);
+
+    var cCen=css('--cen'), cIns=css('--accent'), cDia=css('--dia'), cLine=css('--line'), cMut=css('--muted');
+    var insCol=isDia?cDia:cIns;
+
+    ctx.clearRect(0,0,W,H);
+
+    // окружность
+    ctx.beginPath(); ctx.arc(cx,cy,R,0,7); ctx.strokeStyle=cLine; ctx.lineWidth=2; ctx.stroke();
+
+    // подсвеченная дуга AC (верхняя, от aC до aA против часовой)
+    ctx.beginPath();
+    var steps=60;
+    for(var i=0;i<=steps;i++){ var t=(aC+(aA-aC)*i/steps)*D2R, x=cx+R*Math.cos(t), y=cy-R*Math.sin(t); i?ctx.lineTo(x,y):ctx.moveTo(x,y); }
+    ctx.strokeStyle=cCen; ctx.lineWidth=6; ctx.lineCap='round'; ctx.stroke(); ctx.lineCap='butt';
+
+    // радиусы O-A, O-C (центральный угол)
+    ctx.strokeStyle=cCen; ctx.lineWidth=2.5;
+    ctx.beginPath(); ctx.moveTo(O[0],O[1]); ctx.lineTo(A[0],A[1]); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(O[0],O[1]); ctx.lineTo(C[0],C[1]); ctx.stroke();
+
+    // хорды B-A, B-C (вписанный угол)
+    ctx.strokeStyle=insCol; ctx.lineWidth=2.5;
+    ctx.beginPath(); ctx.moveTo(B[0],B[1]); ctx.lineTo(A[0],A[1]); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(B[0],B[1]); ctx.lineTo(C[0],C[1]); ctx.stroke();
+
+    // маркеры углов
+    var lc=angMark(O,A,C,R*0.30,cCen);
+    var lb=angMark(B,A,C,R*0.34,insCol);
+
+    // вычислить вписанный угол честно из координат (проверка теории)
+    var v1=[A[0]-B[0],A[1]-B[1]], v2=[C[0]-B[0],C[1]-B[1]];
+    var cosB=(v1[0]*v2[0]+v1[1]*v2[1])/(Math.hypot(v1[0],v1[1])*Math.hypot(v2[0],v2[1]));
+    var insDeg=Math.round(Math.acos(Math.max(-1,Math.min(1,cosB)))/D2R);
+
+    // подписи величин у маркеров
+    ctx.font='700 '+Math.max(12,R*0.115)+'px ui-monospace,Menlo,monospace'; ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.fillStyle=cCen; ctx.fillText(m+'°', lc[0], lc[1]);
+    ctx.fillStyle=insCol; ctx.fillText(insDeg+'°', lb[0], lb[1]);
+
+    // точки и буквы
+    dot(O,cMut,6);  lab(O,'O',cMut, 0, R*0.16);
+    dot(A,cCen,6.5); lab(A,'A',cCen, -R*0.14, -R*0.05);
+    dot(C,cCen,6.5); lab(C,'C',cCen,  R*0.14, -R*0.05);
+    dot(B,insCol,7); lab(B,'B',insCol, 0, R*0.19);
+
+    // читалка
+    if(isDia){
+      read.className='viz-read dia';
+      read.innerHTML='AC — <span class="c1">диаметр (дуга 180°)</span> → вписанный <span class="c2">∠ABC = 90°</span>, где бы ни стояла B';
+    } else {
+      read.className='viz-read';
+      read.innerHTML='центральный <span class="c1">∠AOC = '+m+'°</span> → вписанный <span class="c2">∠ABC = '+insDeg+'°</span> &nbsp;(ровно половина)';
+    }
+  }
+
+  sB.addEventListener('input',draw);
+  sA.addEventListener('input',draw);
+  document.getElementById('vizDia').addEventListener('click',function(){ sA.value=180; draw(); });
+  document.getElementById('vizReset').addEventListener('click',function(){ sA.value=100; sB.value=50; draw(); });
+  window.addEventListener('resize',function(){ resize(); draw(); });
+  resize(); draw();
+})();
+</script>
+
+<script>
+/* ТРЕНАЖЁР-ГЕНЕРАТОР: по дуге/центральному найти вписанный и наоборот; угол на диаметр */
+(function(){
+  var taskEl=document.getElementById('trTask'), ansEl=document.getElementById('trAns'), resEl=document.getElementById('trResult');
+  if(!taskEl) return;
+  var cur=null;
+  function ri(a,b){ return Math.floor(Math.random()*(b-a+1))+a; }
+
+  function generate(){
+    var r=Math.random(), t;
+    if(r<0.30) t='cen';        // центральный → вписанный
+    else if(r<0.58) t='arc';   // дуга → вписанный
+    else if(r<0.82) t='ins';   // вписанный → центральный
+    else t='dia';              // на диаметр → 90 (краевой)
+
+    if(t==='cen'){
+      var c=ri(10,80)*2;       // чётный центральный 20..160
+      cur={t:t, given:c, ans:c/2};
+      taskEl.innerHTML='Центральный угол <b>∠AOC = '+c+'°</b>. Точка B на окружности опирается на ту же дугу AC. Найди вписанный угол <b>∠ABC</b>.';
+    } else if(t==='arc'){
+      var a=ri(10,90)*2;       // чётная дуга 20..180
+      cur={t:t, given:a, ans:a/2};
+      taskEl.innerHTML='Вписанный угол ∠ABC опирается на дугу <b>∪AC = '+a+'°</b>. Найди <b>∠ABC</b>.';
+    } else if(t==='ins'){
+      var i=ri(10,80);
+      cur={t:t, given:i, ans:2*i};
+      taskEl.innerHTML='Вписанный угол <b>∠ABC = '+i+'°</b>. Найди центральный угол <b>∠AOC</b>, опирающийся на ту же дугу.';
+    } else {
+      cur={t:t, given:180, ans:90};
+      taskEl.innerHTML='<b>AB</b> — диаметр окружности, точка C лежит на окружности. Найди вписанный угол <b>∠ACB</b>.';
+    }
+    resEl.innerHTML=''; ansEl.value='';
+  }
+
+  function solHTML(){
+    var q=cur, h='<div class="sol">';
+    if(q.t==='cen') h+='Вписанный = половине центрального:<br>∠ABC = ½ · ∠AOC = ½ · '+q.given+'° = <b>'+q.ans+'°</b>';
+    else if(q.t==='arc') h+='Вписанный = половине своей дуги:<br>∠ABC = ½ · ∪AC = ½ · '+q.given+'° = <b>'+q.ans+'°</b>';
+    else if(q.t==='ins') h+='Центральный вдвое больше вписанного:<br>∠AOC = 2 · ∠ABC = 2 · '+q.given+'° = <b>'+q.ans+'°</b>';
+    else h+='∠ACB опирается на диаметр AB.<br>Дуга-полуокружность = 180°,<br>значит ∠ACB = ½ · 180° = <b>90°</b>';
+    return h+'</div>';
+  }
+
+  function check(){
+    var raw=ansEl.value.trim().replace('°','').replace(',','.');
+    if(raw===''){ resEl.innerHTML='<span class="bad">Введи ответ или нажми «Решение».</span>'; return; }
+    var got=parseFloat(raw);
+    if(!isNaN(got) && Math.abs(got-cur.ans)<0.02){ resEl.innerHTML='<span class="ok">✓ Верно!</span>'+solHTML(); }
+    else{ resEl.innerHTML='<span class="bad">✗ Пока не то — глянь решение.</span>'+solHTML(); }
+  }
+
+  document.getElementById('trNew').addEventListener('click',generate);
+  document.getElementById('trCheck').addEventListener('click',check);
+  document.getElementById('trShow').addEventListener('click',function(){ resEl.innerHTML=solHTML(); });
+  ansEl.addEventListener('keydown',function(e){ if(e.key==='Enter') check(); });
+
+  /* стартовое состояние = валидная задача, совпадает с показанным в тексте */
+  cur={t:'cen', given:80, ans:40};
+})();
+</script>

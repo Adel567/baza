@@ -1,0 +1,502 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Площадь параллелограмма — геометрия 8 класс</title>
+<style>
+  :root{
+    --paper:#F6F7F9;
+    --card:#FFFFFF;
+    --ink:#1B2333;
+    --muted:#5A6478;
+    --line:#E2E5EC;
+    --accent:#2E5AAC;      /* основание a — синий */
+    --accent-soft:#E4EBF7;
+    --hi:#E27C2C;          /* высота h — оранжевый */
+    --hi-soft:#FBEEDF;
+    --ok:#1E8E5A;
+    --ok-bg:#E7F4EC;
+    --ok-soft:#DEF3E7;
+    --no:#C0455B;
+  }
+  *{box-sizing:border-box}
+  body{margin:0}
+  .wrap{
+    max-width:760px;margin:0 auto;
+    padding:clamp(1.4rem,4vw,3rem) clamp(1.1rem,4vw,2rem) 4rem;
+    background:var(--paper);color:var(--ink);
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    font-size:17px;line-height:1.62;-webkit-font-smoothing:antialiased;
+  }
+  .eyebrow{font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);font-weight:600;margin:0 0 .5rem}
+  h1{font-family:Georgia,"Times New Roman",serif;font-size:clamp(2.1rem,7vw,3rem);line-height:1.05;margin:0;font-weight:700;letter-spacing:-.01em;text-wrap:balance}
+  .lede{font-size:1.08rem;color:var(--muted);margin:.7rem 0 0;max-width:60ch;text-wrap:pretty}
+  h2{font-family:Georgia,serif;font-size:1.32rem;font-weight:700;margin:0 0 .1rem;letter-spacing:-.005em;text-wrap:balance}
+  section{margin-top:2.6rem}
+  .kicker{font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:600;margin:0 0 .8rem;display:flex;align-items:center;gap:.6rem}
+  .kicker::before{content:"";width:1.4rem;height:2px;background:var(--accent);border-radius:2px}
+  p{margin:.65rem 0}
+  strong{font-weight:650}
+  .math{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-weight:600}
+  sup{font-size:.72em}
+  .aw{color:var(--accent);font-weight:800}
+  .hw{color:var(--hi);font-weight:800}
+
+  /* Главная формула */
+  .hero-formula{margin-top:2.2rem;background:var(--ink);color:#fff;border-radius:14px;padding:1.6rem 1.4rem;text-align:center}
+  .hero-formula .lbl{font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:#9aa6c9;margin:0 0 .7rem}
+  .hero-formula .eq{font-family:ui-monospace,"SF Mono",Menlo,monospace;font-size:clamp(1.7rem,6vw,2.4rem);font-weight:700;letter-spacing:.01em}
+  .hero-formula .eq .a{color:#8FB2E6} .hero-formula .eq .h{color:#F0A45E}
+  .hero-formula .note{font-size:.86rem;color:#9aa6c9;margin:.8rem 0 0}
+
+  /* Пререквизит */
+  .recall{background:var(--accent-soft);border-radius:12px;padding:1rem 1.15rem;font-size:.96rem}
+  .recall p{margin:.35rem 0}
+  .recall b{color:var(--accent)}
+
+  /* Что такое основание и высота */
+  .defs{display:grid;gap:.85rem;margin-top:.4rem}
+  @media(min-width:560px){.defs{grid-template-columns:1fr 1fr}}
+  .def{border-radius:12px;padding:1.05rem 1.1rem;border:1px solid var(--line);background:var(--card);display:flex;flex-direction:column;gap:.35rem}
+  .def.a{border-top:4px solid var(--accent)}
+  .def.h{border-top:4px solid var(--hi)}
+  .def .t{font-weight:700;font-size:1.05rem}
+  .def.a .t{color:var(--accent)} .def.h .t{color:var(--hi)}
+  .def .d{font-size:.93rem;color:var(--muted)}
+
+  /* Диаграмма-канвас */
+  .diagram{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.1rem 1.1rem 1rem;margin-top:1rem}
+  .diagram canvas{width:100%;height:auto;display:block;border-radius:10px;background:#FCFDFF}
+  .diag-area{text-align:center;font-weight:700;font-size:1.05rem;margin:.85rem 0 0;padding:.5rem;border-radius:9px;font-family:ui-monospace,Menlo,monospace;background:var(--ok-bg);color:var(--ok)}
+  .diag-cap{text-align:center;font-size:.9rem;color:var(--muted);margin:.55rem 0 0}
+  .diag-btns{display:flex;gap:.5rem;flex-wrap:wrap;justify-content:center;margin-top:.9rem}
+  .diag-btns button{font:inherit;font-weight:700;font-size:.9rem;cursor:pointer;border:none;border-radius:9px;padding:.55rem 1rem;color:#fff;background:var(--ok)}
+  .diag-btns button.ghost{background:transparent;color:var(--accent);border:1px solid var(--accent)}
+  .diag-btns button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+  .sliders{display:grid;gap:.6rem;margin-top:.9rem}
+  @media(min-width:520px){.sliders{grid-template-columns:repeat(3,1fr)}}
+  .sliders label{display:flex;align-items:center;gap:.5rem;font-weight:700;font-family:ui-monospace,Menlo,monospace;font-size:.95rem}
+  .sliders label.la{color:var(--accent)} .sliders label.lh{color:var(--hi)} .sliders label.lf{color:var(--muted)}
+  .sliders input[type=range]{flex:1;min-width:0}
+  .sliders input.ra{accent-color:var(--accent)} .sliders input.rh{accent-color:var(--hi)} .sliders input.rf{accent-color:var(--muted)}
+  .sliders input[type=range]:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+  .sliders .sval{min-width:2.4ch;text-align:right;font-variant-numeric:tabular-nums}
+
+  /* Разбор */
+  .worked{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:1.2rem 1.3rem}
+  .worked+.worked{margin-top:.8rem}
+  .worked .task{font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.02rem;margin:0 0 1rem;padding-bottom:.8rem;border-bottom:1px solid var(--line)}
+  ol.steps{margin:0;padding:0;list-style:none;counter-reset:s;display:flex;flex-direction:column;gap:.7rem}
+  ol.steps li{position:relative;padding-left:2.1rem;counter-increment:s;font-size:.97rem}
+  ol.steps li::before{content:counter(s);position:absolute;left:0;top:.05rem;width:1.5rem;height:1.5rem;border-radius:50%;background:var(--accent-soft);color:var(--accent);font-size:.82rem;font-weight:700;display:flex;align-items:center;justify-content:center}
+  ol.steps .m{font-family:ui-monospace,Menlo,monospace;font-weight:600;color:var(--ink)}
+  .verdict{margin-top:1rem;padding:.7rem 1rem;background:var(--ok-bg);border-radius:9px;font-weight:600;color:var(--ok);font-size:.98rem;font-family:ui-monospace,Menlo,monospace}
+
+  /* POE */
+  .poe{background:var(--hi-soft);border-left:4px solid var(--hi);border-radius:0 12px 12px 0;padding:1rem 1.15rem;margin-top:1rem;font-size:.97rem}
+  .poe b{color:var(--hi)}
+
+  /* Практика */
+  .drill{display:flex;flex-direction:column;gap:.7rem}
+  details{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:.85rem 1.05rem}
+  details[open]{border-color:var(--accent)}
+  summary{cursor:pointer;font-weight:600;list-style:none;display:flex;justify-content:space-between;align-items:center;gap:1rem}
+  summary::-webkit-details-marker{display:none}
+  summary:focus-visible{outline:3px solid var(--accent);outline-offset:3px;border-radius:6px}
+  summary .q{font-family:ui-monospace,Menlo,monospace;font-size:.95rem}
+  summary .tag{font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);border:1px solid var(--line);border-radius:20px;padding:.1rem .55rem;white-space:nowrap}
+  summary::after{content:"показать ответ";font-size:.78rem;color:var(--accent);font-weight:600;white-space:nowrap}
+  details[open] summary::after{content:"скрыть"}
+  .ans{margin-top:.7rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.96rem;color:var(--muted)}
+  .ans .m{font-family:ui-monospace,Menlo,monospace;color:var(--ink);font-weight:600}
+  .ans b{color:var(--ink)}
+
+  /* Тренажёр */
+  .trainer{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.2rem 1.3rem;margin-top:1rem}
+  .tr-task{font-size:clamp(1rem,4vw,1.15rem);text-align:center;padding:1rem;background:var(--accent-soft);border-radius:10px;font-weight:600;color:var(--ink)}
+  .tr-task b{font-family:ui-monospace,Menlo,monospace}
+  .tr-ctl{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:1rem;align-items:center;justify-content:center}
+  .tr-ctl input{flex:1;min-width:120px;max-width:190px;font:inherit;padding:.5rem .7rem;border:1px solid var(--line);border-radius:9px;text-align:center;background:#fff;color:var(--ink)}
+  .tr-ctl button{font:inherit;font-weight:700;font-size:.9rem;cursor:pointer;border:none;border-radius:9px;padding:.55rem .95rem;color:#fff;background:var(--accent)}
+  .tr-ctl button.sec{background:var(--hi)}
+  .tr-ctl button.ghost{background:transparent;color:var(--accent);border:1px solid var(--accent)}
+  .tr-ctl button:focus-visible,.tr-ctl input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+  .tr-result{margin-top:.9rem;font-size:.96rem;min-height:1.2rem;text-align:center}
+  .tr-result .ok{color:var(--ok);font-weight:700}
+  .tr-result .bad{color:var(--no);font-weight:700}
+  .tr-result .sol{margin-top:.7rem;padding:.85rem 1rem;background:#FCFDFE;border:1px solid var(--line);border-radius:10px;font-family:ui-monospace,Menlo,monospace;font-size:.9rem;line-height:1.85;text-align:left}
+  .tr-result .sol b{color:var(--accent)}
+
+  /* Ошибки */
+  ul.pitfalls{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:.6rem}
+  ul.pitfalls li{padding-left:1.5rem;position:relative;font-size:.98rem}
+  ul.pitfalls li::before{content:"×";position:absolute;left:0;top:-.05rem;color:var(--no);font-weight:700;font-size:1.1rem}
+  ul.pitfalls b{color:var(--ink)}
+
+  /* Что дальше */
+  .next{background:var(--accent);color:#fff;border-radius:12px;padding:1.2rem 1.3rem}
+  .next h2{color:#fff}
+  .next .big{font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.25rem;margin:.6rem 0 .3rem}
+  .next p{color:#dfe7fb;font-size:.96rem;margin:.4rem 0 0}
+  .next b{color:#fff}
+  .foot{margin-top:2.4rem;font-size:.82rem;color:var(--muted);text-align:center}
+
+  @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="wrap">
+
+  <header>
+    <p class="eyebrow">Геометрия · 8 класс</p>
+    <h1>Площадь параллелограмма</h1>
+    <p class="lede">Тот же прямоугольник, только «скошенный»: площадь — это <em>основание</em> на <em>высоту</em>, а вовсе не произведение двух соседних сторон.</p>
+  </header>
+
+  <div class="hero-formula">
+    <p class="lbl">Формула площади</p>
+    <div class="eq">S = <span class="a">a</span> · <span class="h">h</span></div>
+    <p class="note"><span style="color:#8FB2E6">a</span> — основание · <span style="color:#F0A45E">h</span> — высота, проведённая к этому основанию</p>
+  </div>
+
+  <section>
+    <p class="kicker">Зачем это нужно</p>
+    <h2>Первый шаг от прямоугольника к «косым» фигурам</h2>
+    <p>Параллелограмм — это первый шаг от удобного прямоугольника к фигурам, у которых стороны наклонены. Через его площадь дальше выводят площади <strong>треугольника</strong> и <strong>трапеции</strong>, а значит и площадь любого многоугольника — его всегда можно разрезать на треугольники. На практике это участки земли скошенной формы, наклонные грани, раскрой ткани и листового материала.</p>
+    <p>Сразу про главное заблуждение: «раз у параллелограмма две пары сторон, то площадь — это произведение соседних сторон, как у прямоугольника». Это <strong>неверно</strong>. При наклоне сторон фигура «сплющивается»: стороны те же, а площадь уменьшается. Поэтому в формуле участвует не вторая сторона, а <strong>высота</strong>.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Что вспомнить</p>
+    <div class="recall">
+      <p>Площадь <b>прямоугольника</b> — это <span class="math">a · h</span>: длина на ширину, две перпендикулярные стороны.</p>
+      <p><b>Параллелограмм</b> — четырёхугольник, у которого противоположные стороны попарно параллельны и равны.</p>
+      <p><b>Высота</b> — это перпендикуляр между двумя параллельными сторонами. Не наклонная боковая сторона, а именно перпендикуляр.</p>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Откуда берётся формула</p>
+    <h2>Перекроим параллелограмм в прямоугольник</h2>
+    <p>Отрежем от параллелограмма прямоугольный треугольник у одной боковой стороны и приставим его к другой стороне. Получится <strong>прямоугольник</strong>: у него одна сторона равна основанию <span class="aw">a</span>, а другая — высоте <span class="hw">h</span> (расстоянию между параллельными сторонами).</p>
+    <p>Мы ничего не добавили и ничего не убрали — только переставили кусок. Значит площадь не изменилась:</p>
+    <p style="text-align:center" class="math">S(параллелограмма) = S(прямоугольника) = a · h.</p>
+    <p>Смысл формулы: площадь зависит от того, насколько <strong>широка полоса</strong> между параллельными сторонами (это и есть высота <span class="hw">h</span>), а не от длины наклонной боковой стороны.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Пара «основание — высота»</p>
+    <h2>Что такое a и что такое h</h2>
+    <div class="defs">
+      <div class="def a">
+        <div class="t">a — основание</div>
+        <div class="d">Длина стороны, которую мы выбрали за основание. За основание можно взять любую сторону — тогда высоту берут к ней.</div>
+      </div>
+      <div class="def h">
+        <div class="t">h — высота к нему</div>
+        <div class="d">Перпендикуляр от противоположной стороны к прямой, содержащей <b>выбранное</b> основание. К другому основанию будет своя, другая высота.</div>
+      </div>
+    </div>
+    <p style="font-size:.95rem;color:var(--muted);margin-top:.9rem">Основание и высота — <strong>согласованная пара</strong>: h должна быть перпендикулярна именно тому основанию a, на которое умножаем. Боковая сторона <span class="math">b</span> в формулу площади <strong>не входит</strong> — она нужна только для периметра.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Покрути сам · интерактив</p>
+    <h2>Отрежь треугольник и переставь</h2>
+    <p>Перед тобой параллелограмм с основанием <span class="aw">a</span> и высотой <span class="hw">h</span> (прямой угол в основании отмечен). Нажми <strong>«Перекроить»</strong> — левый прямоугольный треугольник переедет вправо и фигура станет прямоугольником <span class="math">a × h</span>. Площадь <strong>не меняется</strong> — это и доказывает формулу.</p>
+    <div class="diagram">
+      <canvas id="pgCv" width="680" height="380" aria-label="Параллелограмм с основанием a и высотой h, который перекраивается в прямоугольник"></canvas>
+      <div class="diag-area" id="pgArea">S = 8 · 5 = 40</div>
+      <div class="diag-cap" id="pgCap">Параллелограмм: основание a, высота h.</div>
+      <div class="diag-btns">
+        <button id="pgCut" type="button">Перекроить в прямоугольник ▸</button>
+        <button id="pgReset" type="button" class="ghost">Сбросить</button>
+      </div>
+      <div class="sliders">
+        <label class="la">a <span id="va" class="sval">8</span><input id="sa" class="ra" type="range" min="4" max="12" step="1" value="8"></label>
+        <label class="lh">h <span id="vh" class="sval">5</span><input id="sh" class="rh" type="range" min="3" max="8" step="1" value="5"></label>
+        <label class="lf">наклон <span id="vf" class="sval">4</span><input id="sf" class="rf" type="range" min="0" max="7" step="1" value="4"></label>
+      </div>
+    </div>
+    <p style="font-size:.9rem;color:var(--muted)">Двигай «наклон» — боковые стороны наклоняются сильнее, но пока <span class="aw">a</span> и <span class="hw">h</span> те же, площадь <span class="math">a · h</span> одна и та же. Длина наклонной стороны на площадь не влияет.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Разбираем вместе · думаю вслух</p>
+    <h2>Эталонный пример</h2>
+    <div class="worked">
+      <p class="task">Основание a = 8 см, высота к нему h = 5 см. Найти площадь.</p>
+      <ol class="steps">
+        <li>Записываю формулу: <span class="m">S = a · h</span> — потому что площадь параллелограмма равна основанию, умноженному на высоту к нему.</li>
+        <li>Проверяю «пару»: высота <span class="m">h = 5</span> проведена именно к стороне <span class="m">a = 8</span> — значит их можно перемножать.</li>
+        <li>Подставляю и считаю: <span class="m">S = 8 · 5 = 40</span>.</li>
+        <li>Не забываю единицы: <span class="m">см · см = см²</span>. Площадь всегда в квадратных единицах.</li>
+      </ol>
+      <div class="verdict">Ответ: S = 40 см²</div>
+    </div>
+
+    <div class="worked">
+      <p class="task">Обратная задача: площадь S = 60 см², основание a = 15 см. Найти высоту h.</p>
+      <ol class="steps">
+        <li>Отталкиваюсь от той же формулы <span class="m">S = a · h</span> — в ней неизвестна только h.</li>
+        <li>Выражаю высоту: из <span class="m">S = a · h</span> следует <span class="m">h = S : a</span> (делю площадь на основание).</li>
+        <li>Подставляю: <span class="m">h = 60 : 15 = 4</span>.</li>
+      </ol>
+      <div class="verdict">Ответ: h = 4 см</div>
+    </div>
+
+    <div class="poe">
+      <p><b>Предскажи → проверь.</b> Нарисуй несколько параллелограммов с <strong>одинаковым</strong> основанием и <strong>одинаковой</strong> высотой, но всё сильнее наклонёнными боковыми сторонами. Площадь растёт, падает или одна и та же? Многие говорят «падает, ведь фигура сплющивается». Проверка по формуле: площадь <strong>одинаковая</strong> — ведь a и h не меняются. Наклон боковой стороны на площадь не влияет.</p>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Теперь ты · нажми, чтобы проверить</p>
+    <h2>Мини-практика</h2>
+    <div class="drill">
+      <details>
+        <summary><span class="q">Что означают a и h в формуле S = a · h?</span><span class="tag">понимание</span></summary>
+        <div class="ans"><b>a</b> — выбранное основание, <b>h</b> — высота (перпендикуляр) к этому основанию. Боковую наклонную сторону вместо h брать нельзя.</div>
+      </details>
+      <details>
+        <summary><span class="q">Основание 9 см, высота к нему 6 см. Найди площадь.</span><span class="tag">применение</span></summary>
+        <div class="ans"><span class="m">S = a · h = 9 · 6 = 54</span>. Ответ <b>54 см²</b>.</div>
+      </details>
+      <details>
+        <summary><span class="q">Основание оставили тем же, а высоту уменьшили в 2 раза. Что будет с площадью?</span><span class="tag">анализ</span></summary>
+        <div class="ans">В формуле <span class="m">a · h</span> множитель a не изменился, а h стал вдвое меньше → площадь тоже <b>уменьшится в 2 раза</b>.</div>
+      </details>
+      <details>
+        <summary><span class="q">Найди ошибку: «a = 7 см, соседняя сторона b = 4 см, значит S = 7 · 4 = 28 см²».</span><span class="tag">анализ</span></summary>
+        <div class="ans">Перемножили <b>две стороны</b>, а не сторону и высоту. Боковая сторона <b>b</b> — это не высота. Чтобы найти площадь, не хватает <b>высоты</b> к основанию, а не стороны b.</div>
+      </details>
+      <details>
+        <summary><span class="q">Обратная задача: S = 48 см², высота h = 6 см. Найди основание a.</span><span class="tag">анализ</span></summary>
+        <div class="ans">Из <span class="m">S = a · h</span> выражаем <span class="m">a = S : h = 48 : 6 = 8</span>. Ответ <b>8 см</b>.</div>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Тренажёр · бесконечная практика</p>
+    <h2>Реши задачу на площадь</h2>
+    <p>Нажми «Новая» и реши задачу: где-то надо найти площадь, где-то — высоту или основание по площади. Все ответы — целые числа. Впиши ответ и проверь себя или посмотри пошаговое решение.</p>
+    <div class="trainer">
+      <div class="tr-task" id="trTask">Основание <b>8</b> см, высота к нему <b>5</b> см. Найди площадь S (см²).</div>
+      <div class="tr-ctl">
+        <button id="trNew" type="button">🎲 Новая</button>
+        <input id="trAns" type="text" inputmode="numeric" placeholder="ответ" aria-label="Ответ">
+        <button id="trCheck" type="button" class="sec">Проверить</button>
+        <button id="trShow" type="button" class="ghost">Решение</button>
+      </div>
+      <div id="trResult" class="tr-result"></div>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Где чаще всего ошибаются</p>
+    <h2>Лови эти ловушки</h2>
+    <ul class="pitfalls">
+      <li><b>Умножают две соседние стороны (a · b) вместо a · h.</b> Боковая сторона — это не высота. Проверка: спроси себя «а это перпендикуляр между параллельными сторонами?». Если линия наклонная — это сторона, а не высота.</li>
+      <li><b>Берут высоту не к тому основанию.</b> Высота и основание — пара. Умножай высоту на то основание, к которому она проведена, а не на любое число из условия.</li>
+      <li><b>Берут наклонный отрезок вместо перпендикуляра.</b> Высота — это именно перпендикуляр к прямой основания. Любой наклонный отрезок длиннее высоты и даст завышенный ответ.</li>
+      <li><b>Путают площадь и периметр.</b> Площадь — «сколько заполняет» (в см²), периметр — сумма всех сторон (в см). Для площади боковая сторона не нужна.</li>
+    </ul>
+  </section>
+
+  <section>
+    <p class="kicker">Проверь себя вслух</p>
+    <div class="recall">
+      <p>1) По какой формуле находят площадь параллелограмма и что означает в ней <b>h</b>?</p>
+      <p>2) Почему нельзя считать площадь как произведение двух соседних сторон?</p>
+      <p>3) Площадь 70 см², высота 7 см — чему равно основание? <span class="math">(a = 70 : 7 = 10 см.)</span></p>
+    </div>
+  </section>
+
+  <section>
+    <div class="next">
+      <h2>Что дальше</h2>
+      <p class="big">S = a · h</p>
+      <p>Ты умеешь считать площадь параллелограмма через основание и высоту к нему — и решать обратные задачи. Дальше это ведёт к <b>площади треугольника</b>: любой треугольник достраивается до параллелограмма, поэтому его площадь — <b>ровно половина</b>, S = ½·a·h.</p>
+    </div>
+  </section>
+
+  <p class="foot">Итог одним предложением: площадь параллелограмма равна основанию, умноженному на проведённую к нему высоту — S = a · h.</p>
+
+</div>
+
+<script>
+/* ===== Визуализация: перекройка параллелограмма в прямоугольник ===== */
+(function(){
+  var cv=document.getElementById('pgCv'); if(!cv) return;
+  var ctx=cv.getContext('2d');
+  var sa=document.getElementById('sa'), sh=document.getElementById('sh'), sf=document.getElementById('sf');
+  var va=document.getElementById('va'), vh=document.getElementById('vh'), vf=document.getElementById('vf');
+  var areaEl=document.getElementById('pgArea'), capEl=document.getElementById('pgCap');
+  var btnCut=document.getElementById('pgCut'), btnReset=document.getElementById('pgReset');
+  var W=680,H=380,dpr=1;
+  var p=0;           // 0 = параллелограмм, 1 = прямоугольник
+  var target=0, raf=null;
+  var reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion:reduce)').matches;
+  function css(v){ return getComputedStyle(document.documentElement).getPropertyValue(v).trim(); }
+
+  function resize(){
+    var c=cv.clientWidth||680; dpr=Math.min(window.devicePixelRatio||1,2);
+    W=c; H=Math.round(c*0.56);
+    cv.width=W*dpr; cv.height=H*dpr; cv.style.height=H+'px';
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+  }
+
+  function draw(){
+    var a=+sa.value, h=+sh.value, s=+sf.value;
+    va.textContent=a; vh.textContent=h; vf.textContent=s;
+
+    // Мир: параллелограмм A(0,0) B(a,0) верх сдвинут вправо на s: D(s,h) E(a+s,h)
+    // Разрез — вертикаль в x=s (высота из D к основанию, нога F(s,0)).
+    // Левый треугольник A(0,0) F(s,0) D(s,h) едет вправо на a*p.
+    var dx=a*p;
+    var minx=0, maxx=a+s, miny=0, maxy=h;
+    var padX=48, padTop=30, padBot=52;
+    var sc=Math.min((W-padX*2)/(maxx-minx||1),(H-padTop-padBot)/(maxy-miny||1));
+    var gw=(maxx-minx)*sc, gh=(maxy-miny)*sc;
+    var ox=(W-gw)/2 - minx*sc;
+    var oy=padTop + ((H-padTop-padBot)-gh)/2;
+    function SX(x){ return ox + x*sc; }
+    function SY(y){ return oy + (maxy-y)*sc; }
+    function fillPoly(pts,fill,stroke,lw){
+      ctx.beginPath();
+      pts.forEach(function(q,i){ var x=SX(q[0]),y=SY(q[1]); i?ctx.lineTo(x,y):ctx.moveTo(x,y); });
+      ctx.closePath();
+      if(fill){ ctx.fillStyle=fill; ctx.fill(); }
+      if(stroke){ ctx.strokeStyle=stroke; ctx.lineWidth=lw||2; ctx.stroke(); }
+    }
+
+    ctx.clearRect(0,0,W,H);
+
+    // Контур-«призрак» целевого прямоугольника (куда переезжаем)
+    ctx.setLineDash([4,5]);
+    fillPoly([[s,0],[a+s,0],[a+s,h],[s,h]], null, 'rgba(90,100,120,.35)', 1.4);
+    ctx.setLineDash([]);
+
+    // Стационарная часть: F(s,0) B(a,0) E(a+s,h) D(s,h)
+    fillPoly([[s,0],[a,0],[a+s,h],[s,h]], 'rgba(46,90,172,0.12)', css('--accent'), 2);
+
+    // Подвижный треугольник: A F D, сдвинут на dx
+    fillPoly([[0+dx,0],[s+dx,0],[s+dx,h]], 'rgba(226,124,44,0.20)', css('--hi'), 2);
+
+    // Линия разреза = высота h (оранжевый пунктир) в x=s, от основания к D
+    ctx.setLineDash([5,4]); ctx.strokeStyle=css('--hi'); ctx.lineWidth=2.4;
+    ctx.beginPath(); ctx.moveTo(SX(s),SY(0)); ctx.lineTo(SX(s),SY(h)); ctx.stroke();
+    ctx.setLineDash([]);
+
+    // Прямой угол в ноге высоты F(s,0)
+    var m=Math.max(9,sc*0.42);
+    ctx.strokeStyle=css('--hi'); ctx.lineWidth=1.6;
+    ctx.beginPath();
+    ctx.moveTo(SX(s)+m, SY(0)); ctx.lineTo(SX(s)+m, SY(0)-m); ctx.lineTo(SX(s), SY(0)-m);
+    ctx.stroke();
+
+    // Размерная линия основания a (синяя) под фигурой, от x=s до x=s+a — длина ровно a
+    var by=SY(0)+22;
+    ctx.strokeStyle=css('--accent'); ctx.lineWidth=3; ctx.lineCap='round';
+    ctx.beginPath(); ctx.moveTo(SX(s),by); ctx.lineTo(SX(s+a),by); ctx.stroke();
+    ctx.lineCap='butt';
+
+    // Подписи
+    ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.font='700 '+Math.max(13,Math.min(19,sc*0.62))+'px ui-monospace,Menlo,monospace';
+    ctx.fillStyle=css('--accent');
+    ctx.fillText('a = '+a, SX(s+a/2), by+16);
+    ctx.fillStyle=css('--hi');
+    ctx.textAlign='right';
+    ctx.fillText('h = '+h, SX(s)-8, SY(h/2));
+
+    var S=a*h;
+    areaEl.textContent='S = '+a+' · '+h+' = '+S;
+    if(p<0.02) capEl.textContent='Параллелограмм: основание a, высота h.';
+    else if(p>0.98) capEl.textContent='Прямоугольник a × h — площадь та же: '+S+'.';
+    else capEl.textContent='Переставляем треугольник…';
+  }
+
+  function animate(){
+    var step=reduce?1:0.06;
+    if(Math.abs(p-target)<=step){ p=target; draw(); raf=null; return; }
+    p += (target>p?step:-step);
+    draw();
+    raf=requestAnimationFrame(animate);
+  }
+  function go(t){
+    target=t;
+    if(reduce){ p=t; draw(); return; }
+    if(!raf) raf=requestAnimationFrame(animate);
+  }
+
+  btnCut.addEventListener('click',function(){ go(target>0.5?0:1); });
+  btnReset.addEventListener('click',function(){ go(0); });
+  [sa,sh,sf].forEach(function(s){ s.addEventListener('input',function(){ draw(); }); });
+  window.addEventListener('resize',function(){ resize(); draw(); });
+  resize(); draw();
+})();
+</script>
+
+<script>
+/* ===== Тренажёр-генератор: площадь / высота / основание параллелограмма ===== */
+(function(){
+  var taskEl=document.getElementById('trTask'), ansEl=document.getElementById('trAns'), resEl=document.getElementById('trResult');
+  if(!taskEl) return;
+  var cur=null;
+  function ri(min,max){ return Math.floor(Math.random()*(max-min+1))+min; }
+  function fix(str){ return String(str).replace(/-/g,'−'); } // настоящий минус, если появится
+
+  function generate(){
+    var a=ri(3,18), h=ri(3,15);   // S=a·h — всегда целое; обратные задачи тоже делятся нацело
+    var S=a*h;
+    var type=ri(0,2);   // 0: найти S · 1: найти h · 2: найти a
+    if(type===0){
+      cur={type:0,a:a,h:h,S:S};
+      taskEl.innerHTML='Основание <b>'+a+'</b> см, высота к нему <b>'+h+'</b> см. Найди площадь S (см²).';
+    } else if(type===1){
+      cur={type:1,a:a,h:h,S:S};
+      taskEl.innerHTML='Площадь <b>'+S+'</b> см², основание <b>'+a+'</b> см. Найди высоту h (см).';
+    } else {
+      cur={type:2,a:a,h:h,S:S};
+      taskEl.innerHTML='Площадь <b>'+S+'</b> см², высота <b>'+h+'</b> см. Найди основание a (см).';
+    }
+    resEl.innerHTML=''; ansEl.value='';
+  }
+
+  function answer(){ return cur.type===0?cur.S : (cur.type===1?cur.h:cur.a); }
+
+  function solHTML(){
+    var q=cur, h='<div class="sol">';
+    if(q.type===0){
+      h+='S = a · h<br>';
+      h+='S = '+q.a+' · '+q.h+' = <b>'+q.S+'</b> см²';
+    } else if(q.type===1){
+      h+='S = a · h  →  h = S : a<br>';
+      h+='h = '+q.S+' : '+q.a+' = <b>'+q.h+'</b> см';
+    } else {
+      h+='S = a · h  →  a = S : h<br>';
+      h+='a = '+q.S+' : '+q.h+' = <b>'+q.a+'</b> см';
+    }
+    return fix(h+'</div>');
+  }
+
+  function check(){
+    var raw=ansEl.value.trim().replace(',','.');
+    if(raw===''){ resEl.innerHTML='<span class="bad">Введи ответ или нажми «Решение».</span>'; return; }
+    var got=parseFloat(raw), right=answer();
+    if(!isNaN(got) && Math.abs(got-right)<0.02){
+      resEl.innerHTML='<span class="ok">✓ Верно!</span>'+solHTML();
+    } else {
+      resEl.innerHTML='<span class="bad">✗ Пока не то — глянь решение.</span>'+solHTML();
+    }
+  }
+
+  document.getElementById('trNew').addEventListener('click',function(){ generate(); ansEl.focus(); });
+  document.getElementById('trCheck').addEventListener('click',check);
+  document.getElementById('trShow').addEventListener('click',function(){ resEl.innerHTML=solHTML(); });
+  ansEl.addEventListener('keydown',function(e){ if(e.key==='Enter') check(); });
+
+  // стартовое состояние = валидная задача (совпадает с показанным решением), без focus()
+  cur={type:0,a:8,h:5,S:40};
+})();
+</script>

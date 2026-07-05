@@ -1,0 +1,515 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Вершина параболы и ось симметрии — алгебра 9 класс</title>
+<style>
+  :root{
+    --paper:#F7F6FB; --card:#FFFFFF; --ink:#211B2E; --muted:#66607A; --line:#E7E3F0;
+    --brand:#7A34C4; --brand-soft:#EFE6FA;
+    --vx:#DE6A16; --vx-soft:#FBEBDA;      /* вершина / абсцисса x0 */
+    --ax:#1F9E8C; --ax-soft:#DCF3EF;      /* ось симметрии / ордината y0 */
+    --up:#1E8E5A; --up-soft:#DEF2E7;      /* ветви вверх — минимум */
+    --down:#C23B3B; --down-soft:#FBE6E6;  /* ветви вниз — максимум */
+    --ok:#1E8E5A; --no:#C23B3B;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper)}
+  .page{max-width:760px;margin:0 auto;padding:clamp(1.4rem,4vw,3rem) clamp(1.1rem,4vw,2rem) 4.5rem;
+    color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:17.5px;line-height:1.68;-webkit-font-smoothing:antialiased}
+  .mono{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-variant-numeric:tabular-nums;font-weight:600}
+  sup{font-size:.72em}
+  sub{font-size:.72em}
+
+  .hero{border-bottom:3px solid var(--brand);padding-bottom:1.4rem;margin-bottom:1.8rem}
+  .eyebrow{font-size:.74rem;letter-spacing:.15em;text-transform:uppercase;color:var(--brand);font-weight:700;margin:0 0 .55rem}
+  h1{font-family:Georgia,"Times New Roman",serif;font-size:clamp(1.9rem,6vw,2.8rem);line-height:1.06;margin:0;font-weight:800;letter-spacing:-.01em;text-wrap:balance}
+  .tagline{font-size:1.12rem;color:var(--muted);margin:.85rem 0 0;text-wrap:pretty}
+
+  section{margin-top:2.4rem}
+  h2{font-family:Georgia,serif;font-size:1.42rem;margin:0 0 .3rem;font-weight:700;letter-spacing:-.01em;text-wrap:balance}
+  h2 .em{color:var(--brand)}
+  .kicker{font-size:.72rem;letter-spacing:.13em;text-transform:uppercase;color:var(--muted);font-weight:700;margin:0 0 .55rem;display:flex;align-items:center;gap:.6rem}
+  .kicker::before{content:"";width:1.4rem;height:2px;background:var(--brand);border-radius:2px}
+  p{margin:.7rem 0}
+  strong{font-weight:680}
+  .xw{color:var(--vx);font-weight:800} .yw{color:var(--ax);font-weight:800}
+
+  .lead-in{background:var(--brand-soft);border-radius:14px;padding:1.1rem 1.3rem;font-size:1.02rem}
+  .lead-in p{margin:.45rem 0}
+  .lead-in b{color:var(--brand)}
+
+  .recall{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:1rem 1.2rem;font-size:.98rem}
+  .recall p{margin:.35rem 0}
+  .recall b{color:var(--brand)}
+
+  /* Дробь через CSS */
+  .frac{display:inline-flex;flex-direction:column;text-align:center;vertical-align:middle;margin:0 .12em;line-height:1.1}
+  .frac .num{padding:0 .45em .05em}
+  .frac .den{padding:.05em .45em 0;border-top:2px solid currentColor}
+
+  .formula-box{background:var(--ink);color:#fff;border-radius:14px;padding:1.5rem 1.3rem;text-align:center;margin-top:1rem}
+  .formula-box .lbl{font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:#B7B0C8;margin:0 0 .8rem}
+  .formula-box .eq{font-family:ui-monospace,Menlo,monospace;font-size:clamp(1.7rem,6vw,2.3rem);font-weight:700;display:flex;align-items:center;justify-content:center;gap:.15em;flex-wrap:wrap}
+  .formula-box .eq .x0{color:#F2954B} .formula-box .eq .b{color:#82A6EC}
+  .formula-box .note{font-size:.9rem;color:#B7B0C8;margin:1rem 0 0}
+  .formula-box .note .mono{color:#EADDF7}
+
+  .steps-def{display:grid;gap:.8rem;margin-top:1rem}
+  @media(min-width:560px){.steps-def{grid-template-columns:1fr 1fr}}
+  .sd{border-radius:14px;padding:1rem 1.15rem;border:2px solid}
+  .sd.x{background:var(--vx-soft);border-color:#F1CDA6}
+  .sd.y{background:var(--ax-soft);border-color:#B7E1DA}
+  .sd .tag{font-family:ui-monospace,Menlo,monospace;font-weight:800;font-size:1.15rem}
+  .sd.x .tag{color:var(--vx)} .sd.y .tag{color:var(--ax)}
+  .sd h3{margin:.25rem 0 .3rem;font-size:1rem;font-weight:800}
+  .sd p{margin:.2rem 0;font-size:.93rem}
+
+  .dir{display:grid;gap:.8rem;margin-top:1rem}
+  @media(min-width:520px){.dir{grid-template-columns:1fr 1fr}}
+  .dir div{border-radius:14px;padding:1rem 1.2rem;font-size:.96rem}
+  .dir .up{background:var(--up-soft);border:2px solid #B4E0C6}
+  .dir .down{background:var(--down-soft);border:2px solid #F2C4C4}
+  .dir .cap{font-weight:800;font-size:1.02rem;display:flex;align-items:center;gap:.5rem}
+  .dir .up .cap{color:var(--up)} .dir .down .cap{color:var(--down)}
+  .dir .glyph{font-size:1.55rem;font-weight:800;font-family:ui-monospace,Menlo,monospace}
+
+  .note{border-left:4px solid var(--brand);background:var(--brand-soft);border-radius:0 10px 10px 0;padding:.8rem 1.1rem;margin-top:1rem;font-size:.98rem}
+  .note b{color:var(--brand)}
+
+  /* График */
+  .graph{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:1.2rem 1.2rem 1rem;margin-top:1rem}
+  .graph canvas{width:100%;height:auto;display:block;border-radius:10px;background:#FCFBFE}
+  .sliders{display:grid;gap:.6rem;margin-top:.9rem}
+  @media(min-width:520px){.sliders{grid-template-columns:1fr 1fr 1fr}}
+  .sliders label{display:flex;align-items:center;gap:.5rem;font-weight:700;font-family:ui-monospace,Menlo,monospace}
+  .sliders input[type=range]{flex:1;min-width:0;accent-color:var(--brand)}
+  .sliders .sval{min-width:3ch;text-align:right;font-variant-numeric:tabular-nums;color:var(--brand)}
+  .sliders input:focus-visible{outline:3px solid var(--brand);outline-offset:2px}
+  .graph-eq{text-align:center;font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.1rem;margin:.85rem 0 0}
+  .graph-read{text-align:center;font-size:.94rem;color:var(--muted);margin:.55rem 0 0;min-height:1.2rem;font-family:ui-monospace,Menlo,monospace}
+  .graph-read b{color:var(--ink)}
+  .graph-read .vv{color:var(--vx);font-weight:700} .graph-read .av{color:var(--ax);font-weight:700}
+
+  /* Разбор */
+  .walk{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.15rem 1.3rem;margin-top:1rem}
+  .walk .q{font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.02rem;margin:0 0 .9rem;padding-bottom:.7rem;border-bottom:1px solid var(--line)}
+  .walk ol{margin:0;padding-left:1.2rem;display:flex;flex-direction:column;gap:.5rem}
+  .walk li{font-size:.95rem}
+  .walk li .why{color:var(--muted);font-size:.9rem}
+  .walk b{font-weight:700}
+  .verdict{margin-top:1rem;padding:.7rem 1rem;background:var(--brand-soft);border-radius:10px;font-weight:650;color:var(--brand)}
+  .verdict.up{background:var(--up-soft);color:var(--up)}
+  .verdict.down{background:var(--down-soft);color:var(--down)}
+
+  /* Тренажёр */
+  .trainer{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.2rem 1.3rem;margin-top:1rem}
+  .tr-task{font-family:ui-monospace,Menlo,monospace;font-weight:800;font-size:clamp(1.2rem,5vw,1.6rem);text-align:center;padding:1rem;background:var(--brand-soft);border-radius:10px;color:var(--ink)}
+  .tr-inputs{display:flex;gap:.7rem;flex-wrap:wrap;margin-top:.9rem}
+  .tr-inputs label{flex:1;min-width:120px;display:flex;flex-direction:column;gap:.3rem;font-weight:700;font-size:.9rem}
+  .tr-inputs .hint{color:var(--muted);font-weight:600;font-size:.8rem}
+  .tr-inputs input{font:inherit;font-family:ui-monospace,Menlo,monospace;padding:.5rem .7rem;border:1px solid var(--line);border-radius:9px;background:#fff;color:var(--ink)}
+  .tr-ctl{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.8rem;align-items:center}
+  .tr-ctl button{font:inherit;font-weight:700;font-size:.9rem;cursor:pointer;border:none;border-radius:9px;padding:.55rem .95rem;color:#fff;background:var(--brand)}
+  .tr-ctl button.sec{background:var(--vx)}
+  .tr-ctl button.ghost{background:transparent;color:var(--brand);border:1px solid var(--brand)}
+  .tr-ctl button:focus-visible,.tr-inputs input:focus-visible{outline:3px solid var(--brand);outline-offset:2px}
+  .tr-result{margin-top:.9rem;font-size:.96rem;min-height:1.2rem}
+  .tr-result .ok{color:var(--ok);font-weight:700} .tr-result .bad{color:var(--no);font-weight:700}
+  .tr-result .sol{margin-top:.6rem;padding:.8rem 1rem;background:#FCFBFE;border:1px solid var(--line);border-radius:10px;font-family:ui-monospace,Menlo,monospace;font-size:.9rem;line-height:1.85}
+  .tr-result .sol b{color:var(--brand)}
+
+  details{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:.9rem 1.1rem;margin-top:.7rem}
+  details[open]{border-color:var(--brand)}
+  summary{cursor:pointer;font-weight:650;list-style:none;display:flex;justify-content:space-between;gap:1rem;align-items:center}
+  summary::-webkit-details-marker{display:none}
+  summary:focus-visible{outline:3px solid var(--brand);outline-offset:3px;border-radius:6px}
+  summary .tg{font-size:.66rem;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);border:1px solid var(--line);border-radius:20px;padding:.12rem .55rem;white-space:nowrap}
+  summary::after{content:"показать";font-size:.8rem;color:var(--brand);font-weight:700;white-space:nowrap}
+  details[open] summary::after{content:"скрыть"}
+  summary .qq{font-family:ui-monospace,Menlo,monospace}
+  .ans{margin-top:.75rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.96rem;color:var(--muted)}
+  .ans b{color:var(--ink)}
+  .ans .mono{color:var(--ink)}
+  .drill{display:flex;flex-direction:column;gap:.2rem;margin-top:1rem}
+
+  ul.traps{list-style:none;margin:1rem 0 0;padding:0;display:flex;flex-direction:column;gap:.7rem}
+  ul.traps li{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:.85rem 1.05rem;padding-left:2.5rem;position:relative;font-size:.97rem}
+  ul.traps li::before{content:"⚠";position:absolute;left:1rem;top:.85rem;color:var(--vx)}
+  ul.traps b{font-weight:700}
+
+  table.vals{border-collapse:collapse;margin:1rem auto 0;font-family:ui-monospace,Menlo,monospace;font-variant-numeric:tabular-nums}
+  table.vals td,table.vals th{border:1px solid var(--line);padding:.35rem .8rem;text-align:center}
+  table.vals th{background:var(--brand-soft);color:var(--brand)}
+  table.vals td.pk{background:var(--vx-soft);color:var(--vx);font-weight:800}
+  .tbl-scroll{overflow-x:auto}
+
+  .wrapup{background:var(--brand);color:#fff;border-radius:16px;padding:1.4rem 1.5rem;margin-top:2.4rem}
+  .wrapup h2{color:#fff;margin:0 0 .5rem}
+  .wrapup p{color:#EADDF7;margin:.4rem 0;font-size:1rem}
+  .wrapup .big-rule{font-size:1.1rem;font-weight:800;color:#fff;margin:.6rem 0;font-family:ui-monospace,Menlo,monospace}
+  .wrapup .next{font-size:.95rem;color:#D6C4EE;margin-top:1rem;padding-top:1rem;border-top:1px solid rgba(255,255,255,.2)}
+  .wrapup .next b{color:#fff}
+
+  .foot{margin-top:2.2rem;font-size:.82rem;color:var(--muted);text-align:center}
+
+  @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="page">
+
+  <header class="hero">
+    <p class="eyebrow">Алгебра · 9 класс · функции</p>
+    <h1>Вершина параболы и ось симметрии</h1>
+    <p class="tagline">У каждой параболы есть одна главная точка — вершина. Найдёшь её — и сразу знаешь наибольшее или наименьшее значение функции и куда «смотрит» весь график.</p>
+  </header>
+
+  <div class="lead-in">
+    <p><b>Где встречается.</b> Мяч летит вверх и падает — на какой высоте он окажется в верхней точке? Из проволоки заданной длины делают прямоугольник — при каких сторонах площадь наибольшая? При каком выпуске прибыль максимальна? Все такие задачи «на максимум и минимум» сводятся к одному — <b>найти вершину параболы</b>.</p>
+    <p>В вершине функция достигает своего <b>наименьшего</b> (если ветви вверх) или <b>наибольшего</b> (если вниз) значения. А ещё без вершины не построить аккуратный график — парабола «плавает».</p>
+  </div>
+
+  <section>
+    <p class="kicker">Что вспомнить с прошлого шага</p>
+    <div class="recall">
+      <p>Квадратичная функция — это <span class="mono">y = ax² + bx + c</span>, где <b>a ≠ 0</b>, а её график — <b>парабола</b>.</p>
+      <p><span class="mono">a</span> — при <span class="mono">x²</span> (задаёт направление ветвей), <span class="mono">b</span> — при <span class="mono">x</span>, <span class="mono">c</span> — свободный член.</p>
+      <p>Коэффициенты берём <b>вместе со знаком</b>: если в записи стоит <span class="mono">− 6x</span>, то <span class="mono">b = −6</span>. Это нам сейчас очень пригодится.</p>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Суть темы</p>
+    <h2>Парабола <span class="em">симметрична</span></h2>
+    <p>Проведи вертикальную прямую через самую нижнюю (или верхнюю) точку параболы — левая и правая ветви наложатся друг на друга, как две половинки бабочки. Эта прямая называется <strong>осью симметрии</strong>, а точка на ней — <strong>вершиной</strong>.</p>
+    <p>Чтобы найти вершину, действуем в два шага: сначала находим её <span class="xw">абсциссу x₀</span> (это «середина» параболы по горизонтали), потом подставляем <span class="mono">x₀</span> в функцию и получаем <span class="yw">ординату y₀</span> (высоту вершины). Ось симметрии — это вертикальная прямая <span class="mono">x = x₀</span>, проходящая через вершину.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Ядро — вся формула темы</p>
+    <h2>Координаты вершины</h2>
+    <div class="formula-box">
+      <p class="lbl">Абсцисса вершины</p>
+      <div class="eq"><span class="x0">x<sub>0</sub></span>&nbsp;=&nbsp;<span class="frac"><span class="num">−<span class="b">b</span></span><span class="den">2<span style="color:#F2954B">a</span></span></span></div>
+      <p class="note">Минус перед <span class="mono">b</span> есть <b>всегда</b>. Затем ординату находим подстановкой: <span class="mono">y<sub>0</sub> = y(x<sub>0</sub>)</span> — подставляем <span class="mono">x<sub>0</sub></span> в саму функцию.</p>
+    </div>
+    <div class="steps-def">
+      <div class="sd x">
+        <div class="tag">x₀ = −b/(2a)</div>
+        <h3>Шаг 1 — абсцисса</h3>
+        <p>Выписываем <span class="mono">a</span> и <span class="mono">b</span> со знаками и считаем по формуле. Аккуратно с минусом.</p>
+      </div>
+      <div class="sd y">
+        <div class="tag">y₀ = y(x₀)</div>
+        <h3>Шаг 2 — ордината</h3>
+        <p>Подставляем найденное <span class="mono">x₀</span> в формулу функции и считаем — получаем высоту вершины.</p>
+      </div>
+    </div>
+    <div class="note">
+      <p><b>Вершина — это точка,</b> у неё <b>две</b> координаты: <span class="mono">(x₀; y₀)</span>. Ответ «вершина = 3» неверен — это только абсцисса. А <b>ось симметрии</b> — вертикальная прямая <span class="mono">x = x₀</span>.</p>
+    </div>
+    <p>А знак старшего коэффициента <span class="mono">a</span> подсказывает, что за значение стоит в вершине:</p>
+    <div class="dir">
+      <div class="up">
+        <div class="cap"><span class="glyph">∪</span> a &gt; 0 — ветви вверх</div>
+        <p>Вершина внизу — это <b>наименьшая</b> точка. Значит <span class="mono">y₀</span> — наименьшее значение функции.</p>
+      </div>
+      <div class="down">
+        <div class="cap"><span class="glyph">∩</span> a &lt; 0 — ветви вниз</div>
+        <p>Вершина вверху — это <b>наибольшая</b> точка. Значит <span class="mono">y₀</span> — наибольшее значение функции.</p>
+      </div>
+    </div>
+    <p style="font-size:.92rem;color:var(--muted)">Почему именно <span class="mono">−b/(2a)</span>? Если у параболы есть точки пересечения с осью <span class="mono">Ox</span>, они расположены симметрично относительно вершины, а их середина как раз равна <span class="mono">−b/(2a)</span>. Поэтому вершина всегда стоит ровно посередине.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Разбираем вместе · думаю вслух</p>
+    <h2>Эталонный пример</h2>
+    <div class="walk">
+      <p class="q">Найти вершину и ось симметрии параболы y = x² − 6x + 5.</p>
+      <ol>
+        <li>Выписываю коэффициенты со знаками: <b>a = 1, b = −6, c = 5</b>. <span class="why">— b это число перед x вместе со знаком минус.</span></li>
+        <li>Считаю абсциссу: <span class="mono">x₀ = −b/(2a) = −(−6)/(2·1) = 6/2 = <b>3</b></span>. <span class="why">— минус перед b превращает −6 в +6, двойной минус не теряю.</span></li>
+        <li>Считаю ординату подстановкой: <span class="mono">y₀ = 3² − 6·3 + 5 = 9 − 18 + 5 = <b>−4</b></span>. <span class="why">— вершина лежит на самой параболе, её y = значение функции в точке x₀.</span></li>
+        <li>Записываю вершину <b>(3; −4)</b> и ось симметрии <b>x = 3</b>.</li>
+        <li>Проверка смысла: <span class="mono">a = 1 &gt; 0</span> — ветви вверх, значит <span class="mono">−4</span> — наименьшее значение. Логично.</li>
+      </ol>
+      <div class="verdict up">Вершина (3; −4) · ось симметрии x = 3 · наименьшее значение −4.</div>
+    </div>
+
+    <div class="walk" style="margin-top:.8rem">
+      <p class="q">Найти вершину параболы y = −x² + 4x − 1 (ветви вниз).</p>
+      <ol>
+        <li><b>a = −1, b = 4, c = −1.</b></li>
+        <li><span class="mono">x₀ = −b/(2a) = −4/(2·(−1)) = −4/(−2) = <b>2</b></span>. <span class="why">— делим на отрицательное 2a, знак меняется.</span></li>
+        <li><span class="mono">y₀ = −(2²) + 4·2 − 1 = −4 + 8 − 1 = <b>3</b></span>.</li>
+        <li>Вершина <b>(2; 3)</b>, ось <b>x = 2</b>. Здесь <span class="mono">a &lt; 0</span> — ветви вниз, поэтому <span class="mono">3</span> — наибольшее значение.</li>
+      </ol>
+      <div class="verdict down">Вершина (2; 3) · ось симметрии x = 2 · наибольшее значение 3.</div>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Покрути сам · интерактив</p>
+    <h2>Двигай a, b, c — <span class="em">лови вершину</span></h2>
+    <p>Меняй ползунки и следи за <span class="xw">оранжевой точкой</span> — это вершина. Пунктирная прямая — ось симметрии <span class="mono">x = x₀</span>. Внизу видно, как <span class="mono">x₀ = −b/(2a)</span> считается вживую.</p>
+    <div class="graph">
+      <canvas id="par" width="640" height="560" aria-label="Парабола с вершиной и осью симметрии"></canvas>
+      <div class="sliders">
+        <label>a <span id="va" class="sval">1</span><input id="sa" type="range" min="-3" max="3" step="0.5" value="1" aria-label="коэффициент a"></label>
+        <label>b <span id="vb" class="sval">−6</span><input id="sb" type="range" min="-6" max="6" step="1" value="-6" aria-label="коэффициент b"></label>
+        <label>c <span id="vc" class="sval">5</span><input id="sc" type="range" min="-6" max="6" step="1" value="5" aria-label="коэффициент c"></label>
+      </div>
+      <p class="graph-eq" id="parEq">y = x² − 6x + 5</p>
+      <p class="graph-read" id="parRead"></p>
+    </div>
+    <p style="font-size:.9rem;color:var(--muted)">Поставь <span class="mono">b = 0</span> — и вершина «прилипнет» к оси <span class="mono">Oy</span> (окажется на ней). Значит ось симметрии совпадает с <span class="mono">Oy</span> только при <span class="mono">b = 0</span>, а в остальных случаях сдвинута. При <span class="mono">a = 0</span> это уже прямая, а не парабола.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Ещё одно представление</p>
+    <h2>Таблица симметрии</h2>
+    <p>Возьмём эталонный пример <span class="mono">y = x² − 6x + 5</span> с вершиной <span class="mono">(3; −4)</span> и посчитаем значения слева и справа от <span class="mono">x₀ = 3</span>:</p>
+    <div class="tbl-scroll">
+      <table class="vals">
+        <tr><th>x</th><td>1</td><td>2</td><td class="pk">3</td><td>4</td><td>5</td></tr>
+        <tr><th>y</th><td>0</td><td>−3</td><td class="pk">−4</td><td>−3</td><td>0</td></tr>
+      </table>
+    </div>
+    <p>Смотри: значения <span class="mono">y</span> зеркально повторяются по обе стороны от <span class="mono">x = 3</span> (при <span class="mono">x = 2</span> и <span class="mono">x = 4</span> одно и то же <span class="mono">y = −3</span>). Это и есть симметрия относительно оси <span class="mono">x = 3</span>, а <span class="mono">−4</span> в вершине — самое маленькое значение в таблице.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Тренажёр · бесконечная практика</p>
+    <h2>Найди вершину сам</h2>
+    <p>Нажимай «Новое» — генерируются параболы с «красивыми» целыми координатами вершины. Впиши <span class="xw">x₀</span> и <span class="yw">y₀</span>, проверь себя, а не вышло — посмотри пошаговое решение по формуле.</p>
+    <div class="trainer">
+      <div class="tr-task" id="trTask">y = x² − 6x + 5</div>
+      <div class="tr-inputs">
+        <label>x₀ — абсцисса вершины<span class="hint">целое число</span><input id="trX0" type="text" inputmode="text" placeholder="напр. 3" aria-label="абсцисса вершины x0"></label>
+        <label>y₀ — ордината вершины<span class="hint">целое число</span><input id="trY0" type="text" inputmode="text" placeholder="напр. −4" aria-label="ордината вершины y0"></label>
+      </div>
+      <div class="tr-ctl">
+        <button id="trNew" type="button">🎲 Новое</button>
+        <button id="trCheck" type="button" class="sec">Проверить</button>
+        <button id="trShow" type="button" class="ghost">Показать решение</button>
+      </div>
+      <div id="trResult" class="tr-result"></div>
+    </div>
+    <p style="font-size:.88rem;color:var(--muted)">Минус вводи как обычный дефис <span class="mono">-</span> или знак <span class="mono">−</span> — оба поймёт. Иногда попадётся <span class="mono">b = 0</span> — тогда вершина лежит прямо на оси <span class="mono">Oy</span>.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Проверь себя · от простого к анализу</p>
+    <h2>Практика с ответами</h2>
+    <div class="drill">
+      <details>
+        <summary><span class="qq">Вершина в точке (−5; 2). Назови ось симметрии.</span><span class="tg">понимание</span></summary>
+        <div class="ans">Ось симметрии проходит через вершину вертикально: <b>x = −5</b> (берём абсциссу вершины).</div>
+      </details>
+      <details>
+        <summary><span class="qq">Найди вершину и ось параболы y = x² + 2x − 8.</span><span class="tg">применение</span></summary>
+        <div class="ans"><span class="mono">a=1, b=2, c=−8. x₀ = −2/(2·1) = −1. y₀ = (−1)² + 2·(−1) − 8 = 1 − 2 − 8 = −9.</span> Вершина <b>(−1; −9)</b>, ось <b>x = −1</b>.</div>
+      </details>
+      <details>
+        <summary><span class="qq">Наименьшее значение функции y = 3x² − 12x + 7?</span><span class="tg">применение</span></summary>
+        <div class="ans">Наименьшее значение — это ордината вершины. <span class="mono">x₀ = −(−12)/(2·3) = 12/6 = 2. y₀ = 3·2² − 12·2 + 7 = 12 − 24 + 7 = −5.</span> Наименьшее значение <b>−5</b> (при x = 2).</div>
+      </details>
+      <details>
+        <summary><span class="qq">Что станет с вершиной y = x² − 6x + 5, если прибавить ко всей функции +10?</span><span class="tg">анализ</span></summary>
+        <div class="ans">Новая функция <span class="mono">y = x² − 6x + 15</span>. Коэффициенты <span class="mono">a, b</span> те же → <span class="mono">x₀ = 3</span> не изменится. А <span class="mono">y₀ = 9 − 18 + 15 = 6</span>. Вершина сдвинулась с <span class="mono">(3; −4)</span> на <b>(3; 6)</b> — вся парабола <b>поднялась на 10 вверх</b>, абсцисса вершины осталась прежней.</div>
+      </details>
+      <details>
+        <summary><span class="qq">Найди ошибку: «Для y = x² − 4x: x₀ = −4/2 = −2».</span><span class="tg">анализ</span></summary>
+        <div class="ans">Потеряли минус в формуле. Здесь <span class="mono">b = −4</span>, и <span class="mono">x₀ = −b/(2a) = −(−4)/(2·1) = 4/2 = 2</span>. В решении взяли <span class="mono">b</span> вместо <span class="mono">−b</span>. Верный ответ <b>x₀ = 2</b> (а не −2).</div>
+      </details>
+      <details>
+        <summary><span class="qq">Обратная задача: ось параболы y = x² + bx + 3 — это x = 4. Найди b.</span><span class="tg">анализ</span></summary>
+        <div class="ans"><span class="mono">x₀ = −b/(2a) = −b/2 = 4</span> → <span class="mono">−b = 8</span> → <b>b = −8</b>. Проверка: у <span class="mono">y = x² − 8x + 3</span> абсцисса вершины <span class="mono">−(−8)/2 = 4</span>. Верно.</div>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Где чаще всего ошибаются</p>
+    <h2>Лови эти ловушки</h2>
+    <ul class="traps">
+      <li><b>Теряют минус в формуле.</b> Пишут <span class="mono">x₀ = b/(2a)</span> вместо <span class="mono">−b/(2a)</span> или забывают, что <span class="mono">−(−6) = +6</span>. Всегда сначала выпиши <span class="mono">b</span> со знаком, потом ставь минус: для <span class="mono">b = −6</span> проговори «минус на минус — плюс».</li>
+      <li><b>Находят только x₀ и забывают y₀.</b> Вершина — точка с <b>двумя</b> координатами. Ответ «вершина = 3» неполный: обязательно подставь <span class="mono">x₀</span> в функцию и запиши пару <span class="mono">(x₀; y₀)</span>.</li>
+      <li><b>Путают ось симметрии с осью Oy.</b> Ось симметрии — это <span class="mono">x = x₀</span>, она проходит через вершину, а не всегда <span class="mono">x = 0</span>. Совпадает с <span class="mono">Oy</span> только при <span class="mono">b = 0</span>.</li>
+      <li><b>Забывают про знак a при разговоре о max/min.</b> Вершина — не всегда минимум. Проверяй <span class="mono">a</span>: вверх (<span class="mono">a &gt; 0</span>) — наименьшее, вниз (<span class="mono">a &lt; 0</span>) — наибольшее значение.</li>
+    </ul>
+  </section>
+
+  <section>
+    <p class="kicker">Проверка понимания</p>
+    <h2>Объясни своими словами</h2>
+    <div class="drill">
+      <details><summary><span class="qq">По какой формуле находят абсциссу вершины?</span><span class="tg">вопрос</span></summary>
+        <div class="ans"><span class="mono">x₀ = −b/(2a)</span> — минус перед b, делим на удвоенный старший коэффициент.</div></details>
+      <details><summary><span class="qq">Сколько координат у вершины и как найти вторую?</span><span class="tg">вопрос</span></summary>
+        <div class="ans">Две. Ординату <span class="mono">y₀</span> находим подстановкой <span class="mono">x₀</span> в саму функцию.</div></details>
+      <details><summary><span class="qq">Как связаны вершина и ось симметрии?</span><span class="tg">вопрос</span></summary>
+        <div class="ans">Ось симметрии — вертикальная прямая <span class="mono">x = x₀</span>, которая проходит ровно через вершину и делит параболу на две зеркальные половины.</div></details>
+    </div>
+  </section>
+
+  <div class="wrapup">
+    <h2>Запомни главное</h2>
+    <p class="big-rule">x₀ = −b/(2a),  y₀ = y(x₀),  ось: x = x₀</p>
+    <p>Абсциссу вершины считаем по формуле (<b>минус перед b — всегда</b>), ординату — <b>подстановкой</b> <span style="color:#fff;font-weight:700">x₀</span> в функцию. Вершина — это пара <b>(x₀; y₀)</b>, а ось симметрии — прямая <b>x = x₀</b>. Знак <b>a</b> говорит, наименьшее это значение (∪) или наибольшее (∩).</p>
+    <p class="next">👉 Дальше — <b>построение параболы</b> по вершине и нескольким точкам, а потом <b>свойства квадратичной функции</b>: где она возрастает, где убывает, наибольшее и наименьшее значение по графику.</p>
+  </div>
+
+  <p class="foot">Проверка на выходе: запиши формулу x₀ по памяти · сколько координат у вершины? · чему равна ось симметрии для y = x² − 6x + 5?</p>
+
+</div>
+
+<script>
+/* ── Интерактивная парабола: вершина + ось симметрии ── */
+(function(){
+  var cv=document.getElementById('par'); if(!cv) return;
+  var ctx=cv.getContext('2d');
+  var sa=document.getElementById('sa'), sb=document.getElementById('sb'), sc=document.getElementById('sc');
+  var va=document.getElementById('va'), vb=document.getElementById('vb'), vc=document.getElementById('vc');
+  var eqEl=document.getElementById('parEq'), readEl=document.getElementById('parRead');
+  var W=640,H=560,dpr=1,RX=8,RYV=8;
+  function css(v){ return getComputedStyle(document.documentElement).getPropertyValue(v).trim(); }
+  function fmt(n){ n=Math.round(n*100)/100; return (n<0?'−':'')+Math.abs(n); }
+  function resize(){ var c=cv.clientWidth||640; dpr=Math.min(window.devicePixelRatio||1,2); W=c; H=Math.round(c*0.82);
+    cv.width=W*dpr; cv.height=H*dpr; cv.style.height=H+'px'; ctx.setTransform(dpr,0,0,dpr,0,0); }
+  function X(x){ return W/2 + x*(W/(2*RX)); }
+  function Y(y){ return H/2 - y*(H/(2*RYV)); }
+  function quadStr(a,b,c){
+    var s='y = ';
+    if(a===0){ s+='0·x²'; }
+    else if(a===1) s+='x²';
+    else if(a===-1) s+='−x²';
+    else s+=(a<0?'−':'')+Math.abs(a)+'x²';
+    if(b!==0){ s+= (b<0?' − ':' + ')+(Math.abs(b)===1?'':Math.abs(b))+'x'; }
+    if(c!==0){ s+= (c<0?' − ':' + ')+Math.abs(c); }
+    return s;
+  }
+  function draw(){
+    var a=parseFloat(sa.value), b=parseFloat(sb.value), c=parseFloat(sc.value);
+    va.textContent=fmt(a); vb.textContent=fmt(b); vc.textContent=fmt(c);
+
+    // вертикальную шкалу подгоняем под вершину, чтобы она всегда была видна и ось не обрезалась
+    var isLin=(a===0), xv=0, yv=0;
+    if(!isLin){ xv=-b/(2*a); yv=a*xv*xv+b*xv+c; }
+    RYV=Math.max(8, Math.round(Math.abs(yv))+2, Math.abs(c)+1);
+
+    ctx.clearRect(0,0,W,H);
+    // сетка
+    ctx.strokeStyle='#EDE8F4'; ctx.lineWidth=1;
+    for(var gx=-RX;gx<=RX;gx++){ ctx.beginPath(); ctx.moveTo(X(gx),0); ctx.lineTo(X(gx),H); ctx.stroke(); }
+    var gstep = RYV<=10?1:(RYV<=24?2:5);
+    for(var gy=-RYV;gy<=RYV;gy+=gstep){ ctx.beginPath(); ctx.moveTo(0,Y(gy)); ctx.lineTo(W,Y(gy)); ctx.stroke(); }
+    // оси координат
+    ctx.strokeStyle='#A79FB8'; ctx.lineWidth=1.5;
+    ctx.beginPath(); ctx.moveTo(0,Y(0)); ctx.lineTo(W,Y(0)); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(X(0),0); ctx.lineTo(X(0),H); ctx.stroke();
+
+    eqEl.textContent=quadStr(a,b,c);
+
+    if(isLin){
+      ctx.strokeStyle=css('--down'); ctx.lineWidth=3;
+      ctx.beginPath(); ctx.moveTo(X(-RX),Y(b*(-RX)+c)); ctx.lineTo(X(RX),Y(b*RX+c)); ctx.stroke();
+      readEl.innerHTML='<b style="color:'+css('--down')+'">a = 0 — это прямая, у неё нет вершины</b>';
+      return;
+    }
+
+    // ось симметрии (пунктир)
+    ctx.strokeStyle=css('--vx'); ctx.lineWidth=1.6; ctx.setLineDash([6,5]);
+    ctx.beginPath(); ctx.moveTo(X(xv),0); ctx.lineTo(X(xv),H); ctx.stroke();
+    ctx.setLineDash([]);
+
+    // парабола
+    ctx.strokeStyle=css('--brand'); ctx.lineWidth=3;
+    ctx.beginPath();
+    var started=false;
+    for(var px=0;px<=W;px++){
+      var xm=(px-W/2)/(W/(2*RX));
+      var ym=a*xm*xm+b*xm+c;
+      var py=Y(ym);
+      if(!started){ ctx.moveTo(px,py); started=true; } else ctx.lineTo(px,py);
+    }
+    ctx.stroke();
+
+    // вершина
+    ctx.fillStyle=css('--vx'); ctx.beginPath(); ctx.arc(X(xv),Y(yv),7,0,7); ctx.fill();
+    ctx.fillStyle='#fff'; ctx.beginPath(); ctx.arc(X(xv),Y(yv),2.6,0,7); ctx.fill();
+
+    var dir = a>0 ? '<b style="color:'+css('--up')+'">a &gt; 0 · наименьшее значение</b>'
+                  : '<b style="color:'+css('--down')+'">a &lt; 0 · наибольшее значение</b>';
+    readEl.innerHTML = 'x₀ = −b/(2a) = <span class="vv">'+fmt(xv)+'</span> · '
+      + 'y₀ = <span class="av">'+fmt(yv)+'</span> · вершина ('+fmt(xv)+'; '+fmt(yv)+') · ось x = '+fmt(xv)+'<br>'+dir;
+  }
+  [sa,sb,sc].forEach(function(s){ s.addEventListener('input',draw); });
+  window.addEventListener('resize',function(){ resize(); draw(); });
+  resize(); draw();
+})();
+</script>
+
+<script>
+/* ── Тренажёр-генератор: координаты вершины ── */
+(function(){
+  var taskEl=document.getElementById('trTask'), x0El=document.getElementById('trX0'), y0El=document.getElementById('trY0'), resEl=document.getElementById('trResult');
+  if(!taskEl) return;
+  var cur=null, started=false;
+  function ri(min,max){ return Math.floor(Math.random()*(max-min+1))+min; }
+  function fmt(n){ return (n<0?'−':'')+Math.abs(n); }        // настоящий минус U+2212
+  function quadStr(a,b,c){
+    var s='y = ';
+    if(a===1) s+='x²'; else if(a===-1) s+='−x²'; else s+=(a<0?'−':'')+Math.abs(a)+'x²';
+    if(b!==0) s+=(b<0?' − ':' + ')+(Math.abs(b)===1?'':Math.abs(b))+'x';
+    if(c!==0) s+=(c<0?' − ':' + ')+Math.abs(c);
+    return s;
+  }
+  function generate(){
+    var a=[-2,-1,1,2][ri(0,3)];
+    var x0 = (Math.random()<0.22) ? 0 : ri(-5,5);   // иногда b = 0 (вершина на Oy)
+    var y0 = ri(-8,8);
+    // из x0 = −b/(2a): b = −2·a·x0 ; из y0 = a·x0² + b·x0 + c: c = y0 + a·x0²
+    var b = -2*a*x0;
+    var c = y0 + a*x0*x0;
+    cur={a:a,b:b,c:c,x0:x0,y0:y0};
+    taskEl.textContent=quadStr(a,b,c);
+    resEl.innerHTML=''; x0El.value=''; y0El.value='';
+    if(started) x0El.focus();
+  }
+  function parseInt2(s){
+    s=(s||'').trim().replace('−','-').replace(',','.');
+    if(s==='') return NaN;
+    var v=parseFloat(s);
+    return isNaN(v)?NaN:v;
+  }
+  function solHTML(){
+    var q=cur, a=q.a,b=q.b,c=q.c;
+    var h='<div class="sol">';
+    h+='a = '+fmt(a)+', b = '+fmt(b)+', c = '+fmt(c)+'<br>';
+    h+='x₀ = −b/(2a) = −('+fmt(b)+')/(2·'+fmt(a)+') = <b>'+fmt(q.x0)+'</b><br>';
+    h+='y₀ = '+fmt(a)+'·('+fmt(q.x0)+')² + '+fmt(b)+'·('+fmt(q.x0)+') + '+fmt(c)+' = <b>'+fmt(q.y0)+'</b><br>';
+    h+='вершина ('+fmt(q.x0)+'; '+fmt(q.y0)+') · ось симметрии x = '+fmt(q.x0)+'<br>';
+    h+= a>0 ? 'a &gt; 0 → '+fmt(q.y0)+' это наименьшее значение.' : 'a &lt; 0 → '+fmt(q.y0)+' это наибольшее значение.';
+    return h+'</div>';
+  }
+  function check(){
+    var gx=parseInt2(x0El.value), gy=parseInt2(y0El.value);
+    if(isNaN(gx)||isNaN(gy)){ resEl.innerHTML='<span class="bad">Впиши оба числа — x₀ и y₀ (или нажми «Показать решение»).</span>'; return; }
+    var okX=Math.abs(gx-cur.x0)<0.001, okY=Math.abs(gy-cur.y0)<0.001;
+    if(okX&&okY){ resEl.innerHTML='<span class="ok">✓ Верно! Вершина ('+fmt(cur.x0)+'; '+fmt(cur.y0)+').</span>'+solHTML(); }
+    else{
+      var hint = (okX&&!okY) ? ' Абсцисса верна, а ординату надо получить подстановкой x₀ в функцию.'
+               : (!okX&&okY) ? ' Ордината верна, проверь знак в формуле x₀ = −b/(2a).'
+               : ' Проверь: сначала x₀ = −b/(2a), потом y₀ подстановкой.';
+      resEl.innerHTML='<span class="bad">✗ Пока не то.'+hint+'</span>'+solHTML();
+    }
+  }
+  document.getElementById('trNew').addEventListener('click',generate);
+  document.getElementById('trCheck').addEventListener('click',check);
+  document.getElementById('trShow').addEventListener('click',function(){ resEl.innerHTML=solHTML(); });
+  function onEnter(e){ if(e.key==='Enter') check(); }
+  x0El.addEventListener('keydown',onEnter); y0El.addEventListener('keydown',onEnter);
+  generate(); started=true;   // первичная генерация БЕЗ фокуса
+})();
+</script>

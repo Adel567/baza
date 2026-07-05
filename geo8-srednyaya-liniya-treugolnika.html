@@ -1,0 +1,467 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Средняя линия треугольника — геометрия 8 класс</title>
+<style>
+  :root{
+    --paper:#F6F7F9;
+    --card:#FFFFFF;
+    --ink:#1B2333;
+    --muted:#5A6478;
+    --line:#E2E5EC;
+    --accent:#3B4FD0;
+    --accent-soft:#EAEDFB;
+    --ml:#3B4FD0;   --ml-soft:#EAEDFB;   /* средняя линия */
+    --base:#E27C2C; --base-soft:#FBEEDF; /* третья сторона */
+    --mid:#159A8A;  --mid-soft:#DEF3F0;  /* середины */
+    --ok:#1E8E5A;   --ok-bg:#E7F4EC;
+    --no:#C0455B;   --no-bg:#F9E9EC;
+  }
+  *{box-sizing:border-box}
+  body{margin:0}
+  .wrap{
+    max-width:760px;margin:0 auto;
+    padding:clamp(1.4rem,4vw,3rem) clamp(1.1rem,4vw,2rem) 4rem;
+    background:var(--paper);color:var(--ink);
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    font-size:17px;line-height:1.62;-webkit-font-smoothing:antialiased;
+  }
+  .eyebrow{font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);font-weight:600;margin:0 0 .5rem}
+  h1{font-family:Georgia,"Times New Roman",serif;font-size:clamp(2rem,7vw,3rem);line-height:1.05;margin:0;font-weight:700;letter-spacing:-.01em;text-wrap:balance}
+  .lede{font-size:1.08rem;color:var(--muted);margin:.7rem 0 0;max-width:60ch;text-wrap:pretty}
+  h2{font-family:Georgia,serif;font-size:1.32rem;font-weight:700;margin:0 0 .1rem;letter-spacing:-.005em}
+  section{margin-top:2.6rem}
+  .kicker{font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:600;margin:0 0 .8rem;display:flex;align-items:center;gap:.6rem}
+  .kicker::before{content:"";width:1.4rem;height:2px;background:var(--accent);border-radius:2px}
+  p{margin:.65rem 0}
+  strong{font-weight:650}
+  .math{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-weight:600}
+  sup{font-size:.72em}
+  .mlw{color:var(--ml);font-weight:700}
+  .basew{color:var(--base);font-weight:700}
+  .midw{color:var(--mid);font-weight:700}
+
+  /* Главная формула */
+  .hero-formula{margin-top:2.2rem;background:var(--ink);color:#fff;border-radius:14px;padding:1.6rem 1.4rem;text-align:center}
+  .hero-formula .lbl{font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:#9aa6c9;margin:0 0 .7rem}
+  .hero-formula .eq{font-family:ui-monospace,"SF Mono",Menlo,monospace;font-size:clamp(1.5rem,5.5vw,2.2rem);font-weight:700;letter-spacing:.01em}
+  .hero-formula .eq b{color:#8ea0ff;font-weight:700}
+  .hero-formula .eq u{color:#f2b27a;text-decoration:none;font-weight:700}
+  .hero-formula .note{font-size:.86rem;color:#9aa6c9;margin:.85rem 0 0}
+
+  /* Пререквизит */
+  .recall{background:var(--accent-soft);border-radius:12px;padding:1rem 1.15rem;font-size:.96rem}
+  .recall p{margin:.35rem 0}
+
+  /* Определение / карточки */
+  .defbox{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:0 12px 12px 0;padding:1rem 1.2rem;margin-top:.4rem}
+  .defbox b{color:var(--accent)}
+  .two{display:grid;gap:.85rem;margin-top:1rem}
+  @media(min-width:560px){.two{grid-template-columns:1fr 1fr}}
+  .fact{border-radius:12px;padding:1rem 1.1rem;border:1px solid var(--line);background:var(--card)}
+  .fact .h{font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.05rem;margin-bottom:.3rem}
+  .fact.p{border-top:4px solid var(--ml)} .fact.p .h{color:var(--ml)}
+  .fact.l{border-top:4px solid var(--base)} .fact.l .h{color:var(--base)}
+  .fact .d{font-size:.92rem;color:var(--muted)}
+
+  /* Разбор */
+  .worked{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:1.2rem 1.3rem}
+  .worked .task{font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.02rem;margin:0 0 1rem;padding-bottom:.8rem;border-bottom:1px solid var(--line)}
+  ol.steps{margin:0;padding:0;list-style:none;counter-reset:s;display:flex;flex-direction:column;gap:.75rem}
+  ol.steps li{position:relative;padding-left:2.1rem;counter-increment:s}
+  ol.steps li::before{content:counter(s);position:absolute;left:0;top:.05rem;width:1.5rem;height:1.5rem;border-radius:50%;background:var(--accent-soft);color:var(--accent);font-size:.82rem;font-weight:700;display:flex;align-items:center;justify-content:center}
+  ol.steps .m{font-family:ui-monospace,Menlo,monospace;font-weight:600;color:var(--ink)}
+  ol.steps .why{color:var(--muted);font-size:.9rem}
+  .verdict{margin-top:1rem;padding:.7rem 1rem;background:var(--ok-bg);border-radius:9px;font-weight:600;color:var(--ok);font-size:.98rem;font-family:ui-monospace,Menlo,monospace}
+
+  /* Диаграмма */
+  .diagram{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.1rem 1.1rem 1rem;margin:1rem 0}
+  .diagram canvas{width:100%;height:auto;display:block;border-radius:10px;background:#FCFDFF}
+  .badge{text-align:center;font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.02rem;margin:.85rem 0 0;padding:.55rem;border-radius:9px;background:var(--accent-soft)}
+  .badge .b{color:var(--base)} .badge .m{color:var(--ml)}
+  .sliders{display:grid;gap:.6rem;margin-top:.9rem}
+  @media(min-width:520px){.sliders{grid-template-columns:1fr 1fr}}
+  .sliders label{display:flex;align-items:center;gap:.5rem;font-weight:700;font-family:ui-monospace,Menlo,monospace;font-size:.9rem}
+  .sliders label.lbase{color:var(--base)} .sliders label.lapex{color:var(--ink)}
+  .sliders input[type=range]{flex:1}
+  .sliders input.rbase{accent-color:var(--base)} .sliders input.rapex{accent-color:var(--accent)}
+  .sliders input[type=range]:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+  .sliders .sval{min-width:2.2ch;text-align:right;font-variant-numeric:tabular-nums}
+
+  /* Практика */
+  .drill{display:flex;flex-direction:column;gap:.7rem}
+  details{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:.85rem 1.05rem}
+  details[open]{border-color:var(--accent)}
+  summary{cursor:pointer;font-weight:600;list-style:none;display:flex;justify-content:space-between;align-items:center;gap:1rem}
+  summary::-webkit-details-marker{display:none}
+  summary:focus-visible{outline:3px solid var(--accent);outline-offset:3px;border-radius:6px}
+  summary .q{font-family:ui-monospace,Menlo,monospace;font-size:.98rem}
+  summary .tag{font-size:.66rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);border:1px solid var(--line);border-radius:20px;padding:.1rem .55rem;white-space:nowrap}
+  summary::after{content:"показать ответ";font-size:.76rem;color:var(--accent);font-weight:600;white-space:nowrap}
+  details[open] summary::after{content:"скрыть"}
+  .ans{margin-top:.7rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.96rem;color:var(--muted)}
+  .ans .m{font-family:ui-monospace,Menlo,monospace;color:var(--ink);font-weight:600}
+  .ans b{color:var(--ink)}
+
+  /* Ошибки */
+  ul.pitfalls{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:.7rem}
+  ul.pitfalls li{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:.85rem 1.05rem .85rem 2.4rem;position:relative;font-size:.97rem}
+  ul.pitfalls li::before{content:"×";position:absolute;left:.95rem;top:.72rem;color:var(--no);font-weight:700;font-size:1.15rem}
+  ul.pitfalls b{color:var(--ink)}
+
+  /* Тренажёр */
+  .trainer{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.2rem 1.3rem;margin-top:1rem}
+  .tr-task{font-size:clamp(1rem,3.6vw,1.12rem);text-align:center;padding:1rem;background:var(--accent-soft);border-radius:10px;font-weight:600;line-height:1.5}
+  .tr-task b{font-family:ui-monospace,Menlo,monospace;color:var(--ink)}
+  .tr-ctl{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.9rem;align-items:center}
+  .tr-ctl button{font:inherit;font-weight:700;font-size:.9rem;cursor:pointer;border:none;border-radius:9px;padding:.55rem .95rem;color:#fff;background:var(--accent)}
+  .tr-ctl button.sec{background:var(--ok)}
+  .tr-ctl button.ghost{background:transparent;color:var(--accent);border:1px solid var(--accent)}
+  .tr-ctl input{flex:1;min-width:130px;font:inherit;padding:.5rem .7rem;border:1px solid var(--line);border-radius:9px;background:#fff;color:var(--ink);text-align:center}
+  .tr-ctl button:focus-visible,.tr-ctl input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+  .tr-result{margin-top:.9rem;font-size:.96rem;min-height:1.2rem;text-align:center}
+  .tr-result .ok{color:var(--ok);font-weight:700}
+  .tr-result .bad{color:var(--no);font-weight:700}
+  .tr-result .sol{margin-top:.7rem;padding:.85rem 1rem;background:#FCFDFF;border:1px solid var(--line);border-radius:10px;font-family:ui-monospace,Menlo,monospace;font-size:.9rem;line-height:1.85;text-align:left}
+  .tr-result .sol b{color:var(--accent)}
+
+  /* Что дальше */
+  .next{background:var(--accent);color:#fff;border-radius:12px;padding:1.3rem 1.4rem}
+  .next h2{color:#fff}
+  .next p{color:#dfe4fb;font-size:.96rem;margin:.5rem 0 0}
+  .next .eq{font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.15rem;margin:.7rem 0 .3rem;color:#fff}
+  .foot{margin-top:2.4rem;font-size:.82rem;color:var(--muted);text-align:center}
+
+  @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="wrap">
+
+  <header>
+    <p class="eyebrow">Геометрия · 8 класс</p>
+    <h1>Средняя линия треугольника</h1>
+    <p class="lede">Короткая дорожка через середины двух сторон, которая всегда ровно <em>вдвое короче</em> третьей стороны — и параллельна ей.</p>
+  </header>
+
+  <div class="hero-formula">
+    <p class="lbl">Главное свойство</p>
+    <div class="eq"><b>MN</b> = ½ · <u>BC</u></div>
+    <p class="note">MN — средняя линия (соединяет середины двух сторон) · BC — третья сторона, которой MN параллельна</p>
+  </div>
+
+  <section>
+    <p class="kicker">Зачем это нужно</p>
+    <h2>Измеряем то, что не достать</h2>
+    <p>Нужно узнать ширину реки, а на тот берег не перебраться. Отмечаешь середины двух «подходов» к воде, меряешь расстояние между ними — и умножаешь на два. Это и есть ширина. Половину измерить легко, целое — нет.</p>
+    <p>Главное заблуждение, которое мы сейчас сломаем: «линия по серединам сторон — это просто такая же сторона, только сдвинутая внутрь». Ничего подобного. Она ровно <strong>в два раза короче</strong>. В этом весь смысл темы.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Что вспомнить перед стартом</p>
+    <div class="recall">
+      <p><strong>Середина отрезка</strong> — точка, которая делит его на две равные части. Здесь мы берём именно <em>середины</em>, а не любые точки.</p>
+      <p><strong>Параллельные прямые</strong> (∥) — не пересекаются, идут «в одну сторону». Средняя линия окажется параллельной третьей стороне.</p>
+      <p><strong>Подобие (уменьшенная копия).</strong> Отрезав верхушку треугольника по серединам, получаешь такой же по форме треугольник, но уменьшенный ровно вдвое. Это опора всего доказательства.</p>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Ядро темы</p>
+    <h2>Определение и теорема</h2>
+    <div class="defbox">
+      <p style="margin:0"><b>Средняя линия треугольника</b> — это отрезок, соединяющий <strong>середины двух его сторон</strong>. У каждого треугольника таких линий три — по одной на каждую пару сторон.</p>
+    </div>
+    <p style="margin-top:1.1rem"><strong>Теорема о средней линии.</strong> Средняя линия параллельна третьей стороне (той, середины которой <em>не</em> брали) и равна её половине. Два свойства сразу:</p>
+    <div class="two">
+      <div class="fact p">
+        <div class="h">MN ∥ BC</div>
+        <div class="d">Средняя линия <span class="mlw">параллельна</span> третьей стороне — идёт ровно вдоль неё.</div>
+      </div>
+      <div class="fact l">
+        <div class="h">MN = ½ · BC</div>
+        <div class="d">Её длина — <span class="basew">половина</span> третьей стороны. Обратно: BC = 2 · MN.</div>
+      </div>
+    </div>
+    <p style="font-size:.9rem;color:var(--muted);margin-top:1rem">Третья сторона — та, чьи концы ты <em>не</em> отмечал серединами. Именно ей средняя линия параллельна, и от неё берётся половина. Почему параллельна: MN отсекает на сторонах равные части — по теореме Фалеса это и даёт MN ∥ BC.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Разбираем вместе · думаю вслух</p>
+    <h2>Эталонный пример</h2>
+    <div class="worked">
+      <p class="task">В треугольнике ABC сторона BC = 18 см. M — середина AB, N — середина AC. Найди MN.</p>
+      <ol class="steps">
+        <li>M и N — середины сторон AB и AC, значит отрезок <span class="m">MN — средняя линия</span>. <span class="why">Почему: средняя линия по определению соединяет две середины.</span></li>
+        <li>MN не пересекает сторону BC — значит <span class="m">BC и есть «третья сторона»</span>. <span class="why">Почему: третья — та, чьи концы не брали серединами.</span></li>
+        <li>По теореме: <span class="m">MN = ½ · BC</span>. <span class="why">Почему: средняя линия равна половине третьей стороны.</span></li>
+        <li>Подставляем и делим: <span class="m">MN = ½ · 18 = 9</span> (см). <span class="why">Проверка смысла: 9 меньше 18 — средняя линия и должна быть короче. ✓</span></li>
+      </ol>
+      <div class="verdict">Ответ: MN = 9 см</div>
+    </div>
+    <p style="font-size:.92rem;color:var(--muted);margin-top:.9rem">А если бы дали среднюю линию и спросили сторону — действие <em>обратное</em>: не делим на 2, а умножаем. Например, PQ = 7 см ⇒ третья сторона = 2 · 7 = 14 см.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Увидь глазами · интерактив</p>
+    <h2>Двигай вершины — соотношение 2:1 держится</h2>
+    <p>Меняй ширину основания и наклон вершины. Синяя <span class="mlw">средняя линия</span> всегда параллельна оранжевой <span class="basew">третьей стороне</span> и всегда ровно вдвое короче — как ни крути треугольник.</p>
+    <div class="diagram">
+      <canvas id="cv" width="680" height="430" aria-label="Треугольник со средней линией: она параллельна основанию и равна его половине"></canvas>
+      <div class="badge" id="badge"></div>
+      <div class="sliders">
+        <label class="lbase">основание BC <span id="vBase" class="sval">12</span><input id="sBase" class="rbase" type="range" min="8" max="16" step="2" value="12" aria-label="Ширина основания BC"></label>
+        <label class="lapex">наклон A <span id="vApex" class="sval">4</span><input id="sApex" class="rapex" type="range" min="0" max="16" step="1" value="4" aria-label="Положение вершины A"></label>
+      </div>
+    </div>
+    <p style="font-size:.9rem;color:var(--muted)">Обрати внимание: длина MN зависит только от BC — сдвигаешь вершину A, форма меняется, а <span class="mlw">MN</span> остаётся половиной <span class="basew">BC</span>. Отсечённый сверху маленький треугольник — это уменьшенная вдвое копия большого.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Теперь ты · нажми, чтобы проверить</p>
+    <h2>Мини-практика</h2>
+    <div class="drill">
+      <details>
+        <summary><span class="q">M, N — середины KL и KP. Как зовут MN и чему ∥?</span><span class="tag">понимание</span></summary>
+        <div class="ans">MN — <b>средняя линия</b> треугольника KLP. Она параллельна третьей стороне <span class="m">LP</span> (концы которой не брали) и равна её половине.</div>
+      </details>
+      <details>
+        <summary><span class="q">Средняя линия = 11 см. Найди параллельную сторону.</span><span class="tag">применение</span></summary>
+        <div class="ans">Ищем сторону — умножаем на 2: <span class="m">BC = 2 · 11 = 22</span> см. Сторона больше средней линии — логично. Ответ <b>22 см</b>.</div>
+      </details>
+      <details>
+        <summary><span class="q">Стороны 10, 16, 12. Найди все три средние линии.</span><span class="tag">применение</span></summary>
+        <div class="ans">Каждая средняя линия — половина той стороны, которой параллельна: <span class="m">10:2 = 5, &nbsp;16:2 = 8, &nbsp;12:2 = 6</span>. Ответ: <b>5, 8 и 6 см</b>.</div>
+      </details>
+      <details>
+        <summary><span class="q">Найди ошибку: «третья сторона = 15, значит средняя = 15·2 = 30».</span><span class="tag">анализ</span></summary>
+        <div class="ans">Средняя линия — <b>половина</b> стороны, поэтому её <em>делят</em> на 2, а не умножают: <span class="m">15 : 2 = 7,5</span> см. На 2 умножают в обратной задаче — когда по средней линии ищут сторону. Верно <b>7,5 см</b>.</div>
+      </details>
+      <details>
+        <summary><span class="q">Сторону, которой ∥ средняя линия, увеличили в 3 раза. Что со средней линией?</span><span class="tag">анализ</span></summary>
+        <div class="ans">Средняя линия — всегда половина этой стороны. Стала сторона втрое больше — и <b>средняя линия тоже в 3 раза больше</b>. Соотношение ½ никуда не девается.</div>
+      </details>
+      <details>
+        <summary><span class="q">MN ∥ BC, проходит через середину AB и MN = ½·BC. N — середина AC?</span><span class="tag">анализ</span></summary>
+        <div class="ans"><b>Да.</b> Если отрезок из середины одной стороны параллелен третьей, он попадает точно в середину второй стороны (обратная теорема / Фалес). Раз ещё и длина ровно половина — это именно средняя линия, и N — середина AC.</div>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Тренажёр · бесконечная практика</p>
+    <h2>Реши сам</h2>
+    <p>Нажми «Новая задача», реши по теореме и впиши ответ (все ответы — целые числа). Проверь себя или посмотри пошаговое решение.</p>
+    <div class="trainer">
+      <div class="tr-task" id="trTask">Средняя линия соединяет середины двух сторон. Третья сторона треугольника равна <b>18</b> см. Найди среднюю линию, которая ей параллельна.</div>
+      <div class="tr-ctl">
+        <button id="trNew" type="button">🎲 Новая задача</button>
+        <input id="trAns" type="text" placeholder="ответ, см" aria-label="Ответ">
+        <button id="trCheck" type="button" class="sec">Проверить</button>
+        <button id="trShow" type="button" class="ghost">Решение</button>
+      </div>
+      <div id="trResult" class="tr-result"></div>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Где чаще всего ошибаются</p>
+    <h2>Лови эти ловушки</h2>
+    <ul class="pitfalls">
+      <li><b>«Средняя линия равна основанию».</b> Нет: MN = ½·BC, а не MN = BC. Средняя линия всегда <em>короче</em> стороны, которой параллельна. Если получилось «равно» или «длиннее» — где-то ошибка.</li>
+      <li><b>Путают с медианой.</b> Медиана идёт из <em>вершины</em> в середину противоположной стороны (один конец — вершина!). Средняя линия соединяет <em>две середины</em> и вершины не касается. Проверь: оба конца лежат на серединах сторон — тогда это средняя линия.</li>
+      <li><b>Берут не те стороны / не середины.</b> Если отрезок параллелен BC, его концы обязаны быть серединами именно AB и AC. Отметил середины двух сторон — параллельной будет третья, оставшаяся.</li>
+      <li><b>В обратной задаче делят вместо умножения.</b> Чтобы по средней линии найти сторону — <em>умножь на 2</em>. Сторона больше средней линии, а не меньше.</li>
+    </ul>
+  </section>
+
+  <section>
+    <p class="kicker">Проверка понимания</p>
+    <h2>Объясни своими словами</h2>
+    <div class="drill">
+      <details>
+        <summary><span class="q">Что соединяет средняя линия и скольким сторонам параллельна каждая из трёх?</span></summary>
+        <div class="ans">Соединяет <b>середины двух сторон</b>. Каждая из трёх средних линий параллельна <b>одной</b> стороне — той, середины которой не брали.</div>
+      </details>
+      <details>
+        <summary><span class="q">Средняя линия = 6 см. Чему равна третья сторона?</span></summary>
+        <div class="ans">Обратное действие — умножаем: <span class="m">2 · 6 = 12</span> см.</div>
+      </details>
+      <details>
+        <summary><span class="q">Чем средняя линия отличается от медианы?</span></summary>
+        <div class="ans">Средняя линия — между <b>двумя серединами</b> сторон, вершины не касается, параллельна третьей стороне и равна её половине. Медиана — из <b>вершины</b> в середину противоположной стороны.</div>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <div class="next">
+      <h2>Что дальше</h2>
+      <p>Та же идея «линия по серединам» работает и в четырёхугольнике. Соединишь середины боковых сторон трапеции — получишь её <strong>среднюю линию</strong>:</p>
+      <div class="eq">m = (a + b) / 2</div>
+      <p>Она параллельна обоим основаниям и равна их полусумме. А ещё маленький треугольник, отсечённый средней линией, подобен большому с коэффициентом ½ — это мостик к теме <strong>подобия треугольников</strong>.</p>
+    </div>
+  </section>
+
+  <p class="foot">Проверка на выходе: что соединяет средняя линия? · во сколько раз она короче третьей стороны? · как по средней линии найти сторону?</p>
+
+</div>
+
+<script>
+/* ---- Визуализация: треугольник со средней линией ---- */
+(function(){
+  var cv=document.getElementById('cv'); if(!cv) return;
+  var ctx=cv.getContext('2d');
+  var sBase=document.getElementById('sBase'), sApex=document.getElementById('sApex');
+  var vBase=document.getElementById('vBase'), vApex=document.getElementById('vApex'), badge=document.getElementById('badge');
+  var W=680,H=430,dpr=1;
+  function css(v){ return getComputedStyle(document.documentElement).getPropertyValue(v).trim(); }
+
+  function resize(){
+    var c=cv.clientWidth||680; dpr=Math.min(window.devicePixelRatio||1,2);
+    W=c; H=Math.round(c*0.63);
+    cv.width=W*dpr; cv.height=H*dpr; cv.style.height=H+'px';
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+  }
+
+  function draw(){
+    var baseW=+sBase.value, apexX=+sApex.value, height=9;
+    vBase.textContent=baseW; vApex.textContent=apexX;
+    // математические точки (y вверх)
+    var B=[0,0], C=[baseW,0], A=[apexX,height];
+    var M=[(A[0]+B[0])/2,(A[1]+B[1])/2];   // середина AB
+    var N=[(A[0]+C[0])/2,(A[1]+C[1])/2];   // середина AC
+    var pts=[A,B,C,M,N];
+    var minx=Math.min.apply(null,pts.map(function(p){return p[0];}));
+    var maxx=Math.max.apply(null,pts.map(function(p){return p[0];}));
+    var miny=Math.min.apply(null,pts.map(function(p){return p[1];}));
+    var maxy=Math.max.apply(null,pts.map(function(p){return p[1];}));
+    var pad=52;
+    var sc=Math.min((W-pad*2)/(maxx-minx||1),(H-pad*2)/(maxy-miny||1));
+    var ox=(W-(maxx-minx)*sc)/2, oy=(H-(maxy-miny)*sc)/2;
+    function SX(x){ return ox+(x-minx)*sc; }
+    function SY(y){ return oy+(maxy-y)*sc; }   // flip
+
+    ctx.clearRect(0,0,W,H);
+    // треугольник — заливка
+    ctx.beginPath();
+    ctx.moveTo(SX(A[0]),SY(A[1])); ctx.lineTo(SX(B[0]),SY(B[1])); ctx.lineTo(SX(C[0]),SY(C[1])); ctx.closePath();
+    ctx.fillStyle='#F2F5FC'; ctx.fill();
+    ctx.strokeStyle=css('--ink'); ctx.lineWidth=1.6; ctx.stroke();
+
+    // проекция MN на BC (пунктир) — видно, что MN = половина BC
+    ctx.setLineDash([5,5]); ctx.strokeStyle=css('--ml'); ctx.lineWidth=2;
+    ctx.beginPath(); ctx.moveTo(SX(B[0]),SY(B[1])); ctx.lineTo(SX(baseW/2),SY(0)); ctx.stroke();
+    ctx.setLineDash([]);
+
+    // третья сторона BC (оранжевая, толстая)
+    ctx.strokeStyle=css('--base'); ctx.lineWidth=5; ctx.lineCap='round';
+    ctx.beginPath(); ctx.moveTo(SX(B[0]),SY(B[1])); ctx.lineTo(SX(C[0]),SY(C[1])); ctx.stroke();
+    // средняя линия MN (синяя, толстая)
+    ctx.strokeStyle=css('--ml'); ctx.lineWidth=5;
+    ctx.beginPath(); ctx.moveTo(SX(M[0]),SY(M[1])); ctx.lineTo(SX(N[0]),SY(N[1])); ctx.stroke();
+    ctx.lineCap='butt';
+
+    // метки параллельности (шеврон "›") на середине каждого отрезка
+    function chevron(x,y,col){ var s=Math.max(6,sc*0.28);
+      ctx.strokeStyle=col; ctx.lineWidth=2.4;
+      ctx.beginPath(); ctx.moveTo(x-s*0.5,y-s); ctx.lineTo(x+s*0.5,y); ctx.lineTo(x-s*0.5,y+s); ctx.stroke(); }
+    chevron(SX(baseW/2),SY(0),css('--base'));
+    chevron(SX((M[0]+N[0])/2),SY(M[1]),css('--ml'));
+
+    // точки-середины
+    function dot(p,col){ ctx.fillStyle=col; ctx.beginPath(); ctx.arc(SX(p[0]),SY(p[1]),5.5,0,7); ctx.fill();
+      ctx.fillStyle='#fff'; ctx.beginPath(); ctx.arc(SX(p[0]),SY(p[1]),2.2,0,7); ctx.fill(); }
+    dot(M,css('--mid')); dot(N,css('--mid'));
+
+    // подписи вершин и точек
+    var fs=Math.max(13,Math.min(18,sc*0.42));
+    ctx.font='700 '+fs+'px Georgia,serif'; ctx.textBaseline='middle';
+    ctx.fillStyle=css('--ink');
+    ctx.textAlign='center'; ctx.fillText('A',SX(A[0]),SY(A[1])-fs*0.9);
+    ctx.textAlign='right';  ctx.fillText('B',SX(B[0])-8,SY(B[1])+fs*0.6);
+    ctx.textAlign='left';   ctx.fillText('C',SX(C[0])+8,SY(C[1])+fs*0.6);
+    ctx.fillStyle=css('--mid');
+    ctx.textAlign='right'; ctx.fillText('M',SX(M[0])-9,SY(M[1]));
+    ctx.textAlign='left';  ctx.fillText('N',SX(N[0])+9,SY(N[1]));
+
+    // длины
+    ctx.font='700 '+Math.max(12,fs*0.82)+'px ui-monospace,Menlo,monospace';
+    ctx.fillStyle=css('--base'); ctx.textAlign='center';
+    ctx.fillText('BC = '+baseW, SX(baseW/2), SY(0)+fs*1.5);
+    ctx.fillStyle=css('--ml');
+    ctx.fillText('MN = '+(baseW/2), SX((M[0]+N[0])/2), SY(M[1])-fs*1.2);
+
+    badge.innerHTML='<span class="b">BC = '+baseW+'</span> &nbsp;·&nbsp; <span class="m">MN = '+(baseW/2)+'</span> &nbsp;·&nbsp; MN вдвое короче BC';
+  }
+
+  [sBase,sApex].forEach(function(s){ s.addEventListener('input',draw); });
+  window.addEventListener('resize',function(){ resize(); draw(); });
+  resize(); draw();
+})();
+</script>
+
+<script>
+/* ---- Тренажёр-генератор ---- */
+(function(){
+  var taskEl=document.getElementById('trTask'), ansEl=document.getElementById('trAns'), resEl=document.getElementById('trResult');
+  if(!taskEl) return;
+  var cur=null;
+  function ri(min,max){ return Math.floor(Math.random()*(max-min+1))+min; }
+  function even(min,max){ return ri(min/2,max/2)*2; }
+
+  function generate(){
+    var type=['ml','base','perim'][ri(0,2)];
+    if(type==='ml'){
+      var bc=even(8,30);
+      cur={type:type, bc:bc, ans:bc/2};
+      taskEl.innerHTML='Средняя линия соединяет середины двух сторон. Третья сторона треугольника равна <b>'+bc+'</b> см. Найди среднюю линию, которая ей параллельна.';
+    } else if(type==='base'){
+      var mn=ri(4,15);
+      cur={type:type, mn:mn, ans:2*mn};
+      taskEl.innerHTML='Средняя линия треугольника равна <b>'+mn+'</b> см. Найди сторону, которой она параллельна.';
+    } else {
+      var a,b,c,t=0;
+      do{ a=even(6,20); b=even(6,20); c=even(6,20); t++; }
+      while((a+b<=c || a+c<=b || b+c<=a) && t<80);
+      cur={type:type, a:a, b:b, c:c, ans:(a+b+c)/2};
+      taskEl.innerHTML='Стороны треугольника: <b>'+a+'</b>, <b>'+b+'</b> и <b>'+c+'</b> см. Провели все три средние линии. Найди периметр треугольника, который они образуют.';
+    }
+    resEl.innerHTML=''; ansEl.value='';
+  }
+
+  function solHTML(){
+    var q=cur, h='<div class="sol">';
+    if(q.type==='ml'){
+      h+='Средняя линия = половина третьей стороны:<br>';
+      h+='MN = ½ · BC = ½ · '+q.bc+' = <b>'+q.ans+'</b> см';
+    } else if(q.type==='base'){
+      h+='Обратная задача — сторону ищем умножением на 2:<br>';
+      h+='BC = 2 · MN = 2 · '+q.mn+' = <b>'+q.ans+'</b> см';
+    } else {
+      h+='Каждая средняя линия = половина своей стороны:<br>';
+      h+=(q.a/2)+' + '+(q.b/2)+' + '+(q.c/2)+' = <b>'+q.ans+'</b> см<br>';
+      h+='(это ровно половина периметра большого: ('+q.a+'+'+q.b+'+'+q.c+') : 2)';
+    }
+    return h+'</div>';
+  }
+
+  function check(){
+    var raw=ansEl.value.trim().replace(',','.');
+    if(raw===''){ resEl.innerHTML='<span class="bad">Введи ответ или нажми «Решение».</span>'; return; }
+    var got=parseFloat(raw);
+    if(!isNaN(got) && Math.abs(got-cur.ans)<0.02){
+      resEl.innerHTML='<span class="ok">✓ Верно!</span>'+solHTML();
+    } else {
+      resEl.innerHTML='<span class="bad">✗ Пока не то — глянь решение.</span>'+solHTML();
+    }
+  }
+
+  document.getElementById('trNew').addEventListener('click',generate);
+  document.getElementById('trCheck').addEventListener('click',check);
+  document.getElementById('trShow').addEventListener('click',function(){ resEl.innerHTML=solHTML(); });
+  ansEl.addEventListener('keydown',function(e){ if(e.key==='Enter') check(); });
+
+  // стартовое состояние = валидная задача (совпадает с показанным текстом)
+  cur={type:'ml', bc:18, ans:9};
+})();
+</script>
