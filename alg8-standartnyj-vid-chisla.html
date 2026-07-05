@@ -1,0 +1,596 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Стандартный вид числа — урок, алгебра 8 класс</title>
+<style>
+  :root{
+    --paper:#F6F7F9;
+    --card:#FFFFFF;
+    --ink:#1B2333;
+    --muted:#5A6478;
+    --line:#E2E5EC;
+    --accent:#3B4FD0;
+    --accent-soft:#EAEDFB;
+    --big:#1E8E5A;    /* n>0, большое число */
+    --big-bg:#E7F4EC;
+    --unit:#B9791A;   /* n=0, число в [1;10) */
+    --unit-bg:#FBF1DC;
+    --small:#C0455B;  /* n<0, малое число */
+    --small-bg:#F9E9EC;
+  }
+  *{box-sizing:border-box}
+  body{margin:0}
+  .wrap{
+    max-width:760px;
+    margin:0 auto;
+    padding:clamp(1.4rem,4vw,3rem) clamp(1.1rem,4vw,2rem) 4rem;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    font-size:17px;
+    line-height:1.62;
+    -webkit-font-smoothing:antialiased;
+  }
+  .eyebrow{
+    font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--accent);font-weight:600;margin:0 0 .5rem;
+  }
+  h1{
+    font-family:Georgia,"Times New Roman",serif;
+    font-size:clamp(2.1rem,7vw,3rem);
+    line-height:1.05;margin:0;font-weight:700;letter-spacing:-.01em;
+    text-wrap:balance;
+  }
+  .lede{
+    font-size:1.08rem;color:var(--muted);margin:.7rem 0 0;max-width:60ch;
+    text-wrap:pretty;
+  }
+  h2{
+    font-family:Georgia,serif;font-size:1.32rem;font-weight:700;
+    margin:0 0 .1rem;letter-spacing:-.005em;
+  }
+  section{margin-top:2.6rem}
+  .kicker{
+    font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--muted);font-weight:600;margin:0 0 .8rem;
+    display:flex;align-items:center;gap:.6rem;
+  }
+  .kicker::before{
+    content:"";width:1.4rem;height:2px;background:var(--accent);border-radius:2px;
+  }
+  p{margin:.65rem 0}
+  strong{font-weight:650}
+  .math{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-weight:600}
+  sup{font-size:.72em}
+
+  /* Главная формула */
+  .hero-formula{
+    margin-top:2.2rem;
+    background:var(--ink);color:#fff;border-radius:14px;
+    padding:1.6rem 1.4rem;text-align:center;
+  }
+  .hero-formula .lbl{
+    font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;
+    color:#9aa6c9;margin:0 0 .7rem;
+  }
+  .hero-formula .eq{
+    font-family:ui-monospace,"SF Mono",Menlo,monospace;
+    font-size:clamp(1.7rem,6vw,2.4rem);font-weight:700;letter-spacing:.01em;
+  }
+  .hero-formula .eq b{color:#8ea0ff;font-weight:700}
+  .hero-formula .note{font-size:.86rem;color:#9aa6c9;margin:.8rem 0 0}
+
+  /* Пререквизит */
+  .recall{
+    background:var(--accent-soft);border-radius:12px;padding:1rem 1.15rem;
+    font-size:.96rem;
+  }
+  .recall p{margin:.3rem 0}
+
+  /* Три случая */
+  .cases{display:grid;gap:.85rem;margin-top:.4rem}
+  @media(min-width:620px){.cases{grid-template-columns:repeat(3,1fr)}}
+  .case{
+    border-radius:12px;padding:1.05rem 1.1rem;border:1px solid var(--line);
+    background:var(--card);display:flex;flex-direction:column;gap:.35rem;
+  }
+  .case .sign{font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.1rem}
+  .case .count{font-weight:650;font-size:1rem}
+  .case .desc{font-size:.9rem;color:var(--muted)}
+  .case.big{border-top:4px solid var(--big);background:var(--big-bg)}
+  .case.big .sign{color:var(--big)}
+  .case.unit{border-top:4px solid var(--unit);background:var(--unit-bg)}
+  .case.unit .sign{color:var(--unit)}
+  .case.small{border-top:4px solid var(--small);background:var(--small-bg)}
+  .case.small .sign{color:var(--small)}
+
+  /* Разбор */
+  .worked{
+    background:var(--card);border:1px solid var(--line);border-radius:12px;
+    padding:1.2rem 1.3rem;
+  }
+  .worked .task{
+    font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.05rem;
+    margin:0 0 1rem;padding-bottom:.8rem;border-bottom:1px solid var(--line);
+  }
+  ol.steps{margin:0;padding:0;list-style:none;counter-reset:s;display:flex;flex-direction:column;gap:.7rem}
+  ol.steps li{
+    position:relative;padding-left:2.1rem;counter-increment:s;
+  }
+  ol.steps li::before{
+    content:counter(s);position:absolute;left:0;top:.05rem;
+    width:1.5rem;height:1.5rem;border-radius:50%;
+    background:var(--accent-soft);color:var(--accent);
+    font-size:.82rem;font-weight:700;display:flex;align-items:center;justify-content:center;
+  }
+  ol.steps .m{font-family:ui-monospace,Menlo,monospace;font-weight:600;color:var(--ink)}
+  .verdict{
+    margin-top:1rem;padding:.7rem 1rem;background:var(--big-bg);
+    border-radius:9px;font-weight:600;color:var(--big);font-size:.98rem;
+  }
+
+  /* Таблица-линейка */
+  .tablewrap{overflow-x:auto;margin-top:.6rem;border:1px solid var(--line);border-radius:12px}
+  table.ruler{border-collapse:collapse;width:100%;min-width:340px;font-size:.95rem;background:var(--card)}
+  table.ruler th,table.ruler td{padding:.55rem .8rem;text-align:left;border-bottom:1px solid var(--line)}
+  table.ruler th{font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:600}
+  table.ruler tr:last-child td{border-bottom:none}
+  table.ruler .mono{font-family:ui-monospace,Menlo,monospace;font-weight:600}
+  table.ruler .np{color:var(--big);font-weight:700}
+  table.ruler .nz{color:var(--unit);font-weight:700}
+  table.ruler .nn{color:var(--small);font-weight:700}
+
+  /* Практика */
+  .drill{display:flex;flex-direction:column;gap:.7rem}
+  details{
+    background:var(--card);border:1px solid var(--line);border-radius:10px;
+    padding:.85rem 1.05rem;
+  }
+  details[open]{border-color:var(--accent)}
+  summary{
+    cursor:pointer;font-weight:600;list-style:none;
+    display:flex;justify-content:space-between;align-items:center;gap:1rem;
+  }
+  summary::-webkit-details-marker{display:none}
+  summary:focus-visible{outline:3px solid var(--accent);outline-offset:3px;border-radius:6px}
+  summary .q{font-family:ui-monospace,Menlo,monospace}
+  summary .tag{
+    font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);
+    border:1px solid var(--line);border-radius:20px;padding:.1rem .55rem;white-space:nowrap;
+  }
+  summary::after{
+    content:"показать ответ";font-size:.78rem;color:var(--accent);font-weight:600;white-space:nowrap;
+  }
+  details[open] summary::after{content:"скрыть"}
+  .ans{margin-top:.7rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.96rem;color:var(--muted)}
+  .ans .m{font-family:ui-monospace,Menlo,monospace;color:var(--ink);font-weight:600}
+
+  /* Ошибки */
+  ul.pitfalls{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:.6rem}
+  ul.pitfalls li{
+    padding-left:1.5rem;position:relative;font-size:.98rem;
+  }
+  ul.pitfalls li::before{
+    content:"×";position:absolute;left:0;top:-.05rem;color:var(--small);font-weight:700;font-size:1.1rem;
+  }
+  ul.pitfalls b{color:var(--ink)}
+
+  .next{
+    background:var(--accent);color:#fff;border-radius:12px;padding:1.2rem 1.3rem;
+  }
+  .next h2{color:#fff}
+  .next .eq{
+    font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.2rem;
+    margin:.6rem 0 .3rem;
+  }
+  .next p{color:#dfe4fb;font-size:.96rem;margin:.4rem 0 0}
+  .foot{margin-top:2.4rem;font-size:.82rem;color:var(--muted);text-align:center}
+
+  @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="wrap">
+
+  <header>
+    <p class="eyebrow">Алгебра · 8 класс</p>
+    <h1>Стандартный вид числа</h1>
+    <p class="lede">Как записать хоть массу Земли, хоть массу электрона <em>одной короткой строкой</em> — и не запутаться в нулях.</p>
+  </header>
+
+  <div class="hero-formula">
+    <p class="lbl">Стандартный вид</p>
+    <div class="eq"><b>a</b> · 10<sup><b>n</b></sup></div>
+    <p class="note">где 1 ≤ a &lt; 10 (мантисса) и n — целое (порядок)</p>
+  </div>
+
+  <section>
+    <p class="kicker">Зачем это нужно</p>
+    <h2>Чтобы не считать нули руками</h2>
+    <p>Наука постоянно работает с числами, которые неудобно писать обычной записью. Масса Земли — <span class="math">5&#8201;980&#8201;000&#8201;000&#8201;000&#8201;000&#8201;000&#8201;000&#8201;000</span> кг, а масса электрона — <span class="math">0,00000000000000000000000000000091</span> кг. Считать нули в таких записях утомительно и легко ошибиться.</p>
+    <p>Стандартный вид сжимает любое такое число до короткой формы <span class="math">a·10<sup>n</sup></span>. Это «язык» физики, химии, астрономии и инженерии: на калькуляторе и в учебниках большие и малые величины почти всегда записаны именно так — например, скорость света <span class="math">3·10<sup>8</sup></span> м/с. Навык понадобится тебе уже в 8–9 классах на физике.</p>
+    <p>Главное заблуждение: «маленькое на вид число — значит и степень отрицательная и большая по модулю». На деле порядок зависит не от того, «маленькое» число или «большое», а от <strong>положения первой значащей цифры относительно запятой</strong>.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Что вспомнить с прошлого шага</p>
+    <div class="recall">
+      <p><strong>Степень с целым показателем.</strong> <span class="math">10<sup>3</sup> = 1000</span>, а <span class="math">10<sup>−2</sup> = 1/100 = 0,01</span>. Умножить на <span class="math">10<sup>n</sup></span> = сдвинуть запятую на n разрядов.</p>
+      <p><strong>Разряды и десятичная дробь.</strong> Запятая отделяет целую часть от дробной; при умножении на 10 она прыгает вправо, при делении — влево.</p>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Ядро · вся суть темы</p>
+    <h2>Одна цифра до запятой — и масштаб</h2>
+    <p>Любое положительное число записываем как <strong>«одна значащая цифра до запятой, остаток — после, и всё умножено на нужную степень десятки»</strong>. Множитель <span class="math">10<sup>n</sup></span> как раз «переносит запятую» на нужное место.</p>
+    <p>Мантисса <span class="math">a</span> — это «суть» числа (значащие цифры), обязательно из промежутка <strong>[1; 10)</strong>: ровно одна ненулевая цифра до запятой. Порядок <span class="math">n</span> — целое число: на сколько разрядов и в какую сторону сдвинули запятую.</p>
+    <div class="cases">
+      <div class="case big">
+        <div class="sign">n &gt; 0</div>
+        <div class="count">Большое число (≥ 10)</div>
+        <div class="desc">Запятую двигаем влево, чтобы перед ней осталась одна цифра. Порядок положительный.</div>
+      </div>
+      <div class="case unit">
+        <div class="sign">n = 0</div>
+        <div class="count">Число от 1 до 10</div>
+        <div class="desc">Уже почти в стандартном виде. Двигать запятую не нужно.</div>
+      </div>
+      <div class="case small">
+        <div class="sign">n &lt; 0</div>
+        <div class="count">Малое число (&lt; 1)</div>
+        <div class="desc">Запятую двигаем вправо до первой значащей цифры. Порядок отрицательный.</div>
+      </div>
+    </div>
+    <p style="font-size:.92rem;color:var(--muted);margin-top:.9rem">Считалочка про знак: <strong>двигаем влево — копим «+», двигаем вправо — «−».</strong></p>
+  </section>
+
+  <section>
+    <p class="kicker">Наглядность · покрути сам</p>
+    <h2>Схема сдвига запятой</h2>
+    <p>Введи любое число (большое или малое) — и посмотри, куда и на сколько разрядов прыгает запятая, чтобы получилась мантисса из [1;10). Цвет подскажет знак порядка.</p>
+    <div class="viz">
+      <div class="viz-ctl">
+        <input id="vizInput" type="text" inputmode="decimal" value="6540000" aria-label="Число для разбора">
+        <div class="viz-presets">
+          <button type="button" data-v="6540000">6&#8201;540&#8201;000</button>
+          <button type="button" data-v="0,00072">0,00072</button>
+          <button type="button" data-v="308000000">308&#8201;000&#8201;000</button>
+          <button type="button" data-v="5,2">5,2</button>
+          <button type="button" data-v="0,025">0,025</button>
+        </div>
+      </div>
+      <div id="vizOut" class="viz-out"></div>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Разбираем вместе</p>
+    <h2>Эталонный пример «думаю вслух»</h2>
+    <div class="worked">
+      <p class="task">Записать 6&#8201;540&#8201;000 в стандартном виде</p>
+      <ol class="steps">
+        <li>Ищу первую значащую цифру — это <span class="m">6</span>. Значит мантисса начинается с неё: <span class="m">a = 6,54</span>. Нули в конце отбрасываю — они не значащие. <em>Почему: a должно быть из [1;10), поэтому оставляю одну цифру до запятой.</em></li>
+        <li>Считаю, на сколько разрядов перенёс запятую. Исходно <span class="m">6540000,0</span> — запятая после семи цифр. Переношу её к виду <span class="m">6,54</span>: это <span class="m">6</span> шагов влево.</li>
+        <li>Перенос влево → порядок положительный: <span class="m">n = 6</span>.</li>
+      </ol>
+      <div class="verdict">Ответ: 6&#8201;540&#8201;000 = 6,54·10<sup>6</sup></div>
+    </div>
+    <p style="font-size:.94rem;color:var(--muted)">А теперь малое число тем же ходом: <span class="math">0,00072</span> → первая значащая цифра <span class="math">7</span>, значит <span class="math">a = 7,2</span>. Считаю шаги запятой вправо: <span class="math">0,00072 → 0,0072 → 0,072 → 0,72 → 7,2</span> — это <strong>4</strong> шага. Вправо → знак «−», поэтому <span class="math">0,00072 = 7,2·10<sup>&#8722;4</sup></span>.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Линейка порядков</p>
+    <h2>Видно закономерность</h2>
+    <p>Меняем только масштаб — и порядок сдвигается ровно на 1. Больше число — больше n; меньше 1 — n уходит в минус.</p>
+    <div class="tablewrap">
+      <table class="ruler">
+        <thead><tr><th>Число</th><th>Стандартный вид</th><th>Порядок n</th></tr></thead>
+        <tbody>
+          <tr><td class="mono">1&#8201;000</td><td class="mono">1·10<sup>3</sup></td><td class="np">3</td></tr>
+          <tr><td class="mono">100</td><td class="mono">1·10<sup>2</sup></td><td class="np">2</td></tr>
+          <tr><td class="mono">1</td><td class="mono">1·10<sup>0</sup></td><td class="nz">0</td></tr>
+          <tr><td class="mono">0,01</td><td class="mono">1·10<sup>&#8722;2</sup></td><td class="nn">&#8722;2</td></tr>
+          <tr><td class="mono">0,001</td><td class="mono">1·10<sup>&#8722;3</sup></td><td class="nn">&#8722;3</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Теперь ты · нажми, чтобы проверить</p>
+    <h2>Мини-практика</h2>
+    <div class="drill">
+      <details>
+        <summary><span class="q">Какие записи — стандартный вид: 4,1·10⁵; 12·10³; 0,7·10⁻²; 9·10⁰?</span><span class="tag">понимание</span></summary>
+        <div class="ans">Стандартный вид — <span class="m">4,1·10⁵</span> и <span class="m">9·10⁰</span>: у них мантисса в [1;10). А <span class="m">12·10³</span> (a = 12 ≥ 10) и <span class="m">0,7·10⁻²</span> (a = 0,7 &lt; 1) — <strong>не подходят</strong>.</div>
+      </details>
+      <details>
+        <summary><span class="q">Запиши в стандартном виде: 95&#8201;000 и 0,0004</span><span class="tag">применение</span></summary>
+        <div class="ans"><span class="m">95&#8201;000 = 9,5·10⁴</span> (4 шага влево). <span class="m">0,0004 = 4·10<sup>&#8722;4</sup></span> (4 шага вправо, число меньше 1).</div>
+      </details>
+      <details>
+        <summary><span class="q">Обратная задача: запиши обычным числом 4,06·10⁻³</span><span class="tag">применение</span></summary>
+        <div class="ans">Порядок отрицательный → двигаем запятую влево на 3 разряда: <span class="m">4,06 → 0,00406</span>. Ответ: <span class="m">0,00406</span>.</div>
+      </details>
+      <details>
+        <summary><span class="q">Что изменится: число 8,3·10⁵ увеличили в 10 раз?</span><span class="tag">анализ</span></summary>
+        <div class="ans">Умножение на 10 добавляет к порядку единицу: <span class="m">8,3·10⁵ → 8,3·10⁶</span>. Мантисса та же, порядок вырос на 1.</div>
+      </details>
+      <details>
+        <summary><span class="q">Найди ошибку: ученик записал 0,025 = 2,5·10²</span><span class="tag">анализ</span></summary>
+        <div class="ans">Число меньше 1, значит порядок обязан быть <strong>отрицательным</strong>. Запятую двигали вправо на 2 разряда → <span class="m">0,025 = 2,5·10<sup>&#8722;2</sup></span>.</div>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Тренажёр · бесконечная практика</p>
+    <h2>Запиши и раскрой стандартный вид</h2>
+    <p>Нажми «Новое задание». Тип задачи меняется сам: то записать число в стандартном виде (введи мантиссу <b>a</b> и порядок <b>n</b>), то раскрыть запись обратно (введи обычное число). Дробную часть пиши через запятую или точку, минус в порядке — обычным «−».</p>
+    <div class="trainer">
+      <div class="tr-kind" id="trKind">Запиши в стандартном виде</div>
+      <div class="tr-eq" id="trTask">6&#8201;540&#8201;000</div>
+
+      <div class="tr-inputs" id="inpFwd">
+        <label>a = <input id="trA" type="text" inputmode="decimal" placeholder="напр. 6,54" aria-label="Мантисса a"></label>
+        <label>· 10<sup>n</sup>, &nbsp;n = <input id="trN" type="text" inputmode="numeric" placeholder="напр. 6 или −4" aria-label="Порядок n"></label>
+      </div>
+      <div class="tr-inputs" id="inpRev" hidden>
+        <label>обычное число = <input id="trNum" type="text" inputmode="decimal" placeholder="напр. 6540000 или 0,00072" aria-label="Обычное число"></label>
+      </div>
+
+      <div class="tr-ctl">
+        <button id="trNew" type="button">🎲 Новое задание</button>
+        <button id="trCheck" type="button" class="sec">Проверить</button>
+        <button id="trShow" type="button" class="ghost">Показать решение</button>
+      </div>
+      <div id="trResult" class="tr-result"></div>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Где чаще всего ошибаются</p>
+    <h2>Лови эти ловушки</h2>
+    <ul class="pitfalls">
+      <li><b>Мантисса не из [1;10).</b> Пишут <span class="math">25·10³</span> или <span class="math">0,9·10⁴</span> и считают это стандартным видом. Перед запятой должна стоять <em>ровно одна ненулевая цифра</em>. На самом деле <span class="math">25·10³ = 2,5·10⁴</span>, а <span class="math">0,9·10⁴ = 9·10³</span>.</li>
+      <li><b>Путают знак порядка у малых чисел.</b> Для <span class="math">0,005</span> пишут <span class="math">5·10³</span> вместо <span class="math">5·10<sup>&#8722;3</sup></span>, рассуждая «маленькое число — степень большая». Правило: число меньше 1 → порядок <em>отрицательный</em>, потому что запятую двигали вправо.</li>
+      <li><b>Неверно считают число разрядов.</b> Считают нули, а не шаги запятой. Надёжный приём — переписать число и физически отсчитать сдвиги по одному, как в разборе выше.</li>
+      <li><b>Теряют значащий ноль внутри числа.</b> В <span class="math">3,05·10⁴</span> хотят «сократить» ноль и пишут <span class="math">3,5·10⁴</span>. Нули между цифрами значащие — убирать нельзя.</li>
+    </ul>
+  </section>
+
+  <section>
+    <p class="kicker">Проверка понимания</p>
+    <div class="recall">
+      <p>Объясни своими словами, будто рассказываешь другу:</p>
+      <p>1. В каком промежутке должна лежать мантисса a?</p>
+      <p>2. У числа 0,000308 порядок положительный или отрицательный — и почему?</p>
+      <p>3. Запиши 52&#8201;000 в стандартном виде.</p>
+      <p style="color:var(--muted);font-size:.9rem">Ответы: 1 ≤ a &lt; 10; отрицательный (число меньше 1, запятую двигаем вправо); 5,2·10⁴.</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="next">
+      <h2>Что дальше</h2>
+      <p>Ты умеешь записывать число как <span class="math">a·10<sup>n</sup></span>. Следующий шаг — <strong>вычисления в стандартном виде</strong>: как складывать, умножать и делить такие записи.</p>
+      <div class="eq">(a·10<sup>m</sup>) · (b·10<sup>n</sup>) = (a·b)·10<sup>m+n</sup></div>
+      <p>Порядки складываются, мантиссы перемножаются — и снова приводим результат к [1;10). Тот же навык сдвига запятой, только теперь в действиях.</p>
+    </div>
+  </section>
+
+  <p class="foot">Проверка на выходе: назови границы для a · знак порядка у 0,00045 · запиши 7&#8201;200&#8201;000 в стандартном виде.</p>
+
+</div>
+
+<style>
+  /* Наглядность-схема */
+  .viz{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.2rem 1.3rem;margin-top:1rem}
+  .viz-ctl input{width:100%;font:inherit;font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.15rem;padding:.55rem .8rem;border:1px solid var(--line);border-radius:9px;background:#fff;color:var(--ink);text-align:center}
+  .viz-ctl input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+  .viz-presets{display:flex;gap:.4rem;flex-wrap:wrap;margin-top:.7rem;justify-content:center}
+  .viz-presets button{font:inherit;font-size:.82rem;font-family:ui-monospace,Menlo,monospace;cursor:pointer;border:1px solid var(--line);background:var(--paper);color:var(--muted);border-radius:20px;padding:.25rem .7rem}
+  .viz-presets button:hover{border-color:var(--accent);color:var(--accent)}
+  .viz-presets button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+  .viz-out{margin-top:1.1rem;text-align:center}
+  .viz-num{font-family:ui-monospace,Menlo,monospace;font-weight:800;font-size:clamp(1.4rem,6vw,2rem);letter-spacing:.02em;word-break:break-all}
+  .viz-arrow{display:inline-flex;align-items:center;gap:.5rem;margin:.7rem 0;padding:.4rem .9rem;border-radius:20px;font-weight:700;font-size:.92rem}
+  .viz-arrow.big{background:var(--big-bg);color:var(--big)}
+  .viz-arrow.unit{background:var(--unit-bg);color:var(--unit)}
+  .viz-arrow.small{background:var(--small-bg);color:var(--small)}
+  .viz-res{font-family:ui-monospace,Menlo,monospace;font-weight:800;font-size:clamp(1.5rem,6vw,2.1rem)}
+  .viz-res b{color:var(--accent)}
+  .viz-note{font-size:.9rem;color:var(--muted);margin-top:.6rem}
+  .viz-bad{color:var(--small);font-weight:700;padding:1rem 0}
+</style>
+<script>
+(function(){
+  var inp=document.getElementById('vizInput'), out=document.getElementById('vizOut');
+  if(!inp) return;
+  var presets=document.querySelectorAll('.viz-presets button');
+
+  function zeros(k){ return k>0 ? new Array(k+1).join('0') : ''; }
+  function sup(n){ return '10<sup>'+(n<0?'−':'')+Math.abs(n)+'</sup>'; }
+  function groupInt(s){ // тонкие пробелы по 3 разряда
+    if(s.length<=4) return s;
+    var r=''; for(var i=0;i<s.length;i++){ if(i>0 && (s.length-i)%3===0) r+=' '; r+=s[i]; } return r;
+  }
+
+  function parse(str){
+    str=(str||'').trim().replace(/\s| | /g,'').replace(',', '.');
+    if(str[0]==='+') str=str.slice(1);
+    var neg=false;
+    if(str[0]==='-'||str[0]==='−'){ neg=true; str=str.slice(1); }
+    if(!/^\d*\.?\d*$/.test(str) || !/\d/.test(str)) return null;
+    var dot=str.indexOf('.');
+    var intPart, frac;
+    if(dot<0){ intPart=str; frac=''; } else { intPart=str.slice(0,dot); frac=str.slice(dot+1); }
+    var comb=intPart+frac;               // все цифры подряд
+    var pointIndex=intPart.length;        // столько цифр стоит до запятой
+    var k=comb.search(/[1-9]/);           // первая значащая цифра
+    if(k<0) return {zero:true};           // само число ноль
+    var n=pointIndex-k-1;
+    // значащие цифры: от k до последней ненулевой
+    var sig=comb.slice(k).replace(/0+$/,''); if(sig==='') sig=comb.slice(k,k+1);
+    return {neg:neg, sig:sig, n:n};
+  }
+
+  function mant(sig){ return sig.length>1 ? sig[0]+','+sig.slice(1) : sig; }
+
+  function render(){
+    var p=parse(inp.value);
+    if(!p){ out.innerHTML='<div class="viz-bad">Введи положительное число, например 4300 или 0,006</div>'; return; }
+    if(p.zero){ out.innerHTML='<div class="viz-bad">Ноль в стандартном виде не записывают.</div>'; return; }
+    var cls = p.n>0?'big':(p.n<0?'small':'unit');
+    var dir, arrow, note;
+    if(p.n>0){ dir='влево на '+p.n+' '+razr(p.n); arrow='←'; note='Число большое (≥ 10) → порядок положительный.'; }
+    else if(p.n<0){ dir='вправо на '+Math.abs(p.n)+' '+razr(Math.abs(p.n)); arrow='→'; note='Число меньше 1 → порядок отрицательный.'; }
+    else { dir='запятую двигать не нужно'; arrow='='; note='Число уже в промежутке [1; 10) → порядок 0.'; }
+    var sign=p.neg?'−':'';
+    var numDisp = sign+dispPlain(p.sig,p.n);
+    var res = sign+mant(p.sig)+' · <b>'+sup(p.n)+'</b>';
+    out.innerHTML =
+      '<div class="viz-num">'+numDisp+'</div>'+
+      '<div class="viz-arrow '+cls+'">'+arrow+' запятая '+dir+'</div>'+
+      '<div class="viz-res">'+res+'</div>'+
+      '<div class="viz-note">'+note+'</div>';
+  }
+  function razr(n){ n=Math.abs(n)%100; var d=n%10; if(n>=11&&n<=14) return 'разрядов'; if(d===1) return 'разряд'; if(d>=2&&d<=4) return 'разряда'; return 'разрядов'; }
+  function dispPlain(sig,n){
+    var L=sig.length, s;
+    if(n>=0){ s = n>=L-1 ? sig+zeros(n-(L-1)) : sig.slice(0,n+1)+','+sig.slice(n+1); }
+    else { s='0,'+zeros(-n-1)+sig; }
+    if(n>=0 && s.indexOf(',')<0) return groupInt(s);
+    return s;
+  }
+
+  inp.addEventListener('input',render);
+  presets.forEach(function(b){ b.addEventListener('click',function(){ inp.value=b.getAttribute('data-v'); render(); }); });
+  render();
+})();
+</script>
+
+<style>
+  .trainer{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.2rem 1.3rem;margin-top:1rem}
+  .tr-kind{font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);font-weight:700;text-align:center;margin-bottom:.5rem}
+  .tr-eq{font-family:ui-monospace,Menlo,monospace;font-weight:800;font-size:clamp(1.3rem,5vw,1.8rem);text-align:center;padding:1rem;background:var(--accent-soft);border-radius:10px;color:var(--ink);word-break:break-all}
+  .tr-inputs{display:flex;gap:.7rem;flex-wrap:wrap;justify-content:center;margin-top:.9rem;align-items:center;font-weight:700}
+  .tr-inputs label{display:flex;align-items:center;gap:.4rem}
+  .tr-inputs input{width:9rem;font:inherit;font-family:ui-monospace,Menlo,monospace;font-weight:700;padding:.5rem .7rem;border:1px solid var(--line);border-radius:9px;background:#fff;color:var(--ink);text-align:center}
+  .tr-ctl{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:1rem;align-items:center;justify-content:center}
+  .tr-ctl button{font:inherit;font-weight:700;font-size:.9rem;cursor:pointer;border:none;border-radius:9px;padding:.55rem .95rem;color:#fff;background:var(--accent)}
+  .tr-ctl button.sec{background:var(--big)}
+  .tr-ctl button.ghost{background:transparent;color:var(--accent);border:1px solid var(--accent)}
+  .tr-ctl button:focus-visible,.tr-inputs input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+  .tr-result{margin-top:1rem;font-size:.96rem;min-height:1.2rem;text-align:center}
+  .tr-result .ok{color:var(--big);font-weight:700}
+  .tr-result .bad{color:var(--small);font-weight:700}
+  .tr-result .sol{margin-top:.7rem;padding:.85rem 1rem;background:#FCFBFE;border:1px solid var(--line);border-radius:10px;font-family:ui-monospace,Menlo,monospace;font-size:.9rem;line-height:1.85;text-align:left}
+  .tr-result .sol b{color:var(--accent)}
+</style>
+<script>
+(function(){
+  var kindEl=document.getElementById('trKind'), taskEl=document.getElementById('trTask'), resEl=document.getElementById('trResult');
+  if(!taskEl) return;
+  var inpFwd=document.getElementById('inpFwd'), inpRev=document.getElementById('inpRev');
+  var aEl=document.getElementById('trA'), nEl=document.getElementById('trN'), numEl=document.getElementById('trNum');
+  var cur=null;
+
+  function ri(min,max){ return Math.floor(Math.random()*(max-min+1))+min; }
+  function zeros(k){ return k>0 ? new Array(k+1).join('0') : ''; }
+  function sup(n){ return '10<sup>'+(n<0?'−':'')+Math.abs(n)+'</sup>'; }
+  function groupInt(s){ if(s.length<=4) return s; var r=''; for(var i=0;i<s.length;i++){ if(i>0&&(s.length-i)%3===0) r+=' '; r+=s[i]; } return r; }
+  function razr(n){ n=Math.abs(n)%100; var d=n%10; if(n>=11&&n<=14) return 'разрядов'; if(d===1) return 'разряд'; if(d>=2&&d<=4) return 'разряда'; return 'разрядов'; }
+
+  function makeDigits(){                 // 1..3 значащие цифры, последняя ненулевая
+    var len=ri(1,3), d=[ri(1,9)];
+    for(var i=1;i<len;i++) d.push(ri(0,9));
+    if(len>1 && d[len-1]===0) d[len-1]=ri(1,9);
+    return d;
+  }
+  function mantStr(d){ return d.length>1 ? d[0]+','+d.slice(1).join('') : ''+d[0]; }
+  function mantVal(d){ return parseFloat(d[0]+'.'+d.slice(1).join('')); }
+  function plainStr(d,n){                  // обычная запись
+    var s=d.join(''), L=d.length;
+    if(n>=0){ return n>=L-1 ? s+zeros(n-(L-1)) : s.slice(0,n+1)+','+s.slice(n+1); }
+    return '0,'+zeros(-n-1)+s;
+  }
+  function plainDisp(d,n){ var s=plainStr(d,n); return (s.indexOf(',')<0)?groupInt(s):s; }
+  function plainVal(d,n){ return mantVal(d)*Math.pow(10,n); }
+
+  function pickN(){                        // большие, малые и краевой n=0
+    var r=Math.random();
+    if(r<0.45) return ri(2,8);             // большое
+    if(r<0.9)  return -ri(1,6);            // малое
+    return 0;                              // уже в [1;10)
+  }
+
+  function generate(){
+    var d=makeDigits(), n=pickN();
+    var type=Math.random()<0.5?'fwd':'rev';
+    cur={d:d, n:n, type:type};
+    resEl.innerHTML='';
+    if(type==='fwd'){
+      kindEl.textContent='Запиши в стандартном виде';
+      taskEl.innerHTML=plainDisp(d,n);
+      inpFwd.hidden=false; inpRev.hidden=true;
+      aEl.value=''; nEl.value='';
+    } else {
+      kindEl.textContent='Раскрой — запиши обычным числом';
+      taskEl.innerHTML=mantStr(d)+' · '+sup(n);
+      inpFwd.hidden=true; inpRev.hidden=false;
+      numEl.value='';
+    }
+  }
+
+  function num(x){ x=(x||'').trim().replace(',', '.').replace('−','-'); return x; }
+
+  function solHTML(){
+    var d=cur.d, n=cur.n, h='<div class="sol">';
+    if(cur.type==='fwd'){
+      h+='Первая значащая цифра — <b>'+d[0]+'</b>, мантисса a = '+mantStr(d)+'.<br>';
+      if(n>0) h+='Сдвиг запятой: '+n+' '+razr(n)+' влево → n = '+n+'.<br>';
+      else if(n<0) h+='Сдвиг запятой: '+Math.abs(n)+' '+razr(n)+' вправо → n = −'+Math.abs(n)+'.<br>';
+      else h+='Число уже в промежутке [1;10) → n = 0.<br>';
+      h+='Ответ: <b>'+mantStr(d)+' · '+sup(n)+'</b>';
+    } else {
+      if(n>0) h+='n = '+n+' > 0 → двигаем запятую вправо на '+n+' '+razr(n)+'.<br>';
+      else if(n<0) h+='n = −'+Math.abs(n)+' < 0 → двигаем запятую влево на '+Math.abs(n)+' '+razr(n)+'.<br>';
+      else h+='n = 0 → число не меняется.<br>';
+      h+='Ответ: <b>'+plainDisp(d,n)+'</b>';
+    }
+    return h+'</div>';
+  }
+
+  function check(){
+    if(cur.type==='fwd'){
+      var a=num(aEl.value), nn=num(nEl.value);
+      if(a===''||nn===''){ resEl.innerHTML='<span class="bad">Заполни оба поля: a и n.</span>'; return; }
+      var av=parseFloat(a), nv=parseInt(nn,10);
+      var okA = !isNaN(av) && Math.abs(av-mantVal(cur.d))<1e-9;
+      var okN = !isNaN(nv) && nv===cur.n;
+      var okRange = av>=1 && av<10;
+      if(okA && okN){ resEl.innerHTML='<span class="ok">✓ Верно! Отлично.</span>'+solHTML(); }
+      else if(!okRange && !isNaN(av)){ resEl.innerHTML='<span class="bad">✗ Мантисса должна быть из [1;10) — ровно одна цифра до запятой.</span>'+solHTML(); }
+      else { resEl.innerHTML='<span class="bad">✗ Пока не то. Проверь мантиссу и знак порядка.</span>'+solHTML(); }
+    } else {
+      var raw=num(numEl.value);
+      if(raw===''){ resEl.innerHTML='<span class="bad">Введи обычное число.</span>'; return; }
+      var got=parseFloat(raw), exp=plainVal(cur.d,cur.n);
+      var ok = !isNaN(got) && Math.abs(got-exp) <= Math.abs(exp)*1e-9 + 1e-12;
+      if(ok){ resEl.innerHTML='<span class="ok">✓ Верно! Отлично.</span>'+solHTML(); }
+      else { resEl.innerHTML='<span class="bad">✗ Пока не то. Проверь, куда двигать запятую по знаку n.</span>'+solHTML(); }
+    }
+  }
+
+  document.getElementById('trNew').addEventListener('click',generate);
+  document.getElementById('trCheck').addEventListener('click',check);
+  document.getElementById('trShow').addEventListener('click',function(){ resEl.innerHTML=solHTML(); });
+  [aEl,nEl,numEl].forEach(function(el){ el.addEventListener('keydown',function(e){ if(e.key==='Enter') check(); }); });
+
+  // seed = валидная задача (совпадает с показанным заданием)
+  cur={d:[6,5,4], n:6, type:'fwd'};
+  kindEl.textContent='Запиши в стандартном виде';
+  taskEl.innerHTML=plainDisp(cur.d,cur.n);
+})();
+</script>

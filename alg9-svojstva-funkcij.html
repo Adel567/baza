@@ -1,0 +1,695 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Свойства функций — урок, алгебра 9 класс</title>
+<style>
+  :root{
+    --paper:#F6F7F9;
+    --card:#FFFFFF;
+    --ink:#1B2333;
+    --muted:#5A6478;
+    --line:#E2E5EC;
+    --accent:#3B4FD0;
+    --accent-soft:#EAEDFB;
+    --up:#2E6FB6;   --up-soft:#E4EDF8;   /* возрастание — синий (направление) */
+    --down:#E27C2C; --down-soft:#FBEEDF; /* убывание — оранжевый (направление) */
+    --pos:#1E8E5A;  --pos-soft:#E7F4EC;  /* f > 0 — зелёный (знак) */
+    --neg:#C0455B;  --neg-soft:#F9E9EC;  /* f < 0 — гранат (знак) */
+    --dom:#B9791A;  --dom-soft:#FBF1DC;  /* D(f) — область определения */
+    --ran:#7A4FD0;  --ran-soft:#EEE8FB;  /* E(f) — область значений */
+  }
+  *{box-sizing:border-box}
+  body{margin:0}
+  .wrap{
+    max-width:760px;margin:0 auto;
+    padding:clamp(1.4rem,4vw,3rem) clamp(1.1rem,4vw,2rem) 4rem;
+    background:var(--paper);color:var(--ink);
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    font-size:17px;line-height:1.62;-webkit-font-smoothing:antialiased;
+  }
+  .eyebrow{font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);font-weight:600;margin:0 0 .5rem}
+  h1{font-family:Georgia,"Times New Roman",serif;font-size:clamp(2rem,6.6vw,2.9rem);line-height:1.05;margin:0;font-weight:700;letter-spacing:-.01em;text-wrap:balance}
+  .lede{font-size:1.08rem;color:var(--muted);margin:.7rem 0 0;max-width:62ch;text-wrap:pretty}
+  h2{font-family:Georgia,serif;font-size:1.32rem;font-weight:700;margin:0 0 .1rem;letter-spacing:-.005em}
+  section{margin-top:2.6rem}
+  .kicker{font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:600;margin:0 0 .8rem;display:flex;align-items:center;gap:.6rem}
+  .kicker::before{content:"";width:1.4rem;height:2px;background:var(--accent);border-radius:2px}
+  p{margin:.65rem 0}
+  strong{font-weight:650}
+  .math{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-weight:600}
+  sup{font-size:.72em}
+  em{font-style:italic}
+
+  .hero-formula{margin-top:2.2rem;background:var(--ink);color:#fff;border-radius:14px;padding:1.5rem 1.4rem;text-align:center}
+  .hero-formula .lbl{font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:#9aa6c9;margin:0 0 .7rem}
+  .hero-formula .eq{font-family:ui-monospace,"SF Mono",Menlo,monospace;font-size:clamp(1.15rem,4.3vw,1.55rem);font-weight:700;line-height:1.5}
+  .hero-formula .eq b.up{color:#8fb4ee} .hero-formula .eq b.dn{color:#f2b988}
+  .hero-formula .eq b.pz{color:#87d3ab} .hero-formula .eq b.nz{color:#eaa0ad}
+  .hero-formula .note{font-size:.86rem;color:#9aa6c9;margin:.9rem 0 0}
+
+  .recall{background:var(--accent-soft);border-radius:12px;padding:1rem 1.15rem;font-size:.96rem}
+  .recall p{margin:.35rem 0}
+  .recall b{color:var(--accent)}
+
+  /* Ядро — свойства карточками */
+  .props{display:grid;gap:.85rem;margin-top:.5rem}
+  @media(min-width:560px){.props{grid-template-columns:1fr 1fr}}
+  .prop{border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:12px;background:var(--card);padding:.95rem 1.1rem}
+  .prop.up{border-left-color:var(--up)} .prop.down{border-left-color:var(--down)}
+  .prop.pos{border-left-color:var(--pos)} .prop.neg{border-left-color:var(--neg)}
+  .prop.dom{border-left-color:var(--dom)} .prop.ran{border-left-color:var(--ran)}
+  .prop h3{margin:0 0 .3rem;font-size:1.02rem;font-weight:700;display:flex;align-items:center;gap:.45rem}
+  .prop .arw{font-family:ui-monospace,Menlo,monospace;font-weight:800}
+  .prop.up .arw{color:var(--up)} .prop.down .arw{color:var(--down)}
+  .prop p{margin:.25rem 0;font-size:.93rem;color:var(--muted)}
+  .prop p b{color:var(--ink)}
+  .prop .mono{font-size:.9rem}
+
+  /* Ключевое различие: направление vs знак */
+  .keydiff{margin-top:1.2rem;display:grid;gap:.85rem}
+  @media(min-width:560px){.keydiff{grid-template-columns:1fr 1fr}}
+  .kd{border-radius:12px;padding:1rem 1.15rem;border:1px solid var(--line)}
+  .kd.dir{background:var(--up-soft);border-color:#c3d6ec}
+  .kd.sgn{background:var(--pos-soft);border-color:#c2e2ce}
+  .kd h4{margin:0 0 .3rem;font-size:.95rem;font-weight:800}
+  .kd.dir h4{color:var(--up)} .kd.sgn h4{color:var(--pos)}
+  .kd p{margin:.2rem 0;font-size:.92rem}
+  .kd .qs{font-weight:700;color:var(--ink)}
+  .diff-banner{margin-top:.9rem;padding:.75rem 1rem;background:var(--neg-soft);border-radius:10px;font-size:.95rem;color:var(--ink)}
+  .diff-banner b{color:var(--neg)}
+
+  /* Разбор */
+  .worked{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:1.2rem 1.3rem}
+  .worked .task{font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.05rem;margin:0 0 1rem;padding-bottom:.8rem;border-bottom:1px solid var(--line)}
+  ol.steps{margin:0;padding:0;list-style:none;counter-reset:s;display:flex;flex-direction:column;gap:.75rem}
+  ol.steps li{position:relative;padding-left:2.1rem;counter-increment:s}
+  ol.steps li::before{content:counter(s);position:absolute;left:0;top:.05rem;width:1.5rem;height:1.5rem;border-radius:50%;background:var(--accent-soft);color:var(--accent);font-size:.82rem;font-weight:700;display:flex;align-items:center;justify-content:center}
+  ol.steps .m{font-family:ui-monospace,Menlo,monospace;font-weight:600;color:var(--ink)}
+  ol.steps .why{color:var(--muted);font-size:.92rem}
+  .verdict{margin-top:1rem;padding:.75rem 1rem;background:var(--accent-soft);border-radius:9px;font-weight:600;color:var(--accent);font-size:.96rem}
+
+  /* Практика */
+  .drill{display:flex;flex-direction:column;gap:.7rem}
+  details{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:.85rem 1.05rem}
+  details[open]{border-color:var(--accent)}
+  summary{cursor:pointer;font-weight:600;list-style:none;display:flex;justify-content:space-between;align-items:center;gap:1rem}
+  summary::-webkit-details-marker{display:none}
+  summary .q{font-family:ui-monospace,Menlo,monospace}
+  summary .tag{font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);border:1px solid var(--line);border-radius:20px;padding:.1rem .55rem;white-space:nowrap}
+  summary::after{content:"показать ответ";font-size:.78rem;color:var(--accent);font-weight:600;white-space:nowrap}
+  details[open] summary::after{content:"скрыть"}
+  summary:focus-visible{outline:3px solid var(--accent);outline-offset:2px;border-radius:6px}
+  .ans{margin-top:.7rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.95rem;color:var(--muted)}
+  .ans .m{font-family:ui-monospace,Menlo,monospace;color:var(--ink);font-weight:600}
+
+  /* Ошибки */
+  ul.pitfalls{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:.6rem}
+  ul.pitfalls li{padding-left:1.5rem;position:relative;font-size:.97rem}
+  ul.pitfalls li::before{content:"×";position:absolute;left:0;top:-.05rem;color:var(--neg);font-weight:700;font-size:1.1rem}
+  ul.pitfalls b{color:var(--ink)}
+
+  .checkself{background:var(--accent-soft);border-radius:12px;padding:1.1rem 1.25rem}
+  .checkself ol{margin:.3rem 0 0;padding-left:1.2rem;display:flex;flex-direction:column;gap:.4rem}
+  .checkself li{font-size:.97rem}
+
+  .next{background:var(--accent);color:#fff;border-radius:12px;padding:1.2rem 1.3rem}
+  .next h2{color:#fff}
+  .next .eq{font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.15rem;margin:.6rem 0 .3rem}
+  .next p{color:#dfe4fb;font-size:.96rem;margin:.4rem 0 0}
+  .foot{margin-top:2.4rem;font-size:.82rem;color:var(--muted);text-align:center}
+
+  /* Визуализация */
+  .viz{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.1rem 1.1rem 1rem;margin-top:1rem}
+  .viz canvas{width:100%;height:auto;display:block;border-radius:10px;background:#FCFDFF}
+  .viz-btns{display:flex;flex-wrap:wrap;gap:.45rem;margin-top:.9rem}
+  .viz-btns button{font:inherit;font-weight:650;font-size:.84rem;cursor:pointer;border:1px solid var(--line);background:var(--paper);color:var(--muted);border-radius:20px;padding:.4rem .8rem}
+  .viz-btns button.on{color:#fff}
+  .viz-btns button[data-m=zeros].on{background:var(--accent);border-color:var(--accent)}
+  .viz-btns button[data-m=up].on{background:var(--up);border-color:var(--up)}
+  .viz-btns button[data-m=down].on{background:var(--down);border-color:var(--down)}
+  .viz-btns button[data-m=pos].on{background:var(--pos);border-color:var(--pos)}
+  .viz-btns button[data-m=neg].on{background:var(--neg);border-color:var(--neg)}
+  .viz-btns button[data-m=emin].on{background:var(--ran);border-color:var(--ran)}
+  .viz-btns button[data-m=dom].on{background:var(--dom);border-color:var(--dom)}
+  .viz-btns button[data-m=ran].on{background:var(--ran);border-color:var(--ran)}
+  .viz-btns button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+  .viz-cap{margin:.85rem 0 0;padding:.6rem .85rem;border-radius:9px;font-size:.95rem;font-weight:600;background:var(--paper);color:var(--ink);min-height:1.2rem}
+
+  /* Тренажёр */
+  .trainer{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.2rem 1.3rem;margin-top:1rem}
+  .trainer canvas{width:100%;height:auto;display:block;border-radius:10px;background:#FCFDFF;border:1px solid var(--line)}
+  .tr-q{font-weight:700;font-size:1.02rem;margin:.9rem 0 0;text-align:center}
+  .tr-q .mono{font-family:ui-monospace,Menlo,monospace}
+  .tr-ctl{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.8rem;align-items:center}
+  .tr-ctl button{font:inherit;font-weight:700;font-size:.9rem;cursor:pointer;border:none;border-radius:9px;padding:.55rem .95rem;color:#fff;background:var(--accent)}
+  .tr-ctl button.sec{background:var(--pos)}
+  .tr-ctl button.ghost{background:transparent;color:var(--accent);border:1px solid var(--accent)}
+  .tr-ctl input{flex:1;min-width:150px;font:inherit;padding:.5rem .7rem;border:1px solid var(--line);border-radius:9px;background:#fff;color:var(--ink)}
+  .tr-ctl button:focus-visible,.tr-ctl input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+  .tr-result{margin-top:.9rem;font-size:.96rem;min-height:1.2rem}
+  .tr-result .ok{color:var(--pos);font-weight:700}
+  .tr-result .bad{color:var(--neg);font-weight:700}
+  .tr-result .sol{margin-top:.6rem;padding:.8rem 1rem;background:#FCFBFE;border:1px solid var(--line);border-radius:10px;font-size:.92rem;line-height:1.7}
+  .tr-result .sol b{color:var(--accent)}
+
+  .tabl{overflow-x:auto;margin-top:1rem;-webkit-overflow-scrolling:touch}
+  table{border-collapse:collapse;width:100%;font-size:.93rem;min-width:420px}
+  th,td{border:1px solid var(--line);padding:.5rem .7rem;text-align:left}
+  th{background:var(--accent-soft);color:var(--ink);font-weight:700}
+  td .mono{font-family:ui-monospace,Menlo,monospace}
+
+  @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="wrap">
+
+  <header>
+    <p class="eyebrow">Алгебра · 9 класс · функции</p>
+    <h1>Свойства функций</h1>
+    <p class="lede">Научись читать график как текст: где функция растёт, где падает, когда обращается в нуль и где она выше или ниже оси. Это ровно то, что спрашивают на ОГЭ по картинке.</p>
+  </header>
+
+  <div class="hero-formula">
+    <p class="lbl">Что мы «считываем» с одного графика</p>
+    <div class="eq">
+      <b class="up">возрастание ↑</b> · <b class="dn">убывание ↓</b><br>
+      нули (y = 0) · <b class="pz">знак +</b> / <b class="nz">знак −</b> · наиб. и наим. значение
+    </div>
+    <p class="note">Направление (куда идёт график) и знак (выше или ниже оси) — это два <em>разных</em> вопроса.</p>
+  </div>
+
+  <section>
+    <p class="kicker">Зачем это нужно</p>
+    <h2>График — это характеристика одним взглядом</h2>
+    <p>Свойства функции — её «портрет»: где величина растёт, где падает, когда становится нулём, когда положительна, а когда отрицательна. Этим языком описывают всё, что меняется со временем: температуру за день, скорость машины, баланс на карте, высоту брошенного мяча.</p>
+    <p>По графику курса валюты сразу видно промежутки роста (<strong>возрастание</strong>) и падения (<strong>убывание</strong>), момент нулевой прибыли (<strong>нуль функции</strong>) и периоды убытка (<strong>отрицательные значения</strong>). Уметь читать эти свойства важнее, чем помнить отдельные точки.</p>
+    <div class="diff-banner">
+      <b>Главный миф темы:</b> «функция возрастает — значит, она положительна». Неправда. Функция может расти, оставаясь всё время отрицательной: подъём от −5 к −1 — это рост, но значения ниже нуля. Разделять «<em>куда</em> идёт график» и «<em>выше или ниже</em> нуля он находится» — главный навык.
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Что вспомнить с прошлых шагов</p>
+    <div class="recall">
+      <p><b>Функция</b> каждому <span class="math">x</span> ставит в соответствие одно значение <span class="math">y = f(x)</span>.</p>
+      <p>На координатной плоскости <b>x</b> откладываем по горизонтали (ось Ox), <b>y</b> — по вертикали (ось Oy).</p>
+      <p><b>График</b> — все точки <span class="math">(x; y)</span>. Идём по нему слева направо — это значит увеличиваем <span class="math">x</span>.</p>
+      <p>Все свойства мы рассматриваем только там, где функция задана — на её области определения.</p>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Ядро темы · шесть свойств</p>
+    <h2>Что именно мы читаем с графика</h2>
+    <p>У функции есть набор свойств. Каждое отвечает на свой вопрос — разберём по одному.</p>
+    <div class="props">
+      <div class="prop dom">
+        <h3>D(f) — область определения</h3>
+        <p>Все значения <b>x</b>, при которых функция задана. Это «тень» графика на <b>ось x</b> (горизонталь).</p>
+      </div>
+      <div class="prop ran">
+        <h3>E(f) — область значений</h3>
+        <p>Все значения <b>y</b>, которые функция принимает. Это «тень» графика на <b>ось y</b> (вертикаль).</p>
+      </div>
+      <div class="prop">
+        <h3>Нули функции</h3>
+        <p>Те <b>x</b>, при которых <span class="math">y = 0</span>. На графике — точки пересечения с осью Ox. Ищем решением уравнения <span class="math">f(x) = 0</span>.</p>
+      </div>
+      <div class="prop pos">
+        <h3>Знаки: f(x) &gt; 0 и f(x) &lt; 0</h3>
+        <p><span class="math">f(x) &gt; 0</span> — где график <b>выше</b> оси Ox; <span class="math">f(x) &lt; 0</span> — где <b>ниже</b>. Промежутки знакопостоянства.</p>
+      </div>
+      <div class="prop up">
+        <h3><span class="arw">↑</span> Возрастание</h3>
+        <p>Двигаясь вправо (увеличиваем <b>x</b>), график идёт <b>вверх</b>: большему <span class="math">x</span> — большее <span class="math">y</span>.</p>
+      </div>
+      <div class="prop down">
+        <h3><span class="arw">↓</span> Убывание</h3>
+        <p>Двигаясь вправо, график идёт <b>вниз</b>: большему <span class="math">x</span> — меньшее <span class="math">y</span>.</p>
+      </div>
+    </div>
+
+    <p style="margin-top:1.1rem"><strong>Наибольшее и наименьшее значение</strong> — это самое большое и самое маленькое значение <span class="math">y</span>, которое функция принимает (верхняя и нижняя точки графика). Иногда наибольшего или наименьшего просто нет — например, если ветви уходят вверх бесконечно.</p>
+
+    <div class="keydiff">
+      <div class="kd dir">
+        <h4>↑↓ Направление (монотонность)</h4>
+        <p class="qs">Вопрос: «КУДА идёт график?»</p>
+        <p>Вверх — возрастает, вниз — убывает.</p>
+      </div>
+      <div class="kd sgn">
+        <h4>+ / − Знак</h4>
+        <p class="qs">Вопрос: «ГДЕ он находится?»</p>
+        <p>Выше оси — плюс, ниже — минус.</p>
+      </div>
+    </div>
+    <p style="font-size:.93rem;color:var(--muted);margin-top:.9rem">И ещё одно правило записи: промежутки возрастания, убывания и знаков указывают <strong>по оси x</strong> (по аргументу) — например, «убывает на <span class="math">(−∞; 2]</span>». Концы промежутков монотонности обычно включают (квадратная скобка), а нули в промежуток знака <em>не</em> включают: там <span class="math">f = 0</span>, знака нет (круглая скобка).</p>
+  </section>
+
+  <section>
+    <p class="kicker">Читаем всё с одного графика · интерактив</p>
+    <h2>Подсвети нужное свойство</h2>
+    <p>Перед тобой парабола <span class="math">f(x) = x² − 4</span>. Нажимай кнопки — и на графике загорится именно та часть, которую спрашивают. Смотри, как <em>направление</em> и <em>знак</em> подсвечиваются на разных участках.</p>
+    <div class="viz">
+      <canvas id="viz" width="640" height="440" aria-label="График функции f(x) = x² − 4 с подсветкой свойств"></canvas>
+      <div class="viz-btns" id="vizBtns">
+        <button type="button" data-m="zeros">Нули</button>
+        <button type="button" data-m="up">Возрастание</button>
+        <button type="button" data-m="down">Убывание</button>
+        <button type="button" data-m="pos">f(x) &gt; 0</button>
+        <button type="button" data-m="neg">f(x) &lt; 0</button>
+        <button type="button" data-m="emin">Наим. значение</button>
+        <button type="button" data-m="dom">D(f)</button>
+        <button type="button" data-m="ran">E(f)</button>
+      </div>
+      <p class="viz-cap" id="vizCap">Выбери свойство — я подсвечу его на графике.</p>
+    </div>
+    <p style="font-size:.9rem;color:var(--muted)">Обрати внимание: «Возрастание» и «f(x) &gt; 0» подсвечивают <strong>разные</strong> участки. Справа от вершины функция и растёт, и (после нуля) положительна — но на участке <span class="math">(0; 2)</span> она уже растёт, а всё ещё отрицательна. Вот почему рост и знак нельзя путать.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Разбираем вместе · думаю вслух</p>
+    <h2>Читаем все свойства f(x) = x² − 4</h2>
+    <div class="worked">
+      <p class="task">f(x) = x² − 4 &nbsp;→&nbsp; опиши все свойства</p>
+      <ol class="steps">
+        <li><b>Нули.</b> Решаю <span class="m">x² − 4 = 0 → x² = 4 → x = −2 или x = 2.</span> <span class="why">Почему так: нуль — это где значение равно нулю, поэтому приравниваю формулу к 0.</span></li>
+        <li><b>Знаки.</b> Парабола ветвями вверх, вершина в точке <span class="m">(0; −4)</span>. Проверю точку <span class="m">x = 0: f(0) = −4 &lt; 0</span> — значит между корнями функция отрицательна: <span class="m">f(x) &lt; 0 на (−2; 2)</span>. Вне корней график выше оси: <span class="m">f(x) &gt; 0 на (−∞; −2) и (2; +∞).</span></li>
+        <li><b>Монотонность.</b> Вершина при <span class="m">x = 0</span>. Слева от неё график идёт вниз — <span class="m">убывает на (−∞; 0]</span>. Справа идёт вверх — <span class="m">возрастает на [0; +∞).</span> <span class="why">Почему: у параболы ветвями вверх до вершины спуск, после — подъём.</span></li>
+        <li><b>Наименьшее значение.</b> В вершине <span class="m">y = −4</span>. Наибольшего <b>нет</b> — ветви уходят вверх бесконечно. Значит область значений <span class="m">E(f): y ≥ −4.</span></li>
+      </ol>
+      <div class="verdict">Один график — и мы прочитали нули, знаки, направление и наименьшее значение. Всё это отдельные вопросы к одной картинке.</div>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Разные представления одной темы</p>
+    <h2>Формула ↔ график ↔ таблица знаков</h2>
+    <p>Одно и то же свойство можно записать по-разному. Таблица помогает <strong>физически развести</strong> направление и знак по разным колонкам — заполни её, и путаницы не будет.</p>
+    <div class="tabl">
+      <table>
+        <thead>
+          <tr><th>Промежуток по x</th><th>Направление</th><th>Знак f(x)</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="mono">(−∞; −2)</td><td>убывает ↓</td><td>+ (выше оси)</td></tr>
+          <tr><td class="mono">(−2; 0)</td><td>убывает ↓</td><td>− (ниже оси)</td></tr>
+          <tr><td class="mono">(0; 2)</td><td>возрастает ↑</td><td>− (ниже оси)</td></tr>
+          <tr><td class="mono">(2; +∞)</td><td>возрастает ↑</td><td>+ (выше оси)</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p style="font-size:.9rem;color:var(--muted)">Видишь строку <span class="math">(0; 2)</span>? Функция уже <strong>возрастает</strong>, но всё ещё <strong>отрицательна</strong>. Направление и знак живут в разных колонках.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Теперь ты · нажми, чтобы проверить</p>
+    <h2>Практика по нарастанию</h2>
+    <div class="drill">
+      <details>
+        <summary><span class="q">Нули f(x) = x² − 1</span><span class="tag">понимание</span></summary>
+        <div class="ans"><span class="m">x² − 1 = 0 → x² = 1 → x = −1 или x = 1.</span> Два нуля. Наименьшее значение <span class="m">−1</span> (в вершине), а <span class="m">f(x) &lt; 0 на (−1; 1).</span></div>
+      </details>
+      <details>
+        <summary><span class="q">f(x) = 3x − 12: нуль и знаки</span><span class="tag">применение</span></summary>
+        <div class="ans">Нуль: <span class="m">3x − 12 = 0 → x = 4.</span> Коэффициент при x равен <span class="m">3 &gt; 0</span> → функция <strong>возрастает</strong>. Слева от нуля ниже оси, справа выше: <span class="m">f(x) &lt; 0 при x &lt; 4, f(x) &gt; 0 при x &gt; 4.</span></div>
+      </details>
+      <details>
+        <summary><span class="q">f(x) = x² − 6x + 5: полный портрет</span><span class="tag">применение</span></summary>
+        <div class="ans">Нули: корни <span class="m">x = 1 и x = 5.</span> Вершина при <span class="m">x = 3, f(3) = −4.</span> Значит: <span class="m">убывает на (−∞; 3], возрастает на [3; +∞); f(x) &lt; 0 на (1; 5), f(x) &gt; 0 на (−∞; 1) и (5; +∞);</span> наименьшее значение <span class="m">−4.</span></div>
+      </details>
+      <details>
+        <summary><span class="q">Что изменится, если у f(x) = ax² знак a сменить с + на −?</span><span class="tag">анализ</span></summary>
+        <div class="ans">Ветви развернутся вниз. Промежутки монотонности <strong>поменяются местами</strong>: где раньше убывала — теперь возрастает, и наоборот. Вместо наименьшего значения в вершине появится <strong>наибольшее</strong>.</div>
+      </details>
+      <details>
+        <summary><span class="q">Найди ошибку: «f(x) = x² − 9 возрастает на (−3; 3), ведь там она идёт к нулю»</span><span class="tag">анализ</span></summary>
+        <div class="ans">Ученик спутал <strong>знак</strong> функции с её <strong>ростом</strong>. На самом деле на <span class="m">(−3; 0]</span> она <strong>убывает</strong>, а на <span class="m">[0; 3)</span> — возрастает. «Идёт к нулю» — это про значения (знак), а не про направление.</div>
+      </details>
+      <details>
+        <summary><span class="q">Обратная задача: возрастает везде, нуль в x = 4, положительна при x &gt; 4</span><span class="tag">анализ</span></summary>
+        <div class="ans">Нужна линейная функция, растущая (коэффициент при x положительный) с нулём в 4. Подходит <span class="m">f(x) = x − 4:</span> нуль <span class="m">x = 4</span>, при <span class="m">x &gt; 4</span> значения положительны, функция возрастает.</div>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Тренажёр · бесконечная практика</p>
+    <h2>Прочитай свойство по графику</h2>
+    <p>Нажми «Новый график» — я нарисую случайную функцию и задам про неё один вопрос. Ответь в поле и проверь себя. Читай именно с картинки.</p>
+    <div class="trainer">
+      <canvas id="trg" width="640" height="380" aria-label="Случайный график для тренажёра"></canvas>
+      <p class="tr-q" id="trQ">Нажми «Новый график», чтобы начать.</p>
+      <div class="tr-ctl">
+        <button id="trNew" type="button">🎲 Новый график</button>
+        <input id="trAns" type="text" aria-label="Ответ">
+        <button id="trCheck" type="button" class="sec">Проверить</button>
+        <button id="trShow" type="button" class="ghost">Ответ</button>
+      </div>
+      <div id="trResult" class="tr-result"></div>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Где чаще всего ошибаются</p>
+    <h2>Лови эти ловушки</h2>
+    <ul class="pitfalls">
+      <li><b>Путают возрастание и положительность.</b> «Растёт — значит y &gt; 0» — неверно: функция может расти, будучи отрицательной (от −10 к −2 — это рост). Всегда задавай два <em>разных</em> вопроса: «куда идёт?» и «выше или ниже оси?».</li>
+      <li><b>Записывают промежутки по оси y вместо x.</b> Возрастание, убывание и знаки указывают по аргументу <span class="math">x</span> (горизонталь). Проверь: в скобках стоят значения x, которые ты видел на горизонтальной оси.</li>
+      <li><b>Путают нуль функции с наименьшим значением.</b> Нуль — где <span class="math">y = 0</span>; минимум — самая нижняя точка (часто он не на оси). У <span class="math">x² − 4</span> нули −2 и 2, а наименьшее значение −4.</li>
+      <li><b>Включают нуль в промежуток знака.</b> Не пиши <span class="math">f(x) &gt; 0 на [−2; +∞)</span>: в <span class="math">x = −2</span> функция равна нулю, а не больше нуля. Концы-нули — круглая скобка.</li>
+      <li><b>Читают график справа налево.</b> «Возрастает» — это когда идём слева направо и график поднимается. Двигайся всегда в сторону роста <span class="math">x</span>.</li>
+      <li><b>Считают, что функция везде ведёт себя одинаково.</b> У параболы один кусок убывает, другой возрастает — нельзя сказать «возрастает» про всю параболу. Найди вершину и разбей ось на промежутки.</li>
+    </ul>
+  </section>
+
+  <section>
+    <p class="kicker">Проверь понимание</p>
+    <div class="checkself">
+      <p style="margin:0"><strong>Объясни своими словами:</strong></p>
+      <ol>
+        <li>Чем «функция возрастает на промежутке» отличается от «функция положительна на промежутке»? Приведи промежуток, где это разные вещи.</li>
+        <li>Как найти нули функции по формуле? А по графику?</li>
+        <li>У функции <span class="math">f(x) = x² − 1</span> назови нули, наименьшее значение и промежуток, где <span class="math">f(x) &lt; 0.</span></li>
+      </ol>
+    </div>
+  </section>
+
+  <section>
+    <div class="next">
+      <h2>Что дальше</h2>
+      <p>Ты научился читать свойства с любого графика. Дальше эти же свойства применяют к конкретным функциям:</p>
+      <div class="eq">квадратичная функция → парабола целиком</div>
+      <p>Там вершина, ветви и ось симметрии сразу дадут все свойства по формуле. А ещё впереди — степенная функция и её поведение. Язык у всех один: нули, знаки, направление, наибольшее и наименьшее.</p>
+    </div>
+  </section>
+
+  <p class="foot">Проверка на выходе: чем рост отличается от знака · как найти нули по формуле · назови наименьшее значение у x² − 4.</p>
+
+</div>
+
+<script>
+/* ================= ВИЗУАЛИЗАЦИЯ: f(x) = x² − 4, подсветка свойств ================= */
+(function(){
+  var canvas=document.getElementById('viz'); if(!canvas) return;
+  var ctx=canvas.getContext('2d');
+  var cap=document.getElementById('vizCap');
+  var btnWrap=document.getElementById('vizBtns');
+  var mode='';
+  var W=640,H=440,dpr=1;
+  var XMIN=-5,XMAX=5,YMIN=-6,YMAX=10;
+  var ML=34,MR=14,MT=14,MB=26;
+  function css(v){ return getComputedStyle(document.documentElement).getPropertyValue(v).trim()||'#3B4FD0'; }
+  function f(x){ return x*x-4; }
+  function px(x){ return ML+(x-XMIN)/(XMAX-XMIN)*(W-ML-MR); }
+  function py(y){ return MT+(YMAX-y)/(YMAX-YMIN)*(H-MT-MB); }
+  function resize(){
+    var cw=canvas.clientWidth||640; dpr=Math.min(window.devicePixelRatio||1,2);
+    W=cw; H=Math.round(cw*0.72);
+    canvas.width=W*dpr; canvas.height=H*dpr; canvas.style.height=H+'px';
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+  }
+  function grid(){
+    ctx.clearRect(0,0,W,H);
+    ctx.strokeStyle='#EDEFF4'; ctx.lineWidth=1;
+    for(var gx=XMIN;gx<=XMAX;gx++){ ctx.beginPath(); ctx.moveTo(px(gx),py(YMAX)); ctx.lineTo(px(gx),py(YMIN)); ctx.stroke(); }
+    for(var gy=YMIN;gy<=YMAX;gy+=2){ ctx.beginPath(); ctx.moveTo(px(XMIN),py(gy)); ctx.lineTo(px(XMAX),py(gy)); ctx.stroke(); }
+    // оси
+    ctx.strokeStyle='#8A94A6'; ctx.lineWidth=1.6;
+    ctx.beginPath(); ctx.moveTo(px(XMIN),py(0)); ctx.lineTo(px(XMAX),py(0)); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(px(0),py(YMAX)); ctx.lineTo(px(0),py(YMIN)); ctx.stroke();
+    // подписи осей
+    ctx.fillStyle='#5A6478'; ctx.font='11px ui-monospace,Menlo,monospace'; ctx.textAlign='center'; ctx.textBaseline='top';
+    for(var lx=XMIN;lx<=XMAX;lx++){ if(lx===0) continue; ctx.fillText((lx<0?'−':'')+Math.abs(lx), px(lx), py(0)+3); }
+    ctx.textAlign='right'; ctx.textBaseline='middle';
+    for(var ly=YMIN;ly<=YMAX;ly+=2){ if(ly===0) continue; ctx.fillText((ly<0?'−':'')+Math.abs(ly), px(0)-4, py(ly)); }
+    ctx.textAlign='left'; ctx.textBaseline='top'; ctx.fillStyle='#8A94A6';
+    ctx.fillText('x', px(XMAX)-10, py(0)+3);
+    ctx.fillText('y', px(0)+5, py(YMAX)-2);
+  }
+  function curve(x0,x1,color,width){
+    ctx.strokeStyle=color; ctx.lineWidth=width; ctx.beginPath();
+    var first=true;
+    for(var x=x0;x<=x1+0.0001;x+=0.05){
+      var X=px(x), Y=py(f(x));
+      if(first){ ctx.moveTo(X,Y); first=false; } else ctx.lineTo(X,Y);
+    }
+    ctx.stroke();
+  }
+  function dot(x,y,color){
+    ctx.fillStyle=color; ctx.beginPath(); ctx.arc(px(x),py(y),6,0,7); ctx.fill();
+    ctx.fillStyle='#fff'; ctx.beginPath(); ctx.arc(px(x),py(y),2.4,0,7); ctx.fill();
+  }
+  function bandX(a,b,color){ // полоса на оси x
+    ctx.fillStyle=color; ctx.globalAlpha=0.9;
+    ctx.fillRect(px(a),py(0)-4,px(b)-px(a),8); ctx.globalAlpha=1;
+  }
+  function bandY(a,b,color){ // полоса на оси y
+    ctx.fillStyle=color; ctx.globalAlpha=0.9;
+    ctx.fillRect(px(0)-4,py(b),8,py(a)-py(b)); ctx.globalAlpha=1;
+  }
+  function draw(){
+    grid();
+    // базовая кривая (тонкая серая)
+    curve(XMIN,XMAX,'#B4BCC9',2.5);
+    var C={acc:css('--accent'),up:css('--up'),down:css('--down'),pos:css('--pos'),neg:css('--neg'),dom:css('--dom'),ran:css('--ran')};
+    if(mode==='zeros'){
+      dot(-2,0,C.acc); dot(2,0,C.acc);
+      cap.textContent='Нули: x = −2 и x = 2 — там график пересекает ось Ox (y = 0).';
+      cap.style.color=C.acc;
+    } else if(mode==='up'){
+      curve(0,XMAX,C.up,4);
+      bandX(0,XMAX,C.up);
+      arrow(3.4,f(3.4),1,C.up);
+      cap.textContent='Возрастает на [0; +∞): вправо от вершины график идёт вверх.';
+      cap.style.color=C.up;
+    } else if(mode==='down'){
+      curve(XMIN,0,C.down,4);
+      bandX(XMIN,0,C.down);
+      arrow(-3.4,f(-3.4),-1,C.down);
+      cap.textContent='Убывает на (−∞; 0]: влево от вершины (идя вправо) график спускается.';
+      cap.style.color=C.down;
+    } else if(mode==='pos'){
+      curve(XMIN,-2,C.pos,4); curve(2,XMAX,C.pos,4);
+      bandX(XMIN,-2,C.pos); bandX(2,XMAX,C.pos);
+      cap.textContent='f(x) > 0 на (−∞; −2) и (2; +∞): там график выше оси Ox.';
+      cap.style.color=C.pos;
+    } else if(mode==='neg'){
+      curve(-2,2,C.neg,4);
+      bandX(-2,2,C.neg);
+      cap.textContent='f(x) < 0 на (−2; 2): между нулями график ниже оси Ox.';
+      cap.style.color=C.neg;
+    } else if(mode==='emin'){
+      dot(0,-4,C.ran);
+      ctx.strokeStyle=C.ran; ctx.lineWidth=1.6; ctx.setLineDash([4,3]);
+      ctx.beginPath(); ctx.moveTo(px(0),py(-4)); ctx.lineTo(px(0)-4,py(-4)); ctx.stroke(); ctx.setLineDash([]);
+      cap.textContent='Наименьшее значение y = −4 — самая нижняя точка (вершина). Наибольшего нет.';
+      cap.style.color=C.ran;
+    } else if(mode==='dom'){
+      bandX(XMIN,XMAX,C.dom);
+      cap.textContent='D(f): по оси x парабола задана для любого числа — «тень» на ось x покрывает всё.';
+      cap.style.color=C.dom;
+    } else if(mode==='ran'){
+      bandY(-4,YMAX,C.ran);
+      dot(0,-4,C.ran);
+      cap.textContent='E(f): y ≥ −4 — «тень» графика на ось y начинается с −4 и уходит вверх.';
+      cap.style.color=C.ran;
+    } else {
+      cap.textContent='Выбери свойство — я подсвечу его на графике.';
+      cap.style.color=css('--ink');
+    }
+  }
+  function arrow(x,y,dir,color){
+    var X=px(x),Y=py(y);
+    ctx.strokeStyle=color; ctx.lineWidth=3;
+    ctx.beginPath(); ctx.moveTo(X,Y+dir*14); ctx.lineTo(X,Y-dir*14); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(X-5,Y-dir*6); ctx.lineTo(X,Y-dir*14); ctx.lineTo(X+5,Y-dir*6); ctx.stroke();
+  }
+  btnWrap.addEventListener('click',function(e){
+    var b=e.target.closest('button'); if(!b) return;
+    var m=b.getAttribute('data-m');
+    if(mode===m){ mode=''; } else { mode=m; }
+    [].forEach.call(btnWrap.querySelectorAll('button'),function(x){ x.classList.toggle('on', x.getAttribute('data-m')===mode); });
+    draw();
+  });
+  window.addEventListener('resize',function(){ resize(); draw(); });
+  resize(); draw();
+})();
+</script>
+
+<script>
+/* ================= ТРЕНАЖЁР-ГЕНЕРАТОР: случайный график + один вопрос ================= */
+(function(){
+  var canvas=document.getElementById('trg'); if(!canvas) return;
+  var ctx=canvas.getContext('2d');
+  var qEl=document.getElementById('trQ'), ansEl=document.getElementById('trAns'), resEl=document.getElementById('trResult');
+  var W=640,H=380,dpr=1;
+  var XMIN=-5,XMAX=5,YMIN=-6,YMAX=6;
+  var ML=34,MR=14,MT=14,MB=26;
+  var cur=null;
+  function css(v){ return getComputedStyle(document.documentElement).getPropertyValue(v).trim()||'#3B4FD0'; }
+  function ri(a,b){ return Math.floor(Math.random()*(b-a+1))+a; }
+  function mm(n){ n=Math.round(n*100)/100; if(n===0)n=0; return (n<0?'−':'')+Math.abs(n); }
+
+  function resize(){
+    var cw=canvas.clientWidth||640; dpr=Math.min(window.devicePixelRatio||1,2);
+    W=cw; H=Math.round(cw*0.62);
+    canvas.width=W*dpr; canvas.height=H*dpr; canvas.style.height=H+'px';
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+  }
+  function px(x){ return ML+(x-XMIN)/(XMAX-XMIN)*(W-ML-MR); }
+  function py(y){ return MT+(YMAX-y)/(YMAX-YMIN)*(H-MT-MB); }
+
+  function func(x){
+    var q=cur;
+    if(q.type==='par'){ return q.a*(x-q.r1)*(x-q.r2); }
+    return q.k*(x-q.r); // lin
+  }
+  function grid(){
+    ctx.clearRect(0,0,W,H);
+    ctx.strokeStyle='#EDEFF4'; ctx.lineWidth=1;
+    for(var gx=XMIN;gx<=XMAX;gx++){ ctx.beginPath(); ctx.moveTo(px(gx),py(YMAX)); ctx.lineTo(px(gx),py(YMIN)); ctx.stroke(); }
+    for(var gy=YMIN;gy<=YMAX;gy+=2){ ctx.beginPath(); ctx.moveTo(px(XMIN),py(gy)); ctx.lineTo(px(XMAX),py(gy)); ctx.stroke(); }
+    ctx.strokeStyle='#8A94A6'; ctx.lineWidth=1.6;
+    ctx.beginPath(); ctx.moveTo(px(XMIN),py(0)); ctx.lineTo(px(XMAX),py(0)); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(px(0),py(YMAX)); ctx.lineTo(px(0),py(YMIN)); ctx.stroke();
+    ctx.fillStyle='#5A6478'; ctx.font='11px ui-monospace,Menlo,monospace'; ctx.textAlign='center'; ctx.textBaseline='top';
+    for(var lx=XMIN;lx<=XMAX;lx++){ if(lx===0) continue; ctx.fillText((lx<0?'−':'')+Math.abs(lx), px(lx), py(0)+3); }
+    ctx.textAlign='right'; ctx.textBaseline='middle';
+    for(var ly=YMIN;ly<=YMAX;ly+=2){ if(ly===0) continue; ctx.fillText((ly<0?'−':'')+Math.abs(ly), px(0)-4, py(ly)); }
+  }
+  function drawGraph(){
+    grid();
+    ctx.strokeStyle=css('--accent'); ctx.lineWidth=3; ctx.beginPath();
+    var first=true;
+    for(var x=XMIN;x<=XMAX+0.0001;x+=0.04){
+      var y=func(x); if(y<YMIN-2||y>YMAX+2){ first=true; continue; }
+      var X=px(x),Y=py(y);
+      if(first){ ctx.moveTo(X,Y); first=false; } else ctx.lineTo(X,Y);
+    }
+    ctx.stroke();
+    // отметить точку для вопроса о знаке
+    if(cur.q==='sign'){
+      ctx.strokeStyle=css('--muted'); ctx.lineWidth=1.4; ctx.setLineDash([4,3]);
+      ctx.beginPath(); ctx.moveTo(px(cur.tx),py(YMAX)); ctx.lineTo(px(cur.tx),py(YMIN)); ctx.stroke(); ctx.setLineDash([]);
+      ctx.fillStyle=css('--accent'); ctx.font='bold 12px ui-monospace,Menlo,monospace'; ctx.textAlign='center'; ctx.textBaseline='top';
+      ctx.fillText('x = '+mm(cur.tx), px(cur.tx), py(0)+3);
+    }
+  }
+  function generate(){
+    var isPar = Math.random()<0.65;
+    if(isPar){
+      var a = Math.random()<0.5?1:-1;
+      var r1,r2;
+      do{ r1=ri(-3,2); r2=r1+2*ri(1,2); }while(r2>4);   // чётный разрыв → целая вершина
+      var xv=(r1+r2)/2, yv=a*(xv-r1)*(xv-r2);
+      cur={type:'par',a:a,r1:r1,r2:r2,xv:xv,yv:yv};
+      // выбрать вопрос
+      var pool=['zeros','sign','monotone','extremum'];
+      cur.q=pool[ri(0,pool.length-1)];
+    } else {
+      var k; do{ k=ri(-2,2);}while(k===0);
+      var r=ri(-3,3);
+      cur={type:'lin',k:k,r:r};
+      var pool2=['zeros','sign','monotone'];
+      cur.q=pool2[ri(0,pool2.length-1)];
+    }
+    // параметры вопроса
+    if(cur.q==='sign'){
+      // выбрать целую точку в пределах, где |y|<=YMAX и не корень
+      var cand=[];
+      for(var t=-4;t<=4;t++){
+        if(cur.type==='par'){ if(t===cur.r1||t===cur.r2) continue; }
+        else { if(t===cur.r) continue; }
+        var yy = cur.type==='par'? cur.a*(t-cur.r1)*(t-cur.r2) : cur.k*(t-cur.r);
+        if(Math.abs(yy)<=YMAX-0.5) cand.push(t);
+      }
+      cur.tx = cand.length? cand[ri(0,cand.length-1)] : 1;
+    }
+    if(cur.q==='monotone' && cur.type==='par'){
+      // сторона от вершины
+      cur.side = Math.random()<0.5?'left':'right';
+    }
+    if(cur.q==='extremum' && cur.type==='par'){
+      cur.kind = cur.a>0?'наименьшее':'наибольшее';
+    }
+    ansEl.value=''; resEl.innerHTML='';
+    setQuestion(); drawGraph();
+  }
+  function setQuestion(){
+    var q=cur, t='';
+    if(q.q==='zeros'){ t='Найди все <b>нули</b> функции по графику (через ; ):'; ansEl.placeholder='напр.  −2; 3'; }
+    else if(q.q==='sign'){ t='Какой <b>знак</b> у функции в точке x = '+mm(q.tx)+'?  Ответ: + или −'; ansEl.placeholder='+  или  −'; }
+    else if(q.q==='extremum'){ t='Найди <b>'+q.kind+' значение</b> функции (число, или «нет»):'; ansEl.placeholder='число  или  нет'; }
+    else if(q.q==='monotone'){
+      if(q.type==='lin'){ t='Функция <b>возрастает</b> или <b>убывает</b>?'; }
+      else {
+        var iv = q.side==='left'? '(−∞; '+mm(q.xv)+']' : '['+mm(q.xv)+'; +∞)';
+        t='Функция <b>возрастает</b> или <b>убывает</b> на промежутке '+iv+'?';
+      }
+      ansEl.placeholder='возрастает  или  убывает';
+    }
+    qEl.innerHTML='<span class="mono">'+t+'</span>';
+  }
+  // правильные ответы
+  function correct(){
+    var q=cur;
+    if(q.q==='zeros'){ return q.type==='par'? [q.r1,q.r2].sort(function(a,b){return a-b;}) : [q.r]; }
+    if(q.q==='sign'){ var y=func(q.tx); return y>0?'+':'−'; }
+    if(q.q==='extremum'){ return q.yv; } // par only
+    if(q.q==='monotone'){
+      if(q.type==='lin'){ return q.k>0?'возрастает':'убывает'; }
+      // парабола: слева от вершины направление = знак(−a стороны). a>0: слева убывает, справа возрастает
+      var risesRight = q.a>0;
+      var onRight = q.side==='right';
+      return (risesRight===onRight)?'возрастает':'убывает';
+    }
+  }
+  function explain(){
+    var q=cur, h='<div class="sol">';
+    if(q.q==='zeros'){
+      var zs = q.type==='par'?[q.r1,q.r2]:[q.r];
+      h+='Нули — точки пересечения с осью Ox. По графику это x = '+zs.map(mm).join(' и x = ')+'.';
+    } else if(q.q==='sign'){
+      var y=func(q.tx);
+      h+='В точке x = '+mm(q.tx)+' график '+(y>0?'<b>выше</b> оси → знак +':'<b>ниже</b> оси → знак −')+' (значение y = '+mm(y)+').';
+    } else if(q.q==='extremum'){
+      h+=q.kind.charAt(0).toUpperCase()+q.kind.slice(1)+' значение — в вершине: y = <b>'+mm(q.yv)+'</b>.'+
+         (q.a>0?' Наибольшего нет — ветви уходят вверх.':' Наименьшего нет — ветви уходят вниз.');
+    } else if(q.q==='monotone'){
+      if(q.type==='lin'){ h+='У прямой знак наклона решает всё: '+(q.k>0?'идёт вверх → <b>возрастает</b>.':'идёт вниз → <b>убывает</b>.'); }
+      else { var ans=correct(); h+='Вершина в x = '+mm(q.xv)+'. На этом промежутке график идёт '+(ans==='возрастает'?'вверх → <b>возрастает</b>.':'вниз → <b>убывает</b>.'); }
+    }
+    return h+'</div>';
+  }
+  function check(){
+    var raw=ansEl.value.trim().toLowerCase();
+    if(!raw){ resEl.innerHTML='<span class="bad">Введи ответ или нажми «Ответ».</span>'; return; }
+    var q=cur, ok=false;
+    if(q.q==='zeros'){
+      var got=raw.split(/[;,\s]+/).map(function(s){return parseFloat(s.replace(',','.').replace('−','-'));}).filter(function(x){return !isNaN(x);}).sort(function(a,b){return a-b;});
+      var exp=correct();
+      ok = got.length===exp.length && exp.every(function(v,i){return Math.abs(v-got[i])<0.01;});
+    } else if(q.q==='sign'){
+      var want=correct();
+      var g = /^\+|плюс|положит/.test(raw)?'+':(/^-|^−|минус|отриц/.test(raw)?'−':'?');
+      ok = g===want;
+    } else if(q.q==='extremum'){
+      var g2=parseFloat(raw.replace(',','.').replace('−','-'));
+      ok = !isNaN(g2) && Math.abs(g2-correct())<0.01;
+    } else if(q.q==='monotone'){
+      var want2=correct();
+      var g3 = /возраст|раст|вверх/.test(raw)?'возрастает':(/убыв|паден|вниз/.test(raw)?'убывает':'?');
+      ok = g3===want2;
+    }
+    if(ok){ resEl.innerHTML='<span class="ok">✓ Верно!</span>'+explain(); }
+    else{ resEl.innerHTML='<span class="bad">✗ Пока не то — посмотри на график ещё раз.</span>'+explain(); }
+  }
+  document.getElementById('trNew').addEventListener('click',generate);
+  document.getElementById('trCheck').addEventListener('click',check);
+  document.getElementById('trShow').addEventListener('click',function(){ resEl.innerHTML=explain(); });
+  ansEl.addEventListener('keydown',function(e){ if(e.key==='Enter') check(); });
+  window.addEventListener('resize',function(){ resize(); if(cur) drawGraph(); });
+  resize(); generate();  // стартовое состояние = валидная задача, без focus()
+})();
+</script>

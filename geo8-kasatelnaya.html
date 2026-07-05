@@ -1,0 +1,513 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Касательная к окружности — геометрия 8 класс</title>
+<style>
+  :root{
+    --paper:#F6F7F9; --card:#FFFFFF; --ink:#1D2530; --muted:#606B7A; --line:#E3E7EE;
+    --brand:#2E5AAC; --brand-soft:#E4EBF7;      /* касательная, основной акцент */
+    --rad:#159A8A; --rad-soft:#DEF3F0;          /* радиус */
+    --accent:#E27C2C; --accent-soft:#FBEEDF;    /* равные отрезки, подсветка */
+    --green:#1E8E5A; --green-bg:#E7F4EC;        /* 2 касательные */
+    --amber:#B9791A; --amber-bg:#FBF1DC;        /* 1 касательная */
+    --red:#C0455B; --red-bg:#F9E9EC;            /* 0 касательных */
+    --ok:#1E8E5A; --no:#C23B3B;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper)}
+  .wrap{
+    max-width:760px;margin:0 auto;
+    padding:clamp(1.4rem,4vw,3rem) clamp(1.1rem,4vw,2rem) 4rem;
+    color:var(--ink);
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    font-size:17px;line-height:1.64;-webkit-font-smoothing:antialiased;
+  }
+  .math{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-weight:600}
+  sup{font-size:.72em}
+
+  .eyebrow{font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--brand);font-weight:700;margin:0 0 .5rem}
+  h1{font-family:Georgia,"Times New Roman",serif;font-size:clamp(2rem,6.5vw,2.9rem);line-height:1.05;margin:0;font-weight:700;letter-spacing:-.01em;text-wrap:balance}
+  .lede{font-size:1.08rem;color:var(--muted);margin:.75rem 0 0;max-width:60ch;text-wrap:pretty}
+
+  section{margin-top:2.5rem}
+  h2{font-family:Georgia,serif;font-size:1.34rem;font-weight:700;margin:0 0 .2rem;letter-spacing:-.005em;text-wrap:balance}
+  .kicker{font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:700;margin:0 0 .8rem;display:flex;align-items:center;gap:.6rem}
+  .kicker::before{content:"";width:1.4rem;height:2px;background:var(--brand);border-radius:2px}
+  p{margin:.65rem 0}
+  strong{font-weight:670}
+  .tan{color:var(--brand);font-weight:800}
+  .rd{color:var(--rad);font-weight:800}
+
+  .lead-in{background:var(--brand-soft);border-radius:14px;padding:1.05rem 1.25rem;font-size:1.01rem}
+  .lead-in p{margin:.4rem 0}
+  .lead-in b{color:var(--brand)}
+
+  .recall{background:var(--rad-soft);border-radius:12px;padding:1rem 1.15rem;font-size:.97rem}
+  .recall p{margin:.35rem 0}
+  .recall b{color:var(--rad)}
+
+  /* Ядро — два факта */
+  .facts{display:grid;gap:.85rem;margin-top:.3rem}
+  @media(min-width:600px){.facts{grid-template-columns:1fr 1fr}}
+  .fact{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.1rem 1.2rem;border-top:4px solid var(--brand)}
+  .fact:nth-child(2){border-top-color:var(--accent)}
+  .fact .ft{font-weight:800;font-size:1.02rem;margin:0 0 .35rem}
+  .fact .fb{font-size:.94rem;color:var(--muted);margin:0}
+  .fact .fm{display:block;margin-top:.55rem;font-family:ui-monospace,Menlo,monospace;font-weight:700;color:var(--ink);font-size:.98rem}
+
+  .hero-formula{margin-top:1.1rem;background:var(--ink);color:#fff;border-radius:14px;padding:1.4rem;text-align:center}
+  .hero-formula .lbl{font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:#9aa6c9;margin:0 0 .6rem}
+  .hero-formula .eq{font-family:ui-monospace,Menlo,monospace;font-size:clamp(1.5rem,5.5vw,2.1rem);font-weight:700}
+  .hero-formula .eq .r{color:#6FD3C6} .hero-formula .eq .t{color:#8ea0ff}
+  .hero-formula .note{font-size:.86rem;color:#9aa6c9;margin:.8rem 0 0}
+
+  /* Сколько касательных */
+  .cases{display:grid;gap:.85rem;margin-top:.4rem}
+  @media(min-width:620px){.cases{grid-template-columns:repeat(3,1fr)}}
+  .case{border-radius:12px;padding:1rem 1.1rem;border:1px solid var(--line);background:var(--card);display:flex;flex-direction:column;gap:.3rem}
+  .case .sign{font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.1rem}
+  .case .count{font-weight:700;font-size:1rem}
+  .case .desc{font-size:.88rem;color:var(--muted)}
+  .case.g{border-top:4px solid var(--green);background:var(--green-bg)} .case.g .sign{color:var(--green)}
+  .case.a{border-top:4px solid var(--amber);background:var(--amber-bg)} .case.a .sign{color:var(--amber)}
+  .case.r{border-top:4px solid var(--red);background:var(--red-bg)} .case.r .sign{color:var(--red)}
+
+  /* Разбор */
+  .worked{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:1.15rem 1.3rem;margin-top:1rem}
+  .worked .task{font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.02rem;margin:0 0 1rem;padding-bottom:.8rem;border-bottom:1px solid var(--line)}
+  ol.steps{margin:0;padding:0;list-style:none;counter-reset:s;display:flex;flex-direction:column;gap:.7rem}
+  ol.steps li{position:relative;padding-left:2.1rem;counter-increment:s;font-size:.97rem}
+  ol.steps li::before{content:counter(s);position:absolute;left:0;top:.02rem;width:1.5rem;height:1.5rem;border-radius:50%;background:var(--brand-soft);color:var(--brand);font-size:.82rem;font-weight:700;display:flex;align-items:center;justify-content:center}
+  ol.steps .m{font-family:ui-monospace,Menlo,monospace;font-weight:600;color:var(--ink)}
+  .verdict{margin-top:1rem;padding:.7rem 1rem;background:var(--brand-soft);border-radius:9px;font-weight:700;color:var(--brand);font-family:ui-monospace,Menlo,monospace;font-size:.98rem}
+
+  /* Чертёж */
+  .fig{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:1.1rem;margin-top:1rem}
+  .fig canvas{width:100%;height:auto;display:block;border-radius:10px;background:#FCFDFF}
+  .fig .ctrl{margin-top:.9rem}
+  .fig .ctrl label{display:flex;align-items:center;gap:.6rem;font-weight:700;font-family:ui-monospace,Menlo,monospace;font-size:.92rem}
+  .fig .ctrl input[type=range]{flex:1;accent-color:var(--brand)}
+  .fig .ctrl input:focus-visible{outline:3px solid var(--brand);outline-offset:2px}
+  .readout{display:flex;flex-wrap:wrap;gap:.5rem;justify-content:center;margin-top:.85rem;font-family:ui-monospace,Menlo,monospace;font-size:.92rem}
+  .readout span{padding:.3rem .7rem;border-radius:8px;background:var(--paper);border:1px solid var(--line);font-weight:700}
+  .readout .rr{color:var(--rad)} .readout .rt{color:var(--brand)}
+
+  /* Тренажёр */
+  .trainer{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.2rem 1.3rem;margin-top:1rem}
+  .tr-task{font-size:clamp(1rem,4vw,1.14rem);text-align:center;padding:1rem;background:var(--brand-soft);border-radius:10px;font-weight:600;line-height:1.55}
+  .tr-task b{font-family:ui-monospace,Menlo,monospace;color:var(--ink)}
+  .tr-ctl{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:1rem;align-items:center;justify-content:center}
+  .tr-ctl input{flex:1;min-width:120px;max-width:190px;font:inherit;padding:.5rem .7rem;border:1px solid var(--line);border-radius:9px;text-align:center;background:#fff;color:var(--ink)}
+  .tr-ctl button{font:inherit;font-weight:700;font-size:.9rem;cursor:pointer;border:none;border-radius:9px;padding:.55rem .95rem;color:#fff;background:var(--brand)}
+  .tr-ctl button.sec{background:var(--green)}
+  .tr-ctl button.ghost{background:transparent;color:var(--brand);border:1px solid var(--brand)}
+  .tr-ctl button:focus-visible,.tr-ctl input:focus-visible{outline:3px solid var(--brand);outline-offset:2px}
+  .tr-result{margin-top:.9rem;font-size:.96rem;min-height:1.2rem;text-align:center}
+  .tr-result .ok{color:var(--ok);font-weight:700} .tr-result .bad{color:var(--no);font-weight:700}
+  .tr-result .sol{margin-top:.6rem;padding:.85rem 1rem;background:#FCFDFE;border:1px solid var(--line);border-radius:10px;font-family:ui-monospace,Menlo,monospace;font-size:.9rem;line-height:1.85;text-align:left}
+  .tr-result .sol b{color:var(--brand)}
+
+  /* Практика */
+  .drill{display:flex;flex-direction:column;gap:.7rem}
+  details{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:.9rem 1.1rem}
+  details[open]{border-color:var(--brand)}
+  summary{cursor:pointer;font-weight:640;list-style:none;display:flex;justify-content:space-between;gap:1rem;align-items:center}
+  summary::-webkit-details-marker{display:none}
+  summary .q{flex:1}
+  summary .tag{font-size:.66rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);border:1px solid var(--line);border-radius:20px;padding:.1rem .55rem;white-space:nowrap}
+  summary::after{content:"ответ";font-size:.78rem;color:var(--brand);font-weight:700;white-space:nowrap}
+  details[open] summary::after{content:"скрыть"}
+  summary:focus-visible{outline:3px solid var(--brand);outline-offset:3px;border-radius:6px}
+  .ans{margin-top:.75rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.96rem;color:var(--muted)}
+  .ans .m{font-family:ui-monospace,Menlo,monospace;color:var(--ink);font-weight:600}
+  .ans b{color:var(--ink)}
+
+  /* Ошибки */
+  ul.pitfalls{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:.6rem}
+  ul.pitfalls li{padding-left:1.6rem;position:relative;font-size:.98rem}
+  ul.pitfalls li::before{content:"\00D7";position:absolute;left:0;top:-.08rem;color:var(--no);font-weight:700;font-size:1.15rem}
+  ul.pitfalls b{color:var(--ink)}
+
+  /* Проверка / таблица */
+  .tblwrap{overflow-x:auto;margin-top:.6rem}
+  table{border-collapse:collapse;width:100%;font-size:.94rem}
+  th,td{border:1px solid var(--line);padding:.55rem .7rem;text-align:left}
+  th{background:var(--brand-soft);color:var(--brand);font-weight:700}
+  td .m{font-family:ui-monospace,Menlo,monospace;font-weight:600}
+
+  .check{background:var(--rad-soft);border-radius:12px;padding:1rem 1.2rem}
+  .check ol{margin:.3rem 0;padding-left:1.3rem}
+  .check li{margin:.4rem 0}
+
+  .next{background:var(--brand);color:#fff;border-radius:14px;padding:1.3rem 1.4rem;margin-top:2.5rem}
+  .next h2{color:#fff}
+  .next p{color:#dfe6f5;font-size:.97rem;margin:.5rem 0 0}
+  .next b{color:#fff}
+  .foot{margin-top:2.2rem;font-size:.82rem;color:var(--muted);text-align:center}
+
+  @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="wrap">
+
+  <header>
+    <p class="eyebrow">Геометрия · 8 класс</p>
+    <h1>Касательная к окружности</h1>
+    <p class="lede">Прямая, которая дотрагивается до окружности ровно в одной точке. Один спрятанный прямой угол — и почти любая задача про касательную превращается в теорему Пифагора.</p>
+  </header>
+
+  <section>
+    <p class="kicker">Зачем это нужно</p>
+    <h2>Где встречается</h2>
+    <div class="lead-in">
+      <p><b>Вокруг тебя.</b> Колесо велосипеда касается дороги в одной точке, ремень натянут по касательной к двум шкивам, бильярдный шар у борта, луч прожектора скользит по краю купола.</p>
+      <p><b>В математике.</b> Касательная — фундамент вписанной окружности и описанного четырёхугольника, а в старших классах из неё вырастает производная (касательная к графику).</p>
+    </div>
+    <p>Житейское заблуждение: «касательная просто проходит рядом с окружностью». Нет — у неё с окружностью <strong>ровно одна</strong> общая точка (точка касания), и в этой точке она ведёт себя строго: <strong>перпендикулярна радиусу</strong>. Именно эта перпендикулярность и делает её рабочим инструментом.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Что вспомнить</p>
+    <h2>Опора на прошлые темы</h2>
+    <div class="recall">
+      <p><b>Окружность и радиус.</b> <span class="math">O</span> — центр, <span class="math">R</span> — радиус (расстояние от центра до любой точки окружности).</p>
+      <p><b>Прямая и окружность.</b> Всё решает сравнение радиуса <span class="math">R</span> и расстояния <span class="math">d</span> от центра до прямой: <span class="math">d &lt; R</span> — два пересечения (секущая), <span class="math">d = R</span> — одно (касательная), <span class="math">d &gt; R</span> — ни одного.</p>
+      <p><b>Теорема Пифагора.</b> В прямоугольном треугольнике <span class="math">OM² = OA² + AM²</span> — она и будет главным рабочим инструментом.</p>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Суть темы — два факта</p>
+    <h2>Почему касательная перпендикулярна радиусу</h2>
+    <p>Касательная — это пограничный случай <span class="math">d = R</span>. А расстояние от центра до прямой измеряется <strong>по перпендикуляру</strong>. Раз этот перпендикуляр равен радиусу — значит, радиус в точку касания <em>и есть</em> тот самый перпендикуляр. Отсюда всё:</p>
+    <div class="facts">
+      <div class="fact">
+        <p class="ft">1. Касательная ⟂ радиусу</p>
+        <p class="fb">Касательная перпендикулярна радиусу, проведённому в точку касания. В точке касания рождается прямой угол.</p>
+        <span class="fm">a касается в A ⟹ OA ⟂ a</span>
+      </div>
+      <div class="fact">
+        <p class="ft">2. Равные отрезки касательных</p>
+        <p class="fb">Из точки вне окружности провели две касательные — отрезки до точек касания равны. Картинка симметрична относительно прямой <span class="math">OM</span>.</p>
+        <span class="fm">MA = MB</span>
+      </div>
+    </div>
+    <div class="hero-formula">
+      <p class="lbl">Треугольник OAM — всегда прямоугольный</p>
+      <div class="eq"><span class="t">OM²</span> = <span class="r">OA²</span> + AM²</div>
+      <p class="note">прямой угол при точке касания A · <span style="color:#6FD3C6">OA = R</span> и AM — катеты · OM — гипотенуза</p>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Сколько касательных можно провести</p>
+    <h2>Всё зависит, где точка M</h2>
+    <p>Число касательных из точки <span class="math">M</span> меняется ровно потому, что меняется знак сравнения <span class="math">OM</span> и <span class="math">R</span>:</p>
+    <div class="cases">
+      <div class="case r">
+        <div class="sign">OM &lt; R</div>
+        <div class="count">0 касательных</div>
+        <div class="desc">Точка внутри окружности — ни одной провести нельзя.</div>
+      </div>
+      <div class="case a">
+        <div class="sign">OM = R</div>
+        <div class="count">1 касательная</div>
+        <div class="desc">Точка на окружности — ровно одна, через саму точку.</div>
+      </div>
+      <div class="case g">
+        <div class="sign">OM &gt; R</div>
+        <div class="count">2 касательные</div>
+        <div class="desc">Точка снаружи — две, и их отрезки равны.</div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Разбираю вслух</p>
+    <h2>Эталонный пример</h2>
+    <p>Из точки <span class="math">M</span> проведена касательная к окружности радиуса <span class="math">R = 6</span>. Расстояние <span class="math">OM = 10</span>. Найти длину отрезка касательной <span class="math">MA</span>.</p>
+    <div class="worked">
+      <p class="task">R = 6, OM = 10 → MA = ?</p>
+      <ol class="steps">
+        <li><span class="math">A</span> — точка касания, значит <span class="m">OA = R = 6</span> (радиус в точку касания).</li>
+        <li>По свойству касательной <span class="m">OA ⟂ MA</span> → треугольник <span class="m">OAM</span> прямоугольный, прямой угол при <span class="math">A</span>.</li>
+        <li><span class="m">OM = 10</span> лежит против прямого угла → это гипотенуза, а <span class="m">OA</span> и <span class="m">MA</span> — катеты.</li>
+        <li>Пифагор: <span class="m">10² = 6² + MA²</span>, то есть <span class="m">100 = 36 + MA²</span>.</li>
+        <li><span class="m">MA² = 100 − 36 = 64</span>, значит <span class="m">MA = √64 = 8</span>.</li>
+      </ol>
+      <div class="verdict">Ответ: MA = 8</div>
+    </div>
+    <p style="font-size:.92rem;color:var(--muted)">Ключ — увидеть прямой угол в точке касания. Как только к точке касания проведён радиус, задача сводится к теореме Пифагора.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Покрути сам · интерактив</p>
+    <h2>Две касательные из одной точки</h2>
+    <p>Двигай ползунок — отодвигай точку <span class="tan">M</span> от центра. Смотри: радиусы <span class="rd">OA</span> и <span class="rd">OB</span> всегда упираются в касательные под прямым углом (значок ∟), а два отрезка касательных <span class="tan">MA</span> и <span class="tan">MB</span> всегда равны (одинаковые чёрточки).</p>
+    <div class="fig">
+      <canvas id="fig" width="700" height="460" aria-label="Окружность, внешняя точка и две касательные с радиусами под прямым углом"></canvas>
+      <div class="ctrl">
+        <label>Точка M<input id="sd" type="range" min="5" max="11" step="0.1" value="8" aria-label="Расстояние от центра до точки M"></label>
+      </div>
+      <div class="readout">
+        <span class="rr" id="roR">R = 4</span>
+        <span id="roOM">OM = 8.0</span>
+        <span class="rt" id="roMA">MA = MB = 6.9</span>
+      </div>
+    </div>
+    <p style="font-size:.9rem;color:var(--muted)">Чем дальше <span class="tan">M</span>, тем длиннее касательные — но равенство <span class="math">MA = MB</span> и прямые углы при <span class="math">A</span> и <span class="math">B</span> сохраняются всегда. Придвинь <span class="tan">M</span> вплотную (<span class="math">OM = R</span>) — касательные схлопнутся в одну точку.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Тренажёр · бесконечная практика</p>
+    <h2>Реши сам</h2>
+    <p>Нажми «Новая», реши задачу и впиши ответ — все ответы целые. Проверь себя или посмотри пошаговое решение.</p>
+    <div class="trainer">
+      <div class="tr-task" id="trTask">Из точки <b>M</b> проведена касательная к окружности радиуса <b>R = 6</b>. Расстояние <b>OM = 10</b>. Найди длину касательной <b>MA</b>.</div>
+      <div class="tr-ctl">
+        <button id="trNew" type="button">🎲 Новая</button>
+        <input id="trAns" type="text" inputmode="numeric" placeholder="ответ" aria-label="Ответ">
+        <button id="trCheck" type="button" class="sec">Проверить</button>
+        <button id="trShow" type="button" class="ghost">Решение</button>
+      </div>
+      <div id="trResult" class="tr-result"></div>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Теперь ты · нажми, чтобы проверить</p>
+    <h2>Проверь себя</h2>
+    <div class="drill">
+      <details>
+        <summary><span class="q">Из точки M, где OM = 17, проведена касательная к окружности R = 8. Найди длину касательной.</span><span class="tag">применение</span></summary>
+        <div class="ans"><span class="m">MA² = OM² − R² = 17² − 8² = 289 − 64 = 225</span>, значит <span class="m">MA = √225 = 15</span>. Ответ <b>15</b>.</div>
+      </details>
+      <details>
+        <summary><span class="q">Радиус R = 5, длина касательной MA = 12. Найди расстояние OM.</span><span class="tag">применение</span></summary>
+        <div class="ans"><span class="m">OM² = R² + MA² = 5² + 12² = 25 + 144 = 169</span>, значит <span class="m">OM = √169 = 13</span>. Ответ <b>13</b>.</div>
+      </details>
+      <details>
+        <summary><span class="q">Из точки M провели две касательные, точки касания A и B, MA = 9. Найди MB.</span><span class="tag">применение</span></summary>
+        <div class="ans">Отрезки касательных из одной точки равны: <span class="m">MB = MA = 9</span>. Ответ <b>9</b>. Никакого Пифагора — работает свойство.</div>
+      </details>
+      <details>
+        <summary><span class="q">Найди ошибку: «OM = 10, R = 6, значит MA = 10 − 6 = 4».</span><span class="tag">анализ</span></summary>
+        <div class="ans">Длину касательной <b>нельзя</b> получать вычитанием <span class="m">OM − R</span> — это катет прямоугольного треугольника, а не отрезок на одной прямой. Верно через Пифагор: <span class="m">MA² = 10² − 6² = 100 − 36 = 64</span>, <span class="m">MA = 8</span>. Правильный ответ <b>8</b>, а не 4.</div>
+      </details>
+      <details>
+        <summary><span class="q">Что изменится с числом касательных, если точку M взять внутри окружности, на ней, вне её?</span><span class="tag">анализ</span></summary>
+        <div class="ans">Внутри (<span class="m">OM &lt; R</span>) — <b>ни одной</b>; на окружности (<span class="m">OM = R</span>) — <b>ровно одна</b>; вне (<span class="m">OM &gt; R</span>) — <b>две</b>. Число касательных ловит знак сравнения <span class="m">OM</span> и <span class="m">R</span>.</div>
+      </details>
+      <details>
+        <summary><span class="q">Обратная задача: длина касательной MA = 24, расстояние OM = 25. Найди радиус.</span><span class="tag">анализ</span></summary>
+        <div class="ans"><span class="m">R² = OM² − MA² = 25² − 24² = 625 − 576 = 49</span>, значит <span class="m">R = √49 = 7</span>. Ответ <b>7</b>.</div>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Где чаще всего ошибаются</p>
+    <h2>Лови эти ловушки</h2>
+    <ul class="pitfalls">
+      <li><b>Не достраивают радиус в точку касания.</b> Без него теряется прямой угол — и задача «не решается». Привычка: к точке касания <strong>сразу</strong> проводи радиус, почти всегда появляется прямоугольный треугольник.</li>
+      <li><b>Ищут длину касательной вычитанием OM − R.</b> Грубая ошибка. <span class="math">OM</span>, <span class="math">R</span> и <span class="math">MA</span> — стороны прямоугольного треугольника: <span class="math">MA² = OM² − R²</span>, только через Пифагор.</li>
+      <li><b>Считают касательные из одной точки разными.</b> На чертеже они кажутся неравными, но <span class="math">MA = MB</span> всегда — это надо использовать, а не «измерять».</li>
+      <li><b>Путают касательную и секущую.</b> Секущая пересекает окружность в <strong>двух</strong> точках (<span class="math">d &lt; R</span>), касательная — в <strong>одной</strong> (<span class="math">d = R</span>).</li>
+      <li><b>Проводят перпендикуляр к произвольному радиусу.</b> Касательная перпендикулярна именно радиусу <strong>в точку касания</strong>, а не любому радиусу.</li>
+    </ul>
+  </section>
+
+  <section>
+    <p class="kicker">Объясни своими словами</p>
+    <h2>Проверка понимания</h2>
+    <div class="check">
+      <ol>
+        <li>Какой угол образует касательная с радиусом, проведённым в точку касания, — и почему именно такой?</li>
+        <li>Из точки вне окружности провели две касательные. Что можно сказать про длины отрезков от этой точки до точек касания?</li>
+        <li>Как, зная радиус <span class="math">R</span> и расстояние <span class="math">OM</span>, найти длину отрезка касательной?</li>
+      </ol>
+      <p style="font-size:.92rem;color:var(--muted);margin:.6rem 0 0">Подсказки: угол <span class="math">90°</span> (радиус — это перпендикуляр из центра при <span class="math">d = R</span>) · отрезки равны · <span class="math">MA = √(OM² − R²)</span>.</p>
+    </div>
+    <div class="tblwrap">
+      <table>
+        <thead><tr><th>Положение M</th><th>Сравнение</th><th>Сколько касательных</th></tr></thead>
+        <tbody>
+          <tr><td>внутри окружности</td><td><span class="m">OM &lt; R</span></td><td>0</td></tr>
+          <tr><td>на окружности</td><td><span class="m">OM = R</span></td><td>1</td></tr>
+          <tr><td>вне окружности</td><td><span class="m">OM &gt; R</span></td><td>2</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <div class="next">
+    <h2>Что дальше</h2>
+    <p>Ты держишь два главных факта: касательная перпендикулярна радиусу в точке касания, а два отрезка касательных из одной точки равны. Дальше эти свойства работают во <b>вписанной окружности</b> — той, что касается всех сторон многоугольника изнутри. Равные отрезки касательных там дают красивые соотношения между сторонами описанного четырёхугольника.</p>
+  </div>
+
+  <p class="foot">Проверка на выходе: какой угол между касательной и радиусом в точке касания? · равны ли MA и MB? · как найти MA по R и OM?</p>
+
+</div>
+
+<script>
+/* ── Чертёж: окружность, точка M, две касательные, радиусы под 90° ── */
+(function(){
+  var cv=document.getElementById('fig'); if(!cv) return;
+  var ctx=cv.getContext('2d'), sd=document.getElementById('sd');
+  var roR=document.getElementById('roR'), roOM=document.getElementById('roOM'), roMA=document.getElementById('roMA');
+  var W=700,H=460,dpr=1;
+  var R=4, DMAX=11, PAD=46;
+
+  function css(v){ return getComputedStyle(document.documentElement).getPropertyValue(v).trim(); }
+  function resize(){
+    var c=cv.clientWidth||700; dpr=Math.min(window.devicePixelRatio||1,2);
+    W=c; H=Math.round(c*0.66);
+    cv.width=W*dpr; cv.height=H*dpr; cv.style.height=H+'px';
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+  }
+  function draw(){
+    var d=+sd.value;
+    ctx.clearRect(0,0,W,H);
+    var scale=(W-2*PAD)/(R+DMAX+3);
+    var Ox=PAD+R*scale+10, Oy=H/2;
+    var Mx=Ox+d*scale, My=Oy;
+    var rpx=R*scale;
+    var L=Math.sqrt(d*d-R*R);                 // длина касательной в единицах
+    var phi=Math.acos(R/d);                    // угол ∠AOM
+    var Ax=Ox+rpx*Math.cos(phi), Ay=Oy-rpx*Math.sin(phi);
+    var Bx=Ox+rpx*Math.cos(phi), By=Oy+rpx*Math.sin(phi);
+
+    var ink=css('--ink'), muted=css('--muted'), tanC=css('--brand'), radC=css('--rad'), accC=css('--accent');
+
+    // ось симметрии OM (пунктир)
+    ctx.strokeStyle='#C7CEDA'; ctx.lineWidth=1.4; ctx.setLineDash([6,5]);
+    ctx.beginPath(); ctx.moveTo(Ox,Oy); ctx.lineTo(Mx,My); ctx.stroke(); ctx.setLineDash([]);
+
+    // окружность
+    ctx.strokeStyle=ink; ctx.lineWidth=2;
+    ctx.beginPath(); ctx.arc(Ox,Oy,rpx,0,Math.PI*2); ctx.stroke();
+
+    // радиусы OA, OB
+    ctx.strokeStyle=radC; ctx.lineWidth=2.4;
+    ctx.beginPath(); ctx.moveTo(Ox,Oy); ctx.lineTo(Ax,Ay); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(Ox,Oy); ctx.lineTo(Bx,By); ctx.stroke();
+
+    // касательные MA, MB
+    ctx.strokeStyle=tanC; ctx.lineWidth=2.8;
+    ctx.beginPath(); ctx.moveTo(Mx,My); ctx.lineTo(Ax,Ay); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(Mx,My); ctx.lineTo(Bx,By); ctx.stroke();
+
+    // прямой угол при A и B
+    drawRightAngle(Ax,Ay,Ox,Oy,Mx,My);
+    drawRightAngle(Bx,By,Ox,Oy,Mx,My);
+
+    // чёрточки равенства на MA и MB
+    tick(Mx,My,Ax,Ay,accC);
+    tick(Mx,My,Bx,By,accC);
+
+    // точки
+    dot(Ox,Oy,ink); dot(Mx,My,tanC); dot(Ax,Ay,radC); dot(Bx,By,radC);
+
+    // подписи
+    ctx.font='700 '+Math.max(13,Math.min(17,scale*1.2))+'px ui-monospace,Menlo,monospace';
+    ctx.textBaseline='middle';
+    ctx.fillStyle=ink; ctx.textAlign='right'; ctx.fillText('O', Ox-8, Oy+2);
+    ctx.fillStyle=tanC; ctx.textAlign='left'; ctx.fillText('M', Mx+9, My);
+    ctx.fillStyle=radC;
+    ctx.textAlign='right'; ctx.fillText('A', Ax-9, Ay-2);
+    ctx.fillText('B', Bx-9, By+2);
+
+    // readout
+    roR.textContent='R = '+R;
+    roOM.textContent='OM = '+d.toFixed(1);
+    roMA.textContent='MA = MB = '+L.toFixed(1);
+  }
+  function dot(x,y,c){ ctx.fillStyle=c; ctx.beginPath(); ctx.arc(x,y,4,0,Math.PI*2); ctx.fill();
+    ctx.fillStyle='#fff'; ctx.beginPath(); ctx.arc(x,y,1.6,0,Math.PI*2); ctx.fill(); }
+  function unit(x,y){ var m=Math.hypot(x,y)||1; return [x/m,y/m]; }
+  function drawRightAngle(px,py,q1x,q1y,q2x,q2y){
+    // угол в точке P между направлениями на q1 (центр) и q2 (M)
+    var u=unit(q1x-px,q1y-py), v=unit(q2x-px,q2y-py), s=11;
+    var a=[px+u[0]*s,py+u[1]*s], b=[px+u[0]*s+v[0]*s,py+u[1]*s+v[1]*s], c=[px+v[0]*s,py+v[1]*s];
+    ctx.strokeStyle='#8A93A3'; ctx.lineWidth=1.4;
+    ctx.beginPath(); ctx.moveTo(a[0],a[1]); ctx.lineTo(b[0],b[1]); ctx.lineTo(c[0],c[1]); ctx.stroke();
+  }
+  function tick(x1,y1,x2,y2,c){
+    var mx=(x1+x2)/2, my=(y1+y2)/2, u=unit(x2-x1,y2-y1), t=6;
+    var px=-u[1], py=u[0];
+    ctx.strokeStyle=c; ctx.lineWidth=2.4;
+    ctx.beginPath(); ctx.moveTo(mx-px*t,my-py*t); ctx.lineTo(mx+px*t,my+py*t); ctx.stroke();
+  }
+  sd.addEventListener('input',draw);
+  window.addEventListener('resize',function(){ resize(); draw(); });
+  resize(); draw();
+})();
+</script>
+
+<script>
+/* ── Тренажёр-генератор ── */
+(function(){
+  var taskEl=document.getElementById('trTask'), ansEl=document.getElementById('trAns'), resEl=document.getElementById('trResult');
+  if(!taskEl) return;
+  var MINUS='−';
+  // прямоугольные тройки: [катет, катет, гипотенуза]
+  var triples=[[3,4,5],[6,8,10],[5,12,13],[9,12,15],[8,15,17],[7,24,25],[20,21,29],[12,16,20],[10,24,26],[9,40,41]];
+  var cur=null;
+  function ri(min,max){ return Math.floor(Math.random()*(max-min+1))+min; }
+  function pickTriple(){ var t=triples[ri(0,triples.length-1)].slice();
+    if(Math.random()<0.5){ var s=t[0]; t[0]=t[1]; t[1]=s; } return t; } // легенды R и MA — любой из катетов
+
+  function generate(){
+    var kind=ri(0,3); // 0 найти MA, 1 найти OM, 2 найти R, 3 равные касательные
+    if(kind===3){
+      var m=ri(4,19);
+      cur={type:'eq', ma:m};
+      taskEl.innerHTML='Из точки <b>M</b> проведены две касательные, точки касания <b>A</b> и <b>B</b>. Известно, что <b>MA = '+m+'</b>. Найди <b>MB</b>.';
+    } else {
+      var t=pickTriple(), r=t[0], ma=t[1], om=t[2];
+      if(kind===0){ cur={type:'ma', r:r, om:om, ma:ma};
+        taskEl.innerHTML='Из точки <b>M</b> проведена касательная к окружности радиуса <b>R = '+r+'</b>. Расстояние <b>OM = '+om+'</b>. Найди длину касательной <b>MA</b>.'; }
+      else if(kind===1){ cur={type:'om', r:r, ma:ma, om:om};
+        taskEl.innerHTML='Радиус окружности <b>R = '+r+'</b>, длина касательной <b>MA = '+ma+'</b>. Найди расстояние <b>OM</b> от точки до центра.'; }
+      else { cur={type:'r', ma:ma, om:om, r:r};
+        taskEl.innerHTML='Длина касательной <b>MA = '+ma+'</b>, расстояние <b>OM = '+om+'</b>. Найди радиус <b>R</b>.'; }
+    }
+    resEl.innerHTML=''; ansEl.value='';
+  }
+  function answer(){ return cur.type==='eq'?cur.ma:(cur.type==='ma'?cur.ma:(cur.type==='om'?cur.om:cur.r)); }
+  function solHTML(){
+    var q=cur, h='<div class="sol">';
+    if(q.type==='eq'){
+      h+='MA и MB — касательные из одной точки M.<br>';
+      h+='Отрезки касательных из одной точки равны:<br>';
+      h+='MB = MA = <b>'+q.ma+'</b>';
+    } else if(q.type==='ma'){
+      h+='OA = R = '+q.r+' (радиус в точку касания), OA ⟂ MA.<br>';
+      h+='Треугольник OAM прямоугольный, OM — гипотенуза.<br>';
+      h+='MA² = OM² '+MINUS+' R² = '+q.om+'² '+MINUS+' '+q.r+'² = '+(q.om*q.om)+' '+MINUS+' '+(q.r*q.r)+' = '+(q.om*q.om-q.r*q.r)+'<br>';
+      h+='MA = √'+(q.om*q.om-q.r*q.r)+' = <b>'+q.ma+'</b>';
+    } else if(q.type==='om'){
+      h+='OA = R = '+q.r+', OA ⟂ MA → треугольник OAM прямоугольный, OM — гипотенуза.<br>';
+      h+='OM² = R² + MA² = '+q.r+'² + '+q.ma+'² = '+(q.r*q.r)+' + '+(q.ma*q.ma)+' = '+(q.r*q.r+q.ma*q.ma)+'<br>';
+      h+='OM = √'+(q.r*q.r+q.ma*q.ma)+' = <b>'+q.om+'</b>';
+    } else {
+      h+='OA = R — радиус в точку касания, OA ⟂ MA → OM гипотенуза.<br>';
+      h+='R² = OM² '+MINUS+' MA² = '+q.om+'² '+MINUS+' '+q.ma+'² = '+(q.om*q.om)+' '+MINUS+' '+(q.ma*q.ma)+' = '+(q.om*q.om-q.ma*q.ma)+'<br>';
+      h+='R = √'+(q.om*q.om-q.ma*q.ma)+' = <b>'+q.r+'</b>';
+    }
+    return h+'</div>';
+  }
+  function check(){
+    var raw=ansEl.value.trim().replace(',','.');
+    if(raw===''){ resEl.innerHTML='<span class="bad">Введи ответ или нажми «Решение».</span>'; return; }
+    var got=parseFloat(raw), right=answer();
+    if(!isNaN(got) && Math.abs(got-right)<0.01){ resEl.innerHTML='<span class="ok">✓ Верно!</span>'+solHTML(); }
+    else{ resEl.innerHTML='<span class="bad">✗ Пока не то — глянь решение.</span>'+solHTML(); }
+  }
+  document.getElementById('trNew').addEventListener('click',generate);
+  document.getElementById('trCheck').addEventListener('click',check);
+  document.getElementById('trShow').addEventListener('click',function(){ resEl.innerHTML=solHTML(); });
+  ansEl.addEventListener('keydown',function(e){ if(e.key==='Enter') check(); });
+  cur={type:'ma', r:6, om:10, ma:8}; // старт = валидная задача, совпадает с показанной
+})();
+</script>

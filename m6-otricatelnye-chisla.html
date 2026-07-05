@@ -1,0 +1,613 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Отрицательные числа — математика 6 класс</title>
+<style>
+  :root{
+    --paper:#F6F7FB; --card:#FFFFFF; --ink:#1B2333; --muted:#5A6478; --line:#E4E6EE;
+    --accent:#6C4FD8; --accent-soft:#ECE8FB;      /* фиолетовый — акцент интерфейса */
+    --neg:#2F6BD8;  --neg-soft:#E6EEFC;           /* синий — отрицательные (влево, холод) */
+    --pos:#E08A2B;  --pos-soft:#FCEEDB;           /* оранжевый — положительные (вправо, тепло) */
+    --zero:#1B2333;                                /* ноль — граница */
+    --ok:#1E8E5A; --no:#C0455B;
+  }
+  *{box-sizing:border-box}
+  body{margin:0}
+  .wrap{max-width:760px;margin:0 auto;padding:clamp(1.4rem,4vw,3rem) clamp(1.1rem,4vw,2rem) 4.5rem;
+    background:var(--paper);color:var(--ink);
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:17px;line-height:1.64;-webkit-font-smoothing:antialiased}
+  .eyebrow{font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);font-weight:700;margin:0 0 .5rem}
+  h1{font-family:Georgia,"Times New Roman",serif;font-size:clamp(2rem,7vw,2.9rem);line-height:1.06;margin:0;font-weight:700;letter-spacing:-.01em;text-wrap:balance}
+  .lede{font-size:1.08rem;color:var(--muted);margin:.8rem 0 0;max-width:60ch;text-wrap:pretty}
+  h2{font-family:Georgia,serif;font-size:1.34rem;font-weight:700;margin:0 0 .1rem;letter-spacing:-.005em;text-wrap:balance}
+  section{margin-top:2.6rem}
+  .kicker{font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:700;margin:0 0 .8rem;
+    display:flex;align-items:center;gap:.6rem}
+  .kicker::before{content:"";width:1.4rem;height:2px;background:var(--accent);border-radius:2px}
+  p{margin:.65rem 0}
+  strong{font-weight:650}
+  .mono{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-weight:600;font-variant-numeric:tabular-nums}
+  .nn{color:var(--neg);font-weight:700} .pp{color:var(--pos);font-weight:700} .zz{color:var(--zero);font-weight:700}
+
+  .hero{border-bottom:3px solid var(--accent);padding-bottom:1.4rem;margin-bottom:.4rem}
+
+  /* Где встречается — карточки-примеры */
+  .lead-in{background:var(--accent-soft);border-radius:14px;padding:1.1rem 1.3rem;margin-top:1.4rem;font-size:1.01rem}
+  .lead-in p{margin:.4rem 0}
+  .lead-in b{color:var(--accent)}
+  .where{display:grid;gap:.7rem;margin-top:1.2rem;grid-template-columns:1fr}
+  @media(min-width:560px){.where{grid-template-columns:1fr 1fr}}
+  .where .w{background:var(--card);border:1px solid var(--line);border-radius:13px;padding:.85rem 1rem;display:flex;gap:.75rem;align-items:center}
+  .where .ic{font-size:1.5rem;line-height:1}
+  .where b{display:block;font-size:.98rem}
+  .where span{font-size:.9rem;color:var(--muted)}
+
+  .recall{border-left:4px solid var(--accent);background:var(--accent-soft);border-radius:0 10px 10px 0;padding:.85rem 1.15rem;margin-top:1rem}
+  .recall b{color:var(--accent)}
+
+  .note{border-left:4px solid var(--pos);background:var(--pos-soft);border-radius:0 10px 10px 0;padding:.8rem 1.1rem;margin-top:1rem;font-size:.98rem}
+  .note b{color:var(--pos)}
+
+  /* Ядро — определения */
+  .def{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1rem 1.2rem;margin-top:.8rem}
+  .def h3{margin:0 0 .3rem;font-size:1.04rem;font-weight:800}
+  .def.neg{border-left:5px solid var(--neg)} .def.neg h3{color:var(--neg)}
+  .def.pos{border-left:5px solid var(--pos)} .def.pos h3{color:var(--pos)}
+  .def.zero{border-left:5px solid var(--zero)} .def.zero h3{color:var(--zero)}
+  .def p{margin:.2rem 0;font-size:.96rem}
+
+  .rule{background:var(--ink);color:#fff;border-radius:14px;padding:1.3rem 1.4rem;text-align:center;margin-top:1rem}
+  .rule .big{font-family:ui-monospace,Menlo,monospace;font-size:clamp(1.15rem,4.6vw,1.5rem);font-weight:700;line-height:1.5}
+  .rule .big .l{color:#8FB4F5} .rule .big .r{color:#F3B36A}
+  .rule .sub{font-size:.9rem;color:#B4BCD0;margin:.7rem 0 0}
+
+  /* Разбор «думаю вслух» */
+  .walk{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.15rem 1.3rem;margin-top:1rem}
+  .walk .q{font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.02rem;margin:0 0 .9rem;padding-bottom:.7rem;border-bottom:1px solid var(--line)}
+  .walk ol{margin:0;padding-left:1.2rem;display:flex;flex-direction:column;gap:.55rem}
+  .walk li{font-size:.96rem}
+  .walk .why{color:var(--muted);font-size:.9rem}
+  .verdict{margin-top:1rem;padding:.7rem 1rem;background:var(--accent-soft);border-radius:10px;font-weight:650;color:var(--accent);font-family:ui-monospace,Menlo,monospace}
+
+  /* Визуализация — числовая прямая */
+  .viz{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:1.1rem;margin-top:1rem}
+  .viz canvas{width:100%;height:auto;display:block;border-radius:8px;touch-action:manipulation}
+  .viz .ctl{display:flex;flex-direction:column;gap:.55rem;margin-top:1rem}
+  .viz .ctl label{display:flex;align-items:center;gap:.6rem;font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:.95rem}
+  .viz .ctl .tag{min-width:5.5ch}
+  .viz .ctl .tag.a{color:var(--accent)} .viz .ctl .tag.b{color:var(--ok)}
+  .viz .ctl input[type=range]{flex:1;accent-color:var(--accent)}
+  .viz .presets{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:.9rem}
+  .viz .presets button{font:inherit;font-weight:700;font-size:.83rem;cursor:pointer;border:1px solid var(--line);background:var(--paper);color:var(--ink);border-radius:20px;padding:.35rem .8rem}
+  .viz .presets button:hover{border-color:var(--accent);color:var(--accent)}
+  .viz .presets button.opp[aria-pressed=true]{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .viz .readout{margin:1rem 0 0;font-size:.98rem;line-height:1.7;background:var(--paper);border-radius:10px;padding:.8rem 1rem}
+
+  /* Тренажёр */
+  .trainer{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.2rem 1.3rem;margin-top:1rem}
+  .tabs{display:flex;gap:.4rem;margin-bottom:.9rem;flex-wrap:wrap}
+  .tabs button{font:inherit;font-weight:700;font-size:.82rem;cursor:pointer;border:1px solid var(--line);background:var(--paper);color:var(--muted);border-radius:20px;padding:.4rem .9rem}
+  .tabs button.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .tr-task{font-family:ui-monospace,Menlo,monospace;font-weight:800;font-size:clamp(1.05rem,4.5vw,1.3rem);text-align:center;padding:1rem;background:var(--accent-soft);border-radius:10px;color:var(--ink)}
+  .tr-ctl{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.9rem;align-items:center}
+  .tr-ctl button{font:inherit;font-weight:700;font-size:.9rem;cursor:pointer;border:none;border-radius:9px;padding:.55rem .95rem;color:#fff;background:var(--accent)}
+  .tr-ctl button.sec{background:var(--pos)}
+  .tr-ctl button.ghost{background:transparent;color:var(--accent);border:1px solid var(--accent)}
+  .tr-ctl input{flex:1;min-width:130px;font:inherit;padding:.5rem .7rem;border:1px solid var(--line);border-radius:9px;background:#fff;color:var(--ink)}
+  .tr-result{margin-top:.9rem;font-size:.96rem;min-height:1.2rem}
+  .tr-result .ok{color:var(--ok);font-weight:700} .tr-result .bad{color:var(--no);font-weight:700}
+  .tr-result .sol{margin-top:.6rem;padding:.8rem 1rem;background:#FCFBFF;border:1px solid var(--line);border-radius:10px;font-size:.92rem;line-height:1.75}
+  .tr-result .sol b{color:var(--ink)}
+  /* мини числовая прямая внутри решения */
+  .mline{display:inline-flex;gap:2px;margin:.2rem 0 .6rem;padding:2px;min-width:min-content}
+  .mline-wrap{overflow-x:auto;margin:.1rem 0 .5rem}
+  .mline span{min-width:2.5ch;text-align:center;font-family:ui-monospace,Menlo,monospace;font-size:.82rem;padding:.15rem .1rem;border-radius:6px;color:var(--muted)}
+  .mline span.z{color:var(--zero);font-weight:800}
+  .mline span.hit.a{background:var(--accent-soft);color:var(--accent);font-weight:800}
+  .mline span.hit.b{background:var(--pos-soft);color:var(--pos);font-weight:800}
+  .mline span.hit.o{background:#DCF1E6;color:var(--ok);font-weight:800}
+
+  /* Практика */
+  details{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:.9rem 1.1rem;margin-top:.6rem}
+  details[open]{border-color:var(--accent)}
+  summary{cursor:pointer;font-weight:600;list-style:none;display:flex;justify-content:space-between;gap:1rem;align-items:center}
+  summary::-webkit-details-marker{display:none}
+  summary .tag{font-size:.68rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);border:1px solid var(--line);border-radius:20px;padding:.12rem .55rem;white-space:nowrap}
+  summary::after{content:"ответ";font-size:.78rem;color:var(--accent);font-weight:700;white-space:nowrap;margin-left:auto}
+  details[open] summary::after{content:"скрыть"}
+  .q{font-weight:600}
+  .ans{margin-top:.75rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.95rem;color:var(--muted)}
+  .ans b{color:var(--ink)}
+  .drill{display:flex;flex-direction:column;gap:.2rem;margin-top:.6rem}
+  .level{font-size:.74rem;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);font-weight:700;margin:1.1rem 0 .2rem}
+
+  /* Ошибки */
+  ul.traps{list-style:none;margin:1rem 0 0;padding:0;display:flex;flex-direction:column;gap:.7rem}
+  ul.traps li{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:.85rem 1.05rem;padding-left:2.5rem;position:relative;font-size:.96rem}
+  ul.traps li::before{content:"⚠";position:absolute;left:1rem;top:.85rem;color:var(--pos)}
+  ul.traps b{font-weight:700}
+
+  /* Итог */
+  .wrapup{background:var(--accent);color:#fff;border-radius:16px;padding:1.4rem 1.5rem;margin-top:2.6rem}
+  .wrapup h2{color:#fff;margin:0 0 .5rem}
+  .wrapup p{color:#EAE4FB;margin:.4rem 0;font-size:1rem}
+  .wrapup .big-rule{font-size:1.08rem;font-weight:700;color:#fff;margin:.6rem 0;font-family:ui-monospace,Menlo,monospace}
+  .wrapup .next{font-size:.95rem;color:#D8CFF6;margin-top:1rem;padding-top:1rem;border-top:1px solid rgba(255,255,255,.25)}
+  .wrapup .next b{color:#fff}
+
+  button:focus-visible,input:focus-visible,summary:focus-visible{outline:3px solid var(--accent);outline-offset:2px;border-radius:8px}
+  @media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+<div class="wrap">
+
+  <header class="hero">
+    <p class="eyebrow">Математика · 6 класс · рациональные числа</p>
+    <h1>Отрицательные числа</h1>
+    <p class="lede">−7 °C на термометре, долг 300 рублей, этаж −2 в подземной парковке. Раньше ты знал только числа «от нуля и больше». Теперь числовая прямая раскрывается влево — и там живёт целая половина чисел.</p>
+  </header>
+
+  <section>
+    <p class="kicker">Зачем это нужно</p>
+    <h2>Где ты встречаешь «ниже нуля»</h2>
+    <div class="lead-in">
+      <p>До 6 класса мы знали только числа «от нуля и больше»: 0, 1, 2, 3 и дроби между ними. Но в жизни постоянно бывает <b>ниже нуля</b> и <b>в долг</b> — и это нельзя записать обычным числом.</p>
+    </div>
+    <div class="where">
+      <div class="w"><span class="ic">🌡️</span><div><b>Термометр зимой</b><span>−7 °C — это 7 градусов ниже нуля</span></div></div>
+      <div class="w"><span class="ic">💳</span><div><b>Деньги</b><span>есть 200 ₽, должен 500 ₽ → состояние −300 ₽</span></div></div>
+      <div class="w"><span class="ic">⛰️</span><div><b>Высота и глубина</b><span>гора +1500 м, дно впадины −200 м</span></div></div>
+      <div class="w"><span class="ic">🅿️</span><div><b>Этажи</b><span>подземная парковка — это этаж −1, −2</span></div></div>
+    </div>
+    <p>Отрицательные числа нужны, чтобы <strong>одним числом</strong> задать сразу и <strong>величину</strong> («сколько»), и <strong>направление</strong> («в какую сторону от нуля»). Без них пришлось бы каждый раз отдельно писать «выше/ниже», «есть/должен».</p>
+  </section>
+
+  <section>
+    <p class="kicker">Что вспомнить</p>
+    <h2>Опора: с чего мы начинаем</h2>
+    <div class="recall">
+      <p>Ты уже умеешь работать с этим — держи в голове, оно понадобится прямо сейчас:</p>
+      <p>▸ <b>Натуральные числа и ноль:</b> 0, 1, 2, 3, … — ими считают предметы.<br>
+         ▸ <b>Десятичные дроби:</b> 0,5; 2,7 — числа между целыми.<br>
+         ▸ <b>Координатный луч:</b> ты отмечал числа на луче, где вправо они <b>растут</b>. Сейчас мы продлим этот луч влево за ноль — и получим числовую прямую.</p>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Ядро темы</p>
+    <h2>Ноль, левая сторона и знак</h2>
+    <p>Все числа удобно представить точками на <strong>числовой прямой</strong> — горизонтальной линии со стрелкой вправо. В середине стоит <span class="zz">0</span> — граница, точка отсчёта.</p>
+
+    <div class="rule">
+      <div class="big"><span class="l">… −3  −2  −1</span>  <span class="zz" style="color:#fff">0</span>  <span class="r">+1  +2  +3 …</span></div>
+      <div class="sub">◄ влево — меньше · вправо — больше ►</div>
+    </div>
+
+    <div class="def pos">
+      <h3>Положительные числа</h3>
+      <p>Стоят <strong>справа от нуля</strong>: +1, +2, +3, … Больше нуля. Знак «+» обычно не пишут: 5 = +5. Смысл знака «+»: отсчитываем <strong>вправо</strong> (тепло, доход, вверх).</p>
+    </div>
+    <div class="def neg">
+      <h3>Отрицательные числа</h3>
+      <p>Стоят <strong>слева от нуля</strong>: −1, −2, −3, … Меньше нуля. Знак «−» перед числом писать <strong>обязательно</strong>. Смысл знака «−»: отсчитываем <strong>влево</strong> (холод, долг, вниз). Дроби тоже бывают отрицательными: −0,5; −3/4.</p>
+    </div>
+    <div class="def zero">
+      <h3>Ноль — особое число</h3>
+      <p>Он <strong>не положительный и не отрицательный</strong> — это граница между ними. Знак к нулю не приписывают: −0 = 0.</p>
+    </div>
+
+    <p>Само число (без знака) показывает, <strong>на сколько единиц</strong> ты отошёл от нуля, а знак — <strong>в какую сторону</strong>. Поэтому <span class="nn">−5</span> — это «пять шагов влево от нуля», а <span class="pp">+5</span> — «пять шагов вправо».</p>
+
+    <div class="def">
+      <h3>Противоположные числа</h3>
+      <p>Два числа, которые отличаются <strong>только знаком</strong>: <span class="pp">5</span> и <span class="nn">−5</span>, <span class="nn">−3,2</span> и <span class="pp">3,2</span>. На прямой они стоят по разные стороны от нуля на <strong>одинаковом расстоянии</strong> — симметрично. Число, противоположное нулю, — это сам ноль.</p>
+    </div>
+
+    <div class="note"><p><b>Осторожно, два разных минуса.</b> В записи <span class="mono">−3</span> минус — это <b>часть самого числа</b> («отрицательное три»). А в записи <span class="mono">7 − 3</span> минус — это команда «вычесть». Если минус стоит перед отдельным числом (а не между двумя) — это знак числа.</p></div>
+  </section>
+
+  <section>
+    <p class="kicker">Как сравнивать</p>
+    <h2>Главное правило: левее — меньше</h2>
+    <p>Вот тут и прячется самая частая ошибка темы. Сравнивать числа надо <strong>не по «размеру цифры», а по положению на прямой</strong>:</p>
+    <div class="rule">
+      <div class="big">кто <span class="l">левее</span> — тот <span class="l">меньше</span></div>
+      <div class="sub">−5 стоит левее −2, значит −5 &lt; −2 · образ термометра: −5 °C холоднее, чем −2 °C</div>
+    </div>
+    <p>С положительными числами всё привычно: 8 больше 3. А среди отрицательных порядок <strong>переворачивается</strong>: чем дальше влево, тем число меньше. Поэтому −9 меньше −1, хотя «девять больше единицы».</p>
+  </section>
+
+  <section>
+    <p class="kicker">Разбираем вместе</p>
+    <h2>Думаю вслух</h2>
+    <p>Что больше: <span class="mono">−7</span> или <span class="mono">−1</span>?</p>
+    <div class="walk">
+      <p class="q">−7 __ −1</p>
+      <ol>
+        <li>Оба числа <b>отрицательные</b> — значит, оба слева от нуля. <span class="why">Сравнивать «по цифре» нельзя, только по месту на прямой.</span></li>
+        <li>Ставлю их на прямую. <b>−7</b> дальше от нуля влево, чем −1, значит −7 стоит <b>левее</b>. <span class="why">Семь шагов влево — это дальше, чем один шаг влево.</span></li>
+        <li>Левее — значит меньше. Получается <b>−7 &lt; −1</b>. <span class="why">Проверка термометром: −7 °C холоднее, чем −1 °C — да, всё сходится.</span></li>
+      </ol>
+      <div class="verdict">Ответ: −1 больше, то есть −7 &lt; −1</div>
+    </div>
+
+    <p>А теперь найдём число, противоположное <span class="mono">−6,5</span>.</p>
+    <div class="walk">
+      <p class="q">противоположное к −6,5 = ?</p>
+      <ol>
+        <li>Противоположное число отличается <b>только знаком</b>. <span class="why">Удалённость от нуля остаётся той же — 6,5 единиц.</span></li>
+        <li>Меняю знак с «−» на «+»: было −6,5, стало <b>+6,5</b>. <span class="why">Точка «перепрыгнула» на другую сторону нуля, но на то же расстояние.</span></li>
+      </ol>
+      <div class="verdict">Ответ: +6,5</div>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Покрути сам · интерактив</p>
+    <h2>Числовая прямая живьём</h2>
+    <p>Двигай точки <b style="color:var(--accent)">A</b> и <b style="color:var(--ok)">B</b> ползунками и смотри, кто левее и кто больше. Нажми «Показать противоположное A» — увидишь симметрию относительно нуля.</p>
+    <div class="viz">
+      <canvas id="line" width="720" height="210" aria-label="Числовая прямая с точками A и B"></canvas>
+      <div class="ctl">
+        <label><span class="tag a">A = <span id="valA">−5</span></span><input id="sa" type="range" min="-10" max="10" step="1" value="-5" aria-label="Число A"></label>
+        <label><span class="tag b">B = <span id="valB">−2</span></span><input id="sb" type="range" min="-10" max="10" step="1" value="-2" aria-label="Число B"></label>
+      </div>
+      <div class="presets">
+        <button type="button" data-a="-5" data-b="-2">−5 и −2</button>
+        <button type="button" data-a="-8" data-b="3">−8 и 3</button>
+        <button type="button" data-a="4" data-b="-4">4 и −4</button>
+        <button type="button" data-a="0" data-b="-6">0 и −6</button>
+        <button type="button" id="oppBtn" class="opp" aria-pressed="false">Показать противоположное A</button>
+      </div>
+      <p class="readout" id="lineRead"></p>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Тренажёр · бесконечно</p>
+    <h2>Тренируйся сам</h2>
+    <p>Выбери тип задания, нажми «Новое», реши в уме и проверь себя. В решении покажется мини-прямая с подсказкой.</p>
+    <div class="trainer">
+      <div class="tabs">
+        <button id="tabCmp" class="on" type="button">Сравни</button>
+        <button id="tabOpp" type="button">Противоположное</button>
+        <button id="tabLeft" type="button">Кто левее</button>
+      </div>
+      <div class="tr-task" id="trTask">Поставь знак: −5 ▢ −2</div>
+      <div class="tr-ctl">
+        <button id="trNew" type="button">🎲 Новое</button>
+        <input id="trAns" type="text" placeholder="< или >" aria-label="Ответ">
+        <button id="trCheck" type="button" class="sec">Проверить</button>
+        <button id="trShow" type="button" class="ghost">Решение</button>
+      </div>
+      <div id="trResult" class="tr-result"></div>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Теперь ты · нажми, чтобы проверить</p>
+    <h2>Практика по уровням</h2>
+
+    <p class="level">Понимание</p>
+    <div class="drill">
+      <details>
+        <summary><span class="q">1) Какие из чисел положительные, какие отрицательные, а какое — ни то ни другое: −4; 0; +7; −0,5; 12?</span></summary>
+        <div class="ans">Отрицательные: <b class="nn">−4</b>, <b class="nn">−0,5</b>. Положительные: <b class="pp">+7</b>, <b class="pp">12</b>. Ни то ни другое — <b class="zz">0</b> (он граница).</div>
+      </details>
+      <details>
+        <summary><span class="q">2) Какое число стоит на прямой левее: −3 или 0?</span></summary>
+        <div class="ans">Левее стоит <b class="nn">−3</b> — оно отрицательное, а все отрицательные слева от нуля. Значит −3 &lt; 0.</div>
+      </details>
+    </div>
+
+    <p class="level">Применение</p>
+    <div class="drill">
+      <details>
+        <summary><span class="q">3) Запиши числом: «самолёт поднялся на 9000 м», «подводная лодка опустилась на 300 м».</span></summary>
+        <div class="ans">Вверх — знак «+»: <b class="pp">+9000 м</b>. Вниз (ниже уровня) — знак «−»: <b class="nn">−300 м</b>.</div>
+      </details>
+      <details>
+        <summary><span class="q">4) Выпиши противоположные числа для: 9; −2,4; 0; −1/2.</span></summary>
+        <div class="ans">Меняем только знак: для 9 → <b class="nn">−9</b>; для −2,4 → <b class="pp">2,4</b>; для 0 → <b class="zz">0</b> (сам ноль); для −1/2 → <b class="pp">1/2</b>.</div>
+      </details>
+    </div>
+
+    <p class="level">Анализ</p>
+    <div class="drill">
+      <details>
+        <summary><span class="q">5) «Что изменится, если…»: было −2 °C, стало на 5 градусов холоднее. Влево или вправо сдвинулись? Какое число?</span><span class="tag">анализ</span></summary>
+        <div class="ans">Холоднее — значит меньше, сдвигаемся <b>влево</b> по прямой. От −2 отступаем ещё на 5 шагов влево: −2 − 5 = <b class="nn">−7 °C</b>.</div>
+      </details>
+      <details>
+        <summary><span class="q">6) Найди ошибку. Ученик написал: «−10 больше, чем −3, потому что 10 больше 3». Где он ошибся?</span><span class="tag">найди ошибку</span></summary>
+        <div class="ans">Он сравнил <b>по цифре</b>, а надо — по месту на прямой. −10 стоит <b>левее</b> −3 (дальше влево от нуля), а левее = меньше. Значит на самом деле <b class="nn">−10 &lt; −3</b>. Термометр: −10 °C холоднее −3 °C.</div>
+      </details>
+      <details>
+        <summary><span class="q">7) Обратная задача. Какое число противоположно +4,1? А какое число противоположно само себе?</span><span class="tag">анализ</span></summary>
+        <div class="ans">Противоположное к +4,1 — это <b class="nn">−4,1</b> (тот же путь от нуля, другая сторона). Само себе противоположен только <b class="zz">0</b>: у него нет «другой стороны».</div>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Чтобы не попасться</p>
+    <h2>Частые ошибки</h2>
+    <ul class="traps">
+      <li><b>«−5 больше −2, ведь 5 больше 2».</b> Это главная ловушка темы. Сравнивай <b>по положению на прямой</b>: −5 стоит левее −2, значит −5 <b>меньше</b>. Всегда мысленно ставь числа на прямую (или вспоминай термометр: −5 °C холоднее).</li>
+      <li><b>«−200 рублей — это просто 200 рублей».</b> Нет: знак несёт смысл. Привязывай минус к реальной картинке — долг, ниже нуля, вниз, — а не к «просто минусу».</li>
+      <li><b>Путают знак числа и вычитание.</b> В «−3» минус — часть числа, в «7 − 3» минус — команда вычесть. Минус перед отдельным числом (не между двумя) — это знак числа.</li>
+      <li><b>«Ноль — отрицательный, раз он не положительный».</b> Ноль — отдельный случай: он <b>ни положителен, ни отрицателен</b>, это граница.</li>
+    </ul>
+  </section>
+
+  <section>
+    <p class="kicker">Проверь себя вслух</p>
+    <h2>Объясни своими словами</h2>
+    <div class="drill">
+      <details>
+        <summary><span class="q">Где на прямой стоят отрицательные числа — слева или справа от нуля?</span></summary>
+        <div class="ans"><b>Слева</b> от нуля. Справа — положительные, а сам ноль их разделяет.</div>
+      </details>
+      <details>
+        <summary><span class="q">Какое число противоположно −7? Оно положительное или отрицательное?</span></summary>
+        <div class="ans">Меняем знак: <b class="pp">+7</b>. Оно <b>положительное</b> — стоит справа от нуля, на том же расстоянии 7.</div>
+      </details>
+      <details>
+        <summary><span class="q">Что больше: −9 или −1? Объясни одним предложением.</span></summary>
+        <div class="ans"><b class="nn">−1 больше</b>: оно стоит правее −9 на прямой (ближе к нулю), а правее — значит больше.</div>
+      </details>
+    </div>
+  </section>
+
+  <div class="wrapup">
+    <h2>Запомни главное</h2>
+    <p class="big-rule">слева от 0 — отрицательные · левее = меньше</p>
+    <p>Положительные и отрицательные числа — это точки справа и слева от нуля на числовой прямой. Знак задаёт <strong style="color:#fff">направление</strong> от нуля, само число — <strong style="color:#fff">расстояние</strong>. Ноль — граница, он сам ни положителен, ни отрицателен.</p>
+    <p class="next">👉 Дальше — <b>координатная прямая</b> (как точно отмечать любое число, в том числе дробное) и <b>модуль числа</b> (то самое «расстояние до нуля», без учёта знака).</p>
+  </div>
+
+</div>
+
+<script>
+/* ── Общий помощник: настоящий минус U+2212, запятая в дробях ── */
+function fmt(n){
+  var s = (Math.round(n*100)/100).toString();
+  return s.replace('-','−').replace('.',',');
+}
+</script>
+
+<script>
+/* ── Визуализация: числовая прямая ── */
+(function(){
+  var cv=document.getElementById('line'); if(!cv) return;
+  var ctx=cv.getContext('2d');
+  var sa=document.getElementById('sa'), sb=document.getElementById('sb');
+  var valA=document.getElementById('valA'), valB=document.getElementById('valB');
+  var read=document.getElementById('lineRead'), oppBtn=document.getElementById('oppBtn');
+  var W=720,H=210,padX=38,axisY=118, showOpp=false;
+  function css(v){ return getComputedStyle(document.documentElement).getPropertyValue(v).trim(); }
+  function setup(){
+    var dpr=Math.min(window.devicePixelRatio||1,2);
+    cv.width=W*dpr; cv.height=H*dpr; ctx.setTransform(dpr,0,0,dpr,0,0);
+  }
+  function X(v){ return padX + (v+10)/20*(W-2*padX); }
+  function pill(x,y,text,color){
+    ctx.font='700 15px ui-monospace,Menlo,monospace';
+    var w=ctx.measureText(text).width+16, h=24, rx=x-w/2;
+    ctx.fillStyle='#fff'; ctx.strokeStyle=color; ctx.lineWidth=2;
+    roundRect(rx,y-h,w,h,7); ctx.fill(); ctx.stroke();
+    ctx.fillStyle=color; ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.fillText(text,x,y-h/2);
+  }
+  function roundRect(x,y,w,h,r){
+    var rr=Math.min(r,w/2,h/2); ctx.beginPath();
+    ctx.moveTo(x+rr,y); ctx.arcTo(x+w,y,x+w,y+h,rr); ctx.arcTo(x+w,y+h,x,y+h,rr);
+    ctx.arcTo(x,y+h,x,y,rr); ctx.arcTo(x,y,x+w,y,rr); ctx.closePath();
+  }
+  function draw(){
+    var a=parseInt(sa.value,10), b=parseInt(sb.value,10);
+    var neg=css('--neg'), pos=css('--pos'), ink=css('--ink'), muted=css('--muted'),
+        acc=css('--accent'), ok=css('--ok'), negS=css('--neg-soft'), posS=css('--pos-soft');
+    ctx.clearRect(0,0,W,H);
+    // фон половин
+    ctx.fillStyle=negS; ctx.fillRect(X(-10),axisY-46,X(0)-X(-10),92);
+    ctx.fillStyle=posS; ctx.fillRect(X(0),axisY-46,X(10)-X(0),92);
+    // подписи сторон
+    ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.font='700 12px system-ui,sans-serif';
+    ctx.fillStyle=neg; ctx.fillText('◄ отрицательные (меньше)', X(-5), axisY-56);
+    ctx.fillStyle=pos; ctx.fillText('положительные (больше) ►', X(5), axisY-56);
+    // ось
+    ctx.strokeStyle=ink; ctx.lineWidth=2;
+    ctx.beginPath(); ctx.moveTo(X(-10)-14,axisY); ctx.lineTo(X(10)+14,axisY); ctx.stroke();
+    // стрелки
+    [[X(-10)-14,-1],[X(10)+14,1]].forEach(function(p){
+      ctx.beginPath(); ctx.moveTo(p[0],axisY); ctx.lineTo(p[0]-8*p[1],axisY-5);
+      ctx.lineTo(p[0]-8*p[1],axisY+5); ctx.closePath(); ctx.fillStyle=ink; ctx.fill();
+    });
+    // штрихи и подписи
+    for(var v=-10; v<=10; v++){
+      var x=X(v), big=(v%2===0);
+      ctx.strokeStyle=(v===0)?ink:'#B9C0CE'; ctx.lineWidth=(v===0)?2.5:1;
+      ctx.beginPath(); ctx.moveTo(x,axisY-(big?8:5)); ctx.lineTo(x,axisY+(big?8:5)); ctx.stroke();
+      if(big){
+        ctx.font=(v===0?'800 13px':'600 12px')+' ui-monospace,Menlo,monospace';
+        ctx.fillStyle=(v<0?neg:v>0?pos:ink);
+        ctx.fillText(fmt(v), x, axisY+22);
+      }
+    }
+    // противоположное A
+    if(showOpp){
+      var xo=X(-a);
+      ctx.setLineDash([4,4]); ctx.strokeStyle=ok; ctx.lineWidth=1.5;
+      ctx.beginPath(); ctx.moveTo(X(a),axisY); ctx.lineTo(X(a),axisY-70); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(xo,axisY); ctx.lineTo(xo,axisY-70); ctx.stroke();
+      ctx.setLineDash([]);
+      // кольцо -A
+      ctx.beginPath(); ctx.arc(xo,axisY,8,0,7); ctx.fillStyle='#fff'; ctx.fill();
+      ctx.strokeStyle=ok; ctx.lineWidth=2.5; ctx.stroke();
+      pill(xo, axisY+90, '−A = '+fmt(-a), ok);
+      // подпись симметрии
+      ctx.font='700 11px system-ui,sans-serif'; ctx.fillStyle=ok; ctx.textAlign='center';
+      ctx.fillText('симметрия относительно 0', X(0), axisY-84);
+    }
+    // точки A, B
+    var xa=X(a), xb=X(b), close=Math.abs(xa-xb)<64;
+    // B рисуем первой, A сверху
+    ctx.beginPath(); ctx.arc(xb,axisY,8,0,7); ctx.fillStyle=ok; ctx.fill();
+    pill(xb, close?axisY-38:axisY-12, 'B = '+fmt(b), ok);
+    ctx.beginPath(); ctx.arc(xa,axisY,8,0,7); ctx.fillStyle=acc; ctx.fill();
+    pill(xa, axisY-12, 'A = '+fmt(a), acc);
+
+    valA.textContent=fmt(a); valB.textContent=fmt(b);
+    updateRead(a,b);
+  }
+  function updateRead(a,b){
+    var sA='<b class="'+(a<0?'nn':a>0?'pp':'zz')+'">'+fmt(a)+'</b>';
+    var sB='<b class="'+(b<0?'nn':b>0?'pp':'zz')+'">'+fmt(b)+'</b>';
+    var html;
+    if(a===b){
+      html='A и B в одной точке — это одно и то же число '+sA+'.';
+    } else {
+      var lo=Math.min(a,b), sL='<b class="'+(lo<0?'nn':lo>0?'pp':'zz')+'">'+fmt(lo)+'</b>';
+      var sign=(a<b)?'&lt;':'&gt;';
+      html='Левее стоит '+sL+', а левее — значит меньше. Пишем '+sA+' '+sign+' '+sB+'.';
+    }
+    if(showOpp){
+      html+='<br>Противоположное к A ('+sA+') — это <b style="color:var(--ok)">'+fmt(-a)+'</b>: та же удалённость от нуля ('+fmt(Math.abs(a))+'), но с другой стороны.';
+    }
+    read.innerHTML=html;
+  }
+  sa.addEventListener('input',draw); sb.addEventListener('input',draw);
+  Array.prototype.forEach.call(document.querySelectorAll('.presets button[data-a]'),function(btn){
+    btn.addEventListener('click',function(){ sa.value=btn.getAttribute('data-a'); sb.value=btn.getAttribute('data-b'); draw(); });
+  });
+  oppBtn.addEventListener('click',function(){
+    showOpp=!showOpp; oppBtn.setAttribute('aria-pressed',showOpp?'true':'false'); draw();
+  });
+  setup(); draw();
+  window.addEventListener('resize',function(){ setup(); draw(); });
+})();
+</script>
+
+<script>
+/* ── Тренажёр: сравнение / противоположное / кто левее ── */
+(function(){
+  var taskEl=document.getElementById('trTask'), ansEl=document.getElementById('trAns'), resEl=document.getElementById('trResult');
+  if(!taskEl) return;
+  var tabCmp=document.getElementById('tabCmp'), tabOpp=document.getElementById('tabOpp'), tabLeft=document.getElementById('tabLeft');
+  var mode='cmp', cur={};
+  function ri(min,max){ return Math.floor(Math.random()*(max-min+1))+min; }
+  function pick(){ return ri(-9,9); }
+
+  // пара чисел с краевыми случаями
+  function genPair(){
+    var t=Math.random(), a,b;
+    if(t<0.32){                    // оба отрицательные
+      a=-ri(1,9); do{ b=-ri(1,9); }while(b===a);
+    } else if(t<0.52){             // число и его противоположное
+      a=ri(1,9)*(Math.random()<0.5?-1:1); b=-a;
+    } else if(t<0.72){             // отрицательное и положительное
+      a=-ri(1,9); b=ri(1,9); if(Math.random()<0.5){ var s=a;a=b;b=s; }
+    } else if(t<0.84){             // с нулём
+      a=0; b=(Math.random()<0.5?-1:1)*ri(1,9); if(Math.random()<0.5){ var z=a;a=b;b=z; }
+    } else {                       // общий случай
+      a=pick(); do{ b=pick(); }while(b===a);
+    }
+    return [a,b];
+  }
+
+  function miniLine(marks){        // marks: [{v,cls}]
+    var vs=marks.map(function(m){ return m.v; }).concat([0]);
+    var lo=Math.min.apply(null,vs)-1, hi=Math.max.apply(null,vs)+1;
+    var html='<div class="mline-wrap"><div class="mline">';
+    for(var v=lo; v<=hi; v++){
+      var hit=null;
+      for(var i=0;i<marks.length;i++){ if(marks[i].v===v){ hit=marks[i]; break; } }
+      var cls=(v===0?'z':'');
+      if(hit){ cls+=' hit '+hit.cls; }
+      html+='<span class="'+cls.trim()+'">'+fmt(v)+'</span>';
+    }
+    return html+'</div></div>';
+  }
+  function tag(n){ return '<b class="'+(n<0?'nn':n>0?'pp':'zz')+'">'+fmt(n)+'</b>'; }
+
+  function genTask(){
+    if(mode==='cmp'){
+      var p=genPair(); cur={a:p[0], b:p[1]};
+      cur.task='Поставь знак:  '+fmt(cur.a)+'  ▢  '+fmt(cur.b);
+      ansEl.placeholder='< или >';
+    } else if(mode==='opp'){
+      var a = (Math.random()<0.12) ? 0 : ri(1,9)*(Math.random()<0.5?-1:1);
+      cur={a:a};
+      cur.task='Назови число, противоположное  '+fmt(cur.a);
+      ansEl.placeholder='число';
+    } else { // left
+      var q=genPair(); cur={a:q[0], b:q[1]};
+      cur.task='Какое число левее на прямой:  '+fmt(cur.a)+'  или  '+fmt(cur.b)+' ?';
+      ansEl.placeholder='число';
+    }
+  }
+  function solHTML(){
+    if(mode==='cmp'){
+      var lo=Math.min(cur.a,cur.b), sign=(cur.a<cur.b)?'&lt;':'&gt;';
+      return miniLine([{v:cur.a,cls:'a'},{v:cur.b,cls:'b'}])+
+        '<div class="sol">Ставим оба на прямую. Левее — '+tag(lo)+', а левее значит меньше.<br>'+
+        'Значит '+tag(cur.a)+' '+sign+' '+tag(cur.b)+'.</div>';
+    } else if(mode==='opp'){
+      if(cur.a===0){
+        return miniLine([{v:0,cls:'a'}])+
+          '<div class="sol">Ноль — особый: он сам себе противоположен.<br>−0 = <b>0</b>.</div>';
+      }
+      var opp=-cur.a;
+      return miniLine([{v:cur.a,cls:'a'},{v:opp,cls:'o'}])+
+        '<div class="sol">Меняем только знак, удалённость от нуля та же ('+fmt(Math.abs(cur.a))+').<br>'+
+        'Противоположное к '+tag(cur.a)+' — это <b>'+fmt(opp)+'</b>.</div>';
+    } else {
+      var lo2=Math.min(cur.a,cur.b), hi2=Math.max(cur.a,cur.b);
+      return miniLine([{v:cur.a,cls:'a'},{v:cur.b,cls:'b'}])+
+        '<div class="sol">Левее стоит меньшее число. '+tag(lo2)+' меньше '+tag(hi2)+',<br>'+
+        'значит левее — <b>'+fmt(lo2)+'</b>.</div>';
+    }
+  }
+  function parseNum(raw){ return parseFloat(raw.replace(/\s/g,'').replace('−','-').replace(',','.')); }
+
+  function check(){
+    var raw=ansEl.value.trim();
+    if(raw===''){ resEl.innerHTML='<span class="bad">Введи ответ или нажми «Решение».</span>'; return; }
+    var okAns=false, hint='';
+    if(mode==='cmp'){
+      var s=raw.replace(/\s/g,'');
+      if(s!=='<' && s!=='>'){ resEl.innerHTML='<span class="bad">Напиши знак: < или >.</span>'; return; }
+      var right=(cur.a<cur.b)?'<':'>';
+      okAns=(s===right);
+    } else {
+      var got=parseNum(raw);
+      if(isNaN(got)){ resEl.innerHTML='<span class="bad">Это не похоже на число. Попробуй ещё.</span>'; return; }
+      var target = (mode==='opp') ? -cur.a : Math.min(cur.a,cur.b);
+      okAns=(Math.abs(got-target)<0.001);
+    }
+    resEl.innerHTML=(okAns?'<span class="ok">✓ Верно!</span>':'<span class="bad">✗ Пока не то — посмотри решение.</span>')+solHTML();
+  }
+  function render(focus){
+    taskEl.textContent=cur.task; resEl.innerHTML=''; ansEl.value='';
+    if(focus) ansEl.focus();
+  }
+  function newTask(focus){ genTask(); render(focus); }
+  function setMode(m){
+    mode=m;
+    tabCmp.className=(m==='cmp')?'on':''; tabOpp.className=(m==='opp')?'on':''; tabLeft.className=(m==='left')?'on':'';
+    newTask(true);
+  }
+  tabCmp.addEventListener('click',function(){ setMode('cmp'); });
+  tabOpp.addEventListener('click',function(){ setMode('opp'); });
+  tabLeft.addEventListener('click',function(){ setMode('left'); });
+  document.getElementById('trNew').addEventListener('click',function(){ newTask(true); });
+  document.getElementById('trCheck').addEventListener('click',check);
+  document.getElementById('trShow').addEventListener('click',function(){ resEl.innerHTML=solHTML(); });
+  ansEl.addEventListener('keydown',function(e){ if(e.key==='Enter') check(); });
+
+  // старт: валидная задача выбранного типа, БЕЗ фокуса (чтобы не было автоскролла)
+  newTask(false);
+})();
+</script>
