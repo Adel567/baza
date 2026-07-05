@@ -1,0 +1,607 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Метод подстановки — урок, алгебра 7 класс</title>
+<style>
+  :root{
+    --paper:#F6F7F9;
+    --card:#FFFFFF;
+    --ink:#1B2333;
+    --muted:#5A6478;
+    --line:#E2E5EC;
+    --accent:#3B4FD0;
+    --accent-soft:#EAEDFB;
+    --pos:#1E8E5A;
+    --pos-bg:#E7F4EC;
+    --zero:#B9791A;
+    --zero-bg:#FBF1DC;
+    --neg:#C0455B;
+    --neg-bg:#F9E9EC;
+    --l1:#3B4FD0;      /* первая прямая */
+    --l2:#D9822B;      /* вторая прямая */
+    --l2-bg:#FBEEDD;
+  }
+  *{box-sizing:border-box}
+  body{margin:0}
+  .wrap{
+    max-width:760px;
+    margin:0 auto;
+    padding:clamp(1.4rem,4vw,3rem) clamp(1.1rem,4vw,2rem) 4rem;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    font-size:17px;
+    line-height:1.62;
+    -webkit-font-smoothing:antialiased;
+  }
+  .eyebrow{
+    font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--accent);font-weight:600;margin:0 0 .5rem;
+  }
+  h1{
+    font-family:Georgia,"Times New Roman",serif;
+    font-size:clamp(2.1rem,7vw,3rem);
+    line-height:1.05;margin:0;font-weight:700;letter-spacing:-.01em;
+    text-wrap:balance;
+  }
+  .lede{
+    font-size:1.08rem;color:var(--muted);margin:.7rem 0 0;max-width:60ch;
+    text-wrap:pretty;
+  }
+  h2{
+    font-family:Georgia,serif;font-size:1.32rem;font-weight:700;
+    margin:0 0 .1rem;letter-spacing:-.005em;
+  }
+  section{margin-top:2.6rem}
+  .kicker{
+    font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--muted);font-weight:600;margin:0 0 .8rem;
+    display:flex;align-items:center;gap:.6rem;
+  }
+  .kicker::before{
+    content:"";width:1.4rem;height:2px;background:var(--accent);border-radius:2px;
+  }
+  p{margin:.65rem 0}
+  strong{font-weight:650}
+  .math{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-weight:600}
+  sub{font-size:.72em}
+
+  /* Пример-мотивация */
+  .story{
+    background:var(--card);border:1px solid var(--line);border-radius:12px;
+    padding:1.1rem 1.25rem;margin-top:1.2rem;
+  }
+  .story p{margin:.4rem 0}
+  .story .q{font-style:italic;color:var(--muted)}
+
+  /* Пререквизит */
+  .recall{
+    background:var(--accent-soft);border-radius:12px;padding:1rem 1.15rem;
+    font-size:.96rem;
+  }
+  .recall p{margin:.3rem 0}
+
+  /* Ядро — алгоритм */
+  .hero-algo{
+    margin-top:1.4rem;background:var(--ink);color:#fff;border-radius:14px;
+    padding:1.5rem 1.4rem;
+  }
+  .hero-algo .lbl{
+    font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;
+    color:#9aa6c9;margin:0 0 1rem;text-align:center;
+  }
+  ol.algo{margin:0;padding:0;list-style:none;counter-reset:a;display:flex;flex-direction:column;gap:.8rem}
+  ol.algo li{position:relative;padding-left:2.3rem;counter-increment:a;font-size:.98rem;color:#e7ebf7}
+  ol.algo li::before{
+    content:counter(a);position:absolute;left:0;top:-.05rem;
+    width:1.65rem;height:1.65rem;border-radius:50%;
+    background:#2b3552;color:#8ea0ff;
+    font-size:.85rem;font-weight:700;display:flex;align-items:center;justify-content:center;
+  }
+  ol.algo b{color:#fff}
+  ol.algo .mono{font-family:ui-monospace,Menlo,monospace;color:#8ea0ff;font-weight:700}
+
+  /* Система в фигурной скобке */
+  .sys{
+    display:inline-flex;align-items:center;gap:.5rem;
+    font-family:ui-monospace,Menlo,monospace;font-weight:700;
+  }
+  .sys .brace{
+    font-size:2.6em;line-height:.8;font-weight:400;color:var(--accent);
+    transform:scaleX(.7);
+  }
+  .sys .rows{display:flex;flex-direction:column;gap:.15rem}
+
+  /* Разбор */
+  .worked{
+    background:var(--card);border:1px solid var(--line);border-radius:12px;
+    padding:1.2rem 1.3rem;
+  }
+  .worked .task{
+    margin:0 0 1rem;padding-bottom:.9rem;border-bottom:1px solid var(--line);
+    display:flex;justify-content:center;
+  }
+  ol.steps{margin:0;padding:0;list-style:none;counter-reset:s;display:flex;flex-direction:column;gap:.75rem}
+  ol.steps li{position:relative;padding-left:2.1rem;counter-increment:s}
+  ol.steps li::before{
+    content:counter(s);position:absolute;left:0;top:.05rem;
+    width:1.5rem;height:1.5rem;border-radius:50%;
+    background:var(--accent-soft);color:var(--accent);
+    font-size:.82rem;font-weight:700;display:flex;align-items:center;justify-content:center;
+  }
+  ol.steps .m{font-family:ui-monospace,Menlo,monospace;font-weight:600;color:var(--ink)}
+  ol.steps .why{color:var(--muted);font-size:.9rem}
+  .verdict{
+    margin-top:1rem;padding:.7rem 1rem;background:var(--pos-bg);
+    border-radius:9px;font-weight:600;color:var(--pos);font-size:.98rem;
+    font-family:ui-monospace,Menlo,monospace;
+  }
+
+  /* Визуализация */
+  .viz{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.1rem 1.1rem 1rem;margin-top:1rem}
+  .viz canvas{width:100%;height:auto;display:block;border-radius:10px;background:#FCFDFF}
+  .legend{display:flex;flex-wrap:wrap;gap:.4rem 1.1rem;margin-top:.85rem;font-family:ui-monospace,Menlo,monospace;font-size:.92rem;font-weight:700}
+  .legend span{display:inline-flex;align-items:center;gap:.5rem}
+  .legend i{width:1.4rem;height:.28rem;border-radius:2px;display:inline-block}
+  .viz-btn{margin-top:.9rem}
+  .viz-btn button{
+    font:inherit;font-weight:700;font-size:.9rem;cursor:pointer;border:none;border-radius:9px;
+    padding:.55rem 1rem;color:#fff;background:var(--accent);
+  }
+  .viz-btn button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+  .viz-note{font-size:.9rem;color:var(--muted);margin-top:.8rem}
+
+  /* Практика */
+  .drill{display:flex;flex-direction:column;gap:.7rem}
+  details{
+    background:var(--card);border:1px solid var(--line);border-radius:10px;
+    padding:.85rem 1.05rem;
+  }
+  details[open]{border-color:var(--accent)}
+  summary{
+    cursor:pointer;font-weight:600;list-style:none;
+    display:flex;justify-content:space-between;align-items:center;gap:1rem;
+  }
+  summary::-webkit-details-marker{display:none}
+  summary:focus-visible{outline:3px solid var(--accent);outline-offset:3px;border-radius:6px}
+  summary .q{font-family:ui-monospace,Menlo,monospace;font-size:.96rem}
+  summary .tag{
+    font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);
+    border:1px solid var(--line);border-radius:20px;padding:.1rem .55rem;white-space:nowrap;
+  }
+  summary::after{
+    content:"ответ";font-size:.78rem;color:var(--accent);font-weight:600;white-space:nowrap;
+  }
+  details[open] summary::after{content:"скрыть"}
+  .ans{margin-top:.7rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.96rem;color:var(--muted)}
+  .ans .m{font-family:ui-monospace,Menlo,monospace;color:var(--ink);font-weight:600}
+  .ans b{color:var(--ink)}
+
+  /* Ошибки */
+  ul.pitfalls{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:.7rem}
+  ul.pitfalls li{padding-left:1.5rem;position:relative;font-size:.98rem}
+  ul.pitfalls li::before{
+    content:"\00d7";position:absolute;left:0;top:-.05rem;color:var(--neg);font-weight:700;font-size:1.1rem;
+  }
+  ul.pitfalls b{color:var(--ink)}
+  ul.pitfalls .fix{color:var(--pos);font-weight:600}
+
+  /* Проверка понимания */
+  ol.check{margin:0;padding-left:1.2rem;display:flex;flex-direction:column;gap:.45rem}
+  ol.check li{padding-left:.2rem}
+
+  .next{
+    background:var(--accent);color:#fff;border-radius:12px;padding:1.2rem 1.3rem;
+  }
+  .next h2{color:#fff}
+  .next p{color:#dfe4fb;font-size:.96rem;margin:.4rem 0 0}
+  .foot{margin-top:2.4rem;font-size:.82rem;color:var(--muted);text-align:center}
+
+  @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="wrap">
+
+  <header>
+    <p class="eyebrow">Алгебра · 7 класс</p>
+    <h1>Метод подстановки</h1>
+    <p class="lede">Два неизвестных, два условия — и надёжный способ найти оба числа. Не подбором, а по шагам: выразил одну переменную и подставил.</p>
+  </header>
+
+  <section>
+    <p class="kicker">Зачем это нужно</p>
+    <h2>Когда неизвестных сразу два</h2>
+    <p>В жизни часто есть две неизвестные величины, связанные двумя условиями. Например:</p>
+    <div class="story">
+      <p class="q">«Купили 3 ручки и 2 тетради за 130 рублей, а 1 ручку и 4 тетради — за 110 рублей. Сколько стоит ручка и сколько тетрадь?»</p>
+      <p>Тут два неизвестных — цена ручки и цена тетради — и два условия. Такая пара условий называется <strong>системой</strong>. Решить её «на глаз» трудно, а метод подстановки даёт чёткий пошаговый алгоритм.</p>
+    </div>
+    <p>Типичное заблуждение: «раз неизвестных два — надо как-то подобрать числа». Подбор срабатывает только в лёгких случаях и ничего не гарантирует. Подстановка же <strong>сводит систему к одному уравнению с одной переменной</strong>, а такое ты уже умеешь решать.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Что вспомнить перед стартом</p>
+    <div class="recall">
+      <p><strong>Система</strong> — это два уравнения под общей фигурной скобкой. Её <strong>решение</strong> — пара чисел <span class="math">(x; y)</span>, которая обращает в верное равенство <strong>оба</strong> уравнения сразу.</p>
+      <p><strong>Линейное уравнение с одной переменной</strong> (например <span class="math">5x − 1 = 9</span>) решаем переносом слагаемых через знак равенства со сменой знака. Именно к нему мы и сведём систему.</p>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Ядро — весь метод в пяти шагах</p>
+    <h2>Алгоритм подстановки</h2>
+    <p>Система в общем виде записывается так:</p>
+    <p style="text-align:center;margin:1rem 0">
+      <span class="sys"><span class="brace">{</span><span class="rows"><span>a<sub>1</sub>x + b<sub>1</sub>y = c<sub>1</sub></span><span>a<sub>2</sub>x + b<sub>2</sub>y = c<sub>2</sub></span></span></span>
+    </p>
+    <div class="hero-algo">
+      <p class="lbl">Как решаем</p>
+      <ol class="algo">
+        <li>Из <b>одного</b> уравнения вырази одну переменную через другую. <span class="why" style="color:#9aa6c9">Удобнее ту, у которой коэффициент <span class="mono">1</span> или <span class="mono">−1</span> — тогда не будет дробей.</span></li>
+        <li>Подставь это выражение в <b>другое</b> уравнение — <b>не</b> в то, откуда выражал!</li>
+        <li>Реши получившееся уравнение с <b>одной</b> переменной.</li>
+        <li>Найденное число подставь в выражение из шага 1 и найди вторую переменную.</li>
+        <li>Запиши ответ парой <span class="mono">(x; y)</span>.</li>
+      </ol>
+    </div>
+    <p style="font-size:.92rem;color:var(--muted);margin-top:.9rem">Почему так можно: система значит «оба равенства верны одновременно». Если из первого <span class="math">y</span> обязательно равно какому-то выражению с <span class="math">x</span>, то во втором мы имеем полное право заменить <span class="math">y</span> на это выражение — значение-то одно и то же.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Разбираем вместе · думаю вслух</p>
+    <h2>Эталонный пример</h2>
+    <div class="worked">
+      <p class="task">
+        <span class="sys"><span class="brace">{</span><span class="rows"><span>y = 2x − 1</span><span>3x + y = 9</span></span></span>
+      </p>
+      <ol class="steps">
+        <li><b>Шаг 1.</b> Первое уравнение уже даёт <span class="m">y</span> через <span class="m">x</span>: <span class="m">y = 2x − 1</span>. <span class="why">Выражать ничего не надо — повезло.</span></li>
+        <li><b>Шаг 2.</b> Подставляю <span class="m">y = 2x − 1</span> во <b>второе</b> уравнение (в первом <span class="m">y</span> я уже «израсходовал»): <span class="m">3x + (2x − 1) = 9</span>. <span class="why">Беру выражение в скобки, чтобы не потерять знак.</span></li>
+        <li><b>Шаг 3.</b> Решаю: <span class="m">3x + 2x − 1 = 9 → 5x − 1 = 9 → 5x = 10 → x = 2</span>.</li>
+        <li><b>Шаг 4.</b> Возвращаюсь к <span class="m">y = 2x − 1</span> и подставляю <span class="m">x = 2</span>: <span class="m">y = 2·2 − 1 = 3</span>.</li>
+        <li><b>Шаг 5.</b> Ответ — пара <span class="m">(2; 3)</span>.</li>
+      </ol>
+      <div class="verdict">Проверка: 3·2 + 3 = 9 — верно. ✓</div>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Наглядность · интерактив</p>
+    <h2>«Решить систему» = найти общую точку</h2>
+    <p>Каждое уравнение системы — это <strong>прямая</strong> на координатной плоскости. А решение системы — <strong>точка, где эти прямые пересекаются</strong>. Подстановка находит координаты этой точки алгебраически, буквами.</p>
+    <p>Вот те же две прямые из примера: <span class="math">y = 2x − 1</span> и <span class="math">3x + y = 9</span>. Как думаешь, в какой точке они пересекутся? Нажми кнопку и проверь.</p>
+    <div class="viz">
+      <canvas id="plane" width="640" height="520" aria-label="Координатная плоскость с двумя прямыми и точкой их пересечения"></canvas>
+      <div class="legend">
+        <span><i style="background:var(--l1)"></i>y = 2x − 1</span>
+        <span><i style="background:var(--l2)"></i>3x + y = 9</span>
+      </div>
+      <div class="viz-btn"><button id="vizBtn" type="button">Показать точку пересечения</button></div>
+      <p class="viz-note" id="vizNote">Прямые начерчены. Точку пока не показываю — сначала прикинь сам.</p>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Теперь ты · нажми, чтобы раскрыть ответ</p>
+    <h2>Практика по нарастанию</h2>
+    <div class="drill">
+      <details>
+        <summary><span class="q">Пара (3; 1) — решение системы { 2x − y = 5; x + y = 4 }?</span><span class="tag">понимание</span></summary>
+        <div class="ans">Подставляем пару в оба уравнения: <span class="m">2·3 − 1 = 5</span> — верно; <span class="m">3 + 1 = 4</span> — верно. Оба сошлись → <b>да, (3; 1) — решение.</b></div>
+      </details>
+      <details>
+        <summary><span class="q">{ y = 3x; &nbsp; x + y = 8 }</span><span class="tag">применение</span></summary>
+        <div class="ans"><span class="m">y</span> уже выражен. Подставляем во второе: <span class="m">x + 3x = 8 → 4x = 8 → x = 2</span>. Тогда <span class="m">y = 3·2 = 6</span>. Ответ <b>(2; 6)</b>.</div>
+      </details>
+      <details>
+        <summary><span class="q">{ x − y = 4; &nbsp; 2x + 3y = 13 }</span><span class="tag">применение</span></summary>
+        <div class="ans">Из первого: <span class="m">x = 4 + y</span>. Подставляем во второе в скобках: <span class="m">2(4 + y) + 3y = 13 → 8 + 5y = 13 → 5y = 5 → y = 1</span>. Тогда <span class="m">x = 4 + 1 = 5</span>. Ответ <b>(5; 1)</b>.</div>
+      </details>
+      <details>
+        <summary><span class="q">Найди ошибку: из x − y = 6 выразили y = 6 − x</span><span class="tag">анализ</span></summary>
+        <div class="ans">Ошибка в знаке. Переносим <span class="m">−y</span> вправо, а <span class="m">6</span> влево, меняя знаки: <span class="m">x − y = 6 → −y = 6 − x → y = x − 6</span>. Правильно <span class="m">y = x − 6</span>, а не <span class="m">6 − x</span>. Быстрая проверка: пусть <span class="m">x = 10</span>, тогда из <span class="m">x − y = 6</span> получаем <span class="m">y = 4</span>; формула <span class="m">y = x − 6</span> даёт <span class="m">4</span> ✓, а <span class="m">6 − x</span> дало бы <span class="m">−4</span> ✗.</div>
+      </details>
+      <details>
+        <summary><span class="q">Что изменится: в { y = x + 1; 2x − y = 3 } подставили y обратно в ПЕРВОЕ уравнение?</span><span class="tag">анализ</span></summary>
+        <div class="ans">Выразили <span class="m">y = x + 1</span> из первого — и подставили туда же. Получим <span class="m">y = x + 1 → (x + 1) = x + 1 → 0 = 0</span>. Переменная исчезла, тождество верно всегда — но <b>ответа так не найти</b>. Подставлять надо во <b>второе</b>: <span class="m">2x − (x + 1) = 3 → x − 1 = 3 → x = 4</span>, тогда <span class="m">y = 5</span>. Ответ <b>(4; 5)</b>.</div>
+      </details>
+      <details>
+        <summary><span class="q">Обратная задача: придумай систему с решением (2; 5)</span><span class="tag">анализ</span></summary>
+        <div class="ans">Подбери коэффициенты так, чтобы пара подходила в оба уравнения. Например: <span class="m">x + y = 7</span> (ведь <span class="m">2 + 5 = 7</span>) и <span class="m">x − y = −3</span> (ведь <span class="m">2 − 5 = −3</span>). Проверь подстановкой — обе верны. Систем-ответов бесконечно много, любая подходящая пара уравнений годится.</div>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Тренажёр · бесконечная практика</p>
+    <h2>Реши систему сам</h2>
+    <p>Нажми «Новая система» и реши её методом подстановки. Впиши <b>x</b> и <b>y</b>, потом проверь себя или посмотри пошаговое решение.</p>
+    <p style="font-size:.9rem;color:var(--muted);margin-top:-.2rem">Иногда система бывает особая: если решений нет — впиши <b>нет</b> в поле x; если решений бесконечно много — впиши <b>много</b>.</p>
+    <div class="trainer">
+      <div class="tr-eq">
+        <span class="brace">{</span>
+        <span class="rows"><span id="trE1">x − y = 2</span><span id="trE2">2x + y = 7</span></span>
+      </div>
+      <div class="tr-ctl">
+        <button id="trNew" type="button">🎲 Новая система</button>
+        <label class="fld">x <input id="trX" type="text" inputmode="text" placeholder="x" aria-label="Значение x"></label>
+        <label class="fld">y <input id="trY" type="text" inputmode="text" placeholder="y" aria-label="Значение y"></label>
+        <button id="trCheck" type="button" class="sec">Проверить</button>
+        <button id="trShow" type="button" class="ghost">Показать решение</button>
+      </div>
+      <div id="trResult" class="tr-result"></div>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Где чаще всего ошибаются</p>
+    <h2>Лови эти ловушки</h2>
+    <ul class="pitfalls">
+      <li><b>Подставляют в то же уравнение, откуда выразили.</b> Выразил из первого — подставляй во второе. Иначе получишь тождество <span class="math">0 = 0</span> и переменная «исчезнет». <span class="fix">Проговаривай: «выразил из первого — подставляю во второе».</span></li>
+      <li><b>Теряют вторую переменную.</b> Нашли <span class="math">x</span> и остановились. Но решение — это <b>пара</b> <span class="math">(x; y)</span>. <span class="fix">Всегда возвращайся к выражению из шага 1 и считай второе число.</span></li>
+      <li><b>Ошибаются в знаке при выражении.</b> Из <span class="math">x − y = 4</span> получают <span class="math">y = x + 4</span> вместо <span class="math">y = x − 4</span>. <span class="fix">Переноси слагаемое через знак равенства, меняя знак; потом подставь пару обратно и проверь.</span></li>
+      <li><b>Не берут выражение в скобки.</b> Подставляя <span class="math">x = 4 + y</span> в <span class="math">2x + 3y = 13</span>, пишут <span class="math">2·4 + y</span> вместо <span class="math">2·(4 + y)</span>. <span class="fix">Подставляемое выражение всегда заключай в скобки.</span></li>
+    </ul>
+  </section>
+
+  <section>
+    <p class="kicker">Проверь себя · объясни своими словами</p>
+    <h2>Три вопроса</h2>
+    <ol class="check">
+      <li>В какое уравнение подставляют выраженную переменную — в то же, откуда выразили, или в другое?</li>
+      <li>Что является ответом при решении системы — одно число или пара чисел?</li>
+      <li>Как быстро проверить найденную пару <span class="math">(x; y)</span>?</li>
+    </ol>
+    <details style="margin-top:.9rem">
+      <summary><span class="q">Сверить ответы</span><span class="tag">проверка</span></summary>
+      <div class="ans">1) В <b>другое</b> уравнение. &nbsp; 2) <b>Пара</b> чисел <span class="m">(x; y)</span>. &nbsp; 3) Подставить пару в <b>оба</b> исходных уравнения — должны получиться два верных равенства.</div>
+    </details>
+  </section>
+
+  <section>
+    <div class="next">
+      <h2>Что дальше</h2>
+      <p>Теперь ты умеешь решать систему, когда она уже готова. Следующий шаг — <strong>текстовые задачи</strong>: там условие дано словами («на 3 больше», «вместе стоят 130 рублей»), и сначала нужно самому составить систему из двух уравнений — а решишь её ты уже знакомым методом подстановки.</p>
+      <p>Итог одним предложением: метод подстановки выражает одну переменную через другую и подставляет это выражение в оставшееся уравнение, сводя систему к одному уравнению с одной неизвестной.</p>
+    </div>
+  </section>
+
+  <p class="foot">Проверка на выходе: назови 5 шагов метода · куда подставляем выраженную переменную · чем является ответ системы.</p>
+
+</div>
+
+<style>
+  .trainer{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.2rem 1.3rem;margin-top:1rem}
+  .tr-eq{display:flex;align-items:center;gap:.5rem;justify-content:center;padding:1rem;background:var(--accent-soft);border-radius:10px}
+  .tr-eq .brace{font-size:3rem;line-height:.7;font-weight:400;color:var(--accent);transform:scaleX(.7)}
+  .tr-eq .rows{display:flex;flex-direction:column;gap:.3rem;font-family:ui-monospace,Menlo,monospace;font-weight:800;font-size:clamp(1.1rem,4.5vw,1.4rem);color:var(--ink)}
+  .tr-ctl{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.9rem;align-items:center}
+  .tr-ctl button{font:inherit;font-weight:700;font-size:.9rem;cursor:pointer;border:none;border-radius:9px;padding:.55rem .95rem;color:#fff;background:var(--accent)}
+  .tr-ctl button.sec{background:var(--pos)}
+  .tr-ctl button.ghost{background:transparent;color:var(--accent);border:1px solid var(--accent)}
+  .tr-ctl .fld{display:flex;align-items:center;gap:.35rem;font-family:ui-monospace,Menlo,monospace;font-weight:700}
+  .tr-ctl .fld input{width:5.5rem;font:inherit;padding:.5rem .6rem;border:1px solid var(--line);border-radius:9px;background:#fff;color:var(--ink)}
+  .tr-ctl button:focus-visible,.tr-ctl input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+  .tr-result{margin-top:.9rem;font-size:.96rem;min-height:1.2rem}
+  .tr-result .ok{color:var(--pos);font-weight:700}
+  .tr-result .bad{color:var(--neg);font-weight:700}
+  .tr-result .sol{margin-top:.7rem;padding:.85rem 1rem;background:#FCFBFE;border:1px solid var(--line);border-radius:10px;font-family:ui-monospace,Menlo,monospace;font-size:.9rem;line-height:1.85;overflow-x:auto}
+  .tr-result .sol b{color:var(--accent)}
+</style>
+
+<script>
+(function(){
+  var canvas=document.getElementById('plane'); if(!canvas) return;
+  var ctx=canvas.getContext('2d');
+  var btn=document.getElementById('vizBtn'), note=document.getElementById('vizNote');
+  var W=640,H=520,dpr=1,revealed=false;
+  var xmin=-2,xmax=6,ymin=-4,ymax=10;
+  var padL=32,padR=16,padT=14,padB=24;
+
+  function css(v){ return getComputedStyle(document.documentElement).getPropertyValue(v).trim(); }
+  function resize(){
+    var cssW=canvas.clientWidth||640; dpr=Math.min(window.devicePixelRatio||1,2);
+    W=cssW; H=Math.round(cssW*0.82);
+    canvas.width=W*dpr; canvas.height=H*dpr; canvas.style.height=H+'px';
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+  }
+  function X(x){ return padL+(x-xmin)/(xmax-xmin)*(W-padL-padR); }
+  function Y(y){ return padT+(ymax-y)/(ymax-ymin)*(H-padT-padB); }
+
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    // сетка
+    ctx.strokeStyle='#EEF0F5'; ctx.lineWidth=1;
+    var gx,gy;
+    for(gx=xmin;gx<=xmax;gx++){ ctx.beginPath(); ctx.moveTo(X(gx),Y(ymax)); ctx.lineTo(X(gx),Y(ymin)); ctx.stroke(); }
+    for(gy=ymin;gy<=ymax;gy++){ ctx.beginPath(); ctx.moveTo(X(xmin),Y(gy)); ctx.lineTo(X(xmax),Y(gy)); ctx.stroke(); }
+    // оси
+    ctx.strokeStyle='#9AA3B2'; ctx.lineWidth=1.5;
+    ctx.beginPath(); ctx.moveTo(X(xmin),Y(0)); ctx.lineTo(X(xmax),Y(0)); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(X(0),Y(ymax)); ctx.lineTo(X(0),Y(ymin)); ctx.stroke();
+    // стрелки осей
+    ctx.fillStyle='#9AA3B2';
+    ctx.beginPath(); ctx.moveTo(X(xmax),Y(0)); ctx.lineTo(X(xmax)-7,Y(0)-4); ctx.lineTo(X(xmax)-7,Y(0)+4); ctx.fill();
+    ctx.beginPath(); ctx.moveTo(X(0),Y(ymax)); ctx.lineTo(X(0)-4,Y(ymax)+7); ctx.lineTo(X(0)+4,Y(ymax)+7); ctx.fill();
+    // подписи осей
+    ctx.fillStyle='#5A6478'; ctx.font='600 12px ui-monospace,Menlo,monospace';
+    ctx.textAlign='left'; ctx.textBaseline='top';
+    ctx.fillText('x',X(xmax)-12,Y(0)+6);
+    ctx.fillText('y',X(0)+6,Y(ymax)+2);
+    // числа на осях (через 2)
+    ctx.fillStyle='#8A93A6'; ctx.font='11px ui-monospace,Menlo,monospace';
+    ctx.textAlign='center'; ctx.textBaseline='top';
+    for(gx=xmin;gx<=xmax;gx++){ if(gx===0||gx%2!==0) continue; ctx.fillText(''+gx,X(gx),Y(0)+5); }
+    ctx.textAlign='right'; ctx.textBaseline='middle';
+    for(gy=ymin;gy<=ymax;gy++){ if(gy===0||gy%2!==0) continue; ctx.fillText((gy<0?'−':'')+Math.abs(gy),X(0)-5,Y(gy)); }
+
+    // прямые: y=2x-1 и y=9-3x
+    function line(f,color){
+      ctx.strokeStyle=color; ctx.lineWidth=3; ctx.beginPath();
+      ctx.moveTo(X(xmin),Y(f(xmin))); ctx.lineTo(X(xmax),Y(f(xmax))); ctx.stroke();
+    }
+    line(function(x){return 2*x-1;}, css('--l1'));
+    line(function(x){return 9-3*x;}, css('--l2'));
+
+    // точка пересечения (2;3)
+    if(revealed){
+      var px=X(2),py=Y(3);
+      ctx.strokeStyle='#B4BAC7'; ctx.lineWidth=1.5; ctx.setLineDash([5,4]);
+      ctx.beginPath(); ctx.moveTo(px,py); ctx.lineTo(px,Y(0)); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(px,py); ctx.lineTo(X(0),py); ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.fillStyle=css('--pos'); ctx.beginPath(); ctx.arc(px,py,6.5,0,7); ctx.fill();
+      ctx.fillStyle='#fff'; ctx.beginPath(); ctx.arc(px,py,2.6,0,7); ctx.fill();
+      ctx.fillStyle=css('--ink'); ctx.font='700 13px ui-monospace,Menlo,monospace';
+      ctx.textAlign='left'; ctx.textBaseline='bottom';
+      ctx.fillText('(2; 3)',px+10,py-6);
+    }
+  }
+  btn.addEventListener('click',function(){
+    revealed=!revealed; draw();
+    if(revealed){ btn.textContent='Скрыть точку'; note.innerHTML='Прямые пересекаются в точке <b>(2; 3)</b> — ровно та пара, что метод подстановки нашёл буквами. Алгебра и график сходятся.'; }
+    else { btn.textContent='Показать точку пересечения'; note.textContent='Прямые начерчены. Точку пока не показываю — сначала прикинь сам.'; }
+  });
+  window.addEventListener('resize',function(){ resize(); draw(); });
+  resize(); draw();
+})();
+</script>
+
+<script>
+(function(){
+  var e1=document.getElementById('trE1'), e2=document.getElementById('trE2');
+  var xEl=document.getElementById('trX'), yEl=document.getElementById('trY'), resEl=document.getElementById('trResult');
+  if(!e1) return;
+  var cur=null;
+
+  function ri(a,b){ return Math.floor(Math.random()*(b-a+1))+a; }
+  function nz(a,b){ var v; do{ v=ri(a,b); }while(v===0); return v; }
+  function fmtN(n){ return (n<0?'−':'')+Math.abs(n); }
+  // "a x": коэффициент 1 и -1 скрываем
+  function lead(a){ if(a===1) return 'x'; if(a===-1) return '−x'; return fmtN(a)+'x'; }
+  function addT(coef,sym){ if(coef===0) return ''; var m=Math.abs(coef)===1?'':Math.abs(coef); return (coef<0?' − ':' + ')+m+sym; }
+  function renderStd(A,B,C){ return lead(A)+addT(B,'y')+' = '+fmtN(C); }
+  function mul(coef){ if(coef===1) return ''; if(coef===-1) return '−'; return fmtN(coef)+'·'; }
+  // slope*sym + konst  (например "y + 2", "−x − 6")
+  function renderLin(slope,konst,sym){
+    var s='';
+    if(slope!==0){ s += (slope===1?'':(slope===-1?'−':fmtN(slope)))+sym; }
+    if(konst!==0 || slope===0){ if(s==='') s+=fmtN(konst); else s+=(konst<0?' − ':' + ')+Math.abs(konst); }
+    return s;
+  }
+  // числовая подстановка: slope*(val) + konst
+  function renderLinNum(slope,konst,val){
+    var s;
+    if(slope===1) s='('+fmtN(val)+')';
+    else if(slope===-1) s='−('+fmtN(val)+')';
+    else s=fmtN(slope)+'·('+fmtN(val)+')';
+    if(konst!==0) s += (konst<0?' − ':' + ')+Math.abs(konst);
+    return s;
+  }
+
+  function build(){
+    var r=Math.random();
+    var special = r<0.13?'none':(r<0.26?'inf':null);
+    for(var t=0;t<300;t++){
+      var v = Math.random()<0.5?'x':'y';
+      var x0=ri(-5,5), y0=ri(-5,5), A1,B1,C1,A2,B2,C2;
+      if(v==='x'){ A1=Math.random()<0.5?1:-1; B1=nz(-3,3); }
+      else { B1=Math.random()<0.5?1:-1; A1=nz(-3,3); }
+      C1=A1*x0+B1*y0;
+      if(special){
+        var k; do{ k=ri(-3,3); }while(k===0||k===1);
+        A2=k*A1; B2=k*B1;
+        C2 = special==='inf' ? k*C1 : k*C1+nz(-6,6);
+      } else {
+        A2=nz(-4,4); B2=nz(-4,4); C2=A2*x0+B2*y0;
+      }
+      var slope,konst,coeff,rhs;
+      if(v==='x'){ slope=-A1*B1; konst=A1*C1; coeff=A2*slope+B2; rhs=C2-A2*konst; }
+      else { slope=-B1*A1; konst=B1*C1; coeff=A2+B2*slope; rhs=C2-B2*konst; }
+      if(special){ if(coeff!==0) continue; }
+      else { if(coeff===0) continue; if(rhs/coeff!==(v==='x'?y0:x0)) continue; }
+      cur={v:v,A1:A1,B1:B1,C1:C1,A2:A2,B2:B2,C2:C2,x0:x0,y0:y0,special:special,
+           slope:slope,konst:konst,coeff:coeff,rhs:rhs,
+           solvedVar:(v==='x'?'y':'x'),solvedVal:(v==='x'?y0:x0),
+           otherVar:(v==='x'?'x':'y'),otherVal:(v==='x'?x0:y0)};
+      return;
+    }
+    // запасной вариант
+    cur={v:'x',A1:1,B1:-1,C1:2,A2:2,B2:1,C2:7,x0:3,y0:1,special:null,
+         slope:1,konst:2,coeff:3,rhs:3,solvedVar:'y',solvedVal:1,otherVar:'x',otherVal:3};
+  }
+
+  function render(){
+    e1.textContent=renderStd(cur.A1,cur.B1,cur.C1);
+    e2.textContent=renderStd(cur.A2,cur.B2,cur.C2);
+  }
+
+  function stepsHTML(){
+    var q=cur, h='<div class="sol">';
+    h+='① '+renderStd(q.A1,q.B1,q.C1)+'<br>② '+renderStd(q.A2,q.B2,q.C2)+'<br><br>';
+    if(q.v==='x'){
+      var ex=renderLin(q.slope,q.konst,'y');
+      h+='<b>1.</b> Из ① выражаем x: &nbsp;x = '+ex+'<br>';
+      h+='<b>2.</b> Подставляем во ②: &nbsp;'+mul(q.A2)+'('+ex+')'+addT(q.B2,'y')+' = '+fmtN(q.C2)+'<br>';
+    } else {
+      var ey=renderLin(q.slope,q.konst,'x');
+      // связующий знак перед подставляемым y-членом B2·(...)
+      var yt = (Math.abs(q.B2)===1?(q.B2<0?' − ':' + '):(q.B2<0?' − ':' + ')+Math.abs(q.B2)+'·')+'('+ey+')';
+      h+='<b>1.</b> Из ① выражаем y: &nbsp;y = '+ey+'<br>';
+      h+='<b>2.</b> Подставляем во ②: &nbsp;'+lead(q.A2)+yt+' = '+fmtN(q.C2)+'<br>';
+    }
+    if(q.special==='none'){
+      h+='<b>3.</b> После упрощения переменная сокращается: &nbsp;0 = '+fmtN(q.rhs)+' — неверно.<br>';
+      h+='<b>Ответ:</b> <b>решений нет</b> (прямые параллельны).';
+    } else if(q.special==='inf'){
+      h+='<b>3.</b> После упрощения: &nbsp;0 = 0 — верно при любом значении.<br>';
+      h+='<b>Ответ:</b> <b>решений бесконечно много</b> (это одна и та же прямая).';
+    } else {
+      h+='<b>3.</b> Приводим подобные: &nbsp;'+lead2(q.coeff,q.solvedVar)+' = '+fmtN(q.rhs)+' &nbsp;→&nbsp; '+q.solvedVar+' = '+fmtN(q.solvedVal)+'<br>';
+      h+='<b>4.</b> Подставляем '+q.solvedVar+' = '+fmtN(q.solvedVal)+' в выражение: &nbsp;'+q.otherVar+' = '+renderLinNum(q.slope,q.konst,q.solvedVal)+' = '+fmtN(q.otherVal)+'<br>';
+      h+='<b>Ответ:</b> (x; y) = (<b>'+fmtN(q.x0)+'; '+fmtN(q.y0)+'</b>) ✓';
+    }
+    return h+'</div>';
+  }
+  // коэффициент·переменная для шага 3 ("5·y", "−y", "y")
+  function lead2(c,sym){ if(c===1) return sym; if(c===-1) return '−'+sym; return fmtN(c)+'·'+sym; }
+
+  function generate(){
+    build(); render(); resEl.innerHTML=''; xEl.value=''; yEl.value='';
+    xEl.focus();
+  }
+
+  function num(s){ s=s.trim().replace(',','.'); if(s==='') return NaN; return parseFloat(s); }
+
+  function check(){
+    var q=cur;
+    var vx=xEl.value.trim().toLowerCase(), vy=yEl.value.trim().toLowerCase();
+    if(q.special==='none'){
+      if(/нет|net|∅|отсут/.test(vx)||/нет|net|∅|отсут/.test(vy)) resEl.innerHTML='<span class="ok">✓ Верно — переменная сократилась, решений нет.</span>'+stepsHTML();
+      else resEl.innerHTML='<span class="bad">✗ Присмотрись: при упрощении переменная исчезнет и останется неверное равенство. Решений нет — впиши «нет».</span>'+stepsHTML();
+      return;
+    }
+    if(q.special==='inf'){
+      if(/мног|беск|inf|∞/.test(vx)||/мног|беск|inf|∞/.test(vy)) resEl.innerHTML='<span class="ok">✓ Верно — оба уравнения задают одну прямую, решений бесконечно много.</span>'+stepsHTML();
+      else resEl.innerHTML='<span class="bad">✗ Присмотрись: второе уравнение — это первое, умноженное на число. Решений бесконечно много — впиши «много».</span>'+stepsHTML();
+      return;
+    }
+    var gx=num(vx), gy=num(vy);
+    if(isNaN(gx)||isNaN(gy)){ resEl.innerHTML='<span class="bad">Впиши оба числа — x и y (или нажми «Показать решение»).</span>'; return; }
+    var ok = Math.abs(gx-q.x0)<0.001 && Math.abs(gy-q.y0)<0.001;
+    if(ok) resEl.innerHTML='<span class="ok">✓ Верно! Пара найдена правильно.</span>'+stepsHTML();
+    else resEl.innerHTML='<span class="bad">✗ Пока не то. Проверь знаки при выражении и не забудь про вторую переменную.</span>'+stepsHTML();
+  }
+
+  document.getElementById('trNew').addEventListener('click',generate);
+  document.getElementById('trCheck').addEventListener('click',check);
+  document.getElementById('trShow').addEventListener('click',function(){ resEl.innerHTML=stepsHTML(); });
+  xEl.addEventListener('keydown',function(e){ if(e.key==='Enter') yEl.focus(); });
+  yEl.addEventListener('keydown',function(e){ if(e.key==='Enter') check(); });
+
+  // стартовое состояние = система, совпадающая с показываемым решением; без focus()
+  cur={v:'x',A1:1,B1:-1,C1:2,A2:2,B2:1,C2:7,x0:3,y0:1,special:null,
+       slope:1,konst:2,coeff:3,rhs:3,solvedVar:'y',solvedVal:1,otherVar:'x',otherVal:3};
+  render();
+})();
+</script>

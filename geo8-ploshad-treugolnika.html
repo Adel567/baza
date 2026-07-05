@@ -1,0 +1,480 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Площадь треугольника — геометрия 8 класс</title>
+<style>
+  :root{
+    --paper:#F6F7F9;
+    --card:#FFFFFF;
+    --ink:#1B2333;
+    --muted:#5A6478;
+    --line:#E2E5EC;
+    --accent:#2E5AAC;      /* основание a — синий */
+    --accent-soft:#E4EBF7;
+    --hi:#E27C2C;          /* высота h — оранжевый */
+    --hi-soft:#FBEEDF;
+    --ok:#1E8E5A;
+    --ok-bg:#E7F4EC;
+    --no:#C0455B;
+  }
+  *{box-sizing:border-box}
+  body{margin:0}
+  .wrap{
+    max-width:760px;margin:0 auto;
+    padding:clamp(1.4rem,4vw,3rem) clamp(1.1rem,4vw,2rem) 4rem;
+    background:var(--paper);color:var(--ink);
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    font-size:17px;line-height:1.62;-webkit-font-smoothing:antialiased;
+  }
+  .eyebrow{font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);font-weight:600;margin:0 0 .5rem}
+  h1{font-family:Georgia,"Times New Roman",serif;font-size:clamp(2.1rem,7vw,3rem);line-height:1.05;margin:0;font-weight:700;letter-spacing:-.01em;text-wrap:balance}
+  .lede{font-size:1.08rem;color:var(--muted);margin:.7rem 0 0;max-width:60ch;text-wrap:pretty}
+  h2{font-family:Georgia,serif;font-size:1.32rem;font-weight:700;margin:0 0 .1rem;letter-spacing:-.005em;text-wrap:balance}
+  section{margin-top:2.6rem}
+  .kicker{font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:600;margin:0 0 .8rem;display:flex;align-items:center;gap:.6rem}
+  .kicker::before{content:"";width:1.4rem;height:2px;background:var(--accent);border-radius:2px}
+  p{margin:.65rem 0}
+  strong{font-weight:650}
+  .math{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-weight:600}
+  sup{font-size:.72em}
+  .aw{color:var(--accent);font-weight:800}
+  .hw{color:var(--hi);font-weight:800}
+
+  /* Главная формула */
+  .hero-formula{margin-top:2.2rem;background:var(--ink);color:#fff;border-radius:14px;padding:1.6rem 1.4rem;text-align:center}
+  .hero-formula .lbl{font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:#9aa6c9;margin:0 0 .7rem}
+  .hero-formula .eq{font-family:ui-monospace,"SF Mono",Menlo,monospace;font-size:clamp(1.7rem,6vw,2.4rem);font-weight:700;letter-spacing:.01em}
+  .hero-formula .eq .a{color:#8FB2E6} .hero-formula .eq .h{color:#F0A45E}
+  .hero-formula .note{font-size:.86rem;color:#9aa6c9;margin:.8rem 0 0}
+
+  /* Пререквизит */
+  .recall{background:var(--accent-soft);border-radius:12px;padding:1rem 1.15rem;font-size:.96rem}
+  .recall p{margin:.3rem 0}
+  .recall b{color:var(--accent)}
+
+  /* Что такое основание и высота */
+  .defs{display:grid;gap:.85rem;margin-top:.4rem}
+  @media(min-width:560px){.defs{grid-template-columns:1fr 1fr}}
+  .def{border-radius:12px;padding:1.05rem 1.1rem;border:1px solid var(--line);background:var(--card);display:flex;flex-direction:column;gap:.35rem}
+  .def.a{border-top:4px solid var(--accent)}
+  .def.h{border-top:4px solid var(--hi)}
+  .def .t{font-weight:700;font-size:1.05rem}
+  .def.a .t{color:var(--accent)} .def.h .t{color:var(--hi)}
+  .def .d{font-size:.93rem;color:var(--muted)}
+
+  /* Диаграмма-канвас */
+  .diagram{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.1rem 1.1rem 1rem;margin-top:1rem}
+  .diagram canvas{width:100%;height:auto;display:block;border-radius:10px;background:#FCFDFF}
+  .diag-area{text-align:center;font-weight:700;font-size:1.05rem;margin:.85rem 0 0;padding:.5rem;border-radius:9px;font-family:ui-monospace,Menlo,monospace;background:var(--ok-bg);color:var(--ok)}
+  .sliders{display:grid;gap:.6rem;margin-top:.9rem}
+  @media(min-width:520px){.sliders{grid-template-columns:repeat(3,1fr)}}
+  .sliders label{display:flex;align-items:center;gap:.5rem;font-weight:700;font-family:ui-monospace,Menlo,monospace;font-size:.95rem}
+  .sliders label.la{color:var(--accent)} .sliders label.lh{color:var(--hi)} .sliders label.lf{color:var(--muted)}
+  .sliders input[type=range]{flex:1}
+  .sliders input.ra{accent-color:var(--accent)} .sliders input.rh{accent-color:var(--hi)} .sliders input.rf{accent-color:var(--muted)}
+  .sliders input[type=range]:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+  .sliders .sval{min-width:2.4ch;text-align:right;font-variant-numeric:tabular-nums}
+
+  /* Разбор */
+  .worked{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:1.2rem 1.3rem}
+  .worked+.worked{margin-top:.8rem}
+  .worked .task{font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.02rem;margin:0 0 1rem;padding-bottom:.8rem;border-bottom:1px solid var(--line)}
+  ol.steps{margin:0;padding:0;list-style:none;counter-reset:s;display:flex;flex-direction:column;gap:.7rem}
+  ol.steps li{position:relative;padding-left:2.1rem;counter-increment:s;font-size:.97rem}
+  ol.steps li::before{content:counter(s);position:absolute;left:0;top:.05rem;width:1.5rem;height:1.5rem;border-radius:50%;background:var(--accent-soft);color:var(--accent);font-size:.82rem;font-weight:700;display:flex;align-items:center;justify-content:center}
+  ol.steps .m{font-family:ui-monospace,Menlo,monospace;font-weight:600;color:var(--ink)}
+  .verdict{margin-top:1rem;padding:.7rem 1rem;background:var(--ok-bg);border-radius:9px;font-weight:600;color:var(--ok);font-size:.98rem;font-family:ui-monospace,Menlo,monospace}
+
+  /* POE */
+  .poe{background:var(--hi-soft);border-left:4px solid var(--hi);border-radius:0 12px 12px 0;padding:1rem 1.15rem;margin-top:1rem;font-size:.97rem}
+  .poe b{color:var(--hi)}
+
+  /* Практика */
+  .drill{display:flex;flex-direction:column;gap:.7rem}
+  details{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:.85rem 1.05rem}
+  details[open]{border-color:var(--accent)}
+  summary{cursor:pointer;font-weight:600;list-style:none;display:flex;justify-content:space-between;align-items:center;gap:1rem}
+  summary::-webkit-details-marker{display:none}
+  summary:focus-visible{outline:3px solid var(--accent);outline-offset:3px;border-radius:6px}
+  summary .q{font-family:ui-monospace,Menlo,monospace;font-size:.95rem}
+  summary .tag{font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);border:1px solid var(--line);border-radius:20px;padding:.1rem .55rem;white-space:nowrap}
+  summary::after{content:"показать ответ";font-size:.78rem;color:var(--accent);font-weight:600;white-space:nowrap}
+  details[open] summary::after{content:"скрыть"}
+  .ans{margin-top:.7rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.96rem;color:var(--muted)}
+  .ans .m{font-family:ui-monospace,Menlo,monospace;color:var(--ink);font-weight:600}
+  .ans b{color:var(--ink)}
+
+  /* Тренажёр */
+  .trainer{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.2rem 1.3rem;margin-top:1rem}
+  .tr-task{font-size:clamp(1rem,4vw,1.15rem);text-align:center;padding:1rem;background:var(--accent-soft);border-radius:10px;font-weight:600;color:var(--ink)}
+  .tr-task b{font-family:ui-monospace,Menlo,monospace}
+  .tr-ctl{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:1rem;align-items:center;justify-content:center}
+  .tr-ctl input{flex:1;min-width:120px;max-width:190px;font:inherit;padding:.5rem .7rem;border:1px solid var(--line);border-radius:9px;text-align:center;background:#fff;color:var(--ink)}
+  .tr-ctl button{font:inherit;font-weight:700;font-size:.9rem;cursor:pointer;border:none;border-radius:9px;padding:.55rem .95rem;color:#fff;background:var(--accent)}
+  .tr-ctl button.sec{background:var(--hi)}
+  .tr-ctl button.ghost{background:transparent;color:var(--accent);border:1px solid var(--accent)}
+  .tr-ctl button:focus-visible,.tr-ctl input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+  .tr-result{margin-top:.9rem;font-size:.96rem;min-height:1.2rem;text-align:center}
+  .tr-result .ok{color:var(--ok);font-weight:700}
+  .tr-result .bad{color:var(--no);font-weight:700}
+  .tr-result .sol{margin-top:.7rem;padding:.85rem 1rem;background:#FCFDFE;border:1px solid var(--line);border-radius:10px;font-family:ui-monospace,Menlo,monospace;font-size:.9rem;line-height:1.85;text-align:left}
+  .tr-result .sol b{color:var(--accent)}
+
+  /* Ошибки */
+  ul.pitfalls{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:.6rem}
+  ul.pitfalls li{padding-left:1.5rem;position:relative;font-size:.98rem}
+  ul.pitfalls li::before{content:"×";position:absolute;left:0;top:-.05rem;color:var(--no);font-weight:700;font-size:1.1rem}
+  ul.pitfalls b{color:var(--ink)}
+
+  /* Что дальше */
+  .next{background:var(--accent);color:#fff;border-radius:12px;padding:1.2rem 1.3rem}
+  .next h2{color:#fff}
+  .next .big{font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.25rem;margin:.6rem 0 .3rem}
+  .next p{color:#dfe7fb;font-size:.96rem;margin:.4rem 0 0}
+  .next b{color:#fff}
+  .foot{margin-top:2.4rem;font-size:.82rem;color:var(--muted);text-align:center}
+
+  @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="wrap">
+
+  <header>
+    <p class="eyebrow">Геометрия · 8 класс</p>
+    <h1>Площадь треугольника</h1>
+    <p class="lede">Половина прямоугольника, натянутого на <em>основание</em> и <em>высоту</em> к нему — а не «половина произведения двух сторон».</p>
+  </header>
+
+  <div class="hero-formula">
+    <p class="lbl">Формула площади</p>
+    <div class="eq">S = ½ · <span class="a">a</span> · <span class="h">h</span></div>
+    <p class="note"><span style="color:#8FB2E6">a</span> — основание · <span style="color:#F0A45E">h</span> — высота, проведённая к этому основанию</p>
+  </div>
+
+  <section>
+    <p class="kicker">Зачем это нужно</p>
+    <h2>Треугольник — кирпичик любой площади</h2>
+    <p>Треугольник — самая базовая плоская фигура: <strong>любой</strong> многоугольник можно разрезать на треугольники. Поэтому через площадь треугольника считают площади участков, крыш, парусов, деталей сложной формы. Землемер разбивает поле на треугольники, у каждого измеряет основание и высоту — и складывает площади.</p>
+    <p>Сразу про главное заблуждение: многие думают, что площадь — это «половина произведения двух сторон». Это верно <strong>только</strong> для прямоугольного треугольника, где стороны — это катеты. В общем случае в формуле участвует основание и <strong>высота</strong> к нему, а не вторая сторона.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Что вспомнить</p>
+    <div class="recall">
+      <p>Площадь <b>прямоугольника (параллелограмма)</b> — это <span class="math">a·h</span>: основание на высоту.</p>
+      <p><b>Высота</b> треугольника — это перпендикуляр, опущенный из вершины на прямую, содержащую противоположную сторону. Не наклонная сторона, а именно перпендикуляр.</p>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Откуда берётся ½</p>
+    <h2>Достроим треугольник до параллелограмма</h2>
+    <p>Скопируем треугольник, повернём копию на 180° и приставим. Получится <strong>параллелограмм</strong> с тем же основанием <span class="aw">a</span> и той же высотой <span class="hw">h</span>. Его площадь — <span class="math">a·h</span>, а наш треугольник — ровно <strong>половина</strong> этого параллелограмма. Вот отсюда и берётся деление на 2.</p>
+    <p>Смысл формулы: площадь треугольника — это «половина прямоугольника», натянутого на основание и перпендикуляр к нему. Не два множителя сторон, а <strong>основание и высота</strong>.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Пара «основание — высота»</p>
+    <h2>Что такое a и что такое h</h2>
+    <div class="defs">
+      <div class="def a">
+        <div class="t">a — основание</div>
+        <div class="d">Длина <b>любой</b> стороны, которую мы выбрали за основание. Оснований у треугольника три — можно взять любое.</div>
+      </div>
+      <div class="def h">
+        <div class="t">h — высота к нему</div>
+        <div class="d">Перпендикуляр из противоположной вершины к прямой, содержащей <b>выбранное</b> основание. Каждому основанию — своя высота.</div>
+      </div>
+    </div>
+    <p style="font-size:.95rem;color:var(--muted);margin-top:.9rem">Основание и высота — <strong>согласованная пара</strong>: высоту берём именно к тому основанию, что выбрали. У любого треугольника три такие пары, и все три дают <strong>одно и то же</strong> S. В прямоугольном треугольнике катеты уже перпендикулярны — один катет можно взять за основание, другой за высоту: <span class="math">S = ½·(катет)·(катет)</span>.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Покрути сам · интерактив</p>
+    <h2>Основание, высота и прямой угол</h2>
+    <p>Двигай ползунки. <span class="aw">Основание a</span> лежит снизу, к нему опущена <span class="hw">высота h</span> — прямой угол в основании отмечен. Ползунок «вершина» двигает верхушку вбок: площадь при этом <strong>не меняется</strong>, а при сильном сдвиге высота падает уже <strong>вне</strong> треугольника — это тупоугольный случай.</p>
+    <div class="diagram">
+      <canvas id="triCv" width="680" height="420" aria-label="Треугольник с выделенным основанием и высотой к нему"></canvas>
+      <div class="diag-area" id="triArea">S = ½ · 8 · 5 = 20</div>
+      <div class="sliders">
+        <label class="la">a <span id="va" class="sval">8</span><input id="sa" class="ra" type="range" min="4" max="12" step="1" value="8"></label>
+        <label class="lh">h <span id="vh" class="sval">5</span><input id="sh" class="rh" type="range" min="3" max="8" step="1" value="5"></label>
+        <label class="lf">вершина <span id="vf" class="sval">3</span><input id="sf" class="rf" type="range" min="-5" max="13" step="1" value="3"></label>
+      </div>
+    </div>
+    <p style="font-size:.9rem;color:var(--muted)">Сдвинь «вершину» за край основания — увидишь, как <span class="hw">высота</span> опускается на <strong>продолжение</strong> основания (пунктир), а площадь остаётся <span class="math">½·a·h</span>. Форма «плывёт», но пока <span class="aw">a</span> и <span class="hw">h</span> те же — площадь одна.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Разбираем вместе · думаю вслух</p>
+    <h2>Эталонный пример</h2>
+    <div class="worked">
+      <p class="task">Основание a = 12 см, высота к нему h = 5 см. Найти площадь.</p>
+      <ol class="steps">
+        <li>Записываю формулу: <span class="m">S = ½ · a · h</span> — потому что площадь треугольника есть половина произведения основания на высоту к нему.</li>
+        <li>Подставляю: <span class="m">S = ½ · 12 · 5</span>.</li>
+        <li>Считаю удобно: сначала <span class="m">½ · 12 = 6</span>, затем <span class="m">6 · 5 = 30</span>.</li>
+        <li>Не забываю единицы: <span class="m">см · см = см²</span>. Площадь всегда в квадратных единицах.</li>
+      </ol>
+      <div class="verdict">Ответ: S = 30 см²</div>
+    </div>
+
+    <div class="worked">
+      <p class="task">Обратная задача: площадь 21 см², основание a = 7 см. Найти высоту h.</p>
+      <ol class="steps">
+        <li>Отталкиваюсь от той же формулы <span class="m">S = ½·a·h</span> — в ней неизвестна только h.</li>
+        <li>Выражаю высоту: из <span class="m">S = ½·a·h</span> следует <span class="m">h = 2S / a</span> (умножили на 2 и разделили на a).</li>
+        <li>Подставляю: <span class="m">h = 2·21 / 7 = 42 / 7 = 6</span>.</li>
+      </ol>
+      <div class="verdict">Ответ: h = 6 см</div>
+    </div>
+
+    <div class="poe">
+      <p><b>Предскажи → проверь.</b> Два треугольника с <strong>равным</strong> основанием и <strong>равной</strong> высотой, но разной формы (один «вытянут вбок»). У какого площадь больше? Многие говорят «у вытянутого». Проверка по формуле: площади <strong>равны</strong> — ведь a и h одинаковы. Площадь зависит только от основания и высоты, а не от наклона сторон.</p>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Теперь ты · нажми, чтобы проверить</p>
+    <h2>Мини-практика</h2>
+    <div class="drill">
+      <details>
+        <summary><span class="q">Что обозначают a и h в S = ½·a·h?</span><span class="tag">понимание</span></summary>
+        <div class="ans"><b>a</b> — выбранное основание, <b>h</b> — высота (перпендикуляр) к этому основанию. В качестве h нельзя взять любую сторону — только высоту к выбранному основанию.</div>
+      </details>
+      <details>
+        <summary><span class="q">a = 10 см, h = 9 см. Найди площадь.</span><span class="tag">применение</span></summary>
+        <div class="ans"><span class="m">S = ½ · 10 · 9 = 5 · 9 = 45</span>. Ответ <b>45 см²</b>.</div>
+      </details>
+      <details>
+        <summary><span class="q">Прямоугольный треугольник, катеты 8 см и 6 см. Найди площадь.</span><span class="tag">применение</span></summary>
+        <div class="ans">Катеты перпендикулярны, значит один — основание, другой — высота: <span class="m">S = ½ · 8 · 6 = 4 · 6 = 24</span>. Ответ <b>24 см²</b>.</div>
+      </details>
+      <details>
+        <summary><span class="q">Основание увеличили в 2 раза, высоту оставили. Во сколько раз изменится площадь?</span><span class="tag">анализ</span></summary>
+        <div class="ans">В формуле <span class="m">½·a·h</span> множитель a вырос вдвое, h не менялась → площадь тоже вырастет <b>в 2 раза</b>.</div>
+      </details>
+      <details>
+        <summary><span class="q">Найди ошибку: для сторон 5 см и 8 см ученик написал S = ½·5·8 = 20 см².</span><span class="tag">анализ</span></summary>
+        <div class="ans">Если эти стороны <b>не</b> образуют прямой угол, то 5 и 8 — это стороны, а <b>не</b> основание и высота. Высота к основанию здесь другая (и меньше), поэтому и площадь другая. Формула ½·a·h требует именно основание и перпендикулярную ему высоту.</div>
+      </details>
+      <details>
+        <summary><span class="q">Обратная задача: площадь 30 см², высота 4 см. Найди основание.</span><span class="tag">анализ</span></summary>
+        <div class="ans">Из <span class="m">S = ½·a·h</span> выражаем <span class="m">a = 2S / h = 60 / 4 = 15</span>. Ответ <b>15 см</b>.</div>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Тренажёр · бесконечная практика</p>
+    <h2>Реши задачу на площадь</h2>
+    <p>Нажми «Новая» и реши задачу: где-то надо найти площадь, где-то — высоту или основание по площади. Все ответы — целые числа. Впиши ответ и проверь себя или посмотри пошаговое решение.</p>
+    <div class="trainer">
+      <div class="tr-task" id="trTask">Основание <b>12</b> см, высота к нему <b>5</b> см. Найди площадь S (см²).</div>
+      <div class="tr-ctl">
+        <button id="trNew" type="button">🎲 Новая</button>
+        <input id="trAns" type="text" placeholder="ответ" aria-label="Ответ">
+        <button id="trCheck" type="button" class="sec">Проверить</button>
+        <button id="trShow" type="button" class="ghost">Решение</button>
+      </div>
+      <div id="trResult" class="tr-result"></div>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Где чаще всего ошибаются</p>
+    <h2>Лови эти ловушки</h2>
+    <ul class="pitfalls">
+      <li><b>Забывают делить на 2.</b> <span class="math">a·h</span> — это площадь параллелограмма; треугольник — его половина. Обязательно ставь множитель ½.</li>
+      <li><b>Берут высоту не к тому основанию.</b> Основание и высота — пара. Если основание AB, то высота проведена из вершины C к прямой AB. Проверь, что отмеченная высота перпендикулярна именно выбранному основанию.</li>
+      <li><b>Путают сторону и высоту.</b> Вторая сторона — это не высота (кроме прямоугольного, где катеты сами перпендикулярны). Подставляй длину перпендикуляра, а не наклонной стороны.</li>
+      <li><b>В тупоугольном «не видят» высоту.</b> Высота к стороне у тупого угла лежит <em>вне</em> фигуры, на продолжении основания. Она всё равно существует — её надо найти и подставить.</li>
+      <li><b>Теряют единицы или забывают квадрат.</b> Площадь всегда в квадратных единицах: см · см = см².</li>
+    </ul>
+  </section>
+
+  <section>
+    <p class="kicker">Проверь себя вслух</p>
+    <div class="recall">
+      <p>1) Запиши формулу площади треугольника и скажи, что такое <b>h</b>.</p>
+      <p>2) Почему в формуле есть множитель <b>½</b> — откуда он берётся?</p>
+      <p>3) Площадь 18 см², основание 6 см — найди высоту. <span class="math">(h = 2·18/6 = 6 см.)</span></p>
+    </div>
+  </section>
+
+  <section>
+    <div class="next">
+      <h2>Что дальше</h2>
+      <p class="big">S = ½ · a · h</p>
+      <p>Ты умеешь считать площадь любого треугольника через основание и высоту к нему — и решать обратные задачи. Дальше это ведёт к <b>площади трапеции</b> (её тоже режут на треугольники) и к <b>отношению площадей</b> — как связаны площади треугольников с общим основанием или высотой.</p>
+    </div>
+  </section>
+
+  <p class="foot">Итог одним предложением: площадь треугольника равна половине произведения его основания на высоту, проведённую к этому основанию — S = ½·a·h.</p>
+
+</div>
+
+<script>
+/* ===== Визуализация: треугольник, основание, высота ===== */
+(function(){
+  var cv=document.getElementById('triCv'); if(!cv) return;
+  var ctx=cv.getContext('2d');
+  var sa=document.getElementById('sa'), sh=document.getElementById('sh'), sf=document.getElementById('sf');
+  var va=document.getElementById('va'), vh=document.getElementById('vh'), vf=document.getElementById('vf');
+  var areaEl=document.getElementById('triArea');
+  var W=680,H=420,dpr=1;
+  function css(v){ return getComputedStyle(document.documentElement).getPropertyValue(v).trim(); }
+
+  function resize(){
+    var c=cv.clientWidth||680; dpr=Math.min(window.devicePixelRatio||1,2);
+    W=c; H=Math.round(c*0.62);
+    cv.width=W*dpr; cv.height=H*dpr; cv.style.height=H+'px';
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+  }
+
+  function draw(){
+    var a=+sa.value, h=+sh.value, fx=+sf.value;
+    va.textContent=a; vh.textContent=h; vf.textContent=fx;
+
+    // математические точки: основание A(0,0)–B(a,0), вершина C(fx,h), основание высоты F(fx,0)
+    var A=[0,0], B=[a,0], C=[fx,h], F=[fx,0];
+    var xs=[0,a,fx], ys=[0,h];
+    var minx=Math.min.apply(null,xs), maxx=Math.max.apply(null,xs);
+    var miny=Math.min.apply(null,ys), maxy=Math.max.apply(null,ys);
+    var padX=52, padTop=34, padBot=48;
+    var sc=Math.min((W-padX*2)/(maxx-minx||1),(H-padTop-padBot)/(maxy-miny||1));
+    var gw=(maxx-minx)*sc, gh=(maxy-miny)*sc;
+    var ox=(W-gw)/2 - minx*sc;
+    var oy=padTop + ((H-padTop-padBot)-gh)/2;
+    function SX(x){ return ox + x*sc; }
+    function SY(y){ return oy + (maxy-y)*sc; }  // flip: больше y — выше
+
+    ctx.clearRect(0,0,W,H);
+
+    // продолжение основания пунктиром, если высота падает вне отрезка
+    ctx.setLineDash([6,5]); ctx.strokeStyle=css('--muted'); ctx.lineWidth=1.6;
+    if(fx<0){ ctx.beginPath(); ctx.moveTo(SX(fx),SY(0)); ctx.lineTo(SX(0),SY(0)); ctx.stroke(); }
+    if(fx>a){ ctx.beginPath(); ctx.moveTo(SX(a),SY(0)); ctx.lineTo(SX(fx),SY(0)); ctx.stroke(); }
+    ctx.setLineDash([]);
+
+    // треугольник — заливка
+    ctx.beginPath();
+    ctx.moveTo(SX(A[0]),SY(A[1])); ctx.lineTo(SX(B[0]),SY(B[1])); ctx.lineTo(SX(C[0]),SY(C[1])); ctx.closePath();
+    ctx.fillStyle='rgba(46,90,172,0.08)'; ctx.fill();
+    ctx.strokeStyle=css('--ink'); ctx.lineWidth=2; ctx.stroke();
+
+    // высота h — пунктир оранжевый от C до F
+    ctx.setLineDash([5,4]); ctx.strokeStyle=css('--hi'); ctx.lineWidth=2.4;
+    ctx.beginPath(); ctx.moveTo(SX(C[0]),SY(C[1])); ctx.lineTo(SX(F[0]),SY(F[1])); ctx.stroke();
+    ctx.setLineDash([]);
+
+    // основание a — толстая синяя линия поверх
+    ctx.strokeStyle=css('--accent'); ctx.lineWidth=4; ctx.lineCap='round';
+    ctx.beginPath(); ctx.moveTo(SX(A[0]),SY(A[1])); ctx.lineTo(SX(B[0]),SY(B[1])); ctx.stroke();
+    ctx.lineCap='butt';
+
+    // метка прямого угла в F (между основанием и высотой)
+    var m=Math.max(10,sc*0.5);
+    // направление вдоль основания к внутренней стороне
+    var dir = (fx<=a-0.001)?1:-1;   // если вершина не правее B — рисуем квадратик вправо
+    if(fx< a && fx>0) dir = 1; else if(fx>=a) dir=-1; else dir=1;
+    ctx.strokeStyle=css('--hi'); ctx.lineWidth=1.6;
+    var fxS=SX(F[0]), fyS=SY(F[1]);
+    ctx.beginPath();
+    ctx.moveTo(fxS+dir*m, fyS);
+    ctx.lineTo(fxS+dir*m, fyS-m);
+    ctx.lineTo(fxS, fyS-m);
+    ctx.stroke();
+
+    // вершины — точки
+    [A,B,C].forEach(function(p){
+      ctx.fillStyle=css('--ink'); ctx.beginPath(); ctx.arc(SX(p[0]),SY(p[1]),3.5,0,7); ctx.fill();
+    });
+
+    // подписи
+    ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.font='700 '+Math.max(14,Math.min(20,sc*0.7))+'px ui-monospace,Menlo,monospace';
+    // a — под серединой основания
+    ctx.fillStyle=css('--accent');
+    ctx.fillText('a = '+a, SX(a/2), SY(0)+26);
+    // h — сбоку от высоты, на середине
+    ctx.fillStyle=css('--hi');
+    var hLabX = SX(fx) + (fx<=a/2 ? 20 : -20);
+    ctx.textAlign = (fx<=a/2)?'left':'right';
+    ctx.fillText('h = '+h, SX(fx)+(fx<=a/2?14:-14), SY(h/2));
+
+    // площадь
+    var S = a*h/2;
+    var Sstr = (S===Math.floor(S)) ? S : (Math.round(S*10)/10);
+    areaEl.textContent='S = ½ · '+a+' · '+h+' = '+Sstr;
+  }
+
+  [sa,sh,sf].forEach(function(s){ s.addEventListener('input',draw); });
+  window.addEventListener('resize',function(){ resize(); draw(); });
+  resize(); draw();
+})();
+</script>
+
+<script>
+/* ===== Тренажёр-генератор: площадь / высота / основание ===== */
+(function(){
+  var taskEl=document.getElementById('trTask'), ansEl=document.getElementById('trAns'), resEl=document.getElementById('trResult');
+  if(!taskEl) return;
+  var cur=null;
+  function ri(min,max){ return Math.floor(Math.random()*(max-min+1))+min; }
+
+  function generate(){
+    var a,h;
+    do{ a=ri(4,20); h=ri(3,14); }while((a*h)%2!==0);   // S=a·h/2 — целое
+    var S=a*h/2;
+    var type=ri(0,2);   // 0: найти S · 1: найти h · 2: найти a
+    if(type===0){
+      cur={type:0,a:a,h:h,S:S};
+      taskEl.innerHTML='Основание <b>'+a+'</b> см, высота к нему <b>'+h+'</b> см. Найди площадь S (см²).';
+    } else if(type===1){
+      cur={type:1,a:a,h:h,S:S};
+      taskEl.innerHTML='Площадь <b>'+S+'</b> см², основание <b>'+a+'</b> см. Найди высоту h (см).';
+    } else {
+      cur={type:2,a:a,h:h,S:S};
+      taskEl.innerHTML='Площадь <b>'+S+'</b> см², высота <b>'+h+'</b> см. Найди основание a (см).';
+    }
+    resEl.innerHTML=''; ansEl.value='';
+  }
+
+  function answer(){ return cur.type===0?cur.S : (cur.type===1?cur.h:cur.a); }
+
+  function solHTML(){
+    var q=cur, h='<div class="sol">';
+    if(q.type===0){
+      h+='S = ½ · a · h<br>';
+      h+='S = ½ · '+q.a+' · '+q.h+' = '+(q.a*q.h)+' / 2 = <b>'+q.S+'</b> см²';
+    } else if(q.type===1){
+      h+='S = ½ · a · h  →  h = 2S / a<br>';
+      h+='h = 2 · '+q.S+' / '+q.a+' = '+(2*q.S)+' / '+q.a+' = <b>'+q.h+'</b> см';
+    } else {
+      h+='S = ½ · a · h  →  a = 2S / h<br>';
+      h+='a = 2 · '+q.S+' / '+q.h+' = '+(2*q.S)+' / '+q.h+' = <b>'+q.a+'</b> см';
+    }
+    return h+'</div>';
+  }
+
+  function check(){
+    var raw=ansEl.value.trim().replace(',','.');
+    if(raw===''){ resEl.innerHTML='<span class="bad">Введи ответ или нажми «Решение».</span>'; return; }
+    var got=parseFloat(raw), right=answer();
+    if(!isNaN(got) && Math.abs(got-right)<0.02){
+      resEl.innerHTML='<span class="ok">✓ Верно!</span>'+solHTML();
+    } else {
+      resEl.innerHTML='<span class="bad">✗ Пока не то — глянь решение.</span>'+solHTML();
+    }
+  }
+
+  document.getElementById('trNew').addEventListener('click',function(){ generate(); ansEl.focus(); });
+  document.getElementById('trCheck').addEventListener('click',check);
+  document.getElementById('trShow').addEventListener('click',function(){ resEl.innerHTML=solHTML(); });
+  ansEl.addEventListener('keydown',function(e){ if(e.key==='Enter') check(); });
+
+  // стартовое состояние = валидная задача (совпадает с показанным пошаговым решением), без focus()
+  cur={type:0,a:12,h:5,S:30};
+})();
+</script>

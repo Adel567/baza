@@ -1,0 +1,688 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Классическое определение вероятности — урок, алгебра 9 класс</title>
+<style>
+  :root{
+    --paper:#F6F7F9;
+    --card:#FFFFFF;
+    --ink:#1B2333;
+    --muted:#5A6478;
+    --line:#E2E5EC;
+    --accent:#3B4FD0;
+    --accent-soft:#EAEDFB;
+    --pos:#1E8E5A;    /* достоверное · P=1 */
+    --pos-bg:#E7F4EC;
+    --zero:#B9791A;   /* акцент-янтарь для примечаний */
+    --zero-bg:#FBF1DC;
+    --neg:#C0455B;    /* невозможное · P=0 */
+    --neg-bg:#F9E9EC;
+  }
+  *{box-sizing:border-box}
+  body{margin:0}
+  .wrap{
+    max-width:760px;
+    margin:0 auto;
+    padding:clamp(1.4rem,4vw,3rem) clamp(1.1rem,4vw,2rem) 4rem;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    font-size:17px;
+    line-height:1.62;
+    -webkit-font-smoothing:antialiased;
+  }
+  .eyebrow{
+    font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--accent);font-weight:600;margin:0 0 .5rem;
+  }
+  h1{
+    font-family:Georgia,"Times New Roman",serif;
+    font-size:clamp(2rem,6.4vw,2.9rem);
+    line-height:1.06;margin:0;font-weight:700;letter-spacing:-.01em;
+    text-wrap:balance;
+  }
+  .lede{
+    font-size:1.08rem;color:var(--muted);margin:.7rem 0 0;max-width:60ch;
+    text-wrap:pretty;
+  }
+  h2{
+    font-family:Georgia,serif;font-size:1.32rem;font-weight:700;
+    margin:0 0 .1rem;letter-spacing:-.005em;
+  }
+  section{margin-top:2.6rem}
+  .kicker{
+    font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--muted);font-weight:600;margin:0 0 .8rem;
+    display:flex;align-items:center;gap:.6rem;
+  }
+  .kicker::before{
+    content:"";width:1.4rem;height:2px;background:var(--accent);border-radius:2px;
+  }
+  p{margin:.65rem 0}
+  strong{font-weight:650}
+  .math{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-weight:600}
+  sup{font-size:.72em}
+
+  /* CSS-дробь */
+  .frac{display:inline-flex;flex-direction:column;align-items:center;vertical-align:-0.55em;margin:0 .18em;line-height:1.05}
+  .frac .num{padding:0 .45em}
+  .frac .den{padding:0 .45em;border-top:2px solid currentColor}
+
+  /* Главная формула */
+  .hero-formula{
+    margin-top:2.2rem;
+    background:var(--ink);color:#fff;border-radius:14px;
+    padding:1.7rem 1.4rem;text-align:center;
+  }
+  .hero-formula .lbl{
+    font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;
+    color:#9aa6c9;margin:0 0 .9rem;
+  }
+  .hero-formula .eq{
+    font-family:ui-monospace,"SF Mono",Menlo,monospace;
+    font-size:clamp(1.7rem,6vw,2.3rem);font-weight:700;letter-spacing:.01em;
+    display:flex;align-items:center;justify-content:center;gap:.35em;
+  }
+  .hero-formula .eq b{color:#8ea0ff;font-weight:700}
+  .hero-formula .note{font-size:.86rem;color:#9aa6c9;margin:1rem 0 0}
+  .hero-formula .note b{color:#c3cdf0}
+
+  /* Пререквизит */
+  .recall{
+    background:var(--accent-soft);border-radius:12px;padding:1rem 1.15rem;
+    font-size:.96rem;
+  }
+  .recall p{margin:.35rem 0}
+
+  /* Три случая: 0 / между / 1 */
+  .cases{display:grid;gap:.85rem;margin-top:.4rem}
+  @media(min-width:620px){.cases{grid-template-columns:repeat(3,1fr)}}
+  .case{
+    border-radius:12px;padding:1.05rem 1.1rem;border:1px solid var(--line);
+    background:var(--card);display:flex;flex-direction:column;gap:.35rem;
+  }
+  .case .sign{font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.15rem}
+  .case .count{font-weight:650;font-size:1rem}
+  .case .desc{font-size:.9rem;color:var(--muted)}
+  .case.imp{border-top:4px solid var(--neg);background:var(--neg-bg)}
+  .case.imp .sign{color:var(--neg)}
+  .case.mid{border-top:4px solid var(--accent);background:var(--accent-soft)}
+  .case.mid .sign{color:var(--accent)}
+  .case.cert{border-top:4px solid var(--pos);background:var(--pos-bg)}
+  .case.cert .sign{color:var(--pos)}
+
+  /* Разбор */
+  .worked{
+    background:var(--card);border:1px solid var(--line);border-radius:12px;
+    padding:1.2rem 1.3rem;
+  }
+  .worked .task{
+    font-weight:700;font-size:1rem;
+    margin:0 0 1rem;padding-bottom:.8rem;border-bottom:1px solid var(--line);
+  }
+  ol.steps{margin:0;padding:0;list-style:none;counter-reset:s;display:flex;flex-direction:column;gap:.7rem}
+  ol.steps li{position:relative;padding-left:2.1rem;counter-increment:s}
+  ol.steps li::before{
+    content:counter(s);position:absolute;left:0;top:.05rem;
+    width:1.5rem;height:1.5rem;border-radius:50%;
+    background:var(--accent-soft);color:var(--accent);
+    font-size:.82rem;font-weight:700;display:flex;align-items:center;justify-content:center;
+  }
+  ol.steps .m{font-family:ui-monospace,Menlo,monospace;font-weight:600;color:var(--ink)}
+  ol.steps .why{color:var(--muted);font-size:.92rem}
+  .verdict{
+    margin-top:1rem;padding:.7rem 1rem;background:var(--pos-bg);
+    border-radius:9px;font-weight:600;color:var(--pos);font-size:.98rem;
+  }
+
+  /* Практика */
+  .drill{display:flex;flex-direction:column;gap:.7rem}
+  details{
+    background:var(--card);border:1px solid var(--line);border-radius:10px;
+    padding:.85rem 1.05rem;
+  }
+  details[open]{border-color:var(--accent)}
+  summary{
+    cursor:pointer;font-weight:600;list-style:none;
+    display:flex;justify-content:space-between;align-items:center;gap:1rem;
+  }
+  summary::-webkit-details-marker{display:none}
+  summary:focus-visible{outline:3px solid var(--accent);outline-offset:3px;border-radius:6px}
+  summary .q{flex:1}
+  summary .tag{
+    font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);
+    border:1px solid var(--line);border-radius:20px;padding:.1rem .55rem;white-space:nowrap;
+  }
+  summary::after{
+    content:"ответ";font-size:.78rem;color:var(--accent);font-weight:600;white-space:nowrap;
+  }
+  details[open] summary::after{content:"скрыть"}
+  .ans{margin-top:.7rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.96rem;color:var(--muted)}
+  .ans .m{font-family:ui-monospace,Menlo,monospace;color:var(--ink);font-weight:600}
+
+  /* Ошибки */
+  ul.pitfalls{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:.6rem}
+  ul.pitfalls li{padding-left:1.5rem;position:relative;font-size:.98rem}
+  ul.pitfalls li::before{
+    content:"\00D7";position:absolute;left:0;top:-.05rem;color:var(--neg);font-weight:700;font-size:1.1rem;
+  }
+  ul.pitfalls b{color:var(--ink)}
+
+  /* Проверка */
+  ol.selfcheck{margin:0;padding-left:1.3rem;display:flex;flex-direction:column;gap:.55rem}
+  ol.selfcheck li{padding-left:.2rem}
+
+  .next{background:var(--accent);color:#fff;border-radius:12px;padding:1.2rem 1.3rem}
+  .next h2{color:#fff}
+  .next .eq{
+    font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.2rem;
+    margin:.6rem 0 .3rem;
+  }
+  .next p{color:#dfe4fb;font-size:.96rem;margin:.4rem 0 0}
+  .foot{margin-top:2.4rem;font-size:.82rem;color:var(--muted);text-align:center}
+
+  /* Таблица двух кубиков */
+  .tablewrap{overflow-x:auto;margin-top:.6rem;-webkit-overflow-scrolling:touch}
+  table.dice{border-collapse:collapse;font-family:ui-monospace,Menlo,monospace;font-size:.9rem;margin:0 auto;min-width:340px}
+  table.dice th,table.dice td{border:1px solid var(--line);width:2.3rem;height:2.1rem;text-align:center;padding:0}
+  table.dice th{background:var(--accent-soft);color:var(--accent);font-weight:700}
+  table.dice td.hot{background:var(--pos-bg);color:var(--pos);font-weight:700}
+  table.dice td.cold{background:var(--neg-bg);color:var(--neg);font-weight:700}
+  table.dice caption{caption-side:top;font-family:system-ui;font-size:.9rem;color:var(--muted);margin-bottom:.5rem;text-align:left}
+  .tbl-legend{display:flex;gap:1.1rem;flex-wrap:wrap;font-size:.88rem;color:var(--muted);margin-top:.7rem}
+  .tbl-legend span{display:inline-flex;align-items:center;gap:.4rem}
+  .tbl-legend i{width:.9rem;height:.9rem;border-radius:3px;display:inline-block}
+  .tbl-legend i.hot{background:var(--pos)}
+  .tbl-legend i.cold{background:var(--neg)}
+
+  @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="wrap">
+
+  <header>
+    <p class="eyebrow">Алгебра · 9 класс · вероятность</p>
+    <h1>Классическое определение вероятности</h1>
+    <p class="lede">Как одним делением честно измерить шанс события — <em>сосчитать удачные исходы и поделить на все возможные.</em></p>
+  </header>
+
+  <div class="hero-formula">
+    <p class="lbl">Формула вероятности</p>
+    <div class="eq">P(<b>A</b>) =
+      <span class="frac"><span class="num">m</span><span class="den">n</span></span>
+    </div>
+    <p class="note"><b>m</b> — благоприятные исходы · <b>n</b> — все равновозможные исходы</p>
+  </div>
+
+  <section>
+    <p class="kicker">Зачем это нужно</p>
+    <h2>Вероятность измеряет случайность</h2>
+    <p>Вероятность отвечает на вопрос «насколько часто событие случается». Она повсюду, где есть случай: прогноз погоды («вероятность дождя 70%»), лотереи и игры, контроль качества на заводе, страхование, риск осложнения в медицине.</p>
+    <p><strong>Главное житейское заблуждение:</strong> «исходов всего два — случится или нет, значит шанс 50 на 50». Это неверно. При броске двух кубиков сумма <span class="math">7</span> и сумма <span class="math">2</span> — обе либо выпадают, либо нет, но их шансы <strong>разные</strong>. Считать шансы равными можно, только когда исходы <strong>по-настоящему равновозможны</strong>.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Что вспомнить перед стартом</p>
+    <div class="recall">
+      <p><strong>Обыкновенные дроби.</strong> Вероятность — это дробь <span class="math">m/n</span>, которую в конце сокращают: <span class="math">3/6 = 1/2</span>.</p>
+      <p><strong>Перебор исходов.</strong> Умей выписать все варианты списком и пересчитать их: у кубика это <span class="math">1, 2, 3, 4, 5, 6</span> — шесть исходов.</p>
+      <p><strong>Проценты.</strong> Долю переводят в проценты умножением на 100%: <span class="math">1/4 = 0,25 = 25%</span>.</p>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Ядро темы</p>
+    <h2>Классическое определение</h2>
+    <p>Если все элементарные исходы испытания <strong>равновозможны</strong>, то вероятность события <span class="math">A</span> равна отношению числа благоприятных исходов к числу всех исходов:</p>
+    <div class="hero-formula" style="margin-top:1.2rem;background:var(--card);color:var(--ink);border:1px solid var(--line)">
+      <div class="eq" style="color:var(--ink)">P(A) =
+        <span class="frac"><span class="num">m</span><span class="den">n</span></span>
+      </div>
+      <p class="note" style="color:var(--muted)"><b style="color:var(--ink)">n</b> — общее число всех равновозможных исходов &nbsp;·&nbsp; <b style="color:var(--ink)">m</b> — сколько из них благоприятствуют событию A</p>
+    </div>
+    <p style="margin-top:1rem"><strong>Когда формула работает.</strong> Только если исходы честно равновозможны — правильная монета, симметричный кубик, перемешанная колода, одинаковые на ощупь шары. Для «нечестного» кубика формула не годится. И исходов должно быть конечное число — их можно пересчитать.</p>
+
+    <p style="margin-top:1.2rem"><strong>Вероятность всегда от 0 до 1.</strong> Поскольку благоприятных не может быть больше, чем всех (<span class="math">0 ≤ m ≤ n</span>), значение зажато между двумя краями:</p>
+    <div class="cases">
+      <div class="case imp">
+        <div class="sign">P = 0</div>
+        <div class="count">Невозможное</div>
+        <div class="desc">Благоприятных нет (<span class="math">m = 0</span>). Никогда не случится.</div>
+      </div>
+      <div class="case mid">
+        <div class="sign">0 &lt; P &lt; 1</div>
+        <div class="count">Случайное</div>
+        <div class="desc">Иногда бывает. Чем больше <span class="math">m</span>, тем ближе к 1.</div>
+      </div>
+      <div class="case cert">
+        <div class="sign">P = 1</div>
+        <div class="count">Достоверное</div>
+        <div class="desc">Благоприятны все исходы (<span class="math">m = n</span>). Случится наверняка.</div>
+      </div>
+    </div>
+    <p style="font-size:.92rem;color:var(--muted);margin-top:.9rem">Вероятность <strong>не может</strong> быть больше 1 или отрицательной. Получил <span class="math">P &gt; 1</span> — точно где-то ошибка.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Разбираем вместе · думаю вслух</p>
+    <h2>Эталонный пример</h2>
+    <div class="worked">
+      <p class="task">В коробке 5 красных и 3 синих шара, одинаковых на ощупь. Наугад берут один. Найти вероятность, что он синий.</p>
+      <ol class="steps">
+        <li>Считаю <strong>все</strong> исходы: шаров всего <span class="m">5 + 3 = 8</span>, значит <span class="m">n = 8</span>. <span class="why">Почему: «одинаковые на ощупь» — вынуть любой равновозможно.</span></li>
+        <li>Считаю <strong>благоприятные</strong>: синих шаров 3, значит <span class="m">m = 3</span>. <span class="why">Почему: благоприятен любой исход, где вынут синий.</span></li>
+        <li>Подставляю в формулу: <span class="m">P = m/n = 3/8</span>. <span class="why">Почему: прямо по классическому определению.</span></li>
+        <li>Проверяю разумность: <span class="m">0 ≤ 3/8 ≤ 1</span> — да, ответ осмыслен. В процентах <span class="m">3/8 = 0,375 = 37,5%</span>.</li>
+      </ol>
+      <div class="verdict">Ответ: P = 3/8 = 0,375.</div>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Посмотри глазами · интерактив</p>
+    <h2>Все исходы перед тобой</h2>
+    <p>Вот все равновозможные исходы события. <strong style="color:var(--pos)">Зелёные</strong> — благоприятные (их <span class="math">m</span>), остальные — нет. Внизу видно, какую <strong>долю</strong> они занимают на шкале от 0 до 1. Нажимай «Сменить событие» и следи, как двигается вероятность.</p>
+    <div class="viz">
+      <div class="viz-head" id="vizTitle">Кубик · выпадет чётное число</div>
+      <canvas id="vizCanvas" aria-label="Наглядная схема исходов события"></canvas>
+      <div class="viz-frac" id="vizFrac">P = 3/6 = 1/2 = 0,5</div>
+      <div class="viz-track">
+        <div class="viz-fill" id="vizFill"></div>
+        <span class="viz-mark" id="vizMark"></span>
+      </div>
+      <div class="viz-scale"><span>0 · невозможно</span><span>достоверно · 1</span></div>
+      <button id="vizNext" type="button" class="viz-btn">Сменить событие →</button>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Наглядность · разрушаем миф «50 на 50»</p>
+    <h2>Сумма двух кубиков</h2>
+    <p>В каждой клетке — сумма очков двух кубиков (строка — первый, столбец — второй). Всего <span class="math">36</span> равновозможных клеток. Смотри: сумма <strong style="color:var(--pos)">7</strong> встречается в 6 клетках, а сумма <strong style="color:var(--neg)">2</strong> — только в одной. Значит <span class="math">P(7) = 6/36 = 1/6</span>, а <span class="math">P(2) = 1/36</span> — вовсе не поровну.</p>
+    <div class="tablewrap">
+      <table class="dice" id="sumTable"></table>
+    </div>
+    <div class="tbl-legend">
+      <span><i class="hot"></i> сумма = 7 — 6 клеток из 36</span>
+      <span><i class="cold"></i> сумма = 2 — 1 клетка из 36</span>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Теперь ты · нажми, чтобы проверить</p>
+    <h2>Мини-практика</h2>
+    <div class="drill">
+      <details>
+        <summary><span class="q">Чему равна вероятность достоверного события? А невозможного?</span><span class="tag">понимание</span></summary>
+        <div class="ans">Достоверное случается всегда: <span class="m">m = n</span>, поэтому <span class="m">P = 1</span>. Невозможное не случается никогда: <span class="m">m = 0</span>, поэтому <span class="m">P = 0</span>.</div>
+      </details>
+      <details>
+        <summary><span class="q">Бросают кубик. Вероятность выпадения чётного числа?</span><span class="tag">применение</span></summary>
+        <div class="ans">Все исходы: <span class="m">1, 2, 3, 4, 5, 6</span> → <span class="m">n = 6</span>. Чётные: <span class="m">2, 4, 6</span> → <span class="m">m = 3</span>. <span class="m">P = 3/6 = 1/2 = 0,5.</span></div>
+      </details>
+      <details>
+        <summary><span class="q">В мешке 10 карточек с числами 1–10. Вероятность, что число делится на 3?</span><span class="tag">применение</span></summary>
+        <div class="ans">Делятся на 3: <span class="m">3, 6, 9</span> → <span class="m">m = 3</span>, <span class="m">n = 10</span>. <span class="m">P = 3/10 = 0,3.</span></div>
+      </details>
+      <details>
+        <summary><span class="q">Что изменится: было 3 белых и 2 чёрных шара, добавили 5 чёрных. Как изменится P(чёрный)?</span><span class="tag">анализ</span></summary>
+        <div class="ans">Сначала <span class="m">P = 2/5 = 0,4</span>. Стало 3 белых и 7 чёрных, всего <span class="m">n = 10</span>, чёрных <span class="m">m = 7</span>: <span class="m">P = 7/10 = 0,7</span>. Вероятность <strong>увеличилась</strong> — благоприятных стало больше.</div>
+      </details>
+      <details>
+        <summary><span class="q">Найди ошибку: «вероятность вытащить туза из колоды 36 карт равна... я взял m = 9».</span><span class="tag">анализ</span></summary>
+        <div class="ans">Тузов в колоде <strong>4</strong>, а не 9. Значит <span class="m">m = 4</span>, <span class="m">n = 36</span>: <span class="m">P = 4/36 = 1/9</span>. Ошибка была в подсчёте благоприятных исходов <span class="math">m</span>.</div>
+      </details>
+      <details>
+        <summary><span class="q">Обратная задача: P(красный) = 1/4, всего шаров 20. Сколько красных?</span><span class="tag">анализ</span></summary>
+        <div class="ans">Из <span class="m">P = m/n</span> выражаем <span class="m">m = n · P = 20 · 1/4 = 5</span>. Красных шаров <strong>5</strong>.</div>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Тренажёр · бесконечная практика</p>
+    <h2>Реши на вероятность сам</h2>
+    <p>Нажми «Новая задача» и найди вероятность. Ответ вводи <strong>дробью</strong> (например <span class="math">3/8</span>) или <strong>десятичной</strong> (<span class="math">0.375</span>). Для невозможного события пиши <span class="math">0</span>, для достоверного — <span class="math">1</span>. Потом проверь себя или посмотри разбор.</p>
+    <div class="trainer">
+      <div class="tr-task" id="trTask">Бросают игральный кубик. Найди вероятность, что выпадет чётное число.</div>
+      <div class="tr-ctl">
+        <button id="trNew" type="button">🎲 Новая задача</button>
+        <input id="trAns" type="text" inputmode="text" placeholder="напр.  1/2   или   0.5" aria-label="Ответ — вероятность">
+        <button id="trCheck" type="button" class="sec">Проверить</button>
+        <button id="trShow" type="button" class="ghost">Показать решение</button>
+      </div>
+      <div id="trResult" class="tr-result"></div>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Где чаще всего ошибаются</p>
+    <h2>Лови эти ловушки</h2>
+    <ul class="pitfalls">
+      <li><b>Считают неравновозможное «поровну».</b> То самое «всегда 50 на 50». Всегда спрашивай себя: <em>«одинаково ли возможны все исходы?»</em> Для суммы двух кубиков «7» встречается чаще, чем «2».</li>
+      <li><b>Неверно считают благоприятные m.</b> Забывают вариант или путают с гранями. Выписывай благоприятные исходы <strong>списком</strong> и пересчитывай.</li>
+      <li><b>Получают P &gt; 1.</b> Верный признак ошибки: перепутали <span class="math">m</span> и <span class="math">n</span> местами (поделили <span class="math">n/m</span>) или неправильно посчитали общее число. Помни: <span class="math">m ≤ n</span>, значит <span class="math">P ≤ 1</span>.</li>
+      <li><b>Забывают про равновозможность.</b> Формула <span class="math">P = m/n</span> верна только для симметричных, честно перемешанных, одинаковых объектов. Для «нечестной» монеты она не работает.</li>
+    </ul>
+  </section>
+
+  <section>
+    <p class="kicker">Проверь себя · объясни своими словами</p>
+    <h2>Три вопроса на понимание</h2>
+    <ol class="selfcheck">
+      <li>Запиши формулу классической вероятности и поясни, что такое <span class="math">m</span> и <span class="math">n</span>.</li>
+      <li>Может ли вероятность быть равной <span class="math">1,5</span>? Почему?</li>
+      <li>В корзине 4 яблока и 6 груш. Какова вероятность наугад вынуть яблоко?</li>
+    </ol>
+    <details style="margin-top:1rem">
+      <summary><span class="q">Сверить ответы</span><span class="tag">ключ</span></summary>
+      <div class="ans">1) <span class="m">P = m/n</span>; <span class="m">m</span> — число благоприятных исходов, <span class="m">n</span> — число всех равновозможных. 2) Нет: всегда <span class="m">0 ≤ P ≤ 1</span>, ведь благоприятных не больше, чем всех. 3) <span class="m">n = 4 + 6 = 10</span>, <span class="m">m = 4</span>: <span class="m">P = 4/10 = 2/5 = 0,4</span>.</div>
+    </details>
+  </section>
+
+  <section>
+    <div class="next">
+      <h2>Что дальше</h2>
+      <p>Ты научился находить вероятность <strong>одного</strong> события. Дальше — события посложнее: когда нужно объединять или комбинировать несколько.</p>
+      <div class="eq">P(A) + P(не A) = 1</div>
+      <p>Например, если знаешь вероятность, что событие произойдёт, легко найти вероятность, что оно <em>не</em> произойдёт. С этого начинается тема сложных событий.</p>
+    </div>
+  </section>
+
+  <p class="foot">Проверка на выходе: запиши формулу P = m/n · назови m и n словами · может ли P быть больше 1?</p>
+
+</div>
+
+<style>
+  .viz{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.1rem 1.1rem 1.2rem;margin:1rem 0}
+  .viz-head{text-align:center;font-weight:700;font-size:1rem;color:var(--ink);margin:0 0 .7rem}
+  .viz canvas{width:100%;height:auto;display:block;background:#FCFDFF;border-radius:10px}
+  .viz-frac{text-align:center;font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:clamp(1.05rem,4vw,1.3rem);margin:1rem 0 .7rem;color:var(--ink)}
+  .viz-track{position:relative;height:16px;background:#EDEFF4;border-radius:20px;overflow:hidden}
+  .viz-fill{position:absolute;left:0;top:0;bottom:0;width:50%;background:var(--accent);border-radius:20px;transition:width .35s ease,background .35s}
+  .viz-mark{position:absolute;top:-4px;width:3px;height:24px;background:var(--ink);left:50%;transform:translateX(-50%);transition:left .35s ease}
+  .viz-scale{display:flex;justify-content:space-between;font-size:.8rem;color:var(--muted);margin-top:.45rem}
+  .viz-btn{margin-top:1rem;width:100%;font:inherit;font-weight:700;font-size:.92rem;cursor:pointer;border:1px solid var(--accent);border-radius:10px;padding:.6rem;color:var(--accent);background:var(--accent-soft)}
+  .viz-btn:hover{background:#dfe4fb}
+  .viz-btn:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+  @media(prefers-reduced-motion:reduce){.viz-fill,.viz-mark{transition:none}}
+</style>
+
+<script>
+(function(){
+  var canvas=document.getElementById('vizCanvas'); if(!canvas) return;
+  var ctx=canvas.getContext('2d');
+  var titleEl=document.getElementById('vizTitle');
+  var fracEl=document.getElementById('vizFrac');
+  var fillEl=document.getElementById('vizFill');
+  var markEl=document.getElementById('vizMark');
+  var btn=document.getElementById('vizNext');
+
+  function C(v){ return getComputedStyle(document.documentElement).getPropertyValue(v).trim(); }
+  function gcd(a,b){ a=Math.abs(a);b=Math.abs(b); while(b){var t=b;b=a%b;a=t;} return a||1; }
+  function decStr(m,n){
+    if(m===0) return '0'; if(m===n) return '1';
+    var d=m/n, r=Math.round(d*1000)/1000, exact=Math.abs(d-r)<1e-9;
+    return (exact?'':'≈ ')+String(r).replace('.',',');
+  }
+
+  function mkDice(fn){ var a=[]; for(var v=1;v<=6;v++) a.push({kind:'dice',v:v,fav:fn(v)}); return a; }
+  function mkBalls(){
+    var a=[],i;
+    for(i=0;i<5;i++) a.push({kind:'ball',color:C('--neg'),fav:false});
+    for(i=0;i<3;i++) a.push({kind:'ball',color:C('--accent'),fav:true});
+    return a;
+  }
+  function mkCards(){ var a=[]; for(var v=1;v<=10;v++) a.push({kind:'card',v:v,fav:v%3===0}); return a; }
+
+  var events=[
+    {title:'Кубик · выпадет чётное число', items:mkDice(function(v){return v%2===0;})},
+    {title:'Кубик · число больше 4',        items:mkDice(function(v){return v>4;})},
+    {title:'Мешок · вынуть синий (5 красных, 3 синих)', items:mkBalls()},
+    {title:'Карточки 1–10 · число делится на 3', items:mkCards()},
+    {title:'Монета · выпадет орёл', items:[{kind:'coin',label:'О',fav:true},{kind:'coin',label:'Р',fav:false}]},
+    {title:'Кубик · число не больше 6 — достоверное', items:mkDice(function(){return true;})},
+    {title:'Кубик · выпадет 7 — невозможное',        items:mkDice(function(){return false;})}
+  ];
+  var idx=0, dpr=1;
+
+  var PIPS={1:[[1,1]],2:[[0,0],[2,2]],3:[[0,0],[1,1],[2,2]],
+    4:[[0,0],[2,0],[0,2],[2,2]],5:[[0,0],[2,0],[1,1],[0,2],[2,2]],
+    6:[[0,0],[2,0],[0,1],[2,1],[0,2],[2,2]]};
+
+  function roundRect(x,y,w,h,r){
+    ctx.beginPath();
+    ctx.moveTo(x+r,y); ctx.arcTo(x+w,y,x+w,y+h,r); ctx.arcTo(x+w,y+h,x,y+h,r);
+    ctx.arcTo(x,y+h,x,y,r); ctx.arcTo(x,y,x+w,y,r); ctx.closePath();
+  }
+
+  function drawTile(x,y,s,it){
+    var favGreen=C('--pos');
+    var isBall=it.kind==='ball';
+    // подложка
+    roundRect(x,y,s,s,s*0.16);
+    if(it.fav && !isBall){ ctx.fillStyle=C('--pos-bg'); ctx.fill(); ctx.lineWidth=2.5; ctx.strokeStyle=favGreen; }
+    else { ctx.fillStyle='#F0F2F6'; ctx.fill(); ctx.lineWidth=1.5; ctx.strokeStyle=C('--line'); }
+    ctx.stroke();
+
+    var cx=x+s/2, cy=y+s/2, fg=it.fav?favGreen:C('--muted');
+
+    if(it.kind==='dice'){
+      var pad=s*0.26, span=s*0.48, step=span/2, rr=Math.max(2,s*0.055);
+      ctx.fillStyle=fg;
+      PIPS[it.v].forEach(function(p){
+        ctx.beginPath(); ctx.arc(x+pad+p[0]*step, y+pad+p[1]*step, rr, 0, 7); ctx.fill();
+      });
+    } else if(it.kind==='card' || it.kind==='coin'){
+      ctx.fillStyle=fg; ctx.font='700 '+Math.round(s*0.42)+'px system-ui,sans-serif';
+      ctx.textAlign='center'; ctx.textBaseline='middle';
+      ctx.fillText(it.kind==='card'?String(it.v):it.label, cx, cy+s*0.02);
+    } else if(isBall){
+      ctx.beginPath(); ctx.arc(cx,cy,s*0.28,0,7); ctx.fillStyle=it.color; ctx.fill();
+      if(it.fav){ ctx.lineWidth=Math.max(2.5,s*0.06); ctx.strokeStyle=favGreen; ctx.beginPath(); ctx.arc(cx,cy,s*0.36,0,7); ctx.stroke(); }
+    }
+    // галочка на благоприятных
+    if(it.fav){
+      var gx=x+s-s*0.24, gy=y+s*0.24, g=s*0.09;
+      ctx.strokeStyle=favGreen; ctx.lineWidth=Math.max(2,s*0.05); ctx.lineCap='round';
+      ctx.beginPath(); ctx.moveTo(gx-g,gy); ctx.lineTo(gx-g*0.3,gy+g*0.7); ctx.lineTo(gx+g,gy-g*0.6); ctx.stroke();
+    }
+  }
+
+  function layout(){
+    var W=canvas.clientWidth||600;
+    var n=events[idx].items.length, gap=8, pad=8;
+    var maxCols = W<330?3:(W<430?5:6);
+    var cols=Math.min(n,maxCols);
+    var tile=Math.floor((W-2*pad-(cols-1)*gap)/cols);
+    tile=Math.max(38,Math.min(tile,84));
+    var rows=Math.ceil(n/cols);
+    var H=2*pad+rows*tile+(rows-1)*gap;
+    return {W:W,H:H,cols:cols,tile:tile,rows:rows,gap:gap,pad:pad,n:n};
+  }
+
+  function draw(){
+    var L=layout();
+    dpr=Math.min(window.devicePixelRatio||1,2);
+    canvas.width=L.W*dpr; canvas.height=L.H*dpr; canvas.style.height=L.H+'px';
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+    ctx.clearRect(0,0,L.W,L.H);
+    var items=events[idx].items;
+    for(var i=0;i<L.n;i++){
+      var r=Math.floor(i/L.cols), c=i%L.cols;
+      var inRow=Math.min(L.cols, L.n-r*L.cols);
+      var rowW=inRow*L.tile+(inRow-1)*L.gap;
+      var startX=(L.W-rowW)/2;
+      var x=startX+c*(L.tile+L.gap);
+      var y=L.pad+r*(L.tile+L.gap);
+      drawTile(x,y,L.tile,items[i]);
+    }
+    updateInfo();
+  }
+
+  function updateInfo(){
+    var items=events[idx].items;
+    var n=items.length, m=items.filter(function(it){return it.fav;}).length;
+    titleEl.textContent=events[idx].title;
+    var g=gcd(m,n), txt='P = '+m+'/'+n;
+    if(m!==0 && m!==n && g>1) txt+=' = '+(m/g)+'/'+(n/g);
+    txt+=' = '+decStr(m,n);
+    fracEl.textContent=txt;
+    var pct=(m/n*100);
+    var col = m===0?C('--neg'):(m===n?C('--pos'):C('--accent'));
+    fillEl.style.width=pct+'%'; fillEl.style.background=col;
+    markEl.style.left=pct+'%';
+  }
+
+  btn.addEventListener('click',function(){ idx=(idx+1)%events.length; draw(); });
+  window.addEventListener('resize',draw);
+  draw();
+})();
+</script>
+
+<script>
+/* Таблица сумм двух кубиков */
+(function(){
+  var t=document.getElementById('sumTable'); if(!t) return;
+  var html='<caption>Сумма очков: строка — 1-й кубик, столбец — 2-й</caption>';
+  html+='<tr><th>+</th>';
+  for(var j=1;j<=6;j++) html+='<th>'+j+'</th>';
+  html+='</tr>';
+  for(var i=1;i<=6;i++){
+    html+='<tr><th>'+i+'</th>';
+    for(var k=1;k<=6;k++){
+      var s=i+k, cls=s===7?' class="hot"':(s===2?' class="cold"':'');
+      html+='<td'+cls+'>'+s+'</td>';
+    }
+    html+='</tr>';
+  }
+  t.innerHTML=html;
+})();
+</script>
+
+<style>
+  .trainer{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.2rem 1.3rem;margin-top:1rem}
+  .tr-task{font-weight:600;font-size:1.05rem;line-height:1.5;padding:1rem 1.1rem;background:var(--accent-soft);border-radius:10px;color:var(--ink)}
+  .tr-ctl{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.9rem;align-items:center}
+  .tr-ctl button{font:inherit;font-weight:700;font-size:.9rem;cursor:pointer;border:none;border-radius:9px;padding:.55rem .95rem;color:#fff;background:var(--accent)}
+  .tr-ctl button.sec{background:var(--pos)}
+  .tr-ctl button.ghost{background:transparent;color:var(--accent);border:1px solid var(--accent)}
+  .tr-ctl input{flex:1;min-width:150px;font:inherit;padding:.5rem .7rem;border:1px solid var(--line);border-radius:9px;background:#fff;color:var(--ink)}
+  .tr-ctl button:focus-visible,.tr-ctl input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+  .tr-result{margin-top:.9rem;font-size:.96rem;min-height:1.2rem}
+  .tr-result .ok{color:var(--pos);font-weight:700}
+  .tr-result .bad{color:var(--neg);font-weight:700}
+  .tr-result .sol{margin-top:.7rem;padding:.85rem 1rem;background:#FCFBFE;border:1px solid var(--line);border-radius:10px;font-family:ui-monospace,Menlo,monospace;font-size:.9rem;line-height:1.85}
+  .tr-result .sol b{color:var(--accent)}
+</style>
+
+<script>
+(function(){
+  var taskEl=document.getElementById('trTask'), ansEl=document.getElementById('trAns'), resEl=document.getElementById('trResult');
+  if(!taskEl) return;
+
+  function ri(a,b){ return Math.floor(Math.random()*(b-a+1))+a; }
+  function rng(a,b){ var r=[]; for(var i=a;i<=b;i++) r.push(i); return r; }
+  function gcd(a,b){ a=Math.abs(a);b=Math.abs(b); while(b){var t=b;b=a%b;a=t;} return a||1; }
+  function decStr(m,n){
+    if(m===0) return '0'; if(m===n) return '1';
+    var d=m/n, r=Math.round(d*1000)/1000, exact=Math.abs(d-r)<1e-9;
+    return (exact?'':'≈ ')+String(r).replace('.',',');
+  }
+
+  var cur={text:'Бросают игральный кубик. Найди вероятность, что выпадет чётное число.', m:3, n:6, why:'подходящие числа: 2, 4, 6 — их 3'};
+
+  function genDice(){
+    var conds=[
+      function(){ return {t:'выпадет чётное число', favs:[2,4,6]}; },
+      function(){ return {t:'выпадет нечётное число', favs:[1,3,5]}; },
+      function(){ var k=ri(1,5); return {t:'выпадет число больше '+k, favs:rng(k+1,6)}; },
+      function(){ var k=ri(2,6); return {t:'выпадет число меньше '+k, favs:rng(1,k-1)}; },
+      function(){ var k=ri(1,6); return {t:'выпадет число '+k, favs:[k]}; },
+      function(){ return {t:'выпадет число, кратное 3', favs:[3,6]}; }
+    ];
+    var c=conds[ri(0,conds.length-1)]();
+    var m=c.favs.length;
+    return {text:'Бросают игральный кубик. Найди вероятность, что '+c.t+'.', m:m, n:6,
+      why: m===0?'таких чисел на кубике нет':'подходящие числа: '+c.favs.join(', ')+' — их '+m};
+  }
+  function genBalls(){
+    var pal=[{g:'красных'},{g:'синих'},{g:'зелёных'},{g:'жёлтых'}];
+    var a=ri(0,3), b; do{ b=ri(0,3); }while(b===a);
+    var n1=ri(2,7), n2=ri(2,7), n=n1+n2;
+    var pickFirst=Math.random()<0.5;
+    var m=pickFirst?n1:n2, adj=pickFirst?pal[a]:pal[b];
+    var adjMap={'красных':'красный','синих':'синий','зелёных':'зелёный','жёлтых':'жёлтый'};
+    return {text:'В мешке '+n1+' '+pal[a].g+' и '+n2+' '+pal[b].g+' шаров, одинаковых на ощупь. Наугад вынимают один. Найди вероятность, что он '+adjMap[adj.g]+'.',
+      m:m, n:n, why:'нужного цвета шаров '+m+', всего '+n};
+  }
+  function genCards(){
+    var N=[6,8,10,12][ri(0,3)];
+    var conds=[];
+    [2,3,4,5].forEach(function(d){ if(d<N) conds.push({t:'делится на '+d, favs:rng(1,N).filter(function(x){return x%d===0;})}); });
+    conds.push({t:'чётное', favs:rng(1,N).filter(function(x){return x%2===0;})});
+    var k=ri(1,N-1); conds.push({t:'больше '+k, favs:rng(k+1,N)});
+    var c=conds[ri(0,conds.length-1)];
+    var m=c.favs.length;
+    return {text:'Карточки с числами от 1 до '+N+', вынимают одну наугад. Найди вероятность, что число '+c.t+'.',
+      m:m, n:N, why:'подходящие числа: '+c.favs.join(', ')+' — их '+m};
+  }
+  function genEdge(){
+    if(Math.random()<0.5)
+      return {text:'Бросают игральный кубик. Найди вероятность, что выпадет число больше 6.', m:0, n:6, why:'на кубике нет чисел больше 6'};
+    return {text:'Бросают игральный кубик. Найди вероятность, что выпадет число от 1 до 6.', m:6, n:6, why:'подходят все шесть граней'};
+  }
+
+  function generate(){
+    var r=Math.random();
+    if(r<0.12) cur=genEdge();
+    else { var g=[genDice,genBalls,genCards][ri(0,2)]; cur=g(); }
+    taskEl.textContent=cur.text;
+    ansEl.value=''; resEl.innerHTML='';
+  }
+
+  function solutionHTML(){
+    var m=cur.m, n=cur.n, g=gcd(m,n);
+    var line='P = m/n = '+m+'/'+n;
+    if(m!==0 && m!==n && g>1) line+=' = <b>'+(m/g)+'/'+(n/g)+'</b>';
+    line+=' = '+decStr(m,n);
+    var h='<div class="sol">';
+    h+='Всего равновозможных исходов: n = <b>'+n+'</b><br>';
+    h+='Благоприятных: m = <b>'+m+'</b>'+(cur.why?' ('+cur.why+')':'')+'<br>';
+    h+=line;
+    h+='</div>';
+    return h;
+  }
+
+  function parseAns(raw){
+    raw=raw.replace(/\s+/g,'');
+    if(raw==='') return NaN;
+    if(raw.indexOf('/')>-1){
+      var p=raw.split('/');
+      if(p.length!==2) return NaN;
+      var a=parseFloat(p[0].replace(',','.')), b=parseFloat(p[1].replace(',','.'));
+      if(isNaN(a)||isNaN(b)||b===0) return NaN;
+      return a/b;
+    }
+    return parseFloat(raw.replace(',','.'));
+  }
+
+  function check(){
+    var val=parseAns(ansEl.value), target=cur.m/cur.n;
+    if(isNaN(val)){ resEl.innerHTML='<span class="bad">Введи вероятность дробью (1/2) или десятичной (0.5).</span>'; return; }
+    if(Math.abs(val-target)<1e-6){
+      resEl.innerHTML='<span class="ok">✓ Верно!</span>'+solutionHTML();
+    } else {
+      var hint='';
+      if(cur.m>0 && Math.abs(val-cur.n/cur.m)<1e-6) hint=' Похоже, ты поделил наоборот: сверху m (благоприятные), снизу n (все).';
+      else if(val>1) hint=' Вероятность не бывает больше 1 — проверь, что m ≤ n.';
+      resEl.innerHTML='<span class="bad">✗ Пока не то.'+hint+'</span>'+solutionHTML();
+    }
+  }
+
+  document.getElementById('trNew').addEventListener('click',generate);
+  document.getElementById('trCheck').addEventListener('click',check);
+  document.getElementById('trShow').addEventListener('click',function(){ resEl.innerHTML=solutionHTML(); });
+  ansEl.addEventListener('keydown',function(e){ if(e.key==='Enter') check(); });
+})();
+</script>

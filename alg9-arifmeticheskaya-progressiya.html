@@ -1,0 +1,686 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Арифметическая прогрессия — урок, алгебра 9 класс</title>
+<style>
+  :root{
+    --paper:#F6F7F9;
+    --card:#FFFFFF;
+    --ink:#1B2333;
+    --muted:#5A6478;
+    --line:#E2E5EC;
+    --accent:#3B4FD0;
+    --accent-soft:#EAEDFB;
+    --pos:#1E8E5A;   /* d>0 возрастает */
+    --pos-bg:#E7F4EC;
+    --zero:#B9791A;  /* d=0 постоянна */
+    --zero-bg:#FBF1DC;
+    --neg:#C0455B;   /* d<0 убывает */
+    --neg-bg:#F9E9EC;
+  }
+  *{box-sizing:border-box}
+  body{margin:0}
+  .wrap{
+    max-width:760px;
+    margin:0 auto;
+    padding:clamp(1.4rem,4vw,3rem) clamp(1.1rem,4vw,2rem) 4rem;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    font-size:17px;
+    line-height:1.62;
+    -webkit-font-smoothing:antialiased;
+  }
+  .eyebrow{
+    font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--accent);font-weight:600;margin:0 0 .5rem;
+  }
+  h1{
+    font-family:Georgia,"Times New Roman",serif;
+    font-size:clamp(2.1rem,7vw,3rem);
+    line-height:1.05;margin:0;font-weight:700;letter-spacing:-.01em;
+    text-wrap:balance;
+  }
+  .lede{
+    font-size:1.08rem;color:var(--muted);margin:.7rem 0 0;max-width:60ch;
+    text-wrap:pretty;
+  }
+  h2{
+    font-family:Georgia,serif;font-size:1.32rem;font-weight:700;
+    margin:0 0 .1rem;letter-spacing:-.005em;
+  }
+  section{margin-top:2.6rem}
+  .kicker{
+    font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--muted);font-weight:600;margin:0 0 .8rem;
+    display:flex;align-items:center;gap:.6rem;
+  }
+  .kicker::before{
+    content:"";width:1.4rem;height:2px;background:var(--accent);border-radius:2px;
+  }
+  p{margin:.65rem 0}
+  strong{font-weight:650}
+  .math{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-weight:600}
+  sup{font-size:.72em}
+  sub{font-size:.72em}
+
+  /* Главные формулы */
+  .hero-formula{
+    margin-top:2.2rem;
+    background:var(--ink);color:#fff;border-radius:14px;
+    padding:1.6rem 1.4rem;text-align:center;
+  }
+  .hero-formula .lbl{
+    font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;
+    color:#9aa6c9;margin:0 0 .7rem;
+  }
+  .hero-formula .eq{
+    font-family:ui-monospace,"SF Mono",Menlo,monospace;
+    font-size:clamp(1.5rem,5.4vw,2.2rem);font-weight:700;letter-spacing:.01em;
+    overflow-x:auto;
+  }
+  .hero-formula .eq b{color:#8ea0ff;font-weight:700}
+  .hero-formula .note{font-size:.86rem;color:#9aa6c9;margin:.8rem 0 0}
+  .hero-2{display:grid;gap:.85rem;margin-top:.85rem}
+  @media(min-width:600px){.hero-2{grid-template-columns:1fr 1fr}}
+  .hero-2 .hero-formula{margin-top:0}
+  .hero-2 .eq{font-size:clamp(1.15rem,4.2vw,1.4rem)}
+
+  /* Пререквизит */
+  .recall{
+    background:var(--accent-soft);border-radius:12px;padding:1rem 1.15rem;
+    font-size:.96rem;
+  }
+  .recall p{margin:.3rem 0}
+
+  /* Три знака d */
+  .cases{display:grid;gap:.85rem;margin-top:.4rem}
+  @media(min-width:620px){.cases{grid-template-columns:repeat(3,1fr)}}
+  .case{
+    border-radius:12px;padding:1.05rem 1.1rem;border:1px solid var(--line);
+    background:var(--card);display:flex;flex-direction:column;gap:.35rem;
+  }
+  .case .sign{font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.15rem}
+  .case .count{font-weight:650;font-size:1rem}
+  .case .desc{font-size:.9rem;color:var(--muted)}
+  .case.pos{border-top:4px solid var(--pos);background:var(--pos-bg)}
+  .case.pos .sign{color:var(--pos)}
+  .case.zero{border-top:4px solid var(--zero);background:var(--zero-bg)}
+  .case.zero .sign{color:var(--zero)}
+  .case.neg{border-top:4px solid var(--neg);background:var(--neg-bg)}
+  .case.neg .sign{color:var(--neg)}
+
+  /* Разбор */
+  .worked{
+    background:var(--card);border:1px solid var(--line);border-radius:12px;
+    padding:1.2rem 1.3rem;
+  }
+  .worked + .worked{margin-top:1rem}
+  .worked .task{
+    font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.02rem;
+    margin:0 0 1rem;padding-bottom:.8rem;border-bottom:1px solid var(--line);
+  }
+  ol.steps{margin:0;padding:0;list-style:none;counter-reset:s;display:flex;flex-direction:column;gap:.7rem}
+  ol.steps li{
+    position:relative;padding-left:2.1rem;counter-increment:s;
+  }
+  ol.steps li::before{
+    content:counter(s);position:absolute;left:0;top:.05rem;
+    width:1.5rem;height:1.5rem;border-radius:50%;
+    background:var(--accent-soft);color:var(--accent);
+    font-size:.82rem;font-weight:700;display:flex;align-items:center;justify-content:center;
+  }
+  ol.steps .m{font-family:ui-monospace,Menlo,monospace;font-weight:600;color:var(--ink)}
+  ol.steps .why{color:var(--muted);font-style:italic}
+  .verdict{
+    margin-top:1rem;padding:.7rem 1rem;background:var(--pos-bg);
+    border-radius:9px;font-weight:600;color:var(--pos);font-size:.98rem;
+  }
+
+  /* Таблица шага */
+  .steptbl{overflow-x:auto;margin-top:.6rem;border:1px solid var(--line);border-radius:12px;background:var(--card)}
+  table.seq{border-collapse:collapse;width:100%;font-family:ui-monospace,Menlo,monospace}
+  table.seq th,table.seq td{padding:.6rem .8rem;text-align:center;border-bottom:1px solid var(--line);white-space:nowrap}
+  table.seq tr:last-child td{border-bottom:none}
+  table.seq th{color:var(--muted);font-weight:600;font-size:.85rem}
+  table.seq td{font-weight:700}
+  table.seq .lbl{text-align:left;color:var(--muted);font-weight:600}
+  .arrows{font-family:ui-monospace,Menlo,monospace;font-size:.85rem;color:var(--pos);text-align:center;margin:.5rem 0 0;font-weight:700}
+
+  /* Практика */
+  .drill{display:flex;flex-direction:column;gap:.7rem}
+  details{
+    background:var(--card);border:1px solid var(--line);border-radius:10px;
+    padding:.85rem 1.05rem;
+  }
+  details[open]{border-color:var(--accent)}
+  summary{
+    cursor:pointer;font-weight:600;list-style:none;
+    display:flex;justify-content:space-between;align-items:center;gap:1rem;
+  }
+  summary::-webkit-details-marker{display:none}
+  summary:focus-visible{outline:3px solid var(--accent);outline-offset:2px;border-radius:6px}
+  summary .q{font-family:ui-monospace,Menlo,monospace}
+  summary .tag{
+    font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);
+    border:1px solid var(--line);border-radius:20px;padding:.1rem .55rem;white-space:nowrap;
+  }
+  summary::after{
+    content:"показать ответ";font-size:.78rem;color:var(--accent);font-weight:600;white-space:nowrap;
+  }
+  details[open] summary::after{content:"скрыть"}
+  .ans{margin-top:.7rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.96rem;color:var(--muted)}
+  .ans .m{font-family:ui-monospace,Menlo,monospace;color:var(--ink);font-weight:600}
+
+  /* Ошибки */
+  ul.pitfalls{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:.6rem}
+  ul.pitfalls li{
+    padding-left:1.5rem;position:relative;font-size:.98rem;
+  }
+  ul.pitfalls li::before{
+    content:"×";position:absolute;left:0;top:-.05rem;color:var(--neg);font-weight:700;font-size:1.1rem;
+  }
+  ul.pitfalls b{color:var(--ink)}
+
+  .selfcheck{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:1.1rem 1.3rem}
+  .selfcheck ol{margin:.3rem 0 0;padding-left:1.2rem}
+  .selfcheck li{margin:.4rem 0}
+
+  .next{
+    background:var(--accent);color:#fff;border-radius:12px;padding:1.2rem 1.3rem;
+  }
+  .next h2{color:#fff}
+  .next .eq{
+    font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.25rem;
+    margin:.6rem 0 .3rem;
+  }
+  .next p{color:#dfe4fb;font-size:.96rem;margin:.4rem 0 0}
+  .foot{margin-top:2.4rem;font-size:.82rem;color:var(--muted);text-align:center}
+
+  @media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+<div class="wrap">
+
+  <header>
+    <p class="eyebrow">Алгебра · 9 класс</p>
+    <h1>Арифметическая прогрессия</h1>
+    <p class="lede">Числа, которые растут одинаковыми шагами. Одна формула находит любой член — хоть сотый, — а вторая складывает их все сразу.</p>
+  </header>
+
+  <div class="hero-2">
+    <div class="hero-formula">
+      <p class="lbl">Любой член прогрессии</p>
+      <div class="eq"><b>a</b><sub>n</sub> = <b>a</b><sub>1</sub> + (n − 1)·<b>d</b></div>
+      <p class="note">a<sub>1</sub> — первый член, d — разность (шаг), n — номер</p>
+    </div>
+    <div class="hero-formula">
+      <p class="lbl">Сумма первых n членов</p>
+      <div class="eq"><b>S</b><sub>n</sub> = (<b>a</b><sub>1</sub> + <b>a</b><sub>n</sub>)·n / 2</div>
+      <p class="note">полусумма краёв, умноженная на количество</p>
+    </div>
+  </div>
+
+  <section>
+    <p class="kicker">Зачем это нужно</p>
+    <h2>Одинаковый шаг — везде вокруг</h2>
+    <p>Ты копишь деньги и каждый месяц кладёшь в копилку одну и ту же сумму. Или ряды кресел в кинотеатре: в первом ряду 12 мест, в каждом следующем на 2 больше. Или сосулька, что каждый час удлиняется на одинаковую величину. Везде, где к числу раз за разом прибавляется <strong>одно и то же</strong>, прячется арифметическая прогрессия.</p>
+    <p>Зачем формула, а не счёт «по пальцам»? Чтобы узнать, сколько мест в 30-м ряду, не выписывая все 30 строк. А чтобы узнать, сколько мест во всём зале, есть вторая формула — суммы. Считаешь в одно действие вместо сложения сотни чисел.</p>
+    <p>Главное заблуждение: <strong>«раз числа растут — это прогрессия»</strong>. Нет. Арифметическая — только если растут (или убывают) на <em>одну и ту же</em> величину каждый шаг. Ряд 2, 4, 8, 16 растёт, но там каждый раз <em>умножают</em> на 2 — это уже другая история.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Что вспомнить с прошлого шага</p>
+    <div class="recall">
+      <p><strong>Последовательность</strong> — это числа по порядку, у каждого свой номер: a<sub>1</sub>, a<sub>2</sub>, a<sub>3</sub>, … Номер n — всегда натуральное число (1, 2, 3, …), нет «члена с номером 2,5».</p>
+      <p><strong>Отрицательные числа.</strong> Разность d бывает отрицательной, и тогда важно не потерять знак: прибавить −4 — это то же, что вычесть 4.</p>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Суть темы</p>
+    <h2>Начинаем с числа и шагаем одинаковыми шагами</h2>
+    <p>Арифметическая прогрессия — это последовательность, где каждый следующий член получается из предыдущего прибавлением <strong>одного и того же числа</strong>. Это число называют <strong>разностью</strong> и обозначают <span class="math">d</span>. Размер шага — это и есть d.</p>
+    <p>Символом смысл записывают так: <span class="math">a<sub>n+1</sub> = a<sub>n</sub> + d</span> — «следующий = текущий + шаг». А если прогрессия уже дана и надо найти шаг: <span class="math">d = a<sub>n+1</sub> − a<sub>n</sub></span> — «из следующего вычесть предыдущий». В настоящей прогрессии результат для любой соседней пары один и тот же.</p>
+    <p>По знаку d прогрессия ведёт себя по-разному:</p>
+    <div class="cases">
+      <div class="case pos">
+        <div class="sign">d &gt; 0</div>
+        <div class="count">Возрастает</div>
+        <div class="desc">Каждый член больше предыдущего. Пример: 3, 7, 11, 15…</div>
+      </div>
+      <div class="case zero">
+        <div class="sign">d = 0</div>
+        <div class="count">Постоянна</div>
+        <div class="desc">Все члены одинаковы. Пример: 5, 5, 5, 5…</div>
+      </div>
+      <div class="case neg">
+        <div class="sign">d &lt; 0</div>
+        <div class="count">Убывает</div>
+        <div class="desc">Каждый член меньше предыдущего. Пример: 20, 16, 12…</div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Откуда берётся (n − 1)</p>
+    <h2>Формула любого члена</h2>
+    <p>Чтобы дойти от первого члена до n-го, нужно сделать не n, а <strong>(n − 1)</strong> шагов. До 2-го члена — 1 шаг, до 3-го — 2 шага, до n-го — (n − 1) шагов. Каждый шаг добавляет по d, поэтому всего прибавляем (n − 1)·d:</p>
+    <div class="hero-formula">
+      <p class="lbl">n-й член</p>
+      <div class="eq"><b>a</b><sub>n</sub> = <b>a</b><sub>1</sub> + (n − 1)·<b>d</b></div>
+      <p class="note">Проверь на первом члене: при n = 1 скобка (1 − 1) = 0, значит a<sub>1</sub> = a<sub>1</sub>. Сходится.</p>
+    </div>
+    <p style="font-size:.92rem;color:var(--muted);margin-top:.9rem">Запомни как считалочку: <strong>шагов на один меньше, чем номер.</strong></p>
+  </section>
+
+  <section>
+    <p class="kicker">Разбираем вместе · думаю вслух</p>
+    <h2>Эталонный пример: найти член</h2>
+    <div class="worked">
+      <p class="task">a<sub>1</sub> = 5, &nbsp;d = 3. &nbsp;Найти a<sub>10</sub>.</p>
+      <ol class="steps">
+        <li>Записываю формулу n-го члена: <span class="m">a<sub>n</sub> = a<sub>1</sub> + (n − 1)·d</span>. <span class="why">Почему именно её — она связывает номер члена с первым членом и разностью.</span></li>
+        <li>Подставляю n = 10: <span class="m">a<sub>10</sub> = 5 + (10 − 1)·3</span>. <span class="why">Почему 10 − 1 — до 10-го члена от первого нужно 9 шагов, а не 10.</span></li>
+        <li>Считаю скобку: <span class="m">10 − 1 = 9</span>, значит <span class="m">a<sub>10</sub> = 5 + 9·3</span>.</li>
+        <li>Умножаю и складываю: <span class="m">9·3 = 27</span>, затем <span class="m">5 + 27 = 32</span>.</li>
+      </ol>
+      <div class="verdict">Ответ: a<sub>10</sub> = 32.</div>
+    </div>
+
+    <div class="worked">
+      <p class="task">a<sub>1</sub> = 20, &nbsp;d = −4 &nbsp;(убывает). &nbsp;Найти a<sub>7</sub>.</p>
+      <ol class="steps">
+        <li>Та же формула: <span class="m">a<sub>7</sub> = 20 + (7 − 1)·(−4)</span>.</li>
+        <li>Скобка: <span class="m">7 − 1 = 6</span>, значит <span class="m">a<sub>7</sub> = 20 + 6·(−4)</span>.</li>
+        <li>Аккуратно со знаком: <span class="m">6·(−4) = −24</span>, а прибавить −24 — это вычесть: <span class="m">20 − 24 = −4</span>. <span class="why">Здесь легче всего потерять минус.</span></li>
+      </ol>
+      <div class="verdict" style="background:var(--neg-bg);color:var(--neg)">Ответ: a<sub>7</sub> = −4.</div>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Складываем с концов</p>
+    <h2>Формула суммы</h2>
+    <p>Маленького Гаусса попросили сложить все числа от 1 до 100. Он мгновенно дал <strong>5050</strong>: сообразил, что 1 + 100 = 2 + 99 = 3 + 98 = … = 101, и таких пар ровно 50. Значит сумма — это 101·50.</p>
+    <p>Та же идея работает всегда. Если сумму переписать в обратном порядке и сложить с исходной, каждая пара (первый + последний, второй + предпоследний, …) даёт одно и то же число <span class="math">a<sub>1</sub> + a<sub>n</sub></span>. Таких пар n штук, но сумму мы взяли дважды — поэтому делим на 2:</p>
+    <div class="hero-2">
+      <div class="hero-formula">
+        <p class="lbl">Если знаешь a<sub>1</sub> и a<sub>n</sub></p>
+        <div class="eq"><b>S</b><sub>n</sub> = (<b>a</b><sub>1</sub> + <b>a</b><sub>n</sub>)·n / 2</div>
+        <p class="note">полусумма краёв × количество</p>
+      </div>
+      <div class="hero-formula">
+        <p class="lbl">Если знаешь a<sub>1</sub> и d</p>
+        <div class="eq"><b>S</b><sub>n</sub> = (2<b>a</b><sub>1</sub> + (n − 1)<b>d</b>)·n / 2</div>
+        <p class="note">то же самое, но a<sub>n</sub> уже подставлен</p>
+      </div>
+    </div>
+    <p style="font-size:.94rem;color:var(--muted);margin-top:.9rem"><strong>Какую брать?</strong> Дан последний член a<sub>n</sub> — удобнее первая. Дана разность d, а последний член неизвестен — вторая (или сначала найди a<sub>n</sub>, потом первую).</p>
+
+    <div class="worked" style="margin-top:1.2rem">
+      <p class="task">a<sub>1</sub> = 3, &nbsp;d = 4. &nbsp;Найти сумму первых 20 членов.</p>
+      <ol class="steps">
+        <li>Дана разность d, последний член не дан → беру вторую формулу: <span class="m">S<sub>n</sub> = (2a<sub>1</sub> + (n − 1)d)·n / 2</span>.</li>
+        <li>Подставляю a<sub>1</sub> = 3, d = 4, n = 20: <span class="m">S<sub>20</sub> = (2·3 + (20 − 1)·4)·20 / 2</span>. <span class="why">n = 20 — это количество членов, не путать с самим членом.</span></li>
+        <li>Считаю скобку по действиям: <span class="m">2·3 = 6</span>; <span class="m">20 − 1 = 19</span>; <span class="m">19·4 = 76</span>; <span class="m">6 + 76 = 82</span>.</li>
+        <li>Домножаю: <span class="m">S<sub>20</sub> = 82·20 / 2 = 82·10 = 820</span>.</li>
+      </ol>
+      <div class="verdict">Ответ: S<sub>20</sub> = 820. &nbsp;(Проверка первой формулой: a<sub>20</sub> = 3 + 76 = 79; (3 + 79)·20/2 = 820. Сошлось.)</div>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Покрути сам · интерактив</p>
+    <h2>Члены сидят на одной прямой</h2>
+    <p>Двигай ползунки <span class="math">a<sub>1</sub></span> и <span class="math">d</span>. Каждый член — точка (номер; значение). Смотри: точки всегда ложатся на прямую, а промежуток между соседями — ровно <span class="math">d</span>. Именно постоянный шаг делает прогрессию арифметической.</p>
+    <div class="viz">
+      <canvas id="apCanvas" width="640" height="380" aria-label="Члены арифметической прогрессии как точки на прямой"></canvas>
+      <div id="apVerdict" class="viz-verdict">d = 3 &gt; 0 · прогрессия возрастает</div>
+      <div class="sliders">
+        <label>a<sub>1</sub> <span id="vA1" class="sval">2</span><input id="sA1" type="range" min="-10" max="10" step="1" value="2" aria-label="Первый член a1"></label>
+        <label>d <span id="vD" class="sval">3</span><input id="sD" type="range" min="-5" max="5" step="1" value="3" aria-label="Разность d"></label>
+      </div>
+      <p class="viz-eq"><span id="apSeq">2, 5, 8, 11, 14, …</span></p>
+    </div>
+    <p style="font-size:.9rem;color:var(--muted)">Поставь d = 0 — точки выстроятся в горизонтальную линию (все члены равны). Сделай d отрицательным — прямая пойдёт вниз, прогрессия убывает.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Ещё одно представление</p>
+    <h2>Таблица с шагами</h2>
+    <p>Выпиши рядом номер и член для прогрессии с <span class="math">a<sub>1</sub> = 5, d = 3</span>. Между соседними клетками — один и тот же прыжок <span class="math">+d</span>:</p>
+    <div class="steptbl">
+      <table class="seq">
+        <tr><th class="lbl">n</th><td>1</td><td>2</td><td>3</td><td>4</td><td>5</td></tr>
+        <tr><th class="lbl">a<sub>n</sub></th><td>5</td><td>8</td><td>11</td><td>14</td><td>17</td></tr>
+      </table>
+    </div>
+    <p class="arrows">└─ +3 ─┘ └─ +3 ─┘ └─ +3 ─┘ └─ +3 ─┘</p>
+    <p style="font-size:.92rem;color:var(--muted)">От 1-го до 4-го члена — <strong>три</strong> плюс-шага, а не четыре. Вот тебе и (n − 1) наглядно: до члена с номером 4 идёт 4 − 1 = 3 шага.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Теперь ты · нажми, чтобы проверить</p>
+    <h2>Мини-практика</h2>
+    <div class="drill">
+      <details>
+        <summary><span class="q">3, 6, 9, 12 — это прогрессия? Назови a<sub>1</sub> и d</span><span class="tag">понимание</span></summary>
+        <div class="ans">Да: соседи отличаются на одно и то же. <span class="m">a<sub>1</sub> = 3, d = 3.</span></div>
+      </details>
+      <details>
+        <summary><span class="q">Какая НЕ прогрессия: (а) 10,7,4,1 (б) 2,4,8,16 (в) −5,−3,−1,1</span><span class="tag">понимание</span></summary>
+        <div class="ans">Ответ — <strong>(б)</strong>. В ней числа <span class="m">умножают</span> на 2, шаг непостоянный. В (а) шаг −3, в (в) шаг +2 — обе прогрессии.</div>
+      </details>
+      <details>
+        <summary><span class="q">a<sub>1</sub> = −2, d = 6. Найди a<sub>15</sub></span><span class="tag">применение</span></summary>
+        <div class="ans"><span class="m">a<sub>15</sub> = −2 + (15 − 1)·6 = −2 + 14·6 = −2 + 84 = 82.</span></div>
+      </details>
+      <details>
+        <summary><span class="q">100, 93, 86, … Найди a<sub>12</sub></span><span class="tag">применение</span></summary>
+        <div class="ans"><span class="m">d = 93 − 100 = −7; &nbsp;a<sub>12</sub> = 100 + 11·(−7) = 100 − 77 = 23.</span></div>
+      </details>
+      <details>
+        <summary><span class="q">a<sub>1</sub> = 2, d = 3. Найди сумму первых 15 членов</span><span class="tag">применение</span></summary>
+        <div class="ans"><span class="m">S<sub>15</sub> = (2·2 + 14·3)·15/2 = (4 + 42)·15/2 = 46·15/2 = 345.</span></div>
+      </details>
+      <details>
+        <summary><span class="q">Обратная: a<sub>1</sub> = 4, a<sub>10</sub> = 40. Найди d</span><span class="tag">анализ</span></summary>
+        <div class="ans">Из формулы <span class="m">40 = 4 + (10 − 1)·d</span> → <span class="m">36 = 9d</span> → <span class="m">d = 4.</span></div>
+      </details>
+      <details>
+        <summary><span class="q">Найди ошибку: ученик пишет «a<sub>6</sub> = a<sub>1</sub> + 6d»</span><span class="tag">анализ</span></summary>
+        <div class="ans">До 6-го члена не 6, а <strong>5</strong> шагов. Верно <span class="m">a<sub>6</sub> = a<sub>1</sub> + (6 − 1)d = a<sub>1</sub> + 5d.</span> Правило: шагов на один меньше номера.</div>
+      </details>
+      <details>
+        <summary><span class="q">Что изменится: у прогрессии с d = 5 первый член увеличили на 3. Как изменится a<sub>20</sub>?</span><span class="tag">анализ</span></summary>
+        <div class="ans"><span class="m">a<sub>20</sub> = a<sub>1</sub> + 19·d</span>. Разность d не тронули, а a<sub>1</sub> вырос на 3 → и a<sub>20</sub> вырастет ровно <strong>на 3</strong>. Сдвиг стартового числа поднимает все члены одинаково.</div>
+      </details>
+      <details>
+        <summary><span class="q">Найди ошибку: для a<sub>1</sub>=4, a<sub>12</sub>=26 ученик пишет S<sub>12</sub> = (4 + 26)·12 = 360</span><span class="tag">анализ</span></summary>
+        <div class="ans">Забыл <strong>деление на 2</strong>. Верно <span class="m">S<sub>12</sub> = (4 + 26)·12/2 = 30·6 = 180.</span></div>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Тренажёр · бесконечная практика</p>
+    <h2>Реши сам</h2>
+    <p>Нажми «Новая задача». Введи ответ числом (отрицательное — с минусом), потом проверь себя или посмотри пошаговое решение.</p>
+    <div class="trainer">
+      <div class="tr-eq" id="trEq">a<sub>1</sub> = 5, d = 3. Найди a<sub>10</sub>.</div>
+      <div class="tr-ctl">
+        <button id="trNew" type="button">🎲 Новая задача</button>
+        <input id="trAns" type="text" inputmode="numeric" placeholder="ответ числом, напр. 32" aria-label="Ответ">
+        <button id="trCheck" type="button" class="sec">Проверить</button>
+        <button id="trShow" type="button" class="ghost">Показать решение</button>
+      </div>
+      <div id="trResult" class="tr-result"></div>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Где чаще всего ошибаются</p>
+    <h2>Лови эти ловушки</h2>
+    <ul class="pitfalls">
+      <li><b>Берут n вместо (n − 1).</b> Пишут a<sub>n</sub> = a<sub>1</sub> + n·d. Тогда для a<sub>1</sub> вышло бы a<sub>1</sub> + d — а это уже a<sub>2</sub>. Проверяй на n = 1: должно получиться ровно a<sub>1</sub>.</li>
+      <li><b>Находят разность наоборот.</b> d = (следующий) − (предыдущий), то есть из бо́льшего по номеру вычитаем меньший. Для 7, 11, 15 это <span class="math">11 − 7 = 4</span>, а не 7 − 11.</li>
+      <li><b>Путают разность d и первый член a<sub>1</sub>.</b> В «7, 11, 15…» пишут d = 7 (взяли первое число) вместо d = 4. a<sub>1</sub> — стартовое число, d — шаг между соседями.</li>
+      <li><b>Теряют минус при отрицательной d.</b> В <span class="math">20 + 6·(−4)</span> пишут 20 + 24. Верно: <span class="math">6·(−4) = −24</span>, прибавить отрицательное — вычесть.</li>
+      <li><b>В сумме забывают делить на 2.</b> Проверь на малом: 1 + 2 + 3 = 6, а (1 + 3)·3 = 12. Делить на 2 обязательно.</li>
+      <li><b>Путают номер n и сам член a<sub>n</sub>.</b> В формулу количества идёт n (например 20), а не значение члена (например 79).</li>
+    </ul>
+  </section>
+
+  <section>
+    <p class="kicker">Проверь понимание</p>
+    <h2>Объясни своими словами</h2>
+    <div class="selfcheck">
+      <ol>
+        <li>Запиши формулу n-го члена и скажи, что означает каждая буква.</li>
+        <li>Почему в формуле стоит (n − 1), а не n? Объясни на примере 3-го члена.</li>
+        <li>В прогрессии 1, 4, 7, 10, … чему равны d и a<sub>5</sub>? <span style="color:var(--muted)">(d = 3, a<sub>5</sub> = 13)</span></li>
+        <li>Почему в формуле суммы стоит деление на 2?</li>
+      </ol>
+    </div>
+    <p style="font-size:.94rem;color:var(--muted);margin-top:1rem"><strong>Итог одним предложением:</strong> арифметическая прогрессия — это последовательность с постоянным шагом d, любой член находят по <span class="math">a<sub>n</sub> = a<sub>1</sub> + (n − 1)·d</span>, а их сумму — по <span class="math">S<sub>n</sub> = (a<sub>1</sub> + a<sub>n</sub>)·n/2</span>.</p>
+  </section>
+
+  <section>
+    <div class="next">
+      <h2>Что дальше</h2>
+      <p>Есть и другой тип роста — когда числа не <em>прибавляются</em>, а <em>умножаются</em> на одно и то же число. Это <strong>геометрическая прогрессия</strong>:</p>
+      <div class="eq">b<sub>n+1</sub> = b<sub>n</sub> · q</div>
+      <p>Тот же принцип «одинакового действия на каждом шаге», только вместо шага +d — множитель q. И у неё будут свои формулы n-го члена и суммы.</p>
+    </div>
+  </section>
+
+  <p class="foot">Проверка на выходе: запиши a<sub>n</sub> по памяти · сколько шагов до 6-го члена? · найди d в 100, 93, 86…</p>
+
+</div>
+
+<style>
+  .viz{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.1rem 1.1rem 1rem;margin:1rem 0}
+  .viz canvas{width:100%;height:auto;display:block;border-radius:10px;background:#FCFDFF}
+  .viz-verdict{text-align:center;font-weight:700;font-size:1.05rem;margin:.8rem 0 0;padding:.5rem;border-radius:9px;font-family:ui-monospace,Menlo,monospace}
+  .viz-verdict.pos{background:var(--pos-bg);color:var(--pos)}
+  .viz-verdict.zero{background:var(--zero-bg);color:var(--zero)}
+  .viz-verdict.neg{background:var(--neg-bg);color:var(--neg)}
+  .sliders{display:grid;gap:.6rem;margin-top:.9rem}
+  @media(min-width:520px){.sliders{grid-template-columns:repeat(2,1fr)}}
+  .sliders label{display:flex;align-items:center;gap:.5rem;font-weight:700;font-family:ui-monospace,Menlo,monospace}
+  .sliders input[type=range]{flex:1;accent-color:var(--accent)}
+  .sliders input[type=range]:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+  .sliders .sval{min-width:2.6ch;text-align:right;color:var(--accent);font-variant-numeric:tabular-nums}
+  .viz-eq{text-align:center;font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.05rem;margin:.9rem 0 0;color:var(--ink);overflow-x:auto}
+</style>
+
+<script>
+(function(){
+  var canvas=document.getElementById('apCanvas'); if(!canvas) return;
+  var ctx=canvas.getContext('2d');
+  var sA1=document.getElementById('sA1'), sD=document.getElementById('sD');
+  var vA1=document.getElementById('vA1'), vD=document.getElementById('vD');
+  var verdict=document.getElementById('apVerdict'), seqEl=document.getElementById('apSeq');
+  var N=8, W=640, H=380, dpr=1;
+
+  function mns(n){ return (n<0?'−':'')+Math.abs(n); }
+  function getCSS(v){ return getComputedStyle(document.documentElement).getPropertyValue(v).trim(); }
+
+  function resize(){
+    var cssW=canvas.clientWidth||640; dpr=Math.min(window.devicePixelRatio||1,2);
+    W=cssW; H=Math.max(300,Math.round(cssW*0.62));
+    canvas.width=W*dpr; canvas.height=H*dpr; canvas.style.height=H+'px';
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+  }
+
+  function draw(){
+    var a1=parseInt(sA1.value,10), d=parseInt(sD.value,10);
+    vA1.textContent=mns(a1); vD.textContent=mns(d);
+
+    var vals=[]; for(var i=1;i<=N;i++) vals.push(a1+(i-1)*d);
+    var maxv=Math.max.apply(null,vals.concat([0]));
+    var minv=Math.min.apply(null,vals.concat([0]));
+    if(maxv===minv){ maxv+=1; minv-=1; }
+    var pad=(maxv-minv)*0.15; maxv+=pad; minv-=pad;
+
+    var padL=38, padR=18, padT=20, padB=34;
+    function X(n){ return padL + (n-1)*(W-padL-padR)/(N-1); }
+    function Y(v){ return padT + (maxv-v)*(H-padT-padB)/(maxv-minv); }
+
+    ctx.clearRect(0,0,W,H);
+
+    // горизонтальная сетка + подписи значений
+    ctx.strokeStyle='#EDEFF4'; ctx.lineWidth=1;
+    ctx.fillStyle='#9AA3B2'; ctx.font='11px ui-monospace,Menlo,monospace'; ctx.textAlign='right';
+    var span=maxv-minv, stepG=Math.max(1,Math.round(span/5));
+    var g0=Math.ceil(minv/stepG)*stepG;
+    for(var gv=g0; gv<=maxv; gv+=stepG){
+      var yy=Y(gv);
+      ctx.beginPath(); ctx.moveTo(padL,yy); ctx.lineTo(W-padR,yy); ctx.stroke();
+      ctx.fillText(mns(gv), padL-6, yy+3);
+    }
+
+    // ось y=0 если в кадре
+    if(minv<0 && maxv>0){
+      ctx.strokeStyle='#C4CBD6'; ctx.lineWidth=1.5;
+      ctx.beginPath(); ctx.moveTo(padL,Y(0)); ctx.lineTo(W-padR,Y(0)); ctx.stroke();
+    }
+
+    // цвет по знаку d
+    var col = d>0 ? getCSS('--pos') : (d<0 ? getCSS('--neg') : getCSS('--zero'));
+
+    // прямая через точки
+    ctx.strokeStyle=col; ctx.lineWidth=2.5; ctx.beginPath();
+    ctx.moveTo(X(1),Y(vals[0])); ctx.lineTo(X(N),Y(vals[N-1])); ctx.stroke();
+
+    // ступенька "+d" между 1-м и 2-м членом
+    if(d!==0){
+      ctx.strokeStyle=col; ctx.lineWidth=1.5; ctx.setLineDash([4,3]);
+      ctx.beginPath();
+      ctx.moveTo(X(1),Y(vals[0])); ctx.lineTo(X(2),Y(vals[0]));
+      ctx.lineTo(X(2),Y(vals[1]));
+      ctx.stroke(); ctx.setLineDash([]);
+      ctx.fillStyle=col; ctx.font='bold 12px ui-monospace,Menlo,monospace'; ctx.textAlign='left';
+      var midY=(Y(vals[0])+Y(vals[1]))/2;
+      ctx.fillText((d<0?'−':'+')+Math.abs(d), X(2)+5, midY+4);
+    }
+
+    // точки + подписи номеров
+    ctx.textAlign='center';
+    for(var k=0;k<N;k++){
+      var px=X(k+1), py=Y(vals[k]);
+      ctx.fillStyle=col; ctx.beginPath(); ctx.arc(px,py,5,0,7); ctx.fill();
+      ctx.fillStyle='#fff'; ctx.beginPath(); ctx.arc(px,py,2,0,7); ctx.fill();
+      ctx.fillStyle='#9AA3B2'; ctx.font='11px ui-monospace,Menlo,monospace';
+      ctx.fillText(k+1, px, H-12);
+    }
+    // подпись оси n
+    ctx.fillStyle='#5A6478'; ctx.font='11px ui-monospace,Menlo,monospace'; ctx.textAlign='right';
+    ctx.fillText('n →', W-padR, H-12);
+
+    // вердикт
+    verdict.className='viz-verdict';
+    if(d>0){ verdict.classList.add('pos'); verdict.textContent='d = '+d+' > 0 · прогрессия возрастает'; }
+    else if(d<0){ verdict.classList.add('neg'); verdict.textContent='d = '+mns(d)+' < 0 · прогрессия убывает'; }
+    else { verdict.classList.add('zero'); verdict.textContent='d = 0 · все члены одинаковы'; }
+
+    // строка последовательности
+    seqEl.textContent = vals.slice(0,5).map(mns).join(', ')+', …';
+  }
+
+  [sA1,sD].forEach(function(s){ s.addEventListener('input',draw); });
+  window.addEventListener('resize',function(){ resize(); draw(); });
+  resize(); draw();
+})();
+</script>
+
+<style>
+  .trainer{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.2rem 1.3rem;margin-top:1rem}
+  .tr-eq{font-family:ui-monospace,Menlo,monospace;font-weight:800;font-size:clamp(1.05rem,4vw,1.35rem);text-align:center;padding:1rem;background:var(--accent-soft);border-radius:10px;color:var(--ink);line-height:1.5}
+  .tr-ctl{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.9rem;align-items:center}
+  .tr-ctl button{font:inherit;font-weight:700;font-size:.9rem;cursor:pointer;border:none;border-radius:9px;padding:.55rem .95rem;color:#fff;background:var(--accent)}
+  .tr-ctl button.sec{background:var(--pos)}
+  .tr-ctl button.ghost{background:transparent;color:var(--accent);border:1px solid var(--accent)}
+  .tr-ctl input{flex:1;min-width:150px;font:inherit;padding:.5rem .7rem;border:1px solid var(--line);border-radius:9px;background:#fff;color:var(--ink)}
+  .tr-ctl button:focus-visible,.tr-ctl input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+  .tr-result{margin-top:.9rem;font-size:.96rem;min-height:1.2rem}
+  .tr-result .ok{color:var(--pos);font-weight:700}
+  .tr-result .bad{color:var(--neg);font-weight:700}
+  .tr-result .sol{margin-top:.7rem;padding:.85rem 1rem;background:#FCFBFE;border:1px solid var(--line);border-radius:10px;font-family:ui-monospace,Menlo,monospace;font-size:.9rem;line-height:1.85}
+  .tr-result .sol b{color:var(--accent)}
+</style>
+
+<script>
+(function(){
+  var eqEl=document.getElementById('trEq'), ansEl=document.getElementById('trAns'), resEl=document.getElementById('trResult');
+  if(!eqEl) return;
+
+  function ri(min,max){ return Math.floor(Math.random()*(max-min+1))+min; }
+  function mns(n){ return (n<0?'−':'')+Math.abs(n); }          // настоящий минус U+2212
+  function sub(x){ return '<sub>'+x+'</sub>'; }
+  // одночлен d·k в скобках со знаком, аккуратно
+  function mulNeg(a,b){ return a*b; }
+
+  var cur=null; // {type, a1, d, n, ans}
+
+  function makeMember(){
+    var a1=ri(-9,9), d=ri(-5,5), n=ri(6,15);
+    return {type:'member', a1:a1, d:d, n:n, ans:a1+(n-1)*d};
+  }
+  function makeDiff(){
+    var a1=ri(-9,9), d=ri(-5,5);
+    return {type:'diff', a1:a1, d:d, n:4, ans:d};
+  }
+  function makeSum(){
+    var a1=ri(-6,8), d=ri(-4,5), n=ri(6,12);
+    var s=(2*a1+(n-1)*d)*n/2;
+    return {type:'sum', a1:a1, d:d, n:n, ans:s};
+  }
+
+  function generate(){
+    var r=Math.random();
+    if(r<0.4) cur=makeMember();
+    else if(r<0.7) cur=makeSum();
+    else cur=makeDiff();
+    renderTask();
+    resEl.innerHTML=''; ansEl.value='';
+    // без focus() при первичной генерации — фокус только по клику "Новая задача"
+  }
+
+  function renderTask(){
+    var q=cur, h='';
+    if(q.type==='member'){
+      h='a'+sub(1)+' = '+mns(q.a1)+', &nbsp;d = '+mns(q.d)+'. &nbsp;Найди a'+sub(q.n)+'.';
+    } else if(q.type==='sum'){
+      h='a'+sub(1)+' = '+mns(q.a1)+', &nbsp;d = '+mns(q.d)+'. &nbsp;Найди сумму первых '+q.n+' членов (S'+sub(q.n)+').';
+    } else { // diff — показываем первые 4 члена
+      var t=[]; for(var i=0;i<4;i++) t.push(mns(q.a1+i*q.d));
+      h=t.join(', ')+', … &nbsp;Найди разность d.';
+    }
+    eqEl.innerHTML=h;
+  }
+
+  function solutionHTML(){
+    var q=cur, h='<div class="sol">';
+    if(q.type==='member'){
+      h+='a'+sub('n')+' = a'+sub(1)+' + (n − 1)·d<br>';
+      h+='a'+sub(q.n)+' = '+mns(q.a1)+' + ('+q.n+' − 1)·('+mns(q.d)+')<br>';
+      h+='= '+mns(q.a1)+' + '+(q.n-1)+'·('+mns(q.d)+') = '+mns(q.a1)+' + '+mns((q.n-1)*q.d)+'<br>';
+      h+='<b>a'+sub(q.n)+' = '+mns(q.ans)+'</b>';
+    } else if(q.type==='sum'){
+      var inner=2*q.a1+(q.n-1)*q.d;
+      h+='S'+sub('n')+' = (2a'+sub(1)+' + (n − 1)d)·n / 2<br>';
+      h+='S'+sub(q.n)+' = (2·'+mns(q.a1)+' + ('+q.n+' − 1)·('+mns(q.d)+'))·'+q.n+' / 2<br>';
+      h+='= ('+mns(2*q.a1)+' + '+mns((q.n-1)*q.d)+')·'+q.n+' / 2 = '+mns(inner)+'·'+q.n+' / 2<br>';
+      h+='<b>S'+sub(q.n)+' = '+mns(q.ans)+'</b>';
+    } else {
+      h+='d = (следующий) − (предыдущий)<br>';
+      h+='d = '+mns(q.a1+q.d)+' − ('+mns(q.a1)+') = <b>'+mns(q.ans)+'</b><br>';
+      h+='Проверь по другой паре — разность та же.';
+    }
+    return h+'</div>';
+  }
+
+  function check(){
+    var raw=ansEl.value.trim().replace('−','-').replace(',','.');
+    if(!raw){ resEl.innerHTML='<span class="bad">Введи ответ или нажми «Показать решение».</span>'; return; }
+    var got=parseFloat(raw);
+    if(isNaN(got)){ resEl.innerHTML='<span class="bad">Не понял ответ — введи число, напр. '+mns(cur.ans)+'.</span>'; return; }
+    if(Math.abs(got-cur.ans)<0.001){
+      resEl.innerHTML='<span class="ok">✓ Верно! Отлично.</span>'+solutionHTML();
+    } else {
+      resEl.innerHTML='<span class="bad">✗ Пока не то. Свериться с решением можно ниже.</span>'+solutionHTML();
+    }
+  }
+
+  document.getElementById('trNew').addEventListener('click',function(){ generate(); ansEl.focus(); });
+  document.getElementById('trCheck').addEventListener('click',check);
+  document.getElementById('trShow').addEventListener('click',function(){ resEl.innerHTML=solutionHTML(); });
+  ansEl.addEventListener('keydown',function(e){ if(e.key==='Enter') check(); });
+
+  // стартовая задача = валидный пример из урока (a1=5, d=3, a10=32), без фокуса
+  cur={type:'member', a1:5, d:3, n:10, ans:32};
+  renderTask();
+})();
+</script>
