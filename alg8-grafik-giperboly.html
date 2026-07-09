@@ -1,0 +1,514 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>График гиперболы y = k/x — алгебра 8 класс</title>
+<style>
+  :root{
+    --paper:#F5F7F8; --card:#FFFFFF; --ink:#182029; --muted:#5A6470; --line:#E1E6EA;
+    --brand:#0E7C86; --brand-soft:#DCF1F2;              /* бирюзовый — акцент темы */
+    --pos:#1E8E5A; --pos-soft:#E3F3EA;                  /* k > 0 · ветви в I и III */
+    --neg:#C0455B; --neg-soft:#F8E7EB;                  /* k < 0 · ветви в II и IV */
+    --ok:#1E8E5A; --no:#C0455B;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper)}
+  .page{max-width:760px;margin:0 auto;padding:clamp(1.4rem,4vw,3rem) clamp(1.1rem,4vw,2rem) 4.5rem;
+    color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:17.5px;line-height:1.66;-webkit-font-smoothing:antialiased}
+  .mono{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-variant-numeric:tabular-nums;font-weight:600}
+  sup{font-size:.72em} sub{font-size:.72em}
+
+  .hero{border-bottom:3px solid var(--brand);padding-bottom:1.4rem;margin-bottom:1.7rem}
+  .eyebrow{font-size:.74rem;letter-spacing:.15em;text-transform:uppercase;color:var(--brand);font-weight:700;margin:0 0 .55rem}
+  h1{font-family:Georgia,"Times New Roman",serif;font-size:clamp(1.9rem,6vw,2.8rem);line-height:1.06;margin:0;font-weight:800;letter-spacing:-.01em;text-wrap:balance}
+  .tagline{font-size:1.1rem;color:var(--muted);margin:.85rem 0 0;text-wrap:pretty}
+
+  section{margin-top:2.4rem}
+  h2{font-family:Georgia,serif;font-size:1.4rem;margin:0 0 .3rem;font-weight:700;letter-spacing:-.01em;text-wrap:balance}
+  h2 .em{color:var(--brand)}
+  .kicker{font-size:.72rem;letter-spacing:.13em;text-transform:uppercase;color:var(--muted);font-weight:700;margin:0 0 .55rem;display:flex;align-items:center;gap:.6rem}
+  .kicker::before{content:"";width:1.4rem;height:2px;background:var(--brand);border-radius:2px}
+  p{margin:.7rem 0}
+  strong{font-weight:680}
+  .pw{color:var(--pos);font-weight:800} .nw{color:var(--neg);font-weight:800}
+
+  .lead-in{background:var(--brand-soft);border-radius:14px;padding:1.1rem 1.3rem;font-size:1.02rem}
+  .lead-in p{margin:.45rem 0}
+  .lead-in b{color:var(--brand)}
+
+  .recall{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:1rem 1.2rem;font-size:.98rem}
+  .recall p{margin:.35rem 0}
+  .recall b{color:var(--brand)}
+
+  .formula-box{background:var(--ink);color:#fff;border-radius:14px;padding:1.5rem 1.3rem;text-align:center;margin-top:1rem}
+  .formula-box .lbl{font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:#9FB0B2;margin:0 0 .7rem}
+  .formula-box .eq{font-family:ui-monospace,Menlo,monospace;font-size:clamp(1.9rem,7vw,2.6rem);font-weight:700}
+  .formula-box .eq .k{color:#4FD0C0} .formula-box .eq .x{color:#7FC7EE}
+  .formula-box .note{font-size:.9rem;color:#9FB0B2;margin:.95rem 0 0}
+  .formula-box .note .mono{color:#DDEDEC}
+
+  /* Роль знака k — две карточки */
+  .signs{display:grid;gap:.9rem;margin-top:1.1rem}
+  @media(min-width:560px){.signs{grid-template-columns:1fr 1fr}}
+  .sc{border-radius:14px;padding:1.1rem 1.2rem;border:2px solid}
+  .sc.p{background:var(--pos-soft);border-color:#B4E0C6}
+  .sc.n{background:var(--neg-soft);border-color:#F1C2CC}
+  .sc .tag{font-family:ui-monospace,Menlo,monospace;font-weight:800;font-size:1.25rem}
+  .sc.p .tag{color:var(--pos)} .sc.n .tag{color:var(--neg)}
+  .sc h3{margin:.35rem 0 .35rem;font-size:1rem;font-weight:800}
+  .sc p{margin:.2rem 0;font-size:.93rem}
+  /* мини-плоскость 2×2 четверти */
+  .quad{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;width:118px;height:118px;margin:.7rem 0 .2rem;border:2px solid var(--muted);border-radius:6px;overflow:hidden;font-family:ui-monospace,Menlo,monospace;font-weight:800;font-size:.82rem}
+  .quad div{display:flex;align-items:center;justify-content:center;color:var(--muted)}
+  .quad .II{border-right:1.5px solid var(--muted);border-bottom:1.5px solid var(--muted)}
+  .quad .I{border-bottom:1.5px solid var(--muted)}
+  .quad .III{border-right:1.5px solid var(--muted)}
+  .sc.p .on{background:var(--pos);color:#fff} .sc.n .on{background:var(--neg);color:#fff}
+
+  .note{border-left:4px solid var(--brand);background:var(--brand-soft);border-radius:0 10px 10px 0;padding:.8rem 1.1rem;margin-top:1rem;font-size:.98rem}
+  .note b{color:var(--brand)}
+
+  /* Разбор */
+  .walk{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.15rem 1.3rem;margin-top:1rem}
+  .walk .q{font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.02rem;margin:0 0 .9rem;padding-bottom:.7rem;border-bottom:1px solid var(--line)}
+  .walk ol{margin:0;padding-left:1.2rem;display:flex;flex-direction:column;gap:.5rem}
+  .walk li{font-size:.95rem}
+  .walk li .why{color:var(--muted);font-size:.9rem}
+  .walk b{font-weight:700}
+  .verdict{margin-top:1rem;padding:.7rem 1rem;border-radius:10px;font-weight:680}
+  .verdict.p{background:var(--pos-soft);color:var(--pos)}
+  .verdict.n{background:var(--neg-soft);color:var(--neg)}
+
+  table.vals{border-collapse:collapse;margin:.9rem 0 0;font-family:ui-monospace,Menlo,monospace;font-variant-numeric:tabular-nums;width:100%}
+  table.vals td,table.vals th{border:1px solid var(--line);padding:.35rem .6rem;text-align:center}
+  table.vals th{background:var(--brand-soft);color:var(--brand)}
+  .tbl-scroll{overflow-x:auto}
+
+  /* График */
+  .graph{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:1.2rem 1.2rem 1rem;margin-top:1rem}
+  .graph canvas{width:100%;height:auto;display:block;border-radius:10px;background:#FCFEFE}
+  .sliders{display:grid;gap:.6rem;margin-top:.9rem}
+  .sliders label{display:flex;align-items:center;gap:.6rem;font-weight:700;font-family:ui-monospace,Menlo,monospace}
+  .sliders input[type=range]{flex:1;min-width:0;accent-color:var(--brand)}
+  .sliders .sval{min-width:3ch;text-align:right;font-variant-numeric:tabular-nums;color:var(--brand)}
+  .sliders input:focus-visible{outline:3px solid var(--brand);outline-offset:2px}
+  .graph-eq{text-align:center;font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.15rem;margin:.85rem 0 0}
+  .graph-read{text-align:center;font-size:.95rem;margin:.55rem 0 0;min-height:1.2rem;font-family:ui-monospace,Menlo,monospace}
+  .graph-read.p{color:var(--pos)} .graph-read.n{color:var(--neg)} .graph-read.z{color:var(--muted)}
+
+  /* Тренажёр */
+  .trainer{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.2rem 1.3rem;margin-top:1rem}
+  .tr-type{font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--brand);font-weight:700;margin:0 0 .5rem}
+  .tr-task{font-family:ui-monospace,Menlo,monospace;font-weight:800;font-size:clamp(1.15rem,4.5vw,1.5rem);text-align:center;padding:1rem;background:var(--brand-soft);border-radius:10px;color:var(--ink);line-height:1.4}
+  .tr-prompt{font-size:.94rem;color:var(--muted);margin:.75rem 0 .2rem}
+  .tr-ctl{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.6rem;align-items:center}
+  .tr-ctl input{flex:1;min-width:150px;font:inherit;font-family:ui-monospace,Menlo,monospace;padding:.5rem .7rem;border:1px solid var(--line);border-radius:9px;background:#fff;color:var(--ink)}
+  .tr-ctl button{font:inherit;font-weight:700;font-size:.9rem;cursor:pointer;border:none;border-radius:9px;padding:.55rem .95rem;color:#fff;background:var(--brand)}
+  .tr-ctl button.sec{background:var(--pos)}
+  .tr-ctl button.ghost{background:transparent;color:var(--brand);border:1px solid var(--brand)}
+  .tr-ctl button:focus-visible,.tr-ctl input:focus-visible{outline:3px solid var(--brand);outline-offset:2px}
+  .tr-result{margin-top:.9rem;font-size:.96rem;min-height:1.2rem}
+  .tr-result .ok{color:var(--ok);font-weight:700} .tr-result .bad{color:var(--no);font-weight:700}
+  .tr-result .sol{margin-top:.6rem;padding:.8rem 1rem;background:#FBFDFD;border:1px solid var(--line);border-radius:10px;font-family:ui-monospace,Menlo,monospace;font-size:.9rem;line-height:1.85}
+  .tr-result .sol b{color:var(--brand)}
+
+  /* Практика */
+  details{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:.9rem 1.1rem;margin-top:.7rem}
+  details[open]{border-color:var(--brand)}
+  summary{cursor:pointer;font-weight:650;list-style:none;display:flex;justify-content:space-between;gap:1rem;align-items:center}
+  summary::-webkit-details-marker{display:none}
+  summary:focus-visible{outline:3px solid var(--brand);outline-offset:3px;border-radius:6px}
+  summary .tg{font-size:.66rem;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);border:1px solid var(--line);border-radius:20px;padding:.12rem .55rem;white-space:nowrap}
+  summary::after{content:"показать";font-size:.8rem;color:var(--brand);font-weight:700;white-space:nowrap}
+  details[open] summary::after{content:"скрыть"}
+  summary .qq{font-family:ui-monospace,Menlo,monospace}
+  .ans{margin-top:.75rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.96rem;color:var(--muted)}
+  .ans b{color:var(--ink)} .ans .mono{color:var(--ink)}
+  .drill{display:flex;flex-direction:column;gap:.2rem;margin-top:1rem}
+
+  ul.traps{list-style:none;margin:1rem 0 0;padding:0;display:flex;flex-direction:column;gap:.7rem}
+  ul.traps li{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:.85rem 1.05rem;padding-left:2.5rem;position:relative;font-size:.97rem}
+  ul.traps li::before{content:"⚠";position:absolute;left:1rem;top:.85rem;color:var(--neg)}
+  ul.traps b{font-weight:700}
+
+  .wrapup{background:var(--brand);color:#fff;border-radius:16px;padding:1.4rem 1.5rem;margin-top:2.4rem}
+  .wrapup h2{color:#fff;margin:0 0 .5rem}
+  .wrapup p{color:#D7EFEF;margin:.4rem 0;font-size:1rem}
+  .wrapup .big-rule{font-size:1.05rem;font-weight:800;color:#fff;margin:.6rem 0;font-family:ui-monospace,Menlo,monospace}
+  .wrapup .next{font-size:.95rem;color:#C3E7E7;margin-top:1rem;padding-top:1rem;border-top:1px solid rgba(255,255,255,.22)}
+  .wrapup .next b{color:#fff}
+
+  .foot{margin-top:2.2rem;font-size:.82rem;color:var(--muted);text-align:center}
+
+  @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="page">
+
+  <header class="hero">
+    <p class="eyebrow">Алгебра · 8 класс · функции</p>
+    <h1>График гиперболы: y = k/x</h1>
+    <p class="tagline">Когда одна величина растёт, а другая во столько же раз убывает — их связь рисуют не прямой, а особой кривой из двух ветвей. Это гипербола.</p>
+  </header>
+
+  <div class="lead-in">
+    <p><b>Где встречается.</b> Всюду, где «чем больше одно — тем меньше другое». Чем выше скорость — тем меньше времени на путь (<span class="mono">t = S/v</span>). Чем больше людей делят пиццу — тем меньше кусок каждому. Чем больше объём газа — тем меньше давление. Это <b>обратная пропорциональность</b>, а её «портрет» — гипербола.</p>
+    <p>Одно житейское заблуждение сразу выкинь: «график — это линия, которую рисуют одним росчерком, не отрывая руки». У гиперболы <b>две отдельные ветви</b>, и соединять их нельзя: при <span class="mono">x = 0</span> функции просто нет.</p>
+  </div>
+
+  <section>
+    <p class="kicker">Что вспомнить с прошлого шага</p>
+    <div class="recall">
+      <p><b>Координатная плоскость:</b> точку задают пара чисел <span class="mono">(x; y)</span> — сдвиг вправо/влево и вверх/вниз. Оси делят плоскость на <b>четыре четверти</b> (I, II, III, IV — против часовой стрелки, начиная с правой верхней).</p>
+      <p><b>Функция</b> — это правило: каждому <span class="mono">x</span> она ставит в соответствие одно <span class="mono">y</span>. Чтобы построить график, берут несколько <span class="mono">x</span>, считают <span class="mono">y</span>, ставят точки и соединяют.</p>
+      <p><b>Обратная пропорциональность:</b> <span class="mono">y = k/x</span>, где произведение <span class="mono">x·y = k</span> постоянно. Растёт <span class="mono">x</span> — убывает <span class="mono">y</span>.</p>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Ядро — вся суть темы</p>
+    <h2>Что такое <span class="em">гипербола</span></h2>
+    <p>Функция <span class="mono">y = k/x</span> задаёт правило: каждому <span class="mono">x</span> (кроме нуля) ставим в соответствие число <span class="mono">k</span>, делённое на <span class="mono">x</span>. Отметим много таких точек — и они сложатся в кривую особой формы. Её и называют гиперболой.</p>
+    <div class="formula-box">
+      <p class="lbl">Функция обратной пропорциональности</p>
+      <div class="eq">y = <span class="k">k</span> / <span class="x">x</span></div>
+      <p class="note"><span class="mono">k</span> — постоянное число, <b class="mono" style="color:#4FD0C0">k ≠ 0</b> · <span class="mono">x</span> — аргумент, <b class="mono" style="color:#7FC7EE">x ≠ 0</b> (на ноль делить нельзя)</p>
+    </div>
+    <p><strong>Две ветви.</strong> График состоит из двух отдельных кусков — ветвей. Между ними разрыв: в точке <span class="mono">x = 0</span> функции нет, поэтому ветви <b>никогда не соединяют</b> через начало координат.</p>
+    <p><strong>Оси — асимптоты.</strong> Когда <span class="mono">x</span> растёт, дробь <span class="mono">k/x</span> уменьшается, но нуля не достигает; когда <span class="mono">x</span> близко к нулю, <span class="mono">|y|</span> становится огромным. Поэтому кривая <b>подходит к осям сколь угодно близко, но не касается их</b>. Такие «недосягаемые» прямые называют асимптотами — здесь это оси <span class="mono">Ox</span> и <span class="mono">Oy</span>.</p>
+
+    <h2 style="margin-top:1.6rem">Главное — <span class="em">знак k</span></h2>
+    <p>Одно число <span class="mono">k</span> решает, в каких четвертях лягут обе ветви. Смотри на знак:</p>
+    <div class="signs">
+      <div class="sc p">
+        <div class="tag">k &gt; 0</div>
+        <div class="quad" aria-hidden="true">
+          <div class="II">II</div><div class="I on">I</div>
+          <div class="III on">III</div><div class="IV">IV</div>
+        </div>
+        <h3>Ветви в I и III четвертях</h3>
+        <p>Там <span class="mono">x</span> и <span class="mono">y</span> <b>одного знака</b> (оба плюс или оба минус) — ведь их произведение <span class="mono">k</span> положительно.</p>
+      </div>
+      <div class="sc n">
+        <div class="tag">k &lt; 0</div>
+        <div class="quad" aria-hidden="true">
+          <div class="II on">II</div><div class="I">I</div>
+          <div class="III">III</div><div class="IV on">IV</div>
+        </div>
+        <h3>Ветви во II и IV четвертях</h3>
+        <p>Там <span class="mono">x</span> и <span class="mono">y</span> <b>разных знаков</b> — их произведение <span class="mono">k</span> отрицательно.</p>
+      </div>
+    </div>
+    <div class="note"><p><b>Проверка знаком.</b> Не помнишь четверти? Возьми любую точку: при <span class="mono">k &gt; 0</span> и <span class="mono">x = 1</span> получаешь <span class="mono">y = k &gt; 0</span> — точка <span class="mono">(+; +)</span>, это I четверть. Знак <span class="mono">k</span> = знак произведения <span class="mono">x·y</span>, а он и задаёт четверти.</p></div>
+  </section>
+
+  <section>
+    <p class="kicker">Разбираем вместе · думаю вслух</p>
+    <h2>Строим график y = 6/x по точкам</h2>
+    <div class="walk">
+      <p class="q">Построить график функции y = 6/x.</p>
+      <ol>
+        <li>Смотрю на знак: <b>k = 6 &gt; 0</b> — значит, ветви будут в <b>I и III</b> четвертях. <span class="why">— знак k сразу задаёт расположение, потом проверю точками.</span></li>
+        <li>Беру удобные <span class="mono">x &gt; 0</span> — делители числа 6, чтобы <span class="mono">y</span> вышел целым:
+          <div class="tbl-scroll"><table class="vals">
+            <tr><th>x</th><td>1</td><td>2</td><td>3</td><td>6</td></tr>
+            <tr><th>y = 6/x</th><td>6</td><td>3</td><td>2</td><td>1</td></tr>
+          </table></div>
+          <span class="why">— при этих x деление красивое, точки легко поставить.</span>
+        </li>
+        <li>Для <span class="mono">x &lt; 0</span> пользуюсь симметрией: <span class="mono">y(−x) = −y(x)</span>. Значит <span class="mono">(−1; −6), (−2; −3), (−3; −2), (−6; −1)</span>. <span class="why">— точки зеркальны относительно начала координат.</span></li>
+        <li>Отмечаю точки и провожу <b>две</b> плавные ветви: одну в I четверти, другую в III. Через начало координат <b>не соединяю</b>. <span class="why">— при x = 0 функции нет, там разрыв.</span></li>
+      </ol>
+      <div class="verdict p">Готово: гипербола с ветвями в I и III четвертях, прижимается к осям, но не касается их.</div>
+    </div>
+
+    <div class="walk" style="margin-top:.8rem">
+      <p class="q">А теперь y = −4/x (знак k сменился).</p>
+      <ol>
+        <li><b>k = −4 &lt; 0</b> → ветви уходят во <b>II и IV</b> четверти. <span class="why">— форма та же, но зеркально по горизонтали.</span></li>
+        <li>Таблица для <span class="mono">x &gt; 0</span>: <span class="mono">x = 1 → y = −4; &nbsp;x = 2 → y = −2; &nbsp;x = 4 → y = −1</span>. Все <span class="mono">y</span> отрицательны — точки в IV четверти <span class="mono">(+; −)</span>.</li>
+        <li>Симметрия даёт вторую ветвь во II четверти: <span class="mono">(−1; 4), (−2; 2), (−4; 1)</span>.</li>
+      </ol>
+      <div class="verdict n">Тот же «скелет», но ветви во II и IV четвертях — всё решил знак минус у k.</div>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Покрути сам · интерактив</p>
+    <h2>Двигай k — <span class="em">смотри, как ветви разворачиваются</span></h2>
+    <p>Тяни ползунок <span class="mono">k</span> и следи за кривой. При <span class="pw">k &gt; 0</span> ветви зелёные (I и III четверти), при <span class="nw">k &lt; 0</span> — гранатовые (II и IV). Оси координат — это асимптоты: кривая липнет к ним, но не пересекает. Увеличивай <span class="mono">|k|</span> — ветви отодвигаются от осей.</p>
+    <div class="graph">
+      <canvas id="hb" width="640" height="560" aria-label="График гиперболы y = k/x с ветвями и осями-асимптотами"></canvas>
+      <div class="sliders">
+        <label>k <span id="vk" class="sval">6</span><input id="sk" type="range" min="-8" max="8" step="1" value="6" aria-label="коэффициент k"></label>
+      </div>
+      <p class="graph-eq" id="hbEq">y = 6/x</p>
+      <p class="graph-read" id="hbRead"></p>
+    </div>
+    <p style="font-size:.9rem;color:var(--muted)">Поставь <span class="mono">k = 0</span> — гипербола исчезает: <span class="mono">y</span> всюду равен нулю, это уже не обратная пропорциональность (потому и требуют <span class="mono">k ≠ 0</span>). Ещё заметь: как бы близко ни подходила ветвь к оси, она её так и не коснётся.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Тренажёр · бесконечная практика</p>
+    <h2>Реши сам — три типа заданий</h2>
+    <p>Жми «Новое» — тренажёр сам придумывает задачу одного из трёх типов: найти <span class="mono">k</span> по точке, проверить принадлежность точки графику, определить четверти по знаку <span class="mono">k</span>. Впиши ответ, проверь себя или посмотри пошаговое решение.</p>
+    <div class="trainer">
+      <p class="tr-type" id="trType">задание</p>
+      <div class="tr-task" id="trTask">y = 6/x</div>
+      <p class="tr-prompt" id="trPrompt">Что ввести…</p>
+      <div class="tr-ctl">
+        <input id="trAns" type="text" placeholder="твой ответ" aria-label="ответ">
+        <button id="trCheck" type="button" class="sec">Проверить</button>
+      </div>
+      <div class="tr-ctl">
+        <button id="trNew" type="button">🎲 Новое</button>
+        <button id="trShow" type="button" class="ghost">Показать решение</button>
+      </div>
+      <div id="trResult" class="tr-result"></div>
+    </div>
+    <p style="font-size:.88rem;color:var(--muted)">Подсказки по вводу: <b>k</b> — число (минус как <span class="mono">-</span> или <span class="mono">−</span>); <b>принадлежит?</b> — «да» или «нет»; <b>четверти</b> — «1 и 3» или «2 и 4» (римские <span class="mono">I, III</span> тоже поймёт).</p>
+  </section>
+
+  <section>
+    <p class="kicker">Проверь себя · от простого к анализу</p>
+    <h2>Практика с ответами</h2>
+    <div class="drill">
+      <details>
+        <summary><span class="qq">В каких четвертях лежит гипербола y = 5/x? А y = −5/x?</span><span class="tg">понимание</span></summary>
+        <div class="ans"><span class="mono">k = 5 &gt; 0</span> → ветви в <b>I и III</b>. <span class="mono">k = −5 &lt; 0</span> → ветви во <b>II и IV</b>. Знак k — всё решает.</div>
+      </details>
+      <details>
+        <summary><span class="qq">Построй y = 3/x по точкам с x = 1, 3, −1, −3.</span><span class="tg">применение</span></summary>
+        <div class="ans">Считаем: <span class="mono">(1; 3), (3; 1), (−1; −3), (−3; −1)</span>. <span class="mono">k = 3 &gt; 0</span>, значит две ветви — в I и III четвертях, через ноль не соединяем.</div>
+      </details>
+      <details>
+        <summary><span class="qq">Обратная задача: график y = k/x проходит через точку (2; 3). Найди k и запиши формулу.</span><span class="tg">применение</span></summary>
+        <div class="ans"><span class="mono">k = x·y = 2·3 = 6</span>. Функция <b>y = 6/x</b>. (Проверка: <span class="mono">6/2 = 3</span> — точка подходит.)</div>
+      </details>
+      <details>
+        <summary><span class="qq">Принадлежит ли точка (3; 4) графику y = 6/x?</span><span class="tg">анализ</span></summary>
+        <div class="ans">Подставим <span class="mono">x = 3</span>: <span class="mono">y = 6/3 = 2</span>, а не 4. Значит точка <b>не принадлежит</b> графику. (Или короче: <span class="mono">x·y = 3·4 = 12 ≠ 6</span>.)</div>
+      </details>
+      <details>
+        <summary><span class="qq">Что изменится, если у функции y = 4/x заменить k на −4?</span><span class="tg">анализ</span></summary>
+        <div class="ans">Форма кривой сохранится, но ветви <b>перейдут из I и III четвертей во II и IV</b>. Меняется только расположение — знак k «перебрасывает» ветви на другую диагональ.</div>
+      </details>
+      <details>
+        <summary><span class="qq">Найди ошибку: ученик соединил две ветви гиперболы линией через точку (0; 0).</span><span class="tg">анализ</span></summary>
+        <div class="ans">При <span class="mono">x = 0</span> функция <b>не определена</b> (деление на ноль), в этой точке графика нет — там разрыв. Две ветви соединять нельзя, они всегда раздельны.</div>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Где чаще всего ошибаются</p>
+    <h2>Лови эти ловушки</h2>
+    <ul class="traps">
+      <li><b>Соединяют две ветви через начало координат</b> в одну сплошную кривую. Помни: <span class="mono">x = 0</span> запрещён, в нуле графика нет — ветви всегда раздельны.</li>
+      <li><b>Ведут график через ось Oy</b> (ставят точку при <span class="mono">x = 0</span>). Как только при подстановке получается деление на ноль — это сигнал: здесь точки нет, это асимптота.</li>
+      <li><b>Путают гиперболу с параболой.</b> Парабола <span class="mono">y = x²</span> — одна цельная кривая, проходит через начало координат. Гипербола <span class="mono">y = k/x</span> — <b>две</b> ветви и разрыв при <span class="mono">x = 0</span>. Это разные графики.</li>
+      <li><b>Неверно ставят ветви при k &lt; 0</b> (рисуют в I и III, как при <span class="mono">k &gt; 0</span>). Проверяй знаком: при <span class="mono">k &lt; 0</span> числа <span class="mono">x</span> и <span class="mono">y</span> разных знаков → четверти II и IV.</li>
+      <li><b>Берут «неудобные» x</b> (например <span class="mono">0,7</span>) и вязнут в некрасивых дробях. Выбирай <span class="mono">x</span> — делители числа <span class="mono">k</span>, тогда <span class="mono">y</span> получается целым.</li>
+    </ul>
+  </section>
+
+  <section>
+    <p class="kicker">Проверка понимания</p>
+    <h2>Объясни своими словами</h2>
+    <div class="drill">
+      <details><summary><span class="qq">Сколько ветвей у гиперболы и почему их нельзя соединять?</span><span class="tg">вопрос</span></summary>
+        <div class="ans">Две. Соединять нельзя, потому что при <span class="mono">x = 0</span> функция не определена — там разрыв, точки графика нет.</div></details>
+      <details><summary><span class="qq">В каких четвертях лежит график y = −7/x?</span><span class="tg">вопрос</span></summary>
+        <div class="ans"><span class="mono">k = −7 &lt; 0</span> → ветви во <b>II и IV</b> четвертях.</div></details>
+      <details><summary><span class="qq">Почему кривая не касается осей?</span><span class="tg">вопрос</span></summary>
+        <div class="ans">Дробь <span class="mono">k/x</span> при <span class="mono">k ≠ 0</span> никогда не равна нулю, а знаменатель не бывает нулём — поэтому график подходит к осям сколь угодно близко, но не пересекает их. Оси — асимптоты.</div></details>
+      <details><summary><span class="qq">График y = k/x проходит через (3; 4). Чему равно k?</span><span class="tg">вопрос</span></summary>
+        <div class="ans"><span class="mono">k = x·y = 3·4 = 12</span>.</div></details>
+    </div>
+  </section>
+
+  <div class="wrapup">
+    <h2>Запомни главное</h2>
+    <p class="big-rule">y = k/x · две ветви · x ≠ 0 · оси — асимптоты</p>
+    <p>График функции <b>y = k/x</b> — это <b>гипербола</b> из двух раздельных ветвей. Расположение задаёт знак <b>k</b>: <span style="color:#fff;font-weight:700">k &gt; 0 → I и III</span>, <span style="color:#fff;font-weight:700">k &lt; 0 → II и IV</span>. Разрыв при <span class="mono">x = 0</span> не даёт соединить ветви, а оси координат — асимптоты: кривая липнет к ним, но не касается.</p>
+    <p class="next">👉 Дальше — <b>свойства этой функции</b>: область определения и значений, где она убывает и возрастает, нечётность (симметрия относительно начала координат). А потом — <b>дробно-рациональные функции и уравнения</b>, где та же дробь встречается в задачах посложнее.</p>
+  </div>
+
+  <p class="foot">Проверка на выходе: сколько ветвей у гиперболы · в каких четвертях ветви при k &lt; 0 · чему равно k, если график проходит через (2; 5)?</p>
+
+</div>
+
+<script>
+/* ── Интерактивная гипербола y = k/x ── */
+(function(){
+  var cv=document.getElementById('hb'); if(!cv) return;
+  var ctx=cv.getContext('2d');
+  var sk=document.getElementById('sk'), vk=document.getElementById('vk');
+  var eqEl=document.getElementById('hbEq'), readEl=document.getElementById('hbRead');
+  var W=640,H=560,dpr=1,RX=8,RY=8;
+  function css(v){ return getComputedStyle(document.documentElement).getPropertyValue(v).trim(); }
+  function fmt(n){ n=Math.round(n*100)/100; return (n<0?'−':'')+Math.abs(n); }
+  function resize(){ var c=cv.clientWidth||640; dpr=Math.min(window.devicePixelRatio||1,2); W=c; H=Math.round(c*0.82);
+    RY=Math.round(RX*H/W);
+    cv.width=W*dpr; cv.height=H*dpr; cv.style.height=H+'px'; ctx.setTransform(dpr,0,0,dpr,0,0); }
+  function X(x){ return W/2 + x*(W/(2*RX)); }
+  function Y(y){ return H/2 - y*(H/(2*RY)); }
+
+  function draw(){
+    var k=parseFloat(sk.value);
+    vk.textContent=fmt(k);
+    ctx.clearRect(0,0,W,H);
+    // сетка
+    ctx.strokeStyle='#E7EEEE'; ctx.lineWidth=1;
+    for(var gx=-RX;gx<=RX;gx++){ ctx.beginPath(); ctx.moveTo(X(gx),0); ctx.lineTo(X(gx),H); ctx.stroke(); }
+    for(var gy=-RY;gy<=RY;gy++){ ctx.beginPath(); ctx.moveTo(0,Y(gy)); ctx.lineTo(W,Y(gy)); ctx.stroke(); }
+    // оси-асимптоты
+    ctx.strokeStyle='#93A3A3'; ctx.lineWidth=1.6;
+    ctx.beginPath(); ctx.moveTo(0,Y(0)); ctx.lineTo(W,Y(0)); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(X(0),0); ctx.lineTo(X(0),H); ctx.stroke();
+    // подписи осей
+    ctx.fillStyle='#93A3A3'; ctx.font='600 13px ui-monospace,Menlo,monospace';
+    ctx.fillText('x', W-14, Y(0)-8); ctx.fillText('y', X(0)+8, 16);
+
+    eqEl.textContent='y = '+ (k===0? '0/x' : fmt(k)+'/x');
+
+    if(k===0){
+      readEl.className='graph-read z';
+      readEl.textContent='k = 0 · дробь всюду равна нулю — это не гипербола';
+      return;
+    }
+
+    var col = k>0 ? css('--pos') : css('--neg');
+    ctx.strokeStyle=col; ctx.lineWidth=3; ctx.lineJoin='round';
+    // две ветви: x < 0 и x > 0 отдельно (разрыв в нуле)
+    var segs=[[-RX,-0.06],[0.06,RX]];
+    segs.forEach(function(seg){
+      ctx.beginPath(); var started=false;
+      for(var x=seg[0]; x<=seg[1]+1e-9; x+=0.02){
+        var y=k/x, py=Y(y);
+        if(py<-60 || py>H+60){ started=false; continue; }   // ушла за край — рвём линию
+        var px=X(x);
+        if(!started){ ctx.moveTo(px,py); started=true; } else ctx.lineTo(px,py);
+      }
+      ctx.stroke();
+    });
+    // опорные точки (x = 1 и x = −1)
+    [[1,k],[-1,-k]].forEach(function(p){
+      if(Math.abs(p[1])<=RY+0.5){
+        ctx.fillStyle=col; ctx.beginPath(); ctx.arc(X(p[0]),Y(p[1]),6,0,7); ctx.fill();
+        ctx.fillStyle='#fff'; ctx.beginPath(); ctx.arc(X(p[0]),Y(p[1]),2.4,0,7); ctx.fill();
+      }
+    });
+
+    readEl.className='graph-read '+(k>0?'p':'n');
+    readEl.textContent = k>0
+      ? 'k = '+fmt(k)+' > 0 · ветви в I и III четвертях'
+      : 'k = '+fmt(k)+' < 0 · ветви во II и IV четвертях';
+  }
+  sk.addEventListener('input',draw);
+  window.addEventListener('resize',function(){ resize(); draw(); });
+  resize(); draw();
+})();
+</script>
+
+<script>
+/* ── Тренажёр-генератор: k по точке / принадлежность / четверти ── */
+(function(){
+  var typeEl=document.getElementById('trType'), taskEl=document.getElementById('trTask'),
+      promptEl=document.getElementById('trPrompt'), ansEl=document.getElementById('trAns'),
+      resEl=document.getElementById('trResult');
+  if(!taskEl) return;
+  var cur=null, started=false;
+  function ri(min,max){ return Math.floor(Math.random()*(max-min+1))+min; }
+  function nz(min,max){ var v=0; while(v===0) v=ri(min,max); return v; }   // ненулевое
+  function fmt(n){ return (n<0?'−':'')+Math.abs(n); }                 // настоящий минус U+2212
+  function kx(k){ return 'y = '+fmt(k)+'/x'; }
+
+  function generate(){
+    var type=ri(0,2);
+    if(type===0){                       // найти k по точке
+      var x=nz(-6,6), y=nz(-6,6), k=x*y;
+      cur={type:0,x:x,y:y,k:k};
+      typeEl.textContent='тип 1 · найти k по точке';
+      taskEl.textContent='График y = k/x проходит через ('+fmt(x)+'; '+fmt(y)+')';
+      promptEl.textContent='Чему равно k? Впиши число.';
+      ansEl.placeholder='напр. '+fmt(k);
+    } else if(type===1){                // принадлежит ли точка
+      var x1=nz(-6,6), y1=nz(-6,6), k1=x1*y1;
+      var px,py;
+      if(Math.random()<0.5){ px=x1; py=y1; }                    // точно принадлежит
+      else{ px=x1; py=y1+(Math.random()<0.5?1:-1)*ri(1,4); if(px*py===k1) py+=1; }
+      cur={type:1,px:px,py:py,k:k1,belongs:(px*py===k1)};
+      typeEl.textContent='тип 2 · принадлежит ли точка';
+      taskEl.textContent=kx(k1)+' · точка ('+fmt(px)+'; '+fmt(py)+')';
+      promptEl.textContent='Принадлежит ли точка графику? Ответ: да или нет.';
+      ansEl.placeholder='да / нет';
+    } else {                            // четверти по знаку k
+      var k2=nz(-8,8);
+      cur={type:2,k:k2};
+      typeEl.textContent='тип 3 · четверти по знаку k';
+      taskEl.textContent=kx(k2);
+      promptEl.textContent='В каких четвертях лежат ветви? Впиши, напр. «1 и 3».';
+      ansEl.placeholder='1 и 3  или  2 и 4';
+    }
+    resEl.innerHTML=''; ansEl.value='';
+    if(started) ansEl.focus();
+  }
+
+  function parseNum(s){ s=(s||'').trim().replace('−','-').replace(',','.'); if(s==='')return NaN; var v=parseFloat(s); return isNaN(v)?NaN:v; }
+  function parseYesNo(s){ s=(s||'').trim().toLowerCase(); if(/^(да|yes|д|\+)/.test(s))return true; if(/^(нет|no|н|\-)/.test(s))return false; return null; }
+  function parseQuad(s){
+    s=(s||'').toLowerCase().replace(/iv/g,'4').replace(/iii/g,'3').replace(/ii/g,'2').replace(/\bi\b/g,'1').replace(/i/g,'1');
+    var nums=(s.match(/[1-4]/g)||[]).map(Number);
+    return Array.from(new Set(nums)).sort(function(a,b){return a-b;});
+  }
+  function sameArr(a,b){ return a.length===b.length && a.every(function(v,i){return v===b[i];}); }
+
+  function solHTML(){
+    var q=cur, h='<div class="sol">';
+    if(q.type===0){
+      h+='k — это произведение координат точки: k = x·y<br>';
+      h+='k = ('+fmt(q.x)+')·('+fmt(q.y)+') = <b>'+fmt(q.k)+'</b><br>';
+      h+='Функция: y = '+fmt(q.k)+'/x. Проверка: '+fmt(q.k)+'/'+fmt(q.x)+' = '+fmt(q.y)+'.';
+    } else if(q.type===1){
+      var yv=q.k/q.px;
+      h+='Подставляем x = '+fmt(q.px)+' в y = '+fmt(q.k)+'/x:<br>';
+      h+='y = '+fmt(q.k)+'/'+fmt(q.px)+' = <b>'+fmt(yv)+'</b><br>';
+      h+='В точке дан y = '+fmt(q.py)+'. ';
+      h+= q.belongs ? '<b>'+fmt(yv)+' = '+fmt(q.py)+'</b> → точка принадлежит графику.'
+                    : '<b>'+fmt(yv)+' ≠ '+fmt(q.py)+'</b> → точка не принадлежит графику.';
+    } else {
+      h+='Смотрим на знак k. Здесь k = '+fmt(q.k)+' '+(q.k>0?'>':'<')+' 0.<br>';
+      h+= q.k>0 ? 'k > 0 → x и y одного знака → ветви в <b>I и III</b> четвертях.'
+                : 'k < 0 → x и y разных знаков → ветви во <b>II и IV</b> четвертях.';
+    }
+    return h+'</div>';
+  }
+
+  function check(){
+    var q=cur, raw=ansEl.value;
+    if(q.type===0){
+      var g=parseNum(raw);
+      if(isNaN(g)){ resEl.innerHTML='<span class="bad">Впиши число (или нажми «Показать решение»).</span>'; return; }
+      if(Math.abs(g-q.k)<0.001) resEl.innerHTML='<span class="ok">✓ Верно! k = '+fmt(q.k)+'.</span>'+solHTML();
+      else resEl.innerHTML='<span class="bad">✗ Не то. k = x·y — перемножь координаты точки со знаками.</span>'+solHTML();
+    } else if(q.type===1){
+      var yn=parseYesNo(raw);
+      if(yn===null){ resEl.innerHTML='<span class="bad">Ответь «да» или «нет».</span>'; return; }
+      if(yn===q.belongs) resEl.innerHTML='<span class="ok">✓ Верно!</span>'+solHTML();
+      else resEl.innerHTML='<span class="bad">✗ Не то. Подставь x в формулу и сравни полученный y с ординатой точки.</span>'+solHTML();
+    } else {
+      var got=parseQuad(raw);
+      if(got.length===0){ resEl.innerHTML='<span class="bad">Впиши номера четвертей, напр. «1 и 3».</span>'; return; }
+      var exp = q.k>0 ? [1,3] : [2,4];
+      if(sameArr(got,exp)) resEl.innerHTML='<span class="ok">✓ Верно!</span>'+solHTML();
+      else resEl.innerHTML='<span class="bad">✗ Не то. Определи знак k, потом четверти.</span>'+solHTML();
+    }
+  }
+
+  document.getElementById('trNew').addEventListener('click',generate);
+  document.getElementById('trCheck').addEventListener('click',check);
+  document.getElementById('trShow').addEventListener('click',function(){ resEl.innerHTML=solHTML(); });
+  ansEl.addEventListener('keydown',function(e){ if(e.key==='Enter') check(); });
+  generate(); started=true;   // первичная генерация БЕЗ фокуса
+})();
+</script>

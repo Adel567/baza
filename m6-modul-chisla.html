@@ -1,0 +1,651 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Модуль числа — математика 6 класс</title>
+<style>
+  :root{
+    --paper:#F6F7FB; --card:#FFFFFF; --ink:#1B2333; --muted:#5A6478; --line:#E4E6EE;
+    --accent:#6C4FD8; --accent-soft:#ECE8FB;      /* фиолетовый — акцент интерфейса */
+    --neg:#2F6BD8;  --neg-soft:#E6EEFC;           /* синий — отрицательные (влево) */
+    --pos:#E08A2B;  --pos-soft:#FCEEDB;           /* оранжевый — положительные (вправо) */
+    --zero:#1B2333;                                /* ноль — граница */
+    --dist:#1E8E5A; --dist-soft:#DCF1E6;          /* зелёный — расстояние = модуль */
+    --ok:#1E8E5A; --no:#C0455B;
+  }
+  *{box-sizing:border-box}
+  body{margin:0}
+  .wrap{max-width:760px;margin:0 auto;padding:clamp(1.4rem,4vw,3rem) clamp(1.1rem,4vw,2rem) 4.5rem;
+    background:var(--paper);color:var(--ink);
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:17px;line-height:1.64;-webkit-font-smoothing:antialiased}
+  .eyebrow{font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);font-weight:700;margin:0 0 .5rem}
+  h1{font-family:Georgia,"Times New Roman",serif;font-size:clamp(2rem,7vw,2.9rem);line-height:1.06;margin:0;font-weight:700;letter-spacing:-.01em;text-wrap:balance}
+  .lede{font-size:1.08rem;color:var(--muted);margin:.8rem 0 0;max-width:60ch;text-wrap:pretty}
+  h2{font-family:Georgia,serif;font-size:1.34rem;font-weight:700;margin:0 0 .1rem;letter-spacing:-.005em;text-wrap:balance}
+  section{margin-top:2.6rem}
+  .kicker{font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:700;margin:0 0 .8rem;
+    display:flex;align-items:center;gap:.6rem}
+  .kicker::before{content:"";width:1.4rem;height:2px;background:var(--accent);border-radius:2px}
+  p{margin:.65rem 0}
+  strong{font-weight:650}
+  .mono{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-weight:600;font-variant-numeric:tabular-nums}
+  .nn{color:var(--neg);font-weight:700} .pp{color:var(--pos);font-weight:700} .zz{color:var(--zero);font-weight:700}
+  .dd{color:var(--dist);font-weight:700}
+
+  .hero{border-bottom:3px solid var(--accent);padding-bottom:1.4rem;margin-bottom:.4rem}
+
+  /* Где встречается */
+  .lead-in{background:var(--accent-soft);border-radius:14px;padding:1.1rem 1.3rem;margin-top:1.4rem;font-size:1.01rem}
+  .lead-in p{margin:.4rem 0}
+  .lead-in b{color:var(--accent)}
+  .where{display:grid;gap:.7rem;margin-top:1.2rem;grid-template-columns:1fr}
+  @media(min-width:560px){.where{grid-template-columns:1fr 1fr}}
+  .where .w{background:var(--card);border:1px solid var(--line);border-radius:13px;padding:.85rem 1rem;display:flex;gap:.75rem;align-items:center}
+  .where .ic{font-size:1.5rem;line-height:1}
+  .where b{display:block;font-size:.98rem}
+  .where span{font-size:.9rem;color:var(--muted)}
+
+  .recall{border-left:4px solid var(--accent);background:var(--accent-soft);border-radius:0 10px 10px 0;padding:.85rem 1.15rem;margin-top:1rem}
+  .recall b{color:var(--accent)}
+
+  .note{border-left:4px solid var(--pos);background:var(--pos-soft);border-radius:0 10px 10px 0;padding:.8rem 1.1rem;margin-top:1rem;font-size:.98rem}
+  .note b{color:var(--pos)}
+
+  /* Ядро — определения */
+  .def{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1rem 1.2rem;margin-top:.8rem}
+  .def h3{margin:0 0 .3rem;font-size:1.04rem;font-weight:800}
+  .def.neg{border-left:5px solid var(--neg)} .def.neg h3{color:var(--neg)}
+  .def.pos{border-left:5px solid var(--pos)} .def.pos h3{color:var(--pos)}
+  .def.zero{border-left:5px solid var(--zero)} .def.zero h3{color:var(--zero)}
+  .def p{margin:.2rem 0;font-size:.96rem}
+
+  .rule{background:var(--ink);color:#fff;border-radius:14px;padding:1.3rem 1.4rem;text-align:center;margin-top:1rem}
+  .rule .big{font-family:ui-monospace,Menlo,monospace;font-size:clamp(1.2rem,5vw,1.7rem);font-weight:700;line-height:1.4}
+  .rule .big .g{color:#6FD69B}
+  .rule .sub{font-size:.9rem;color:#B4BCD0;margin:.7rem 0 0}
+
+  /* Разбор «думаю вслух» */
+  .walk{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.15rem 1.3rem;margin-top:1rem}
+  .walk .q{font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.02rem;margin:0 0 .9rem;padding-bottom:.7rem;border-bottom:1px solid var(--line)}
+  .walk ol{margin:0;padding-left:1.2rem;display:flex;flex-direction:column;gap:.55rem}
+  .walk li{font-size:.96rem}
+  .walk .why{color:var(--muted);font-size:.9rem}
+  .verdict{margin-top:1rem;padding:.7rem 1rem;background:var(--dist-soft);border-radius:10px;font-weight:650;color:var(--dist);font-family:ui-monospace,Menlo,monospace}
+
+  /* Визуализация */
+  .viz{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:1.1rem;margin-top:1rem}
+  .viz canvas{width:100%;height:auto;display:block;border-radius:8px;touch-action:manipulation}
+  .viz .ctl{display:flex;flex-direction:column;gap:.55rem;margin-top:1rem}
+  .viz .ctl label{display:flex;align-items:center;gap:.6rem;font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:.95rem}
+  .viz .ctl .tag{min-width:6.5ch;color:var(--accent)}
+  .viz .ctl input[type=range]{flex:1;accent-color:var(--dist)}
+  .viz .presets{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:.9rem}
+  .viz .presets button{font:inherit;font-weight:700;font-size:.83rem;cursor:pointer;border:1px solid var(--line);background:var(--paper);color:var(--ink);border-radius:20px;padding:.35rem .8rem}
+  .viz .presets button:hover{border-color:var(--accent);color:var(--accent)}
+  .viz .presets button.opp[aria-pressed=true]{background:var(--dist);color:#fff;border-color:var(--dist)}
+  .viz .readout{margin:1rem 0 0;font-size:.98rem;line-height:1.7;background:var(--paper);border-radius:10px;padding:.8rem 1rem}
+
+  /* Тренажёр */
+  .trainer{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.2rem 1.3rem;margin-top:1rem}
+  .tabs{display:flex;gap:.4rem;margin-bottom:.9rem;flex-wrap:wrap}
+  .tabs button{font:inherit;font-weight:700;font-size:.82rem;cursor:pointer;border:1px solid var(--line);background:var(--paper);color:var(--muted);border-radius:20px;padding:.4rem .9rem}
+  .tabs button.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .tr-task{font-family:ui-monospace,Menlo,monospace;font-weight:800;font-size:clamp(1.05rem,4.5vw,1.3rem);text-align:center;padding:1rem;background:var(--accent-soft);border-radius:10px;color:var(--ink)}
+  .tr-ctl{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.9rem;align-items:center}
+  .tr-ctl button{font:inherit;font-weight:700;font-size:.9rem;cursor:pointer;border:none;border-radius:9px;padding:.55rem .95rem;color:#fff;background:var(--accent)}
+  .tr-ctl button.sec{background:var(--dist)}
+  .tr-ctl button.ghost{background:transparent;color:var(--accent);border:1px solid var(--accent)}
+  .tr-ctl input{flex:1;min-width:130px;font:inherit;padding:.5rem .7rem;border:1px solid var(--line);border-radius:9px;background:#fff;color:var(--ink)}
+  .tr-result{margin-top:.9rem;font-size:.96rem;min-height:1.2rem}
+  .tr-result .ok{color:var(--ok);font-weight:700} .tr-result .bad{color:var(--no);font-weight:700}
+  .tr-result .sol{margin-top:.6rem;padding:.8rem 1rem;background:#FCFBFF;border:1px solid var(--line);border-radius:10px;font-size:.92rem;line-height:1.75}
+  .tr-result .sol b{color:var(--ink)}
+  /* мини числовая прямая внутри решения */
+  .mline{display:inline-flex;gap:2px;margin:.2rem 0 .6rem;padding:2px;min-width:min-content}
+  .mline-wrap{overflow-x:auto;margin:.1rem 0 .5rem}
+  .mline span{min-width:2.5ch;text-align:center;font-family:ui-monospace,Menlo,monospace;font-size:.82rem;padding:.15rem .1rem;border-radius:6px;color:var(--muted)}
+  .mline span.z{color:var(--zero);font-weight:800}
+  .mline span.span{background:var(--dist-soft)}
+  .mline span.hit.a{background:var(--neg-soft);color:var(--neg);font-weight:800}
+  .mline span.hit.b{background:var(--pos-soft);color:var(--pos);font-weight:800}
+  .mline span.hit.o{background:var(--dist-soft);color:var(--dist);font-weight:800}
+
+  /* Практика */
+  details{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:.9rem 1.1rem;margin-top:.6rem}
+  details[open]{border-color:var(--accent)}
+  summary{cursor:pointer;font-weight:600;list-style:none;display:flex;justify-content:space-between;gap:1rem;align-items:center}
+  summary::-webkit-details-marker{display:none}
+  summary .tag{font-size:.68rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);border:1px solid var(--line);border-radius:20px;padding:.12rem .55rem;white-space:nowrap}
+  summary::after{content:"ответ";font-size:.78rem;color:var(--accent);font-weight:700;white-space:nowrap;margin-left:auto}
+  details[open] summary::after{content:"скрыть"}
+  .q{font-weight:600}
+  .ans{margin-top:.75rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.95rem;color:var(--muted)}
+  .ans b{color:var(--ink)}
+  .drill{display:flex;flex-direction:column;gap:.2rem;margin-top:.6rem}
+  .level{font-size:.74rem;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);font-weight:700;margin:1.1rem 0 .2rem}
+
+  /* Ошибки */
+  ul.traps{list-style:none;margin:1rem 0 0;padding:0;display:flex;flex-direction:column;gap:.7rem}
+  ul.traps li{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:.85rem 1.05rem;padding-left:2.5rem;position:relative;font-size:.96rem}
+  ul.traps li::before{content:"⚠";position:absolute;left:1rem;top:.85rem;color:var(--pos)}
+  ul.traps b{font-weight:700}
+
+  /* Итог */
+  .wrapup{background:var(--accent);color:#fff;border-radius:16px;padding:1.4rem 1.5rem;margin-top:2.6rem}
+  .wrapup h2{color:#fff;margin:0 0 .5rem}
+  .wrapup p{color:#EAE4FB;margin:.4rem 0;font-size:1rem}
+  .wrapup .big-rule{font-size:1.08rem;font-weight:700;color:#fff;margin:.6rem 0;font-family:ui-monospace,Menlo,monospace}
+  .wrapup .next{font-size:.95rem;color:#D8CFF6;margin-top:1rem;padding-top:1rem;border-top:1px solid rgba(255,255,255,.25)}
+  .wrapup .next b{color:#fff}
+
+  button:focus-visible,input:focus-visible,summary:focus-visible{outline:3px solid var(--accent);outline-offset:2px;border-radius:8px}
+  @media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+<div class="wrap">
+
+  <header class="hero">
+    <p class="eyebrow">Математика · 6 класс · рациональные числа</p>
+    <h1>Модуль числа</h1>
+    <p class="lede">Иногда важен не знак, а вопрос «как далеко?». Насколько термометр отклонился от нуля, на сколько метров ты отошёл от старта, насколько ошибся прогноз. На все эти вопросы отвечает модуль — расстояние от числа до нуля.</p>
+  </header>
+
+  <section>
+    <p class="kicker">Зачем это нужно</p>
+    <h2>Когда важна величина, а не знак</h2>
+    <div class="lead-in">
+      <p>Часто нас интересует именно <b>«насколько далеко»</b>, а сторона (влево или вправо, плюс или минус) не важна. −7 °C и +7 °C — это одинаковое отклонение от нуля, оба на 7 градусов. Вот тут и нужен модуль.</p>
+    </div>
+    <div class="where">
+      <div class="w"><span class="ic">🌡️</span><div><b>Отклонение от нуля</b><span>−7 °C и +7 °C одинаково далеки от нуля — на 7</span></div></div>
+      <div class="w"><span class="ic">🏃</span><div><b>Расстояние от старта</b><span>отошёл на 3 м — влево или вправо, путь один</span></div></div>
+      <div class="w"><span class="ic">🎯</span><div><b>Ошибка прогноза</b><span>на 3 ₽ больше или на 3 ₽ меньше — ошибка одна</span></div></div>
+      <div class="w"><span class="ic">📏</span><div><b>Любое расстояние</b><span>оно никогда не бывает отрицательным</span></div></div>
+    </div>
+    <p>Есть частое житейское заблуждение: «модуль — это просто убрать минус». Для отрицательных чисел ответ и правда совпадает, но смысл теряется. Лучше сразу думать <strong>«расстояние до нуля»</strong> — тогда станет понятно, почему модуль <strong>не бывает отрицательным</strong>, а у нуля он равен нулю.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Что вспомнить</p>
+    <h2>Опора: с чего мы начинаем</h2>
+    <div class="recall">
+      <p>Модуль вырастает из двух тем, которые ты уже знаешь — держи их в голове:</p>
+      <p>▸ <b>Координатная прямая:</b> каждое число — это точка на прямой, а ноль стоит в начале отсчёта.<br>
+         ▸ <b>Противоположные числа:</b> <span class="pp">5</span> и <span class="nn">−5</span> отличаются только знаком и стоят по разные стороны от нуля <b>на одинаковом расстоянии</b>.</p>
+    </div>
+    <p>Как раз это «одинаковое расстояние» и подсказывает главную мысль темы: у противоположных чисел модули будут равны.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Ядро темы</p>
+    <h2>Модуль — это расстояние до нуля</h2>
+    <p>Поставим число точкой на координатной прямой. Тогда:</p>
+
+    <div class="rule">
+      <div class="big">модуль числа = <span class="g">расстояние</span><br>от точки до нуля</div>
+      <div class="sub">записывают двумя чёрточками: <b style="color:#fff">|a|</b> — читается «модуль а»</div>
+    </div>
+
+    <p>Расстояние считают <strong>без учёта направления</strong> (влево или вправо — неважно), поэтому модуль <strong>никогда не бывает отрицательным</strong>. Число <span class="nn">−5</span> стоит на 5 клеток от нуля → его модуль равен <span class="dd">5</span>. Число <span class="pp">5</span> тоже на 5 клеток → его модуль тоже <span class="dd">5</span>. У противоположных чисел модули одинаковые.</p>
+
+    <div class="rule">
+      <div class="big"><span class="g">|a| ≥ 0</span></div>
+      <div class="sub">модуль всегда неотрицателен · |0| = 0 — только у нуля модуль равен нулю</div>
+    </div>
+
+    <p>А как <strong>находить</strong> модуль в записи? Всё зависит от знака числа под чёрточками:</p>
+
+    <div class="def pos">
+      <h3>Число положительное</h3>
+      <p>Модуль равен самому числу: <span class="mono">|a| = a</span>, если a &gt; 0. Например, <span class="mono">|3| = 3</span>, <span class="mono">|3,8| = 3,8</span>.</p>
+    </div>
+    <div class="def zero">
+      <h3>Число — ноль</h3>
+      <p>Модуль нуля равен нулю: <span class="mono">|0| = 0</span>. Точка стоит прямо в нуле, расстояние до нуля — ноль.</p>
+    </div>
+    <div class="def neg">
+      <h3>Число отрицательное</h3>
+      <p>Модуль равен <strong>противоположному</strong> (положительному) числу. Например, <span class="mono">|−6| = 6</span>, <span class="mono">|−3,8| = 3,8</span>. Расстояние от точки −6 до нуля — это 6.</p>
+    </div>
+
+    <p>Модуль есть у любого рационального числа — целого, обычной дроби, десятичной: <span class="mono">|−2/3| = 2/3</span>, <span class="mono">|−4,5| = 4,5</span>.</p>
+
+    <div class="note"><p><b>Не пугайся записи «|a| = −a, если a &lt; 0».</b> Она не значит «модуль отрицательный»! Если a отрицательное, то <b>−a — положительное</b>. Например, при a = −7 получаем −a = −(−7) = 7. Минус тут не делает ответ отрицательным, а «переворачивает» знак назад к плюсу.</p></div>
+  </section>
+
+  <section>
+    <p class="kicker">Разбираем вместе</p>
+    <h2>Думаю вслух</h2>
+    <p>Найдём три модуля подряд: <span class="mono">|−5|</span>, <span class="mono">|0|</span> и <span class="mono">|3|</span>. Смотри, как я рассуждаю.</p>
+    <div class="walk">
+      <p class="q">|−5| = ?</p>
+      <ol>
+        <li>Смотрю на знак числа под модулем: <b>−5 отрицательное</b>. <span class="why">От знака зависит, какое правило применить.</span></li>
+        <li>Для отрицательного модуль равен противоположному числу. Противоположное к −5 — это <b>5</b>. <span class="why">Точка −5 удалена от нуля на 5 клеток — это и есть расстояние.</span></li>
+        <li>Проверка: результат положительный, значит он мог бы быть расстоянием. Всё верно. <span class="why">Если бы вышел минус — я бы точно ошибся.</span></li>
+      </ol>
+      <div class="verdict">|−5| = 5</div>
+    </div>
+
+    <div class="walk">
+      <p class="q">|0| = ?</p>
+      <ol>
+        <li>Число под модулем — <b>ноль</b>. Особый случай. <span class="why">Точка стоит прямо в начале отсчёта.</span></li>
+        <li>Расстояние от нуля до нуля — <b>ноль</b>. Идти никуда не надо. <span class="why">Это единственное число, у которого модуль равен нулю.</span></li>
+      </ol>
+      <div class="verdict">|0| = 0</div>
+    </div>
+
+    <div class="walk">
+      <p class="q">|3| = ?</p>
+      <ol>
+        <li>Число под модулем <b>положительное</b> (3 &gt; 0). <span class="why">Знак «плюс» у положительных не пишут.</span></li>
+        <li>Модуль положительного равен самому числу. Точка 3 стоит на 3 клетки правее нуля. <span class="why">Расстояние — те же 3.</span></li>
+      </ol>
+      <div class="verdict">|3| = 3</div>
+    </div>
+
+    <p>Заметь: <span class="mono">|−5| = 5</span> и <span class="mono">|5| = 5</span> — у противоположных чисел модуль вышел одинаковый. Это не случайность, это самый смысл темы.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Покрути сам · интерактив</p>
+    <h2>Модуль как длина — вживую</h2>
+    <p>Двигай точку <b style="color:var(--accent)">A</b> ползунком по прямой. Зелёный отрезок — это путь от нуля до точки, то есть <b class="dd">модуль</b>. Смотри: как только точка уходит влево, модуль всё равно остаётся положительным. Нажми «Показать противоположное» — увидишь, что у зеркальной точки отрезок такой же длины.</p>
+    <div class="viz">
+      <canvas id="line" width="720" height="230" aria-label="Координатная прямая: точка A и её расстояние до нуля"></canvas>
+      <div class="ctl">
+        <label><span class="tag">A = <span id="valA">−5</span></span><input id="sa" type="range" min="-10" max="10" step="1" value="-5" aria-label="Число A"></label>
+      </div>
+      <div class="presets">
+        <button type="button" data-a="-5">A = −5</button>
+        <button type="button" data-a="3">A = 3</button>
+        <button type="button" data-a="0">A = 0</button>
+        <button type="button" data-a="-8">A = −8</button>
+        <button type="button" id="oppBtn" class="opp" aria-pressed="false">Показать противоположное</button>
+      </div>
+      <p class="readout" id="lineRead"></p>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Тренажёр · бесконечно</p>
+    <h2>Тренируйся сам</h2>
+    <p>Выбери тип задания, нажми «Новое», реши в уме и проверь себя. В решении покажется мини-прямая, где зелёным подсвечено расстояние до нуля.</p>
+    <div class="trainer">
+      <div class="tabs">
+        <button id="tabAbs" class="on" type="button">Найди |x|</button>
+        <button id="tabFind" type="button">Числа по модулю</button>
+        <button id="tabCmp" type="button">Сравни модули</button>
+      </div>
+      <div class="tr-task" id="trTask">Вычисли: |−5|</div>
+      <div class="tr-ctl">
+        <button id="trNew" type="button">🎲 Новое</button>
+        <input id="trAns" type="text" placeholder="ответ" aria-label="Ответ">
+        <button id="trCheck" type="button" class="sec">Проверить</button>
+        <button id="trShow" type="button" class="ghost">Решение</button>
+      </div>
+      <div id="trResult" class="tr-result"></div>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Теперь ты · нажми, чтобы проверить</p>
+    <h2>Практика по уровням</h2>
+
+    <p class="level">Понимание</p>
+    <div class="drill">
+      <details>
+        <summary><span class="q">1) Прочитай запись |−12| словами и скажи, чему она равна.</span></summary>
+        <div class="ans">Читается «модуль минус двенадцати». Это расстояние от точки −12 до нуля, то есть <b class="dd">12</b>. Значит |−12| = 12.</div>
+      </details>
+      <details>
+        <summary><span class="q">2) Может ли модуль числа быть отрицательным? Ответь одним предложением.</span></summary>
+        <div class="ans"><b>Нет</b> — модуль это расстояние, а расстояние не бывает отрицательным. Всегда |a| ≥ 0.</div>
+      </details>
+      <details>
+        <summary><span class="q">3) Назови число, у которого модуль равен 0.</span></summary>
+        <div class="ans">Только <b class="zz">0</b>: его точка стоит прямо в начале отсчёта, идти до нуля не надо. |0| = 0.</div>
+      </details>
+    </div>
+
+    <p class="level">Применение</p>
+    <div class="drill">
+      <details>
+        <summary><span class="q">4) Вычисли: |−7|, |15|, |−0,3|, |0|.</span></summary>
+        <div class="ans">|−7| = <b class="dd">7</b> (отрицательное → противоположное); |15| = <b class="dd">15</b> (положительное → само число); |−0,3| = <b class="dd">0,3</b>; |0| = <b class="dd">0</b>.</div>
+      </details>
+      <details>
+        <summary><span class="q">5) Найди значение: |−8| + |−2|.</span></summary>
+        <div class="ans">Сначала каждый модуль: |−8| = 8, |−2| = 2. Потом складываем: 8 + 2 = <b class="dd">10</b>.</div>
+      </details>
+      <details>
+        <summary><span class="q">6) Найди значение: |10| − |−6|.</span></summary>
+        <div class="ans">|10| = 10, |−6| = 6. Вычитаем: 10 − 6 = <b class="dd">4</b>. (Сначала считаем модули, потом действие.)</div>
+      </details>
+    </div>
+
+    <p class="level">Анализ</p>
+    <div class="drill">
+      <details>
+        <summary><span class="q">7) Обратная задача: назови все числа, у которых модуль равен 4.</span><span class="tag">анализ</span></summary>
+        <div class="ans">Таких чисел <b>два</b>: <b class="pp">4</b> и <b class="nn">−4</b>. Оба стоят на расстоянии 4 от нуля — одно справа, другое слева.</div>
+      </details>
+      <details>
+        <summary><span class="q">8) Найди ошибку. Ученик написал «|−5| = −5». В чём ошибка и как правильно?</span><span class="tag">найди ошибку</span></summary>
+        <div class="ans">Модуль — это расстояние, оно не бывает отрицательным, а тут в ответе минус. Для отрицательного числа берём <b>противоположное</b>: |−5| = <b class="dd">5</b>. Проверка себя: «может ли это быть расстоянием?» — минус сразу выдаёт ошибку.</div>
+      </details>
+      <details>
+        <summary><span class="q">9) Что изменится, если в |−3| убрать минус и взять |3|? Сравни ответы и объясни.</span><span class="tag">анализ</span></summary>
+        <div class="ans"><b>Ничего не изменится:</b> |−3| = 3 и |3| = 3 — ответ один. Числа −3 и 3 противоположные, они на одинаковом расстоянии от нуля (по 3 клетки), поэтому и модули равны.</div>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Чтобы не попасться</p>
+    <h2>Частые ошибки</h2>
+    <ul class="traps">
+      <li><b>«Модуль — это просто поставить плюс / убрать минус».</b> Для отрицательных ответ совпадает, но смысл теряется. Думай «расстояние до нуля» — тогда |0| = 0 и |положительного| = само число становятся очевидными. Всегда сначала смотри на знак числа.</li>
+      <li><b>Отрицательный результат: «|−5| = −5».</b> Расстояние не бывает отрицательным. После вычисления спроси себя: «может ли это быть расстоянием?». Получился минус — значит, ошибка.</li>
+      <li><b>Путают модуль с самим числом: «|−7| = −7».</b> Здесь забыли применить правило для отрицательного. Для отрицательного числа берём противоположное: |−7| = 7.</li>
+      <li><b>Думают, что −a всегда отрицательно.</b> Нет: если a = −7, то −a = −(−7) = 7. Минус перед отрицательным числом даёт положительное.</li>
+    </ul>
+  </section>
+
+  <section>
+    <p class="kicker">Проверь себя вслух</p>
+    <h2>Объясни своими словами</h2>
+    <div class="drill">
+      <details>
+        <summary><span class="q">Чему равно расстояние от точки −9 до нуля, то есть чему равен |−9|?</span></summary>
+        <div class="ans">Расстояние — <b class="dd">9</b> клеток. Значит |−9| = 9 (для отрицательного берём противоположное число).</div>
+      </details>
+      <details>
+        <summary><span class="q">У каких двух чисел модуль равен 6?</span></summary>
+        <div class="ans">У <b class="pp">6</b> и <b class="nn">−6</b> — они стоят по разные стороны от нуля на одинаковом расстоянии 6.</div>
+      </details>
+      <details>
+        <summary><span class="q">Может ли |a| быть меньше нуля? Почему?</span></summary>
+        <div class="ans"><b>Нет.</b> Модуль это расстояние, а расстояние всегда ноль или больше. Значит |a| ≥ 0 при любом a.</div>
+      </details>
+    </div>
+  </section>
+
+  <div class="wrapup">
+    <h2>Запомни главное</h2>
+    <p class="big-rule">|a| = расстояние от a до нуля · |a| ≥ 0</p>
+    <p>Модуль числа — это расстояние от его точки до нуля на координатной прямой. Поэтому он <strong style="color:#fff">никогда не бывает отрицательным</strong>, у нуля равен нулю, а у противоположных чисел модули <strong style="color:#fff">одинаковые</strong> (|−5| = |5| = 5).</p>
+    <p class="next">👉 Дальше модуль работает как инструмент: <b>сравнение рациональных чисел</b> (кто дальше от нуля) и <b>сложение чисел с разными знаками</b> — там как раз складывают и вычитают модули.</p>
+  </div>
+
+</div>
+
+<script>
+/* ── Общий помощник: настоящий минус U+2212, запятая в дробях ── */
+function fmt(n){
+  var s = (Math.round(n*100)/100).toString();
+  return s.replace('-','−').replace('.',',');
+}
+</script>
+
+<script>
+/* ── Визуализация: координатная прямая, модуль как длина ── */
+(function(){
+  var cv=document.getElementById('line'); if(!cv) return;
+  var ctx=cv.getContext('2d');
+  var sa=document.getElementById('sa'), valA=document.getElementById('valA');
+  var read=document.getElementById('lineRead'), oppBtn=document.getElementById('oppBtn');
+  var W=720,H=230,padX=38,axisY=132, showOpp=false;
+  function css(v){ return getComputedStyle(document.documentElement).getPropertyValue(v).trim(); }
+  function setup(){
+    var dpr=Math.min(window.devicePixelRatio||1,2);
+    cv.width=W*dpr; cv.height=H*dpr; ctx.setTransform(dpr,0,0,dpr,0,0);
+  }
+  function X(v){ return padX + (v+10)/20*(W-2*padX); }
+  function roundRect(x,y,w,h,r){
+    var rr=Math.min(r,Math.abs(w)/2,h/2); ctx.beginPath();
+    ctx.moveTo(x+rr,y); ctx.arcTo(x+w,y,x+w,y+h,rr); ctx.arcTo(x+w,y+h,x,y+h,rr);
+    ctx.arcTo(x,y+h,x,y,rr); ctx.arcTo(x,y,x+w,y,rr); ctx.closePath();
+  }
+  function pill(x,y,text,color){
+    ctx.font='700 15px ui-monospace,Menlo,monospace';
+    var w=ctx.measureText(text).width+16, h=24, rx=x-w/2;
+    ctx.fillStyle='#fff'; ctx.strokeStyle=color; ctx.lineWidth=2;
+    roundRect(rx,y-h,w,h,7); ctx.fill(); ctx.stroke();
+    ctx.fillStyle=color; ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.fillText(text,x,y-h/2);
+  }
+  function draw(){
+    var a=parseInt(sa.value,10);
+    var neg=css('--neg'), pos=css('--pos'), ink=css('--ink'),
+        acc=css('--accent'), dist=css('--dist'), distS=css('--dist-soft');
+    ctx.clearRect(0,0,W,H);
+    // ось
+    ctx.strokeStyle=ink; ctx.lineWidth=2;
+    ctx.beginPath(); ctx.moveTo(X(-10)-14,axisY); ctx.lineTo(X(10)+14,axisY); ctx.stroke();
+    [[X(-10)-14,-1],[X(10)+14,1]].forEach(function(p){
+      ctx.beginPath(); ctx.moveTo(p[0],axisY); ctx.lineTo(p[0]-8*p[1],axisY-5);
+      ctx.lineTo(p[0]-8*p[1],axisY+5); ctx.closePath(); ctx.fillStyle=ink; ctx.fill();
+    });
+    // штрихи и подписи
+    for(var v=-10; v<=10; v++){
+      var x=X(v), big=(v%2===0);
+      ctx.strokeStyle=(v===0)?ink:'#B9C0CE'; ctx.lineWidth=(v===0)?2.5:1;
+      ctx.beginPath(); ctx.moveTo(x,axisY-(big?8:5)); ctx.lineTo(x,axisY+(big?8:5)); ctx.stroke();
+      if(big){
+        ctx.font=(v===0?'800 13px':'600 12px')+' ui-monospace,Menlo,monospace';
+        ctx.fillStyle=(v<0?neg:v>0?pos:ink); ctx.textAlign='center'; ctx.textBaseline='middle';
+        ctx.fillText(fmt(v), x, axisY+22);
+      }
+    }
+    // зелёный отрезок расстояния: от 0 до A (над осью)
+    var barY=axisY-40, x0=X(0), xa=X(a);
+    if(a!==0){
+      ctx.strokeStyle=dist; ctx.lineWidth=7; ctx.lineCap='round';
+      ctx.beginPath(); ctx.moveTo(x0,barY); ctx.lineTo(xa,barY); ctx.stroke();
+      ctx.lineCap='butt';
+      // тонкие связки к оси
+      ctx.strokeStyle=dist; ctx.lineWidth=1.5; ctx.setLineDash([3,3]);
+      ctx.beginPath(); ctx.moveTo(x0,barY); ctx.lineTo(x0,axisY); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(xa,barY); ctx.lineTo(xa,axisY); ctx.stroke();
+      ctx.setLineDash([]);
+      // подпись длины над отрезком
+      pill((x0+xa)/2, barY-6, '|A| = '+fmt(Math.abs(a)), dist);
+    } else {
+      ctx.font='700 13px system-ui,sans-serif'; ctx.fillStyle=dist;
+      ctx.textAlign='center'; ctx.textBaseline='middle';
+      ctx.fillText('длина 0 — точка стоит в нуле', X(0), barY-4);
+      pill(X(0), barY+30, '|A| = 0', dist);
+    }
+    // противоположное −A под осью
+    if(showOpp && a!==0){
+      var xo=X(-a), barY2=axisY+44;
+      ctx.strokeStyle=dist; ctx.lineWidth=7; ctx.lineCap='round';
+      ctx.globalAlpha=.55;
+      ctx.beginPath(); ctx.moveTo(x0,barY2); ctx.lineTo(xo,barY2); ctx.stroke();
+      ctx.globalAlpha=1; ctx.lineCap='butt';
+      // точка -A
+      ctx.beginPath(); ctx.arc(xo,axisY,7,0,7); ctx.fillStyle='#fff'; ctx.fill();
+      ctx.strokeStyle=dist; ctx.lineWidth=2.5; ctx.stroke();
+      ctx.font='700 12px ui-monospace,Menlo,monospace'; ctx.fillStyle=dist;
+      ctx.textAlign='center'; ctx.textBaseline='middle';
+      ctx.fillText('|'+fmt(-a)+'| = '+fmt(Math.abs(a)), xo, barY2+18);
+    }
+    // точка A
+    ctx.beginPath(); ctx.arc(xa,axisY,8,0,7); ctx.fillStyle=acc; ctx.fill();
+    pill(xa, axisY-2, 'A = '+fmt(a), acc);
+
+    valA.textContent=fmt(a);
+    updateRead(a);
+  }
+  function updateRead(a){
+    var sA='<b style="color:var(--accent)">'+fmt(a)+'</b>';
+    var d='<b class="dd">'+fmt(Math.abs(a))+'</b>';
+    var html;
+    if(a===0){
+      html='Точка A стоит прямо в нуле — идти никуда не надо. Расстояние 0, значит |0| = '+d+'.';
+    } else {
+      var side=(a<0)?'слева':'справа';
+      html='Точка A = '+sA+' стоит '+side+' от нуля на '+d+' '+(Math.abs(a)===1?'клетку':(Math.abs(a)<5?'клетки':'клеток'))+'. Это расстояние и есть модуль: |'+fmt(a)+'| = '+d+'.';
+    }
+    if(showOpp && a!==0){
+      html+='<br>У противоположного числа '+fmt(-a)+' отрезок такой же длины: |'+fmt(-a)+'| = '+d+' — модули равны.';
+    }
+    read.innerHTML=html;
+  }
+  sa.addEventListener('input',draw);
+  Array.prototype.forEach.call(document.querySelectorAll('.presets button[data-a]'),function(btn){
+    btn.addEventListener('click',function(){ sa.value=btn.getAttribute('data-a'); draw(); });
+  });
+  oppBtn.addEventListener('click',function(){
+    showOpp=!showOpp; oppBtn.setAttribute('aria-pressed',showOpp?'true':'false'); draw();
+  });
+  setup(); draw();
+  window.addEventListener('resize',function(){ setup(); draw(); });
+})();
+</script>
+
+<script>
+/* ── Тренажёр: |x| / числа по модулю / сравни модули ── */
+(function(){
+  var taskEl=document.getElementById('trTask'), ansEl=document.getElementById('trAns'), resEl=document.getElementById('trResult');
+  if(!taskEl) return;
+  var tabAbs=document.getElementById('tabAbs'), tabFind=document.getElementById('tabFind'), tabCmp=document.getElementById('tabCmp');
+  var mode='abs', cur={};
+  function ri(min,max){ return Math.floor(Math.random()*(max-min+1))+min; }
+
+  // число: чаще целое, иногда одна десятичная; иногда ноль
+  function genNum(allowZero){
+    var t=Math.random();
+    if(allowZero && t<0.12) return 0;
+    var sign=(Math.random()<0.5)?-1:1;
+    if(Math.random()<0.28){ return sign*(ri(1,9)+ri(1,9)/10); } // десятичная, напр. 6,5
+    return sign*ri(1,12);
+  }
+  function fmtTag(n){ return '<b class="'+(n<0?'nn':n>0?'pp':'zz')+'">'+fmt(n)+'</b>'; }
+
+  // мини-прямата: подсветить путь от 0 до числа зелёным
+  function miniLine(marks, spanTo){
+    var vs=marks.map(function(m){ return Math.round(m.v); }).concat([0]);
+    var lo=Math.min.apply(null,vs)-1, hi=Math.max.apply(null,vs)+1;
+    if(hi-lo>16){ lo=Math.min(0,Math.round(spanTo))-1; hi=Math.max(0,Math.round(spanTo))+1; }
+    var html='<div class="mline-wrap"><div class="mline">';
+    for(var v=lo; v<=hi; v++){
+      var cls=(v===0?'z':'');
+      // подсветка отрезка [0..spanTo]
+      if(typeof spanTo==='number'){
+        var a=Math.min(0,spanTo), b=Math.max(0,spanTo);
+        if(v>a && v<b){ cls+=' span'; }
+      }
+      var hit=null;
+      for(var i=0;i<marks.length;i++){ if(Math.round(marks[i].v)===v){ hit=marks[i]; break; } }
+      if(hit){ cls+=' hit '+hit.cls; }
+      html+='<span class="'+cls.trim()+'">'+fmt(v)+'</span>';
+    }
+    return html+'</div></div>';
+  }
+
+  function genTask(){
+    if(mode==='abs'){
+      var n=genNum(true);
+      cur={n:n, ans:Math.abs(n)};
+      cur.task='Вычисли:  |'+fmt(n)+'|';
+      ansEl.placeholder='число';
+    } else if(mode==='find'){
+      var k=ri(1,12);
+      cur={k:k};
+      cur.task='Назови все числа, у которых модуль равен '+k;
+      ansEl.placeholder='напр. 4 и −4';
+    } else { // cmp
+      var a=genNum(false), b;
+      var t=Math.random();
+      if(t<0.3){ b=-a; }                 // противоположные → модули равны
+      else { do{ b=genNum(false); }while(Math.abs(Math.abs(a)-Math.abs(b))<0.001); }
+      cur={a:a, b:b};
+      cur.task='Сравни модули:  |'+fmt(a)+'|  ▢  |'+fmt(b)+'|';
+      ansEl.placeholder='< , > или =';
+    }
+  }
+
+  function solHTML(){
+    if(mode==='abs'){
+      var n=cur.n, r=cur.ans;
+      var why;
+      if(n>0) why='Число под модулем положительное, поэтому модуль равен самому числу.';
+      else if(n<0) why='Число отрицательное, поэтому модуль равен противоположному (положительному) числу.';
+      else why='Ноль стоит прямо в начале отсчёта, расстояние до нуля равно нулю.';
+      return miniLine([{v:n,cls:(n<0?'a':n>0?'b':'o')}], n)+
+        '<div class="sol">'+why+'<br>Зелёным подсвечено расстояние от нуля до точки — это и есть модуль.<br>'+
+        '|'+fmt(n)+'| = <b>'+fmt(r)+'</b>.</div>';
+    } else if(mode==='find'){
+      var k=cur.k;
+      return miniLine([{v:k,cls:'b'},{v:-k,cls:'a'}], k)+
+        '<div class="sol">На расстоянии '+k+' от нуля стоят <b>два</b> числа — одно справа, одно слева.<br>'+
+        'Это '+fmtTag(k)+' и '+fmtTag(-k)+'.</div>';
+    } else {
+      var a=cur.a, b=cur.b, ma=Math.abs(a), mb=Math.abs(b);
+      var sign = (ma<mb)?'&lt;' : (ma>mb)?'&gt;' : '=';
+      var line;
+      if(ma===mb){ line='Оба числа на одинаковом расстоянии от нуля, поэтому модули <b>равны</b>.'; }
+      else{ var farV=(ma>mb)?a:b; line='Дальше от нуля стоит '+fmtTag(farV)+', у него модуль больше.'; }
+      return miniLine([{v:a,cls:'a'},{v:b,cls:'b'}])+
+        '<div class="sol">|'+fmt(a)+'| = '+fmt(ma)+',  |'+fmt(b)+'| = '+fmt(mb)+'. '+line+'<br>'+
+        'Значит |'+fmt(a)+'| '+sign+' |'+fmt(b)+'|.</div>';
+    }
+  }
+
+  function parseNum(raw){ return parseFloat(raw.replace(/\s/g,'').replace('−','-').replace(',','.')); }
+  // достать все числа из строки ответа
+  function parseList(raw){
+    var cleaned=raw.replace('−','-').replace(/−/g,'-').replace(/,(?=\d)/g,'.');
+    var m=cleaned.match(/-?\d+(?:\.\d+)?/g);
+    if(!m) return [];
+    return m.map(parseFloat);
+  }
+
+  function check(){
+    var raw=ansEl.value.trim();
+    if(raw===''){ resEl.innerHTML='<span class="bad">Введи ответ или нажми «Решение».</span>'; return; }
+    var okAns=false;
+    if(mode==='abs'){
+      var got=parseNum(raw);
+      if(isNaN(got)){ resEl.innerHTML='<span class="bad">Это не похоже на число. Попробуй ещё.</span>'; return; }
+      okAns=(Math.abs(got-cur.ans)<0.001);
+    } else if(mode==='find'){
+      var nums=parseList(raw);
+      if(nums.length===0){ resEl.innerHTML='<span class="bad">Назови числа, напр. «4 и −4».</span>'; return; }
+      var hasPos=nums.some(function(x){ return Math.abs(x-cur.k)<0.001; });
+      var hasNeg=nums.some(function(x){ return Math.abs(x+cur.k)<0.001; });
+      okAns=(hasPos && hasNeg);
+    } else {
+      var s=raw.replace(/\s/g,'');
+      if(s!=='<' && s!=='>' && s!=='='){ resEl.innerHTML='<span class="bad">Напиши знак: < , > или =.</span>'; return; }
+      var ma=Math.abs(cur.a), mb=Math.abs(cur.b);
+      var right = (ma<mb)?'<' : (ma>mb)?'>' : '=';
+      okAns=(s===right);
+    }
+    resEl.innerHTML=(okAns?'<span class="ok">✓ Верно!</span>':'<span class="bad">✗ Пока не то — посмотри решение.</span>')+solHTML();
+  }
+
+  function render(focus){
+    taskEl.textContent=cur.task; resEl.innerHTML=''; ansEl.value='';
+    if(focus) ansEl.focus();
+  }
+  function newTask(focus){ genTask(); render(focus); }
+  function setMode(m){
+    mode=m;
+    tabAbs.className=(m==='abs')?'on':''; tabFind.className=(m==='find')?'on':''; tabCmp.className=(m==='cmp')?'on':'';
+    newTask(true);
+  }
+  tabAbs.addEventListener('click',function(){ setMode('abs'); });
+  tabFind.addEventListener('click',function(){ setMode('find'); });
+  tabCmp.addEventListener('click',function(){ setMode('cmp'); });
+  document.getElementById('trNew').addEventListener('click',function(){ newTask(true); });
+  document.getElementById('trCheck').addEventListener('click',check);
+  document.getElementById('trShow').addEventListener('click',function(){ resEl.innerHTML=solHTML(); });
+  ansEl.addEventListener('keydown',function(e){ if(e.key==='Enter') check(); });
+
+  // старт: валидная задача выбранного типа, БЕЗ фокуса (чтобы не было автоскролла)
+  newTask(false);
+})();
+</script>

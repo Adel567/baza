@@ -1,0 +1,515 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Многоугольник и сумма углов — геометрия 8 класс</title>
+<style>
+  :root{
+    --paper:#F6F7F9;
+    --card:#FFFFFF;
+    --ink:#1B2333;
+    --muted:#5A6478;
+    --line:#E2E5EC;
+    --accent:#2E5AAC;      /* стороны / диагонали — синий */
+    --accent-soft:#E4EBF7;
+    --hi:#E27C2C;          /* углы / выделение — оранжевый */
+    --hi-soft:#FBEEDF;
+    --ok:#1E8E5A;
+    --ok-bg:#E7F4EC;
+    --no:#C0455B;
+  }
+  *{box-sizing:border-box}
+  body{margin:0}
+  .wrap{
+    max-width:760px;margin:0 auto;
+    padding:clamp(1.4rem,4vw,3rem) clamp(1.1rem,4vw,2rem) 4rem;
+    background:var(--paper);color:var(--ink);
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    font-size:17px;line-height:1.62;-webkit-font-smoothing:antialiased;
+  }
+  .eyebrow{font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);font-weight:600;margin:0 0 .5rem}
+  h1{font-family:Georgia,"Times New Roman",serif;font-size:clamp(2.1rem,7vw,3rem);line-height:1.05;margin:0;font-weight:700;letter-spacing:-.01em;text-wrap:balance}
+  .lede{font-size:1.08rem;color:var(--muted);margin:.7rem 0 0;max-width:60ch;text-wrap:pretty}
+  h2{font-family:Georgia,serif;font-size:1.32rem;font-weight:700;margin:0 0 .1rem;letter-spacing:-.005em;text-wrap:balance}
+  section{margin-top:2.6rem}
+  .kicker{font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:600;margin:0 0 .8rem;display:flex;align-items:center;gap:.6rem}
+  .kicker::before{content:"";width:1.4rem;height:2px;background:var(--accent);border-radius:2px}
+  p{margin:.65rem 0}
+  strong{font-weight:650}
+  .math{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-weight:600}
+  sup{font-size:.72em}
+  .aw{color:var(--accent);font-weight:800}
+  .hw{color:var(--hi);font-weight:800}
+
+  /* Главная формула */
+  .hero-formula{margin-top:2.2rem;background:var(--ink);color:#fff;border-radius:14px;padding:1.6rem 1.4rem;text-align:center}
+  .hero-formula .lbl{font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:#9aa6c9;margin:0 0 .7rem}
+  .hero-formula .eq{font-family:ui-monospace,"SF Mono",Menlo,monospace;font-size:clamp(1.6rem,6vw,2.3rem);font-weight:700;letter-spacing:.01em}
+  .hero-formula .eq .n{color:#8FB2E6} .hero-formula .eq .t{color:#F0A45E}
+  .hero-formula .note{font-size:.86rem;color:#9aa6c9;margin:.8rem 0 0}
+
+  /* Пререквизит */
+  .recall{background:var(--accent-soft);border-radius:12px;padding:1rem 1.15rem;font-size:.96rem}
+  .recall p{margin:.3rem 0}
+  .recall b{color:var(--accent)}
+
+  /* Словарь: вершины / стороны / диагонали */
+  .defs{display:grid;gap:.85rem;margin-top:.4rem}
+  @media(min-width:560px){.defs{grid-template-columns:repeat(3,1fr)}}
+  .def{border-radius:12px;padding:1.05rem 1.1rem;border:1px solid var(--line);background:var(--card);display:flex;flex-direction:column;gap:.35rem;border-top:4px solid var(--accent)}
+  .def .t{font-weight:700;font-size:1.02rem;color:var(--accent)}
+  .def .d{font-size:.92rem;color:var(--muted)}
+
+  /* Выпуклый / невыпуклый */
+  .cmp{display:grid;gap:.85rem;margin-top:.4rem}
+  @media(min-width:560px){.cmp{grid-template-columns:1fr 1fr}}
+  .cmp .box{border-radius:12px;padding:1.05rem 1.1rem;border:1px solid var(--line);background:var(--card)}
+  .cmp .box.good{border-top:4px solid var(--ok)}
+  .cmp .box.bad{border-top:4px solid var(--no)}
+  .cmp .box .h{font-weight:700;margin-bottom:.2rem}
+  .cmp .box.good .h{color:var(--ok)} .cmp .box.bad .h{color:var(--no)}
+  .cmp .box .d{font-size:.92rem;color:var(--muted)}
+
+  /* Диаграмма-канвас */
+  .diagram{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.1rem 1.1rem 1rem;margin-top:1rem}
+  .diagram canvas{width:100%;height:auto;display:block;border-radius:10px;background:#FCFDFF}
+  .diag-area{text-align:center;font-weight:700;font-size:1.02rem;margin:.85rem 0 0;padding:.55rem;border-radius:9px;font-family:ui-monospace,Menlo,monospace;background:var(--ok-bg);color:var(--ok)}
+  .sliders{display:grid;gap:.6rem;margin-top:.9rem}
+  .sliders label{display:flex;align-items:center;gap:.6rem;font-weight:700;font-family:ui-monospace,Menlo,monospace;font-size:.95rem;color:var(--accent)}
+  .sliders input[type=range]{flex:1;accent-color:var(--accent)}
+  .sliders input[type=range]:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+  .sliders .sval{min-width:2.4ch;text-align:right;font-variant-numeric:tabular-nums}
+
+  /* Таблица-закономерность */
+  .tblwrap{overflow-x:auto;margin-top:1rem;border:1px solid var(--line);border-radius:12px}
+  table{border-collapse:collapse;width:100%;font-size:.95rem;min-width:360px}
+  th,td{padding:.6rem .9rem;text-align:center;border-bottom:1px solid var(--line)}
+  thead th{background:var(--accent-soft);color:var(--accent);font-weight:700}
+  tbody tr:last-child td{border-bottom:none}
+  td.m{font-family:ui-monospace,Menlo,monospace;font-weight:600}
+  td.s{color:var(--hi);font-weight:700;font-family:ui-monospace,Menlo,monospace}
+
+  /* Разбор */
+  .worked{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:1.2rem 1.3rem}
+  .worked+.worked{margin-top:.8rem}
+  .worked .task{font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.02rem;margin:0 0 1rem;padding-bottom:.8rem;border-bottom:1px solid var(--line)}
+  ol.steps{margin:0;padding:0;list-style:none;counter-reset:s;display:flex;flex-direction:column;gap:.7rem}
+  ol.steps li{position:relative;padding-left:2.1rem;counter-increment:s;font-size:.97rem}
+  ol.steps li::before{content:counter(s);position:absolute;left:0;top:.05rem;width:1.5rem;height:1.5rem;border-radius:50%;background:var(--accent-soft);color:var(--accent);font-size:.82rem;font-weight:700;display:flex;align-items:center;justify-content:center}
+  ol.steps .m{font-family:ui-monospace,Menlo,monospace;font-weight:600;color:var(--ink)}
+  .verdict{margin-top:1rem;padding:.7rem 1rem;background:var(--ok-bg);border-radius:9px;font-weight:600;color:var(--ok);font-size:.98rem;font-family:ui-monospace,Menlo,monospace}
+  .hint{margin-top:1rem;padding:.7rem 1rem;background:var(--hi-soft);border-radius:9px;color:#8a4a12;font-size:.95rem}
+  .hint b{color:var(--hi)}
+
+  /* POE */
+  .poe{background:var(--hi-soft);border-left:4px solid var(--hi);border-radius:0 12px 12px 0;padding:1rem 1.15rem;margin-top:1rem;font-size:.97rem}
+  .poe b{color:var(--hi)}
+
+  /* Практика */
+  .drill{display:flex;flex-direction:column;gap:.7rem}
+  details{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:.85rem 1.05rem}
+  details[open]{border-color:var(--accent)}
+  summary{cursor:pointer;font-weight:600;list-style:none;display:flex;justify-content:space-between;align-items:center;gap:1rem}
+  summary::-webkit-details-marker{display:none}
+  summary:focus-visible{outline:3px solid var(--accent);outline-offset:3px;border-radius:6px}
+  summary .q{font-family:ui-monospace,Menlo,monospace;font-size:.95rem}
+  summary .tag{font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);border:1px solid var(--line);border-radius:20px;padding:.1rem .55rem;white-space:nowrap}
+  summary::after{content:"показать ответ";font-size:.78rem;color:var(--accent);font-weight:600;white-space:nowrap}
+  details[open] summary::after{content:"скрыть"}
+  .ans{margin-top:.7rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.96rem;color:var(--muted)}
+  .ans .m{font-family:ui-monospace,Menlo,monospace;color:var(--ink);font-weight:600}
+  .ans b{color:var(--ink)}
+
+  /* Тренажёр */
+  .trainer{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.2rem 1.3rem;margin-top:1rem}
+  .tr-task{font-size:clamp(1rem,4vw,1.15rem);text-align:center;padding:1rem;background:var(--accent-soft);border-radius:10px;font-weight:600;color:var(--ink)}
+  .tr-task b{font-family:ui-monospace,Menlo,monospace}
+  .tr-ctl{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:1rem;align-items:center;justify-content:center}
+  .tr-ctl input{flex:1;min-width:120px;max-width:190px;font:inherit;padding:.5rem .7rem;border:1px solid var(--line);border-radius:9px;text-align:center;background:#fff;color:var(--ink)}
+  .tr-ctl button{font:inherit;font-weight:700;font-size:.9rem;cursor:pointer;border:none;border-radius:9px;padding:.55rem .95rem;color:#fff;background:var(--accent)}
+  .tr-ctl button.sec{background:var(--hi)}
+  .tr-ctl button.ghost{background:transparent;color:var(--accent);border:1px solid var(--accent)}
+  .tr-ctl button:focus-visible,.tr-ctl input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+  .tr-result{margin-top:.9rem;font-size:.96rem;min-height:1.2rem;text-align:center}
+  .tr-result .ok{color:var(--ok);font-weight:700}
+  .tr-result .bad{color:var(--no);font-weight:700}
+  .tr-result .sol{margin-top:.7rem;padding:.85rem 1rem;background:#FCFDFE;border:1px solid var(--line);border-radius:10px;font-family:ui-monospace,Menlo,monospace;font-size:.9rem;line-height:1.85;text-align:left}
+  .tr-result .sol b{color:var(--accent)}
+
+  /* Ошибки */
+  ul.pitfalls{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:.6rem}
+  ul.pitfalls li{padding-left:1.5rem;position:relative;font-size:.98rem}
+  ul.pitfalls li::before{content:"×";position:absolute;left:0;top:-.05rem;color:var(--no);font-weight:700;font-size:1.1rem}
+  ul.pitfalls b{color:var(--ink)}
+
+  /* Что дальше */
+  .next{background:var(--accent);color:#fff;border-radius:12px;padding:1.2rem 1.3rem}
+  .next h2{color:#fff}
+  .next .big{font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.25rem;margin:.6rem 0 .3rem}
+  .next p{color:#dfe7fb;font-size:.96rem;margin:.4rem 0 0}
+  .next b{color:#fff}
+  .foot{margin-top:2.4rem;font-size:.82rem;color:var(--muted);text-align:center}
+
+  @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="wrap">
+
+  <header>
+    <p class="eyebrow">Геометрия · 8 класс · урок 1</p>
+    <h1>Многоугольник и сумма углов</h1>
+    <p class="lede">У пятиугольника углы могут быть совсем разными — но их <em>сумма</em> всегда одна и та же. Научимся её считать одной формулой, разрезая фигуру на треугольники.</p>
+  </header>
+
+  <div class="hero-formula">
+    <p class="lbl">Сумма внутренних углов выпуклого n-угольника</p>
+    <div class="eq">S = (<span class="n">n</span> − 2) · <span class="t">180°</span></div>
+    <p class="note"><span style="color:#8FB2E6">n</span> — число сторон · <span style="color:#F0A45E">(n − 2)</span> — столько треугольников внутри · 180° — сумма углов одного</p>
+  </div>
+
+  <section>
+    <p class="kicker">Зачем это нужно</p>
+    <h2>Многоугольники — скелет всей геометрии</h2>
+    <p>Паркет на полу, грани кристалла, дорожный знак «Стоп» (восьмиугольник), гайка (шестиугольник), раскрой плитки и деталей в черчении — всё это многоугольники. Чтобы посчитать угол распила рамы или разложить панели без зазоров, нужно уметь находить углы фигуры.</p>
+    <p>Сразу разрушим главный миф: <strong>«у многоугольника все углы одинаковые»</strong>. Это верно только для <em>правильных</em> фигур — квадрата, правильного шестиугольника. У обычного пятиугольника углы могут быть какими угодно. Постоянна только их <strong>сумма</strong> — вот её мы и научимся считать.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Что вспомнить</p>
+    <div class="recall">
+      <p>Сумма углов <b>любого треугольника</b> равна <span class="math">180°</span>. Это тот кирпичик, из которого мы соберём всё остальное.</p>
+      <p><b>Диагональ</b> — отрезок, соединяющий две <em>несоседние</em> вершины. Именно диагоналями мы будем резать многоугольник на треугольники.</p>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Словарь фигуры</p>
+    <h2>Вершины, стороны, диагонали</h2>
+    <p>Многоугольник — это замкнутая ломаная и часть плоскости внутри неё. У <strong>n-угольника</strong> ровно <span class="math">n</span> вершин, <span class="math">n</span> сторон и <span class="math">n</span> углов — одно и то же число.</p>
+    <div class="defs">
+      <div class="def">
+        <div class="t">Вершины</div>
+        <div class="d">Точки, где сходятся две соседние стороны. Их <b>n</b> штук.</div>
+      </div>
+      <div class="def">
+        <div class="t">Стороны</div>
+        <div class="d">Отрезки между <b>соседними</b> вершинами. Их тоже <b>n</b>.</div>
+      </div>
+      <div class="def">
+        <div class="t">Диагонали</div>
+        <div class="d">Отрезки между <b>несоседними</b> вершинами. Их <b>n·(n − 3) / 2</b>.</div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Две породы многоугольников</p>
+    <h2>Выпуклый и невыпуклый</h2>
+    <div class="cmp">
+      <div class="box good">
+        <div class="h">✓ Выпуклый</div>
+        <div class="d">Лежит по <b>одну сторону</b> от любой прямой, проведённой через его сторону. Никакого угла больше 180°. Наша формула выведена именно для него.</div>
+      </div>
+      <div class="box bad">
+        <div class="h">✗ Невыпуклый</div>
+        <div class="d">Есть «вмятина» — внутренний угол <b>больше 180°</b>. Проверка: приложи линейку к каждой стороне — если фигура оказывается по обе стороны от прямой, она невыпуклая.</div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Откуда берётся формула</p>
+    <h2>Режем на треугольники из одной вершины</h2>
+    <p>Возьмём выпуклый n-угольник и проведём все диагонали <strong>из одной вершины</strong>. Фигура распадётся на треугольники. В каждом треугольнике углы дают 180°, а вместе они складываются ровно в углы всего многоугольника — ничего лишнего не добавилось.</p>
+    <p>Сколько получится треугольников? Всегда на <strong>два меньше</strong>, чем сторон: <span class="math">(n − 2)</span>. Поэтому и сумма углов — это <span class="math">(n − 2)</span> раз по 180°. Формула не заучивается, а <strong>видится</strong>.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Покрути сам · интерактив</p>
+    <h2>Двигай ползунок — считай треугольники</h2>
+    <p>Меняй число сторон <span class="aw">n</span>. Из выделенной вершины проведены все диагонали — фигура разбита на <span class="hw">треугольники</span> (они окрашены через один). Посчитай их глазами и сверься с формулой внизу: их всегда <span class="math">n − 2</span>.</p>
+    <div class="diagram">
+      <canvas id="polyCv" width="680" height="420" aria-label="Правильный многоугольник, разбитый диагоналями из одной вершины на треугольники"></canvas>
+      <div class="diag-area" id="polyArea">S = (6 − 2) · 180° = 720°</div>
+      <div class="sliders">
+        <label>сторон n <span id="vn" class="sval">6</span><input id="sn" type="range" min="3" max="10" step="1" value="6"></label>
+      </div>
+    </div>
+    <p style="font-size:.9rem;color:var(--muted)">Обрати внимание: при n = 3 диагоналей нет вовсе — сам треугольник и есть один-единственный «кусок», сумма 180°. Каждая новая сторона добавляет ровно один треугольник и <strong>+180°</strong> к сумме.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Закономерность в таблице</p>
+    <h2>Чем больше сторон — тем больше сумма</h2>
+    <p>Заполним по шагам и увидим правило своими глазами: каждая строка прибавляет один треугольник и 180°.</p>
+    <div class="tblwrap">
+      <table>
+        <thead>
+          <tr><th>n (сторон)</th><th>треугольников (n − 2)</th><th>сумма S</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="m">3</td><td class="m">1</td><td class="s">180°</td></tr>
+          <tr><td class="m">4</td><td class="m">2</td><td class="s">360°</td></tr>
+          <tr><td class="m">5</td><td class="m">3</td><td class="s">540°</td></tr>
+          <tr><td class="m">6</td><td class="m">4</td><td class="s">720°</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="poe">
+      <p><b>Предскажи → проверь.</b> Не считая по таблице дальше: если у фигуры <strong>10 сторон</strong>, чему равна сумма углов? Сначала назови число, потом проверь по формуле: <span class="math">(10 − 2)·180° = 8·180° = 1440°</span>. Сошлось?</p>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Разбираем вместе · думаю вслух</p>
+    <h2>Эталонные примеры</h2>
+    <div class="worked">
+      <p class="task">Найти сумму углов семиугольника.</p>
+      <ol class="steps">
+        <li>Определяю <span class="m">n</span>: у семиугольника <span class="m">7</span> сторон, значит <span class="m">n = 7</span> — в формуле n это число сторон.</li>
+        <li>Записываю формулу и подставляю: <span class="m">S = (n − 2)·180° = (7 − 2)·180°</span>.</li>
+        <li>Считаю скобку: <span class="m">7 − 2 = 5</span> — столько треугольников получится внутри.</li>
+        <li>Умножаю: <span class="m">S = 5 · 180° = 900°</span>.</li>
+      </ol>
+      <div class="verdict">Ответ: сумма углов семиугольника 900°</div>
+    </div>
+
+    <div class="worked">
+      <p class="task">Найти каждый угол правильного шестиугольника.</p>
+      <ol class="steps">
+        <li>Сначала вся сумма: <span class="m">n = 6</span>, значит <span class="m">S = (6 − 2)·180° = 4·180° = 720°</span>.</li>
+        <li>Слово «правильный» означает, что все <span class="m">6</span> углов равны между собой — только поэтому сумму можно делить поровну.</li>
+        <li>Один угол: <span class="m">720° ÷ 6 = 120°</span>.</li>
+      </ol>
+      <div class="verdict">Ответ: каждый угол правильного шестиугольника 120°</div>
+    </div>
+
+    <div class="worked">
+      <p class="task">Сумма углов выпуклого многоугольника равна 1440°. Сколько у него сторон?</p>
+      <ol class="steps">
+        <li>Это обратная задача: сумма известна, ищем <span class="m">n</span>. Ставлю её в формулу: <span class="m">(n − 2)·180° = 1440°</span>.</li>
+        <li>Делю обе части на 180°: <span class="m">n − 2 = 1440 ÷ 180 = 8</span>.</li>
+        <li>Прибавляю 2: <span class="m">n = 8 + 2 = 10</span>.</li>
+      </ol>
+      <div class="verdict">Ответ: 10 сторон (десятиугольник)</div>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Теперь ты · нажми, чтобы проверить</p>
+    <h2>Мини-практика</h2>
+    <div class="drill">
+      <details>
+        <summary><span class="q">На чертеже пятиугольник ABCDE. Сколько диагоналей выйдет из вершины A?</span><span class="tag">понимание</span></summary>
+        <div class="ans">Из A нельзя вести к соседям B и E (это стороны) и к самой A. Остаются C и D — <b>две</b> диагонали. (Всего у пятиугольника <span class="m">5·2/2 = 5</span> диагоналей.)</div>
+      </details>
+      <details>
+        <summary><span class="q">Найди сумму углов восьмиугольника.</span><span class="tag">применение</span></summary>
+        <div class="ans"><span class="m">S = (8 − 2)·180° = 6·180° = 1080°</span>. Ответ <b>1080°</b>.</div>
+      </details>
+      <details>
+        <summary><span class="q">Найди сумму углов двенадцатиугольника.</span><span class="tag">применение</span></summary>
+        <div class="ans"><span class="m">S = (12 − 2)·180° = 10·180° = 1800°</span>. Ответ <b>1800°</b>.</div>
+      </details>
+      <details>
+        <summary><span class="q">Что изменится с суммой углов, если добавить многоугольнику одну сторону?</span><span class="tag">анализ</span></summary>
+        <div class="ans">Число сторон вырастет на 1 → появится ещё один треугольник → сумма увеличится <b>на 180°</b>. (В формуле n стало на 1 больше.)</div>
+      </details>
+      <details>
+        <summary><span class="q">Найди ошибку: для пятиугольника ученик записал S = 5·180° = 900°.</span><span class="tag">анализ</span></summary>
+        <div class="ans">Он забыл вычесть 2. Треугольников не 5, а <span class="m">5 − 2 = 3</span>. Верно: <span class="m">S = (5 − 2)·180° = 3·180° = 540°</span>. Ответ <b>540°</b>.</div>
+      </details>
+      <details>
+        <summary><span class="q">Обратная задача: сумма углов равна 2340°. Найди число сторон.</span><span class="tag">анализ</span></summary>
+        <div class="ans">Из <span class="m">(n − 2)·180° = 2340°</span>: <span class="m">n − 2 = 2340 ÷ 180 = 13</span>, значит <span class="m">n = 15</span>. Ответ <b>15 сторон</b>.</div>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Тренажёр · бесконечная практика</p>
+    <h2>Реши задачу на сумму углов</h2>
+    <p>Нажми «Новая» и реши: где-то надо найти сумму по числу сторон, где-то — число сторон по сумме, а где-то — один угол правильного многоугольника. Впиши ответ (в градусах или штуках) и проверь себя или посмотри пошаговое решение.</p>
+    <div class="trainer">
+      <div class="tr-task" id="trTask">Найди сумму внутренних углов <b>шестиугольника</b> (n = 6). Ответ в градусах.</div>
+      <div class="tr-ctl">
+        <button id="trNew" type="button">🎲 Новая</button>
+        <input id="trAns" type="text" placeholder="ответ" aria-label="Ответ">
+        <button id="trCheck" type="button" class="sec">Проверить</button>
+        <button id="trShow" type="button" class="ghost">Решение</button>
+      </div>
+      <div id="trResult" class="tr-result"></div>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Где чаще всего ошибаются</p>
+    <h2>Лови эти ловушки</h2>
+    <ul class="pitfalls">
+      <li><b>Забывают вычесть 2</b> и пишут <span class="math">n·180°</span>. Треугольников всегда на два меньше, чем сторон. Сначала считай скобку <span class="math">n − 2</span>, потом умножай.</li>
+      <li><b>Считают, что все углы равны.</b> Постоянна только сумма. Делить её на n можно <em>лишь</em> для правильного многоугольника — и об этом должно быть прямо сказано в условии.</li>
+      <li><b>Путают выпуклый и невыпуклый.</b> Если хоть один угол больше 180° (есть «вмятина») — фигура невыпуклая, простой способ деления на треугольники к ней уже не применяют вслепую.</li>
+      <li><b>Подставляют число диагоналей вместо n.</b> В формуле суммы углов стоит число <em>сторон</em>. Сначала надёжно определи n — это число сторон, вершин и углов.</li>
+    </ul>
+  </section>
+
+  <section>
+    <p class="kicker">Проверь себя вслух</p>
+    <div class="recall">
+      <p>1) По какой формуле находят сумму углов выпуклого n-угольника и что означает <b>(n − 2)</b>?</p>
+      <p>2) Чему равна сумма углов четырёхугольника и почему? <span class="math">((4 − 2)·180° = 360°.)</span></p>
+      <p>3) Постоянна ли сумма углов у разных пятиугольников? А сами углы? <span class="math">(Сумма — всегда 540°, углы — нет, кроме правильного.)</span></p>
+    </div>
+  </section>
+
+  <section>
+    <div class="next">
+      <h2>Что дальше</h2>
+      <p class="big">S = (n − 2) · 180°</p>
+      <p>Ты умеешь находить сумму углов любого выпуклого многоугольника и решать обратную задачу. Ближайший шаг — <b>сумма углов четырёхугольника</b> (частный случай при n = 4: ровно 360°), а за ним — <b>параллелограмм и его свойства</b>, с которого начинается разбор всех четырёхугольников года.</p>
+    </div>
+  </section>
+
+  <p class="foot">Итог одним предложением: сумма внутренних углов любого выпуклого n-угольника равна (n − 2)·180°, потому что его всегда можно разбить из одной вершины на (n − 2) треугольника по 180° каждый.</p>
+
+</div>
+
+<script>
+/* ===== Визуализация: правильный n-угольник, триангуляция из одной вершины ===== */
+(function(){
+  var cv=document.getElementById('polyCv'); if(!cv) return;
+  var ctx=cv.getContext('2d');
+  var sn=document.getElementById('sn'), vn=document.getElementById('vn'), areaEl=document.getElementById('polyArea');
+  var W=680,H=420,dpr=1;
+  function css(v){ return getComputedStyle(document.documentElement).getPropertyValue(v).trim(); }
+
+  function resize(){
+    var c=cv.clientWidth||680; dpr=Math.min(window.devicePixelRatio||1,2);
+    W=c; H=Math.round(c*0.62);
+    cv.width=W*dpr; cv.height=H*dpr; cv.style.height=H+'px';
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+  }
+
+  function draw(){
+    var n=+sn.value; vn.textContent=n;
+    ctx.clearRect(0,0,W,H);
+
+    var cx=W/2, cy=H/2+6;
+    var R=Math.min(W,H)/2 - 46;
+    // вершины правильного n-угольника, вершина 0 — сверху
+    var P=[];
+    for(var k=0;k<n;k++){
+      var ang=-Math.PI/2 + k*2*Math.PI/n;
+      P.push([cx+R*Math.cos(ang), cy+R*Math.sin(ang)]);
+    }
+
+    // треугольники веером из вершины 0: (0,k,k+1) для k=1..n-2 — всего n-2, окрашены через один
+    for(var k=1;k<=n-2;k++){
+      ctx.beginPath();
+      ctx.moveTo(P[0][0],P[0][1]);
+      ctx.lineTo(P[k][0],P[k][1]);
+      ctx.lineTo(P[k+1][0],P[k+1][1]);
+      ctx.closePath();
+      ctx.fillStyle = (k%2===1) ? 'rgba(46,90,172,0.10)' : 'rgba(226,124,44,0.14)';
+      ctx.fill();
+    }
+
+    // диагонали из вершины 0 (к несоседним 2..n-2) — тонкие пунктирные
+    ctx.setLineDash([5,4]); ctx.strokeStyle=css('--accent'); ctx.lineWidth=1.4;
+    for(var d=2;d<=n-2;d++){
+      ctx.beginPath(); ctx.moveTo(P[0][0],P[0][1]); ctx.lineTo(P[d][0],P[d][1]); ctx.stroke();
+    }
+    ctx.setLineDash([]);
+
+    // контур многоугольника
+    ctx.beginPath();
+    for(var i=0;i<n;i++){ i?ctx.lineTo(P[i][0],P[i][1]):ctx.moveTo(P[i][0],P[i][1]); }
+    ctx.closePath();
+    ctx.strokeStyle=css('--ink'); ctx.lineWidth=2.4; ctx.lineJoin='round'; ctx.stroke();
+
+    // вершины — точки; выделенная вершина 0 крупнее и оранжевая
+    for(var j=0;j<n;j++){
+      ctx.beginPath(); ctx.arc(P[j][0],P[j][1], j===0?6:3.5, 0, 7);
+      ctx.fillStyle = j===0 ? css('--hi') : css('--ink'); ctx.fill();
+    }
+    // подпись у выделенной вершины
+    ctx.fillStyle=css('--hi'); ctx.font='700 13px system-ui,sans-serif';
+    ctx.textAlign='center'; ctx.textBaseline='bottom';
+    ctx.fillText('из этой вершины', P[0][0], P[0][1]-12);
+
+    // область-вывод
+    var S=(n-2)*180;
+    areaEl.textContent='S = ('+n+' − 2) · 180° = '+(n-2)+' · 180° = '+S+'°';
+  }
+
+  sn.addEventListener('input',draw);
+  window.addEventListener('resize',function(){ resize(); draw(); });
+  resize(); draw();
+})();
+</script>
+
+<script>
+/* ===== Тренажёр-генератор: сумма / число сторон / угол правильного ===== */
+(function(){
+  var taskEl=document.getElementById('trTask'), ansEl=document.getElementById('trAns'), resEl=document.getElementById('trResult');
+  if(!taskEl) return;
+  var cur=null;
+  function ri(min,max){ return Math.floor(Math.random()*(max-min+1))+min; }
+  var NAMES={3:'треугольника',4:'четырёхугольника',5:'пятиугольника',6:'шестиугольника',7:'семиугольника',8:'восьмиугольника',9:'девятиугольника',10:'десятиугольника',11:'одиннадцатиугольника',12:'двенадцатиугольника'};
+  // n, для которых угол правильного многоугольника целый: (n-2)*180/n
+  var REG=[3,4,5,6,8,9,10,12];
+
+  function generate(){
+    var type=ri(0,2);
+    if(type===0){                       // дано n → найти сумму
+      var n=ri(4,12), S=(n-2)*180;
+      cur={type:0,n:n,S:S};
+      taskEl.innerHTML='Найди сумму внутренних углов <b>'+NAMES[n]+'</b> (n = '+n+'). Ответ в градусах.';
+    } else if(type===1){                // дана сумма → найти n
+      var n2=ri(4,14), S2=(n2-2)*180;
+      cur={type:1,n:n2,S:S2};
+      taskEl.innerHTML='Сумма внутренних углов выпуклого многоугольника равна <b>'+S2+'°</b>. Сколько у него сторон?';
+    } else {                            // правильный → найти один угол
+      var n3=REG[ri(0,REG.length-1)], S3=(n3-2)*180, ang=S3/n3;
+      cur={type:2,n:n3,S:S3,ang:ang};
+      taskEl.innerHTML='Найди каждый угол <b>правильного '+NAMES[n3]+'</b> (n = '+n3+'). Ответ в градусах.';
+    }
+    resEl.innerHTML=''; ansEl.value='';
+  }
+
+  function answer(){ return cur.type===0?cur.S : (cur.type===1?cur.n:cur.ang); }
+
+  function solHTML(){
+    var q=cur, h='<div class="sol">';
+    if(q.type===0){
+      h+='S = (n − 2) · 180°<br>';
+      h+='S = ('+q.n+' − 2) · 180° = '+(q.n-2)+' · 180° = <b>'+q.S+'</b>°';
+    } else if(q.type===1){
+      h+='(n − 2) · 180° = '+q.S+'  →  n − 2 = '+q.S+' / 180 = '+(q.n-2)+'<br>';
+      h+='n = '+(q.n-2)+' + 2 = <b>'+q.n+'</b> сторон';
+    } else {
+      h+='Сумма: S = ('+q.n+' − 2) · 180° = '+q.S+'°<br>';
+      h+='Все '+q.n+' углов равны  →  угол = '+q.S+' / '+q.n+' = <b>'+q.ang+'</b>°';
+    }
+    return h+'</div>';
+  }
+
+  function check(){
+    var raw=ansEl.value.trim().replace(',','.').replace('°','');
+    if(raw===''){ resEl.innerHTML='<span class="bad">Введи ответ или нажми «Решение».</span>'; return; }
+    var got=parseFloat(raw), right=answer();
+    if(!isNaN(got) && Math.abs(got-right)<0.02){
+      resEl.innerHTML='<span class="ok">✓ Верно!</span>'+solHTML();
+    } else {
+      resEl.innerHTML='<span class="bad">✗ Пока не то — глянь решение.</span>'+solHTML();
+    }
+  }
+
+  document.getElementById('trNew').addEventListener('click',function(){ generate(); ansEl.focus(); });
+  document.getElementById('trCheck').addEventListener('click',check);
+  document.getElementById('trShow').addEventListener('click',function(){ resEl.innerHTML=solHTML(); });
+  ansEl.addEventListener('keydown',function(e){ if(e.key==='Enter') check(); });
+
+  // стартовое состояние = валидная задача (совпадает с показанным решением), без focus()
+  cur={type:0,n:6,S:720};
+})();
+</script>

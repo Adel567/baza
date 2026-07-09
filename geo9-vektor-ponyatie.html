@@ -1,0 +1,599 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Векторы: понятие и действия — геометрия 9 класс</title>
+<style>
+  :root{
+    --paper:#F6F7F9; --card:#FFFFFF; --ink:#1D2530; --muted:#5A6478; --line:#E3E7EE;
+    --brand:#2E5AAC; --brand-soft:#E4EBF7;
+    --va:#2E5AAC; --va-soft:#E4EBF7;   /* вектор a */
+    --vb:#E27C2C; --vb-soft:#FBEEDF;   /* вектор b */
+    --sum:#1E8E5A; --sum-soft:#E7F4EC; /* сумма / результат */
+    --neg:#C0455B; --neg-soft:#F9E9EC; /* противоположный / ошибка */
+    --ok:#1E8E5A; --no:#C0455B;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper)}
+  .page{max-width:730px;margin:0 auto;padding:clamp(1.4rem,4vw,3rem) clamp(1.1rem,4vw,2rem) 4.5rem;
+    color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:17.5px;line-height:1.66;-webkit-font-smoothing:antialiased}
+  .mono{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-variant-numeric:tabular-nums;font-weight:600}
+  sup{font-size:.72em}
+
+  /* вектор со стрелкой над буквой */
+  .vec{position:relative;display:inline-block;font-weight:700;font-style:italic;padding-top:.18em}
+  .vec::before{content:"→";position:absolute;top:-.62em;left:50%;transform:translateX(-50%) scaleX(.9);
+    font-style:normal;font-weight:700;font-size:.72em;line-height:1}
+  .va{color:var(--va)} .vb{color:var(--vb)} .vs{color:var(--sum)} .vn{color:var(--neg)}
+  .aw{color:var(--va);font-weight:800} .bw{color:var(--vb);font-weight:800} .sw{color:var(--sum);font-weight:800}
+
+  .hero{border-bottom:3px solid var(--brand);padding-bottom:1.4rem;margin-bottom:1.6rem}
+  .eyebrow{font-size:.74rem;letter-spacing:.15em;text-transform:uppercase;color:var(--brand);font-weight:700;margin:0 0 .55rem}
+  h1{font-size:clamp(1.9rem,6vw,2.7rem);line-height:1.05;margin:0;font-weight:800;letter-spacing:-.02em;text-wrap:balance}
+  .tagline{font-size:1.1rem;color:var(--muted);margin:.85rem 0 0;text-wrap:pretty}
+
+  section{margin-top:2.4rem}
+  h2{font-size:1.45rem;margin:0 0 .3rem;font-weight:780;letter-spacing:-.015em;text-wrap:balance}
+  .kicker{font-size:.72rem;letter-spacing:.13em;text-transform:uppercase;color:var(--muted);font-weight:700;margin:0 0 .7rem;display:flex;align-items:center;gap:.55rem}
+  .kicker::before{content:"";width:1.4rem;height:2px;background:var(--brand);border-radius:2px}
+  p{margin:.7rem 0}
+  strong{font-weight:680}
+
+  .lead-in{background:var(--brand-soft);border-radius:14px;padding:1.1rem 1.3rem;font-size:1.02rem}
+  .lead-in p{margin:.45rem 0}
+  .lead-in b{color:var(--brand)}
+
+  .recall{background:#fff;border:1px solid var(--line);border-left:4px solid var(--brand);border-radius:0 12px 12px 0;padding:1rem 1.2rem;font-size:.98rem}
+  .recall p{margin:.4rem 0}
+  .recall b{color:var(--brand)}
+
+  .def{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.15rem 1.3rem;margin-top:1rem}
+  .def h3{margin:0 0 .5rem;font-size:1.08rem}
+  .def ul{margin:.4rem 0 0;padding-left:1.1rem;display:flex;flex-direction:column;gap:.4rem;font-size:.98rem}
+  .def li b{font-weight:700}
+
+  .rule-box{background:var(--ink);color:#fff;border-radius:14px;padding:1.2rem 1.3rem;margin-top:1rem}
+  .rule-box .lbl{font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:#9AA6C9;margin:0 0 .55rem}
+  .rule-box .eq{font-family:ui-monospace,Menlo,monospace;font-size:clamp(1.2rem,5vw,1.7rem);font-weight:700;text-align:center;margin:.2rem 0}
+  .rule-box .eq .a{color:#8FB2E6} .rule-box .eq .b{color:#F0A45E} .rule-box .eq .s{color:#6FD8A6} .rule-box .eq .n{color:#E88B9C}
+  .rule-box p{color:#C7D0E0;font-size:.92rem;margin:.55rem 0 0}
+  .rule-box .vec::before{content:"→"}
+
+  .cards{display:grid;gap:.85rem;margin-top:1rem}
+  @media(min-width:600px){.cards.two{grid-template-columns:1fr 1fr}}
+  .rc{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:1rem 1.1rem}
+  .rc.tri{border-top:4px solid var(--va)} .rc.par{border-top:4px solid var(--vb)}
+  .rc.sub{border-top:4px solid var(--neg)} .rc.mul{border-top:4px solid var(--sum)}
+  .rc h3{margin:0 0 .35rem;font-size:1rem}
+  .rc.tri h3{color:var(--va)} .rc.par h3{color:var(--vb)} .rc.sub h3{color:var(--neg)} .rc.mul h3{color:var(--sum)}
+  .rc p{margin:.3rem 0;font-size:.95rem}
+  .rc .fx{font-family:ui-monospace,Menlo,monospace;font-weight:700;background:var(--paper);border-radius:8px;padding:.4rem .6rem;display:inline-block;margin-top:.3rem}
+
+  .note{border-left:4px solid var(--vb);background:var(--vb-soft);border-radius:0 10px 10px 0;padding:.8rem 1.1rem;margin-top:1rem;font-size:.96rem}
+  .note b{color:var(--vb)}
+
+  /* worked */
+  .worked{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.15rem 1.3rem;margin-top:1rem}
+  .worked .task{font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1rem;margin:0 0 .9rem;padding-bottom:.7rem;border-bottom:1px solid var(--line)}
+  ol.steps{margin:0;padding:0;list-style:none;counter-reset:s;display:flex;flex-direction:column;gap:.6rem}
+  ol.steps li{position:relative;padding-left:2.1rem;counter-increment:s;font-size:.96rem}
+  ol.steps li::before{content:counter(s);position:absolute;left:0;top:.02rem;width:1.5rem;height:1.5rem;border-radius:50%;background:var(--brand-soft);color:var(--brand);font-size:.8rem;font-weight:700;display:flex;align-items:center;justify-content:center}
+  ol.steps .m{font-family:ui-monospace,Menlo,monospace;font-weight:600}
+  ol.steps em{color:var(--muted);font-style:italic}
+  .verdict{margin-top:1rem;padding:.7rem 1rem;background:var(--sum-soft);border-radius:9px;font-weight:700;color:var(--sum);font-family:ui-monospace,Menlo,monospace;font-size:.98rem}
+
+  /* визуализация */
+  .viz{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.1rem;margin-top:1rem}
+  .viz canvas{width:100%;height:auto;display:block;border-radius:10px;background:#FCFDFF}
+  .viz-read{text-align:center;font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1rem;margin:.85rem 0 0;padding:.55rem;border-radius:9px;background:var(--sum-soft);color:var(--ink)}
+  .viz-read .r{color:var(--sum)}
+  .modebtns{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.9rem}
+  .modebtns button{font:inherit;font-weight:700;font-size:.85rem;cursor:pointer;border:1px solid var(--line);border-radius:9px;padding:.5rem .85rem;background:#fff;color:var(--muted)}
+  .modebtns button.on{background:var(--brand);color:#fff;border-color:var(--brand)}
+  .modebtns button.reset{margin-left:auto;background:transparent;color:var(--brand);border-color:var(--brand)}
+  .sliders{display:grid;gap:.55rem;margin-top:.95rem}
+  @media(min-width:520px){.sliders{grid-template-columns:1fr 1fr}}
+  .sliders label{display:flex;align-items:center;gap:.5rem;font-weight:700;font-family:ui-monospace,Menlo,monospace;font-size:.9rem}
+  .sliders label.la{color:var(--va)} .sliders label.lb{color:var(--vb)}
+  .sliders .nm{min-width:5.5ch}
+  .sliders input[type=range]{flex:1}
+  .sliders input.ra{accent-color:var(--va)} .sliders input.rb{accent-color:var(--vb)}
+  .sliders .sval{min-width:2.5ch;text-align:right;color:var(--muted)}
+
+  /* тренажёр */
+  .trainer{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.2rem 1.3rem;margin-top:1rem}
+  .tr-task{font-size:clamp(1rem,3.6vw,1.12rem);text-align:center;padding:1rem;background:var(--brand-soft);border-radius:10px;font-weight:600;line-height:1.55}
+  .tr-task b{font-family:ui-monospace,Menlo,monospace;color:var(--ink)}
+  .tr-ctl{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:1rem;align-items:center;justify-content:center}
+  .tr-ctl input{flex:1;min-width:130px;max-width:200px;font:inherit;padding:.5rem .7rem;border:1px solid var(--line);border-radius:9px;text-align:center;background:#fff;color:var(--ink)}
+  .tr-ctl button{font:inherit;font-weight:700;font-size:.9rem;cursor:pointer;border:none;border-radius:9px;padding:.55rem .95rem;color:#fff;background:var(--brand)}
+  .tr-ctl button.sec{background:var(--vb)}
+  .tr-ctl button.ghost{background:transparent;color:var(--brand);border:1px solid var(--brand)}
+  .tr-ctl button:focus-visible,.tr-ctl input:focus-visible,.modebtns button:focus-visible,.sliders input:focus-visible{outline:3px solid var(--brand);outline-offset:2px}
+  .tr-result{margin-top:.9rem;font-size:.96rem;min-height:1.2rem;text-align:center}
+  .tr-result .ok{color:var(--ok);font-weight:700} .tr-result .bad{color:var(--no);font-weight:700}
+  .tr-result .sol{margin-top:.6rem;padding:.85rem 1rem;background:#FCFDFE;border:1px solid var(--line);border-radius:10px;font-family:ui-monospace,Menlo,monospace;font-size:.9rem;line-height:1.85;text-align:left}
+  .tr-result .sol b{color:var(--brand)}
+  .tr-hint{font-size:.86rem;color:var(--muted);text-align:center;margin:.5rem 0 0}
+
+  /* практика */
+  .drill{display:flex;flex-direction:column;gap:.6rem}
+  details{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:.85rem 1.05rem}
+  details[open]{border-color:var(--brand)}
+  summary{cursor:pointer;font-weight:600;list-style:none;display:flex;justify-content:space-between;align-items:center;gap:1rem}
+  summary::-webkit-details-marker{display:none}
+  summary:focus-visible{outline:3px solid var(--brand);outline-offset:3px;border-radius:6px}
+  summary .q{font-size:.96rem}
+  summary .tag{font-size:.64rem;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);border:1px solid var(--line);border-radius:20px;padding:.1rem .55rem;white-space:nowrap}
+  summary::after{content:"ответ";font-size:.76rem;color:var(--brand);font-weight:700;white-space:nowrap;margin-left:auto}
+  details[open] summary::after{content:"скрыть"}
+  .ans{margin-top:.7rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.96rem;color:var(--muted)}
+  .ans .m{font-family:ui-monospace,Menlo,monospace;color:var(--ink);font-weight:600}
+  .ans b{color:var(--ink)}
+
+  /* ошибки */
+  ul.traps{list-style:none;margin:1rem 0 0;padding:0;display:flex;flex-direction:column;gap:.65rem}
+  ul.traps li{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:.85rem 1.05rem .85rem 2.5rem;position:relative;font-size:.96rem}
+  ul.traps li::before{content:"⚠";position:absolute;left:1rem;top:.85rem;color:var(--neg)}
+  ul.traps b{font-weight:700}
+
+  .selfcheck{background:var(--vb-soft);border-radius:12px;padding:1rem 1.2rem}
+  .selfcheck ol{margin:.3rem 0 0;padding-left:1.2rem;display:flex;flex-direction:column;gap:.4rem;font-size:.98rem}
+
+  .wrapup{background:var(--brand);color:#fff;border-radius:16px;padding:1.4rem 1.5rem;margin-top:2.4rem}
+  .wrapup h2{color:#fff;margin:0 0 .5rem}
+  .wrapup p{color:#DEE7F5;margin:.4rem 0;font-size:1rem}
+  .wrapup .next{font-size:.95rem;color:#C6D5EE;margin-top:1rem;padding-top:1rem;border-top:1px solid rgba(255,255,255,.2)}
+  .wrapup .next b{color:#fff}
+  .wrapup .vec::before{content:"→"}
+
+  @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="page">
+
+  <header class="hero">
+    <p class="eyebrow">Геометрия · 9 класс · ОГЭ</p>
+    <h1>Векторы: понятие и действия</h1>
+    <p class="tagline">Что такое вектор, как их складывать, вычитать и умножать на число — база, из которой вырастают координаты и физика.</p>
+  </header>
+
+  <div class="lead-in">
+    <p><b>Где встречается.</b> Многие величины задаются не только числом, но и направлением: скорость машины (60 км/ч <i>на север</i>), сила, с которой толкают ящик, перемещение фигуры при сдвиге. Сказать «скорость 60» мало — надо знать, <i>куда</i>. Для таких «число + направление» и придумали вектор.</p>
+    <p>В геометрии векторы — удобный инструмент: ими описывают параллельный перенос, считают середины и среднюю линию, а в координатах превращают чертёж в формулы. В физике 9 класса вектор скрыт почти всюду: скорость, ускорение, сила.</p>
+  </div>
+
+  <section>
+    <p class="kicker">Что вспомнить с прошлых тем</p>
+    <div class="recall">
+      <p><b>Отрезок</b> — это две точки и «палочка» между ними; у него есть только длина. Вектор — это тот же отрезок, но с <b>направлением</b>: указано, где начало, а где конец.</p>
+      <p><b>Координатная плоскость.</b> Точку задают парой чисел: первое — сдвиг вправо (ось x), второе — сдвиг вверх (ось y). Дальше мы так же будем задавать и вектор: насколько вправо и насколько вверх он ведёт.</p>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Ядро · что такое вектор</p>
+    <h2>Направленный отрезок</h2>
+    <p><strong>Вектор</strong> — это направленный отрезок: у него есть начало и конец, и идти от начала к концу можно только в одну сторону. Поэтому вектор полностью задаётся <strong>двумя</strong> вещами: <strong>длиной</strong> (насколько длинный) и <strong>направлением</strong> (куда указывает).</p>
+
+    <div class="rule-box">
+      <p class="lbl">Обозначения</p>
+      <div class="eq"><span class="vec a">AB</span> &nbsp;или&nbsp; <span class="vec a">a</span> &nbsp;&nbsp;·&nbsp;&nbsp; длина: <span class="mono">|<span class="vec a">a</span>|</span></div>
+      <p>Вектор от точки A к точке B пишут <span class="vec">AB</span> (A — начало, B — конец) или одной буквой <span class="vec">a</span>. Длину (модуль) обозначают <span class="mono">|<span class="vec">a</span>|</span> — это число, и оно <b>не бывает отрицательным</b>.</p>
+    </div>
+
+    <div class="def">
+      <h3>Ключевые понятия</h3>
+      <ul>
+        <li><b>Нулевой вектор</b> <span class="mono">0</span> — у него начало и конец совпадают, длина 0, направление не определено.</li>
+        <li><b>Равные векторы</b> — сонаправлены <i>и</i> равны по длине. Где нарисованы — неважно: вектор можно свободно переносить параллельно самому себе.</li>
+        <li><b>Коллинеарные</b> — лежат на одной прямой или на параллельных. Среди них: <b>сонаправленные</b> (↑↑, смотрят в одну сторону) и <b>противоположно направленные</b> (↑↓, в разные).</li>
+      </ul>
+    </div>
+    <div class="note">
+      <p><b>Главное:</b> равенство длин само по себе равенства НЕ даёт. Нужны оба условия — <b>и</b> длина, <b>и</b> направление. Поэтому <span class="mono"><span class="vec">AB</span></span> и <span class="mono"><span class="vec">BA</span></span> — это разные (противоположные) векторы, хотя отрезок один.</p>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Ядро · действия с векторами</p>
+    <h2>Складываем, вычитаем, умножаем на число</h2>
+    <p>Результат любого из этих действий — снова <strong>вектор</strong>. Мы не складываем числа-длины, а «состыковываем» направленные отрезки, поэтому итог зависит и от направлений.</p>
+
+    <div class="cards two">
+      <div class="rc tri">
+        <h3>Сложение · правило треугольника</h3>
+        <p>От точки A отложи <span class="vec va">a</span> (конец B). От <b>конца</b> B отложи <span class="vec vb">b</span> (конец C). Тогда <span class="mono"><span class="vec vs">AC</span></span> — сумма: из начала первого в конец второго.</p>
+        <p>Ключ: второй вектор — <b>от конца первого</b>, а не от начала.</p>
+      </div>
+      <div class="rc par">
+        <h3>Сложение · правило параллелограмма</h3>
+        <p>Когда <span class="vec va">a</span> и <span class="vec vb">b</span> отложены из <b>одной</b> точки — достраиваем параллелограмм. Сумма — его <b>диагональ</b> из той же точки.</p>
+        <p>Оба правила дают <b>один и тот же</b> вектор суммы.</p>
+      </div>
+      <div class="rc sub">
+        <h3>Вычитание</h3>
+        <p>Вычесть — значит прибавить противоположный: <span class="mono"><span class="vec va">a</span> − <span class="vec vb">b</span> = <span class="vec va">a</span> + (−<span class="vec vb">b</span>)</span>.</p>
+        <p>Если <span class="vec va">a</span> и <span class="vec vb">b</span> из общей точки — разность идёт <b>к концу уменьшаемого</b> (к концу того, из чего вычитаем).</p>
+      </div>
+      <div class="rc mul">
+        <h3>Умножение на число k</h3>
+        <p><span class="mono">|k·<span class="vec va">a</span>| = |k|·|<span class="vec va">a</span>|</span> — длина растягивается/сжимается в |k| раз.</p>
+        <p><b>Знак</b> решает направление: k&gt;0 — сонаправлен, k&lt;0 — разворот. Результат всегда <b>коллинеарен</b> исходному.</p>
+      </div>
+    </div>
+
+    <div class="rule-box">
+      <p class="lbl">Законы и признак</p>
+      <div class="eq"><span class="vec a">a</span> + <span class="vec b">b</span> = <span class="vec b">b</span> + <span class="vec a">a</span> &nbsp;&nbsp;·&nbsp;&nbsp; <span class="vec b">b</span> = k·<span class="vec a">a</span> ⇒ коллинеарны</div>
+      <p>Порядок слагаемых на сумму не влияет (переместительный закон). А умножение на число — главный «детектор параллельности»: если <span class="vec">b</span> = k·<span class="vec">a</span>, то векторы лежат на одной или параллельных прямых.</p>
+    </div>
+
+    <div class="note">
+      <p><b>Осторожно с длиной:</b> <span class="mono">|<span class="vec">a</span> + <span class="vec">b</span>| ≠ |<span class="vec">a</span>| + |<span class="vec">b</span>|</span> в общем случае. Складывать длины можно только у сонаправленных. Если векторы перпендикулярны — длину суммы берут по Пифагору: <span class="mono">|<span class="vec">a</span> + <span class="vec">b</span>| = √(|<span class="vec">a</span>|² + |<span class="vec">b</span>|²)</span>.</p>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Разбираем вместе · думаю вслух</p>
+    <h2>Эталонные примеры</h2>
+
+    <div class="worked">
+      <p class="task">Квадрат ABCD (вершины по порядку). Равны ли <span class="vec">AB</span> и <span class="vec">DC</span>?</p>
+      <ol class="steps">
+        <li>Сторона AB параллельна DC (противоположные стороны квадрата) → векторы <b>коллинеарны</b>. <em>Коллинеарность — это параллельность направлений.</em></li>
+        <li>Длины равны: <span class="m">|<span class="vec">AB</span>| = |<span class="vec">DC</span>|</span>, у квадрата все стороны равны.</li>
+        <li>Направление: идём A→B и D→C — в квадрате это одна и та же сторона, значит <b>сонаправлены</b>. <em>А равенство требует именно сонаправленности.</em></li>
+        <li>Сонаправлены и равны по длине ⟹ векторы равны.</li>
+      </ol>
+      <div class="verdict">Ответ: <span class="vec">AB</span> = <span class="vec">DC</span> &nbsp;(а вот <span class="vec">AB</span> и <span class="vec">CD</span> были бы противоположны — и НЕ равны)</div>
+    </div>
+
+    <div class="worked" style="margin-top:.8rem">
+      <p class="task">Прямоугольник ABCD. Найти сумму <span class="vec">AB</span> + <span class="vec">AD</span>.</p>
+      <ol class="steps">
+        <li>Оба вектора отложены из одной точки A → удобно правило <b>параллелограмма</b>. <em>AB и AD — две смежные стороны из A.</em></li>
+        <li>ABCD построен на этих сторонах, значит сумма — <b>диагональ</b> из точки A.</li>
+        <li>Диагональ из A — это вектор <span class="m"><span class="vec">AC</span></span>.</li>
+      </ol>
+      <div class="verdict">Ответ: <span class="vec">AB</span> + <span class="vec">AD</span> = <span class="vec">AC</span></div>
+    </div>
+
+    <div class="worked" style="margin-top:.8rem">
+      <p class="task">В координатах: <span class="vec">a</span> = (5; 2), <span class="vec">b</span> = (1; 4). Найти <span class="vec">a</span> − <span class="vec">b</span> и её длину.</p>
+      <ol class="steps">
+        <li>Вычитаем <b>по координатам</b>: <span class="m">(5 − 1; 2 − 4)</span>. <em>Первую из первой, вторую из второй.</em></li>
+        <li>Считаем: <span class="m">(4; −2)</span>. <em>Минус сохраняем — это направление вниз по оси y.</em></li>
+        <li>Длина через корень из суммы квадратов: <span class="m">√(4² + (−2)²) = √(16 + 4) = √20 = 2√5</span>.</li>
+      </ol>
+      <div class="verdict">Ответ: <span class="vec">a</span> − <span class="vec">b</span> = (4; −2), длина 2√5</div>
+    </div>
+
+    <div class="worked" style="margin-top:.8rem">
+      <p class="task">|<span class="vec">a</span>| = 6. Найти длину и направление вектора <span class="vec">b</span> = −3·<span class="vec">a</span>.</p>
+      <ol class="steps">
+        <li>Длина: <span class="m">|<span class="vec">b</span>| = |−3|·|<span class="vec">a</span>| = 3·6 = 18</span>. <em>Берём модуль числа: |−3| = 3, минус на длину не влияет.</em></li>
+        <li>Направление: k = −3 &lt; 0 → вектор <b>развернулся</b>, <span class="m"><span class="vec">b</span> ↑↓ <span class="vec">a</span></span>.</li>
+      </ol>
+      <div class="verdict">Ответ: |<span class="vec">b</span>| = 18, противоположно направлен с <span class="vec">a</span></div>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Увидь глазами · интерактив</p>
+    <h2>Складываем векторы на сетке</h2>
+    <p>Двигай ползунками координаты <span class="aw">a</span> и <span class="bw">b</span> (насколько вправо и вверх). Переключай правило и смотри, как строится <span class="sw">сумма</span>: по треугольнику (конец к началу) или по параллелограмму (из одной точки) — вектор суммы <b>получается один и тот же</b>.</p>
+    <div class="viz">
+      <canvas id="viz" width="640" height="520" aria-label="Векторы на координатной сетке и их сумма по правилу треугольника или параллелограмма"></canvas>
+      <div id="vizRead" class="viz-read"></div>
+      <div class="modebtns">
+        <button id="mTri" type="button" class="on">Правило треугольника</button>
+        <button id="mPar" type="button">Правило параллелограмма</button>
+        <button id="vReset" type="button" class="reset">Сбросить</button>
+      </div>
+      <div class="sliders">
+        <label class="la"><span class="nm">a → x</span><input id="ax" class="ra" type="range" min="-4" max="4" step="1" value="3" aria-label="Координата x вектора a"><span id="vax" class="sval">3</span></label>
+        <label class="la"><span class="nm">a → y</span><input id="ay" class="ra" type="range" min="-4" max="4" step="1" value="1" aria-label="Координата y вектора a"><span id="vay" class="sval">1</span></label>
+        <label class="lb"><span class="nm">b → x</span><input id="bx" class="rb" type="range" min="-4" max="4" step="1" value="1" aria-label="Координата x вектора b"><span id="vbx" class="sval">1</span></label>
+        <label class="lb"><span class="nm">b → y</span><input id="by" class="rb" type="range" min="-4" max="4" step="1" value="2" aria-label="Координата y вектора b"><span id="vby" class="sval">2</span></label>
+      </div>
+    </div>
+    <p style="font-size:.9rem;color:var(--muted)">Обрати внимание: сумма <span class="sw">a + b</span> в координатах — это просто «сложи соответствующие числа». А длина суммы почти всегда меньше суммы длин — стрелка «срезает угол».</p>
+  </section>
+
+  <section>
+    <p class="kicker">Вектор в координатах · подготовка к тренажёру</p>
+    <div class="recall">
+      <p>Вектор можно задать парой чисел <span class="mono">(x; y)</span> — «на x вправо, на y вверх». Тогда действия становятся арифметикой:</p>
+      <p><span class="mono"><span class="vec">a</span> + <span class="vec">b</span> = (x₁+x₂; y₁+y₂)</span> &nbsp;·&nbsp; <span class="mono"><span class="vec">a</span> − <span class="vec">b</span> = (x₁−x₂; y₁−y₂)</span></p>
+      <p><span class="mono">k·<span class="vec">a</span> = (k·x; k·y)</span> &nbsp;·&nbsp; длина <span class="mono">|<span class="vec">a</span>| = √(x² + y²)</span></p>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Теперь ты · бесконечная практика</p>
+    <h2>Тренажёр действий</h2>
+    <p>Нажми «Новая», реши и впиши ответ. Для векторов пиши в виде <b>(x; y)</b>, для длины — число. Проверь себя или посмотри пошаговое решение.</p>
+    <div class="trainer">
+      <div class="tr-task" id="trTask">Даны <b>a = (3; 1)</b> и <b>b = (2; 4)</b>. Найди <b>a + b</b>.</div>
+      <div class="tr-ctl">
+        <button id="trNew" type="button">🎲 Новая</button>
+        <input id="trAns" type="text" placeholder="например (5; 5)" aria-label="Ответ">
+        <button id="trCheck" type="button" class="sec">Проверить</button>
+        <button id="trShow" type="button" class="ghost">Решение</button>
+      </div>
+      <div id="trResult" class="tr-result"></div>
+      <p class="tr-hint">Минус пиши обычным знаком. Ответ-вектор — два числа в скобках через «;».</p>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Проверь себя · от понимания к анализу</p>
+    <h2>Мини-практика</h2>
+    <div class="drill">
+      <details>
+        <summary><span class="q">Может ли модуль (длина) вектора быть отрицательным?</span><span class="tag">понимание</span></summary>
+        <div class="ans">Нет. Длина — это число, и она всегда <b>≥ 0</b>. Ноль бывает только у нулевого вектора.</div>
+      </details>
+      <details>
+        <summary><span class="q">Закончи: <span class="mono">a − b = a + ___</span>. Как направлен противоположный вектор?</span><span class="tag">понимание</span></summary>
+        <div class="ans"><span class="m">a − b = a + (−b)</span>. Вектор <span class="m">−b</span> — та же длина, что у b, но <b>обратное</b> направление.</div>
+      </details>
+      <details>
+        <summary><span class="q">В параллелограмме MNPQ (по порядку) укажи вектор, равный <span class="vec">MN</span>.</span><span class="tag">применение</span></summary>
+        <div class="ans">Это <b><span class="vec">QP</span></b>: сторона QP параллельна MN, равна по длине и сонаправлена (Q→P идёт так же, как M→N).</div>
+      </details>
+      <details>
+        <summary><span class="q">Векторы перпендикулярны, |a| = 6, |b| = 8. Найди |a + b|.</span><span class="tag">применение</span></summary>
+        <div class="ans">По Пифагору: <span class="m">√(6² + 8²) = √(36 + 64) = √100 = 10</span>. Ответ <b>10</b> (не 14!).</div>
+      </details>
+      <details>
+        <summary><span class="q">|a| = 7. Найди длины 3·a и −3·a. Сравни.</span><span class="tag">применение</span></summary>
+        <div class="ans">Длина зависит от <b>модуля</b> числа: <span class="m">|3·a| = 3·7 = 21</span> и <span class="m">|−3·a| = 3·7 = 21</span>. Длины <b>равны</b>, различаются только направлением.</div>
+      </details>
+      <details>
+        <summary><span class="q">c = (7; 0), d = (3; −5). Найди c − d и |c − d|.</span><span class="tag">применение</span></summary>
+        <div class="ans"><span class="m">c − d = (7 − 3; 0 − (−5)) = (4; 5)</span>. Длина <span class="m">√(4² + 5²) = √41</span>. Ответ: <b>(4; 5)</b>, длина √41.</div>
+      </details>
+      <details>
+        <summary><span class="q">Найди ошибку: «в квадрате ABCD <span class="vec">AB</span> = <span class="vec">CD</span>, ведь длины равны и стороны параллельны».</span><span class="tag">анализ</span></summary>
+        <div class="ans">Векторы <b>противоположно направлены</b> (A→B и C→D смотрят в разные стороны), значит они не равны. Равен вектору <span class="vec">AB</span> вектор <span class="vec">DC</span>, а не <span class="vec">CD</span>.</div>
+      </details>
+      <details>
+        <summary><span class="q">Найди ошибку: «b = −4·a, значит |b| = −4·|a|, длина отрицательная».</span><span class="tag">анализ</span></summary>
+        <div class="ans">Длина считается через <b>модуль</b> множителя: <span class="m">|b| = |−4|·|a| = 4·|a|</span>. Отрицательной длины не бывает; минус влияет только на направление.</div>
+      </details>
+      <details>
+        <summary><span class="q">Изменится ли сумма, если сложить те же векторы в обратном порядке — b + a?</span><span class="tag">анализ</span></summary>
+        <div class="ans"><b>Нет.</b> Действует переместительный закон: <span class="m">a + b = b + a</span> — вектор суммы тот же.</div>
+      </details>
+      <details>
+        <summary><span class="q">Обратная задача: a − b = (4; 1), b = (2; 3). Найди a.</span><span class="tag">анализ</span></summary>
+        <div class="ans">Из <span class="m">a − b = (4;1)</span> следует <span class="m">a = (a − b) + b = (4+2; 1+3) = (6; 4)</span>. Ответ <b>(6; 4)</b>.</div>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Где чаще всего ошибаются</p>
+    <h2>Лови эти ловушки</h2>
+    <ul class="traps">
+      <li><b>Путают вектор с отрезком.</b> <span class="mono"><span class="vec">AB</span></span> и <span class="mono"><span class="vec">BA</span></span> — это НЕ одно и то же, а противоположные векторы. Всегда называй сначала начало, потом конец, и мысленно рисуй стрелку.</li>
+      <li><b>Думают, что равные векторы должны стоять в одном месте.</b> Их можно рисовать где угодно — важны только длина и направление. Вектор свободно переносится параллельно себе.</li>
+      <li><b>Равенство только по длине.</b> Длина 5 и длина 5 ещё не дают равенства, если стрелки смотрят в разные стороны. Проверяй оба условия.</li>
+      <li><b>При сложении откладывают второй вектор не от конца первого.</b> Проговаривай: «конец первого — начало второго», ставь точку-стык пальцем.</li>
+      <li><b>Считают, что <span class="mono">|a + b| = |a| + |b|</span> всегда.</b> Это верно только для сонаправленных. Под углом сумма короче — стрелка «срезает».</li>
+      <li><b>При умножении на отрицательное число не меняют направление.</b> Сначала смотри на знак (он решает разворот), потом на модуль (он решает длину). И помни: коллинеарность от знака не зависит — и +2·a, и −2·a лежат на той же прямой.</li>
+    </ul>
+  </section>
+
+  <section>
+    <p class="kicker">Объясни своими словами</p>
+    <div class="selfcheck">
+      <ol>
+        <li>Чем вектор отличается от обычного отрезка?</li>
+        <li>Векторы <span class="vec">a</span> и <span class="vec">b</span> имеют равные длины и противоположные направления. Равны ли они? Почему?</li>
+        <li>Чему равно <span class="vec">a</span> − <span class="vec">b</span> через сложение? К концу какого вектора направлена разность?</li>
+        <li>Чем управляет знак множителя k, а чем — его модуль?</li>
+      </ol>
+    </div>
+  </section>
+
+  <div class="wrapup">
+    <h2>Запомни главное</h2>
+    <p><b>Вектор — это направленный отрезок,</b> заданный длиной и направлением. Два вектора равны, когда они сонаправлены <i>и</i> равны по длине.</p>
+    <p>Сумму строят по правилу треугольника или параллелограмма; разность — это сумма с противоположным (<span class="vec">a</span> − <span class="vec">b</span> = <span class="vec">a</span> + (−<span class="vec">b</span>)); умножение на k меняет длину в |k| раз, а знак — направление.</p>
+    <p class="next">👉 Дальше — <b>координаты вектора</b> (как задать вектор парой чисел и считать действия арифметикой) и <b>скалярное произведение</b> (как через векторы находить углы и длины).</p>
+  </div>
+
+</div>
+
+<script>
+/* ВИЗУАЛИЗАЦИЯ: векторы a, b и их сумма на координатной сетке */
+(function(){
+  var cv=document.getElementById('viz'); if(!cv) return;
+  var ctx=cv.getContext('2d');
+  var ax=document.getElementById('ax'), ay=document.getElementById('ay');
+  var bx=document.getElementById('bx'), by=document.getElementById('by');
+  var vax=document.getElementById('vax'), vay=document.getElementById('vay');
+  var vbx=document.getElementById('vbx'), vby=document.getElementById('vby');
+  var read=document.getElementById('vizRead');
+  var mode='tri', W=640,H=520,dpr=1;
+  function css(v){ return getComputedStyle(document.documentElement).getPropertyValue(v).trim(); }
+  function mn(n){ return (''+n).replace('-','−'); }
+  function resize(){
+    var c=cv.clientWidth||640; dpr=Math.min(window.devicePixelRatio||1,2);
+    W=c; H=Math.round(c*0.86);
+    cv.width=W*dpr; cv.height=H*dpr; cv.style.height=H+'px';
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+  }
+  function arrow(sx,ex,col,w,dash){
+    ctx.save();
+    ctx.strokeStyle=col; ctx.fillStyle=col; ctx.lineWidth=w;
+    if(dash){ ctx.setLineDash([6,6]); ctx.globalAlpha=.55; }
+    ctx.beginPath(); ctx.moveTo(sx[0],sx[1]); ctx.lineTo(ex[0],ex[1]); ctx.stroke();
+    ctx.setLineDash([]); ctx.globalAlpha=1;
+    var ang=Math.atan2(ex[1]-sx[1], ex[0]-sx[0]), hl=Math.max(9,w*3.4);
+    if(Math.hypot(ex[0]-sx[0],ex[1]-sx[1])>4){
+      ctx.beginPath();
+      ctx.moveTo(ex[0],ex[1]);
+      ctx.lineTo(ex[0]-hl*Math.cos(ang-0.42), ex[1]-hl*Math.sin(ang-0.42));
+      ctx.lineTo(ex[0]-hl*Math.cos(ang+0.42), ex[1]-hl*Math.sin(ang+0.42));
+      ctx.closePath(); ctx.fill();
+    }
+    ctx.restore();
+  }
+  function draw(){
+    var Ax=+ax.value, Ay=+ay.value, Bx=+bx.value, By=+by.value;
+    vax.textContent=mn(Ax); vay.textContent=mn(Ay); vbx.textContent=mn(Bx); vby.textContent=mn(By);
+    var Sx=Ax+Bx, Sy=Ay+By;
+    // мировые точки, участвующие в чертеже
+    var xs=[0,Ax,Bx,Sx], ys=[0,Ay,By,Sy];
+    var minx=Math.min.apply(null,xs)-1.4, maxx=Math.max.apply(null,xs)+1.4;
+    var miny=Math.min.apply(null,ys)-1.4, maxy=Math.max.apply(null,ys)+1.4;
+    var pad=26;
+    var sc=Math.min((W-pad*2)/(maxx-minx),(H-pad*2)/(maxy-miny));
+    var ox=(W-(maxx-minx)*sc)/2-minx*sc;
+    var oy=(H-(maxy-miny)*sc)/2+maxy*sc;
+    function SX(x){ return ox+x*sc; }
+    function SY(y){ return oy-y*sc; }
+    var P=function(x,y){ return [SX(x),SY(y)]; };
+    ctx.clearRect(0,0,W,H);
+    // сетка
+    ctx.strokeStyle=css('--line'); ctx.lineWidth=1;
+    for(var gx=Math.ceil(minx); gx<=Math.floor(maxx); gx++){ ctx.beginPath(); ctx.moveTo(SX(gx),SY(miny)); ctx.lineTo(SX(gx),SY(maxy)); ctx.stroke(); }
+    for(var gy=Math.ceil(miny); gy<=Math.floor(maxy); gy++){ ctx.beginPath(); ctx.moveTo(SX(minx),SY(gy)); ctx.lineTo(SX(maxx),SY(gy)); ctx.stroke(); }
+    // оси
+    ctx.strokeStyle=css('--muted'); ctx.lineWidth=1.6;
+    ctx.beginPath(); ctx.moveTo(SX(minx),SY(0)); ctx.lineTo(SX(maxx),SY(0)); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(SX(0),SY(miny)); ctx.lineTo(SX(0),SY(maxy)); ctx.stroke();
+    var cA=css('--va'), cB=css('--vb'), cS=css('--sum');
+    var O=P(0,0);
+    if(mode==='tri'){
+      arrow(O, P(Ax,Ay), cA, 3.2, false);            // a из начала
+      arrow(P(Ax,Ay), P(Sx,Sy), cB, 3.2, false);     // b от конца a
+      arrow(O, P(Sx,Sy), cS, 4, false);              // сумма
+    } else {
+      // достроить параллелограмм
+      arrow(P(Ax,Ay), P(Sx,Sy), cB, 2.4, true);      // b-параллель
+      arrow(P(Bx,By), P(Sx,Sy), cA, 2.4, true);      // a-параллель
+      arrow(O, P(Ax,Ay), cA, 3.2, false);
+      arrow(O, P(Bx,By), cB, 3.2, false);
+      arrow(O, P(Sx,Sy), cS, 4, false);              // диагональ = сумма
+    }
+    // подписи
+    ctx.font='700 '+Math.max(13,sc*0.42)+'px system-ui,sans-serif'; ctx.textAlign='center'; ctx.textBaseline='middle';
+    function lab(x1,y1,x2,y2,txt,col){ var mx=SX((x1+x2)/2), my=SY((y1+y2)/2); ctx.fillStyle=col;
+      ctx.strokeStyle='#fff'; ctx.lineWidth=3; ctx.strokeText(txt,mx,my-9); ctx.fillText(txt,mx,my-9); }
+    if(mode==='tri'){ lab(0,0,Ax,Ay,'a',cA); lab(Ax,Ay,Sx,Sy,'b',cB); }
+    else { lab(0,0,Ax,Ay,'a',cA); lab(0,0,Bx,By,'b',cB); }
+    lab(0,0,Sx,Sy,'a+b',cS);
+    // читалка
+    var len=Math.sqrt(Sx*Sx+Sy*Sy);
+    var lenTxt=(Math.abs(len-Math.round(len))<1e-9)? (''+Math.round(len)) : (Math.round(len*100)/100);
+    read.innerHTML='('+mn(Ax)+'; '+mn(Ay)+') + ('+mn(Bx)+'; '+mn(By)+') = <span class="r">('+mn(Sx)+'; '+mn(Sy)+')</span> &nbsp; |a+b| = '+lenTxt;
+  }
+  function setMode(m){ mode=m;
+    document.getElementById('mTri').classList.toggle('on', m==='tri');
+    document.getElementById('mPar').classList.toggle('on', m==='par'); draw(); }
+  [ax,ay,bx,by].forEach(function(s){ s.addEventListener('input',draw); });
+  document.getElementById('mTri').addEventListener('click',function(){ setMode('tri'); });
+  document.getElementById('mPar').addEventListener('click',function(){ setMode('par'); });
+  document.getElementById('vReset').addEventListener('click',function(){
+    ax.value=3; ay.value=1; bx.value=1; by.value=2; setMode('tri'); });
+  window.addEventListener('resize',function(){ resize(); draw(); });
+  resize(); draw();
+})();
+</script>
+
+<script>
+/* ТРЕНАЖЁР-ГЕНЕРАТОР: действия с векторами по координатам */
+(function(){
+  var taskEl=document.getElementById('trTask'), ansEl=document.getElementById('trAns'), resEl=document.getElementById('trResult');
+  if(!taskEl) return;
+  var cur=null;
+  function ri(a,b){ return Math.floor(Math.random()*(b-a+1))+a; }
+  function mn(n){ return (''+n).replace('-','−'); }
+  function vec(x,y){ return '('+mn(x)+'; '+mn(y)+')'; }
+  function nz(a,b){ var n; do{ n=ri(a,b); }while(n===0); return n; } // ненулевое
+
+  function generate(){
+    var r=Math.random(), t;
+    if(r<0.30) t='add';
+    else if(r<0.55) t='sub';
+    else if(r<0.78) t='mul';
+    else t='len';
+
+    if(t==='add'){
+      var x1=ri(-5,5),y1=ri(-5,5),x2=ri(-5,5),y2=ri(-5,5);
+      cur={t:t,x1:x1,y1:y1,x2:x2,y2:y2,ans:[x1+x2,y1+y2]};
+      taskEl.innerHTML='Даны <b>a = '+vec(x1,y1)+'</b> и <b>b = '+vec(x2,y2)+'</b>. Найди <b>a + b</b>.';
+    } else if(t==='sub'){
+      var x1=ri(-5,5),y1=ri(-5,5),x2=ri(-5,5),y2=ri(-5,5);
+      cur={t:t,x1:x1,y1:y1,x2:x2,y2:y2,ans:[x1-x2,y1-y2]};
+      taskEl.innerHTML='Даны <b>a = '+vec(x1,y1)+'</b> и <b>b = '+vec(x2,y2)+'</b>. Найди <b>a − b</b>.';
+    } else if(t==='mul'){
+      var k=[-3,-2,-1,2,3][ri(0,4)], x=nz(-4,4), y=nz(-4,4);
+      cur={t:t,k:k,x:x,y:y,ans:[k*x,k*y]};
+      taskEl.innerHTML='Дан <b>a = '+vec(x,y)+'</b>. Найди <b>'+mn(k)+'·a</b>.';
+    } else {
+      // длина: пифагоровы катеты со случайными знаками -> целый ответ
+      var pool=[[3,4,5],[6,8,10],[5,12,13],[8,15,17],[9,12,15],[12,16,20],[7,24,25]];
+      var p=pool[ri(0,pool.length-1)];
+      var x=p[0]*(Math.random()<0.5?1:-1), y=p[1]*(Math.random()<0.5?1:-1);
+      if(Math.random()<0.5){ var tmp=x; x=y; y=tmp; }
+      cur={t:t,x:x,y:y,ans:p[2]};
+      taskEl.innerHTML='Дан вектор <b>a = '+vec(x,y)+'</b>. Найди его длину <b>|a|</b>.';
+    }
+    resEl.innerHTML=''; ansEl.value='';
+  }
+
+  function solHTML(){
+    var q=cur, h='<div class="sol">';
+    if(q.t==='add'){
+      h+='Складываем соответствующие координаты:<br>'+
+         'a + b = ('+mn(q.x1)+' + '+mn(q.x2)+'; '+mn(q.y1)+' + '+mn(q.y2)+')<br>'+
+         '= <b>'+vec(q.ans[0],q.ans[1])+'</b>';
+    } else if(q.t==='sub'){
+      h+='Вычитаем соответствующие координаты:<br>'+
+         'a − b = ('+mn(q.x1)+' − '+mn(q.x2)+'; '+mn(q.y1)+' − '+mn(q.y2)+')<br>'+
+         '= <b>'+vec(q.ans[0],q.ans[1])+'</b>';
+    } else if(q.t==='mul'){
+      h+='Умножаем каждую координату на число:<br>'+
+         mn(q.k)+'·a = ('+mn(q.k)+'·'+mn(q.x)+'; '+mn(q.k)+'·'+mn(q.y)+')<br>'+
+         '= <b>'+vec(q.ans[0],q.ans[1])+'</b>';
+    } else {
+      var xs=q.x*q.x, ys=q.y*q.y;
+      h+='Длина = корень из суммы квадратов координат:<br>'+
+         '|a| = √('+mn(q.x)+'² + '+mn(q.y)+'²) = √('+xs+' + '+ys+')<br>'+
+         '= √'+(xs+ys)+' = <b>'+q.ans+'</b>';
+    }
+    return h+'</div>';
+  }
+
+  function check(){
+    var raw=ansEl.value.trim();
+    if(raw===''){ resEl.innerHTML='<span class="bad">Введи ответ или нажми «Решение».</span>'; return; }
+    var norm=raw.replace(/−/g,'-').replace(',','.');
+    var ok=false;
+    if(cur.t==='len'){
+      var got=parseFloat(norm.replace(/[^0-9.\-]/g,''));
+      ok=(!isNaN(got) && Math.abs(got-cur.ans)<0.02);
+    } else {
+      var nums=norm.match(/-?\d+(\.\d+)?/g);
+      if(nums && nums.length>=2){
+        ok=(Math.abs(parseFloat(nums[0])-cur.ans[0])<0.02 && Math.abs(parseFloat(nums[1])-cur.ans[1])<0.02);
+      }
+    }
+    if(ok){ resEl.innerHTML='<span class="ok">✓ Верно!</span>'+solHTML(); }
+    else{ resEl.innerHTML='<span class="bad">✗ Пока не то — глянь решение.</span>'+solHTML(); }
+  }
+
+  document.getElementById('trNew').addEventListener('click',generate);
+  document.getElementById('trCheck').addEventListener('click',check);
+  document.getElementById('trShow').addEventListener('click',function(){ resEl.innerHTML=solHTML(); });
+  ansEl.addEventListener('keydown',function(e){ if(e.key==='Enter') check(); });
+
+  /* стартовое состояние = валидная задача, совпадает с показанной в тексте */
+  cur={t:'add',x1:3,y1:1,x2:2,y2:4,ans:[5,5]};
+})();
+</script>

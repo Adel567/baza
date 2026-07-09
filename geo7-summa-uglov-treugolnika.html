@@ -1,0 +1,449 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Сумма углов треугольника — геометрия 7 класс</title>
+<style>
+  :root{
+    --paper:#F6F7F9;
+    --card:#FFFFFF;
+    --ink:#1B2333;
+    --muted:#5A6478;
+    --line:#E2E5EC;
+    --accent:#2E5AAC;        /* брендовый — заголовки, формула */
+    --accent-soft:#E4EBF7;
+    --ca:#1E8E5A; --ca-soft:#E7F4EC;   /* угол A — зелёный */
+    --cb:#E27C2C; --cb-soft:#FBEEDF;   /* угол B — янтарный */
+    --cc:#C0455B; --cc-soft:#F9E9EC;   /* угол C — гранат */
+    --ok:#1E8E5A; --no:#C0455B;
+  }
+  *{box-sizing:border-box}
+  body{margin:0}
+  .wrap{
+    max-width:760px;margin:0 auto;
+    padding:clamp(1.4rem,4vw,3rem) clamp(1.1rem,4vw,2rem) 4rem;
+    background:var(--paper);color:var(--ink);
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    font-size:17px;line-height:1.62;-webkit-font-smoothing:antialiased;
+  }
+  .eyebrow{font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);font-weight:600;margin:0 0 .5rem}
+  h1{font-family:Georgia,"Times New Roman",serif;font-size:clamp(2rem,7vw,3rem);line-height:1.05;margin:0;font-weight:700;letter-spacing:-.01em;text-wrap:balance}
+  .lede{font-size:1.08rem;color:var(--muted);margin:.7rem 0 0;max-width:60ch;text-wrap:pretty}
+  h2{font-family:Georgia,serif;font-size:1.32rem;font-weight:700;margin:0 0 .1rem;letter-spacing:-.005em}
+  section{margin-top:2.6rem}
+  .kicker{font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:600;margin:0 0 .8rem;display:flex;align-items:center;gap:.6rem}
+  .kicker::before{content:"";width:1.4rem;height:2px;background:var(--accent);border-radius:2px}
+  p{margin:.65rem 0}
+  strong{font-weight:650}
+  .math{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-weight:600}
+  sup{font-size:.72em}
+  .wA{color:var(--ca);font-weight:700} .wB{color:var(--cb);font-weight:700} .wC{color:var(--cc);font-weight:700}
+
+  /* Главная формула */
+  .hero-formula{margin-top:2.2rem;background:var(--ink);color:#fff;border-radius:14px;padding:1.6rem 1.4rem;text-align:center}
+  .hero-formula .lbl{font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:#9aa6c9;margin:0 0 .7rem}
+  .hero-formula .eq{font-family:ui-monospace,"SF Mono",Menlo,monospace;font-size:clamp(1.5rem,6vw,2.3rem);font-weight:700}
+  .hero-formula .eq .a{color:#5fd39a} .hero-formula .eq .b{color:#f0a45e} .hero-formula .eq .c{color:#ec8497}
+  .hero-formula .note{font-size:.86rem;color:#9aa6c9;margin:.8rem 0 0}
+
+  /* Пререквизит */
+  .recall{background:var(--accent-soft);border-radius:12px;padding:1rem 1.15rem;font-size:.96rem}
+  .recall p{margin:.35rem 0}
+  .recall b{color:var(--accent)}
+
+  /* Следствие / замечание */
+  .note-box{border-left:4px solid var(--accent);background:var(--accent-soft);border-radius:0 10px 10px 0;padding:.8rem 1.1rem;margin-top:1rem;font-size:.97rem}
+  .note-box b{color:var(--accent)}
+
+  /* Разбор */
+  .worked{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:1.2rem 1.3rem}
+  .worked .task{font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.02rem;margin:0 0 1rem;padding-bottom:.8rem;border-bottom:1px solid var(--line)}
+  ol.steps{margin:0;padding:0;list-style:none;counter-reset:s;display:flex;flex-direction:column;gap:.7rem}
+  ol.steps li{position:relative;padding-left:2.1rem;counter-increment:s}
+  ol.steps li::before{content:counter(s);position:absolute;left:0;top:.05rem;width:1.5rem;height:1.5rem;border-radius:50%;background:var(--accent-soft);color:var(--accent);font-size:.82rem;font-weight:700;display:flex;align-items:center;justify-content:center}
+  ol.steps .m{font-family:ui-monospace,Menlo,monospace;font-weight:600;color:var(--ink)}
+  ol.steps em{color:var(--muted);font-style:italic}
+  .verdict{margin-top:1rem;padding:.7rem 1rem;background:var(--accent-soft);border-radius:9px;font-weight:600;color:var(--accent);font-size:.98rem;font-family:ui-monospace,Menlo,monospace}
+
+  /* Визуализация */
+  .viz{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.1rem 1.1rem 1rem;margin:1rem 0}
+  .viz canvas{width:100%;height:auto;display:block;border-radius:10px;background:#FCFDFF}
+  .viz-read{text-align:center;font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:clamp(.92rem,3.4vw,1.05rem);margin:.85rem 0 0;padding:.55rem;border-radius:9px;background:var(--accent-soft)}
+  .viz-read .a{color:var(--ca)} .viz-read .b{color:var(--cb)} .viz-read .c{color:var(--cc)}
+  .sliders{display:grid;gap:.7rem;margin-top:.95rem}
+  .sliders label{display:flex;align-items:center;gap:.55rem;font-weight:700;font-family:ui-monospace,Menlo,monospace;font-size:.92rem}
+  .sliders label .nm{min-width:6.5ch}
+  .sliders input[type=range]{flex:1}
+  .sliders input.rA{accent-color:var(--ca)}
+  .sliders input.rB{accent-color:var(--cb)}
+  .sliders label.lA .nm{color:var(--ca)} .sliders label.lB .nm{color:var(--cb)}
+  .sliders .sval{min-width:3.5ch;text-align:right;color:var(--muted);font-variant-numeric:tabular-nums}
+  .viz-btn{margin-top:.85rem;display:flex;gap:.5rem;flex-wrap:wrap}
+  .viz-btn button{font:inherit;font-weight:700;font-size:.86rem;cursor:pointer;border:none;border-radius:9px;padding:.5rem .9rem;background:var(--accent);color:#fff}
+  .viz-btn button.reset{background:transparent;color:var(--accent);border:1px solid var(--accent)}
+  .viz-btn button:focus-visible,.sliders input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+
+  /* Практика */
+  .drill{display:flex;flex-direction:column;gap:.7rem}
+  details{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:.85rem 1.05rem}
+  details[open]{border-color:var(--accent)}
+  summary{cursor:pointer;font-weight:600;list-style:none;display:flex;justify-content:space-between;align-items:center;gap:1rem}
+  summary::-webkit-details-marker{display:none}
+  summary:focus-visible{outline:3px solid var(--accent);outline-offset:3px;border-radius:6px}
+  summary .q{font-family:ui-monospace,Menlo,monospace;font-size:.92rem}
+  summary .tag{font-size:.66rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);border:1px solid var(--line);border-radius:20px;padding:.1rem .55rem;white-space:nowrap}
+  summary::after{content:"ответ";font-size:.76rem;color:var(--accent);font-weight:600;white-space:nowrap}
+  details[open] summary::after{content:"скрыть"}
+  .ans{margin-top:.7rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.96rem;color:var(--muted)}
+  .ans .m{font-family:ui-monospace,Menlo,monospace;color:var(--ink);font-weight:600}
+  .ans b{color:var(--ink)}
+
+  /* Тренажёр */
+  .trainer{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.2rem 1.3rem;margin-top:1rem}
+  .tr-task{font-size:clamp(1rem,3.6vw,1.12rem);text-align:center;padding:1rem;background:var(--accent-soft);border-radius:10px;font-weight:600;line-height:1.5}
+  .tr-task b{font-family:ui-monospace,Menlo,monospace;color:var(--ink)}
+  .tr-ctl{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:1rem;align-items:center;justify-content:center}
+  .tr-ctl input{flex:1;min-width:130px;max-width:200px;font:inherit;padding:.5rem .7rem;border:1px solid var(--line);border-radius:9px;text-align:center;background:#fff;color:var(--ink)}
+  .tr-ctl button{font:inherit;font-weight:700;font-size:.9rem;cursor:pointer;border:none;border-radius:9px;padding:.55rem .95rem;color:#fff;background:var(--accent)}
+  .tr-ctl button.sec{background:var(--cb)}
+  .tr-ctl button.ghost{background:transparent;color:var(--accent);border:1px solid var(--accent)}
+  .tr-ctl button:focus-visible,.tr-ctl input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+  .tr-result{margin-top:.9rem;font-size:.96rem;min-height:1.2rem;text-align:center}
+  .tr-result .ok{color:var(--ok);font-weight:700}
+  .tr-result .bad{color:var(--no);font-weight:700}
+  .tr-result .sol{margin-top:.6rem;padding:.85rem 1rem;background:#FCFDFE;border:1px solid var(--line);border-radius:10px;font-family:ui-monospace,Menlo,monospace;font-size:.9rem;line-height:1.85;text-align:left}
+  .tr-result .sol b{color:var(--accent)}
+
+  /* Ошибки */
+  ul.pitfalls{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:.6rem}
+  ul.pitfalls li{padding-left:1.6rem;position:relative;font-size:.98rem}
+  ul.pitfalls li::before{content:"×";position:absolute;left:.15rem;top:-.05rem;color:var(--no);font-weight:700;font-size:1.15rem}
+  ul.pitfalls b{color:var(--ink)}
+
+  /* Проверка */
+  .selfcheck{background:var(--cb-soft);border-radius:12px;padding:1rem 1.2rem}
+  .selfcheck ol{margin:.3rem 0 0;padding-left:1.2rem;display:flex;flex-direction:column;gap:.4rem;font-size:.98rem}
+
+  .next{background:var(--accent);color:#fff;border-radius:12px;padding:1.2rem 1.3rem}
+  .next h2{color:#fff}
+  .next p{color:#dfe6f5;font-size:.96rem;margin:.4rem 0 0}
+  .next b{color:#fff}
+  .foot{margin-top:2.4rem;font-size:.82rem;color:var(--muted);text-align:center}
+
+  @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="wrap">
+
+  <header>
+    <p class="eyebrow">Геометрия · 7 класс</p>
+    <h1>Сумма углов треугольника</h1>
+    <p class="lede">Один из самых рабочих фактов всей геометрии: знаешь два угла — мгновенно находишь третий, без всякого транспортира.</p>
+  </header>
+
+  <div class="hero-formula">
+    <p class="lbl">Теорема о сумме углов треугольника</p>
+    <div class="eq"><span class="a">∠A</span> + <span class="b">∠B</span> + <span class="c">∠C</span> = 180°</div>
+    <p class="note">сумма трёх углов любого треугольника на плоскости всегда равна 180°</p>
+  </div>
+
+  <section>
+    <p class="kicker">Зачем это нужно</p>
+    <h2>Третий угол — без измерений</h2>
+    <p>Эта теорема нужна строителям и инженерам (расчёт ферм, крыш, раскосов), в навигации и в дизайне. А в самой математике на неё опираются десятки следующих тем: внешний угол, виды треугольников, соотношение сторон и углов, признаки равенства, а позже — вся тригонометрия.</p>
+    <p>Типичное житейское заблуждение: <strong>«чем больше треугольник, тем больше сумма его углов»</strong>. Это неверно. У крошечного и у огромного треугольника сумма углов одна и та же — ровно <strong>180°</strong>. Размер на сумму углов не влияет, и сейчас ты увидишь это своими глазами.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Что вспомнить с прошлых шагов</p>
+    <div class="recall">
+      <p><b>Треугольник</b> — фигура с тремя вершинами A, B, C и тремя углами при них: <span class="wA">∠A</span>, <span class="wB">∠B</span>, <span class="wC">∠C</span>.</p>
+      <p><b>Развёрнутый угол</b> (прямая линия) равен <b>180°</b>. Именно в него и «складываются» три угла треугольника.</p>
+      <p><b>Накрест лежащие углы</b> при параллельных прямых равны. Это нам понадобится, чтобы понять, <i>почему</i> сумма именно 180°.</p>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Ядро темы</p>
+    <h2>Правило и следствие</h2>
+    <p><strong>Теорема.</strong> Если сложить величины всех трёх углов любого треугольника, всегда получится <strong>180°</strong> — развёрнутый угол. Не «примерно», не «зависит от формы», а строго 180° для каждого треугольника на плоскости.</p>
+    <p>Отсюда сразу вытекает главная рабочая формула: если известны два угла, третий — это остаток до 180°.</p>
+    <div class="note-box">
+      <p><b>Следствие (как искать третий угол):</b> <span class="math"><span class="wC">∠C</span> = 180° − <span class="wA">∠A</span> − <span class="wB">∠B</span></span>. Сначала сложи два известных угла, потом вычти их сумму из 180° <b>один раз</b>.</p>
+    </div>
+    <p style="font-size:.95rem;color:var(--muted);margin-top:.9rem"><b>Почему так (идея доказательства).</b> Через вершину B проведём прямую, параллельную стороне AC. При вершине B получаются три угла, которые вместе дают развёрнутый угол — 180°. Два крайних из них равны углам <span class="wA">A</span> и <span class="wC">C</span> (это накрест лежащие углы при параллельных прямых), а средний — сам угол <span class="wB">B</span>. Значит <span class="math"><span class="wA">∠A</span> + <span class="wB">∠B</span> + <span class="wC">∠C</span> = 180°</span>. Это как «бумажная модель»: оторви три уголка треугольника и приложи вершинами в одну точку — они без зазоров выстроятся в прямую.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Разбираем вместе · думаю вслух</p>
+    <h2>Эталонный пример</h2>
+    <div class="worked">
+      <p class="task">В треугольнике <span class="wA">∠A = 70°</span>, <span class="wB">∠B = 55°</span>. Найти <span class="wC">∠C</span>.</p>
+      <ol class="steps">
+        <li>Записываю теорему: <span class="m">∠A + ∠B + ∠C = 180°</span>. <em>Почему: сумма углов любого треугольника равна 180°.</em></li>
+        <li>Подставляю известное: <span class="m">70° + 55° + ∠C = 180°</span>. <em>Вместо ∠A и ∠B ставлю данные значения.</em></li>
+        <li>Складываю известные углы: <span class="m">125° + ∠C = 180°</span>. <em>Потому что 70 + 55 = 125.</em></li>
+        <li>Выражаю третий угол: <span class="m">∠C = 180° − 125° = 55°</span>. <em>Из 180° вычитаю сумму двух известных.</em></li>
+        <li>Проверка смыслом: <span class="m">70 + 55 + 55 = 180</span> ✓ — сходится.</li>
+      </ol>
+      <div class="verdict">Ответ: ∠C = 55°</div>
+    </div>
+    <p style="font-size:.92rem;color:var(--muted);margin-top:.8rem">Попробуй сам по этому же образцу: <span class="math">∠A = 90°</span>, <span class="math">∠B = 30°</span> → сложи (<span class="math">90 + 30 = 120</span>), вычти (<span class="math">180 − 120</span>). Должно получиться <b>∠C = 60°</b>.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Увидь глазами · интерактив</p>
+    <h2>Меняй углы — сумма всё равно 180°</h2>
+    <p>Тяни ползунки <span class="wA">∠A</span> и <span class="wB">∠B</span> — треугольник перестраивается, а третий угол <span class="wC">∠C</span> подстраивается сам. Следи за нижней строкой: сколько ни меняй форму, сумма трёх углов держится ровно на <strong>180°</strong>.</p>
+    <div class="viz">
+      <canvas id="viz" width="640" height="440" aria-label="Треугольник с тремя подписанными углами; при изменении двух углов третий пересчитывается, а сумма остаётся 180 градусов"></canvas>
+      <div id="vizRead" class="viz-read"></div>
+      <div class="sliders">
+        <label class="lA"><span class="nm">∠A</span><input id="sA" class="rA" type="range" min="20" max="130" step="1" value="70" aria-label="Величина угла A"><span id="vA" class="sval">70°</span></label>
+        <label class="lB"><span class="nm">∠B</span><input id="sB" class="rB" type="range" min="20" max="130" step="1" value="55" aria-label="Величина угла B"><span id="vB" class="sval">55°</span></label>
+      </div>
+      <div class="viz-btn">
+        <button id="vizEq" type="button">Равносторонний (60°·60°·60°)</button>
+        <button id="vizReset" type="button" class="reset">Сбросить</button>
+      </div>
+    </div>
+    <p style="font-size:.9rem;color:var(--muted)">Каждый угол — своим цветом: <span class="wA">A зелёный</span>, <span class="wB">B янтарный</span>, <span class="wC">C гранатовый</span>. Обрати внимание: сделай один угол огромным — другие тут же становятся меньше, чтобы сумма осталась 180°.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Теперь ты · бесконечная практика</p>
+    <h2>Тренажёр</h2>
+    <p>Нажми «Новая», реши задачу и впиши ответ в градусах (число, можно без значка °). Проверь себя или посмотри пошаговое решение.</p>
+    <div class="trainer">
+      <div class="tr-task" id="trTask">В треугольнике <b>∠A = 70°</b> и <b>∠B = 55°</b>. Найди третий угол <b>∠C</b>.</div>
+      <div class="tr-ctl">
+        <button id="trNew" type="button">🎲 Новая</button>
+        <input id="trAns" type="text" inputmode="numeric" placeholder="ответ в °" aria-label="Ответ в градусах">
+        <button id="trCheck" type="button" class="sec">Проверить</button>
+        <button id="trShow" type="button" class="ghost">Решение</button>
+      </div>
+      <div id="trResult" class="tr-result"></div>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Проверь себя · от простого к анализу</p>
+    <h2>Мини-практика</h2>
+    <div class="drill">
+      <details>
+        <summary><span class="q">Чему равна сумма углов треугольника? Изменится ли она, если треугольник увеличить в 2 раза?</span><span class="tag">понимание</span></summary>
+        <div class="ans">Всегда <b>180°</b>. При увеличении в 2 раза <b>не изменится</b> — размер на сумму углов не влияет.</div>
+      </details>
+      <details>
+        <summary><span class="q">В треугольнике ∠A = 100°, ∠B = 35°. Найди ∠C.</span><span class="tag">применение</span></summary>
+        <div class="ans"><span class="m">∠C = 180° − 100° − 35° = 180° − 135° = 45°</span>. Ответ <b>45°</b>.</div>
+      </details>
+      <details>
+        <summary><span class="q">Два угла треугольника равны 48° и 67°. Найди третий.</span><span class="tag">применение</span></summary>
+        <div class="ans"><span class="m">180° − 48° − 67° = 180° − 115° = 65°</span>. Ответ <b>65°</b>.</div>
+      </details>
+      <details>
+        <summary><span class="q">В треугольнике все углы равны между собой. Чему равен каждый?</span><span class="tag">анализ</span></summary>
+        <div class="ans">Три одинаковых угла в сумме дают 180°, значит каждый: <span class="m">180° : 3 = 60°</span>. Ответ <b>60°</b>.</div>
+      </details>
+      <details>
+        <summary><span class="q">Найди ошибку: ученик говорит, что нашёл треугольник с углами 80°, 70° и 40°. Может ли такой существовать?</span><span class="tag">анализ</span></summary>
+        <div class="ans"><b>Нет.</b> Проверь сумму: <span class="m">80° + 70° + 40° = 190° ≠ 180°</span>. Раз сумма не равна 180°, такого треугольника не бывает.</div>
+      </details>
+      <details>
+        <summary><span class="q">Может ли в треугольнике быть два прямых угла?</span><span class="tag">анализ</span></summary>
+        <div class="ans"><b>Нет.</b> Уже <span class="m">90° + 90° = 180°</span> — на третий угол ничего не остаётся, а угол не может быть 0°.</div>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Где чаще всего ошибаются</p>
+    <h2>Лови эти ловушки</h2>
+    <ul class="pitfalls">
+      <li><b>«Сумма зависит от размера или формы».</b> Нет: 180° — закон для всех треугольников. Проверь на «бумажной» модели — три уголка складываются ровно в прямую.</li>
+      <li><b>Ошибка в вычитании.</b> Частый промах: <span class="math">180 − 125</span> считают как 65 вместо <b>55</b>, или вычитают только один угол. Сначала сложи два угла, потом вычти сумму из 180° <b>один раз</b>.</li>
+      <li><b>Пытаются «измерить» третий угол.</b> Транспортир не нужен: третий угол всегда находится по формуле <span class="math">180° − ∠A − ∠B</span>.</li>
+      <li><b>Принимают невозможный набор углов.</b> После ответа всегда проверь: три угла в сумме дают именно <b>180°</b>. Если нет — где-то ошибка.</li>
+    </ul>
+  </section>
+
+  <section>
+    <p class="kicker">Объясни своими словами</p>
+    <div class="selfcheck">
+      <ol>
+        <li>Чему равна сумма углов любого треугольника?</li>
+        <li>Как найти третий угол, если известны два?</li>
+        <li>Почему в треугольнике не может быть двух прямых углов?</li>
+      </ol>
+    </div>
+  </section>
+
+  <section>
+    <div class="next">
+      <h2>Что дальше</h2>
+      <p>Сумма углов — фундамент для следующих тем. Через неё вводят <b>внешний угол треугольника</b> (он равен сумме двух не смежных с ним внутренних), <b>виды треугольников по углам</b> (остроугольный, прямоугольный, тупоугольный) и <b>соотношение между сторонами и углами</b>.</p>
+      <p><b>Запомни одним предложением:</b> сумма углов любого треугольника всегда равна 180°, поэтому третий угол находится как 180° минус два известных.</p>
+    </div>
+  </section>
+
+  <p class="foot">Проверка на выходе: чему равна сумма углов? · ∠A = 100°, ∠B = 35° → ∠C? · могут ли углы быть 80°, 70° и 40°?</p>
+
+</div>
+
+<script>
+/* ВИЗУАЛИЗАЦИЯ: треугольник по двум углам, третий пересчитывается, сумма = 180° */
+(function(){
+  var cv=document.getElementById('viz'); if(!cv) return;
+  var ctx=cv.getContext('2d');
+  var sA=document.getElementById('sA'), sB=document.getElementById('sB');
+  var vA=document.getElementById('vA'), vB=document.getElementById('vB');
+  var read=document.getElementById('vizRead');
+  var W=640,H=440,dpr=1;
+  var D2R=Math.PI/180;
+  var MIN=20; /* минимальный угол, чтобы фигура читалась */
+
+  function css(v){ return getComputedStyle(document.documentElement).getPropertyValue(v).trim(); }
+  function resize(){
+    var c=cv.clientWidth||640; dpr=Math.min(window.devicePixelRatio||1,2);
+    W=c; H=Math.round(c*0.70);
+    cv.width=W*dpr; cv.height=H*dpr; cv.style.height=H+'px';
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+  }
+  /* гарантируем A + B <= 180 - MIN, подстраивая НЕ трогаемый ползунок */
+  function clampPair(src){
+    var a=+sA.value, b=+sB.value, lim=180-MIN;
+    if(a+b>lim){
+      if(src==='B'){ sA.value=lim-b; } else { sB.value=lim-a; }
+    }
+  }
+  /* маркер угла в вершине V между лучами на P1 и P2 (в экранных координатах) */
+  function angMark(V,P1,P2,rad,col){
+    var t1=Math.atan2(P1[1]-V[1],P1[0]-V[0]), t2=Math.atan2(P2[1]-V[1],P2[0]-V[0]);
+    var d=t2-t1; while(d>Math.PI)d-=2*Math.PI; while(d<-Math.PI)d+=2*Math.PI;
+    ctx.beginPath();
+    for(var i=0;i<=26;i++){ var t=t1+d*i/26, x=V[0]+rad*Math.cos(t), y=V[1]+rad*Math.sin(t); i?ctx.lineTo(x,y):ctx.moveTo(x,y); }
+    ctx.strokeStyle=col; ctx.lineWidth=2.6; ctx.stroke();
+    var tm=t1+d/2; return [V[0]+(rad+16)*Math.cos(tm), V[1]+(rad+16)*Math.sin(tm)];
+  }
+  function dot(p,col){ ctx.beginPath(); ctx.arc(p[0],p[1],6,0,7); ctx.fillStyle=col; ctx.fill(); ctx.beginPath(); ctx.arc(p[0],p[1],3.6,0,7); ctx.fillStyle='#fff'; ctx.fill(); }
+
+  function draw(){
+    var a=+sA.value, b=+sB.value, c=180-a-b;
+    vA.textContent=a+'°'; vB.textContent=b+'°';
+
+    /* строим в математических координатах: B=(0,0), C=(1,0), A — на пересечении лучей */
+    var L=1;
+    var t=L*Math.sin(c*D2R)/Math.sin(a*D2R); /* длина BA по теореме синусов */
+    var Bm=[0,0], Cm=[L,0], Am=[t*Math.cos(b*D2R), t*Math.sin(b*D2R)];
+
+    /* уложить в канвас */
+    var pts=[Am,Bm,Cm];
+    var minx=Math.min(Am[0],Bm[0],Cm[0]), maxx=Math.max(Am[0],Bm[0],Cm[0]);
+    var miny=Math.min(Am[1],Bm[1],Cm[1]), maxy=Math.max(Am[1],Bm[1],Cm[1]);
+    var pad=64, sc=Math.min((W-pad*2)/(maxx-minx),(H-pad*2)/(maxy-miny||1));
+    var ox=(W-(maxx-minx)*sc)/2, oy=(H-(maxy-miny)*sc)/2;
+    function S(p){ return [ox+(p[0]-minx)*sc, oy+(maxy-p[1])*sc]; } /* flip Y */
+    var A=S(Am), B=S(Bm), C=S(Cm);
+
+    var cA=css('--ca'), cB=css('--cb'), cC=css('--cc'), cLine=css('--line'), cInk=css('--ink');
+
+    ctx.clearRect(0,0,W,H);
+
+    /* заливка треугольника */
+    ctx.beginPath(); ctx.moveTo(A[0],A[1]); ctx.lineTo(B[0],B[1]); ctx.lineTo(C[0],C[1]); ctx.closePath();
+    ctx.fillStyle='rgba(46,90,172,0.05)'; ctx.fill();
+    ctx.strokeStyle=cInk; ctx.lineWidth=2.4; ctx.stroke();
+
+    /* маркеры углов */
+    var lA=angMark(A,B,C,26,cA);
+    var lB=angMark(B,A,C,26,cB);
+    var lC=angMark(C,A,B,26,cC);
+
+    /* подписи величин углов */
+    ctx.font='700 '+Math.max(13,W*0.028)+'px ui-monospace,Menlo,monospace';
+    ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.fillStyle=cA; ctx.fillText(a+'°', lA[0], lA[1]);
+    ctx.fillStyle=cB; ctx.fillText(b+'°', lB[0], lB[1]);
+    ctx.fillStyle=cC; ctx.fillText(c+'°', lC[0], lC[1]);
+
+    /* точки-вершины и буквы */
+    dot(A,cA); dot(B,cB); dot(C,cC);
+    ctx.font='700 '+Math.max(13,W*0.03)+'px system-ui,sans-serif';
+    ctx.fillStyle=cA; ctx.fillText('A', A[0], A[1]-20);
+    ctx.fillStyle=cB; ctx.fillText('B', B[0]-16, B[1]+16);
+    ctx.fillStyle=cC; ctx.fillText('C', C[0]+16, C[1]+16);
+
+    read.innerHTML='<span class="a">'+a+'°</span> + <span class="b">'+b+'°</span> + <span class="c">'+c+'°</span> = 180°';
+  }
+
+  sA.addEventListener('input',function(){ clampPair('A'); draw(); });
+  sB.addEventListener('input',function(){ clampPair('B'); draw(); });
+  document.getElementById('vizEq').addEventListener('click',function(){ sA.value=60; sB.value=60; draw(); });
+  document.getElementById('vizReset').addEventListener('click',function(){ sA.value=70; sB.value=55; draw(); });
+  window.addEventListener('resize',function(){ resize(); draw(); });
+  resize(); draw();
+})();
+</script>
+
+<script>
+/* ТРЕНАЖЁР-ГЕНЕРАТОР: найди третий угол; углы через x */
+(function(){
+  var taskEl=document.getElementById('trTask'), ansEl=document.getElementById('trAns'), resEl=document.getElementById('trResult');
+  if(!taskEl) return;
+  var cur=null;
+  var MINUS='−'; /* настоящий минус − (U+2212) */
+  function ri(a,b){ return Math.floor(Math.random()*(b-a+1))+a; }
+
+  /* коэффициенты для x-задач: сумма коэффициентов делит 180 нацело */
+  var ratios=[[1,1,2],[1,2,2],[1,1,3],[1,2,3],[2,3,4],[1,3,5],[1,4,5],[2,2,5]];
+
+  function generate(){
+    if(Math.random()<0.6){
+      /* два угла даны — найти третий */
+      var a,b,c;
+      do{ a=ri(25,120); b=ri(20,140); c=180-a-b; }while(c<15);
+      cur={t:'third', a:a, b:b, ans:c};
+      taskEl.innerHTML='В треугольнике <b>∠A = '+a+'°</b> и <b>∠B = '+b+'°</b>. Найди третий угол <b>∠C</b>.';
+    } else {
+      /* углы выражены через x — найти наибольший угол */
+      var r=ratios[ri(0,ratios.length-1)];
+      var sum=r[0]+r[1]+r[2], x=180/sum, mx=Math.max(r[0],r[1],r[2]);
+      cur={t:'x', r:r, x:x, ans:mx*x};
+      taskEl.innerHTML='Углы треугольника относятся как <b>'+r[0]+' : '+r[1]+' : '+r[2]+'</b> (то есть равны '+r[0]+'x, '+r[1]+'x, '+r[2]+'x). Найди <b>наибольший</b> угол.';
+    }
+    resEl.innerHTML=''; ansEl.value='';
+  }
+
+  function solHTML(){
+    var q=cur, h='<div class="sol">';
+    if(q.t==='third'){
+      h+='∠A + ∠B + ∠C = 180°<br>';
+      h+='∠C = 180° '+MINUS+' '+q.a+'° '+MINUS+' '+q.b+'°<br>';
+      h+='∠C = 180° '+MINUS+' '+(q.a+q.b)+'° = <b>'+q.ans+'°</b>';
+    } else {
+      var r=q.r, sum=r[0]+r[1]+r[2];
+      h+='Сумма углов: '+r[0]+'x + '+r[1]+'x + '+r[2]+'x = 180°<br>';
+      h+=sum+'x = 180° → x = 180° : '+sum+' = '+q.x+'°<br>';
+      h+='Углы: '+(r[0]*q.x)+'°, '+(r[1]*q.x)+'°, '+(r[2]*q.x)+'°<br>';
+      h+='Наибольший = <b>'+q.ans+'°</b>';
+    }
+    return h+'</div>';
+  }
+
+  function check(){
+    var raw=ansEl.value.trim().replace('°','').replace(',','.');
+    if(raw===''){ resEl.innerHTML='<span class="bad">Введи ответ или нажми «Решение».</span>'; return; }
+    var got=parseFloat(raw);
+    if(!isNaN(got) && Math.abs(got-cur.ans)<0.02){ resEl.innerHTML='<span class="ok">✓ Верно!</span>'+solHTML(); }
+    else{ resEl.innerHTML='<span class="bad">✗ Пока не то — глянь решение.</span>'+solHTML(); }
+  }
+
+  document.getElementById('trNew').addEventListener('click',generate);
+  document.getElementById('trCheck').addEventListener('click',check);
+  document.getElementById('trShow').addEventListener('click',function(){ resEl.innerHTML=solHTML(); });
+  ansEl.addEventListener('keydown',function(e){ if(e.key==='Enter') check(); });
+
+  /* стартовое состояние = задача, показанная в тексте */
+  cur={t:'third', a:70, b:55, ans:55};
+})();
+</script>

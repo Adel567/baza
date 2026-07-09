@@ -1,0 +1,443 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Теорема косинусов — геометрия 9 класс</title>
+<style>
+  :root{
+    --paper:#F6F7F9; --card:#FFFFFF; --ink:#1D2530; --muted:#606B7A; --line:#E3E7EE;
+    --brand:#2E5AAC; --brand-soft:#E4EBF7;
+    --ca:#E27C2C; --ca-soft:#FBEEDF;    /* сторона a */
+    --cb:#159A8A; --cb-soft:#DEF3F0;    /* сторона b */
+    --cc:#2E5AAC; --cc-soft:#E4EBF7;    /* сторона c (ищем) */
+    --ang:#8A4FC7; --ang-soft:#ECE3F8;  /* угол C */
+    --ok:#1E8E5A; --no:#C23B3B;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper)}
+  .page{max-width:720px;margin:0 auto;padding:clamp(1.4rem,4vw,3rem) clamp(1.1rem,4vw,2rem) 4.5rem;
+    color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:17.5px;line-height:1.68;-webkit-font-smoothing:antialiased}
+  .mono{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-variant-numeric:tabular-nums;font-weight:600}
+  sup{font-size:.72em}
+
+  .hero{border-bottom:3px solid var(--brand);padding-bottom:1.4rem;margin-bottom:1.8rem}
+  .eyebrow{font-size:.74rem;letter-spacing:.15em;text-transform:uppercase;color:var(--brand);font-weight:700;margin:0 0 .55rem}
+  h1{font-size:clamp(1.8rem,5.8vw,2.7rem);line-height:1.05;margin:0;font-weight:800;letter-spacing:-.02em;text-wrap:balance}
+  .tagline{font-size:1.12rem;color:var(--muted);margin:.85rem 0 0;text-wrap:pretty}
+
+  section{margin-top:2.4rem}
+  h2{font-size:1.5rem;margin:0 0 .3rem;font-weight:780;letter-spacing:-.015em;text-wrap:balance}
+  h2 .em{color:var(--brand)}
+  p{margin:.7rem 0}
+  strong{font-weight:680}
+  .caw{color:var(--ca);font-weight:800} .cbw{color:var(--cb);font-weight:800} .ccw{color:var(--cc);font-weight:800} .angw{color:var(--ang);font-weight:800}
+
+  .lead-in{background:var(--brand-soft);border-radius:14px;padding:1.1rem 1.3rem;font-size:1.02rem}
+  .lead-in p{margin:.4rem 0}
+  .lead-in b{color:var(--brand)}
+
+  .formula-box{background:var(--ink);color:#fff;border-radius:14px;padding:1.3rem 1rem;text-align:center;margin-top:1rem}
+  .formula-box .eq{font-family:ui-monospace,Menlo,monospace;font-size:clamp(1.25rem,5.4vw,2rem);font-weight:700;line-height:1.3}
+  .formula-box .eq .a{color:#F0A45E} .formula-box .eq .b{color:#6FD3C6} .formula-box .eq .c{color:#8FB2E6} .formula-box .eq .ang{color:#C3A6EE}
+  .formula-box .note{font-size:.86rem;color:#AEB8C6;margin:.9rem 0 0;line-height:1.6}
+
+  .note{border-left:4px solid var(--brand);background:var(--brand-soft);border-radius:0 10px 10px 0;padding:.8rem 1.1rem;margin-top:1rem;font-size:.98rem}
+  .note b{color:var(--brand)}
+
+  /* три случая угла — цвет-код */
+  .cases{display:grid;gap:.7rem;margin-top:1rem}
+  @media(min-width:560px){.cases{grid-template-columns:1fr 1fr 1fr}}
+  .case{border-radius:14px;padding:1rem 1.05rem;border:2px solid}
+  .case.acute{background:var(--cb-soft);border-color:#BBE3D3}
+  .case.right{background:var(--brand-soft);border-color:#C2D7EE}
+  .case.obtuse{background:var(--ca-soft);border-color:#F1D2AE}
+  .case h3{margin:.1rem 0 .35rem;font-size:1rem;font-weight:800}
+  .case.acute h3{color:var(--cb)} .case.right h3{color:var(--brand)} .case.obtuse h3{color:var(--ca)}
+  .case p{margin:.2rem 0;font-size:.92rem}
+  .case .mono{font-size:.9rem}
+
+  /* Чертёж */
+  .diagram{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:1.2rem;margin-top:1rem}
+  .diagram canvas{width:100%;height:auto;display:block;border-radius:10px;background:#FCFDFE}
+  .sliders{display:grid;gap:.6rem;margin-top:.9rem}
+  .sliders label{display:flex;align-items:center;gap:.5rem;font-weight:700;font-family:ui-monospace,Menlo,monospace;font-size:.95rem}
+  .sliders label.lc{color:var(--ang)}
+  .sliders input[type=range]{flex:1;accent-color:var(--ang)}
+  .sliders .sval{min-width:3.6ch;text-align:right;font-variant-numeric:tabular-nums}
+  .diag-eq{text-align:center;font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.02rem;margin:.9rem 0 0;line-height:1.6}
+  .diag-eq .c{color:var(--cc)}
+  .diag-tip{text-align:center;font-size:.88rem;color:var(--muted);margin:.55rem 0 0}
+
+  .walk{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.15rem 1.3rem;margin-top:1rem}
+  .walk .q{font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1rem;margin:0 0 .9rem;padding-bottom:.7rem;border-bottom:1px solid var(--line)}
+  .walk ol{margin:0;padding-left:1.2rem;display:flex;flex-direction:column;gap:.5rem}
+  .walk li{font-size:.95rem}
+  .walk b{font-weight:700}
+  .verdict{margin-top:1rem;padding:.7rem 1rem;background:var(--brand-soft);border-radius:10px;font-weight:650;color:var(--brand);font-family:ui-monospace,Menlo,monospace}
+
+  /* таблица угол → косинус → c */
+  .tbl-wrap{overflow-x:auto;margin-top:1rem}
+  table.rel{border-collapse:collapse;width:100%;min-width:340px;font-size:.95rem}
+  table.rel th,table.rel td{border:1px solid var(--line);padding:.55rem .7rem;text-align:center;font-family:ui-monospace,Menlo,monospace}
+  table.rel th{background:var(--brand-soft);color:var(--brand);font-weight:700}
+  table.rel td.first{font-weight:700}
+
+  /* Тренажёр */
+  .trainer{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.2rem 1.3rem;margin-top:1rem}
+  .tr-task{font-size:clamp(1rem,3.8vw,1.12rem);text-align:center;padding:1rem;background:var(--brand-soft);border-radius:10px;font-weight:600;line-height:1.5}
+  .tr-task b{font-family:ui-monospace,Menlo,monospace;color:var(--ink)}
+  .tr-ctl{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:1rem;align-items:center;justify-content:center}
+  .tr-ctl input{flex:1;min-width:110px;max-width:180px;font:inherit;padding:.5rem .7rem;border:1px solid var(--line);border-radius:9px;text-align:center;background:#fff;color:var(--ink)}
+  .tr-ctl button{font:inherit;font-weight:700;font-size:.9rem;cursor:pointer;border:none;border-radius:9px;padding:.55rem .95rem;color:#fff;background:var(--brand)}
+  .tr-ctl button.sec{background:var(--ca)}
+  .tr-ctl button.ghost{background:transparent;color:var(--brand);border:1px solid var(--brand)}
+  .tr-ctl button:focus-visible,.tr-ctl input:focus-visible,.sliders input:focus-visible,summary:focus-visible{outline:3px solid var(--brand);outline-offset:2px}
+  .tr-result{margin-top:.9rem;font-size:.96rem;min-height:1.2rem;text-align:center}
+  .tr-result .ok{color:var(--ok);font-weight:700} .tr-result .bad{color:var(--no);font-weight:700}
+  .tr-result .sol{margin-top:.6rem;padding:.8rem 1rem;background:#FCFDFE;border:1px solid var(--line);border-radius:10px;font-family:ui-monospace,Menlo,monospace;font-size:.9rem;line-height:1.85;text-align:left}
+  .tr-hint{text-align:center;font-size:.85rem;color:var(--muted);margin:.6rem 0 0}
+
+  details{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:.9rem 1.1rem;margin-top:.7rem}
+  details[open]{border-color:var(--brand)}
+  summary{cursor:pointer;font-weight:650;list-style:none;display:flex;justify-content:space-between;gap:1rem;align-items:center}
+  summary::-webkit-details-marker{display:none}
+  summary::after{content:"ответ";font-size:.8rem;color:var(--brand);font-weight:700;white-space:nowrap}
+  details[open] summary::after{content:"скрыть"}
+  .ans{margin-top:.75rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.96rem;color:var(--muted)}
+  .ans b{color:var(--ink)}
+  .lvl{font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;font-weight:700;color:var(--muted);margin:1.1rem 0 .1rem}
+  .drill{display:flex;flex-direction:column;gap:.2rem;margin-top:.3rem}
+
+  ul.traps{list-style:none;margin:1rem 0 0;padding:0;display:flex;flex-direction:column;gap:.7rem}
+  ul.traps li{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:.85rem 1.05rem;padding-left:2.5rem;position:relative;font-size:.97rem}
+  ul.traps li::before{content:"⚠";position:absolute;left:1rem;top:.85rem;color:var(--ca)}
+  ul.traps b{font-weight:700}
+
+  .wrapup{background:var(--brand);color:#fff;border-radius:16px;padding:1.4rem 1.5rem;margin-top:2.4rem}
+  .wrapup h2{color:#fff;margin:0 0 .5rem}
+  .wrapup p{color:#DEE7F5;margin:.4rem 0;font-size:1rem}
+  .wrapup .big-rule{font-size:clamp(1.05rem,4.4vw,1.3rem);font-weight:800;color:#fff;margin:.6rem 0;font-family:ui-monospace,Menlo,monospace}
+  .wrapup .next{font-size:.95rem;color:#C6D5EE;margin-top:1rem;padding-top:1rem;border-top:1px solid rgba(255,255,255,.2)}
+  .wrapup .next b{color:#fff}
+
+  @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="page">
+
+  <header class="hero">
+    <p class="eyebrow">Геометрия · 9 класс · ОГЭ</p>
+    <h1>Теорема косинусов</h1>
+    <p class="tagline">Как найти сторону любого треугольника, когда Пифагора уже не хватает, — по двум сторонам и углу между ними.</p>
+  </header>
+
+  <div class="lead-in">
+    <p><b>Где встречается.</b> Крыша дома, треугольный участок земли, маршрут корабля, который сначала шёл в одну сторону, а потом повернул на какой-то угол. Известны две стороны и угол между ними — а третью надо найти. В жизни углы редко бывают ровно 90°, и «через Пифагора» тут не посчитать: он просто не работает.</p>
+    <p>Теорема косинусов снимает это ограничение. Это рабочий инструмент в <b>геодезии, навигации, строительстве</b> и дальше в математике — тригонометрии и векторах.</p>
+  </div>
+
+  <section>
+    <h2>Сначала вспомни <span class="em">две вещи</span></h2>
+    <p>Новая формула вырастает прямо из того, что ты уже знаешь:</p>
+    <div class="note">
+      <p><b>1. Теорема Пифагора.</b> В <strong>прямоугольном</strong> треугольнике <span class="mono">c<sup>2</sup> = a<sup>2</sup> + b<sup>2</sup></span>. Работает только при угле 90°.</p>
+      <p><b>2. Косинус угла.</b> Число, зависящее от величины угла. Табличные значения, которые сегодня нужны: <span class="mono">cos 60° = 0,5</span>, <span class="mono">cos 90° = 0</span>, <span class="mono">cos 120° = −0,5</span>. Для тупого угла косинус <strong>отрицательный</strong> — это нормально.</p>
+    </div>
+    <p>Типичное заблуждение: «раз есть стороны — посчитаю по Пифагору». Пифагор — это <strong>частный случай</strong>, верный только при прямом угле. Теорема косинусов — общий закон для <strong>всех</strong> треугольников.</p>
+  </section>
+
+  <section>
+    <h2>Ядро — сама формула</h2>
+    <p>Для треугольника со сторонами <span class="caw">a</span>, <span class="cbw">b</span>, <span class="ccw">c</span>, где угол <span class="angw">C</span> лежит между сторонами <span class="caw">a</span> и <span class="cbw">b</span>:</p>
+    <div class="formula-box">
+      <div class="eq"><span class="c">c<sup>2</sup></span> = <span class="a">a<sup>2</sup></span> + <span class="b">b<sup>2</sup></span> − 2<span class="a">a</span><span class="b">b</span>·cos<span class="ang">C</span></div>
+      <div class="note"><span class="a">a</span>, <span class="b">b</span> — две стороны, между ними угол <span class="ang">C</span> · <span class="c">c</span> — сторона <b>напротив</b> угла C (её и ищем)</div>
+    </div>
+    <p>Словами: квадрат стороны равен сумме квадратов двух других сторон <strong>минус</strong> удвоенное произведение этих сторон на косинус угла между ними.</p>
+    <div class="note">
+      <p><b>Смысл «лишнего» слагаемого</b> <span class="mono">−2ab·cosC</span> — это поправка на угол, она показывает, насколько треугольник «отклонился» от прямоугольного. Теорема косинусов — это <b>теорема Пифагора с поправкой на угол</b>.</p>
+    </div>
+    <p>Если известны все <strong>три</strong> стороны, из этой же формулы можно выразить косинус угла:</p>
+    <div class="formula-box" style="padding:1rem">
+      <div class="eq" style="font-size:clamp(1.05rem,4.6vw,1.6rem)">cos<span class="ang">C</span> = (<span class="a">a<sup>2</sup></span> + <span class="b">b<sup>2</sup></span> − <span class="c">c<sup>2</sup></span>) / 2<span class="a">a</span><span class="b">b</span></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Поправка на угол: <span class="em">три случая</span></h2>
+    <p>Всё держится на знаке косинуса. Сравни поправочный член <span class="mono">−2ab·cosC</span> в трёх ситуациях:</p>
+    <div class="cases">
+      <div class="case acute">
+        <h3>Угол острый</h3>
+        <p><span class="mono">cosC &gt; 0</span></p>
+        <p>Вычитаем положительное → сторона <b>c короче</b>, чем при прямом угле.</p>
+      </div>
+      <div class="case right">
+        <h3>Угол прямой</h3>
+        <p><span class="mono">cos90° = 0</span></p>
+        <p>Поправка исчезает → остаётся <b>ровно Пифагор</b> <span class="mono">c<sup>2</sup>=a<sup>2</sup>+b<sup>2</sup></span>.</p>
+      </div>
+      <div class="case obtuse">
+        <h3>Угол тупой</h3>
+        <p><span class="mono">cosC &lt; 0</span></p>
+        <p>Двойной минус даёт плюс → сторона <b>c длиннее</b>.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Разбор «думаю вслух»</h2>
+    <p>Классика: даны две стороны и угол между ними — найди третью. Идём по шагам.</p>
+    <div class="walk">
+      <p class="q">a = 7, b = 5, угол C между ними = 60°. Найти c.</p>
+      <ol>
+        <li><b>Пишем формулу</b> для стороны напротив известного угла: <span class="mono">c<sup>2</sup> = a<sup>2</sup> + b<sup>2</sup> − 2ab·cosC</span>.</li>
+        <li><b>Подставляем:</b> <span class="mono">c<sup>2</sup> = 7<sup>2</sup> + 5<sup>2</sup> − 2·7·5·cos60°</span>.</li>
+        <li><b>Табличное значение:</b> <span class="mono">cos60° = 0,5</span>.</li>
+        <li><b>Считаем:</b> <span class="mono">c<sup>2</sup> = 49 + 25 − 70·0,5 = 49 + 25 − 35 = 39</span>.</li>
+        <li><b>Корень:</b> <span class="mono">c = √39 ≈ 6,24</span>.</li>
+        <li>Проверка смысла: угол острый, поэтому c ≈ 6,24 меньше, чем было бы при прямом угле (√74 ≈ 8,6). ✓</li>
+      </ol>
+      <div class="verdict">Ответ: c = √39 ≈ 6,24</div>
+    </div>
+    <div class="walk" style="margin-top:.8rem">
+      <p class="q">a = 8, b = 3, угол C = 120° (тупой). Найти c.</p>
+      <ol>
+        <li><span class="mono">c<sup>2</sup> = 8<sup>2</sup> + 3<sup>2</sup> − 2·8·3·cos120°</span>.</li>
+        <li><span class="mono">cos120° = −0,5</span> — угол тупой, косинус отрицательный.</li>
+        <li>Аккуратно с двумя минусами: <span class="mono">−2·8·3·(−0,5) = +24</span>, значит удвоенное произведение <b>прибавляется</b>:<br><span class="mono">c<sup>2</sup> = 64 + 9 + 24 = 97</span>.</li>
+        <li><span class="mono">c = √97 ≈ 9,85</span>.</li>
+        <li>Проверка: угол тупой → c длиннее, чем при прямом угле (√73 ≈ 8,5). ✓</li>
+      </ol>
+      <div class="verdict">Ответ: c = √97 ≈ 9,85</div>
+    </div>
+    <div class="walk" style="margin-top:.8rem">
+      <p class="q">Стороны a = 6, b = 10, c = 14. Найти угол C (напротив стороны 14).</p>
+      <ol>
+        <li>Известны все три стороны → берём вторую формулу: <span class="mono">cosC = (a<sup>2</sup> + b<sup>2</sup> − c<sup>2</sup>) / (2ab)</span>.</li>
+        <li><span class="mono">cosC = (36 + 100 − 196) / (2·6·10) = (−60) / 120 = −0,5</span>.</li>
+        <li>Косинус отрицательный → угол тупой. По таблице <span class="mono">cosC = −0,5</span> даёт <span class="mono">C = 120°</span>.</li>
+      </ol>
+      <div class="verdict">Ответ: C = 120°</div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Увидь глазами — <span class="em">раскрываем угол C</span></h2>
+    <p>Стороны <span class="caw">a</span> и <span class="cbw">b</span> закреплены и выходят из вершины <span class="angw">C</span>. Двигай угол C ползунком и смотри, как меняется <span class="ccw">сторона c</span> напротив него: острый угол — c короткая, тупой — c длинная.</p>
+    <div class="diagram">
+      <canvas id="tri" width="640" height="440" aria-label="Треугольник со сторонами a, b и меняющимся углом C между ними"></canvas>
+      <div class="sliders">
+        <label class="lc">угол C <span id="vc" class="sval">60°</span><input id="sc" type="range" min="20" max="150" step="1" value="60"></label>
+      </div>
+      <p class="diag-eq" id="diagEq"></p>
+      <p class="diag-tip" id="diagTip"></p>
+    </div>
+    <p style="font-size:.9rem;color:var(--muted)"><span class="caw">Оранжевая</span> — сторона a, <span class="cbw">бирюзовая</span> — сторона b, <span class="ccw">синяя</span> — искомая сторона c напротив угла <span class="angw">C</span>. Проходя через 90°, c ведёт себя ровно как Пифагор.</p>
+  </section>
+
+  <section>
+    <h2>Таблица «угол → косинус → длина c»</h2>
+    <p>Возьмём равные стороны <span class="mono">a = b = 5</span> и меняем только угол между ними. Смотри, как растёт c:</p>
+    <div class="tbl-wrap">
+      <table class="rel">
+        <tr><th>Угол C</th><th>cos C</th><th>c<sup>2</sup> = 25 + 25 − 50·cosC</th><th>сторона c</th></tr>
+        <tr><td class="first">60°</td><td>0,5</td><td>50 − 25 = 25</td><td>c = 5</td></tr>
+        <tr><td class="first">90°</td><td>0</td><td>50 − 0 = 50</td><td>c ≈ 7,07</td></tr>
+        <tr><td class="first">120°</td><td>−0,5</td><td>50 + 25 = 75</td><td>c ≈ 8,66</td></tr>
+      </table>
+    </div>
+    <p style="font-size:.94rem;color:var(--muted)">Стороны те же, а c растёт вместе с углом — потому что косинус уменьшается (от 0,5 к −0,5), и поправка из «вычитаем» превращается в «прибавляем».</p>
+  </section>
+
+  <section>
+    <h2>Тренажёр · найди сторону c</h2>
+    <p>Даны две стороны и угол между ними — найди третью. Углы подобраны так, что ответ выходит <b>целым</b>. Заданий — бесконечно.</p>
+    <div class="trainer">
+      <div class="tr-task" id="trTask">Стороны <b>a = 5</b> и <b>b = 8</b>, угол между ними <b>C = 60°</b>. Найди сторону <b>c</b> (напротив угла C).</div>
+      <div class="tr-ctl">
+        <button id="trNew" type="button">🎲 Новая</button>
+        <input id="trAns" type="text" placeholder="c = ?" aria-label="Ответ">
+        <button id="trCheck" type="button" class="sec">Проверить</button>
+        <button id="trShow" type="button" class="ghost">Решение</button>
+      </div>
+      <div id="trResult" class="tr-result"></div>
+      <p class="tr-hint">Подставь стороны и cos угла в формулу, посчитай c<sup>2</sup>, потом извлеки корень.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Проверь себя</h2>
+    <p class="lvl">Понимание</p>
+    <div class="drill">
+      <details><summary>1) Напиши теорему косинусов для стороны b. Какой угол в ней стоит и где он?</summary>
+        <div class="ans"><span class="mono">b<sup>2</sup> = a<sup>2</sup> + c<sup>2</sup> − 2ac·cosB</span>. В формуле стоит угол <b>B</b> — он лежит <b>напротив</b> стороны b и <b>между</b> сторонами a и c.</div></details>
+    </div>
+    <p class="lvl">Применение</p>
+    <div class="drill">
+      <details><summary>2) Две стороны 4 и 9, угол между ними 45°. Найди третью сторону. (cos45° = √2/2 ≈ 0,707.)</summary>
+        <div class="ans"><span class="mono">c<sup>2</sup> = 4<sup>2</sup> + 9<sup>2</sup> − 2·4·9·cos45° = 16 + 81 − 72·0,707 ≈ 97 − 50,9 = 46,1</span>. Значит <span class="mono">c ≈ √46,1 ≈ 6,8</span>. Ответ <b>≈ 6,8</b>.</div></details>
+    </div>
+    <p class="lvl">Анализ</p>
+    <div class="drill">
+      <details><summary>3) «Что изменится, если…»: стороны 4 и 9 те же, а угол увеличили с 45° до 135°. Станет c длиннее или короче? Без вычислений.</summary>
+        <div class="ans"><b>Длиннее.</b> При 45° косинус положительный — поправку <b>вычитаем</b>. При 135° угол тупой, <span class="mono">cos135° &lt; 0</span> — двойной минус даёт плюс, поправку <b>прибавляем</b>. Значит c<sup>2</sup> больше, и сторона c длиннее.</div></details>
+      <details><summary>4) Найди ошибку: для a = 5, b = 6, C = 60° ученик написал c<sup>2</sup> = 5<sup>2</sup> + 6<sup>2</sup> + 2·5·6·cos60°.</summary>
+        <div class="ans">Перед удвоенным произведением должен быть <b>минус</b>, а не плюс: <span class="mono">c<sup>2</sup> = 5<sup>2</sup> + 6<sup>2</sup> − 2·5·6·cos60°</span>. Верно: <span class="mono">c<sup>2</sup> = 25 + 36 − 60·0,5 = 25 + 36 − 30 = 31</span>, значит <span class="mono">c = √31 ≈ 5,57</span>. У ученика вышло бы 91 — слишком много.</div></details>
+      <details><summary>5) Обратная задача: стороны 5, 7, 8. Остроугольный ли треугольник? Найди косинус наибольшего угла (напротив стороны 8).</summary>
+        <div class="ans">Наибольший угол — напротив наибольшей стороны 8: <span class="mono">cosC = (5<sup>2</sup> + 7<sup>2</sup> − 8<sup>2</sup>) / (2·5·7) = (25 + 49 − 64) / 70 = 10/70 ≈ 0,143</span>. Косинус <b>положительный</b> → наибольший угол острый → треугольник <b>остроугольный</b>.</div></details>
+    </div>
+  </section>
+
+  <section>
+    <h2>Ловушки</h2>
+    <ul class="traps">
+      <li><b>Теряют минус.</b> Пишут <span class="mono">c<sup>2</sup> = a<sup>2</sup> + b<sup>2</sup> + 2ab·cosC</span>. Запомни «<b>минус два аб косинус</b>» как единое выражение: для острого угла сторона должна стать короче, а значит мы вычитаем.</li>
+      <li><b>Берут не тот угол.</b> В формулу идёт угол <b>напротив искомой стороны</b> и <b>между двумя данными</b>. Сначала отметь на чертеже сторону c, потом угол напротив неё — только его косинус.</li>
+      <li><b>Путают с Пифагором.</b> Считают <span class="mono">c<sup>2</sup> = a<sup>2</sup> + b<sup>2</sup></span>, когда угол не 90°. Пифагор — это теорема косинусов при <span class="mono">C = 90°</span>; при другом угле обязателен член <span class="mono">−2ab·cosC</span>.</li>
+      <li><b>Забывают про тупой угол.</b> Там <span class="mono">cosC &lt; 0</span>, и «двойной минус» даёт плюс. Сначала определи знак косинуса, потом аккуратно раскрой два минуса — иначе c выйдет слишком маленькой.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Объясни своими словами</h2>
+    <div class="drill">
+      <details><summary>1) Запиши теорему косинусов для стороны c и назови угол, который в неё входит.</summary>
+        <div class="ans"><span class="mono">c<sup>2</sup> = a<sup>2</sup> + b<sup>2</sup> − 2ab·cosC</span>. Входит угол <b>C</b> — между сторонами a и b, напротив искомой стороны c.</div></details>
+      <details><summary>2) Во что превращается теорема косинусов, если угол между сторонами 90°?</summary>
+        <div class="ans"><span class="mono">cos90° = 0</span>, поправка <span class="mono">−2ab·0 = 0</span> исчезает, и остаётся <b>теорема Пифагора</b> <span class="mono">c<sup>2</sup> = a<sup>2</sup> + b<sup>2</sup></span>.</div></details>
+      <details><summary>3) Косинус угла получился отрицательным. Что это говорит про угол?</summary>
+        <div class="ans">Угол <b>тупой</b> (больше 90°). Это не ошибка — теорема косинусов честно работает и для тупоугольных треугольников.</div></details>
+    </div>
+  </section>
+
+  <div class="wrapup">
+    <h2>Запомни главное</h2>
+    <p class="big-rule">c<sup>2</sup> = a<sup>2</sup> + b<sup>2</sup> − 2ab·cosC</p>
+    <p>Теорема косинусов — это обобщение Пифагора на <b>любой</b> треугольник. По двум сторонам и углу между ними находим третью сторону; по трём сторонам находим угол. Угол C — между сторонами a и b, напротив искомой c. Минус перед <span class="mono">2ab·cosC</span> терять нельзя.</p>
+    <p class="next">👉 Дальше — <b>теорема синусов</b> (когда дана сторона и противолежащий угол) и вместе они дают <b>решение треугольников</b>: находим все стороны и углы по любым трём заданным элементам.</p>
+  </div>
+
+</div>
+
+<script>
+/* ── Интерактивный чертёж: треугольник с меняющимся углом C ── */
+(function(){
+  var cv=document.getElementById('tri'); if(!cv) return;
+  var ctx=cv.getContext('2d');
+  var sc=document.getElementById('sc'), vc=document.getElementById('vc');
+  var eq=document.getElementById('diagEq'), tip=document.getElementById('diagTip');
+  var aLen=6, bLen=4;              // условные длины сторон a и b
+  var W=640,H=440,dpr=1;
+  function css(v){ return getComputedStyle(document.documentElement).getPropertyValue(v).trim(); }
+  function resize(){ var c=cv.clientWidth||640; dpr=Math.min(window.devicePixelRatio||1,2); W=c; H=Math.round(c*0.70);
+    cv.width=W*dpr; cv.height=H*dpr; cv.style.height=H+'px'; ctx.setTransform(dpr,0,0,dpr,0,0); }
+  function draw(){
+    var deg=+sc.value, rad=deg*Math.PI/180; vc.textContent=deg+'°';
+    var cosv=Math.cos(rad);
+    var cVal=Math.sqrt(aLen*aLen+bLen*bLen-2*aLen*bLen*cosv);
+    // мат. координаты: вершина C в начале; сторона b вдоль +x к вершине A; сторона a под углом C к вершине B
+    var C=[0,0], A=[bLen,0], B=[aLen*Math.cos(rad), aLen*Math.sin(rad)];
+    var pts=[C,A,B];
+    var minx=Math.min.apply(null,pts.map(function(p){return p[0];}));
+    var maxx=Math.max.apply(null,pts.map(function(p){return p[0];}));
+    var miny=Math.min.apply(null,pts.map(function(p){return p[1];}));
+    var maxy=Math.max.apply(null,pts.map(function(p){return p[1];}));
+    var pad=52, sc2=Math.min((W-pad*2)/(maxx-minx||1),(H-pad*2)/(maxy-miny||1));
+    var ox=(W-(maxx-minx)*sc2)/2, oy=(H-(maxy-miny)*sc2)/2;
+    function SX(x){ return ox+(x-minx)*sc2; }
+    function SY(y){ return oy+(maxy-y)*sc2; }
+    ctx.clearRect(0,0,W,H);
+    var cx=SX(C[0]),cy=SY(C[1]), ax=SX(A[0]),ay=SY(A[1]), bx=SX(B[0]),by=SY(B[1]);
+    // заливка
+    ctx.beginPath(); ctx.moveTo(cx,cy); ctx.lineTo(ax,ay); ctx.lineTo(bx,by); ctx.closePath();
+    ctx.fillStyle='rgba(46,90,172,0.06)'; ctx.fill();
+    function seg(x1,y1,x2,y2,col){ ctx.strokeStyle=col; ctx.lineWidth=4; ctx.lineCap='round';
+      ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(x2,y2); ctx.stroke(); }
+    seg(cx,cy,ax,ay, css('--cb'));    // сторона b (C→A)
+    seg(cx,cy,bx,by, css('--ca'));    // сторона a (C→B)
+    seg(ax,ay,bx,by, css('--cc'));    // сторона c (A→B) — искомая
+    // дуга угла C при вершине C
+    var ar=Math.min(38,sc2*1.1); ctx.strokeStyle=css('--ang'); ctx.lineWidth=2.4;
+    ctx.beginPath(); ctx.arc(cx,cy,ar,-rad,0); ctx.stroke();
+    // подписи сторон
+    ctx.font='800 15px ui-monospace,Menlo,monospace'; ctx.textBaseline='middle';
+    ctx.fillStyle=css('--cb'); ctx.textAlign='center'; ctx.fillText('b', (cx+ax)/2, ay+16);
+    ctx.fillStyle=css('--ca'); ctx.fillText('a', (cx+bx)/2-10, (cy+by)/2-8);
+    ctx.fillStyle=css('--cc'); ctx.fillText('c', (ax+bx)/2+12, (ay+by)/2);
+    // метка угла C
+    ctx.fillStyle=css('--ang'); ctx.font='800 14px ui-monospace,Menlo,monospace';
+    ctx.textAlign='left'; ctx.fillText('C', cx+ar+6, cy-ar*0.4);
+    // вершины-точки
+    [[cx,cy],[ax,ay],[bx,by]].forEach(function(p){ ctx.beginPath(); ctx.arc(p[0],p[1],3.5,0,6.29); ctx.fillStyle=css('--ink'); ctx.fill(); });
+    // формула снизу
+    var cosStr=(cosv<0?'−':'')+Math.abs(cosv).toFixed(2);
+    eq.innerHTML='c<sup>2</sup> = 6<sup>2</sup> + 4<sup>2</sup> − 2·6·4·cos '+deg+'° &nbsp;→&nbsp; <span class="c">c ≈ '+cVal.toFixed(2)+'</span>';
+    var msg = deg<90 ? 'угол острый · cos C = '+cosStr+' &gt; 0 · c короче, чем при 90°'
+            : deg===90 ? 'угол прямой · cos C = 0 · это ровно Пифагор (c ≈ 7,21)'
+            : 'угол тупой · cos C = '+cosStr+' &lt; 0 · c длиннее, чем при 90°';
+    tip.innerHTML=msg;
+  }
+  sc.addEventListener('input',draw);
+  window.addEventListener('resize',function(){ resize(); draw(); });
+  resize(); draw();
+})();
+</script>
+
+<script>
+/* ── Тренажёр-генератор: найди сторону c ── */
+(function(){
+  var taskEl=document.getElementById('trTask'), ansEl=document.getElementById('trAns'), resEl=document.getElementById('trResult');
+  if(!taskEl) return;
+  var MINUS='−';
+  // тройки [a,b,c], дающие целую c для данного угла
+  var data={
+    60:[[3,8,7],[5,8,7],[7,15,13],[8,15,13]],
+    90:[[3,4,5],[6,8,10],[5,12,13],[8,15,17],[7,24,25]],
+    120:[[3,5,7],[7,8,13],[5,16,19]]
+  };
+  var angles=[60,90,120];
+  var cur={a:5,b:8,C:60,c:7};
+  function ri(min,max){ return Math.floor(Math.random()*(max-min+1))+min; }
+  function render(){
+    taskEl.innerHTML='Стороны <b>a = '+cur.a+'</b> и <b>b = '+cur.b+'</b>, угол между ними <b>C = '+cur.C+'°</b>. '
+      +'Найди сторону <b>c</b> (напротив угла C).';
+  }
+  function generate(){
+    var C=angles[ri(0,2)], list=data[C];
+    var t=list[ri(0,list.length-1)].slice();
+    var a=t[0], b=t[1], c=t[2];
+    if(Math.random()<0.5){ var tmp=a; a=b; b=tmp; }
+    var k=(Math.random()<0.35)?2:1;
+    a*=k; b*=k; c*=k;
+    cur={a:a,b:b,C:C,c:c};
+    render(); resEl.innerHTML=''; ansEl.value=''; ansEl.focus();
+  }
+  function solHTML(){
+    var a=cur.a,b=cur.b,C=cur.C,c=cur.c, a2=a*a,b2=b*b, ab=a*b, c2=c*c;
+    var cosStr = C===60?'0,5' : C===90?'0' : MINUS+'0,5';
+    var h='<div class="sol">';
+    h+='c² = a² + b² '+MINUS+' 2·a·b·cos C<br>';
+    h+='cos '+C+'° = '+cosStr+'<br>';
+    if(C===90){
+      h+='c² = '+a2+' + '+b2+' '+MINUS+' 0 = '+c2+'  (угол прямой → это Пифагор)<br>';
+    } else if(C===60){
+      h+='c² = '+a2+' + '+b2+' '+MINUS+' 2·'+a+'·'+b+'·0,5 = '+a2+' + '+b2+' '+MINUS+' '+ab+' = '+c2+'<br>';
+    } else {
+      h+='c² = '+a2+' + '+b2+' '+MINUS+' 2·'+a+'·'+b+'·('+MINUS+'0,5) = '+a2+' + '+b2+' + '+ab+' = '+c2+'<br>';
+    }
+    h+='c = √'+c2+' = <b>'+c+'</b>';
+    return h+'</div>';
+  }
+  function check(){
+    var raw=ansEl.value.trim().replace(',','.'); if(raw===''){ resEl.innerHTML='<span class="bad">Введи ответ или нажми «Решение».</span>'; return; }
+    var got=parseFloat(raw);
+    if(!isNaN(got) && Math.abs(got-cur.c)<0.02){ resEl.innerHTML='<span class="ok">✓ Верно!</span>'+solHTML(); }
+    else { resEl.innerHTML='<span class="bad">✗ Пока не то — глянь решение.</span>'+solHTML(); }
+  }
+  document.getElementById('trNew').addEventListener('click',generate);
+  document.getElementById('trCheck').addEventListener('click',check);
+  document.getElementById('trShow').addEventListener('click',function(){ resEl.innerHTML=solHTML(); });
+  ansEl.addEventListener('keydown',function(e){ if(e.key==='Enter') check(); });
+  /* первичный рендер БЕЗ focus() — стартовое состояние совпадает с cur */
+})();
+</script>
