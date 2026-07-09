@@ -1,0 +1,461 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Расстояние между двумя точками — геометрия 9 класс</title>
+<style>
+  :root{
+    --paper:#F6F7F9; --card:#FFFFFF; --ink:#1D2530; --muted:#606B7A; --line:#E3E7EE;
+    --brand:#2E5AAC; --brand-soft:#E4EBF7;
+    --dx:#E27C2C; --dx-soft:#FBEEDF;    /* Δx — горизонтальный катет */
+    --dy:#159A8A; --dy-soft:#DEF3F0;    /* Δy — вертикальный катет */
+    --dist:#2E5AAC; --dist-soft:#E4EBF7;/* d — гипотенуза, расстояние */
+    --ok:#1E8E5A; --no:#C23B3B;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper)}
+  .page{max-width:720px;margin:0 auto;padding:clamp(1.4rem,4vw,3rem) clamp(1.1rem,4vw,2rem) 4.5rem;
+    color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:17.5px;line-height:1.68;-webkit-font-smoothing:antialiased}
+  .mono{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-variant-numeric:tabular-nums;font-weight:600}
+  sup{font-size:.72em}
+
+  .hero{border-bottom:3px solid var(--brand);padding-bottom:1.4rem;margin-bottom:1.8rem}
+  .eyebrow{font-size:.74rem;letter-spacing:.15em;text-transform:uppercase;color:var(--brand);font-weight:700;margin:0 0 .55rem}
+  h1{font-size:clamp(1.85rem,6vw,2.7rem);line-height:1.05;margin:0;font-weight:800;letter-spacing:-.02em;text-wrap:balance}
+  .tagline{font-size:1.12rem;color:var(--muted);margin:.85rem 0 0;text-wrap:pretty}
+
+  section{margin-top:2.4rem}
+  h2{font-size:1.5rem;margin:0 0 .3rem;font-weight:780;letter-spacing:-.015em;text-wrap:balance}
+  h2 .em{color:var(--brand)}
+  p{margin:.7rem 0}
+  strong{font-weight:680}
+  .dxw{color:var(--dx);font-weight:800} .dyw{color:var(--dy);font-weight:800} .dw{color:var(--dist);font-weight:800}
+
+  .lead-in{background:var(--brand-soft);border-radius:14px;padding:1.1rem 1.3rem;font-size:1.02rem}
+  .lead-in p{margin:.4rem 0}
+  .lead-in b{color:var(--brand)}
+
+  .formula-box{background:var(--ink);color:#fff;border-radius:14px;padding:1.4rem 1.2rem;text-align:center;margin-top:1rem}
+  .formula-box .eq{font-family:ui-monospace,Menlo,monospace;font-size:clamp(1.25rem,5.2vw,1.85rem);font-weight:700;line-height:1.3}
+  .formula-box .eq .d{color:#8FB2E6} .formula-box .eq .x{color:#F0A45E} .formula-box .eq .y{color:#6FD3C6}
+  .formula-box .note{font-size:.9rem;color:#AEB8C6;margin:.85rem 0 0}
+
+  .note{border-left:4px solid var(--brand);background:var(--brand-soft);border-radius:0 10px 10px 0;padding:.8rem 1.1rem;margin-top:1rem;font-size:.98rem}
+  .note b{color:var(--brand)}
+
+  .recall{background:var(--brand-soft);border-radius:12px;padding:1rem 1.2rem;font-size:.98rem}
+  .recall p{margin:.35rem 0}
+  .recall b{color:var(--brand)}
+
+  /* Чертёж */
+  .diagram{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:1.2rem;margin-top:1rem}
+  .diagram canvas{width:100%;height:auto;display:block;border-radius:8px;background:#FCFDFF;touch-action:none}
+  .legend{display:flex;flex-wrap:wrap;gap:.5rem .9rem;margin-top:.9rem;font-size:.9rem;font-family:ui-monospace,Menlo,monospace;font-weight:700}
+  .legend span{display:inline-flex;align-items:center;gap:.4rem}
+  .legend i{width:.95rem;height:.95rem;border-radius:3px;display:inline-block}
+  .diag-eq{text-align:center;font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:clamp(.95rem,4vw,1.15rem);margin:.9rem 0 0;line-height:1.5}
+  .diag-eq .x{color:var(--dx)} .diag-eq .y{color:var(--dy)} .diag-eq .d{color:var(--dist)}
+  .diag-hint{font-size:.86rem;color:var(--muted);text-align:center;margin:.5rem 0 0}
+
+  .walk{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.15rem 1.3rem;margin-top:1rem}
+  .walk .q{font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.02rem;margin:0 0 .9rem;padding-bottom:.7rem;border-bottom:1px solid var(--line)}
+  .walk ol{margin:0;padding-left:1.2rem;display:flex;flex-direction:column;gap:.55rem}
+  .walk li{font-size:.96rem}
+  .walk b{font-weight:700}
+  .verdict{margin-top:1rem;padding:.7rem 1rem;background:var(--brand-soft);border-radius:10px;font-weight:650;color:var(--brand);font-family:ui-monospace,Menlo,monospace}
+
+  /* Тренажёр */
+  .trainer{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.2rem 1.3rem;margin-top:1rem}
+  .tr-task{font-size:clamp(1rem,4vw,1.18rem);text-align:center;padding:1rem;background:var(--brand-soft);border-radius:10px;font-weight:600}
+  .tr-task b{font-family:ui-monospace,Menlo,monospace;color:var(--ink)}
+  .tr-ctl{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:1rem;align-items:center;justify-content:center}
+  .tr-ctl input{flex:1;min-width:120px;max-width:200px;font:inherit;padding:.5rem .7rem;border:1px solid var(--line);border-radius:9px;text-align:center;background:#fff;color:var(--ink)}
+  .tr-ctl button{font:inherit;font-weight:700;font-size:.9rem;cursor:pointer;border:none;border-radius:9px;padding:.55rem .95rem;color:#fff;background:var(--brand)}
+  .tr-ctl button.sec{background:var(--dy)}
+  .tr-ctl button.ghost{background:transparent;color:var(--brand);border:1px solid var(--brand)}
+  .tr-ctl button:focus-visible,.tr-ctl input:focus-visible{outline:3px solid var(--brand);outline-offset:2px}
+  .tr-hint{font-size:.84rem;color:var(--muted);text-align:center;margin:.6rem 0 0}
+  .tr-result{margin-top:.9rem;font-size:.96rem;min-height:1.2rem;text-align:center}
+  .tr-result .ok{color:var(--ok);font-weight:700} .tr-result .bad{color:var(--no);font-weight:700}
+  .tr-result .sol{margin-top:.6rem;padding:.85rem 1rem;background:#FCFDFE;border:1px solid var(--line);border-radius:10px;font-family:ui-monospace,Menlo,monospace;font-size:.9rem;line-height:1.85;text-align:left}
+  .tr-result .sol b{color:var(--brand)}
+
+  details{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:.9rem 1.1rem;margin-top:.7rem}
+  details[open]{border-color:var(--brand)}
+  summary{cursor:pointer;font-weight:650;list-style:none;display:flex;justify-content:space-between;gap:1rem;align-items:center}
+  summary::-webkit-details-marker{display:none}
+  summary .tag{font-size:.66rem;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);border:1px solid var(--line);border-radius:20px;padding:.12rem .55rem;white-space:nowrap;font-weight:600}
+  summary::after{content:"ответ";font-size:.8rem;color:var(--brand);font-weight:700;white-space:nowrap}
+  details[open] summary::after{content:"скрыть"}
+  summary:focus-visible{outline:3px solid var(--brand);outline-offset:3px;border-radius:6px}
+  .ans{margin-top:.75rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.96rem;color:var(--muted)}
+  .ans b{color:var(--ink)}
+  .drill{display:flex;flex-direction:column;gap:.2rem;margin-top:1rem}
+  .sq{display:flex;align-items:center;gap:.55rem;flex:1;min-width:0}
+  .sq .qt{flex:1;min-width:0}
+
+  ul.traps{list-style:none;margin:1rem 0 0;padding:0;display:flex;flex-direction:column;gap:.7rem}
+  ul.traps li{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:.85rem 1.05rem;padding-left:2.5rem;position:relative;font-size:.97rem}
+  ul.traps li::before{content:"⚠";position:absolute;left:1rem;top:.85rem;color:var(--dx)}
+  ul.traps b{font-weight:700}
+
+  .check-self{background:var(--card);border:1px dashed var(--line);border-radius:14px;padding:1.1rem 1.3rem;margin-top:1rem}
+  .check-self ul{margin:.4rem 0 0;padding-left:1.2rem}
+  .check-self li{margin:.35rem 0}
+
+  .wrapup{background:var(--brand);color:#fff;border-radius:16px;padding:1.4rem 1.5rem;margin-top:2.4rem}
+  .wrapup h2{color:#fff;margin:0 0 .5rem}
+  .wrapup p{color:#DEE7F5;margin:.4rem 0;font-size:1rem}
+  .wrapup .big-rule{font-size:clamp(1rem,4.4vw,1.25rem);font-weight:800;color:#fff;margin:.6rem 0;font-family:ui-monospace,Menlo,monospace}
+  .wrapup .next{font-size:.95rem;color:#C6D5EE;margin-top:1rem;padding-top:1rem;border-top:1px solid rgba(255,255,255,.2)}
+  .wrapup .next b{color:#fff}
+
+  @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="page">
+
+  <header class="hero">
+    <p class="eyebrow">Геометрия · 9 класс · метод координат</p>
+    <h1>Расстояние между двумя точками</h1>
+    <p class="tagline">Как узнать длину отрезка, зная только координаты его концов, — без линейки, одной формулой.</p>
+  </header>
+
+  <div class="lead-in">
+    <p><b>Где встречается.</b> Как только фигуру задают координатами, любую длину — сторону треугольника, радиус, диагональ — можно посчитать числом. Так работают навигаторы: две точки заданы координатами, а программа считает прямое расстояние по формуле.</p>
+    <p>В ОГЭ этот навык нужен, чтобы найти периметр по координатам вершин, проверить, <b>равнобедренный</b> ли треугольник, и записать <b>уравнение окружности</b> (там расстояние от центра до точки — это радиус).</p>
+  </div>
+
+  <section>
+    <h2>Разрушим главный миф</h2>
+    <p>Кажется, что расстояние можно найти, просто <strong>вычтя координаты</strong>. Но это верно, только когда точки стоят на одной горизонтали или вертикали.</p>
+    <p>В общем случае точки стоят «по диагонали» — и одним вычитанием не обойтись. Отрезок между ними становится <span class="dw">гипотенузой</span> прямоугольного треугольника, а гипотенузу, как ты уже знаешь, складыванием не получить. Работает <strong>теорема Пифагора</strong>.</p>
+  </section>
+
+  <section>
+    <h2>Что вспомнить с прошлых шагов</h2>
+    <div class="recall">
+      <p><b>Координатная плоскость.</b> Точка задаётся парой чисел: A(x₁; y₁) — сначала абсцисса (по оси x), потом ордината (по оси y).</p>
+      <p><b>Теорема Пифагора.</b> В прямоугольном треугольнике <span class="mono">c² = a² + b²</span>, где c — гипотенуза, a и b — катеты. Именно она сейчас превратится в формулу расстояния.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Ядро: одна формула</h2>
+    <p>Соединим точки A и B отрезком и достроим прямоугольный треугольник: <span class="dxw">горизонтальный катет</span> — это разность по x, <span class="dyw">вертикальный катет</span> — разность по y. Тогда отрезок AB — <span class="dw">гипотенуза</span>, и по Пифагору:</p>
+    <div class="formula-box">
+      <div class="eq"><span class="d">AB</span> = √( (<span class="x">x₂ − x₁</span>)<sup>2</sup> + (<span class="y">y₂ − y₁</span>)<sup>2</sup> )</div>
+      <div class="note"><span class="x">x₂ − x₁</span> — разность абсцисс (гориз. катет) · <span class="y">y₂ − y₁</span> — разность ординат (верт. катет)</div>
+    </div>
+    <div class="note">
+      <p><b>Это не новое правило,</b> а теорема Пифагора, записанная через координаты: <span class="mono">квадрат расстояния = квадрат разности по x + квадрат разности по y</span>. Под корнем — сумма квадратов, поэтому она всегда ≥ 0, и корень извлекается всегда.</p>
+      <p style="margin:.5rem 0 0">Порядок точек не важен: <span class="mono">(x₂ − x₁)² = (x₁ − x₂)²</span> — квадрат «съедает» знак. Поэтому <span class="mono">AB = BA</span>.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Эталонный разбор — <span class="em">думаю вслух</span></h2>
+    <p>Разберём пример полностью, проговаривая каждый шаг и <b>почему</b> он такой.</p>
+    <div class="walk">
+      <p class="q">Найти расстояние между A(1; 2) и B(4; 6).</p>
+      <ol>
+        <li>Разность абсцисс: <span class="mono">x₂ − x₁ = 4 − 1 = <span class="dxw">3</span></span>. <b>Почему:</b> это длина горизонтального катета.</li>
+        <li>Разность ординат: <span class="mono">y₂ − y₁ = 6 − 2 = <span class="dyw">4</span></span>. <b>Почему:</b> это длина вертикального катета.</li>
+        <li>Возводим в квадрат и складываем: <span class="mono">3² + 4² = 9 + 16 = 25</span>. <b>Почему:</b> по Пифагору квадрат гипотенузы = сумме квадратов катетов.</li>
+        <li>Извлекаем корень: <span class="mono">AB = √25 = 5</span>. <b>Почему:</b> под корнем был квадрат расстояния, а нам нужно само расстояние.</li>
+      </ol>
+      <div class="verdict">Ответ: AB = 5</div>
+    </div>
+    <div class="walk" style="margin-top:.8rem">
+      <p class="q">Теперь с отрицательными: C(−2; 3) и D(1; −1).</p>
+      <ol>
+        <li>Разность абсцисс: <span class="mono">1 − (−2) = 1 + 2 = <span class="dxw">3</span></span>. Аккуратно с двойным знаком: минус на минус даёт плюс.</li>
+        <li>Разность ординат: <span class="mono">−1 − 3 = <span class="dyw">−4</span></span>. Катет «вниз», но это не страшно — дальше квадрат.</li>
+        <li>В квадрат: <span class="mono">3² + (−4)² = 9 + 16 = 25</span>. Видишь: знак разности исчез при возведении в квадрат.</li>
+        <li><span class="mono">CD = √25 = 5</span>.</li>
+      </ol>
+      <div class="verdict">Ответ: CD = 5</div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Увидь глазами — <span class="em">треугольник из координат</span></h2>
+    <p>Отрезок AB — это <span class="dw">гипотенуза</span>. Двигай точки <b>A</b> и <b>B</b> (тяни их мышкой или пальцем) и смотри, как меняются <span class="dxw">Δx</span>, <span class="dyw">Δy</span> и само расстояние <span class="dw">d</span>.</p>
+    <div class="diagram">
+      <canvas id="cv" width="640" height="560" aria-label="Две точки на координатной плоскости и прямоугольный треугольник"></canvas>
+      <div class="legend">
+        <span><i style="background:var(--dx)"></i>Δx — гориз. катет</span>
+        <span><i style="background:var(--dy)"></i>Δy — верт. катет</span>
+        <span><i style="background:var(--dist)"></i>d — расстояние AB</span>
+      </div>
+      <p class="diag-eq" id="diagEq"></p>
+      <p class="diag-hint">Тяни точки A и B. Кнопки внизу — быстрые примеры.</p>
+      <div class="tr-ctl" style="margin-top:.7rem">
+        <button id="ex1" type="button" class="ghost">3-4-5</button>
+        <button id="ex2" type="button" class="ghost">6-8-10</button>
+        <button id="ex3" type="button" class="ghost">на одной линии</button>
+      </div>
+    </div>
+    <p style="font-size:.9rem;color:var(--muted)">Когда точки на одной горизонтали или вертикали, один из катетов равен нулю — и формула превращается в обычную разность координат.</p>
+  </section>
+
+  <section>
+    <h2>Тренажёр · найди расстояние</h2>
+    <p>Найди расстояние между точками и впиши ответ. Если получается «некрасивое» число — вводи его как <b>√20</b> или <b>2√5</b> (можно и десятичной дробью). Проверь себя или посмотри решение.</p>
+    <div class="trainer">
+      <div class="tr-task" id="trTask">Найди расстояние между <b>A(−2; −1)</b> и <b>B(2; 2)</b>.</div>
+      <div class="tr-ctl">
+        <button id="trNew" type="button">🎲 Новая</button>
+        <input id="trAns" type="text" placeholder="напр.  5  или  √20" aria-label="Ответ">
+        <button id="trCheck" type="button" class="sec">Проверить</button>
+        <button id="trShow" type="button" class="ghost">Решение</button>
+      </div>
+      <p class="tr-hint">Ответ — число (целое, дробь или в виде корня √N).</p>
+      <div id="trResult" class="tr-result"></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Проверь себя · по нарастанию</h2>
+    <div class="drill">
+      <details>
+        <summary><span class="sq"><span class="qt">1) Запиши формулу расстояния между A(x₁; y₁) и B(x₂; y₂).</span></span><span class="tag">понимание</span></summary>
+        <div class="ans"><span class="mono">AB = √((x₂ − x₁)² + (y₂ − y₁)²)</span>. Разность по x — горизонтальный катет, разность по y — вертикальный.</div>
+      </details>
+      <details>
+        <summary><span class="sq"><span class="qt">2) Чему равно расстояние от точки до неё же самой?</span></span><span class="tag">понимание</span></summary>
+        <div class="ans">Обе разности равны нулю: <span class="mono">√(0 + 0) = 0</span>. Точка не удалена сама от себя — расстояние <b>0</b>.</div>
+      </details>
+      <details>
+        <summary><span class="sq"><span class="qt">3) Найди расстояние между P(2; −1) и Q(5; 3).</span></span><span class="tag">применение</span></summary>
+        <div class="ans"><span class="mono">√((5−2)² + (3−(−1))²) = √(3² + 4²) = √(9+16) = √25 = 5</span>. Ответ <b>5</b>.</div>
+      </details>
+      <details>
+        <summary><span class="sq"><span class="qt">4) Найди длину отрезка KL: K(−3; 2), L(1; 2).</span></span><span class="tag">применение</span></summary>
+        <div class="ans">Ординаты равны → точки на одной горизонтали, вертикальный катет ноль: <span class="mono">|1 − (−3)| = 4</span>. Ответ <b>4</b>.</div>
+      </details>
+      <details>
+        <summary><span class="sq"><span class="qt">5) Найди ошибку: «расстояние между A(1; 5) и B(4; 1) равно (4−1)+(5−1)=7».</span></span><span class="tag">анализ</span></summary>
+        <div class="ans">Нельзя <b>складывать катеты</b> — отрезок это гипотенуза. Верно: <span class="mono">√(3² + (−4)²) = √(9+16) = √25 = 5</span>. Правильный ответ <b>5</b>, а не 7.</div>
+      </details>
+      <details>
+        <summary><span class="sq"><span class="qt">6) Равнобедренный ли треугольник с вершинами A(1; 1), B(4; 5), C(8; 2)?</span></span><span class="tag">анализ</span></summary>
+        <div class="ans">Считаем стороны: <span class="mono">AB = √(3²+4²) = 5</span>, <span class="mono">BC = √(4²+(−3)²) = 5</span>, <span class="mono">AC = √(7²+1²) = √50</span>. Две стороны равны (AB = BC = 5) → треугольник <b>равнобедренный</b>.</div>
+      </details>
+      <details>
+        <summary><span class="sq"><span class="qt">7) Треугольник A(0;0), B(4;0), C(0;3): периметр? Что изменится, если C поднять до (0;4)?</span></span><span class="tag">анализ</span></summary>
+        <div class="ans"><span class="mono">AB = 4</span>, <span class="mono">AC = 3</span>, <span class="mono">BC = √(4²+3²) = 5</span> → периметр <b>12</b>. Если C(0;4): <span class="mono">AC = 4</span>, <span class="mono">BC = √(4²+4²) = √32 = 4√2 ≈ 5,66</span> → периметр <span class="mono">8 + √32 ≈ 13,66</span> (гипотенуза перестала быть целой).</div>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <h2>Ловушки</h2>
+    <ul class="traps">
+      <li><b>Забывают извлечь корень.</b> Посчитали 9 + 16 = 25 и пишут «расстояние 25». Но 25 — это <span class="mono">расстояние²</span>. Последний шаг всегда — <span class="mono">√</span>.</li>
+      <li><b>Путаются в знаках разностей.</b> Особенно с отрицательными: <span class="mono">−1 − 3 = −4</span> (а не 2), <span class="mono">1 − (−2) = 3</span>. Записывай вычитание в скобках и раскрывай знак аккуратно.</li>
+      <li><b>Но в квадрате знак не важен.</b> Даже если разность вышла отрицательной, <span class="mono">(−4)² = 16</span> — тот же результат. Главное — найти саму разность верно, а знак потом исчезнет.</li>
+      <li><b>Складывают катеты.</b> <span class="mono">(x₂−x₁) + (y₂−y₁)</span> — это не расстояние. Отрезок это гипотенуза, её сложением катетов не получить.</li>
+      <li><b>Путают с формулой середины.</b> У середины — <b>полусумма</b> координат (деление на 2, ответ — точка). У расстояния — <b>корень из суммы квадратов</b> разностей (ответ — одно число).</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Объясни своими словами</h2>
+    <div class="check-self">
+      <ul>
+        <li>Из какой теоремы получается формула расстояния и почему в ней появляется корень?</li>
+        <li>Найди устно расстояние между (1; 1) и (1; 5). <span class="mono" style="color:var(--muted)">(ответ: 4 — точки на одной вертикали)</span></li>
+        <li>Чем формула расстояния отличается от формулы середины отрезка?</li>
+        <li>Изменится ли расстояние, если поменять точки A и B местами? Почему?</li>
+      </ul>
+    </div>
+  </section>
+
+  <div class="wrapup">
+    <h2>Запомни главное</h2>
+    <p class="big-rule">AB = √((x₂ − x₁)² + (y₂ − y₁)²)</p>
+    <p>Расстояние между двумя точками — это длина гипотенузы прямоугольного треугольника, катеты которого равны разностям координат. Не забудь корень, и следи за знаками разностей (в квадрате они всё равно исчезнут).</p>
+    <p class="next">👉 Дальше — <b>середина отрезка</b> (там координаты складывают и делят на 2) и <b>уравнение окружности</b> (окружность — это все точки на расстоянии R от центра, то есть та же формула расстояния = радиусу).</p>
+  </div>
+
+</div>
+
+<script>
+/* ===== Интерактивный чертёж: две точки + прямоугольный треугольник ===== */
+(function(){
+  var cv=document.getElementById('cv'); if(!cv) return;
+  var ctx=cv.getContext('2d'), eq=document.getElementById('diagEq');
+  var W=640,H=560,dpr=1;
+  var GX=6; // ось x от -GX до GX
+  var A={x:-2,y:-1}, B={x:2,y:2};
+  var drag=null;
+  function css(v){ return getComputedStyle(document.documentElement).getPropertyValue(v).trim()||'#000'; }
+  function minus(n){ return (n<0?'−':'')+Math.abs(n); }
+
+  function metrics(){
+    var pad=34;
+    var cell=Math.min((W-pad*2)/(2*GX), (H-pad*2)/(2*GY()));
+    return {cell:cell, ox:W/2, oy:H/2};
+  }
+  function GY(){ return Math.round(GX*(H/W)); }
+  function m(){ return metrics(); }
+  function PX(x){ return m().ox + x*m().cell; }
+  function PY(y){ return m().oy - y*m().cell; }
+  function invX(px){ return Math.round((px - m().ox)/m().cell); }
+  function invY(py){ return Math.round((m().oy - py)/m().cell); }
+
+  function resize(){
+    var c=cv.clientWidth||640; dpr=Math.min(window.devicePixelRatio||1,2);
+    W=c; H=Math.round(c*0.86);
+    cv.width=W*dpr; cv.height=H*dpr; cv.style.height=H+'px';
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+  }
+
+  function draw(){
+    var cell=m().cell, gy=GY();
+    ctx.clearRect(0,0,W,H);
+    // сетка
+    ctx.strokeStyle='#EDEFF4'; ctx.lineWidth=1;
+    for(var gx=-GX;gx<=GX;gx++){ ctx.beginPath(); ctx.moveTo(PX(gx),PY(gy)); ctx.lineTo(PX(gx),PY(-gy)); ctx.stroke(); }
+    for(var g=-gy;g<=gy;g++){ ctx.beginPath(); ctx.moveTo(PX(-GX),PY(g)); ctx.lineTo(PX(GX),PY(g)); ctx.stroke(); }
+    // оси
+    ctx.strokeStyle='#9AA3B2'; ctx.lineWidth=1.6;
+    ctx.beginPath(); ctx.moveTo(PX(-GX),PY(0)); ctx.lineTo(PX(GX),PY(0)); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(PX(0),PY(gy)); ctx.lineTo(PX(0),PY(-gy)); ctx.stroke();
+    ctx.fillStyle='#9AA3B2'; ctx.font='700 12px ui-monospace,Menlo,monospace';
+    ctx.textAlign='center'; ctx.textBaseline='top'; ctx.fillText('x', PX(GX)-6, PY(0)+6);
+    ctx.textAlign='left'; ctx.textBaseline='top'; ctx.fillText('y', PX(0)+6, PY(gy)+2);
+
+    var C={x:B.x,y:A.y}; // прямой угол
+    var same=(A.x===B.x&&A.y===B.y);
+    // катеты
+    if(!same){
+      ctx.lineWidth=4; ctx.lineCap='round';
+      // горизонтальный катет A->C  (Δx)
+      if(A.x!==B.x){ ctx.strokeStyle=css('--dx'); ctx.beginPath(); ctx.moveTo(PX(A.x),PY(A.y)); ctx.lineTo(PX(C.x),PY(C.y)); ctx.stroke(); }
+      // вертикальный катет C->B  (Δy)
+      if(A.y!==B.y){ ctx.strokeStyle=css('--dy'); ctx.beginPath(); ctx.moveTo(PX(C.x),PY(C.y)); ctx.lineTo(PX(B.x),PY(B.y)); ctx.stroke(); }
+      // прямой угол в C
+      if(A.x!==B.x && A.y!==B.y){
+        var s=Math.min(cell*0.34,14), sx=(A.x>B.x?1:-1), sy=(B.y>A.y?1:-1);
+        ctx.strokeStyle='#8A94A4'; ctx.lineWidth=1.4; ctx.beginPath();
+        ctx.moveTo(PX(C.x)+s*sx, PY(C.y));
+        ctx.lineTo(PX(C.x)+s*sx, PY(C.y)-s*sy);
+        ctx.lineTo(PX(C.x), PY(C.y)-s*sy);
+        ctx.stroke();
+      }
+    }
+    // гипотенуза AB (d)
+    ctx.strokeStyle=css('--dist'); ctx.lineWidth=4; ctx.lineCap='round';
+    ctx.beginPath(); ctx.moveTo(PX(A.x),PY(A.y)); ctx.lineTo(PX(B.x),PY(B.y)); ctx.stroke();
+
+    // подписи катетов
+    ctx.font='700 13px ui-monospace,Menlo,monospace';
+    if(A.x!==B.x){ ctx.fillStyle=css('--dx'); ctx.textAlign='center'; ctx.textBaseline=(B.y>A.y?'top':'bottom');
+      ctx.fillText('Δx='+Math.abs(B.x-A.x), (PX(A.x)+PX(C.x))/2, PY(A.y)+(B.y>A.y?6:-6)); }
+    if(A.y!==B.y){ ctx.fillStyle=css('--dy'); ctx.textAlign=(A.x>B.x?'left':'right'); ctx.textBaseline='middle';
+      ctx.fillText('Δy='+Math.abs(B.y-A.y), PX(C.x)+(A.x>B.x?7:-7), (PY(C.y)+PY(B.y))/2); }
+
+    // точки
+    [[A,'A'],[B,'B']].forEach(function(pair){
+      var p=pair[0];
+      ctx.fillStyle=css('--ink'); ctx.beginPath(); ctx.arc(PX(p.x),PY(p.y),7,0,7); ctx.fill();
+      ctx.fillStyle='#fff'; ctx.beginPath(); ctx.arc(PX(p.x),PY(p.y),3,0,7); ctx.fill();
+      ctx.fillStyle=css('--ink'); ctx.font='800 14px system-ui,sans-serif'; ctx.textAlign='left'; ctx.textBaseline='bottom';
+      ctx.fillText(pair[1]+'('+p.x+'; '+p.y+')', PX(p.x)+10, PY(p.y)-8);
+    });
+
+    // формула снизу
+    var dx=B.x-A.x, dy=B.y-A.y, sum=dx*dx+dy*dy, d=Math.sqrt(sum);
+    var dtxt = same ? '0' : (Number.isInteger(d)? d : (simp(sum).coef===1? '√'+sum : (simp(sum).coef+'√'+simp(sum).rad)));
+    eq.innerHTML='<span class="d">d</span> = √( (<span class="x">'+minus(dx)+'</span>)² + (<span class="y">'+minus(dy)+'</span>)² ) = √('+ (dx*dx) +' + '+ (dy*dy) +') = √'+sum+' = <b><span class="d">'+dtxt+'</span></b>'+(Number.isInteger(d)||same?'':' ≈ '+(Math.round(d*100)/100));
+  }
+
+  function simp(n){ var c=1,r=n; for(var k=Math.floor(Math.sqrt(n));k>=2;k--){ if(n%(k*k)===0){ c=k; r=n/(k*k); break; } } return {coef:c,rad:r}; }
+
+  // перетаскивание
+  function nearest(px,py){
+    var da=Math.hypot(px-PX(A.x),py-PY(A.y)), db=Math.hypot(px-PX(B.x),py-PY(B.y));
+    if(da<26&&da<=db) return A; if(db<26) return B; return null;
+  }
+  function pos(e){ var r=cv.getBoundingClientRect(); var t=e.touches?e.touches[0]:e; return {x:t.clientX-r.left, y:t.clientY-r.top}; }
+  function down(e){ var p=pos(e); drag=nearest(p.x,p.y); if(drag){ e.preventDefault(); move(e); } }
+  function move(e){ if(!drag) return; e.preventDefault(); var p=pos(e);
+    var nx=Math.max(-GX,Math.min(GX,invX(p.x))), ny=Math.max(-GY(),Math.min(GY(),invY(p.y)));
+    if(nx!==drag.x||ny!==drag.y){ drag.x=nx; drag.y=ny; draw(); } }
+  function up(){ drag=null; }
+  cv.addEventListener('mousedown',down); window.addEventListener('mousemove',move); window.addEventListener('mouseup',up);
+  cv.addEventListener('touchstart',down,{passive:false}); cv.addEventListener('touchmove',move,{passive:false}); window.addEventListener('touchend',up);
+
+  document.getElementById('ex1').addEventListener('click',function(){ A={x:-2,y:-1}; B={x:2,y:2}; draw(); });
+  document.getElementById('ex2').addEventListener('click',function(){ A={x:-3,y:-3}; B={x:3,y:1}; draw(); });
+  document.getElementById('ex3').addEventListener('click',function(){ A={x:-4,y:2}; B={x:3,y:2}; draw(); });
+
+  window.addEventListener('resize',function(){ resize(); draw(); });
+  resize(); draw();
+})();
+</script>
+
+<script>
+/* ===== Тренажёр-генератор ===== */
+(function(){
+  var taskEl=document.getElementById('trTask'), ansEl=document.getElementById('trAns'), resEl=document.getElementById('trResult');
+  if(!taskEl) return;
+  var cur=null;
+  function ri(a,b){ return Math.floor(Math.random()*(b-a+1))+a; }
+  function sign(){ return Math.random()<0.5?-1:1; }
+  function minus(n){ return (n<0?'−':'')+Math.abs(n); }
+  var triples=[[3,4],[6,8],[5,12],[8,15],[9,12],[7,24],[12,16]];
+  function isPerfect(n){ var r=Math.round(Math.sqrt(n)); return r*r===n; }
+  function simp(n){ var c=1,r=n; for(var k=Math.floor(Math.sqrt(n));k>=2;k--){ if(n%(k*k)===0){ c=k; r=n/(k*k); break; } } return {coef:c,rad:r}; }
+  function radText(n){ if(isPerfect(n)) return ''+Math.round(Math.sqrt(n)); var s=simp(n); return (s.coef===1?'√'+s.rad:s.coef+'√'+s.rad); }
+
+  function generate(){
+    var r=Math.random(), dx,dy;
+    if(r<0.5){ // пифагорова тройка — целый ответ
+      var t=triples[ri(0,triples.length-1)]; dx=t[0]*sign(); dy=t[1]*sign(); if(Math.random()<0.5){ var tmp=dx; dx=dy; dy=tmp; }
+    } else if(r<0.72){ // на одной линии — целый ответ
+      if(Math.random()<0.5){ dx=ri(1,9)*sign(); dy=0; } else { dx=0; dy=ri(1,9)*sign(); }
+    } else { // некрасивый — ответ с корнем
+      do{ dx=ri(1,6)*sign(); dy=ri(1,6)*sign(); } while(isPerfect(dx*dx+dy*dy) || (dx===0&&dy===0));
+    }
+    var ax=ri(-5,4), ay=ri(-5,4), bx=ax+dx, by=ay+dy;
+    cur={ax:ax,ay:ay,bx:bx,by:by};
+    taskEl.innerHTML='Найди расстояние между <b>A('+minus(ax)+'; '+minus(ay)+')</b> и <b>B('+minus(bx)+'; '+minus(by)+')</b>.';
+    resEl.innerHTML=''; ansEl.value='';
+  }
+  function sumSq(){ return (cur.bx-cur.ax)*(cur.bx-cur.ax)+(cur.by-cur.ay)*(cur.by-cur.ay); }
+
+  function solHTML(){
+    var dx=cur.bx-cur.ax, dy=cur.by-cur.ay, S=sumSq();
+    var h='<div class="sol">';
+    h+='x₂ − x₁ = '+minus(cur.bx)+' − ('+minus(cur.ax)+') = '+minus(dx)+'<br>';
+    h+='y₂ − y₁ = '+minus(cur.by)+' − ('+minus(cur.ay)+') = '+minus(dy)+'<br>';
+    h+='d = √( ('+minus(dx)+')² + ('+minus(dy)+')² ) = √('+(dx*dx)+' + '+(dy*dy)+') = √'+S+'<br>';
+    if(isPerfect(S)){ h+='d = √'+S+' = <b>'+Math.round(Math.sqrt(S))+'</b>'; }
+    else { var s=simp(S); var pretty=(s.coef===1?'√'+s.rad:s.coef+'√'+s.rad); h+='d = √'+S+' = <b>'+pretty+'</b> ≈ '+(Math.round(Math.sqrt(S)*100)/100); }
+    return h+'</div>';
+  }
+  function parseAns(raw){
+    raw=raw.trim().toLowerCase().replace(/\s+/g,'').replace('sqrt','√').replace('корень','√').replace('изв','').replace(',', '.');
+    if(raw==='') return NaN;
+    // формы: a√b , √b , a*√b , число
+    var mfull=raw.match(/^(\d+(?:\.\d+)?)?[*·]?√(\d+(?:\.\d+)?)$/);
+    if(mfull){ var c=mfull[1]?parseFloat(mfull[1]):1; return c*Math.sqrt(parseFloat(mfull[2])); }
+    var num=parseFloat(raw); return isNaN(num)?NaN:num;
+  }
+  function check(){
+    var got=parseAns(ansEl.value);
+    if(isNaN(got)){ resEl.innerHTML='<span class="bad">Введи ответ (число или √N) или нажми «Решение».</span>'; return; }
+    var exp=Math.sqrt(sumSq());
+    if(Math.abs(got-exp)<0.03){ resEl.innerHTML='<span class="ok">✓ Верно!</span>'+solHTML(); }
+    else{ resEl.innerHTML='<span class="bad">✗ Пока не то — глянь решение.</span>'+solHTML(); }
+  }
+  document.getElementById('trNew').addEventListener('click',function(){ generate(); ansEl.focus(); });
+  document.getElementById('trCheck').addEventListener('click',check);
+  document.getElementById('trShow').addEventListener('click',function(){ resEl.innerHTML=solHTML(); });
+  ansEl.addEventListener('keydown',function(e){ if(e.key==='Enter') check(); });
+  // стартовое состояние = 3-4-5, совпадает с показанной задачей (без focus при первичной генерации)
+  cur={ax:-2,ay:-1,bx:2,by:2};
+})();
+</script>

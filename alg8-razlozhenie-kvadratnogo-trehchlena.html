@@ -1,0 +1,510 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Разложение квадратного трёхчлена на множители — алгебра 8 класс</title>
+<style>
+  :root{
+    --paper:#F6F7F9;
+    --card:#FFFFFF;
+    --ink:#1B2333;
+    --muted:#5A6478;
+    --line:#E2E5EC;
+    --accent:#3B4FD0;
+    --accent-soft:#EAEDFB;
+    /* семантический цвет-код разложения */
+    --ca:#3B4FD0;   --ca-bg:#EAEDFB;   /* a — старший коэффициент */
+    --cx1:#1E8E5A;  --cx1-bg:#E7F4EC;  /* x₁ — первый корень */
+    --cx2:#B9791A;  --cx2-bg:#FBF1DC;  /* x₂ — второй корень */
+    --no:#C0455B;   --no-bg:#F9E9EC;   /* D<0 — не раскладывается */
+    --ok:#1E8E5A;
+  }
+  *{box-sizing:border-box}
+  body{margin:0}
+  .wrap{
+    max-width:760px;margin:0 auto;
+    padding:clamp(1.4rem,4vw,3rem) clamp(1.1rem,4vw,2rem) 4rem;
+    background:var(--paper);color:var(--ink);
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    font-size:17px;line-height:1.62;-webkit-font-smoothing:antialiased;
+  }
+  .eyebrow{font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);font-weight:600;margin:0 0 .5rem}
+  h1{font-family:Georgia,"Times New Roman",serif;font-size:clamp(2rem,6.4vw,2.8rem);line-height:1.06;margin:0;font-weight:700;letter-spacing:-.01em;text-wrap:balance}
+  .lede{font-size:1.08rem;color:var(--muted);margin:.7rem 0 0;max-width:60ch;text-wrap:pretty}
+  h2{font-family:Georgia,serif;font-size:1.32rem;font-weight:700;margin:0 0 .1rem;letter-spacing:-.005em}
+  section{margin-top:2.6rem}
+  .kicker{font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:600;margin:0 0 .8rem;display:flex;align-items:center;gap:.6rem}
+  .kicker::before{content:"";width:1.4rem;height:2px;background:var(--accent);border-radius:2px}
+  p{margin:.65rem 0}
+  strong{font-weight:650}
+  .math{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-weight:600}
+  sup{font-size:.72em}
+  sub{font-size:.72em}
+  /* семантические токены цвета */
+  .va{color:var(--ca);font-weight:800}
+  .vx1{color:var(--cx1);font-weight:800}
+  .vx2{color:var(--cx2);font-weight:800}
+
+  /* Главная формула */
+  .hero-formula{margin-top:2.2rem;background:var(--ink);color:#fff;border-radius:14px;padding:1.6rem 1.4rem;text-align:center}
+  .hero-formula .lbl{font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:#9aa6c9;margin:0 0 .7rem}
+  .hero-formula .eq{font-family:ui-monospace,"SF Mono",Menlo,monospace;font-size:clamp(1.35rem,5.2vw,2.05rem);font-weight:700;letter-spacing:.01em}
+  .hero-formula .eq .a{color:#8ea0ff}
+  .hero-formula .eq .r1{color:#7fd8a6}
+  .hero-formula .eq .r2{color:#f0c674}
+  .hero-formula .note{font-size:.86rem;color:#9aa6c9;margin:.9rem 0 0}
+
+  /* Пререквизит */
+  .recall{background:var(--accent-soft);border-radius:12px;padding:1rem 1.15rem;font-size:.96rem}
+  .recall p{margin:.3rem 0}
+
+  /* легенда цвет-кода */
+  .legend{display:grid;gap:.7rem;margin-top:.4rem}
+  @media(min-width:560px){.legend{grid-template-columns:repeat(3,1fr)}}
+  .lg{border-radius:12px;padding:.85rem 1rem;border:1px solid var(--line);display:flex;flex-direction:column;gap:.2rem}
+  .lg .s{font-family:ui-monospace,Menlo,monospace;font-weight:800;font-size:1.2rem}
+  .lg .t{font-size:.88rem;color:var(--muted)}
+  .lg.a{background:var(--ca-bg);border-top:4px solid var(--ca)} .lg.a .s{color:var(--ca)}
+  .lg.x1{background:var(--cx1-bg);border-top:4px solid var(--cx1)} .lg.x1 .s{color:var(--cx1)}
+  .lg.x2{background:var(--cx2-bg);border-top:4px solid var(--cx2)} .lg.x2 .s{color:var(--cx2)}
+
+  /* цветной пример */
+  .colored{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:1.15rem 1.3rem;margin-top:1rem;text-align:center;font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:clamp(1.05rem,4.4vw,1.4rem);line-height:1.9}
+
+  /* три случая по D */
+  .cases{display:grid;gap:.85rem;margin-top:.4rem}
+  @media(min-width:620px){.cases{grid-template-columns:repeat(3,1fr)}}
+  .case{border-radius:12px;padding:1.05rem 1.1rem;border:1px solid var(--line);background:var(--card);display:flex;flex-direction:column;gap:.35rem}
+  .case .sign{font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.05rem}
+  .case .count{font-weight:650;font-size:.98rem}
+  .case .desc{font-size:.88rem;color:var(--muted)}
+  .case.pos{border-top:4px solid var(--cx1);background:var(--cx1-bg)} .case.pos .sign{color:var(--cx1)}
+  .case.zero{border-top:4px solid var(--cx2);background:var(--cx2-bg)} .case.zero .sign{color:var(--cx2)}
+  .case.neg{border-top:4px solid var(--no);background:var(--no-bg)} .case.neg .sign{color:var(--no)}
+
+  /* Разбор */
+  .worked{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:1.2rem 1.3rem}
+  .worked .task{font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.05rem;margin:0 0 1rem;padding-bottom:.8rem;border-bottom:1px solid var(--line)}
+  ol.steps{margin:0;padding:0;list-style:none;counter-reset:s;display:flex;flex-direction:column;gap:.75rem}
+  ol.steps li{position:relative;padding-left:2.1rem;counter-increment:s}
+  ol.steps li::before{content:counter(s);position:absolute;left:0;top:.05rem;width:1.5rem;height:1.5rem;border-radius:50%;background:var(--accent-soft);color:var(--accent);font-size:.82rem;font-weight:700;display:flex;align-items:center;justify-content:center}
+  ol.steps .m{font-family:ui-monospace,Menlo,monospace;font-weight:600;color:var(--ink)}
+  ol.steps .why{color:var(--muted);font-size:.9rem}
+  .verdict{margin-top:1rem;padding:.7rem 1rem;background:var(--cx1-bg);border-radius:9px;font-weight:600;color:var(--cx1);font-size:.98rem;font-family:ui-monospace,Menlo,monospace}
+
+  /* Практика / details */
+  .drill{display:flex;flex-direction:column;gap:.7rem}
+  details{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:.85rem 1.05rem}
+  details[open]{border-color:var(--accent)}
+  summary{cursor:pointer;font-weight:600;list-style:none;display:flex;justify-content:space-between;align-items:center;gap:1rem}
+  summary::-webkit-details-marker{display:none}
+  summary .q{font-family:ui-monospace,Menlo,monospace}
+  summary .tag{font-size:.66rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);border:1px solid var(--line);border-radius:20px;padding:.1rem .55rem;white-space:nowrap}
+  summary::after{content:"ответ";font-size:.78rem;color:var(--accent);font-weight:600;white-space:nowrap;margin-left:auto}
+  details[open] summary::after{content:"скрыть"}
+  .ans{margin-top:.7rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.96rem;color:var(--muted)}
+  .ans .m{font-family:ui-monospace,Menlo,monospace;color:var(--ink);font-weight:600}
+  .ans b{color:var(--ink)}
+
+  /* Ошибки */
+  ul.pitfalls{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:.6rem}
+  ul.pitfalls li{padding-left:1.5rem;position:relative;font-size:.98rem}
+  ul.pitfalls li::before{content:"×";position:absolute;left:0;top:-.05rem;color:var(--no);font-weight:700;font-size:1.1rem}
+  ul.pitfalls b{color:var(--ink)}
+
+  /* Проверка понимания */
+  .selfcheck{background:var(--accent-soft);border-radius:12px;padding:1.1rem 1.25rem}
+  .selfcheck ol{margin:.4rem 0 0;padding-left:1.2rem;display:flex;flex-direction:column;gap:.45rem}
+  .selfcheck li{font-size:.98rem}
+
+  .next{background:var(--accent);color:#fff;border-radius:12px;padding:1.2rem 1.3rem}
+  .next h2{color:#fff}
+  .next .eq{font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.15rem;margin:.6rem 0 .3rem}
+  .next p{color:#dfe4fb;font-size:.96rem;margin:.4rem 0 0}
+  .foot{margin-top:2.4rem;font-size:.82rem;color:var(--muted);text-align:center}
+
+  @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="wrap">
+
+  <header>
+    <p class="eyebrow">Алгебра · 8 класс</p>
+    <h1>Разложение квадратного трёхчлена на множители</h1>
+    <p class="lede">Свернуть <em>ax² + bx + c</em> в произведение скобок — и длинные выражения вдруг начинают сокращаться и решаться в уме.</p>
+  </header>
+
+  <div class="hero-formula">
+    <p class="lbl">Главная формула темы</p>
+    <div class="eq"><span class="a">a</span>x<sup>2</sup> + bx + c = <span class="a">a</span>(x − <span class="r1">x<sub>1</sub></span>)(x − <span class="r2">x<sub>2</sub></span>)</div>
+    <p class="note"><span style="color:#8ea0ff">a</span> — старший коэффициент · <span style="color:#7fd8a6">x₁</span>, <span style="color:#f0c674">x₂</span> — корни трёхчлена</p>
+  </div>
+
+  <section>
+    <p class="kicker">Зачем это нужно</p>
+    <h2>Трёхчлен — это «сжатые» скобки</h2>
+    <p>Квадратный трёхчлен <span class="math">ax² + bx + c</span> — это свёрнутая запись произведения двух скобок. Научишься разворачивать её обратно — и станет проще многое:</p>
+    <ul>
+      <li><strong>Сокращение дробей.</strong> Дробь <span class="math">(x²−5x+6)/(x−2)</span> выглядит страшно, но после разложения числителя это <span class="math">(x−2)(x−3)/(x−2) = x−3</span>. Без разложения сократить нельзя.</li>
+      <li><strong>Решение уравнений.</strong> Произведение равно нулю, когда один из множителей — ноль. Это самый быстрый способ найти корни.</li>
+      <li><strong>ОГЭ и подготовка к 9 классу.</strong> При построении параболы разложение сразу показывает точки пересечения с осью Ox.</li>
+    </ul>
+    <p>Главный миф: «любой трёхчлен можно разложить на множители». Нет. Если у трёхчлена нет корней (дискриминант <span class="math">D&lt;0</span>), на множители с обычными числами он <strong>не раскладывается</strong>.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Что вспомнить перед стартом</p>
+    <div class="recall">
+      <p><strong>Корни квадратного уравнения.</strong> Разложить = сначала найти корни трёхчлена, то есть решить <span class="math">ax²+bx+c=0</span>.</p>
+      <p><strong>Дискриминант.</strong> <span class="math">D = b²−4ac</span>. Он заранее говорит, есть ли корни: <span class="math">D&gt;0</span> — два, <span class="math">D=0</span> — один, <span class="math">D&lt;0</span> — нет.</p>
+      <p><strong>Теорема Виета.</strong> Для приведённого <span class="math">x²+px+q</span> корни подбираются устно: сумма <span class="math">= −p</span>, произведение <span class="math">= q</span>. Часто корни видно без дискриминанта.</p>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Ядро темы · правило</p>
+    <h2>Найти корни — и записать через скобки</h2>
+    <p>Если <span class="vx1">x₁</span> и <span class="vx2">x₂</span> — корни трёхчлена <span class="math">ax²+bx+c</span> (то есть корни уравнения <span class="math">ax²+bx+c=0</span>), то</p>
+    <div class="colored"><span class="va">a</span>x² + bx + c = <span class="va">a</span>(x − <span class="vx1">x₁</span>)(x − <span class="vx2">x₂</span>)</div>
+    <div class="legend">
+      <div class="lg a"><span class="s">a</span><span class="t">старший коэффициент (при x²), a ≠ 0. <b>Обязательно</b> выносится множителем перед скобками.</span></div>
+      <div class="lg x1"><span class="s">x₁</span><span class="t">первый корень. Ставится в скобку со знаком минус: (x − x₁).</span></div>
+      <div class="lg x2"><span class="s">x₂</span><span class="t">второй корень. Тоже через минус: (x − x₂).</span></div>
+    </div>
+    <p style="margin-top:1rem"><strong>Знаки — место частых ошибок.</strong> Если корень отрицательный, например <span class="math">x₁ = −3</span>, то скобка получается <span class="math">(x − (−3)) = (x + 3)</span>. Минус в формуле и минус корня дают плюс.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Сначала проверь, возможно ли разложение</p>
+    <h2>Три случая по знаку D</h2>
+    <p>Перед разложением всегда смотри на дискриминант — он решает, будет ли что раскладывать:</p>
+    <div class="cases">
+      <div class="case pos">
+        <div class="sign">D &gt; 0</div>
+        <div class="count">Два разных корня</div>
+        <div class="desc">Раскладывается: <span class="math">a(x−x₁)(x−x₂)</span>.</div>
+      </div>
+      <div class="case zero">
+        <div class="sign">D = 0</div>
+        <div class="count">Один корень (кратный)</div>
+        <div class="desc">Раскладывается: <span class="math">a(x−x₁)²</span>.</div>
+      </div>
+      <div class="case neg">
+        <div class="sign">D &lt; 0</div>
+        <div class="count">Корней нет</div>
+        <div class="desc">На множители <b>не раскладывается</b>.</div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Разбираем вместе · думаю вслух</p>
+    <h2>Эталонный пример</h2>
+    <div class="worked">
+      <p class="task">Разложить 2x² − 10x + 12</p>
+      <ol class="steps">
+        <li>Выписываем коэффициенты: <span class="m">a = 2, b = −10, c = 12</span>. <span class="why">Замечаю: a ≠ 1 — значит, его придётся вынести в ответ, не потерять.</span></li>
+        <li>Считаю дискриминант: <span class="m">D = (−10)² − 4·2·12 = 100 − 96 = 4</span>. <span class="why">D &gt; 0 — корни есть, разложение возможно.</span></li>
+        <li>Нахожу корни: <span class="m">x = (10 ± √4)/(2·2) = (10 ± 2)/4</span>, значит <span class="m"><span class="vx1">x₁ = 3</span></span>, <span class="m"><span class="vx2">x₂ = 2</span></span>. <span class="why">Это значения, где трёхчлен равен нулю.</span></li>
+        <li>Записываю по формуле: <span class="m">2x² − 10x + 12 = <span class="va">2</span>(x − <span class="vx1">3</span>)(x − <span class="vx2">2</span>)</span>. <span class="why">Множитель a=2 спереди обязателен: без него скобки дали бы x²−5x+6 — в 2 раза меньше нужного.</span></li>
+        <li>Проверка: <span class="m">2·(x−3)(x−2) = 2·(x²−5x+6) = 2x²−10x+12</span>. <span class="why">Совпало с исходным — значит, верно.</span></li>
+      </ol>
+      <div class="verdict">Ответ: 2x² − 10x + 12 = 2(x − 3)(x − 2)</div>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Наглядность · корни на графике</p>
+    <h2>Разложение = нули параболы</h2>
+    <p>Корни трёхчлена — это точки, где парабола <span class="math">y = ax²+bx+c</span> пересекает ось <span class="math">Ox</span>. Разложение просто «называет» эти точки. А если корней нет (<span class="math">D&lt;0</span>) — парабола до оси не достаёт, и раскладывать нечего.</p>
+    <div class="para">
+      <div class="para-tabs" id="paraTabs">
+        <button type="button" class="on" data-i="0">x² − 5x + 6</button>
+        <button type="button" data-i="1">2x² − 10x + 12</button>
+        <button type="button" data-i="2">x² + x + 1</button>
+      </div>
+      <canvas id="parab" width="640" height="360" aria-label="Парабола с отмеченными корнями"></canvas>
+      <div id="paraVerdict" class="para-verdict"></div>
+    </div>
+    <p style="font-size:.9rem;color:var(--muted)">Зелёная и янтарная точки — это <span class="vx1">x₁</span> и <span class="vx2">x₂</span>, те самые числа из скобок разложения.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Тренажёр · бесконечная практика</p>
+    <h2>Разложи трёхчлен сам</h2>
+    <p>Нажми «Новый трёхчлен». Найди его корни и впиши их через <b>точку с запятой</b> (a виден в самом трёхчлене — его выносить не нужно, только назови корни). Если корней нет — напиши «нет». Потом проверь себя или посмотри полное решение со скобками.</p>
+    <div class="trainer">
+      <div class="tr-eq" id="trEq">2x² − 10x + 12</div>
+      <div class="tr-ctl">
+        <button id="trNew" type="button">🎲 Новый трёхчлен</button>
+        <input id="trAns" type="text" placeholder="напр.  3; 2   или   нет" aria-label="Корни">
+        <button id="trCheck" type="button" class="sec">Проверить</button>
+        <button id="trShow" type="button" class="ghost">Показать решение</button>
+      </div>
+      <div id="trResult" class="tr-result"></div>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Практика по нарастанию · нажми, чтобы проверить</p>
+    <h2>Реши сам</h2>
+    <div class="drill">
+      <details>
+        <summary><span class="q">Вставь число: x² − 9x + 20 = (x − 4)(x − *)</span><span class="tag">понимание</span></summary>
+        <div class="ans">Корни в сумме дают 9, в произведении 20. Один корень 4, значит второй — <b>5</b> (4·5=20, 4+5=9). Ответ: <span class="m">*= 5</span>.</div>
+      </details>
+      <details>
+        <summary><span class="q">Можно ли разложить x² + x + 1?</span><span class="tag">понимание</span></summary>
+        <div class="ans"><span class="m">D = 1² − 4·1·1 = 1 − 4 = −3 &lt; 0</span> → корней нет → <b>не раскладывается.</b></div>
+      </details>
+      <details>
+        <summary><span class="q">Разложить x² − x − 12</span><span class="tag">применение</span></summary>
+        <div class="ans"><span class="m">D = 1 + 48 = 49</span>, корни <span class="m"><span class="vx1">x₁ = 4</span>, <span class="vx2">x₂ = −3</span></span>. Ответ: <span class="m">(x − 4)(x + 3)</span>. <b>Внимание:</b> x₂=−3 даёт скобку (x+3).</div>
+      </details>
+      <details>
+        <summary><span class="q">Разложить 5x² − 5</span><span class="tag">применение</span></summary>
+        <div class="ans">Здесь <span class="m">b=0, c=−5</span>. Корни: <span class="m">5x²=5 → x²=1 → x₁=1, x₂=−1</span>. Не забудь множитель <span class="va">a=5</span>: <span class="m">5(x − 1)(x + 1)</span>.</div>
+      </details>
+      <details>
+        <summary><span class="q">Что изменится для x² − 6x + 9, если D = 0?</span><span class="tag">анализ</span></summary>
+        <div class="ans"><span class="m">D = 36 − 36 = 0</span> → один корень <span class="m">x = 3</span>. Скобки совпадают: разложение <span class="m">(x − 3)²</span>, а не две разные скобки.</div>
+      </details>
+      <details>
+        <summary><span class="q">Найди ошибку: 2x² − 8x + 6 = (x − 1)(x − 3)</span><span class="tag">анализ</span></summary>
+        <div class="ans">Потерян множитель <span class="va">a = 2</span>. Скобки дают только <span class="m">x²−4x+3</span> — всё в 2 раза меньше. Верно: <span class="m">2(x − 1)(x − 3)</span>.</div>
+      </details>
+      <details>
+        <summary><span class="q">Обратная задача: трёхчлен разложился как (x + 5)(x − 2). Восстанови его.</span><span class="tag">анализ</span></summary>
+        <div class="ans">Раскрываем скобки: <span class="m">(x+5)(x−2) = x² − 2x + 5x − 10 = x² + 3x − 10</span>.</div>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Где чаще всего ошибаются</p>
+    <h2>Лови эти ловушки</h2>
+    <ul class="pitfalls">
+      <li><b>Забывают старший коэффициент a.</b> Пишут <span class="math">2x²−10x+12 = (x−3)(x−2)</span>, но скобки дают лишь <span class="math">x²−5x+6</span> — в 2 раза меньше. Если <span class="math">a≠1</span> — всегда выноси его спереди и проверяй раскрытием.</li>
+      <li><b>Путают знаки корней в скобках.</b> Корень <span class="math">x₁=−3</span>, а пишут <span class="math">(x−3)</span> вместо <span class="math">(x+3)</span>. Подставляй корень в формулу механически: <span class="math">(x−(−3)) = (x+3)</span>.</li>
+      <li><b>Раскладывают, когда корней нет.</b> При <span class="math">D&lt;0</span> пытаются «подобрать» скобки. Сначала считай D — если <span class="math">D&lt;0</span>, пиши «не раскладывается».</li>
+      <li><b>Бросают деление на 2a.</b> Находят <span class="math">(b±√D)</span>, но забывают разделить на знаменатель <span class="math">2a</span>. Проговаривай формулу корней целиком.</li>
+    </ul>
+  </section>
+
+  <section>
+    <p class="kicker">Проверка понимания</p>
+    <h2>Объясни своими словами</h2>
+    <div class="selfcheck">
+      <p>Закрой урок и ответь вслух (или запиши):</p>
+      <ol>
+        <li>По какой формуле раскладывают квадратный трёхчлен через его корни?</li>
+        <li>Что нужно проверить <em>перед</em> разложением, чтобы понять, возможно ли оно вообще?</li>
+        <li>Куда девается старший коэффициент <span class="math">a</span>, если он не равен 1?</li>
+        <li>Почему корень <span class="math">x₁ = −3</span> даёт скобку <span class="math">(x + 3)</span>, а не <span class="math">(x − 3)</span>?</li>
+      </ol>
+    </div>
+  </section>
+
+  <section>
+    <div class="next">
+      <h2>Что дальше</h2>
+      <p>Теперь у тебя есть главный инструмент для <strong>сокращения рациональных дробей</strong>. Разложи числитель и знаменатель — и одинаковые скобки сократятся:</p>
+      <div class="eq">(x² − 5x + 6)/(x − 2) = (x − 2)(x − 3)/(x − 2) = x − 3</div>
+      <p>Отсюда прямая дорога к дробно-рациональным уравнениям — там разложение нужно на каждом шаге.</p>
+    </div>
+  </section>
+
+  <p class="foot">Итог: разложить трёхчлен — значит найти корни и записать ax² + bx + c = a(x − x₁)(x − x₂), не потеряв ни множитель a, ни знаки корней.</p>
+
+</div>
+
+<style>
+  .para{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.1rem;margin:1rem 0}
+  .para-tabs{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:.9rem}
+  .para-tabs button{font:inherit;font-weight:700;font-size:.85rem;font-family:ui-monospace,Menlo,monospace;cursor:pointer;border:1px solid var(--line);background:#fff;color:var(--muted);border-radius:9px;padding:.4rem .7rem}
+  .para-tabs button.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .para-tabs button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+  .para canvas{width:100%;height:auto;display:block;border-radius:10px;background:#FCFDFF}
+  .para-verdict{text-align:center;font-weight:700;font-size:1rem;margin:.8rem 0 0;padding:.55rem;border-radius:9px;font-family:ui-monospace,Menlo,monospace}
+  .para-verdict.pos{background:var(--cx1-bg);color:var(--cx1)}
+  .para-verdict.neg{background:var(--no-bg);color:var(--no)}
+</style>
+
+<script>
+(function(){
+  var canvas=document.getElementById('parab'); if(!canvas) return;
+  var ctx=canvas.getContext('2d');
+  var verdict=document.getElementById('paraVerdict');
+  var tabs=document.getElementById('paraTabs');
+  // {a,b,c} — примеры; корни считаем сами
+  var EX=[
+    {a:1,b:-5,c:6},     // (x−2)(x−3)
+    {a:2,b:-10,c:12},   // 2(x−3)(x−2)
+    {a:1,b:1,c:1}       // D<0
+  ];
+  var idx=0, W=640,H=360,dpr=1,RANGE=8;
+
+  function resize(){
+    var cssW=canvas.clientWidth||640; dpr=Math.min(window.devicePixelRatio||1,2);
+    W=cssW; H=Math.round(cssW*0.6);
+    canvas.width=W*dpr; canvas.height=H*dpr; canvas.style.height=H+'px';
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+  }
+  function X(x){ return W/2 + x*(W/(2*RANGE)); }
+  function Y(y){ var yr=RANGE*(H/W); return H/2 - y*(H/(2*yr)); }
+  function fmt(n){ n=Math.round(n*100)/100; return (n<0?'−':'')+Math.abs(n); }
+
+  function draw(){
+    var e=EX[idx], a=e.a,b=e.b,c=e.c;
+    ctx.clearRect(0,0,W,H);
+    // сетка
+    ctx.strokeStyle='#EDEFF4'; ctx.lineWidth=1;
+    for(var gx=-RANGE;gx<=RANGE;gx++){ ctx.beginPath(); ctx.moveTo(X(gx),0); ctx.lineTo(X(gx),H); ctx.stroke(); }
+    var yr=Math.round(RANGE*(H/W));
+    for(var gy=-yr;gy<=yr;gy++){ ctx.beginPath(); ctx.moveTo(0,Y(gy)); ctx.lineTo(W,Y(gy)); ctx.stroke(); }
+    // оси
+    ctx.strokeStyle='#9AA3B2'; ctx.lineWidth=1.5;
+    ctx.beginPath(); ctx.moveTo(0,Y(0)); ctx.lineTo(W,Y(0)); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(X(0),0); ctx.lineTo(X(0),H); ctx.stroke();
+
+    var D=b*b-4*a*c;
+    var col = D<-0.001 ? getCSS('--no') : getCSS('--accent');
+    // кривая
+    ctx.strokeStyle=col; ctx.lineWidth=3; ctx.beginPath();
+    var first=true;
+    for(var px=0;px<=W;px+=2){
+      var x=(px-W/2)/(W/(2*RANGE));
+      var y=a*x*x+b*x+c;
+      var py=Y(y);
+      if(first){ ctx.moveTo(px,py); first=false; } else ctx.lineTo(px,py);
+    }
+    ctx.stroke();
+
+    // корни
+    if(D>=-0.001){
+      var sq=Math.sqrt(Math.max(D,0));
+      var x1=(-b-sq)/(2*a), x2=(-b+sq)/(2*a);
+      var pts=[{x:x1,col:getCSS('--cx1'),lab:'x₁'},{x:x2,col:getCSS('--cx2'),lab:'x₂'}];
+      pts.forEach(function(pt){
+        ctx.fillStyle=pt.col; ctx.beginPath(); ctx.arc(X(pt.x),Y(0),7,0,7); ctx.fill();
+        ctx.fillStyle='#fff'; ctx.beginPath(); ctx.arc(X(pt.x),Y(0),2.6,0,7); ctx.fill();
+        ctx.fillStyle=pt.col; ctx.font='700 13px ui-monospace,Menlo,monospace'; ctx.textAlign='center';
+        ctx.fillText(pt.lab+'='+fmt(pt.x), X(pt.x), Y(0)+22);
+      });
+    }
+    // вердикт
+    verdict.className='para-verdict';
+    if(D<-0.001){
+      verdict.classList.add('neg');
+      verdict.textContent='D = '+fmt(D)+' < 0 · корней нет · не раскладывается';
+    } else {
+      verdict.classList.add('pos');
+      var sq2=Math.sqrt(Math.max(D,0)), r1=(-b-sq2)/(2*a), r2=(-b+sq2)/(2*a);
+      var af = a===1?'':a;
+      verdict.textContent = af+'(x − '+fmt(r1)+')(x − '+fmt(r2)+')';
+    }
+  }
+  function getCSS(v){ return getComputedStyle(document.documentElement).getPropertyValue(v).trim()||'#3B4FD0'; }
+
+  tabs.addEventListener('click',function(e){
+    var btn=e.target.closest('button'); if(!btn) return;
+    idx=parseInt(btn.getAttribute('data-i'),10);
+    [].forEach.call(tabs.querySelectorAll('button'),function(b){ b.classList.toggle('on',b===btn); });
+    draw();
+  });
+  window.addEventListener('resize',function(){ resize(); draw(); });
+  resize(); draw();
+})();
+</script>
+
+<style>
+  .trainer{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.2rem 1.3rem;margin-top:1rem}
+  .tr-eq{font-family:ui-monospace,Menlo,monospace;font-weight:800;font-size:clamp(1.3rem,5vw,1.7rem);text-align:center;padding:1rem;background:var(--accent-soft);border-radius:10px;color:var(--ink)}
+  .tr-ctl{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.9rem;align-items:center}
+  .tr-ctl button{font:inherit;font-weight:700;font-size:.9rem;cursor:pointer;border:none;border-radius:9px;padding:.55rem .95rem;color:#fff;background:var(--accent)}
+  .tr-ctl button.sec{background:var(--ok)}
+  .tr-ctl button.ghost{background:transparent;color:var(--accent);border:1px solid var(--accent)}
+  .tr-ctl input{flex:1;min-width:150px;font:inherit;padding:.5rem .7rem;border:1px solid var(--line);border-radius:9px;background:#fff;color:var(--ink)}
+  .tr-ctl button:focus-visible,.tr-ctl input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+  .tr-result{margin-top:.9rem;font-size:.96rem;min-height:1.2rem}
+  .tr-result .ok{color:var(--ok);font-weight:700}
+  .tr-result .bad{color:var(--no);font-weight:700}
+  .tr-result .sol{margin-top:.7rem;padding:.85rem 1rem;background:#FCFBFE;border:1px solid var(--line);border-radius:10px;font-family:ui-monospace,Menlo,monospace;font-size:.9rem;line-height:1.8}
+  .tr-result .sol b{color:var(--accent)}
+</style>
+
+<script>
+(function(){
+  var eqEl=document.getElementById('trEq'), ansEl=document.getElementById('trAns'), resEl=document.getElementById('trResult');
+  if(!eqEl) return;
+  var cur={a:2,b:-10,c:12,x1:3,x2:2,noRoots:false};
+  function ri(min,max){ return Math.floor(Math.random()*(max-min+1))+min; }
+  function fmt(n){ n=Math.round(n*100)/100; if(n===0)n=0; return (n<0?'−':'')+Math.abs(n); }
+
+  function fmtTri(q){
+    var s = (q.a===1?'':(q.a===-1?'−':q.a))+'x²';
+    if(q.b!==0) s += (q.b<0?' − ':' + ')+(Math.abs(q.b)===1?'':Math.abs(q.b))+'x';
+    if(q.c!==0) s += (q.c<0?' − ':' + ')+Math.abs(q.c);
+    return s;
+  }
+  // скобка (x − x1): если корень отрицателен → (x + |x1|)
+  function bracket(r){
+    if(r===0) return 'x';
+    return '(x '+(r<0?'+ '+Math.abs(r):'− '+r)+')';
+  }
+  function generate(){
+    if(Math.random()<0.8){                       // раскладывается: целые корни
+      var a=ri(1,3), x1, x2, tries=0;
+      do{ x1=ri(-6,6); x2=ri(-6,6); tries++; }while((x1===0&&x2===0)&&tries<40);
+      cur={a:a, b:-a*(x1+x2), c:a*x1*x2, x1:x1, x2:x2, noRoots:false};
+    } else {                                       // краевой случай D<0
+      var a2,b2,c2,t2=0;
+      do{ a2=ri(1,2); b2=ri(-4,4); c2=ri(1,6); t2++; }while(b2*b2-4*a2*c2>=0 && t2<80);
+      cur={a:a2,b:b2,c:c2,noRoots:true};
+    }
+    eqEl.textContent=fmtTri(cur); resEl.innerHTML=''; ansEl.value='';
+  }
+  function solutionHTML(){
+    var q=cur, D=q.b*q.b-4*q.a*q.c, h='<div class="sol">';
+    h+='a = '+q.a+', b = '+fmt(q.b)+', c = '+fmt(q.c)+'<br>';
+    h+='D = b² − 4ac = ('+fmt(q.b)+')² − 4·'+q.a+'·('+fmt(q.c)+') = <b>'+D+'</b><br>';
+    if(q.noRoots){
+      h+='D < 0 → действительных корней нет → на множители не раскладывается.';
+      return h+'</div>';
+    }
+    if(D===0){
+      h+='D = 0 → один корень x = '+fmt(q.x1)+'<br>';
+      h+='<b>Ответ: '+fmtTri(q)+' = '+(q.a===1?'':q.a)+bracket(q.x1)+'²</b>';
+      return h+'</div>';
+    }
+    h+='D > 0 → x₁ = '+fmt(q.x1)+',  x₂ = '+fmt(q.x2)+'<br>';
+    h+='выносим a = '+q.a+' и подставляем корни:<br>';
+    h+='<b>Ответ: '+fmtTri(q)+' = '+(q.a===1?'':q.a)+bracket(q.x1)+bracket(q.x2)+'</b>';
+    return h+'</div>';
+  }
+  function check(){
+    var raw=ansEl.value.trim().toLowerCase();
+    if(!raw){ resEl.innerHTML='<span class="bad">Впиши корни или нажми «Показать решение».</span>'; return; }
+    if(cur.noRoots){
+      if(/нет|net|∅|не\s*раскл|отсут/.test(raw) || raw==='-'){ resEl.innerHTML='<span class="ok">✓ Верно — D &lt; 0, корней нет, не раскладывается.</span>'+solutionHTML(); }
+      else{ resEl.innerHTML='<span class="bad">✗ Посчитай D — он отрицательный, значит корней нет.</span>'+solutionHTML(); }
+      return;
+    }
+    var got=raw.split(/[;,]/).map(function(s){return parseFloat(s.replace(',','.'));}).filter(function(x){return !isNaN(x);}).map(function(x){return Math.round(x*100)/100;}).sort(function(a,b){return a-b;});
+    var exp=[cur.x1,cur.x2].map(function(x){return Math.round(x*100)/100;}).sort(function(a,b){return a-b;});
+    var uexp = exp[0]===exp[1] ? [exp[0]] : exp;
+    var ok=false;
+    if(uexp.length===1){ ok = got.length>=1 && got.every(function(v){return Math.abs(v-uexp[0])<0.02;}); }
+    else { ok = got.length===2 && Math.abs(got[0]-exp[0])<0.02 && Math.abs(got[1]-exp[1])<0.02; }
+    if(ok){ resEl.innerHTML='<span class="ok">✓ Верно! Отлично.</span>'+solutionHTML(); }
+    else{
+      var hint = (got.length<uexp.length)?' Подсказка: корней два — не забудь второй.':'';
+      resEl.innerHTML='<span class="bad">✗ Пока не то.'+hint+'</span>'+solutionHTML();
+    }
+  }
+  document.getElementById('trNew').addEventListener('click',function(){ generate(); ansEl.focus(); });
+  document.getElementById('trCheck').addEventListener('click',check);
+  document.getElementById('trShow').addEventListener('click',function(){ resEl.innerHTML=solutionHTML(); });
+  ansEl.addEventListener('keydown',function(e){ if(e.key==='Enter') check(); });
+  // стартовое состояние = эталонный пример (без focus при загрузке)
+})();
+</script>

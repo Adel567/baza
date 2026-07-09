@@ -1,0 +1,682 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Метод сложения (9 класс) — системы линейных уравнений</title>
+<style>
+  :root{
+    --paper:#F6F7F9;
+    --card:#FFFFFF;
+    --ink:#1B2333;
+    --muted:#5A6478;
+    --line:#E2E5EC;
+    --accent:#3B4FD0;
+    --accent-soft:#EAEDFB;
+    --pos:#1E8E5A;   /* одно решение */
+    --pos-bg:#E7F4EC;
+    --zero:#B9791A;  /* бесконечно много */
+    --zero-bg:#FBF1DC;
+    --neg:#C0455B;   /* нет решений / ошибка */
+    --neg-bg:#F9E9EC;
+    /* цвет-код действий алгоритма */
+    --ce:#3B4FD0; --ce-bg:#EAEDFB;   /* уравнять коэффициенты */
+    --cs:#C2701C; --cs-bg:#FBEEDD;   /* сложить/вычесть — исключить */
+    --co:#7B4FC0; --co-bg:#EEE7FA;   /* решить одно уравнение */
+    --cb:#1E8E5A; --cb-bg:#E7F4EC;   /* найти вторую переменную */
+    --l1:#3B4FD0;  /* прямая ① */
+    --l2:#C0455B;  /* прямая ② */
+  }
+  *{box-sizing:border-box}
+  body{margin:0}
+  .wrap{
+    max-width:760px;margin:0 auto;
+    padding:clamp(1.4rem,4vw,3rem) clamp(1.1rem,4vw,2rem) 4rem;
+    background:var(--paper);color:var(--ink);
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    font-size:17px;line-height:1.62;-webkit-font-smoothing:antialiased;
+  }
+  .eyebrow{font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);font-weight:600;margin:0 0 .5rem}
+  h1{font-family:Georgia,"Times New Roman",serif;font-size:clamp(2rem,7vw,2.9rem);line-height:1.05;margin:0;font-weight:700;letter-spacing:-.01em;text-wrap:balance}
+  .lede{font-size:1.08rem;color:var(--muted);margin:.7rem 0 0;max-width:60ch;text-wrap:pretty}
+  h2{font-family:Georgia,serif;font-size:1.32rem;font-weight:700;margin:0 0 .1rem;letter-spacing:-.005em}
+  section{margin-top:2.6rem}
+  .kicker{font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:600;margin:0 0 .8rem;display:flex;align-items:center;gap:.6rem}
+  .kicker::before{content:"";width:1.4rem;height:2px;background:var(--accent);border-radius:2px}
+  p{margin:.65rem 0}
+  strong{font-weight:650}
+  .math{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-weight:600}
+  sup{font-size:.72em}
+  sub{font-size:.72em}
+
+  /* Идея метода — тёмный герой */
+  .hero-formula{margin-top:2.2rem;background:var(--ink);color:#fff;border-radius:14px;padding:1.6rem 1.4rem;text-align:center}
+  .hero-formula .lbl{font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:#9aa6c9;margin:0 0 1rem}
+  .sys-hero{display:inline-flex;align-items:center;gap:.5rem;font-family:ui-monospace,"SF Mono",Menlo,monospace;font-weight:700;font-size:clamp(1.15rem,4.4vw,1.5rem);text-align:left}
+  .sys-hero .brace{font-size:2.6em;font-weight:400;line-height:.8;color:#6b78a8;transform:scaleX(.7)}
+  .sys-hero .eqs div{white-space:nowrap}
+  .sys-hero .eqs b{color:#8ea0ff}
+  .hero-arrow{margin:1rem 0 .5rem;color:#9aa6c9;font-size:.9rem;font-family:ui-monospace,Menlo,monospace}
+  .hero-arrow b{color:#8ea0ff}
+  .hero-formula .eq{font-family:ui-monospace,"SF Mono",Menlo,monospace;font-size:clamp(1.4rem,5.2vw,2rem);font-weight:700;letter-spacing:.01em}
+  .hero-formula .note{font-size:.86rem;color:#9aa6c9;margin:.9rem 0 0}
+
+  /* Мотивация */
+  .story{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:1.1rem 1.25rem;margin-top:1.2rem}
+  .story p{margin:.4rem 0}
+  .story .q{font-style:italic;color:var(--muted)}
+
+  /* Пререквизит */
+  .recall{background:var(--accent-soft);border-radius:12px;padding:1rem 1.15rem;font-size:.96rem}
+  .recall p{margin:.35rem 0}
+
+  /* Ядро — алгоритм */
+  .hero-algo{margin-top:1.4rem;background:var(--ink);color:#fff;border-radius:14px;padding:1.5rem 1.4rem}
+  .hero-algo .lbl{font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:#9aa6c9;margin:0 0 1rem;text-align:center}
+  ol.algo{margin:0;padding:0;list-style:none;counter-reset:a;display:flex;flex-direction:column;gap:.8rem}
+  ol.algo li{position:relative;padding-left:2.3rem;counter-increment:a;font-size:.98rem;color:#e7ebf7}
+  ol.algo li::before{content:counter(a);position:absolute;left:0;top:-.05rem;width:1.65rem;height:1.65rem;border-radius:50%;background:#2b3552;color:#8ea0ff;font-size:.85rem;font-weight:700;display:flex;align-items:center;justify-content:center}
+  ol.algo b{color:#fff}
+  ol.algo .mono{font-family:ui-monospace,Menlo,monospace;color:#8ea0ff;font-weight:700}
+
+  /* Считалочка «складываем/вычитаем/уравниваем» */
+  .decide{display:grid;gap:.85rem;margin-top:1.1rem}
+  @media(min-width:620px){.decide{grid-template-columns:repeat(3,1fr)}}
+  .dc{border-radius:12px;padding:1.05rem 1.1rem;border:1px solid var(--line);background:var(--card);display:flex;flex-direction:column;gap:.35rem}
+  .dc .sign{font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.05rem}
+  .dc .act{font-weight:650;font-size:1rem}
+  .dc .desc{font-size:.9rem;color:var(--muted)}
+  .dc.add{border-top:4px solid var(--pos);background:var(--pos-bg)} .dc.add .sign{color:var(--pos)}
+  .dc.sub{border-top:4px solid var(--zero);background:var(--zero-bg)} .dc.sub .sign{color:var(--zero)}
+  .dc.mul{border-top:4px solid var(--accent);background:var(--accent-soft)} .dc.mul .sign{color:var(--accent)}
+
+  /* Легенда цвет-кода действий */
+  .actlegend{display:flex;flex-wrap:wrap;gap:.5rem;margin:1rem 0 .2rem}
+  .actlegend .chip{display:inline-flex;align-items:center;gap:.45rem;font-size:.82rem;font-weight:600;padding:.32rem .7rem;border-radius:20px}
+  .actlegend .chip i{width:.7rem;height:.7rem;border-radius:50%;display:inline-block}
+  .chip.ce{background:var(--ce-bg);color:var(--ce)} .chip.ce i{background:var(--ce)}
+  .chip.cs{background:var(--cs-bg);color:var(--cs)} .chip.cs i{background:var(--cs)}
+  .chip.co{background:var(--co-bg);color:var(--co)} .chip.co i{background:var(--co)}
+  .chip.cb{background:var(--cb-bg);color:var(--cb)} .chip.cb i{background:var(--cb)}
+
+  /* Разбор */
+  .worked{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:1.2rem 1.3rem}
+  .worked .task{margin:0 0 1.1rem;padding-bottom:.9rem;border-bottom:1px solid var(--line);display:flex;justify-content:center}
+  .sys{display:inline-flex;align-items:center;gap:.5rem;font-family:ui-monospace,Menlo,monospace;font-weight:700}
+  .sys .brace{font-size:2.4em;line-height:.8;font-weight:400;color:var(--accent);transform:scaleX(.7)}
+  .sys .rows{display:flex;flex-direction:column;gap:.15rem;text-align:left}
+  ol.steps{margin:0;padding:0;list-style:none;counter-reset:s;display:flex;flex-direction:column;gap:.85rem}
+  ol.steps li{position:relative;padding-left:2.2rem;counter-increment:s}
+  ol.steps li::before{content:counter(s);position:absolute;left:0;top:.05rem;width:1.6rem;height:1.6rem;border-radius:50%;background:var(--accent-soft);color:var(--accent);font-size:.82rem;font-weight:700;display:flex;align-items:center;justify-content:center}
+  ol.steps li.se::before{background:var(--ce-bg);color:var(--ce)}
+  ol.steps li.ss::before{background:var(--cs-bg);color:var(--cs)}
+  ol.steps li.so::before{background:var(--co-bg);color:var(--co)}
+  ol.steps li.sb::before{background:var(--cb-bg);color:var(--cb)}
+  ol.steps .m{font-family:ui-monospace,Menlo,monospace;font-weight:600;color:var(--ink)}
+  ol.steps .why{color:var(--muted);font-size:.9rem}
+  .verdict{margin-top:1.1rem;padding:.75rem 1rem;background:var(--pos-bg);border-radius:9px;font-weight:600;color:var(--pos);font-size:.96rem;font-family:ui-monospace,Menlo,monospace}
+
+  /* Столбиком */
+  .column{margin-top:1.1rem;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:1.2rem 1.3rem;overflow-x:auto}
+  .column .cap{font-size:.94rem;color:var(--muted);margin:0 0 .9rem}
+  .col-grid{font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.02rem;line-height:1.9;white-space:nowrap}
+  .col-grid .hl{background:var(--cs-bg);color:var(--cs);border-radius:5px;padding:0 .18em}
+  .col-grid .rule{border-top:2px solid var(--ink);display:block;margin:.35rem 0}
+  .col-grid .res{color:var(--accent)}
+
+  /* Три случая — сколько решений */
+  .cases{display:grid;gap:.85rem;margin-top:.4rem}
+  @media(min-width:620px){.cases{grid-template-columns:repeat(3,1fr)}}
+  .case{border-radius:12px;padding:1.05rem 1.1rem;border:1px solid var(--line);background:var(--card);display:flex;flex-direction:column;gap:.35rem}
+  .case .sign{font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.02rem}
+  .case .count{font-weight:650;font-size:1rem}
+  .case .desc{font-size:.9rem;color:var(--muted)}
+  .case.pos{border-top:4px solid var(--pos);background:var(--pos-bg)} .case.pos .sign{color:var(--pos)}
+  .case.zero{border-top:4px solid var(--zero);background:var(--zero-bg)} .case.zero .sign{color:var(--zero)}
+  .case.neg{border-top:4px solid var(--neg);background:var(--neg-bg)} .case.neg .sign{color:var(--neg)}
+
+  /* Визуализация */
+  .viz{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.1rem 1.1rem 1rem;margin-top:1rem}
+  .viz canvas{width:100%;height:auto;display:block;border-radius:10px;background:#FCFDFF}
+  .viz-cap{margin:.85rem 0 .2rem;font-size:.94rem;line-height:1.7}
+  .viz-cap .eqs{font-family:ui-monospace,Menlo,monospace;font-weight:700}
+  .viz-cap .eqs .l1{color:var(--l1)}
+  .viz-cap .eqs .l2{color:var(--l2)}
+  .viz-cap .pt{font-family:ui-monospace,Menlo,monospace;font-weight:700}
+  .viz button{font:inherit;font-weight:700;font-size:.9rem;cursor:pointer;border:none;border-radius:9px;padding:.55rem .95rem;color:#fff;background:var(--accent);margin-top:.6rem}
+  .viz button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+
+  /* Практика */
+  .drill{display:flex;flex-direction:column;gap:.7rem}
+  details{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:.85rem 1.05rem}
+  details[open]{border-color:var(--accent)}
+  summary{cursor:pointer;font-weight:600;list-style:none;display:flex;justify-content:space-between;align-items:center;gap:1rem}
+  summary::-webkit-details-marker{display:none}
+  summary:focus-visible{outline:3px solid var(--accent);outline-offset:3px;border-radius:6px}
+  summary .q{font-family:ui-monospace,Menlo,monospace;font-size:.94rem}
+  summary .tag{font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);border:1px solid var(--line);border-radius:20px;padding:.1rem .55rem;white-space:nowrap}
+  summary::after{content:"ответ";font-size:.78rem;color:var(--accent);font-weight:600;white-space:nowrap}
+  details[open] summary::after{content:"скрыть"}
+  .ans{margin-top:.7rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.96rem;color:var(--muted)}
+  .ans .m{font-family:ui-monospace,Menlo,monospace;color:var(--ink);font-weight:600}
+  .ans b{color:var(--ink)}
+
+  /* Ошибки */
+  ul.pitfalls{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:.7rem}
+  ul.pitfalls li{padding-left:1.5rem;position:relative;font-size:.98rem}
+  ul.pitfalls li::before{content:"\00d7";position:absolute;left:0;top:-.05rem;color:var(--neg);font-weight:700;font-size:1.1rem}
+  ul.pitfalls b{color:var(--ink)}
+  ul.pitfalls .fix{color:var(--pos);font-weight:600}
+
+  /* Проверка понимания */
+  ol.check{margin:0;padding-left:1.2rem;display:flex;flex-direction:column;gap:.45rem}
+  ol.check li{padding-left:.2rem}
+
+  .next{background:var(--accent);color:#fff;border-radius:12px;padding:1.2rem 1.3rem}
+  .next h2{color:#fff}
+  .next p{color:#dfe4fb;font-size:.96rem;margin:.4rem 0 0}
+  .foot{margin-top:2.4rem;font-size:.82rem;color:var(--muted);text-align:center}
+
+  @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="wrap">
+
+  <header>
+    <p class="eyebrow">Алгебра · 9 класс · ОГЭ</p>
+    <h1>Метод сложения</h1>
+    <p class="lede">Домножаем уравнения так, чтобы при одной переменной оказались <em>противоположные</em> коэффициенты — складываем, и переменная исчезает. От системы остаётся одно простое уравнение.</p>
+  </header>
+
+  <div class="hero-formula">
+    <p class="lbl">Идея метода</p>
+    <div class="sys-hero">
+      <span class="brace">{</span>
+      <div class="eqs">
+        <div>3x + <b>2y</b> = 16</div>
+        <div>5x <b>− 2y</b> = 8</div>
+      </div>
+    </div>
+    <div class="hero-arrow">складываем почленно ↓ &nbsp; <b>2y + (−2y) = 0</b></div>
+    <div class="eq">8x = 24 &nbsp;→&nbsp; x = 3</div>
+    <p class="note">Переменная y пропала — осталось уравнение с одним неизвестным. Дальше находим x, потом y.</p>
+  </div>
+
+  <section>
+    <p class="kicker">Зачем это нужно · когда сложение удобнее</p>
+    <h2>Самый быстрый инструмент для линейных систем</h2>
+    <p>Система двух уравнений — это язык задач, где две неизвестные величины связаны сразу двумя условиями: «два взрослых и один детский билет стоят столько-то, а один взрослый и три детских — столько-то», «лодка по течению и против», «сплав двух металлов». Способ сложения решает такие системы быстрее всего, когда коэффициенты при переменной удобно «обнулить».</p>
+    <div class="story">
+      <p class="q">«Способ подстановки и способ сложения дают разные ответы?»</p>
+      <p>Нет. Метод решения свободный — ответ у правильной системы <strong>один и тот же</strong>. Просто подстановка часто ведёт к дробям: выразишь <span class="math">x = (…)/5</span> — и дальше воюешь со знаменателями. А сложение позволяет убрать переменную <strong>без деления</strong>, целыми числами. Поэтому там, где коэффициенты «просятся» (например <span class="math">+2y</span> и <span class="math">−2y</span>), сложение короче.</p>
+    </div>
+    <p>Ещё это <strong>точка пересечения двух прямых</strong>: каждое уравнение — прямая на плоскости, а пара <span class="math">(x; y)</span>, где они встречаются, и есть решение системы. Сложение находит эту точку алгеброй, без чертежа.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Что вспомнить перед стартом</p>
+    <div class="recall">
+      <p><strong>Линейные системы и метод подстановки.</strong> Ты уже решал системы, выражая переменную и подставляя. Сложение — второй способ для тех же линейных систем; ответ — по-прежнему <strong>пара</strong> чисел <span class="math">(x; y)</span>.</p>
+      <p><strong>Равносильные преобразования.</strong> Если умножить <em>всё</em> уравнение (обе части!) на число, не равное нулю, — получится равносильное уравнение с теми же корнями. Именно поэтому уравнения можно «домножать», подгоняя коэффициенты.</p>
+      <p><strong>Сложение равенств.</strong> Если в каждом уравнении левая часть равна правой, то и сумма левых частей равна сумме правых. Складывать два верных равенства — законная операция.</p>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Ядро — весь метод в четырёх шагах</p>
+    <h2>Алгоритм способа сложения</h2>
+    <p>Дана система из двух линейных уравнений, приведённых к виду <span class="math">ax + by = c</span> (переменные слева, числа справа):</p>
+    <p style="text-align:center;margin:1rem 0">
+      <span class="sys"><span class="brace">{</span><span class="rows"><span>a₁x + b₁y = c₁</span><span>a₂x + b₂y = c₂</span></span></span>
+    </p>
+    <div class="hero-algo">
+      <p class="lbl">Как решаем</p>
+      <ol class="algo">
+        <li><b>Уравняй коэффициенты.</b> Домножь уравнения на числа так, чтобы при одной переменной коэффициенты стали <b>противоположными</b> (равны по модулю, разного знака), например <span class="mono">b₁</span> и <span class="mono">−b₁</span>.</li>
+        <li><b>Сложи</b> уравнения почленно (левую с левой, правую с правой). Выбранная переменная <b>исключается</b> — остаётся уравнение с одним неизвестным.</li>
+        <li><b>Реши</b> это уравнение — найди первую переменную.</li>
+        <li><b>Подставь</b> её в любое исходное уравнение и найди <b>вторую</b>. Запиши ответ парой <span class="mono">(x; y)</span>.</li>
+      </ol>
+    </div>
+    <p style="font-size:.92rem;color:var(--muted);margin-top:.9rem">Если коэффициенты при переменной уже <strong>одинаковы</strong> (оба <span class="math">+</span>), уравнения не складывают, а <strong>вычитают</strong> — тогда переменная тоже уйдёт. Считалочка:</p>
+    <div class="decide">
+      <div class="dc add">
+        <div class="sign">+5y и −5y</div>
+        <div class="act">Складываем</div>
+        <div class="desc">Коэффициенты противоположны: <span class="math">5y + (−5y) = 0</span>.</div>
+      </div>
+      <div class="dc sub">
+        <div class="sign">5y и 5y</div>
+        <div class="act">Вычитаем</div>
+        <div class="desc">Коэффициенты одинаковы: <span class="math">5y − 5y = 0</span>.</div>
+      </div>
+      <div class="dc mul">
+        <div class="sign">2y и 5y</div>
+        <div class="act">Сначала уравниваем</div>
+        <div class="desc">Разные — домножаем уравнения, чтобы стали равны или противоположны.</div>
+      </div>
+    </div>
+    <p style="font-size:.92rem;color:var(--muted);margin-top:.9rem"><strong>Противоположные — складываем, одинаковые — вычитаем, разные — сперва уравниваем.</strong></p>
+  </section>
+
+  <section>
+    <p class="kicker">Разбираем вместе · думаю вслух</p>
+    <h2>Эталонный пример с домножением</h2>
+    <p>Держи в голове цвет-код действий — на каждом шаге понятно, что именно ты делаешь:</p>
+    <div class="actlegend">
+      <span class="chip ce"><i></i>уравнять коэффициенты</span>
+      <span class="chip cs"><i></i>сложить — исключить</span>
+      <span class="chip co"><i></i>решить уравнение</span>
+      <span class="chip cb"><i></i>найти вторую</span>
+    </div>
+    <div class="worked">
+      <p class="task">
+        <span class="sys"><span class="brace">{</span><span class="rows"><span>2x + 3y = 13</span><span>4x − y = 5</span></span></span>
+      </p>
+      <ol class="steps">
+        <li class="se"><b>Уравниваю коэффициенты.</b> Выгодно исключить <span class="m">y</span>: в первом при нём <span class="m">+3</span>, во втором <span class="m">−1</span>. Домножу <b>второе</b> уравнение на <span class="m">3</span> — <b>всё, обе части</b>: <span class="m">4x − y = 5 &nbsp;|·3 &nbsp;→&nbsp; 12x − 3y = 15</span>. <span class="why">Теперь при y стоят +3 и −3 — противоположны.</span></li>
+        <li class="ss"><b>Складываю почленно.</b> <span class="m">(2x + 12x) + (3y − 3y) = 13 + 15</span>. Столбец с <span class="m">y</span> обнуляется — переменная ушла. <span class="why">Ради этого и выбирал множитель.</span></li>
+        <li class="so"><b>Решаю.</b> Осталось <span class="m">14x = 28 &nbsp;→&nbsp; x = 2</span>.</li>
+        <li class="sb"><b>Нахожу y.</b> Подставляю <span class="m">x = 2</span> во второе исходное: <span class="m">4·2 − y = 5 → 8 − y = 5 → y = 3</span>.</li>
+        <li><b>Ответ:</b> <span class="m">(2; 3)</span>.</li>
+      </ol>
+      <div class="verdict">Проверка в 1-м: 2·2 + 3·3 = 4 + 9 = 13 ✓</div>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Как это выглядит · столбиком</p>
+    <h2>Складываем «по столбцам»</h2>
+    <div class="column">
+      <p class="cap">Запиши уравнения одно под другим — <b>x под x</b>, <b>y под y</b>, числа справа. После домножения второй строки сложение делается по столбцам, как обычное сложение в столбик.</p>
+      <div class="col-grid">
+        &nbsp;&nbsp;2x + <span class="hl">3y</span> = 13<br>
+        +12x <span class="hl">− 3y</span> = 15
+        <span class="rule"></span>
+        <span class="res">&nbsp;14x + <span class="hl" style="background:var(--pos-bg);color:var(--pos)">0</span> = 28</span>
+      </div>
+      <p class="cap" style="margin:.9rem 0 0">Столбец с <span class="math">y</span> даёт ноль — переменная «ушла». Остаётся <span class="math">14x = 28</span>, дальше <span class="math">x = 2</span>.</p>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Сколько решений — и почему</p>
+    <h2>Что покажет исключение переменной</h2>
+    <p>Обычно после сложения остаётся нормальное уравнение и система имеет <strong>одно</strong> решение. Но иногда при исключении пропадают <em>обе</em> переменные — и тогда по тому, что осталось справа, видно, сколько у системы решений. Геометрически это положение двух прямых:</p>
+    <div class="cases">
+      <div class="case pos">
+        <div class="sign">14x = 28</div>
+        <div class="count">Одно решение</div>
+        <div class="desc">Осталось нормальное уравнение — прямые пересекаются в одной точке <span class="math">(x; y)</span>.</div>
+      </div>
+      <div class="case zero">
+        <div class="sign">0 = 0</div>
+        <div class="count">Бесконечно много</div>
+        <div class="desc">Ушли обе переменные, равенство верное — это одна и та же прямая (уравнения пропорциональны).</div>
+      </div>
+      <div class="case neg">
+        <div class="sign">0 = 7</div>
+        <div class="count">Решений нет</div>
+        <div class="desc">Ушли обе, а равенство неверное — прямые параллельны, общих точек нет.</div>
+      </div>
+    </div>
+    <p style="font-size:.92rem;color:var(--muted);margin-top:.9rem">Важно: <span class="math">0·x = 0</span> — это <em>не</em> «x = 0», а «подходит любой x». А <span class="math">0·x = 7</span> означает «нет такого x». Не дели на ноль.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Покрути сам · интерактив</p>
+    <h2>Система — это две прямые</h2>
+    <p>Каждое уравнение системы — прямая. Их <strong>точка пересечения</strong> и есть решение <span class="math">(x; y)</span>. Метод сложения находит ту же точку алгеброй. Нажми «Другая система» и посмотри, как меняются прямые и их общая точка.</p>
+    <div class="viz">
+      <canvas id="vizCanvas" width="640" height="460" aria-label="Две прямые системы и точка их пересечения"></canvas>
+      <div id="vizCap" class="viz-cap"></div>
+      <button id="vizNext" type="button">↻ Другая система</button>
+    </div>
+    <p style="font-size:.9rem;color:var(--muted)">А если прямые <strong>параллельны</strong> — точки пересечения нет, у системы нет решений. Если прямые <strong>совпадают</strong> — общих точек бесконечно много.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Тренажёр · бесконечная практика</p>
+    <h2>Реши систему методом сложения</h2>
+    <p>Нажми «Новая система» и реши её. Введи ответ в виде <b>x; y</b> (например <span class="math">3; 2</span>). Если решений нет — напиши «нет», если бесконечно много — «много». Потом проверь себя или посмотри пошаговое решение.</p>
+    <p style="font-size:.9rem;color:var(--muted);margin-top:-.2rem">Иногда коэффициенты уже удобны, иногда нужно домножить одно или оба уравнения. Изредка попадаются краевые случаи — параллельные и совпадающие прямые.</p>
+    <div class="trainer">
+      <div class="tr-eq" id="trEq"></div>
+      <div class="tr-ctl">
+        <button id="trNew" type="button">🎲 Новая система</button>
+        <input id="trAns" type="text" placeholder="напр.  3; 2   ·   нет   ·   много" aria-label="Ответ x и y">
+        <button id="trCheck" type="button" class="sec">Проверить</button>
+        <button id="trShow" type="button" class="ghost">Показать решение</button>
+      </div>
+      <div id="trResult" class="tr-result"></div>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Теперь ты · от простого к анализу</p>
+    <h2>Практика по нарастанию</h2>
+    <div class="drill">
+      <details>
+        <summary><span class="q">Коэффициенты при y равны +7 и −7. Сложить или вычесть?</span><span class="tag">понимание</span></summary>
+        <div class="ans"><b>Сложить.</b> Коэффициенты противоположны: <span class="m">7y + (−7y) = 0</span> — переменная y уйдёт без всякого домножения.</div>
+      </details>
+      <details>
+        <summary><span class="q">В { x + y = 10;  x − y = 4 } какую переменную выгодно исключить и как?</span><span class="tag">понимание</span></summary>
+        <div class="ans">Исключаем <b>y</b>: при нём <span class="m">+1</span> и <span class="m">−1</span> — противоположны, значит <b>складываем</b> без домножения. <span class="m">2x = 14 → x = 7</span>, тогда <span class="m">y = 3</span>. Ответ <b>(7; 3)</b>.</div>
+      </details>
+      <details>
+        <summary><span class="q">{ 7x + 2y = 19;  5x − 2y = 5 }</span><span class="tag">применение</span></summary>
+        <div class="ans">При <span class="m">y</span> коэффициенты <span class="m">+2</span> и <span class="m">−2</span> → <b>складываем</b>: <span class="m">12x = 24 → x = 2</span>. Подставим в первое: <span class="m">14 + 2y = 19 → 2y = 5 → y = 2,5</span>. Ответ <b>(2; 2,5)</b>.</div>
+      </details>
+      <details>
+        <summary><span class="q">{ 5x + 4y = 22;  3x − 2y = 0 }</span><span class="tag">применение</span></summary>
+        <div class="ans">Домножим <b>второе</b> на <span class="m">2</span>, чтобы при y были <span class="m">+4</span> и <span class="m">−4</span>: <span class="m">6x − 4y = 0</span>. Складываем с первым: <span class="m">11x = 22 → x = 2</span>. Тогда <span class="m">3·2 − 2y = 0 → y = 3</span>. Ответ <b>(2; 3)</b>.</div>
+      </details>
+      <details>
+        <summary><span class="q">{ 3x + 4y = 10;  2x + 5y = 9 } — оба коэффициента разные</span><span class="tag">применение</span></summary>
+        <div class="ans">Убираем <span class="m">x</span>: домножим 1-е на <span class="m">2</span>, 2-е на <span class="m">3</span> → <span class="m">6x + 8y = 20</span> и <span class="m">6x + 15y = 27</span>. Коэффициенты при x одинаковы → <b>вычитаем</b>: <span class="m">−7y = −7 → y = 1</span>. Тогда <span class="m">3x + 4 = 10 → x = 2</span>. Ответ <b>(2; 1)</b>.</div>
+      </details>
+      <details>
+        <summary><span class="q">Какой множитель? В { 2x + 5y = 1;  3x + 4y = 10 } как исключить x?</span><span class="tag">анализ</span></summary>
+        <div class="ans">Наименьшее общее для <span class="m">2</span> и <span class="m">3</span> — это <span class="m">6</span>. Домножь 1-е на <span class="m">3</span>, 2-е на <span class="m">2</span> → при x станет <span class="m">6</span> и <span class="m">6</span>. Они <b>одинаковы</b>, поэтому уравнения нужно <b>вычесть</b> (или домножить одно на <span class="m">−1</span> и сложить). Так x исчезнет — вот и вся суть подбора множителя: гонишь коэффициенты к общему кратному.</div>
+      </details>
+      <details>
+        <summary><span class="q">Найди ошибку: из { 2x + 3y = 13;  2x − y = 5 } вычли и получили 2y = 8</span><span class="tag">анализ</span></summary>
+        <div class="ans">Ошибка в знаке. При вычитании знак меняется у <em>каждого</em> слагаемого второго уравнения: <span class="m">3y − (−y) = 3y + y = 4y</span>, а не <span class="m">2y</span>. Верно: <span class="m">4y = 8 → y = 2</span>, затем <span class="m">2x − 2 = 5 → x = 3,5</span>. Ответ <b>(3,5; 2)</b>.</div>
+      </details>
+      <details>
+        <summary><span class="q">Что изменится? При сложении вышло 0 = 0. Сколько решений и как расположены прямые?</span><span class="tag">анализ</span></summary>
+        <div class="ans">Ушли обе переменные, и осталось <b>верное</b> равенство <span class="m">0 = 0</span> — значит, второе уравнение было пропорционально первому, это <b>одна и та же прямая</b>. Решений <b>бесконечно много</b>: любая пара с первой прямой подходит.</div>
+      </details>
+      <details>
+        <summary><span class="q">Что изменится? А если после сложения получилось 0 = 7?</span><span class="tag">анализ</span></summary>
+        <div class="ans">Равенство <b>неверное</b> — ни один <span class="m">(x; y)</span> не сделает <span class="m">0 = 7</span>. Прямые <b>параллельны</b>, общих точек нет: у системы <b>нет решений</b>. Это честный ответ, а не ошибка счёта.</div>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Где чаще всего ошибаются</p>
+    <h2>Лови эти ловушки</h2>
+    <ul class="pitfalls">
+      <li><b>Домножают только одну часть уравнения.</b> Множитель применяется к <em>обеим</em> частям и ко <em>всем</em> слагаемым сразу. Умножил левую на 3 — и число справа тоже на 3. <span class="fix">Пиши «·3» над всем уравнением и проверяй каждый член, включая свободный.</span></li>
+      <li><b>Ошибаются в знаке при вычитании.</b> Знак меняется у <em>каждого</em> слагаемого вычитаемого уравнения, включая число справа: <span class="math">13 − 5</span>, а не <span class="math">13 + 5</span>. <span class="fix">Приём: замени вычитание на сложение — домножь второе уравнение на −1 и складывай.</span></li>
+      <li><b>Складывают, не уравняв коэффициенты.</b> Если при переменной не одинаковые и не противоположные числа, ни одна переменная не исчезнет. <span class="fix">Сначала посмотри на коэффициенты и домножь до общего кратного.</span></li>
+      <li><b>Пишут столбиком неровно.</b> Складывают <span class="math">3x</span> с <span class="math">2y</span>. <span class="fix">Выравнивай x под x, y под y — тогда каждый столбец складывается сам собой.</span></li>
+      <li><b>Останавливаются на одной переменной.</b> Нашёл <span class="math">x</span> — это ещё не ответ. <span class="fix">Обязательно подставь и найди <span class="math">y</span>, запиши парой <span class="math">(x; y)</span>.</span></li>
+    </ul>
+  </section>
+
+  <section>
+    <p class="kicker">Проверь себя · объясни своими словами</p>
+    <h2>Три вопроса</h2>
+    <ol class="check">
+      <li>Что значит «исключить переменную» и какие коэффициенты для этого нужны?</li>
+      <li>Когда уравнения <strong>складывают</strong>, а когда <strong>вычитают</strong>? Что делают, если коэффициенты разные?</li>
+      <li>После исключения осталось <span class="math">0 = 0</span> — сколько решений? А если <span class="math">0 = 5</span>?</li>
+    </ol>
+    <details style="margin-top:.9rem">
+      <summary><span class="q">Сверить ответы</span><span class="tag">проверка</span></summary>
+      <div class="ans">1) Сделать так, чтобы при переменной оказались <b>противоположные</b> (или одинаковые) коэффициенты, и она пропала при сложении/вычитании. &nbsp; 2) Складывают при <b>противоположных</b> коэффициентах, вычитают при <b>одинаковых</b>; если разные — сперва домножают уравнения до общего кратного. &nbsp; 3) <span class="m">0 = 0</span> → решений <b>бесконечно много</b> (прямые совпали); <span class="m">0 = 5</span> → <b>решений нет</b> (прямые параллельны).</div>
+    </details>
+  </section>
+
+  <section>
+    <div class="next">
+      <h2>Что дальше</h2>
+      <p><strong>Текстовые задачи на системы.</strong> Теперь ты умеешь решать готовую систему — следующий шаг научиться самому составлять её по условию («сумма 50, разность 8» → <span class="math">{ x + y = 50; x − y = 8 }</span>) и добивать методом сложения.</p>
+      <p><strong>Графический метод.</strong> Начертить обе прямые и посмотреть на точку пересечения — быстрый способ прикинуть, сколько решений, ещё до вычислений.</p>
+      <p><strong>Системы второй степени.</strong> Когда одно из уравнений уже с x², сложение и подстановка комбинируют — сводя систему к квадратному уравнению.</p>
+      <p style="margin-top:.7rem">Итог одной фразой: способ сложения подбирает множители так, чтобы при почленном сложении (или вычитании) уравнений одна переменная исчезла, оставив простое уравнение с одной неизвестной.</p>
+    </div>
+  </section>
+
+  <p class="foot">Проверка на выходе: назови алгоритм по памяти · когда складываем, а когда вычитаем · что значит 0 = 0 и 0 = 5 после исключения.</p>
+
+</div>
+
+<style>
+  .trainer{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.2rem 1.3rem;margin-top:1rem}
+  .tr-eq{font-family:ui-monospace,Menlo,monospace;font-weight:800;font-size:clamp(1.15rem,4.6vw,1.5rem);
+    display:flex;align-items:center;justify-content:center;gap:.4rem;text-align:left;
+    padding:1rem;background:var(--accent-soft);border-radius:10px;color:var(--ink);overflow-x:auto}
+  .tr-eq .brc{font-size:2.4em;font-weight:400;line-height:.7;color:var(--accent);transform:scaleX(.7)}
+  .tr-eq .lines{white-space:nowrap;line-height:1.5}
+  .tr-ctl{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.9rem;align-items:center}
+  .tr-ctl button{font:inherit;font-weight:700;font-size:.9rem;cursor:pointer;border:none;border-radius:9px;padding:.55rem .95rem;color:#fff;background:var(--accent)}
+  .tr-ctl button.sec{background:var(--pos)}
+  .tr-ctl button.ghost{background:transparent;color:var(--accent);border:1px solid var(--accent)}
+  .tr-ctl input{flex:1;min-width:150px;font:inherit;padding:.5rem .7rem;border:1px solid var(--line);border-radius:9px;background:#fff;color:var(--ink)}
+  .tr-ctl button:focus-visible,.tr-ctl input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+  .tr-result{margin-top:.9rem;font-size:.96rem;min-height:1.2rem}
+  .tr-result .ok{color:var(--pos);font-weight:700}
+  .tr-result .bad{color:var(--neg);font-weight:700}
+  .tr-result .sol{margin-top:.7rem;padding:.85rem 1rem;background:#FCFBFE;border:1px solid var(--line);border-radius:10px;font-family:ui-monospace,Menlo,monospace;font-size:.9rem;line-height:1.85;overflow-x:auto}
+  .tr-result .sol b{color:var(--accent)}
+</style>
+
+<script>
+/* ── Визуализация: две прямые системы и точка пересечения ── */
+(function(){
+  var canvas=document.getElementById('vizCanvas'); if(!canvas) return;
+  var ctx=canvas.getContext('2d');
+  var capEl=document.getElementById('vizCap');
+  var W=640,H=460,dpr=1,R=6; // ось от -6 до 6
+
+  function mn(n){ return (n<0?'−':'')+Math.abs(n); }
+  function fmtDec(n){ n=Math.round(n*100)/100; var s=(n<0?'−':'')+Math.abs(n); return s.replace('.',','); }
+  function eqTxt(a,b,c){
+    var s=(a<0?'−':'')+(Math.abs(a)===1?'':Math.abs(a))+'x';
+    s+=(b<0?' − ':' + ')+(Math.abs(b)===1?'':Math.abs(b))+'y';
+    s+=' = '+mn(c);
+    return s;
+  }
+
+  // 9-классные системы: почти все требуют домножения
+  var presets=[
+    {a1:2,b1:3,c1:13, a2:4,b2:-1,c2:5,  x:2,y:3,  note:'Домножили 2-е на 3 → при y стало +3 и −3, сложили: 14x = 28, x = 2, y = 3.'},
+    {a1:5,b1:4,c1:22, a2:3,b2:-2,c2:0,  x:2,y:3,  note:'Домножили 2-е на 2 → при y +4 и −4, сложили: 11x = 22, x = 2, y = 3.'},
+    {a1:3,b1:4,c1:10, a2:2,b2:5,c2:9,   x:2,y:1,  note:'Уравняли x (×2 и ×3), вычли: −7y = −7, y = 1, затем x = 2.'},
+    {a1:7,b1:2,c1:16, a2:5,b2:-2,c2:8,  x:2,y:1,  note:'При y +2 и −2 — сложили сразу: 12x = 24, x = 2, y = 1.'}
+  ];
+  var idx=0;
+
+  function resize(){
+    var cssW=canvas.clientWidth||640; dpr=Math.min(window.devicePixelRatio||1,2);
+    W=cssW; H=Math.round(cssW*0.72);
+    canvas.width=W*dpr; canvas.height=H*dpr; canvas.style.height=H+'px';
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+  }
+  function X(x){ return W/2 + x*(W/(2*R)); }
+  function Y(y){ return H/2 - y*(H/(2*R)); }
+
+  function line(a,b,c,color){
+    ctx.strokeStyle=color; ctx.lineWidth=3; ctx.beginPath();
+    if(Math.abs(b)>1e-9){
+      var x1=-R, y1=(c-a*x1)/b, x2=R, y2=(c-a*x2)/b;
+      ctx.moveTo(X(x1),Y(y1)); ctx.lineTo(X(x2),Y(y2));
+    } else {
+      var xv=c/a; ctx.moveTo(X(xv),0); ctx.lineTo(X(xv),H);
+    }
+    ctx.stroke();
+  }
+
+  function draw(){
+    var p=presets[idx];
+    ctx.clearRect(0,0,W,H);
+    ctx.strokeStyle='#EDEFF4'; ctx.lineWidth=1;
+    for(var g=-R;g<=R;g++){
+      ctx.beginPath(); ctx.moveTo(X(g),0); ctx.lineTo(X(g),H); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(0,Y(g)); ctx.lineTo(W,Y(g)); ctx.stroke();
+    }
+    ctx.strokeStyle='#9AA3B2'; ctx.lineWidth=1.5;
+    ctx.beginPath(); ctx.moveTo(0,Y(0)); ctx.lineTo(W,Y(0)); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(X(0),0); ctx.lineTo(X(0),H); ctx.stroke();
+    ctx.fillStyle='#9AA3B2'; ctx.font='12px ui-monospace,Menlo,monospace';
+    ctx.fillText('x', W-14, Y(0)-6);
+    ctx.fillText('y', X(0)+6, 14);
+    // деления на осях
+    ctx.fillStyle='#8A93A6'; ctx.font='11px ui-monospace,Menlo,monospace';
+    ctx.textAlign='center'; ctx.textBaseline='top';
+    for(var t=-R;t<=R;t+=2){ if(t===0) continue; ctx.fillText(''+t, X(t), Y(0)+5); }
+    ctx.textAlign='right'; ctx.textBaseline='middle';
+    for(var s=-R;s<=R;s+=2){ if(s===0) continue; ctx.fillText((s<0?'−':'')+Math.abs(s), X(0)-5, Y(s)); }
+    ctx.textAlign='start'; ctx.textBaseline='alphabetic';
+
+    line(p.a1,p.b1,p.c1,'#3B4FD0');
+    line(p.a2,p.b2,p.c2,'#C0455B');
+
+    var px=X(p.x), py=Y(p.y);
+    ctx.strokeStyle='#9AA3B2'; ctx.setLineDash([4,4]); ctx.lineWidth=1;
+    ctx.beginPath(); ctx.moveTo(px,Y(0)); ctx.lineTo(px,py); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(X(0),py); ctx.lineTo(px,py); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle='#1B2333'; ctx.beginPath(); ctx.arc(px,py,6,0,7); ctx.fill();
+    ctx.fillStyle='#fff'; ctx.beginPath(); ctx.arc(px,py,2.4,0,7); ctx.fill();
+    ctx.fillStyle='#1B2333'; ctx.font='700 13px ui-monospace,Menlo,monospace';
+    var lbl='('+fmtDec(p.x)+'; '+fmtDec(p.y)+')';
+    var lx=px+10; if(lx+ctx.measureText(lbl).width>W-4) lx=px-10-ctx.measureText(lbl).width;
+    ctx.fillText(lbl, lx, py-9);
+
+    capEl.innerHTML='<div class="eqs"><span class="l1">'+eqTxt(p.a1,p.b1,p.c1)+'</span> &nbsp; и &nbsp; <span class="l2">'+eqTxt(p.a2,p.b2,p.c2)+'</span></div>'
+      +'<div style="color:var(--muted);margin-top:.35rem">'+p.note+' Точка пересечения <span class="pt">('+fmtDec(p.x)+'; '+fmtDec(p.y)+')</span> — это и есть решение.</div>';
+  }
+
+  document.getElementById('vizNext').addEventListener('click',function(){ idx=(idx+1)%presets.length; draw(); });
+  window.addEventListener('resize',function(){ resize(); draw(); });
+  resize(); draw();
+})();
+</script>
+
+<script>
+/* ── Тренажёр-генератор систем: метод сложения ── */
+(function(){
+  var eqEl=document.getElementById('trEq'), ansEl=document.getElementById('trAns'), resEl=document.getElementById('trResult');
+  if(!eqEl) return;
+  var cur=null;
+
+  function ri(min,max){ return Math.floor(Math.random()*(max-min+1))+min; }
+  function rs(){ return Math.random()<0.5?1:-1; }
+  function gcd(a,b){ a=Math.abs(a);b=Math.abs(b); while(b){ var t=b; b=a%b; a=t; } return a; }
+  function lcm(a,b){ return Math.abs(a*b)/gcd(a,b); }
+  function mn(n){ n=Math.round(n*1000)/1000; var s=(n<0?'−':'')+Math.abs(n); return s.replace('.',','); } // настоящий минус
+  function mint(n){ n=Math.round(n); return (n<0?'−':'')+Math.abs(n); }
+
+  function eqStr(a,b,c){
+    var s=(a<0?'−':'')+(Math.abs(a)===1?'':Math.abs(a))+'x';
+    s+=(b<0?' − ':' + ')+(Math.abs(b)===1?'':Math.abs(b))+'y';
+    s+=' = '+mint(c);
+    return s;
+  }
+  function oneVarEq(coef,v,rc){
+    return (coef<0?'−':'')+(Math.abs(coef)===1?'':Math.abs(coef))+v+' = '+mint(rc);
+  }
+
+  function generate(){
+    var r=Math.random();
+    if(r<0.10){ // параллельные — нет решений
+      var a1=ri(1,3)*rs(), b1=ri(1,3)*rs();
+      var k=ri(2,3)*rs();
+      var c1=ri(-5,5);
+      cur={a1:a1,b1:b1,c1:c1,a2:k*a1,b2:k*b1,c2:k*c1+ri(1,4)*rs(),kind:'none'};
+    } else if(r<0.18){ // совпадают — бесконечно много
+      var a1b=ri(1,3)*rs(), b1b=ri(1,3)*rs(), c1b=ri(-5,5);
+      var k2=ri(2,3);
+      cur={a1:a1b,b1:b1b,c1:c1b,a2:k2*a1b,b2:k2*b1b,c2:k2*c1b,kind:'inf'};
+    } else {
+      var x0,y0;
+      do{ x0=ri(-4,4); y0=ri(-4,4); } while(x0===0 && y0===0);
+      var a1,b1,a2,b2;
+      if(r<0.55){ // уже одинаковые/противоположные в одной переменной
+        var mode=ri(0,3), sgn=rs();
+        if(mode===0){ var B=ri(1,3)*sgn; b1=B; b2=B; do{a1=ri(1,4)*rs();a2=ri(1,4)*rs();}while(a1===a2); }
+        else if(mode===1){ var B1=ri(1,3)*sgn; b1=B1; b2=-B1; do{a1=ri(1,4)*rs();a2=ri(1,4)*rs();}while(a1===-a2); }
+        else if(mode===2){ var A=ri(1,3)*sgn; a1=A; a2=A; do{b1=ri(1,4)*rs();b2=ri(1,4)*rs();}while(b1===b2); }
+        else { var A1=ri(1,3)*sgn; a1=A1; a2=-A1; do{b1=ri(1,4)*rs();b2=ri(1,4)*rs();}while(b1===-b2); }
+      } else { // нужно уравнивать множителями оба
+        var tries=0;
+        do{ a1=ri(1,3)*rs(); a2=ri(1,3)*rs(); b1=ri(1,3)*rs(); b2=ri(1,3)*rs(); tries++; }
+        while((Math.abs(a1)===Math.abs(a2) || Math.abs(b1)===Math.abs(b2) || a1*b2-a2*b1===0) && tries<80);
+      }
+      var c1=a1*x0+b1*y0, c2=a2*x0+b2*y0;
+      cur={a1:a1,b1:b1,c1:c1,a2:a2,b2:b2,c2:c2,kind:'one',x0:x0,y0:y0};
+    }
+    render(); ansEl.focus();
+  }
+
+  function render(){
+    eqEl.innerHTML='<span class="brc">{</span><span class="lines">'+eqStr(cur.a1,cur.b1,cur.c1)+'<br>'+eqStr(cur.a2,cur.b2,cur.c2)+'</span>';
+    resEl.innerHTML=''; ansEl.value='';
+  }
+
+  function steps(){
+    var a1=cur.a1,b1=cur.b1,c1=cur.c1,a2=cur.a2,b2=cur.b2,c2=cur.c2;
+    var Lx=lcm(a1,a2), Ly=lcm(b1,b2);
+    var elimY = Ly<=Lx;                       // исключаем ту переменную, где кратное меньше
+    var elimVar = elimY?'y':'x', remVar = elimY?'x':'y';
+    var m1,m2;
+    if(elimY){ m1=Ly/Math.abs(b1); m2=Ly/Math.abs(b2); }
+    else { m1=Lx/Math.abs(a1); m2=Lx/Math.abs(a2); }
+    var na1=a1*m1,nb1=b1*m1,nc1=c1*m1, na2=a2*m2,nb2=b2*m2,nc2=c2*m2;
+    var e1=elimY?nb1:na1, e2=elimY?nb2:na2;
+    var add=(e1>0)!==(e2>0);                  // противоположны → складываем
+    var ra,rb,rc;
+    if(add){ ra=na1+na2; rb=nb1+nb2; rc=nc1+nc2; }
+    else { ra=na1-na2; rb=nb1-nb2; rc=nc1-nc2; }
+    var remCoef=elimY?ra:rb;
+
+    var h='<div class="sol">';
+    h+='① '+eqStr(a1,b1,c1)+'<br>② '+eqStr(a2,b2,c2)+'<br><br>';
+    h+='Исключаем <b>'+elimVar+'</b>.<br>';
+    if(m1!==1 || m2!==1){
+      h+='Уравняем коэффициенты при '+elimVar+' до '+(elimY?Ly:Lx)+' — умножим ① на '+m1+', ② на '+m2+':<br>';
+      h+=eqStr(na1,nb1,nc1)+'<br>'+eqStr(na2,nb2,nc2)+'<br>';
+    }
+    h+='Коэффициенты при '+elimVar+' '+(add?'противоположны':'одинаковы')+' → <b>'+(add?'складываем':'вычитаем ② из ①')+'</b>.<br>';
+    if(remCoef===0){
+      if(rc===0) h+='0 = 0 — верное равенство.<br><b>Бесконечно много решений</b> (прямые совпадают).';
+      else h+='0 = '+mint(rc)+' — неверное равенство.<br><b>Решений нет</b> (прямые параллельны).';
+    } else {
+      var val=rc/remCoef;
+      var x,y;
+      if(elimY){ x=val; y=(c1-a1*x)/b1; } else { y=val; x=(c1-b1*y)/a1; }
+      h+=oneVarEq(remCoef,remVar,rc)+' &nbsp;→&nbsp; '+remVar+' = '+mn(val)+'<br>';
+      var other = elimY?y:x;
+      h+='Подставим '+remVar+' = '+mn(val)+' в ① → '+elimVar+' = '+mn(other)+'<br>';
+      h+='<b>Ответ: ('+mn(x)+'; '+mn(y)+')</b>';
+    }
+    return h+'</div>';
+  }
+
+  function check(){
+    var raw=ansEl.value.trim().toLowerCase();
+    if(!raw){ resEl.innerHTML='<span class="bad">Введи ответ или нажми «Показать решение».</span>'; return; }
+    if(cur.kind==='none'){
+      if(/нет|net|∅|отсут|парал/.test(raw)) resEl.innerHTML='<span class="ok">✓ Верно — обе переменные сокращаются, а равенство неверное: решений нет.</span>'+steps();
+      else resEl.innerHTML='<span class="bad">✗ Здесь после сложения уходят обе переменные, а равенство неверное (вида 0 = число) — решений нет. Впиши «нет».</span>'+steps();
+      return;
+    }
+    if(cur.kind==='inf'){
+      if(/много|беск|любо|∞/.test(raw)) resEl.innerHTML='<span class="ok">✓ Верно — уравнения задают одну прямую, решений бесконечно много.</span>'+steps();
+      else resEl.innerHTML='<span class="bad">✗ Присмотрись: второе уравнение — это первое, домноженное на число. Прямые совпадают, решений бесконечно много. Впиши «много».</span>'+steps();
+      return;
+    }
+    var nums=raw.replace(/−/g,'-').split(/[;,\s]+/).map(function(s){return parseFloat(s.replace(',','.'));}).filter(function(x){return !isNaN(x);});
+    if(nums.length<2){ resEl.innerHTML='<span class="bad">Нужны два числа: x и y, например 3; 2.</span>'; return; }
+    var ok = Math.abs(nums[0]-cur.x0)<0.02 && Math.abs(nums[1]-cur.y0)<0.02;
+    if(ok){ resEl.innerHTML='<span class="ok">✓ Верно! Отлично.</span>'+steps(); }
+    else{
+      var swapped = Math.abs(nums[0]-cur.y0)<0.02 && Math.abs(nums[1]-cur.x0)<0.02;
+      var hint = swapped ? ' Похоже, ты перепутал местами x и y — порядок важен.' : ' Проверь знаки при вычитании и обратную подстановку.';
+      resEl.innerHTML='<span class="bad">✗ Пока не то.'+hint+'</span>'+steps();
+    }
+  }
+
+  document.getElementById('trNew').addEventListener('click',generate);
+  document.getElementById('trCheck').addEventListener('click',check);
+  document.getElementById('trShow').addEventListener('click',function(){ resEl.innerHTML=steps(); });
+  ansEl.addEventListener('keydown',function(e){ if(e.key==='Enter') check(); });
+
+  // стартовая валидная задача (без focus) — { 2x+3y=13; 4x−y=5 } → (2; 3)
+  cur={a1:2,b1:3,c1:13,a2:4,b2:-1,c2:5,kind:'one',x0:2,y0:3};
+  render();
+})();
+</script>

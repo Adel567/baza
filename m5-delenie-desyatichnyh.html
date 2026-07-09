@@ -1,0 +1,541 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Деление десятичных дробей — математика 5 класс</title>
+<style>
+  :root{
+    --paper:#FBF9F5; --card:#FFFFFF; --ink:#26202E; --muted:#6B6473; --line:#E7E2E8;
+    --brand:#6A3EA1; --brand-soft:#EFE7F6;                 /* фиолетовый — акцент, частное, запятая */
+    --d1:#2E8B57; --d1-soft:#E3F1E9; --d1-line:#BFE0CC;    /* зелёный — делимое */
+    --d2:#CF5A34; --d2-soft:#FBEADF; --d2-line:#F0CDB8;    /* оранжевый — делитель */
+    --ok:#2E8B57; --no:#C23B3B;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper)}
+  .page{
+    max-width:730px;margin:0 auto;
+    padding:clamp(1.4rem,4vw,3rem) clamp(1.1rem,4vw,2rem) 4.5rem;
+    color:var(--ink);
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    font-size:17.5px;line-height:1.66;-webkit-font-smoothing:antialiased;
+  }
+  .mono{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-variant-numeric:tabular-nums;font-weight:600}
+
+  .hero{border-bottom:3px solid var(--brand);padding-bottom:1.4rem;margin-bottom:1.6rem}
+  .eyebrow{font-size:.74rem;letter-spacing:.15em;text-transform:uppercase;color:var(--brand);font-weight:700;margin:0 0 .55rem}
+  h1{font-size:clamp(2rem,6.5vw,2.95rem);line-height:1.04;margin:0;font-weight:800;letter-spacing:-.02em;text-wrap:balance}
+  .tagline{font-size:1.1rem;color:var(--muted);margin:.85rem 0 0;text-wrap:pretty}
+
+  section{margin-top:2.4rem}
+  .kicker{font-size:.72rem;letter-spacing:.13em;text-transform:uppercase;color:var(--muted);font-weight:700;margin:0 0 .7rem;display:flex;align-items:center;gap:.55rem}
+  .kicker::before{content:"";width:1.4rem;height:2px;background:var(--brand);border-radius:2px}
+  h2{font-size:1.5rem;margin:0 0 .3rem;font-weight:780;letter-spacing:-.015em;text-wrap:balance}
+  h2 .em{color:var(--brand)}
+  p{margin:.7rem 0}
+  strong{font-weight:680}
+
+  /* цвет-код: перенос запятой */
+  .t1{color:var(--d1);font-weight:800;background:var(--d1-soft);border-radius:5px;padding:0 .14em}   /* делимое */
+  .t2{color:var(--d2);font-weight:800;background:var(--d2-soft);border-radius:5px;padding:0 .14em}   /* делитель */
+  .tp{color:var(--brand);font-weight:800;background:var(--brand-soft);border-radius:5px;padding:0 .14em} /* сдвиг/частное */
+
+  .lead-in{background:var(--brand-soft);border-radius:14px;padding:1.1rem 1.3rem;font-size:1.02rem}
+  .lead-in p{margin:.4rem 0}
+  .lead-in b{color:var(--brand)}
+
+  .where{display:grid;gap:.7rem;margin-top:1.2rem;grid-template-columns:1fr}
+  @media(min-width:560px){.where{grid-template-columns:1fr 1fr}}
+  .where .w{background:var(--card);border:1px solid var(--line);border-radius:13px;padding:.85rem 1rem;display:flex;gap:.75rem;align-items:center}
+  .where .ic{font-size:1.5rem;line-height:1;flex:none}
+  .where b{display:block;font-size:.98rem}
+  .where span{font-size:.9rem;color:var(--muted)}
+
+  .recall{border-left:4px solid var(--brand);background:var(--brand-soft);border-radius:0 10px 10px 0;padding:.85rem 1.15rem;margin-top:1rem}
+  .recall b{color:var(--brand)}
+
+  .note{border-left:4px solid var(--d2);background:var(--d2-soft);border-radius:0 10px 10px 0;padding:.8rem 1.1rem;margin-top:1rem;font-size:.98rem}
+  .note b{color:var(--d2)}
+
+  /* Ядро — правило крупно */
+  .rulebox{background:var(--ink);color:#fff;border-radius:16px;padding:1.3rem 1.4rem;margin-top:1rem}
+  .rulebox ol{margin:0;padding-left:1.3rem;display:flex;flex-direction:column;gap:.7rem}
+  .rulebox li{font-size:1.04rem;line-height:1.5}
+  .rulebox b{color:#fff}
+  .rulebox .hi1{color:#7FDCA4;font-weight:800} .rulebox .hi2{color:#F3B98F;font-weight:800}
+  .rulebox .cap{font-size:.72rem;letter-spacing:.13em;text-transform:uppercase;color:#C9B8E4;font-weight:700;margin:0 0 .8rem}
+
+  /* Два мини-правила */
+  .minis{display:grid;grid-template-columns:1fr 1fr;gap:.8rem;margin-top:.9rem}
+  @media(max-width:520px){.minis{grid-template-columns:1fr}}
+  .mini{background:var(--card);border:1px solid var(--line);border-radius:13px;padding:.95rem 1.05rem}
+  .mini .lab{font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;font-weight:700;color:var(--brand);margin:0 0 .4rem}
+  .mini p{margin:.3rem 0;font-size:.95rem}
+
+  /* Наглядность — перенос запятой */
+  .count{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:1.2rem 1.3rem;margin-top:1rem;text-align:center}
+  .count .big{font-family:ui-monospace,Menlo,monospace;font-weight:800;font-size:clamp(1.3rem,6vw,1.9rem);letter-spacing:.02em;line-height:1.4}
+  .count .arrow{color:var(--brand);font-size:.95rem;font-weight:700;margin:.7rem 0 .3rem}
+  .count .tally{font-size:1rem;color:var(--muted);margin:.5rem 0 0}
+  .count .tally b{color:var(--ink)}
+
+  /* Бар-модель Canvas */
+  .fig{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1rem 1.1rem;margin-top:1rem}
+  .fig canvas{width:100%;height:auto;display:block}
+  .fig .cap{font-size:.88rem;color:var(--muted);margin:.6rem 0 0;text-align:center}
+  .fig button{font:inherit;font-weight:700;font-size:.85rem;cursor:pointer;border:1px solid var(--brand);background:transparent;color:var(--brand);border-radius:9px;padding:.4rem .9rem;margin-top:.7rem}
+
+  /* Разбор «думаю вслух» */
+  .walk{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.15rem 1.3rem;margin-top:1rem}
+  .walk .q{font-family:ui-monospace,Menlo,monospace;font-weight:800;font-size:1.12rem;margin:0 0 .9rem;padding-bottom:.7rem;border-bottom:1px solid var(--line)}
+  .walk ol{margin:0;padding-left:1.25rem;display:flex;flex-direction:column;gap:.6rem}
+  .walk li{font-size:.98rem}
+  .walk .why{color:var(--muted);font-size:.9rem}
+  .verdict{margin-top:1rem;padding:.75rem 1rem;background:var(--brand-soft);border-radius:10px;font-weight:700;color:var(--brand);font-size:1rem}
+
+  /* Тренажёр */
+  .trainer{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.2rem 1.3rem;margin-top:1rem}
+  .tabs{display:flex;gap:.4rem;margin-bottom:.9rem;flex-wrap:wrap}
+  .tabs button{font:inherit;font-weight:700;font-size:.82rem;cursor:pointer;border:1px solid var(--line);background:var(--paper);color:var(--muted);border-radius:20px;padding:.4rem .9rem}
+  .tabs button.on{background:var(--brand);color:#fff;border-color:var(--brand)}
+  .tr-task{font-family:ui-monospace,Menlo,monospace;font-weight:800;font-size:clamp(1.15rem,5.5vw,1.5rem);text-align:center;padding:1.1rem;background:var(--brand-soft);border-radius:10px;color:var(--ink)}
+  .tr-ctl{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.9rem;align-items:center}
+  .tr-ctl button{font:inherit;font-weight:700;font-size:.9rem;cursor:pointer;border:none;border-radius:9px;padding:.55rem .95rem;color:#fff;background:var(--brand)}
+  .tr-ctl button.sec{background:var(--d1)}
+  .tr-ctl button.ghost{background:transparent;color:var(--brand);border:1px solid var(--brand)}
+  .tr-ctl input{flex:1;min-width:130px;font:inherit;padding:.55rem .7rem;border:1px solid var(--line);border-radius:9px;background:#fff;color:var(--ink)}
+  .tr-result{margin-top:.9rem;font-size:.96rem;min-height:1.2rem}
+  .tr-result .ok{color:var(--ok);font-weight:700} .tr-result .bad{color:var(--no);font-weight:700}
+  .tr-result .sol{margin-top:.6rem;padding:.85rem 1.05rem;background:#FCFBFE;border:1px solid var(--line);border-radius:10px;font-size:.95rem;line-height:1.85}
+  .tr-result .sol .mono{font-size:1rem}
+  .tr-result .sol .step{display:block;margin:.15rem 0}
+  .tr-result .sol .stepn{display:inline-block;min-width:1.4em;color:var(--brand);font-weight:800}
+
+  /* Практика */
+  details{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:.9rem 1.1rem;margin-top:.6rem}
+  details[open]{border-color:var(--brand)}
+  summary{cursor:pointer;font-weight:650;list-style:none;display:flex;justify-content:space-between;gap:1rem;align-items:center}
+  summary::-webkit-details-marker{display:none}
+  summary .q{font-size:1rem}
+  summary .tag{font-size:.66rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);border:1px solid var(--line);border-radius:20px;padding:.12rem .55rem;white-space:nowrap;flex:none}
+  summary::after{content:"ответ";font-size:.8rem;color:var(--brand);font-weight:700;white-space:nowrap;margin-left:auto}
+  details[open] summary::after{content:"скрыть"}
+  .ans{margin-top:.75rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.96rem;color:var(--muted)}
+  .ans b{color:var(--ink)}
+  .drill{display:flex;flex-direction:column;gap:.2rem;margin-top:.6rem}
+  .level{font-size:.74rem;letter-spacing:.08em;text-transform:uppercase;color:var(--brand);font-weight:700;margin:1.1rem 0 .2rem}
+
+  /* Ошибки */
+  ul.traps{list-style:none;margin:1rem 0 0;padding:0;display:flex;flex-direction:column;gap:.7rem}
+  ul.traps li{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:.85rem 1.05rem;padding-left:2.5rem;position:relative;font-size:.97rem}
+  ul.traps li::before{content:"⚠";position:absolute;left:1rem;top:.85rem;color:var(--d2)}
+  ul.traps b{font-weight:700}
+
+  /* Итог */
+  .wrapup{background:var(--brand);color:#fff;border-radius:16px;padding:1.4rem 1.5rem;margin-top:2.6rem}
+  .wrapup h2{color:#fff;margin:0 0 .5rem}
+  .wrapup p{color:#EEE6F6;margin:.4rem 0;font-size:1rem}
+  .wrapup .big-rule{font-size:1.08rem;font-weight:700;color:#fff;margin:.6rem 0}
+  .wrapup .next{font-size:.95rem;color:#D9C9EC;margin-top:1rem;padding-top:1rem;border-top:1px solid rgba(255,255,255,.22)}
+  .wrapup .next b{color:#fff}
+
+  button:focus-visible,input:focus-visible,summary:focus-visible{outline:3px solid var(--brand);outline-offset:2px;border-radius:8px}
+  @media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+<div class="page">
+
+  <header class="hero">
+    <p class="eyebrow">Математика · 5 класс · десятичные дроби</p>
+    <h1>Деление<br>десятичных дробей</h1>
+    <p class="tagline">Ты уже умеешь делить обычные числа. Весь секрет — сначала передвинуть запятую, чтобы делить на целое. Дальше всё как всегда.</p>
+  </header>
+
+  <section>
+    <p class="kicker">Зачем это нужно</p>
+    <h2>Где встречается деление с запятой</h2>
+    <div class="lead-in">
+      <p>Деление десятичных нужно всюду, где <b>целое делят на части</b> и ответ выходит «не круглый»: узнать цену за один килограмм, разделить поровну, найти скорость.</p>
+    </div>
+    <div class="where">
+      <div class="w"><span class="ic">🍬</span><div><b>Цена за килограмм</b><span>1,5 кг конфет стоят 240 ₽ — сколько за 1 кг?</span></div></div>
+      <div class="w"><span class="ic">🧾</span><div><b>Разделить поровну</b><span>счёт 1350 ₽ на 4 человек</span></div></div>
+      <div class="w"><span class="ic">🚗</span><div><b>Скорость</b><span>200 км проехали за 2,5 часа</span></div></div>
+      <div class="w"><span class="ic">📊</span><div><b>Среднее и проценты</b><span>пригодится совсем скоро</span></div></div>
+    </div>
+    <div class="note">
+      <p><b>Разрушим миф.</b> Многие думают, что «при делении ответ всегда меньше». Это не так! Если делить на число <b>меньше 1</b>, ответ станет <b>больше</b>. Например, <span class="mono">6 : 0,5 = 12</span> — «сколько половинок в шести? Двенадцать». Делить — не всегда «уменьшать».</p>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Что вспомнить</p>
+    <h2>На что мы обопрёмся</h2>
+    <div class="recall">
+      <p>Тебе понадобятся три вещи, которые ты уже знаешь:</p>
+      <p>▸ <b>Деление уголком</b> натуральных чисел — например, <span class="mono">45 : 18 = 2,5</span>. В этом весь фокус.<br>
+         ▸ <b>Умножение десятичных</b> — им будем проверять ответ.<br>
+         ▸ <b>Что перенос запятой вправо — это умножение на 10, 100…</b> У <span class="mono">1,8</span> один знак после запятой; сдвинуть запятую на 1 вправо → <span class="mono">18</span> (стало в 10 раз больше).</p>
+    </div>
+    <p>Главная идея темы: <strong>деление на десятичную дробь мы сводим к делению на целое число</strong>. Как только делитель станет целым — дальше обычное деление уголком, которое ты уже умеешь.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Ядро темы · правило</p>
+    <h2>Как разделить на десятичную дробь</h2>
+    <div class="rulebox">
+      <p class="cap">Три шага — и всегда в этом порядке</p>
+      <ol>
+        <li><b>Сделай делитель целым.</b> Перенеси запятую в <span class="hi2">делителе</span> вправо до конца — столько раз, сколько знаков после запятой.</li>
+        <li><b>Столько же — в делимом.</b> Перенеси запятую в <span class="hi1">делимом</span> вправо на <b>то же</b> число знаков. Не хватает цифр — допиши нули.</li>
+        <li><b>Дели как обычно.</b> Раздели уголком на получившееся целое число. Запятую в ответе ставь в тот момент, когда в делимом переходишь через запятую.</li>
+      </ol>
+    </div>
+    <p><strong>Почему частное не меняется?</strong> Перенос запятой вправо — это умножение на 10. Мы умножаем на 10 <strong>и делимое, и делитель</strong> — значит частное остаётся прежним: <span class="mono">12 : 4 = 24 : 8 = 120 : 40 = 3</span>.</p>
+    <div class="minis">
+      <div class="mini">
+        <p class="lab">Делим на 10 или 100</p>
+        <p>Запятую в делимом двигаем <b>влево</b>: на 10 — на 1 знак, на 100 — на 2. Например, <span class="mono">63 : 10 = 6,3</span>.</p>
+      </div>
+      <div class="mini">
+        <p class="lab">Делим на натуральное</p>
+        <p>Делим уголком как обычно. Дошли в делимом до запятой — ставим запятую в ответе. Цифр не хватает — сносим нули: <span class="mono">3 : 4 = 0,75</span>.</p>
+      </div>
+    </div>
+    <div class="note">
+      <p><b>На ноль делить нельзя.</b> И запомни: запятую в делителе и делимом сдвигают строго на <b>одинаковое</b> число знаков — иначе ответ будет в 10 (или 100) раз неверным.</p>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Наглядность · цвет-код</p>
+    <h2>Как переносить запятую</h2>
+    <p>Смотри на делитель: сколько у него знаков после запятой — на столько сдвигаем запятую вправо в <span class="t1">обоих</span> числах. Пример <span class="mono">4,5 : 1,8</span>:</p>
+    <div class="count">
+      <div class="big">4,<span class="t1">5</span> &nbsp;:&nbsp; 1,<span class="t2">8</span></div>
+      <div class="tally">у делителя <span class="t2">1,8</span> — <b>1 знак</b> после запятой</div>
+      <div class="arrow">↓ переносим запятую вправо на 1 знак в обоих числах</div>
+      <div class="big">4<span class="tp">5</span> &nbsp;:&nbsp; 1<span class="tp">8</span></div>
+      <div class="tally">теперь делим целые: <b>45 : 18 = 2,5</b></div>
+    </div>
+
+    <p style="margin-top:1.4rem">А вот <span class="mono">6 : 0,5</span> в виде картинки. Полосу длиной 6 режем на кусочки по 0,5 — и таких кусочков ровно <b>12</b>. Поэтому деление на дробь меньше 1 «увеличивает»:</p>
+    <div class="fig">
+      <canvas id="bar" width="660" height="150" aria-label="Полоса длиной 6, разделённая на 12 кусочков по 0,5"></canvas>
+      <p class="cap">6 : 0,5 = 12 — двенадцать кусочков по 0,5 умещаются в шести</p>
+      <button id="barBtn" type="button">▶ Показать по кусочкам</button>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Разбираем вместе</p>
+    <h2>Думаю вслух</h2>
+    <p>Посмотри, как рассуждать по шагам. Пример: <span class="mono">4,5 : 1,8</span>.</p>
+    <div class="walk">
+      <p class="q">4,5 : 1,8 = ?</p>
+      <ol>
+        <li>Смотрю на делитель <span class="mono">1,<span class="t2">8</span></span>: один знак после запятой. Переношу запятую вправо на 1 → <b class="mono">18</b>. <span class="why">Делитель стал целым — то, что нужно.</span></li>
+        <li>В делимом <span class="mono">4,<span class="t1">5</span></span> переношу запятую тоже на 1 знак → <b class="mono">45</b>. <span class="why">Обязательно на столько же, иначе ответ испортится.</span></li>
+        <li>Делю целые: <b class="mono">45 : 18</b>. 18 в 45 помещается 2 раза (36), остаток 9. Ставлю запятую, сношу ноль: <b class="mono">90 : 18 = 5</b>. Значит <b class="mono">2,5</b>.</li>
+        <li><b>Проверка умножением:</b> <span class="mono">2,5 · 1,8 = 4,5</span>. Сходится ✓</li>
+      </ol>
+      <div class="verdict">Ответ: 4,5 : 1,8 = 2,5</div>
+    </div>
+
+    <p>А теперь случай, где в делимом <b>не хватает цифр</b>: <span class="mono">7,2 : 0,03</span>.</p>
+    <div class="walk">
+      <p class="q">7,2 : 0,03 = ?</p>
+      <ol>
+        <li>У делителя <span class="mono">0,<span class="t2">03</span></span> — два знака после запятой. Переношу запятую на 2 вправо → <b class="mono">3</b>.</li>
+        <li>В делимом <span class="mono">7,2</span> надо тоже на 2 знака, а цифра всего одна. <b>Дописываю ноль:</b> 7,2 → <b class="mono">720</b>. <span class="why">Пустое место справа заполняем нулём.</span></li>
+        <li>Делю целые: <b class="mono">720 : 3 = 240</b>.</li>
+        <li>Заметь: делили на <b>0,03</b> — число намного меньше 1, и ответ вышел куда больше делимого. Всё верно.</li>
+      </ol>
+      <div class="verdict">Ответ: 7,2 : 0,03 = 240</div>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Тренажёр · бесконечно</p>
+    <h2>Тренируйся сам</h2>
+    <p>Выбери тип задания, нажми «Новое», реши в тетради и проверь себя. В решении покажется перенос запятой и деление по шагам.</p>
+    <div class="trainer">
+      <div class="tabs">
+        <button id="tabDec" class="on" type="button">На десятичную</button>
+        <button id="tabSmall" type="button">На 0,1 и 0,01</button>
+        <button id="tabBig" type="button">На 10 и 100</button>
+      </div>
+      <div class="tr-task" id="trTask">4,5 : 1,8 = ▢</div>
+      <div class="tr-ctl">
+        <button id="trNew" type="button">🎲 Новое</button>
+        <input id="trAns" type="text" inputmode="decimal" placeholder="ответ, напр. 2,5" aria-label="Ответ">
+        <button id="trCheck" type="button" class="sec">Проверить</button>
+        <button id="trShow" type="button" class="ghost">Решение</button>
+      </div>
+      <div id="trResult" class="tr-result"></div>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Теперь ты · нажми, чтобы проверить</p>
+    <h2>Практика по уровням</h2>
+
+    <p class="level">Понимание</p>
+    <div class="drill">
+      <details>
+        <summary><span class="q">1) На сколько знаков и в какую сторону перенести запятую в <span class="mono">5,6 : 0,7</span>, чтобы делить на целое?</span></summary>
+        <div class="ans">У делителя <span class="mono">0,7</span> один знак после запятой → переносим запятую на <b>1 знак вправо</b> в обоих числах: <span class="mono">56 : 7</span>. (Ответ: <b>8</b>.)</div>
+      </details>
+      <details>
+        <summary><span class="q">2) Что нужно сделать первым делом при делении на <span class="mono">0,03</span>?</span></summary>
+        <div class="ans">Сделать делитель целым: перенести запятую на <b>2 знака вправо</b> (0,03 → 3), и ровно на 2 знака — в делимом.</div>
+      </details>
+    </div>
+
+    <p class="level">Применение</p>
+    <div class="drill">
+      <details>
+        <summary><span class="q">3) Вычисли: <span class="mono">12,5 : 5</span></span></summary>
+        <div class="ans">Делим на натуральное. 12 : 5 = 2 (остаток 2), ставим запятую, сносим 5: 25 : 5 = 5 → <b>2,5</b>.</div>
+      </details>
+      <details>
+        <summary><span class="q">4) Вычисли: <span class="mono">8,4 : 0,2</span></span></summary>
+        <div class="ans">Переносим запятую на 1 вправо: 84 : 2 = <b>42</b>. (Проверка: 0,2 · 42 = 8,4 ✓)</div>
+      </details>
+      <details>
+        <summary><span class="q">5) Вычисли: <span class="mono">3,15 : 0,9</span></span></summary>
+        <div class="ans">Переносим на 1: 31,5 : 9. 31 : 9 = 3 (ост. 4), запятая, 45 : 9 = 5 → <b>3,5</b>. (0,9 · 3,5 = 3,15 ✓)</div>
+      </details>
+      <details>
+        <summary><span class="q">6) Раздели на 0,1 и на 10: <span class="mono">7,4 : 0,1</span> и <span class="mono">74 : 10</span></span></summary>
+        <div class="ans"><b>: 0,1</b> — переносим запятую вправо на 1 (0,1 → 1): 74 : 1 = <b>74</b>. <b>: 10</b> — запятую в делимом влево на 1: <b>7,4</b>. Деление на 0,1 увеличивает, на 10 — уменьшает.</div>
+      </details>
+    </div>
+
+    <p class="level">Анализ</p>
+    <div class="drill">
+      <details>
+        <summary><span class="q">7) В примере <span class="mono">6 : 0,5 = 12</span> ученик спорит: «ответ должен быть <b>меньше</b> 6, ведь это деление». В чём его ошибка?</span><span class="tag">анализ</span></summary>
+        <div class="ans">Он думает, что деление всегда уменьшает. Но делим на <b>0,5 — это меньше 1</b>. Вопрос «сколько половинок в шести?» → двенадцать. При делении на число меньше 1 частное <b>больше</b> делимого.</div>
+      </details>
+      <details>
+        <summary><span class="q">8) Найди ошибку. Ученик считает <span class="mono">4,5 : 1,8</span> так: переносит запятую только в делителе и делит <span class="mono">4,5 : 18 = 0,25</span>. Где промах и как верно?</span><span class="tag">найди ошибку</span></summary>
+        <div class="ans">Он перенёс запятую <b>только в делителе</b>, а в делимом забыл. Из-за этого ответ вышел в 10 раз меньше. Надо двигать запятую <b>в обоих</b> числах на 1: <span class="mono">45 : 18 = 2,5</span>. (Проверка: 2,5 · 1,8 = 4,5 ✓)</div>
+      </details>
+      <details>
+        <summary><span class="q">9) Обратная задача. Подбери делитель, при котором <span class="mono">4,8 : x = 6</span>.</span><span class="tag">анализ</span></summary>
+        <div class="ans">Ищем: на что разделить 4,8, чтобы вышло 6. Так как 6 больше 4,8, делитель <b>меньше 1</b>. Подбор: <b>x = 0,8</b>, потому что 4,8 : 0,8 = 6 (или 0,8 · 6 = 4,8 ✓).</div>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Чтобы не попасться</p>
+    <h2>Частые ошибки</h2>
+    <ul class="traps">
+      <li><b>Переносят запятую только в делителе.</b> В делимом тоже нужно — и ровно на столько же знаков, одновременно. Иначе ответ в 10 или 100 раз неверный.</li>
+      <li><b>Теряют нули при сносе.</b> Когда цифр делимого не хватает — сносят нули, а не бросают деление. <span class="mono">3 : 4 = 0,75</span>, а не «не делится».</li>
+      <li><b>Неверно ставят запятую в частном.</b> Запятую в ответе ставят ровно в тот момент, когда в делимом переходишь через запятую. Пропустишь — сдвинется весь ответ.</li>
+      <li><b>Думают, что «деление всегда уменьшает».</b> При делении на число меньше 1 частное <b>больше</b> делимого. Проверяй смыслом: «сколько раз делитель помещается».</li>
+    </ul>
+  </section>
+
+  <section>
+    <p class="kicker">Проверь себя вслух</p>
+    <h2>Объясни своими словами</h2>
+    <div class="drill">
+      <details>
+        <summary><span class="q">Как разделить на десятичную дробь — что делают сначала с делителем и делимым?</span></summary>
+        <div class="ans">Сначала переносят запятую вправо в делителе, чтобы он стал целым, и на столько же знаков — в делимом. Потом делят как на натуральное число.</div>
+      </details>
+      <details>
+        <summary><span class="q">Почему частное не меняется, если перенести запятую в обоих числах на одинаковое число знаков?</span></summary>
+        <div class="ans">Потому что и делимое, и делитель мы умножаем на одно и то же число (10 или 100). Частное от этого не меняется: <span class="mono">12 : 4 = 120 : 40 = 3</span>.</div>
+      </details>
+      <details>
+        <summary><span class="q">Может ли частное быть больше делимого? Приведи пример.</span></summary>
+        <div class="ans">Да, если делить на число меньше 1. Например, <b>9,6 : 0,8 = 12</b> — двенадцать больше 9,6.</div>
+      </details>
+    </div>
+  </section>
+
+  <div class="wrapup">
+    <h2>Запомни главное</h2>
+    <p class="big-rule">Сделай делитель целым → на столько же сдвинь запятую в делимом → дели уголком как обычно.</p>
+    <p>Деление на десятичную дробь всегда сводится к делению на целое число. Запятую двигаем в обоих числах одинаково — тогда ответ верный.</p>
+    <p class="next">👉 Дальше — <b>среднее арифметическое</b> (сложить и разделить на количество) и <b>проценты</b>. Обе темы стоят прямо на делении десятичных, так что этот навык скоро очень пригодится.</p>
+  </div>
+
+</div>
+
+<script>
+/* ── Бар-модель 6 : 0,5 = 12 ── */
+(function(){
+  var cv=document.getElementById('bar'); if(!cv) return;
+  var ctx=cv.getContext('2d'), W=cv.width, H=cv.height;
+  var reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion:reduce)').matches;
+  var padL=18, padR=18, y=44, bh=52, bw=W-padL-padR, n=12;
+  function seg(i){ // i кусочков закрашено
+    ctx.clearRect(0,0,W,H);
+    ctx.font='600 14px ui-monospace,Menlo,monospace';
+    ctx.fillStyle='#6B6473'; ctx.textAlign='left';
+    ctx.fillText('длина 6 = двенадцать кусочков по 0,5', padL, 26);
+    var sw=bw/n;
+    for(var k=0;k<n;k++){
+      var x=padL+k*sw;
+      ctx.fillStyle=(k<i)?((k%2)?'#7FDCA4':'#2E8B57'):'#F2EEF6';
+      ctx.fillRect(x,y,sw-2,bh);
+    }
+    ctx.strokeStyle='#26202E'; ctx.lineWidth=2; ctx.strokeRect(padL,y,bw,bh);
+    ctx.fillStyle='#26202E'; ctx.textAlign='center';
+    ctx.font='700 13px ui-monospace,Menlo,monospace';
+    ctx.fillText('0', padL, y+bh+20);
+    ctx.fillText('6', padL+bw, y+bh+20);
+    ctx.font='800 15px system-ui,sans-serif'; ctx.fillStyle='#6A3EA1';
+    ctx.fillText('кусочков закрашено: '+i, W/2, y+bh+38);
+  }
+  seg(12);
+  var timer=null;
+  document.getElementById('barBtn').addEventListener('click',function(){
+    if(timer){ clearInterval(timer); timer=null; }
+    if(reduce){ seg(12); return; }
+    var i=0; seg(0);
+    timer=setInterval(function(){ i++; seg(i); if(i>=12){ clearInterval(timer); timer=null; } },140);
+  });
+})();
+
+/* ── Тренажёр: деление десятичных дробей (целочисленная арифметика) ── */
+(function(){
+  var taskEl=document.getElementById('trTask'),
+      ansEl=document.getElementById('trAns'),
+      resEl=document.getElementById('trResult');
+  if(!taskEl) return;
+  var tabDec=document.getElementById('tabDec'),
+      tabSmall=document.getElementById('tabSmall'),
+      tabBig=document.getElementById('tabBig');
+  var mode='dec', cur={};
+
+  function ri(a,b){ return Math.floor(Math.random()*(b-a+1))+a; }
+  function pickNZ(min,max){ var n; do{ n=ri(min,max); }while(n%10===0); return n; } // без хвостового нуля
+
+  /* Число = {int, dp}; значение = int / 10^dp. Русская запятая, минус U+2212. */
+  function fmtRaw(intVal,dp){        // без обрезки хвостовых нулей
+    var neg=intVal<0; intVal=Math.abs(intVal);
+    var s=String(intVal);
+    if(dp>0){ while(s.length<=dp) s='0'+s; s=s.slice(0,s.length-dp)+','+s.slice(s.length-dp); }
+    return (neg?'−':'')+s;
+  }
+  function fmtDec(intVal,dp){        // с обрезкой хвостовых нулей (чистый вид)
+    var neg=intVal<0; intVal=Math.abs(intVal);
+    var s=String(intVal);
+    if(dp>0){
+      while(s.length<=dp) s='0'+s;
+      var whole=s.slice(0,s.length-dp), frac=s.slice(s.length-dp).replace(/0+$/,'');
+      s=frac ? whole+','+frac : whole;
+    }
+    return (neg?'−':'')+s;
+  }
+  function fmtO(o){ return fmtDec(o.int,o.dp); }
+  function fracLen(str){ var i=str.indexOf(','); return i<0?0:str.length-i-1; }
+
+  /* число с подсветкой дробной части */
+  function colored(o,cls){
+    var s=fmtDec(o.int,o.dp), i=s.indexOf(',');
+    if(i<0) return '<span class="mono">'+s+'</span>';
+    return '<span class="mono">'+s.slice(0,i)+',<span class="'+cls+'">'+s.slice(i+1)+'</span></span>';
+  }
+
+  function makeQuot(){ // частное: целое или с одним знаком
+    return (Math.random()<0.5) ? {int:ri(2,19),dp:0} : {int:pickNZ(12,96),dp:1};
+  }
+
+  function genDec(){
+    var r=Math.random(), d, q;
+    if(r<0.4){ d={int:pickNZ(2,9),dp:1};   q=makeQuot(); }        // 0,x
+    else if(r<0.78){ d={int:pickNZ(11,45),dp:1}; q=makeQuot(); }  // x,x
+    else { d={int:pickNZ(2,9),dp:2}; q={int:ri(2,24),dp:0}; }     // 0,0x — только целое частное
+    cur.divisor=d; cur.quot=q;
+  }
+  function genSmall(){                 // делим на 0,1 или 0,01
+    var d=(Math.random()<0.5)?{int:1,dp:1}:{int:1,dp:2};
+    var q=(d.dp===1)?makeQuot():{int:ri(2,24),dp:0}; // 0,01 → целое частное (не плодим лишние знаки)
+    cur.divisor=d; cur.quot=q;
+  }
+  function genBig(){                   // делим на 10 или 100
+    var d=(Math.random()<0.5)?{int:10,dp:0}:{int:100,dp:0};
+    var q=(Math.random()<0.5)?{int:ri(2,98),dp:1}:{int:pickNZ(105,985),dp:2};
+    cur.divisor=d; cur.quot=q;
+  }
+
+  function genTask(){
+    if(mode==='dec') genDec();
+    else if(mode==='small') genSmall();
+    else genBig();
+    // делимое = частное · делитель  (гарантированно точный конечный ответ)
+    cur.dividend={ int:cur.quot.int*cur.divisor.int, dp:cur.quot.dp+cur.divisor.dp };
+    cur.task=fmtO(cur.dividend)+'  :  '+fmtO(cur.divisor)+'  = ▢';
+  }
+
+  function solHTML(){
+    var q=cur.quot, d=cur.divisor, dv=cur.dividend;
+    var ansClean=fmtDec(q.int,q.dp);
+    var s='<div class="sol">';
+
+    if(mode==='big'){
+      var k=(d.int===10)?1:2;
+      var word=(k===1)?'1 знак':'2 знака';
+      s+='<span class="step"><span class="stepn">1.</span> Делим на '+d.int+' — переносим запятую в делимом '+colored(dv,'t1')+' <b>влево</b> на '+word+'.</span>';
+      s+='<span class="step"><span class="stepn">2.</span> Получаем <b class="mono">'+ansClean+'</b>. <span style="color:var(--muted)">Деление на 10 или 100 всегда уменьшает число.</span></span>';
+      return s+'<span class="step" style="margin-top:.5rem"><b>Ответ: '+ansClean+'</b></span></div>';
+    }
+
+    // dec и small: делитель дробный — сначала делаем его целым
+    var k2=d.dp, word2=(k2===1)?'1 знак':'2 знака';
+    var newDivInt=d.int;                          // делитель после переноса
+    var newDvClean=fmtDec(q.int*d.int, q.dp);     // делимое после переноса
+    var dvClean=fmtDec(dv.int,dv.dp);
+    s+='<span class="step"><span class="stepn">1.</span> Делаем делитель целым: у '+colored(d,'t2')+' перенос запятой вправо на '+word2+' → <b class="mono">'+newDivInt+'</b>.</span>';
+    s+='<span class="step"><span class="stepn">2.</span> В делимом '+colored(dv,'t1')+' переносим запятую тоже на '+word2+' → <b class="mono">'+newDvClean+'</b>';
+    if(fracLen(dvClean)<k2) s+=' <span style="color:var(--muted)">(цифр не хватило — дописали нуль)</span>';
+    s+='.</span>';
+    s+='<span class="step"><span class="stepn">3.</span> Делим целое на целое: <b class="mono">'+newDvClean+' : '+newDivInt+' = '+ansClean+'</b>.</span>';
+    if(mode==='small'){
+      var wm=(d.dp===1)?'на 1 знак':'на 2 знака';
+      s+='<span class="step" style="color:var(--muted)">Короче: делить на '+fmtO(d)+' — то же, что перенести запятую вправо '+wm+'.</span>';
+    }
+    s+='<span class="step" style="margin-top:.5rem"><b>Ответ: '+ansClean+'</b></span></div>';
+    return s;
+  }
+
+  function parseNum(raw){ return parseFloat(raw.replace(/\s/g,'').replace('−','-').replace(',','.')); }
+  function check(){
+    var raw=ansEl.value.trim();
+    if(raw===''){ resEl.innerHTML='<span class="bad">Введи ответ или нажми «Решение».</span>'; return; }
+    var got=parseNum(raw);
+    if(isNaN(got)){ resEl.innerHTML='<span class="bad">Это не похоже на число. Дробную часть пиши через запятую.</span>'; return; }
+    var target=cur.quot.int/Math.pow(10,cur.quot.dp);
+    var ok=Math.abs(got-target)<1e-9;
+    resEl.innerHTML=(ok?'<span class="ok">✓ Верно!</span>':'<span class="bad">✗ Пока не то — посмотри решение.</span>')+solHTML();
+  }
+  function render(focus){
+    taskEl.textContent=cur.task; resEl.innerHTML=''; ansEl.value='';
+    if(focus) ansEl.focus();
+  }
+  function newTask(focus){ genTask(); render(focus); }
+  function setMode(m){
+    mode=m;
+    tabDec.className=(m==='dec')?'on':''; tabSmall.className=(m==='small')?'on':''; tabBig.className=(m==='big')?'on':'';
+    newTask(true);
+  }
+  tabDec.addEventListener('click',function(){ setMode('dec'); });
+  tabSmall.addEventListener('click',function(){ setMode('small'); });
+  tabBig.addEventListener('click',function(){ setMode('big'); });
+  document.getElementById('trNew').addEventListener('click',function(){ newTask(true); });
+  document.getElementById('trCheck').addEventListener('click',check);
+  document.getElementById('trShow').addEventListener('click',function(){ resEl.innerHTML=solHTML(); });
+  ansEl.addEventListener('keydown',function(e){ if(e.key==='Enter') check(); });
+
+  /* старт: валидная задача (совпадает с примером в тексте), БЕЗ фокуса — иначе автоскролл к тренажёру */
+  cur={ quot:{int:25,dp:1}, divisor:{int:18,dp:1}, dividend:{int:450,dp:2}, task:'4,5  :  1,8  = ▢' };
+  render(false);
+})();
+</script>
