@@ -117,6 +117,35 @@
   .wrapup .big-rule{font-size:1.1rem;font-weight:700;color:#fff;margin:.6rem 0}
   .wrapup .next{font-size:.95rem;color:#D9C9EC;margin-top:1rem;padding-top:1rem;border-top:1px solid rgba(255,255,255,.2)}
 
+  /* Тренажёр */
+  .trainer{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:1.3rem 1.3rem 1.2rem;margin-top:1rem}
+  .tr-num{font-family:ui-monospace,Menlo,monospace;font-weight:800;font-size:clamp(2.1rem,10vw,3rem);text-align:center;letter-spacing:.03em;margin:.1rem 0 .3rem;color:var(--ink)}
+  .tr-hint{text-align:center;color:var(--muted);font-size:.9rem;margin:0 0 1.1rem}
+  .tr-chips{display:flex;flex-wrap:wrap;gap:.5rem;justify-content:center;margin-bottom:1.15rem}
+  .chip{font-family:ui-monospace,Menlo,monospace;font-weight:800;font-size:1.1rem;border:2px solid var(--line);background:var(--paper);border-radius:12px;padding:.5rem 1rem;cursor:pointer;color:var(--muted);transition:transform .08s,border-color .1s,background .1s;position:relative}
+  .chip:hover{transform:translateY(-1px)}
+  .chip:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+  .chip.t.on{border-color:var(--tail);background:var(--tail-soft);color:var(--tail)}
+  .chip.s.on{border-color:var(--sum);background:var(--sum-soft);color:var(--sum)}
+  .chip.ok::after{content:"✓";position:absolute;top:-8px;right:-8px;background:var(--ok);color:#fff;font-size:.7rem;width:1.15rem;height:1.15rem;border-radius:50%;display:flex;align-items:center;justify-content:center}
+  .chip.err::after{content:"✕";position:absolute;top:-8px;right:-8px;background:var(--no);color:#fff;font-size:.7rem;width:1.15rem;height:1.15rem;border-radius:50%;display:flex;align-items:center;justify-content:center}
+  .tr-btns{display:flex;gap:.5rem;flex-wrap:wrap;justify-content:center}
+  .tr-btns button{font:inherit;font-weight:700;font-size:.92rem;border-radius:10px;padding:.55rem 1.1rem;cursor:pointer;border:1px solid transparent}
+  .tr-btns .go{background:var(--brand);color:#fff}
+  .tr-btns .sh{background:var(--paper);border:1px solid var(--line);color:var(--ink)}
+  .tr-btns .nw{background:var(--brand-soft);color:var(--brand)}
+  .tr-btns button:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+  .tr-res{margin-top:1.1rem;font-size:.97rem}
+  .tr-res .head{font-weight:700;padding:.6rem .9rem;border-radius:9px;margin-bottom:.7rem}
+  .tr-res .head.ok{background:#E7F4EC;color:var(--ok)}
+  .tr-res .head.no{background:#FBEAEA;color:var(--no)}
+  .tr-res .head.info{background:var(--brand-soft);color:var(--brand)}
+  .tr-sol{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:.85rem 1rem}
+  .tr-sol .row{margin:.3rem 0;font-size:.94rem}
+  .tr-sol .grp{font-weight:700;margin-top:.5rem}
+  .tr-sol .grp.tail{color:var(--tail)} .tr-sol .grp.sum{color:var(--sum)}
+  .tr-sol .grp:first-child{margin-top:0}
+
   @media(prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 
@@ -243,6 +272,22 @@
   </section>
 
   <section>
+    <h2>Тренажёр — <span class="em">проверь любое число</span></h2>
+    <p>Появляется случайное число. Нажми на <strong>все делители, на которые оно делится</strong> (÷2, ÷5, ÷10 — по хвосту; ÷3, ÷9 — по сумме цифр), потом проверь себя. Не уверен — жми «Показать разбор».</p>
+    <div class="trainer">
+      <div class="tr-num mono" id="trNum">1 530</div>
+      <p class="tr-hint">Отметь все числа, на которые делится это число</p>
+      <div class="tr-chips" id="trChips"></div>
+      <div class="tr-btns">
+        <button class="go" id="trCheck" type="button">Проверить</button>
+        <button class="sh" id="trShow" type="button">Показать разбор</button>
+        <button class="nw" id="trNew" type="button">🎲 Новое число</button>
+      </div>
+      <div class="tr-res" id="trRes"></div>
+    </div>
+  </section>
+
+  <section>
     <h2>Проверь себя</h2>
     <p>Реши сам, потом нажми «проверить». Не подглядывай раньше времени 🙂</p>
     <div class="drill">
@@ -282,4 +327,85 @@
   </div>
 
 </div>
+
+<script>
+(function(){
+  var DIVS=[{d:2,cls:'t'},{d:3,cls:'s'},{d:5,cls:'t'},{d:9,cls:'s'},{d:10,cls:'t'}];
+  var N=0, sel={};
+  var numEl=document.getElementById('trNum');
+  var chipsEl=document.getElementById('trChips');
+  var resEl=document.getElementById('trRes');
+  function ri(a,b){ return Math.floor(Math.random()*(b-a+1))+a; }
+  function grp(n){ var s=String(n), o='', c=0; for(var i=s.length-1;i>=0;i--){ o=s[i]+o; if(++c%3===0 && i>0) o=' '+o; } return o; }
+  function dsum(n){ var s=0; n=Math.abs(n); while(n>0){ s+=n%10; n=Math.floor(n/10); } return s; }
+  function cls(d){ return DIVS.filter(function(o){ return o.d===d; })[0].cls; }
+  function locked(){ return resEl.getAttribute('data-done')==='1'; }
+
+  function buildChips(){
+    chipsEl.innerHTML='';
+    DIVS.forEach(function(o){
+      var b=document.createElement('button');
+      b.type='button'; b.className='chip '+o.cls; b.setAttribute('data-d',o.d);
+      b.textContent='÷'+o.d;
+      b.addEventListener('click',function(){
+        if(locked()) return;
+        sel[o.d]=!sel[o.d];
+        b.classList.toggle('on', sel[o.d]);
+      });
+      chipsEl.appendChild(b);
+    });
+  }
+  function newNum(first){
+    N = first || ri(100,9999);
+    sel={}; resEl.innerHTML=''; resEl.removeAttribute('data-done');
+    numEl.textContent=grp(N);
+    Array.prototype.forEach.call(chipsEl.children,function(b){
+      b.className='chip '+cls(+b.getAttribute('data-d'));
+    });
+  }
+  function paint(reveal){
+    Array.prototype.forEach.call(chipsEl.children,function(b){
+      var d=+b.getAttribute('data-d'), corr=(N%d===0), chosen=!!sel[d];
+      b.classList.toggle('on', corr);
+      if(reveal){
+        if(chosen===corr){ if(corr) b.classList.add('ok'); }
+        else b.classList.add('err');
+      }
+    });
+  }
+  function solution(){
+    var last=N%10, S=dsum(N), digs=String(N).split('').join(' + ');
+    function yn(b){ return b?'<span class="yes">да</span>':'<span class="no">нет</span>'; }
+    var h='<div class="tr-sol">';
+    h+='<div class="grp tail">По хвосту (последняя цифра — '+last+'):</div>';
+    h+='<div class="row">÷2 — хвост '+(last%2===0?'чётный':'нечётный')+' → '+yn(N%2===0)+'</div>';
+    h+='<div class="row">÷5 — хвост '+((last===0||last===5)?'0 или 5':'не 0 и не 5')+' → '+yn(N%5===0)+'</div>';
+    h+='<div class="row">÷10 — хвост '+(last===0?'0':'не 0')+' → '+yn(N%10===0)+'</div>';
+    h+='<div class="grp sum">По сумме цифр ('+digs+' = '+S+'):</div>';
+    h+='<div class="row">÷3 — сумма '+(S%3===0?'делится':'не делится')+' на 3 → '+yn(N%3===0)+'</div>';
+    h+='<div class="row">÷9 — сумма '+(S%9===0?'делится':'не делится')+' на 9 → '+yn(N%9===0)+'</div>';
+    return h+'</div>';
+  }
+  function check(){
+    if(locked()) return;
+    var ok=true;
+    DIVS.forEach(function(o){ if(!!sel[o.d] !== (N%o.d===0)) ok=false; });
+    paint(true);
+    resEl.setAttribute('data-done','1');
+    resEl.innerHTML = (ok
+      ? '<div class="head ok">✓ Верно! Все делители отмечены правильно.</div>'
+      : '<div class="head no">Не совсем — сверься с разбором ниже.</div>') + solution();
+  }
+  function show(){
+    if(locked()) return;
+    paint(false);
+    resEl.setAttribute('data-done','1');
+    resEl.innerHTML = '<div class="head info">Разбор числа '+grp(N)+':</div>' + solution();
+  }
+  document.getElementById('trCheck').addEventListener('click',check);
+  document.getElementById('trShow').addEventListener('click',show);
+  document.getElementById('trNew').addEventListener('click',function(){ newNum(); });
+  buildChips(); newNum(1530);
+})();
+</script>
 <!--LESSON-NAV-BOT--><nav class="lnav lnav-bot"><span class="prev"></span><a class="to-cat" href="./catalog.html">📚 <span>Все темы</span></a><a class="next" href="./m5-obyknovennye-drobi-smysl.html"><span class="dir">Следующая →</span><span class="ttl">Доли и смысл обыкновенной дроби</span></a></nav><!--/LESSON-NAV-BOT-->
