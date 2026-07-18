@@ -372,7 +372,7 @@
   var sa=document.getElementById('sa'), sb=document.getElementById('sb'), sc=document.getElementById('sc');
   var va=document.getElementById('va'), vb=document.getElementById('vb'), vc=document.getElementById('vc');
   var eqEl=document.getElementById('parEq'), readEl=document.getElementById('parRead');
-  var W=640,H=560,dpr=1,RX=8,RYV=8;
+  var W=640,H=560,dpr=1,RX=8,RYV=26; // RYV фиксирован: при a∈[±0.5..3], b,c∈[−6..6] |y₀| ≤ 24 — вершина всегда видна, масштаб не «дышит»
   function css(v){ return getComputedStyle(document.documentElement).getPropertyValue(v).trim(); }
   function fmt(n){ n=Math.round(n*100)/100; return (n<0?'−':'')+Math.abs(n); }
   function resize(){ var c=cv.clientWidth||640; dpr=Math.min(window.devicePixelRatio||1,2); W=c; H=Math.round(c*0.82);
@@ -393,10 +393,9 @@
     var a=parseFloat(sa.value), b=parseFloat(sb.value), c=parseFloat(sc.value);
     va.textContent=fmt(a); vb.textContent=fmt(b); vc.textContent=fmt(c);
 
-    // вертикальную шкалу подгоняем под вершину, чтобы она всегда была видна и ось не обрезалась
+    // вертикальный масштаб фиксированный (RYV) — вершина видна при любых значениях ползунков
     var isLin=(a===0), xv=0, yv=0;
     if(!isLin){ xv=-b/(2*a); yv=a*xv*xv+b*xv+c; }
-    RYV=Math.max(8, Math.round(Math.abs(yv))+2, Math.abs(c)+1);
 
     ctx.clearRect(0,0,W,H);
     // сетка
@@ -488,7 +487,7 @@
     var h='<div class="sol">';
     h+='a = '+fmt(a)+', b = '+fmt(b)+', c = '+fmt(c)+'<br>';
     h+='x₀ = −b/(2a) = −('+fmt(b)+')/(2·'+fmt(a)+') = <b>'+fmt(q.x0)+'</b><br>';
-    h+='y₀ = '+fmt(a)+'·('+fmt(q.x0)+')² + '+fmt(b)+'·('+fmt(q.x0)+') + '+fmt(c)+' = <b>'+fmt(q.y0)+'</b><br>';
+    h+='y₀ = '+fmt(a)+'·('+fmt(q.x0)+')²'+(b<0?' − ':' + ')+Math.abs(b)+'·('+fmt(q.x0)+')'+(c<0?' − ':' + ')+Math.abs(c)+' = <b>'+fmt(q.y0)+'</b><br>';
     h+='вершина ('+fmt(q.x0)+'; '+fmt(q.y0)+') · ось симметрии x = '+fmt(q.x0)+'<br>';
     h+= a>0 ? 'a &gt; 0 → '+fmt(q.y0)+' это наименьшее значение.' : 'a &lt; 0 → '+fmt(q.y0)+' это наибольшее значение.';
     return h+'</div>';
@@ -510,6 +509,8 @@
   document.getElementById('trShow').addEventListener('click',function(){ resEl.innerHTML=solHTML(); });
   function onEnter(e){ if(e.key==='Enter') check(); }
   x0El.addEventListener('keydown',onEnter); y0El.addEventListener('keydown',onEnter);
-  generate(); started=true;   // первичная генерация БЕЗ фокуса
+  // стартовое состояние = пример из HTML: y = x² − 6x + 5, вершина (3; −4); без generate() и без фокуса
+  cur={a:1,b:-6,c:5,x0:3,y0:-4};
+  started=true;
 })();
 </script>

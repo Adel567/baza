@@ -604,7 +604,13 @@
         var yy = cur.type==='par'? cur.a*(t-cur.r1)*(t-cur.r2) : cur.k*(t-cur.r);
         if(Math.abs(yy)<=YMAX-0.5) cand.push(t);
       }
-      cur.tx = cand.length? cand[ri(0,cand.length-1)] : 1;
+      if(cand.length){ cur.tx = cand[ri(0,cand.length-1)]; }
+      else { // страховка: точка не должна быть корнем
+        var ft=1;
+        if(Math.abs(func(ft))<1e-9) ft=0;
+        if(Math.abs(func(ft))<1e-9) ft=4;
+        cur.tx=ft;
+      }
     }
     if(cur.q==='monotone' && cur.type==='par'){
       // сторона от вершины
@@ -620,7 +626,7 @@
     var q=cur, t='';
     if(q.q==='zeros'){ t='Найди все <b>нули</b> функции по графику (через ; ):'; ansEl.placeholder='напр.  −2; 3'; }
     else if(q.q==='sign'){ t='Какой <b>знак</b> у функции в точке x = '+mm(q.tx)+'?  Ответ: + или −'; ansEl.placeholder='+  или  −'; }
-    else if(q.q==='extremum'){ t='Найди <b>'+q.kind+' значение</b> функции (число, или «нет»):'; ansEl.placeholder='число  или  нет'; }
+    else if(q.q==='extremum'){ t='Найди <b>'+q.kind+' значение</b> функции (число):'; ansEl.placeholder='число'; }
     else if(q.q==='monotone'){
       if(q.type==='lin'){ t='Функция <b>возрастает</b> или <b>убывает</b>?'; }
       else {
@@ -679,7 +685,7 @@
       ok = !isNaN(g2) && Math.abs(g2-correct())<0.01;
     } else if(q.q==='monotone'){
       var want2=correct();
-      var g3 = /возраст|раст|вверх/.test(raw)?'возрастает':(/убыв|паден|вниз/.test(raw)?'убывает':'?');
+      var g3 = /возраст|раст|вверх/.test(raw)?'возрастает':(/убыв|паден|пада|вниз/.test(raw)?'убывает':'?');
       ok = g3===want2;
     }
     if(ok){ resEl.innerHTML='<span class="ok">✓ Верно!</span>'+explain(); }

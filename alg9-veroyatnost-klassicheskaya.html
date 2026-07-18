@@ -606,6 +606,13 @@
     return {text:'Бросают игральный кубик. Найди вероятность, что '+c.t+'.', m:m, n:6,
       why: m===0?'таких чисел на кубике нет':'подходящие числа: '+c.favs.join(', ')+' — их '+m};
   }
+  function ballWord(k){
+    var d=k%10, h=k%100;
+    if(h>=11&&h<=14) return 'шаров';
+    if(d===1) return 'шар';
+    if(d>=2&&d<=4) return 'шара';
+    return 'шаров';
+  }
   function genBalls(){
     var pal=[{g:'красных'},{g:'синих'},{g:'зелёных'},{g:'жёлтых'}];
     var a=ri(0,3), b; do{ b=ri(0,3); }while(b===a);
@@ -613,7 +620,7 @@
     var pickFirst=Math.random()<0.5;
     var m=pickFirst?n1:n2, adj=pickFirst?pal[a]:pal[b];
     var adjMap={'красных':'красный','синих':'синий','зелёных':'зелёный','жёлтых':'жёлтый'};
-    return {text:'В мешке '+n1+' '+pal[a].g+' и '+n2+' '+pal[b].g+' шаров, одинаковых на ощупь. Наугад вынимают один. Найди вероятность, что он '+adjMap[adj.g]+'.',
+    return {text:'В мешке '+n1+' '+pal[a].g+' и '+n2+' '+pal[b].g+' '+ballWord(n2)+', одинаковых на ощупь. Наугад вынимают один. Найди вероятность, что он '+adjMap[adj.g]+'.',
       m:m, n:n, why:'нужного цвета шаров '+m+', всего '+n};
   }
   function genCards(){
@@ -670,8 +677,11 @@
   function check(){
     var val=parseAns(ansEl.value), target=cur.m/cur.n;
     if(isNaN(val)){ resEl.innerHTML='<span class="bad">Введи вероятность дробью (1/2) или десятичной (0.5).</span>'; return; }
-    if(Math.abs(val-target)<1e-6){
+    var diff=Math.abs(val-target);
+    if(diff<=0.005){
       resEl.innerHTML='<span class="ok">✓ Верно!</span>'+solutionHTML();
+    } else if(diff<=0.02){
+      resEl.innerHTML='<span class="bad">Почти! Похоже, ты округлил десятичную запись. Введи ответ обыкновенной дробью (m/n) — так точнее.</span>';
     } else {
       var hint='';
       if(cur.m>0 && Math.abs(val-cur.n/cur.m)<1e-6) hint=' Похоже, ты поделил наоборот: сверху m (благоприятные), снизу n (все).';

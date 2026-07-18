@@ -469,12 +469,13 @@
       }
       return;
     }
-    var got=raw.split(/[;,]/).map(function(s){return parseFloat(s.replace(',','.').replace(/−/g,'-'));})
-              .filter(function(x){return !isNaN(x);})
-              .map(function(x){return Math.round(x);});
+    var norm=raw.replace(/−/g,'-').replace(/(\d),(\d)/g,'$1.$2');
+    var got=norm.split(/[;,\s]+/).filter(function(s){return s!=='';})
+              .map(function(s){return parseFloat(s);})
+              .filter(function(x){return !isNaN(x);});
     got=got.filter(function(v,i){return got.indexOf(v)===i;}).sort(function(a,b){return a-b;});
     var exp=d.valid.slice().sort(function(a,b){return a-b;});
-    var ok = got.length===exp.length && exp.every(function(v,i){return v===got[i];});
+    var ok = got.length===exp.length && exp.every(function(v,i){return Math.abs(v-got[i])<0.001;});
     if(ok){
       resEl.innerHTML='<span class="ok">✓ Верно! Корни найдены и лишнее отсеяно.</span>'+solutionHTML();
     } else {

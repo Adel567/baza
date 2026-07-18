@@ -441,7 +441,7 @@
 var MINUS='−';
 function fmtN(x){
   var n=Math.round(x*1000)/1000; if(n===0)n=0;
-  var s=(Math.abs(n)%1===0)? String(Math.abs(n)) : String(Math.abs(n));
+  var s=(Math.abs(n)%1===0)? String(Math.abs(n)) : String(Math.abs(n)).replace('.',',');
   return (n<0?MINUS:'')+s;
 }
 function relSym(rel){ return rel==='>='?'≥':rel==='<='?'≤':rel; }
@@ -496,7 +496,10 @@ function formatIntervals(ints){
   ints=normIntervals(ints);
   if(ints.length===0) return '∅ — решений нет';
   if(ints.length===1 && ints[0][0]===-Infinity && ints[0][2]===Infinity) return 'x — любое число, ('+MINUS+'∞; +∞)';
-  return ints.map(function(iv){ return bracketLo(iv[0],iv[1])+'; '+bracketHi(iv[2],iv[3]); }).join(' ∪ ');
+  return ints.map(function(iv){
+    if(iv[0]===iv[2]) return 'x = '+fmtN(iv[0]); // точечное решение вместо «[3; 3]»
+    return bracketLo(iv[0],iv[1])+'; '+bracketHi(iv[2],iv[3]);
+  }).join(' ∪ ');
 }
 function normIntervals(arr){
   arr=arr.filter(function(iv){ return iv[0]<iv[2] || (iv[0]===iv[2] && iv[1] && iv[3]); });
@@ -538,12 +541,15 @@ function parseNum(t){
   return isNaN(v)?null:v;
 }
 function normStr(s){
-  s=s.trim().toLowerCase().replace(/\s+/g,'');
+  s=s.trim().toLowerCase();
+  s=s.replace(/\s+u\s+/g,'|');   // отдельно стоящая u между пробелами = объединение
+  s=s.replace(/\s+/g,'');
   s=s.replace(/[−–—]/g,'-');
   s=s.replace(/∞/g,'inf');
   s=s.replace(/≤/g,'<=').replace(/≥/g,'>=').replace(/⩽/g,'<=').replace(/⩾/g,'>=');
   s=s.replace(/[≠]|<>/g,'!=');
-  s=s.replace(/∪/g,'|').replace(/или/g,'|').replace(/u/g,'|');
+  s=s.replace(/∪/g,'|').replace(/или/g,'|');
+  s=s.replace(/([\)\]])u([\(\[])/g,'$1|$2'); // u между скобками: (1;2)u(3;4)
   s=s.replace(/∈/g,'');
   return s;
 }
@@ -654,7 +660,9 @@ function parseAns(raw){
     ctx.font='700 15px ui-monospace,Menlo,monospace'; ctx.textAlign='center';
     function zoneSign(xs){ var yv=f(xs); if(Math.abs(yv)<1e-9) return;
       ctx.fillStyle= yv>0?cssVar('--pos'):cssVar('--neg');
-      ctx.fillText(yv>0?'+':MINUS, X(xs), yv>0?axisY-depth*0.55-10:axisY+depth*0.55+18); }
+      var tx=Math.max(12,Math.min(W-12,X(xs)));
+      var ty=Math.max(14,Math.min(H-6, yv>0?axisY-depth*0.55-10:axisY+depth*0.55+18));
+      ctx.fillText(yv>0?'+':MINUS, tx, ty); }
     if(lo===hi){ zoneSign(lo-3); zoneSign(lo+3); }
     else { zoneSign(lo-2); zoneSign((lo+hi)/2); zoneSign(hi+2); }
 

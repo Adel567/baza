@@ -535,7 +535,6 @@
     }
 
     // вердикт
-    var sym = dir==='>'?'&gt; 0':dir==='<'?'&lt; 0':dir==='>='?'≥ 0':'≤ 0';
     var symTxt = dir==='>'?'> 0':dir==='<'?'< 0':dir==='>='?'≥ 0':'≤ 0';
     verdict.textContent='(x+1)(x'+MINUS+'2)(x'+MINUS+'4) '+symTxt+'  →  x ∈ '+ansStr(ans);
   }
@@ -630,6 +629,10 @@
   }
   function parseIntervals(str){
     if(!str) return null;
+    // словесные ответы — как в уроке про квадратные неравенства
+    var word=str.trim().toLowerCase().replace(/\s+/g,'');
+    if(/^(нет|net|пусто|пуст|решенийнет|нетрешений|none|∅)$/.test(word)) return [];
+    if(/^(все|всё|любое|любые|любоечисло|всечисла|вседействительные|r|x-любое)$/.test(word)) return [{lo:-Infinity,hi:Infinity,lc:false,rc:false}];
     str=str.replace(/∪/g,'U').replace(/или/gi,'U').replace(/\bor\b/gi,'U');
     str=str.replace(/([\)\]])\s*([\(\[])/g,'$1 U $2');
     var parts=str.split(/U/i).map(function(s){return s.trim();}).filter(Boolean);
@@ -637,11 +640,33 @@
     var out=[];
     for(var i=0;i<parts.length;i++){
       var m=parts[i].match(/^([\[\(])(.+);(.+)([\]\)])$/);
-      if(!m) return null;
-      var lo=parseEnd(m[2]), hi=parseEnd(m[3]);
-      if(lo===null||hi===null) return null;
-      if(!(hi>lo)) return null;
-      out.push({lo:lo,hi:hi,lc:(m[1]==='[')&&lo!==-Infinity,rc:(m[4]===']')&&hi!==Infinity});
+      if(m){
+        var lo=parseEnd(m[2]), hi=parseEnd(m[3]);
+        if(lo===null||hi===null) return null;
+        if(!(hi>lo)) return null;
+        out.push({lo:lo,hi:hi,lc:(m[1]==='[')&&lo!==-Infinity,rc:(m[4]===']')&&hi!==Infinity});
+        continue;
+      }
+      // неравенства: x<−2, x≥3, 1<x≤4 — форматы соседнего урока
+      var p=parts[i].replace(/\s+/g,'').replace(/[−–—]/g,'-').replace(/≤/g,'<=').replace(/≥/g,'>=');
+      if(m=p.match(/^(.+?)(<=|<)x(<=|<)(.+)$/)){
+        var a1=parseEnd(m[1]), a2=parseEnd(m[4]);
+        if(a1===null||a2===null||!(a2>a1)) return null;
+        out.push({lo:a1,hi:a2,lc:m[2]==='<=',rc:m[3]==='<='}); continue;
+      }
+      if(m=p.match(/^x(<=|<|>=|>)(.+)$/)){
+        var w=parseEnd(m[2]); if(w===null) return null;
+        if(m[1].charAt(0)==='<') out.push({lo:-Infinity,hi:w,lc:false,rc:m[1]==='<='});
+        else out.push({lo:w,hi:Infinity,lc:m[1]==='>=',rc:false});
+        continue;
+      }
+      if(m=p.match(/^(.+?)(<=|<|>=|>)x$/)){
+        var u=parseEnd(m[1]); if(u===null) return null;
+        if(m[2].charAt(0)==='<') out.push({lo:u,hi:Infinity,lc:m[2]==='<=',rc:false});
+        else out.push({lo:-Infinity,hi:u,lc:false,rc:m[2]==='>='});
+        continue;
+      }
+      return null;
     }
     return out;
   }
@@ -685,7 +710,7 @@
     var raw=ansEl.value.trim();
     if(!raw){ resEl.innerHTML='<span class="bad">Введи ответ промежутками или нажми «Показать решение».</span>'; return; }
     var stu=parseIntervals(raw);
-    if(stu===null){ resEl.innerHTML='<span class="bad">Не разобрал запись. Формат: (a; b) U [c; d), бесконечность — inf.</span>'; return; }
+    if(stu===null){ resEl.innerHTML='<span class="bad">Не разобрал запись. Формат: (a; b) U [c; d), или x&lt;−2 или x&gt;3, бесконечность — inf.</span>'+solutionHTML(); return; }
     var correct=buildAnswer(cur.pts,cur.dir);
     var tp=testPoints(cur.pts), ok=true;
     for(var i=0;i<tp.length;i++){ if(inSet(correct,tp[i])!==inSet(stu,tp[i])){ ok=false; break; } }

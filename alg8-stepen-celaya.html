@@ -479,6 +479,8 @@
   function parseAns(raw){
     raw=raw.trim().replace(/−/g,'-').replace(/\s+/g,'');
     if(!raw) return null;
+    var pw=raw.match(/^10\^(-?\d+)$/);          // запись вида 10^-2 — вычисляем
+    if(pw) return Math.pow(10,parseInt(pw[1],10));
     if(raw.indexOf('/')>=0){
       var p=raw.split('/');
       var nn=parseFloat(p[0].replace(',','.')), dd=parseFloat(p[1].replace(',','.'));
@@ -492,7 +494,8 @@
   function check(){
     var f=frac(cur.a,cur.n), target=f.num/f.den, val=parseAns(ansEl.value);
     if(val===null){ resEl.innerHTML='<span class="bad">Введи ответ — целым числом или дробью вида 1/8.</span>'; return; }
-    if(Math.abs(val-target)<0.005){
+    var tol=Math.max(1e-9,Math.abs(target)*0.01);  // относительный допуск: 1% от ответа
+    if(Math.abs(val-target)<=tol){
       resEl.innerHTML='<span class="ok">✓ Верно!</span>'+solutionHTML();
     } else {
       resEl.innerHTML='<span class="bad">✗ Пока не то. Ответ должен быть '+(f.den===1?'целым числом':'дробью')+'.</span>'+solutionHTML();

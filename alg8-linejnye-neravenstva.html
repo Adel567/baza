@@ -378,7 +378,7 @@
           <button data-ts="&gt;">x &gt;</button>
           <button data-ts="&gt;=">x ≥</button>
         </div>
-        <input id="trBound" type="text" inputmode="numeric" placeholder="число" aria-label="Граничное число">
+        <input id="trBound" type="text" inputmode="text" placeholder="число" aria-label="Граничное число">
       </div>
       <div class="tr-special">
         <button id="trAll" type="button">любое x (вся прямая)</button>
@@ -603,7 +603,9 @@ function arrow(ctx,x,y,dir,color){
       return h;
     }
     var R2=cur.d*cur.x0; /* rightConst - p */
-    h+='Переносим '+fmtN(cur.p)+': &nbsp;'+fmtN(cur.d)+'x '+SYM[cur.shownRel]+' '+fmtN(cur.rightConst)+' '+(cur.p<0?'+':MINUS)+' '+Math.abs(cur.p)+'<br>';
+    if(cur.p!==0){
+      h+='Переносим '+fmtN(cur.p)+': &nbsp;'+fmtN(cur.d)+'x '+SYM[cur.shownRel]+' '+fmtN(cur.rightConst)+' '+(cur.p<0?'+':MINUS)+' '+Math.abs(cur.p)+'<br>';
+    }
     h+=fmtN(cur.d)+'x '+SYM[cur.shownRel]+' '+fmtN(R2)+'<br>';
     if(cur.d<0){
       h+='Делим на '+fmtN(cur.d)+' — число <span class="fl">отрицательное, разворачиваем знак</span>:<br>';
@@ -615,7 +617,6 @@ function arrow(ctx,x,y,dir,color){
   }
 
   function drawSol(){
-    var wrap=document.createElement('div');
     var c=document.createElement('canvas'); c.width=660; c.height=120;
     c.setAttribute('aria-label','Ответ на числовой прямой');
     resEl.appendChild(c);
@@ -624,6 +625,19 @@ function arrow(ctx,x,y,dir,color){
   }
 
   function check(){
+    var rawBound=(boundEl.value||'').trim();
+    /* пустой ввод — просим заполнить, решение не раскрываем (для всех типов задач) */
+    if(!selSign && !special && rawBound===''){
+      resEl.innerHTML='<span class="bad">Выбери знак и впиши число (или особую кнопку).</span>'; return;
+    }
+    /* число без выбранного знака — просим выбрать знак, решение не раскрываем */
+    if(!selSign && !special){
+      resEl.innerHTML='<span class="bad">Выбери знак между x и числом.</span>'; return;
+    }
+    /* знак без числа — просим вписать число, решение не раскрываем */
+    if(selSign && rawBound===''){
+      resEl.innerHTML='<span class="bad">Впиши граничное число.</span>'; return;
+    }
     var correct=false;
     if(cur.kind==='edge'){
       var want = cur.truth ? 'all':'none';
@@ -631,12 +645,9 @@ function arrow(ctx,x,y,dir,color){
     } else {
       if(special){ correct=false; }
       else {
-        var num=parseFloat((boundEl.value||'').replace(',','.').replace(/−/g,'-'));
+        var num=parseFloat(rawBound.replace(',','.').replace(/−/g,'-'));
         correct = (selSign===cur.rel) && !isNaN(num) && (num===cur.x0);
       }
-    }
-    if(!selSign && !special && cur.kind!=='edge' && !boundEl.value){
-      resEl.innerHTML='<span class="bad">Выбери знак и впиши число (или особую кнопку).</span>'; return;
     }
     resEl.innerHTML = correct
       ? '<span class="ok">✓ Верно!</span>'

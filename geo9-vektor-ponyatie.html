@@ -514,6 +514,7 @@
   function ri(a,b){ return Math.floor(Math.random()*(b-a+1))+a; }
   function mn(n){ return (''+n).replace('-','−'); }
   function vec(x,y){ return '('+mn(x)+'; '+mn(y)+')'; }
+  function par(n){ return n<0 ? '('+mn(n)+')' : ''+n; } // отрицательные — в скобках
   function nz(a,b){ var n; do{ n=ri(a,b); }while(n===0); return n; } // ненулевое
 
   function generate(){
@@ -524,11 +525,15 @@
     else t='len';
 
     if(t==='add'){
-      var x1=ri(-5,5),y1=ri(-5,5),x2=ri(-5,5),y2=ri(-5,5);
+      var x1,y1,x2,y2;
+      do{ x1=ri(-5,5); y1=ri(-5,5); }while(x1===0&&y1===0); // не нулевой вектор
+      do{ x2=ri(-5,5); y2=ri(-5,5); }while(x2===0&&y2===0);
       cur={t:t,x1:x1,y1:y1,x2:x2,y2:y2,ans:[x1+x2,y1+y2]};
       taskEl.innerHTML='Даны <b>a = '+vec(x1,y1)+'</b> и <b>b = '+vec(x2,y2)+'</b>. Найди <b>a + b</b>.';
     } else if(t==='sub'){
-      var x1=ri(-5,5),y1=ri(-5,5),x2=ri(-5,5),y2=ri(-5,5);
+      var x1,y1,x2,y2;
+      do{ x1=ri(-5,5); y1=ri(-5,5); }while(x1===0&&y1===0); // не нулевой вектор
+      do{ x2=ri(-5,5); y2=ri(-5,5); }while(x2===0&&y2===0);
       cur={t:t,x1:x1,y1:y1,x2:x2,y2:y2,ans:[x1-x2,y1-y2]};
       taskEl.innerHTML='Даны <b>a = '+vec(x1,y1)+'</b> и <b>b = '+vec(x2,y2)+'</b>. Найди <b>a − b</b>.';
     } else if(t==='mul'){
@@ -551,20 +556,20 @@
     var q=cur, h='<div class="sol">';
     if(q.t==='add'){
       h+='Складываем соответствующие координаты:<br>'+
-         'a + b = ('+mn(q.x1)+' + '+mn(q.x2)+'; '+mn(q.y1)+' + '+mn(q.y2)+')<br>'+
+         'a + b = ('+mn(q.x1)+' + '+par(q.x2)+'; '+mn(q.y1)+' + '+par(q.y2)+')<br>'+
          '= <b>'+vec(q.ans[0],q.ans[1])+'</b>';
     } else if(q.t==='sub'){
       h+='Вычитаем соответствующие координаты:<br>'+
-         'a − b = ('+mn(q.x1)+' − '+mn(q.x2)+'; '+mn(q.y1)+' − '+mn(q.y2)+')<br>'+
+         'a − b = ('+mn(q.x1)+' − '+par(q.x2)+'; '+mn(q.y1)+' − '+par(q.y2)+')<br>'+
          '= <b>'+vec(q.ans[0],q.ans[1])+'</b>';
     } else if(q.t==='mul'){
       h+='Умножаем каждую координату на число:<br>'+
-         mn(q.k)+'·a = ('+mn(q.k)+'·'+mn(q.x)+'; '+mn(q.k)+'·'+mn(q.y)+')<br>'+
+         mn(q.k)+'·a = ('+par(q.k)+'·'+par(q.x)+'; '+par(q.k)+'·'+par(q.y)+')<br>'+
          '= <b>'+vec(q.ans[0],q.ans[1])+'</b>';
     } else {
       var xs=q.x*q.x, ys=q.y*q.y;
       h+='Длина = корень из суммы квадратов координат:<br>'+
-         '|a| = √('+mn(q.x)+'² + '+mn(q.y)+'²) = √('+xs+' + '+ys+')<br>'+
+         '|a| = √('+par(q.x)+'² + '+par(q.y)+'²) = √('+xs+' + '+ys+')<br>'+
          '= √'+(xs+ys)+' = <b>'+q.ans+'</b>';
     }
     return h+'</div>';
@@ -573,12 +578,18 @@
   function check(){
     var raw=ansEl.value.trim();
     if(raw===''){ resEl.innerHTML='<span class="bad">Введи ответ или нажми «Решение».</span>'; return; }
-    var norm=raw.replace(/−/g,'-').replace(',','.');
+    var norm=raw.replace(/−/g,'-');
     var ok=false;
     if(cur.t==='len'){
-      var got=parseFloat(norm.replace(/[^0-9.\-]/g,''));
+      var got=parseFloat(norm.replace(',','.').replace(/[^0-9.\-]/g,''));
       ok=(!isNaN(got) && Math.abs(got-cur.ans)<0.02);
     } else {
+      if(norm.indexOf(';')>=0){
+        norm=norm.replace(/(\d)\s*,\s*(\d)/g,'$1.$2'); // есть «;» → запятая между цифрами десятичная
+      } else if(norm.indexOf(',')>=0){
+        resEl.innerHTML='<span class="bad">Запятая двусмысленна: раздели координаты точкой с запятой, например «5; 5».</span>';
+        return;
+      }
       var nums=norm.match(/-?\d+(\.\d+)?/g);
       if(nums && nums.length>=2){
         ok=(Math.abs(parseFloat(nums[0])-cur.ans[0])<0.02 && Math.abs(parseFloat(nums[1])-cur.ans[1])<0.02);
@@ -588,7 +599,7 @@
     else{ resEl.innerHTML='<span class="bad">✗ Пока не то — глянь решение.</span>'+solHTML(); }
   }
 
-  document.getElementById('trNew').addEventListener('click',generate);
+  document.getElementById('trNew').addEventListener('click',function(){ generate(); ansEl.focus(); });
   document.getElementById('trCheck').addEventListener('click',check);
   document.getElementById('trShow').addEventListener('click',function(){ resEl.innerHTML=solHTML(); });
   ansEl.addEventListener('keydown',function(e){ if(e.key==='Enter') check(); });

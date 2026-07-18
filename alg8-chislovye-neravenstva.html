@@ -495,13 +495,13 @@ function drawCompareLine(canvas, a, b){
   }
 
   /* точки a и b (если совпали — рисуем одну со сдвигом подписей) */
-  function dot(x,color,label,up){
+  function dot(x,color,label){
     var X=px(x), R=8;
     ctx.beginPath(); ctx.arc(X,axisY,R,0,7);
     ctx.fillStyle=color; ctx.fill();
     ctx.lineWidth=2; ctx.strokeStyle='#fff'; ctx.stroke();
     ctx.fillStyle=color; ctx.font='700 15px ui-monospace,Menlo,monospace'; ctx.textAlign='center';
-    ctx.fillText(label, X, up? axisY-15 : axisY-15);
+    ctx.fillText(label, X, axisY-15);
   }
   if(a===b){
     /* совпали: две подписи чуть разнесём по вертикали */
@@ -512,8 +512,8 @@ function drawCompareLine(canvas, a, b){
     ctx.fillStyle=accent; ctx.fillText('a', X-9, axisY-15);
     ctx.fillStyle=edge;   ctx.fillText('b', X+9, axisY-15);
   } else {
-    dot(b,edge,'b',false);
-    dot(a,accent,'a',false);
+    dot(b,edge,'b');
+    dot(a,accent,'a');
   }
 }
 function arrow(ctx,x,y,dir,color){
@@ -558,6 +558,7 @@ function arrow(ctx,x,y,dir,color){
   function ri(a,b){ return Math.floor(Math.random()*(b-a+1))+a; }
   function pick(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
   function box(){ return '<span class="box">?</span>'; }
+  function escSign(s){ return s==='<' ? '&lt;' : s; }
 
   /* коэффициент·переменная: 3a, −a, a */
   function fmtCoef(k,v){
@@ -601,7 +602,7 @@ function arrow(ctx,x,y,dir,color){
       cur={type:'act', rel0:rel0, leftExpr:leftExpr, rightExpr:rightExpr, keeps:keeps, why:why, ans:ans2};
       modeEl.textContent='Определи знак после действия';
       hintEl.textContent='Дано a '+rel0+' b. Какой знак между выражениями?';
-      eqEl.innerHTML='<span style="font-size:.8em;color:var(--muted)">a '+rel0+' b &nbsp;⟹</span><br>'+leftExpr+' '+box()+' '+rightExpr;
+      eqEl.innerHTML='<span style="font-size:.8em;color:var(--muted)">a '+escSign(rel0)+' b &nbsp;⟹</span><br>'+leftExpr+' '+box()+' '+rightExpr;
     }
   }
 
@@ -613,14 +614,14 @@ function arrow(ctx,x,y,dir,color){
       if(d>0) h+='Разность <span class="kp">положительна</span> → первое число больше<br>';
       else if(d<0) h+='Разность <span class="fl">отрицательна</span> → первое число меньше<br>';
       else h+='Разность равна <b>0</b> → числа равны<br>';
-      h+='Ответ: <b>'+fmtN(cur.a)+' '+cur.ans+' '+fmtN(cur.b)+'</b> &nbsp;(на прямой '+fmtN(cur.a)+(cur.ans==='>'?' правее':(cur.ans==='<'?' левее':' в той же точке, что')+' ')+' '+fmtN(cur.b)+')</div>';
+      h+='Ответ: <b>'+fmtN(cur.a)+' '+escSign(cur.ans)+' '+fmtN(cur.b)+'</b> &nbsp;(на прямой '+fmtN(cur.a)+(cur.ans==='>'?' правее':(cur.ans==='<'?' левее':' в той же точке, что'))+' '+fmtN(cur.b)+')</div>';
       return h;
     }
     /* type act */
-    h+='Дано <b>a '+cur.rel0+' b</b>. '+cur.why.charAt(0).toUpperCase()+cur.why.slice(1)+'.<br>';
+    h+='Дано <b>a '+escSign(cur.rel0)+' b</b>. '+cur.why.charAt(0).toUpperCase()+cur.why.slice(1)+'.<br>';
     if(cur.keeps) h+='Такое действие знак <span class="kp">сохраняет</span>.<br>';
     else h+='Умножение на отрицательное знак <span class="fl">переворачивает</span>.<br>';
-    h+='Ответ: <b>'+cur.leftExpr+' '+cur.ans+' '+cur.rightExpr+'</b></div>';
+    h+='Ответ: <b>'+cur.leftExpr+' '+escSign(cur.ans)+' '+cur.rightExpr+'</b></div>';
     return h;
   }
 

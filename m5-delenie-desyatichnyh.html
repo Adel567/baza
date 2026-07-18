@@ -462,7 +462,7 @@
   }
   function genBig(){                   // делим на 10 или 100
     var d=(Math.random()<0.5)?{int:10,dp:0}:{int:100,dp:0};
-    var q=(Math.random()<0.5)?{int:ri(2,98),dp:1}:{int:pickNZ(105,985),dp:2};
+    var q=(Math.random()<0.5)?{int:pickNZ(2,98),dp:1}:{int:pickNZ(105,985),dp:2};
     cur.divisor=d; cur.quot=q;
   }
 
@@ -483,7 +483,12 @@
     if(mode==='big'){
       var k=(d.int===10)?1:2;
       var word=(k===1)?'1 знак':'2 знака';
-      s+='<span class="step"><span class="stepn">1.</span> Делим на '+d.int+' — переносим запятую в делимом '+colored(dv,'t1')+' <b>влево</b> на '+word+'.</span>';
+      var dvStr=fmtDec(dv.int,dv.dp);
+      if(dvStr.indexOf(',')<0){
+        s+='<span class="step"><span class="stepn">1.</span> Делим на '+d.int+' — делимое <b class="mono">'+dvStr+'</b> целое, запятая у него в конце ('+dvStr+' = '+dvStr+',0). Переносим её <b>влево</b> на '+word+'.</span>';
+      } else {
+        s+='<span class="step"><span class="stepn">1.</span> Делим на '+d.int+' — переносим запятую в делимом '+colored(dv,'t1')+' <b>влево</b> на '+word+'.</span>';
+      }
       s+='<span class="step"><span class="stepn">2.</span> Получаем <b class="mono">'+ansClean+'</b>. <span style="color:var(--muted)">Деление на 10 или 100 всегда уменьшает число.</span></span>';
       return s+'<span class="step" style="margin-top:.5rem"><b>Ответ: '+ansClean+'</b></span></div>';
     }
@@ -497,7 +502,7 @@
     s+='<span class="step"><span class="stepn">2.</span> В делимом '+colored(dv,'t1')+' переносим запятую тоже на '+word2+' → <b class="mono">'+newDvClean+'</b>';
     if(fracLen(dvClean)<k2) s+=' <span style="color:var(--muted)">(цифр не хватило — дописали нуль)</span>';
     s+='.</span>';
-    s+='<span class="step"><span class="stepn">3.</span> Делим целое на целое: <b class="mono">'+newDvClean+' : '+newDivInt+' = '+ansClean+'</b>.</span>';
+    s+='<span class="step"><span class="stepn">3.</span> '+(newDvClean.indexOf(',')<0?'Делим целое на целое':'Делим на целое')+': <b class="mono">'+newDvClean+' : '+newDivInt+' = '+ansClean+'</b>.</span>';
     if(mode==='small'){
       var wm=(d.dp===1)?'на 1 знак':'на 2 знака';
       s+='<span class="step" style="color:var(--muted)">Короче: делить на '+fmtO(d)+' — то же, что перенести запятую вправо '+wm+'.</span>';

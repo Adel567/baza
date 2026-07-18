@@ -273,7 +273,6 @@
     var sc=Math.min(availW/maxBase, availH/Math.max(h,1));
     var totW=maxBase*sc, totH=h*sc;
     var ox=(W-totW)/2, oy=padTop+(availH-totH)/2;
-    function X(x){ return ox + (x-(maxBase-a)/2 + (maxBase-a)/2) ; } // placeholder, redefined below
     // разложим по центру: центр фигуры = maxBase/2
     var cxMath=maxBase/2;
     function MX(x){ return ox + (x)*sc; }
@@ -310,7 +309,17 @@
     var half=(a+b)/2, S=half*h;
     eq.innerHTML='S = ½ · (<span class="a">'+a+'</span> + <span class="b">'+b+'</span>) · <span class="h">'+h+'</span> = ½ · '+(a+b)+' · '+h+' = <b>'+ (S%1===0? S : S.toFixed(1)) +'</b>';
   }
-  [sa,sb,sh].forEach(function(s){ s.addEventListener('input',draw); });
+  // a ≠ b: при a = b получается параллелограмм, а не трапеция — проскакиваем равенство
+  function skipEq(s,other){
+    var prev=+s.value;
+    s.addEventListener('input',function(){
+      var v=+s.value;
+      if(v===+other.value){ var c=v+(v>prev?1:-1); v=(c>=+s.min&&c<=+s.max)?c:prev; s.value=v; }
+      prev=v; draw();
+    });
+  }
+  skipEq(sa,sb); skipEq(sb,sa);
+  sh.addEventListener('input',draw);
   window.addEventListener('resize',function(){ resize(); draw(); });
   resize(); draw();
 })();

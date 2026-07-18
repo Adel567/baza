@@ -520,6 +520,8 @@
     var padX=14, padTop=16, labelH=26;
     var baseY = hasNeg ? (H-labelH)*0.55+8 : H-labelH;
     var upSpace = baseY-padTop, downSpace = H-labelH-baseY;
+    // единый масштаб по модулю: одинаковые px на единицу вверх и вниз
+    var unitSpace = hasNeg ? Math.min(upSpace, downSpace) : upSpace;
     var slot=(W-2*padX)/N, bw=slot*0.5;
 
     // базовая линия
@@ -535,13 +537,13 @@
       var cx=padX+slot*i+slot/2;
       // арифметическая — серый контур позади
       if(ariChk.checked){
-        var av=a[i], ah=Math.abs(av)/maxAbs*(av>=0?upSpace:downSpace)*prog;
+        var av=a[i], ah=Math.abs(av)/maxAbs*unitSpace*prog;
         ctx.strokeStyle='#AEB6C6'; ctx.lineWidth=1.5;
         var ay=av>=0?baseY-ah:baseY;
         ctx.strokeRect(cx-bw/2-3, ay, bw+6, ah);
       }
       // геометрическая — цветной столбик
-      var gv=g[i], gh=Math.abs(gv)/maxAbs*(gv>=0?upSpace:downSpace)*prog;
+      var gv=g[i], gh=Math.abs(gv)/maxAbs*unitSpace*prog;
       var gy=gv>=0?baseY-gh:baseY;
       ctx.fillStyle=col; ctx.globalAlpha=0.92;
       ctx.fillRect(cx-bw/2, gy, bw, gh);
@@ -715,7 +717,7 @@
     }
   }
 
-  document.getElementById('trNew').addEventListener('click',generate);
+  document.getElementById('trNew').addEventListener('click',function(){ generate(); ansEl.focus(); });
   document.getElementById('trCheck').addEventListener('click',check);
   document.getElementById('trShow').addEventListener('click',function(){ resEl.innerHTML=solutionHTML(); });
   ansEl.addEventListener('keydown',function(e){ if(e.key==='Enter') check(); });

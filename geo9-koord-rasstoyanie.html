@@ -291,6 +291,7 @@
   var drag=null;
   function css(v){ return getComputedStyle(document.documentElement).getPropertyValue(v).trim()||'#000'; }
   function minus(n){ return (n<0?'−':'')+Math.abs(n); }
+  function fmt(x){ var r=Math.round(x*100)/100; return (''+r).replace('.',','); }
 
   function metrics(){
     var pad=34;
@@ -362,13 +363,13 @@
       ctx.fillStyle=css('--ink'); ctx.beginPath(); ctx.arc(PX(p.x),PY(p.y),7,0,7); ctx.fill();
       ctx.fillStyle='#fff'; ctx.beginPath(); ctx.arc(PX(p.x),PY(p.y),3,0,7); ctx.fill();
       ctx.fillStyle=css('--ink'); ctx.font='800 14px system-ui,sans-serif'; ctx.textAlign='left'; ctx.textBaseline='bottom';
-      ctx.fillText(pair[1]+'('+p.x+'; '+p.y+')', PX(p.x)+10, PY(p.y)-8);
+      ctx.fillText(pair[1]+'('+minus(p.x)+'; '+minus(p.y)+')', PX(p.x)+10, PY(p.y)-8);
     });
 
     // формула снизу
     var dx=B.x-A.x, dy=B.y-A.y, sum=dx*dx+dy*dy, d=Math.sqrt(sum);
     var dtxt = same ? '0' : (Number.isInteger(d)? d : (simp(sum).coef===1? '√'+sum : (simp(sum).coef+'√'+simp(sum).rad)));
-    eq.innerHTML='<span class="d">d</span> = √( (<span class="x">'+minus(dx)+'</span>)² + (<span class="y">'+minus(dy)+'</span>)² ) = √('+ (dx*dx) +' + '+ (dy*dy) +') = √'+sum+' = <b><span class="d">'+dtxt+'</span></b>'+(Number.isInteger(d)||same?'':' ≈ '+(Math.round(d*100)/100));
+    eq.innerHTML='<span class="d">d</span> = √( (<span class="x">'+minus(dx)+'</span>)² + (<span class="y">'+minus(dy)+'</span>)² ) = √('+ (dx*dx) +' + '+ (dy*dy) +') = √'+sum+' = <b><span class="d">'+dtxt+'</span></b>'+(Number.isInteger(d)||same?'':' ≈ '+fmt(d));
   }
 
   function simp(n){ var c=1,r=n; for(var k=Math.floor(Math.sqrt(n));k>=2;k--){ if(n%(k*k)===0){ c=k; r=n/(k*k); break; } } return {coef:c,rad:r}; }
@@ -388,7 +389,7 @@
   cv.addEventListener('touchstart',down,{passive:false}); cv.addEventListener('touchmove',move,{passive:false}); window.addEventListener('touchend',up);
 
   document.getElementById('ex1').addEventListener('click',function(){ A={x:-2,y:-1}; B={x:2,y:2}; draw(); });
-  document.getElementById('ex2').addEventListener('click',function(){ A={x:-3,y:-3}; B={x:3,y:1}; draw(); });
+  document.getElementById('ex2').addEventListener('click',function(){ A={x:-4,y:-3}; B={x:4,y:3}; draw(); });
   document.getElementById('ex3').addEventListener('click',function(){ A={x:-4,y:2}; B={x:3,y:2}; draw(); });
 
   window.addEventListener('resize',function(){ resize(); draw(); });
@@ -405,7 +406,8 @@
   function ri(a,b){ return Math.floor(Math.random()*(b-a+1))+a; }
   function sign(){ return Math.random()<0.5?-1:1; }
   function minus(n){ return (n<0?'−':'')+Math.abs(n); }
-  var triples=[[3,4],[6,8],[5,12],[8,15],[9,12],[7,24],[12,16]];
+  function fmt(x){ var r=Math.round(x*100)/100; return (''+r).replace('.',','); }
+  var triples=[[3,4],[6,8],[5,12],[9,12],[12,16]];
   function isPerfect(n){ var r=Math.round(Math.sqrt(n)); return r*r===n; }
   function simp(n){ var c=1,r=n; for(var k=Math.floor(Math.sqrt(n));k>=2;k--){ if(n%(k*k)===0){ c=k; r=n/(k*k); break; } } return {coef:c,rad:r}; }
   function radText(n){ if(isPerfect(n)) return ''+Math.round(Math.sqrt(n)); var s=simp(n); return (s.coef===1?'√'+s.rad:s.coef+'√'+s.rad); }
@@ -433,11 +435,11 @@
     h+='y₂ − y₁ = '+minus(cur.by)+' − ('+minus(cur.ay)+') = '+minus(dy)+'<br>';
     h+='d = √( ('+minus(dx)+')² + ('+minus(dy)+')² ) = √('+(dx*dx)+' + '+(dy*dy)+') = √'+S+'<br>';
     if(isPerfect(S)){ h+='d = √'+S+' = <b>'+Math.round(Math.sqrt(S))+'</b>'; }
-    else { var s=simp(S); var pretty=(s.coef===1?'√'+s.rad:s.coef+'√'+s.rad); h+='d = √'+S+' = <b>'+pretty+'</b> ≈ '+(Math.round(Math.sqrt(S)*100)/100); }
+    else { var s=simp(S); var pretty=(s.coef===1?'√'+s.rad:s.coef+'√'+s.rad); h+='d = √'+S+' = <b>'+pretty+'</b> ≈ '+fmt(Math.sqrt(S)); }
     return h+'</div>';
   }
   function parseAns(raw){
-    raw=raw.trim().toLowerCase().replace(/\s+/g,'').replace('sqrt','√').replace('корень','√').replace('изв','').replace(',', '.');
+    raw=raw.trim().toLowerCase().replace(/корень\s*из/g,'√').replace(/\s+/g,'').replace('sqrt','√').replace('корень','√').replace(',', '.');
     if(raw==='') return NaN;
     // формы: a√b , √b , a*√b , число
     var mfull=raw.match(/^(\d+(?:\.\d+)?)?[*·]?√(\d+(?:\.\d+)?)$/);

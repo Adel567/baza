@@ -347,6 +347,10 @@
 
   function draw(){
     var a=+sa.value, h=+sh.value, s=+sf.value;
+    // наклон не может превышать основание, иначе разрез не работает: s ≤ a
+    var smax=Math.min(7,a);
+    if(+sf.max!==smax) sf.max=smax;
+    if(s>smax){ s=smax; sf.value=smax; }
     va.textContent=a; vh.textContent=h; vf.textContent=s;
 
     // Мир: параллелограмм A(0,0) B(a,0) верх сдвинут вправо на s: D(s,h) E(a+s,h)
@@ -394,17 +398,19 @@
     ctx.moveTo(SX(s)+m, SY(0)); ctx.lineTo(SX(s)+m, SY(0)-m); ctx.lineTo(SX(s), SY(0)-m);
     ctx.stroke();
 
-    // Размерная линия основания a (синяя) под фигурой, от x=s до x=s+a — длина ровно a
+    // Размерная линия основания a (синяя) под фигурой: при p=0 под AB (x=0..a),
+    // при p=1 под основанием прямоугольника (x=s..s+a), между — едет вместе с фигурой
+    var bx=s*p;
     var by=SY(0)+22;
     ctx.strokeStyle=css('--accent'); ctx.lineWidth=3; ctx.lineCap='round';
-    ctx.beginPath(); ctx.moveTo(SX(s),by); ctx.lineTo(SX(s+a),by); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(SX(bx),by); ctx.lineTo(SX(bx+a),by); ctx.stroke();
     ctx.lineCap='butt';
 
     // Подписи
     ctx.textAlign='center'; ctx.textBaseline='middle';
     ctx.font='700 '+Math.max(13,Math.min(19,sc*0.62))+'px ui-monospace,Menlo,monospace';
     ctx.fillStyle=css('--accent');
-    ctx.fillText('a = '+a, SX(s+a/2), by+16);
+    ctx.fillText('a = '+a, SX(bx+a/2), by+16);
     ctx.fillStyle=css('--hi');
     ctx.textAlign='right';
     ctx.fillText('h = '+h, SX(s)-8, SY(h/2));
@@ -429,8 +435,8 @@
     if(!raf) raf=requestAnimationFrame(animate);
   }
 
-  btnCut.addEventListener('click',function(){ go(target>0.5?0:1); });
-  btnReset.addEventListener('click',function(){ go(0); });
+  btnCut.addEventListener('click',function(){ var t=target>0.5?0:1; go(t); this.textContent=t?'Собрать параллелограмм ◂':'Перекроить в прямоугольник ▸'; });
+  btnReset.addEventListener('click',function(){ go(0); btnCut.textContent='Перекроить в прямоугольник ▸'; });
   [sa,sh,sf].forEach(function(s){ s.addEventListener('input',function(){ draw(); }); });
   window.addEventListener('resize',function(){ resize(); draw(); });
   resize(); draw();

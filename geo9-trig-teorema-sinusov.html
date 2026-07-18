@@ -149,7 +149,7 @@
     <div class="prereq">
       <div class="pr">
         <h3>Синус угла</h3>
-        <p>Синус — это число от 0 до 1 (а точнее до угла 90°). Важно: у <b>тупого</b> угла синус тоже положительный, например <span class="mono">sin 120° = √3/2 ≈ 0,87</span>. Поэтому теорема работает и в тупоугольном треугольнике.</p>
+        <p>Для углов треугольника синус — число от 0 до 1. Важно: у <b>тупого</b> угла синус тоже положительный, например <span class="mono">sin 120° = √3/2 ≈ 0,87</span>. Поэтому теорема работает и в тупоугольном треугольнике.</p>
       </div>
       <div class="pr">
         <h3>Сумма углов треугольника</h3>
@@ -181,7 +181,7 @@
       <div class="pair c">c ↔ C<span>сторона c против угла C</span></div>
     </div>
     <div class="note">
-      <p><b>Словами:</b> большей стороне лежит против больший угол. А общее число, которому равны все три отношения, — это <b>диаметр 2R</b> описанной окружности. В этом и весь геометрический смысл теоремы.</p>
+      <p><b>Словами:</b> против большей стороны лежит больший угол. А общее число, которому равны все три отношения, — это <b>диаметр 2R</b> описанной окружности. В этом и весь геометрический смысл теоремы.</p>
     </div>
     <p style="font-size:.94rem;color:var(--muted)">Делить на <span class="mono">sin A</span> всегда можно: угол треугольника не бывает 0° или 180°, поэтому его синус никогда не ноль. Из всей цепочки берут <b>две дроби</b> — те, где одно неизвестное.</p>
   </section>
@@ -196,10 +196,10 @@
         <label class="lb">угол B <span id="vB" class="sval">60°</span><input id="sB" class="rb" type="range" min="30" max="100" step="1" value="60"></label>
       </div>
       <div class="ratios">
-        <div class="rt a">a/sin A<span class="val" id="rA">10.0</span></div>
-        <div class="rt b">b/sin B<span class="val" id="rB">10.0</span></div>
-        <div class="rt c">c/sin C<span class="val" id="rC">10.0</span></div>
-        <div class="rt r">2R<span class="val" id="rR">10.0</span></div>
+        <div class="rt a">a/sin A<span class="val" id="rA">10,0</span></div>
+        <div class="rt b">b/sin B<span class="val" id="rB">10,0</span></div>
+        <div class="rt c">c/sin C<span class="val" id="rC">10,0</span></div>
+        <div class="rt r">2R<span class="val" id="rR">10,0</span></div>
       </div>
       <p class="diag-tip" id="diagTip"></p>
     </div>
@@ -376,11 +376,12 @@
     ctx.fillStyle=css('--cc'); ctx.fillText('c', mC[0]+(mC[0]-Ox)*0.14, mC[1]+(mC[1]-Oy)*0.14);
     // числа: длины через закон синусов, a = UNIT·sinA (т.к. 2R=UNIT)
     var a=UNIT*Math.sin(ra), b=UNIT*Math.sin(rb), c=UNIT*Math.sin(rc);
-    rA.textContent=(a/Math.sin(ra)).toFixed(1);
-    rB.textContent=(b/Math.sin(rb)).toFixed(1);
-    rC.textContent=(c/Math.sin(rc)).toFixed(1);
-    rR.textContent=UNIT.toFixed(1);
-    tip.innerHTML='Углы: A='+A+'°, B='+B+'°, C='+C+'°. &nbsp; Все отношения равны 2R = '+UNIT.toFixed(1)+' — это и есть теорема синусов.';
+    function f1(x){ return x.toFixed(1).replace('.',','); }
+    rA.textContent=f1(a/Math.sin(ra));
+    rB.textContent=f1(b/Math.sin(rb));
+    rC.textContent=f1(c/Math.sin(rc));
+    rR.textContent=f1(UNIT);
+    tip.innerHTML='Углы: A='+A+'°, B='+B+'°, C='+C+'°. &nbsp; Все отношения равны 2R = '+f1(UNIT)+' — это и есть теорема синусов.';
   }
   [sA,sB].forEach(function(el){ el.addEventListener('input',draw); });
   window.addEventListener('resize',function(){ resize(); draw(); });
@@ -408,6 +409,11 @@
     var a=ri(6,15);                      // дана сторона a (против угла A)
     // вариант задачи: найти b (против B, есть готовая пара) или c (против C, нужен третий угол)
     var findC=Math.random()<0.5;
+    if(findC){ // для findC третий угол тоже должен быть табличным (30/45/60/90)
+      var t2=0;
+      while(ANGLES.indexOf(C)<0 && t2<40){ A=ANGLES[ri(0,3)]; B=ANGLES[ri(0,3)]; C=180-A-B; t2++; }
+      if(ANGLES.indexOf(C)<0){ A=30; B=60; C=90; }
+    }
     var targetAngle = findC ? C : B;
     var targetName  = findC ? 'c' : 'b';
     var val = a*sind(targetAngle)/sind(A);

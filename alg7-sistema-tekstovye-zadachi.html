@@ -507,10 +507,29 @@
       h+='Ответ: '+X+' и '+Y+'.';
     } else {
       var P1=q.ans[0], P2=q.ans[1];
+      var mn=function(n){ return (n<0?MINUS:'')+Math.abs(n); };
       h+='Пусть <b>x</b> — цена товара А, <b>y</b> — цена товара Б (руб.).<br>';
       h+='Система:  '+q.a1+'x + '+q.b1+'y = '+q.c1+' ;  '+q.a2+'x + '+q.b2+'y = '+q.c2+'<br>';
-      h+='Уравняем множители при x: умножим 1-е на '+q.a2+', 2-е на '+q.a1+' и вычтем — x уйдёт, найдём <b>y = '+P2+'</b>.<br>';
-      h+='Подставим обратно: <b>x = '+P1+'</b>.<br>';
+      var ky,kc;
+      if(q.a1===q.a2){
+        h+='Коэффициенты при x уже одинаковы — вычтем из 1-го 2-е, x уйдёт:<br>';
+        ky=q.b1-q.b2; kc=q.c1-q.c2;
+      } else {
+        var parts=[];
+        if(q.a2!==1) parts.push('1-е на '+q.a2);
+        if(q.a1!==1) parts.push('2-е на '+q.a1);
+        h+='Уравняем множители при x: умножим '+parts.join(', ')+':<br>';
+        h+=(q.a1*q.a2)+'x + '+(q.b1*q.a2)+'y = '+(q.c1*q.a2)+' ;  '+(q.a1*q.a2)+'x + '+(q.b2*q.a1)+'y = '+(q.c2*q.a1)+'<br>';
+        h+='Вычтем из 1-го 2-е — x уйдёт:<br>';
+        ky=q.b1*q.a2-q.b2*q.a1; kc=q.c1*q.a2-q.c2*q.a1;
+      }
+      if(Math.abs(ky)===1){
+        h+=(ky===-1?MINUS+'y = '+mn(kc)+'<br>':'')+'y = <b>'+P2+'</b><br>';
+      } else {
+        h+=mn(ky)+'y = '+mn(kc)+'<br>';
+        h+='y = '+mn(kc)+' : ('+mn(ky)+') = <b>'+P2+'</b><br>';
+      }
+      h+='Подставим y = '+P2+' в 1-е: '+q.a1+'x + '+q.b1+'·'+P2+' = '+q.c1+' &rarr; '+q.a1+'x = '+(q.c1-q.b1*P2)+' &rarr; <b>x = '+P1+'</b>.<br>';
       h+='Проверка: '+q.a1+'·'+P1+' + '+q.b1+'·'+P2+' = '+q.c1+'  ✓ ;  '+
          q.a2+'·'+P1+' + '+q.b2+'·'+P2+' = '+q.c2+'  ✓<br>';
       h+='Ответ: товар А — '+P1+' р., товар Б — '+P2+' р.';
@@ -529,7 +548,8 @@
   function check(){
     var raw=ansEl.value.trim();
     if(!raw){ resEl.innerHTML='<span class="bad">Введи две величины через точку с запятой или нажми «Показать решение».</span>'; return; }
-    var got=raw.split(/[;,]/).map(function(s){ return parseFloat(s.replace(',','.')); }).filter(function(x){ return !isNaN(x); });
+    var norm=raw.replace(/−/g,'-').replace(/(\d),(\d)/g,'$1.$2');
+    var got=norm.split(/[;,\s]+/).map(parseFloat).filter(function(x){ return !isNaN(x); });
     var exp=cur.ans;
     if(got.length<2){
       resEl.innerHTML='<span class="bad">Нужны две величины, например «'+exp[0]+'; '+exp[1]+'».</span>';
@@ -540,7 +560,7 @@
     if(okOrder){
       resEl.innerHTML='<span class="ok">✓ Верно! Обе величины найдены правильно.</span>'+solutionHTML(cur);
     } else if(okSwap){
-      resEl.innerHTML='<span class="bad">✓ Числа те же, но перепутан порядок. Смотри подсказку под условием.</span>'+solutionHTML(cur);
+      resEl.innerHTML='<span style="color:var(--vy);font-weight:700">⚠ Числа те же, но перепутан порядок. Смотри подсказку под условием.</span>'+solutionHTML(cur);
     } else {
       resEl.innerHTML='<span class="bad">✗ Пока не то. Составь систему из двух условий и реши её.</span>'+solutionHTML(cur);
     }

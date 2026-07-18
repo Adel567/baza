@@ -348,7 +348,7 @@
       </div>
       <p class="para-eq"><span id="paraFormula">y = x² − 7x + 3</span></p>
     </div>
-    <p style="font-size:.9rem;color:var(--muted)">Поймай момент, когда парабола только касается оси — это и есть <span class="math">D = 0</span>, граница между «два корня» и «ни одного». (При <span class="math">a = 0</span> это уже не парабola, а прямая — потому дискриминант и требует <span class="math">a ≠ 0</span>.)</p>
+    <p style="font-size:.9rem;color:var(--muted)">Поймай момент, когда парабола только касается оси — это и есть <span class="math">D = 0</span>, граница между «два корня» и «ни одного». (При <span class="math">a = 0</span> это уже не парабола, а прямая — потому дискриминант и требует <span class="math">a ≠ 0</span>.)</p>
   </section>
 
   <section>
@@ -455,11 +455,6 @@
   var RANGE=10; // ось x от -10 до 10
 
   function fmt(n){ n=Math.round(n*10)/10; return (n<0?'−':'')+Math.abs(n); }
-  function term(coef,tail){ // для формулы
-    if(Math.abs(coef)<0.05) return '';
-    var s=(coef<0?' − ':' + ')+ (Math.abs(coef)===1&&tail!==''?'':fmtAbs(Math.abs(coef)))+tail;
-    return s;
-  }
   function fmtAbs(n){ n=Math.round(n*10)/10; return ''+n; }
 
   function resize(){
@@ -512,8 +507,8 @@
 
     // формула
     var f='y = ';
-    if(isLin){ f += (Math.abs(b)<0.05?'':fmt(b).replace('−','-')+'x'); }
-    else { f += (a===1?'':(a===-1?'−':fmt(a).replace('−','-')))+'x²'; }
+    if(isLin){ f += (Math.abs(b)<0.05?'':fmt(b)+'x'); }
+    else { f += (a===1?'':(a===-1?'−':fmt(a)))+'x²'; }
     // b-член
     if(!isLin && Math.abs(b)>=0.05){ f += (b<0?' − ':' + ')+(Math.abs(b)===1?'':fmtAbs(Math.abs(b)))+'x'; }
     if(Math.abs(c)>=0.05){ f += (c<0?' − ':' + ')+fmtAbs(Math.abs(c)); }
@@ -593,14 +588,21 @@
     return h+'</div>';
   }
   function check(){
-    var sol=solve(cur), raw=ansEl.value.trim().toLowerCase();
+    var sol=solve(cur), raw=ansEl.value.trim().toLowerCase().replace(/−/g,'-');
     if(!raw){ resEl.innerHTML='<span class="bad">Введи ответ или нажми «Показать решение».</span>'; return; }
     if(sol.n===0){
       if(/нет|net|∅|отсут/.test(raw) || raw==='-'){ resEl.innerHTML='<span class="ok">✓ Верно — D < 0, корней нет.</span>'+solutionHTML(); }
       else{ resEl.innerHTML='<span class="bad">✗ Посчитай D — здесь он отрицательный, значит корней нет.</span>'+solutionHTML(); }
       return;
     }
-    var got=raw.split(/[;,]/).map(function(s){return parseFloat(s.replace(',','.'));}).filter(function(x){return !isNaN(x);}).map(function(x){return Math.round(x*100)/100;}).sort(function(a,b){return a-b;});
+    var norm=raw.replace(/(\d),(\d)/g,'$1.$2').replace(/[xх][₁₂12]?\s*=/g,'');
+    var parts=norm.split(/[;,\s]+/).filter(function(s){return s!=='';});
+    var got=parts.map(function(s){return parseFloat(s);});
+    if(!parts.length || got.some(function(x){return isNaN(x);})){
+      resEl.innerHTML='<span class="bad">Не понял запись. Введи корни числами через точку с запятой, напр. «3; 0.5», или слово «нет».</span>'; return;
+    }
+    got=got.map(function(x){return Math.round(x*100)/100;});
+    got=got.filter(function(v,i){return got.indexOf(v)===i;}).sort(function(a,b){return a-b;});
     var exp=sol.roots.map(function(x){return Math.round(x*100)/100;}).sort(function(a,b){return a-b;});
     var ok = got.length===exp.length && exp.every(function(v,i){return Math.abs(v-got[i])<0.02;});
     if(ok){ resEl.innerHTML='<span class="ok">✓ Верно! Отлично.</span>'+solutionHTML(); }

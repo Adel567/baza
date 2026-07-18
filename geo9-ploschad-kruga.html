@@ -240,7 +240,7 @@
         <button id="trCheck" type="button" class="sec">Проверить</button>
         <button id="trShow" type="button" class="ghost">Решение</button>
       </div>
-      <p class="tr-hint">Все ответы — «красивые»: <span class="math">k</span> целое. Хочешь число — умножь <span class="math">k</span> на 3,14.</p>
+      <p class="tr-hint">Все ответы — «красивые»: <span class="math">k</span> целое. Можно ответить и десятичным числом: для <span class="math">25π</span> подойдёт и <span class="math">25</span>, и <span class="math">78,5</span>.</p>
       <div id="trResult" class="tr-result"></div>
     </div>
   </section>
@@ -369,10 +369,14 @@
     ctx.textAlign='center'; ctx.textBaseline='middle';
     ctx.fillText(a+'°', cx+(ra+18)*Math.cos(rad/2), cy-(ra+18)*Math.sin(rad/2));
 
-    // подпись радиуса R
+    // подпись радиуса R (с подложкой, чтобы текст читался на заливке сектора)
+    var rlbl='R = '+Rn, rfs=Math.max(12,R*0.10), rx=cx+R*0.5+6, ry=cy+14;
+    ctx.font='italic 700 '+rfs+'px Georgia,serif';
+    var rtw=ctx.measureText(rlbl).width;
+    ctx.fillStyle='rgba(255,255,255,0.75)';
+    ctx.fillRect(rx-rtw/2-4, ry-rfs/2-3, rtw+8, rfs+6);
     ctx.fillStyle=css('--rad');
-    ctx.font='italic 700 '+Math.max(12,R*0.10)+'px Georgia,serif';
-    ctx.fillText('R = '+Rn, cx+R*0.5+6, cy+14);
+    ctx.fillText(rlbl, rx, ry);
 
     // числа: доля и площадь. Для R=6: πR² = 36π; k = (a/360)*36 = a/10
     var full=Rn*Rn;                           // 36 (коэффициент перед π у круга)
@@ -392,7 +396,6 @@
 (function(){
   var taskEl=document.getElementById('trTask'), ansEl=document.getElementById('trAns'), resEl=document.getElementById('trResult');
   if(!taskEl) return;
-  var M='−';                                  // настоящий минус (на будущее)
   var cur=null;
   function ri(min,max){ return Math.floor(Math.random()*(max-min+1))+min; }
   function fmt(x){ var r=Math.round(x*100)/100; return (''+r).replace('.',','); }
@@ -433,7 +436,8 @@
     var raw=ansEl.value.trim().replace(',','.').replace(/π|пи|pi/gi,'').replace('*','').trim();
     if(raw===''){ resEl.innerHTML='<span class="bad">Впиши число k или нажми «Решение».</span>'; return; }
     var got=parseFloat(raw);
-    if(!isNaN(got) && Math.abs(got-cur.ans)<0.001){ resEl.innerHTML='<span class="ok">✓ Верно! Это '+cur.ans+'π см<sup>2</sup>.</span>'+solHTML(); }
+    var exact=cur.ans*Math.PI; // принимаем и десятичный ответ (допуск ~1%)
+    if(!isNaN(got) && (Math.abs(got-cur.ans)<0.001 || Math.abs(got-exact)<=exact*0.01)){ resEl.innerHTML='<span class="ok">✓ Верно! Это '+cur.ans+'π см<sup>2</sup>.</span>'+solHTML(); }
     else{ resEl.innerHTML='<span class="bad">✗ Пока не то — посмотри решение.</span>'+solHTML(); }
   }
   document.getElementById('trNew').addEventListener('click',function(){ generate(); ansEl.focus(); });

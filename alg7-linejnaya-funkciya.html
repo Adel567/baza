@@ -161,7 +161,7 @@
       <canvas id="lin" width="640" height="420" aria-label="График линейной функции"></canvas>
       <div class="sliders">
         <label class="lk">k <span id="vk" class="sval">2</span><input id="sk" class="rk" type="range" min="-5" max="5" step="0.5" value="2"></label>
-        <label class="lb">b <span id="vb" class="sval">1</span><input id="sb" class="rb" type="range" min="-9" max="9" step="1" value="1"></label>
+        <label class="lb">b <span id="vb" class="sval">1</span><input id="sb" class="rb" type="range" min="-6" max="6" step="1" value="1"></label>
       </div>
       <p class="graph-eq" id="linEq">y = 2x + 1</p>
       <p class="graph-tip" id="linTip"></p>
@@ -259,6 +259,13 @@
     ctx.strokeStyle='#9AA3AE'; ctx.lineWidth=1.5;
     ctx.beginPath(); ctx.moveTo(0,Y(0)); ctx.lineTo(W,Y(0)); ctx.stroke();
     ctx.beginPath(); ctx.moveTo(X(0),0); ctx.lineTo(X(0),H); ctx.stroke();
+    // числа на осях (через 2)
+    ctx.fillStyle='#8A93A6'; ctx.font='11px ui-monospace,Menlo,monospace';
+    ctx.textAlign='center'; ctx.textBaseline='top';
+    for(var lx=-RANGE+2;lx<=RANGE-2;lx++){ if(lx===0||lx%2!==0) continue; ctx.fillText((lx<0?'−':'')+Math.abs(lx),X(lx),Y(0)+5); }
+    ctx.textAlign='right'; ctx.textBaseline='middle';
+    var yl=Math.floor(RANGE*(H/W));
+    for(var ly=-yl;ly<=yl;ly++){ if(ly===0||ly%2!==0) continue; ctx.fillText((ly<0?'−':'')+Math.abs(ly),X(0)-5,Y(ly)); }
     // прямая
     ctx.strokeStyle=css('--brand'); ctx.lineWidth=3;
     ctx.beginPath(); ctx.moveTo(X(-RANGE), Y(k*(-RANGE)+b)); ctx.lineTo(X(RANGE), Y(k*RANGE+b)); ctx.stroke();
@@ -272,10 +279,12 @@
     ctx.fillStyle=css('--b'); ctx.beginPath(); ctx.arc(X(0),Y(b),6,0,7); ctx.fill();
     ctx.fillStyle='#fff'; ctx.beginPath(); ctx.arc(X(0),Y(b),2.4,0,7); ctx.fill();
     // формула
-    var f='y = ';
-    f += (k===1?'':(k===-1?'−':fmt(k).replace('−','-')))+'x';
-    if(Math.abs(b)>=0.01) f += (b<0?' − ':' + ')+Math.abs(b);
-    else if(k===0) f='y = '+fmt(b).replace('−','-');
+    var f;
+    if(k===0){ f='y = '+fmt(b); }
+    else{
+      f='y = '+(k===1?'':(k===-1?'−':fmt(k)))+'x';
+      if(Math.abs(b)>=0.01) f += (b<0?' − ':' + ')+Math.abs(b);
+    }
     eqEl.textContent = f;
     tipEl.textContent = (k>0?'k > 0 → функция растёт': k<0?'k < 0 → функция убывает':'k = 0 → постоянная') + ' · пересекает ось Y в точке ('+'0, '+fmt(b)+')';
   }
@@ -292,29 +301,31 @@
   var mode='y', cur={k:2,b:1,x:3};
   var tabY=document.getElementById('tabY'), tabX=document.getElementById('tabX');
   function ri(min,max){ return Math.floor(Math.random()*(max-min+1))+min; }
-  function fmtK(k){ return k===1?'':(k===-1?'−':''+k); }
+  function mnum(n){ return String(n).replace(/-/g,'−'); }
+  function fmtK(k){ return k===1?'':(k===-1?'−':mnum(k)); }
   function fmtFn(k,b){ var s='y = '+fmtK(k)+'x'; if(b!==0) s+=(b<0?' − ':' + ')+Math.abs(b); return s; }
   function generate(){
     var k; do{ k=ri(-5,5);}while(k===0);
     var b=ri(-9,9), x=ri(-6,6);
     cur={k:k,b:b,x:x};
-    if(mode==='y'){ taskEl.textContent = fmtFn(k,b)+',  найди y при x = '+x; }
-    else { var y=k*x+b; cur.y=y; taskEl.textContent = fmtFn(k,b)+',  при каком x значение y = '+y+' ?'; }
+    if(mode==='y'){ taskEl.textContent = fmtFn(k,b)+',  найди y при x = '+mnum(x); }
+    else { var y=k*x+b; cur.y=y; taskEl.textContent = fmtFn(k,b)+',  при каком x значение y = '+mnum(y)+' ?'; }
     resEl.innerHTML=''; ansEl.value='';
   }
   function solHTML(){
     var q=cur, h='<div class="sol">';
     if(mode==='y'){ var y=q.k*q.x+q.b;
-      h+='y = '+fmtK(q.k)+'·('+q.x+')'+(q.b<0?' − '+(-q.b):' + '+q.b)+'<br>';
-      h+='y = '+(q.k*q.x)+(q.b<0?' − '+(-q.b):' + '+q.b)+' = <b>'+y+'</b>'; }
+      var kf=(q.k===1?'':(q.k===-1?'−':mnum(q.k)+'·'));
+      h+='y = '+kf+'('+mnum(q.x)+')'+(q.b<0?' − '+(-q.b):' + '+q.b)+'<br>';
+      h+='y = '+mnum(q.k*q.x)+(q.b<0?' − '+(-q.b):' + '+q.b)+' = <b>'+mnum(y)+'</b>'; }
     else { var xv=(q.y-q.b)/q.k;
-      h+=fmtK(q.k)+'x'+(q.b<0?' − '+(-q.b):' + '+q.b)+' = '+q.y+'<br>';
-      h+=fmtK(q.k)+'x = '+q.y+(q.b<0?' + '+(-q.b):' − '+q.b)+' = '+(q.y-q.b)+'<br>';
-      h+='x = '+(q.y-q.b)+' / '+q.k+' = <b>'+(Math.round(xv*100)/100)+'</b>'; }
+      h+=fmtK(q.k)+'x'+(q.b<0?' − '+(-q.b):' + '+q.b)+' = '+mnum(q.y)+'<br>';
+      h+=fmtK(q.k)+'x = '+mnum(q.y)+(q.b<0?' + '+(-q.b):' − '+q.b)+' = '+mnum(q.y-q.b)+'<br>';
+      h+='x = '+mnum(q.y-q.b)+' / '+mnum(q.k)+' = <b>'+mnum(Math.round(xv*100)/100)+'</b>'; }
     return h+'</div>';
   }
   function check(){
-    var raw=ansEl.value.trim().replace(',','.');
+    var raw=ansEl.value.trim().replace(/−/g,'-').replace(',','.');
     if(raw===''){ resEl.innerHTML='<span class="bad">Введи число или нажми «Решение».</span>'; return; }
     var got=parseFloat(raw);
     var right = mode==='y' ? (cur.k*cur.x+cur.b) : ((cur.y-cur.b)/cur.k);

@@ -196,13 +196,13 @@
 
   <section>
     <h2>Тренажёр · раскрой скобку</h2>
-    <p>Раскрой выражение и впиши три коэффициента результата <span class="mono">□x² + □x + □</span>. Для разности квадратов средний коэффициент равен 0.</p>
+    <p>Раскрой выражение и впиши три коэффициента результата <span class="mono">□x² + □x + □</span>. Для разности квадратов средний коэффициент равен 0. Отрицательный коэффициент вводи со знаком минус (например, −12).</p>
     <div class="trainer">
       <div class="tr-task" id="trTask">(3x + 2)²</div>
       <div class="tr-fields">
-        <input id="fA" inputmode="numeric" aria-label="коэффициент при x²">x² +
-        <input id="fB" inputmode="numeric" aria-label="коэффициент при x">x +
-        <input id="fC" inputmode="numeric" aria-label="свободный член">
+        <input id="fA" inputmode="text" aria-label="коэффициент при x²">x² +
+        <input id="fB" inputmode="text" aria-label="коэффициент при x">x +
+        <input id="fC" inputmode="text" aria-label="свободный член">
       </div>
       <div class="tr-ctl">
         <button id="trNew" type="button">🎲 Новое</button>
@@ -314,9 +314,16 @@
     }
     return h+'</div>';
   }
+  function parseIntStrict(raw){
+    var s=String(raw).replace(/−/g,'-').trim();
+    if(!/^-?\d+$/.test(s)) return null;
+    return parseInt(s,10);
+  }
   function check(){
-    var a=parseInt(fA.value,10), b=parseInt(fB.value,10), c=parseInt(fC.value,10);
-    if([a,b,c].some(function(x){return isNaN(x);})){ resEl.innerHTML='<span class="bad">Заполни все три поля (можно 0).</span>'; return; }
+    var vals=[fA.value,fB.value,fC.value];
+    if(vals.some(function(v){return String(v).trim()==='';})){ resEl.innerHTML='<span class="bad">Заполни все три поля (можно 0).</span>'; return; }
+    var a=parseIntStrict(fA.value), b=parseIntStrict(fB.value), c=parseIntStrict(fC.value);
+    if([a,b,c].some(function(x){return x===null;})){ resEl.innerHTML='<span class="bad">Коэффициенты — целые числа, например 9, −12 или 0. Проверь формат ввода.</span>'; return; }
     if(a===cur.A && b===cur.B && c===cur.C){ resEl.innerHTML='<span class="ok">✓ Верно!</span>'+solHTML(); }
     else{
       var hint = (cur.B!==0 && b===0)?' Не забыл среднее слагаемое 2ab?':'';

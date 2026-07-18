@@ -451,7 +451,6 @@
 
     // центр и вершины
     dot(O,cAcc,6.5);
-    var laO=(cy> H*0.6)? -R*0.16 : R*0.17;
     lab(O,'O',cAcc, 14, 0);
     dot(A,cInk,6.5); lab(A,'A',cInk, (A[0]-cx)*0.12, (A[1]-cy)*0.12 + (A[1]<cy?-14:14));
     dot(B,cInk,6.5); lab(B,'B',cInk, (B[0]-cx)*0.12 + (B[0]<cx?-14:14), (B[1]-cy)*0.12);
@@ -460,10 +459,10 @@
     // классификация по наибольшему углу
     var angA=interiorAngle(A,B,C), angB=interiorAngle(B,A,C), angC=interiorAngle(C,A,B);
     var mx=Math.max(angA,angB,angC);
-    if(mx>90.6){
+    if(mx>90.25){
       read.className='viz-read out';
       read.innerHTML='Тупоугольный · центр <span class="cw">O — снаружи</span> треугольника &nbsp;|&nbsp; OA = OB = OC = R';
-    } else if(mx>89.4){
+    } else if(mx>89.75){
       read.className='viz-read mid';
       read.innerHTML='Прямоугольный · центр <span class="cw">O — на середине гипотенузы</span> &nbsp;|&nbsp; OA = OB = OC = R';
     } else {
@@ -472,8 +471,25 @@
     }
   }
 
+  /* минимальный зазор 12° между вершинами: при движении ползунка клампуем к ближайшему допустимому значению */
+  var GAP=12;
+  function circDist(a,b){ var d=Math.abs(a-b)%360; return Math.min(d,360-d); }
+  function clampSlider(el,o1,o2){
+    function ok(x){ return circDist(x,+o1.value)>=GAP && circDist(x,+o2.value)>=GAP; }
+    var v=+el.value;
+    if(!ok(v)){
+      for(var s=1;s<180;s++){
+        var down=((v-s)%360+360)%360, up=(v+s)%360;
+        if(ok(down)){ v=down; break; }
+        if(ok(up)){ v=up; break; }
+      }
+      el.value=v;
+    }
+  }
   function setTri(a,b,c){ sA.value=a; sB.value=b; sC.value=c; draw(); }
-  sA.addEventListener('input',draw); sB.addEventListener('input',draw); sC.addEventListener('input',draw);
+  sA.addEventListener('input',function(){ clampSlider(sA,sB,sC); draw(); });
+  sB.addEventListener('input',function(){ clampSlider(sB,sA,sC); draw(); });
+  sC.addEventListener('input',function(){ clampSlider(sC,sA,sB); draw(); });
   document.getElementById('bAcute').addEventListener('click',function(){ setTri(90,210,330); });
   document.getElementById('bRight').addEventListener('click',function(){ setTri(20,100,200); });
   document.getElementById('bObtuse').addEventListener('click',function(){ setTri(100,150,200); });

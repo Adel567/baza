@@ -415,16 +415,16 @@
         <span class="brace">{</span>
         <span class="sys" id="trSys"><span>2x − 1 &gt; 3</span><span>x + 4 ≤ 10</span></span>
       </div>
-      <p class="tr-hint">Собери ответ. Пример: <b>( 2 ; 6 ]</b> &nbsp;или&nbsp; <b>[ −∞ ; 3 )</b></p>
+      <p class="tr-hint">Собери ответ. Пример: <b>( 2 ; 6 ]</b> &nbsp;или&nbsp; <b>( −∞ ; 3 )</b>. Если ответ — одна точка k, собери <b>[ k ; k ]</b> или просто впиши <b>k</b> (можно «x=k»).</p>
       <div class="tr-build">
         <div class="tr-brk" data-side="L" role="group" aria-label="Левая скобка">
           <button data-brk="(">(</button>
           <button data-brk="[">[</button>
           <button data-brk="-inf">−∞</button>
         </div>
-        <input id="trLo" type="text" inputmode="numeric" placeholder="число" aria-label="Левая граница">
+        <input id="trLo" type="text" inputmode="text" placeholder="число" aria-label="Левая граница">
         <span class="sep">;</span>
-        <input id="trHi" type="text" inputmode="numeric" placeholder="число" aria-label="Правая граница">
+        <input id="trHi" type="text" inputmode="text" placeholder="число" aria-label="Правая граница">
         <div class="tr-brk" data-side="R" role="group" aria-label="Правая скобка">
           <button data-brk=")">)</button>
           <button data-brk="]">]</button>
@@ -563,7 +563,7 @@ function drawSystem(canvas,a,b){
   /* пересечение на оси */
   if(res.empty){
     ctx.fillStyle=empt; ctx.font='700 15px ui-monospace,Menlo,monospace'; ctx.textAlign='center';
-    ctx.fillText('∅  пересечения нет', W/2, axisY+40);
+    ctx.fillText('∅  пересечения нет', W/2, axisY+34);
   } else {
     var xL = res.lo.v===-Infinity? margin+2 : px(res.lo.v);
     var xR = res.hi.v===Infinity? W-margin-2 : px(res.hi.v);
@@ -657,9 +657,9 @@ function drawRay(ctx,s,px,y,col,W,margin){
   }
   /* превращает решённое (rel,x0) в показанное линейное неравенство */
   function buildIneq(finalRel,x0){
-    var d=pick([1,2,3,4])*pick([1,-1]);
+    var d,p;
+    do{ d=pick([1,2,3,4])*pick([1,-1]); p=ri(-6,6); }while(d===1&&p===0); /* d=1, p=0 → задача уже решена, перегенерируем */
     var shownRel=d>0?finalRel:flip(finalRel);
-    var p=ri(-6,6);
     var rhs=d*x0+p;
     return {d:d,p:p,rhs:rhs,shownRel:shownRel,rel:finalRel,x0:x0,
             text:fmtLin(d,p)+' '+relSym(shownRel)+' '+fmtNum(rhs)};
@@ -762,7 +762,20 @@ function drawRay(ctx,s,px,y,col,W,margin){
   }
   function check(){
     var stu=studentInterval();
-    if(stu===null){ resEl.innerHTML='<span class="bad">Собери ответ: скобки + числа, либо нажми ∅.</span>'; return; }
+    var r0=cur.res;
+    /* ответ-точка: принимаем также просто «k» или «x=k» в любом из полей, без скобок */
+    if(stu===null && r0.single && !special){
+      var k=r0.lo.v;
+      var vals=[loEl.value,hiEl.value].map(function(s){
+        s=(s||'').trim().toLowerCase().replace(/−/g,'-').replace(',','.');
+        var m=s.match(/^x\s*=\s*(-?\d+(?:\.\d+)?)$/);
+        return m?parseFloat(m[1]):(s===''?NaN:parseFloat(s));
+      }).filter(function(v){return !isNaN(v);});
+      if(vals.length && vals.every(function(v){return v===k;})){
+        resEl.innerHTML='<span class="ok">✓ Верно!</span>'+solutionHTML(); drawSol(); return;
+      }
+    }
+    if(stu===null){ resEl.innerHTML='<span class="bad">Собери ответ: скобки + числа, либо нажми ∅. Если ответ — одна точка, впиши её число.</span>'; return; }
     var r=cur.res, correct;
     if(r.empty){ correct = stu.empty===true; }
     else if(stu.empty){ correct=false; }

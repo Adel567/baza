@@ -399,7 +399,8 @@ function fmt(n){
   function css(v){ return getComputedStyle(document.documentElement).getPropertyValue(v).trim(); }
   function setup(){
     var dpr=Math.min(window.devicePixelRatio||1,2);
-    cv.width=W*dpr; cv.height=H*dpr; ctx.setTransform(dpr,0,0,dpr,0,0);
+    W=cv.clientWidth||720;
+    cv.width=W*dpr; cv.height=H*dpr; cv.style.height=H+'px'; ctx.setTransform(dpr,0,0,dpr,0,0);
   }
   function X(v){ return padX + (v+10)/20*(W-2*padX); }
   function roundRect(x,y,w,h,r){
@@ -528,9 +529,13 @@ function fmt(n){
   function miniLine(marks, spanTo){
     var vs=marks.map(function(m){ return Math.round(m.v); }).concat([0]);
     var lo=Math.min.apply(null,vs)-1, hi=Math.max.apply(null,vs)+1;
-    if(hi-lo>16){ lo=Math.min(0,Math.round(spanTo))-1; hi=Math.max(0,Math.round(spanTo))+1; }
+    // полный диапазон: обе точки всегда в кадре, при нехватке ширины .mline-wrap даёт скролл
+    var cells=[];
+    for(var v=lo; v<=hi; v++) cells.push(v);
+    marks.forEach(function(m){ if(m.v!==Math.round(m.v)) cells.push(m.v); }); // дробные — отдельной клеткой на своей позиции
+    cells.sort(function(x,y){ return x-y; });
     var html='<div class="mline-wrap"><div class="mline">';
-    for(var v=lo; v<=hi; v++){
+    cells.forEach(function(v){
       var cls=(v===0?'z':'');
       // подсветка отрезка [0..spanTo]
       if(typeof spanTo==='number'){
@@ -538,10 +543,10 @@ function fmt(n){
         if(v>a && v<b){ cls+=' span'; }
       }
       var hit=null;
-      for(var i=0;i<marks.length;i++){ if(Math.round(marks[i].v)===v){ hit=marks[i]; break; } }
+      for(var i=0;i<marks.length;i++){ if(marks[i].v===v){ hit=marks[i]; break; } }
       if(hit){ cls+=' hit '+hit.cls; }
       html+='<span class="'+cls.trim()+'">'+fmt(v)+'</span>';
-    }
+    });
     return html+'</div></div>';
   }
 
@@ -616,7 +621,11 @@ function fmt(n){
       if(nums.length===0){ resEl.innerHTML='<span class="bad">Назови числа, напр. «4 и −4».</span>'; return; }
       var hasPos=nums.some(function(x){ return Math.abs(x-cur.k)<0.001; });
       var hasNeg=nums.some(function(x){ return Math.abs(x+cur.k)<0.001; });
-      okAns=(hasPos && hasNeg);
+      var extra=nums.some(function(x){ return Math.abs(x-cur.k)>=0.001 && Math.abs(x+cur.k)>=0.001; });
+      if(hasPos && hasNeg && extra){
+        resEl.innerHTML='<span class="bad">✗ Есть лишние числа: модуль '+cur.k+' — ровно у двух чисел.</span>'+solHTML(); return;
+      }
+      okAns=(hasPos && hasNeg && !extra);
     } else {
       var s=raw.replace(/\s/g,'');
       if(s!=='<' && s!=='>' && s!=='='){ resEl.innerHTML='<span class="bad">Напиши знак: < , > или =.</span>'; return; }

@@ -43,8 +43,8 @@
   .formula-box .lbl{font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:#9FB0B2;margin:0 0 .7rem}
   .formula-box .eq{font-family:ui-monospace,Menlo,monospace;font-size:clamp(1.9rem,7vw,2.6rem);font-weight:700}
   .formula-box .eq .k{color:#4FD0C0} .formula-box .eq .x{color:#7FC7EE}
-  .formula-box .note{font-size:.9rem;color:#9FB0B2;margin:.95rem 0 0}
-  .formula-box .note .mono{color:#DDEDEC}
+  .formula-box .fnote{font-size:.9rem;color:#9FB0B2;margin:.95rem 0 0}
+  .formula-box .fnote .mono{color:#DDEDEC}
 
   /* Роль знака k — две карточки */
   .signs{display:grid;gap:.9rem;margin-top:1.1rem}
@@ -171,7 +171,7 @@
     <div class="formula-box">
       <p class="lbl">Функция обратной пропорциональности</p>
       <div class="eq">y = <span class="k">k</span> / <span class="x">x</span></div>
-      <p class="note"><span class="mono">k</span> — постоянное число, <b class="mono" style="color:#4FD0C0">k ≠ 0</b> · <span class="mono">x</span> — аргумент, <b class="mono" style="color:#7FC7EE">x ≠ 0</b> (на ноль делить нельзя)</p>
+      <p class="fnote"><span class="mono">k</span> — постоянное число, <b class="mono" style="color:#4FD0C0">k ≠ 0</b> · <span class="mono">x</span> — аргумент, <b class="mono" style="color:#7FC7EE">x ≠ 0</b> (на ноль делить нельзя)</p>
     </div>
     <p><strong>Две ветви.</strong> График состоит из двух отдельных кусков — ветвей. Между ними разрыв: в точке <span class="mono">x = 0</span> функции нет, поэтому ветви <b>никогда не соединяют</b> через начало координат.</p>
     <p><strong>Оси — асимптоты.</strong> Когда <span class="mono">x</span> растёт, дробь <span class="mono">k/x</span> уменьшается, но нуля не достигает; когда <span class="mono">x</span> близко к нулю, <span class="mono">|y|</span> становится огромным. Поэтому кривая <b>подходит к осям сколь угодно близко, но не касается их</b>. Такие «недосягаемые» прямые называют асимптотами — здесь это оси <span class="mono">Ox</span> и <span class="mono">Oy</span>.</p>
@@ -368,6 +368,17 @@
     // подписи осей
     ctx.fillStyle='#93A3A3'; ctx.font='600 13px ui-monospace,Menlo,monospace';
     ctx.fillText('x', W-14, Y(0)-8); ctx.fillText('y', X(0)+8, 16);
+    // числовые метки: ±1 на оси x, ±k на оси y (уровни опорных точек)
+    ctx.font='600 11px ui-monospace,Menlo,monospace';
+    ctx.textAlign='center';
+    ctx.fillText('1', X(1), Y(0)+15);
+    ctx.fillText('−1', X(-1), Y(0)+15);
+    if(k!==0 && Math.abs(k)<=RY){
+      ctx.textAlign='right';
+      ctx.fillText(fmt(k), X(0)-6, Y(k)+4);
+      ctx.fillText(fmt(-k), X(0)-6, Y(-k)+4);
+    }
+    ctx.textAlign='start';
 
     eqEl.textContent='y = '+ (k===0? '0/x' : fmt(k)+'/x');
 
@@ -396,6 +407,13 @@
       if(Math.abs(p[1])<=RY+0.5){
         ctx.fillStyle=col; ctx.beginPath(); ctx.arc(X(p[0]),Y(p[1]),6,0,7); ctx.fill();
         ctx.fillStyle='#fff'; ctx.beginPath(); ctx.arc(X(p[0]),Y(p[1]),2.4,0,7); ctx.fill();
+        // подпись опорной точки, напр. (1; 6)
+        var lbl='('+fmt(p[0])+'; '+fmt(p[1])+')';
+        ctx.fillStyle=col; ctx.font='600 11px ui-monospace,Menlo,monospace';
+        var lx=X(p[0])+9, ly=Y(p[1])+(p[1]>=0?-8:16);
+        if(lx+ctx.measureText(lbl).width>W-4) lx=X(p[0])-ctx.measureText(lbl).width-9;
+        ly=Math.max(12, Math.min(H-6, ly));
+        ctx.fillText(lbl, lx, ly);
       }
     });
 

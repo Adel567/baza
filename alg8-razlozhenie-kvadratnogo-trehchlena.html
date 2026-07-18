@@ -382,7 +382,8 @@
     // корни
     if(D>=-0.001){
       var sq=Math.sqrt(Math.max(D,0));
-      var x1=(-b-sq)/(2*a), x2=(-b+sq)/(2*a);
+      // порядок как в текстовом разборе: x₁ — из ветки «+» (больший при a>0), x₂ — из ветки «−»
+      var x1=(-b+sq)/(2*a), x2=(-b-sq)/(2*a);
       var pts=[{x:x1,col:getCSS('--cx1'),lab:'x₁'},{x:x2,col:getCSS('--cx2'),lab:'x₂'}];
       pts.forEach(function(pt){
         ctx.fillStyle=pt.col; ctx.beginPath(); ctx.arc(X(pt.x),Y(0),7,0,7); ctx.fill();
@@ -455,10 +456,12 @@
     if(Math.random()<0.8){                       // раскладывается: целые корни
       var a=ri(1,3), x1, x2, tries=0;
       do{ x1=ri(-6,6); x2=ri(-6,6); tries++; }while((x1===0&&x2===0)&&tries<40);
+      if(x1===0&&x2===0){ generate(); return; }    // страховка: условие не достигнуто — перегенерировать
       cur={a:a, b:-a*(x1+x2), c:a*x1*x2, x1:x1, x2:x2, noRoots:false};
     } else {                                       // краевой случай D<0
       var a2,b2,c2,t2=0;
       do{ a2=ri(1,2); b2=ri(-4,4); c2=ri(1,6); t2++; }while(b2*b2-4*a2*c2>=0 && t2<80);
+      if(b2*b2-4*a2*c2>=0){ generate(); return; }  // страховка: D всё ещё ≥ 0 — перегенерировать
       cur={a:a2,b:b2,c:c2,noRoots:true};
     }
     eqEl.textContent=fmtTri(cur); resEl.innerHTML=''; ansEl.value='';
@@ -466,7 +469,7 @@
   function solutionHTML(){
     var q=cur, D=q.b*q.b-4*q.a*q.c, h='<div class="sol">';
     h+='a = '+q.a+', b = '+fmt(q.b)+', c = '+fmt(q.c)+'<br>';
-    h+='D = b² − 4ac = ('+fmt(q.b)+')² − 4·'+q.a+'·('+fmt(q.c)+') = <b>'+D+'</b><br>';
+    h+='D = b² − 4ac = ('+fmt(q.b)+')² − 4·'+q.a+'·('+fmt(q.c)+') = <b>'+fmt(D)+'</b><br>';
     if(q.noRoots){
       h+='D < 0 → действительных корней нет → на множители не раскладывается.';
       return h+'</div>';
@@ -482,7 +485,7 @@
     return h+'</div>';
   }
   function check(){
-    var raw=ansEl.value.trim().toLowerCase();
+    var raw=ansEl.value.trim().toLowerCase().replace(/−/g,'-');
     if(!raw){ resEl.innerHTML='<span class="bad">Впиши корни или нажми «Показать решение».</span>'; return; }
     if(cur.noRoots){
       if(/нет|net|∅|не\s*раскл|отсут/.test(raw) || raw==='-'){ resEl.innerHTML='<span class="ok">✓ Верно — D &lt; 0, корней нет, не раскладывается.</span>'+solutionHTML(); }

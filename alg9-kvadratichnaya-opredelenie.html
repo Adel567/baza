@@ -247,7 +247,7 @@
     <h2>Тренажёр · читай коэффициенты</h2>
     <p>Нажимай «Новое» — генерируются бесконечные задания трёх типов: назвать коэффициент, определить ветви, отличить квадратичную от других. Впиши ответ и проверь себя.</p>
     <div class="trainer">
-      <div class="tr-task" id="trTask">y = x²<span class="qlabel">задание</span></div>
+      <div class="tr-task" id="trTask">y = x²<span class="qlabel">это квадратичная функция?</span></div>
       <div class="tr-ctl">
         <button id="trNew" type="button">🎲 Новое</button>
         <input id="trAns" type="text" placeholder="ответ" aria-label="Ответ">
@@ -432,7 +432,7 @@
     }
   }
 
-  function norm(s){ return s.trim().toLowerCase().replace('ё','е').replace(/\s+/g,'').replace(',','.').replace('-','−'); }
+  function norm(s){ return s.trim().toLowerCase().replace(/ё/g,'е').replace(/\s+/g,'').replace(/,/g,'.').replace(/-/g,'−').replace(/[.!?…∪∩«»"']+$/,''); }
 
   function solHTML(){
     var q=cur, h='<div class="sol">';
@@ -455,7 +455,7 @@
     var ok=false;
     if(cur.type==='coef'){
       var got=parseFloat(raw.trim().replace(',','.').replace('−','-'));
-      ok = !isNaN(got) && got===cur.val;
+      ok = !isNaN(got) && Math.abs(got-cur.val)<0.001;
     } else {
       ok = norm(raw)===norm(cur.val);
     }
@@ -467,6 +467,8 @@
   document.getElementById('trCheck').addEventListener('click',check);
   document.getElementById('trShow').addEventListener('click',function(){ resEl.innerHTML=solHTML(); });
   ansEl.addEventListener('keydown',function(e){ if(e.key==='Enter') check(); });
-  generate(); started=true;
+  // стартовое состояние = пример из HTML (y = x², «это квадратичная функция?»), без generate() и без focus()
+  cur={type:'isq',val:'да',why:'есть слагаемое с x² и a = 1 ≠ 0 — это квадратичная функция.'};
+  started=true;
 })();
 </script>

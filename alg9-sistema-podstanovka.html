@@ -505,6 +505,10 @@
       C1=A1*x0+y0; C2=A2*x0+B2*y0;
       break;
     }
+    if(C1===undefined){ // страховка: 300 попыток не дали невырожденную систему
+      x0=1; y0=2; A1=1; A2=2; B2=1; coeff=A2-B2*A1;
+      C1=A1*x0+y0; C2=A2*x0+B2*y0;
+    }
     var expr=renderLin(-A1,C1,'x');            // y = ...
     var subst=lead(A2)+termMul(B2,'('+expr+')');
     var steps=[
@@ -608,9 +612,11 @@
     var low=raw.trim().toLowerCase();
     if(low==='') return {empty:true};
     if(/нет|net|∅|отсут/.test(low)) return {none:true};
-    var nums=low.replace(/−/g,'-').match(/-?\d+(?:[.,]\d+)?/g);
+    // минус → дефис; десятичная запятая только между цифрами → точка; остальные запятые — разделители
+    low=low.replace(/−/g,'-').replace(/(\d),(\d)/g,'$1.$2');
+    var nums=low.match(/-?\d+(?:\.\d+)?/g);
     if(!nums) return {bad:true};
-    nums=nums.map(function(s){ return parseFloat(s.replace(',','.')); });
+    nums=nums.map(function(s){ return parseFloat(s); });
     if(nums.length%2!==0) return {odd:true};
     var pairs=[]; for(var i=0;i<nums.length;i+=2) pairs.push([nums[i],nums[i+1]]);
     return {pairs:pairs};
@@ -624,14 +630,14 @@
 
   function check(){
     var p=parsePairs(ansEl.value);
+    if(p.empty){ resEl.innerHTML='<span class="bad">Впиши пары x;y (например 2;3, 3;2) или «нет».</span>'; return; }
     if(cur.special==='none'){
       if(p.none) resEl.innerHTML='<span class="ok">✓ Верно — дискриминант отрицательный, решений нет.</span>'+solHTML();
       else resEl.innerHTML='<span class="bad">✗ Присмотрись: после подстановки D &lt; 0, корней нет. Впиши «нет».</span>'+solHTML();
       return;
     }
-    if(p.empty){ resEl.innerHTML='<span class="bad">Впиши пары x;y (например 2;3, 3;2) или «нет».</span>'; return; }
     if(p.none){ resEl.innerHTML='<span class="bad">✗ Решения есть — реши квадратное уравнение до конца.</span>'+solHTML(); return; }
-    if(p.bad||p.odd){ resEl.innerHTML='<span class="bad">Каждая пара — это два числа (x;y). Проверь формат: 4;3, −3;−4.</span>'; return; }
+    if(p.bad||p.odd){ resEl.innerHTML='<span class="bad">Каждая пара — это два числа в формате «x; y» (например 4; 3, −3; −4). Пары разделяй запятой, x и y внутри пары — точкой с запятой.</span>'; return; }
     if(setsEqual(p.pairs,cur.pairs)){
       resEl.innerHTML='<span class="ok">✓ Верно! Все пары найдены.</span>'+solHTML();
     } else {
