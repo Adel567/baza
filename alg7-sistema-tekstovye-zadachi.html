@@ -229,6 +229,12 @@
   @media(prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 
+<style>
+.oge-tip{display:flex;gap:.8rem;align-items:flex-start;background:#FFF8E7;border:1px solid #F0D98A;border-left:4px solid #E0A315;border-radius:10px;padding:.85rem 1.05rem;margin:1.5rem 0}
+.oge-tip .b{font-size:.72rem;font-weight:800;letter-spacing:.03em;color:#8A6A15;white-space:nowrap;text-transform:uppercase;padding-top:.15rem}
+.oge-tip .x{font-size:.95rem;line-height:1.5}
+</style>
+
 <!--LESSON-NAV-TOP--><style>.lnav{--lnav-accent:#3D5AF1}.lnav a{text-decoration:none;font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif}.lnav-top{max-width:820px;margin:0 auto;padding:.75rem clamp(1rem,4vw,1.5rem) .1rem}.lnav-top a{display:inline-flex;align-items:center;gap:.35rem;color:var(--lnav-accent);font-weight:600;font-size:.9rem}.lnav-top a:hover{text-decoration:underline}.lnav-bot{max-width:820px;margin:2.6rem auto 3rem;padding:1.1rem clamp(1rem,4vw,1.5rem) 0;border-top:1px solid #E4E8EF;display:flex;align-items:stretch;gap:.55rem}.lnav-bot a{min-width:0;display:flex;flex-direction:column;justify-content:center;gap:.15rem;border:1px solid #E4E8EF;border-radius:12px;padding:.65rem .85rem;color:#182233;background:#fff;transition:border-color .1s,transform .08s}.lnav-bot a:hover{border-color:var(--lnav-accent);transform:translateY(-1px)}.lnav-bot .prev,.lnav-bot .next{flex:1 1 0}.lnav-bot .next{text-align:right}.lnav-bot .dir{font-size:.72rem;color:#8A93A6;font-weight:600}.lnav-bot .ttl{font-size:.9rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.lnav-bot .to-cat{flex:0 0 auto;flex-direction:row;align-items:center;justify-content:center;color:var(--lnav-accent);font-weight:700;font-size:.85rem;white-space:nowrap}@media(max-width:420px){.lnav-bot .to-cat span{display:none}.lnav-bot .to-cat{padding:.65rem .7rem}}</style><nav class="lnav lnav-top"><a href="./catalog.html">← Все темы</a></nav><!--/LESSON-NAV-TOP-->
 <div class="wrap">
 
@@ -363,6 +369,8 @@
     </div>
   </section>
 
+  <div class="oge-tip"><div class="b">🎯 В ОГЭ</div><div class="x"><b>Задание 21.</b> Решить текстовую задачу. Сюжеты «на сумму и разность», «на N больше», задачи о покупках сводятся к системе двух уравнений — ровно этот навык и проверяют.</div></div>
+
   <section>
     <p class="kicker">Тренажёр · бесконечная практика</p>
     <h2>Собери систему и реши</h2>
@@ -480,12 +488,21 @@
     var p1=ri(12,80), p2=ri(12,80);
     return {type:'pu', a1:a1,b1:b1,a2:a2,b2:b2, c1:a1*p1+b1*p2, c2:a2*p1+b2*p2, ans:[p1,p2]};
   }
+  function genMoreLess(){
+    var boys=ri(6,20), diff=ri(2,10), girls=boys+diff;   // девочек на diff больше
+    return {type:'ml', total:boys+girls, diff:diff, ans:[girls, boys]}; // порядок: девочки; мальчики
+  }
 
   function renderTask(q){
     if(q.type==='sd'){
       hintEl.textContent='Порядок: большее число; меньшее число.';
       return 'Сумма двух чисел равна <b>'+q.sum+'</b>, а их разность равна <b>'+q.diff+
              '</b>.<br>Найди эти числа — сначала большее, потом меньшее.';
+    }
+    if(q.type==='ml'){
+      hintEl.textContent='Порядок: сначала девочек, потом мальчиков.';
+      return 'В классе <b>'+q.total+'</b> человек: девочек на <b>'+q.diff+
+             '</b> больше, чем мальчиков.<br>Сколько в классе девочек и сколько мальчиков?';
     }
     hintEl.textContent='Порядок: цена товара А; цена товара Б. (штук × цена = сумма)';
     return 'Покупали два товара по двум чекам. Сколько стоит одна штука каждого?'+
@@ -506,6 +523,14 @@
       h+='Тогда y = '+q.sum+' '+MINUS+' '+X+' = <b>'+Y+'</b><br>';
       h+='Проверка: '+X+' + '+Y+' = '+q.sum+' ;  '+X+' '+MINUS+' '+Y+' = '+q.diff+'  ✓<br>';
       h+='Ответ: '+X+' и '+Y+'.';
+    } else if(q.type==='ml'){
+      var G=q.ans[0], B=q.ans[1];
+      h+='Пусть <b>x</b> — девочки, <b>y</b> — мальчики.<br>';
+      h+='Система:  x + y = '+q.total+' ;  x '+MINUS+' y = '+q.diff+'   («девочек на '+q.diff+' больше»)<br>';
+      h+='Сложим уравнения: 2x = '+(q.total+q.diff)+' &rarr; <b>x = '+G+'</b><br>';
+      h+='Тогда y = '+q.total+' '+MINUS+' '+G+' = <b>'+B+'</b><br>';
+      h+='Проверка: '+G+' + '+B+' = '+q.total+' ;  '+G+' '+MINUS+' '+B+' = '+q.diff+'  ✓<br>';
+      h+='Ответ: '+G+' девочек и '+B+' мальчиков.';
     } else {
       var P1=q.ans[0], P2=q.ans[1];
       var mn=function(n){ return (n<0?MINUS:'')+Math.abs(n); };
@@ -541,7 +566,8 @@
   function show(q){ eqEl.innerHTML=renderTask(q); resEl.innerHTML=''; ansEl.value=''; }
 
   function generate(){
-    cur = Math.random()<0.5 ? genSumDiff() : genPurchase();
+    var pick=Math.random();
+    cur = pick<0.34 ? genSumDiff() : (pick<0.67 ? genMoreLess() : genPurchase());
     show(cur);
     ansEl.focus();   // фокус только по действию пользователя, не при первичной загрузке
   }
