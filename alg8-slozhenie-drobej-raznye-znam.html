@@ -1,0 +1,593 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Сложение и вычитание дробей с разными знаменателями — урок, алгебра 8 класс</title>
+<style>
+  :root{
+    --paper:#F6F7F9;
+    --card:#FFFFFF;
+    --ink:#1B2333;
+    --muted:#5A6478;
+    --line:#E2E5EC;
+    --accent:#3B4FD0;
+    --accent-soft:#EAEDFB;
+    --pos:#1E8E5A;   /* множитель первой дроби */
+    --pos-bg:#E7F4EC;
+    --zero:#B9791A;  /* множитель второй дроби */
+    --zero-bg:#FBF1DC;
+    --neg:#C0455B;   /* ошибки / знак */
+    --neg-bg:#F9E9EC;
+  }
+  *{box-sizing:border-box}
+  body{margin:0}
+  .wrap{
+    max-width:760px;
+    margin:0 auto;
+    padding:clamp(1.4rem,4vw,3rem) clamp(1.1rem,4vw,2rem) 4rem;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    font-size:17px;
+    line-height:1.62;
+    -webkit-font-smoothing:antialiased;
+  }
+  .eyebrow{
+    font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--accent);font-weight:600;margin:0 0 .5rem;
+  }
+  h1{
+    font-family:Georgia,"Times New Roman",serif;
+    font-size:clamp(2.1rem,7vw,3rem);
+    line-height:1.05;margin:0;font-weight:700;letter-spacing:-.01em;
+    text-wrap:balance;
+  }
+  .lede{
+    font-size:1.08rem;color:var(--muted);margin:.7rem 0 0;max-width:60ch;
+    text-wrap:pretty;
+  }
+  h2{
+    font-family:Georgia,serif;font-size:1.32rem;font-weight:700;
+    margin:0 0 .1rem;letter-spacing:-.005em;
+  }
+  section{margin-top:2.6rem}
+  .kicker{
+    font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--muted);font-weight:600;margin:0 0 .8rem;
+    display:flex;align-items:center;gap:.6rem;
+  }
+  .kicker::before{
+    content:"";width:1.4rem;height:2px;background:var(--accent);border-radius:2px;
+  }
+  p{margin:.65rem 0}
+  strong{font-weight:650}
+  .math{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-weight:600}
+  sup{font-size:.72em}
+
+  /* Дробь: числитель над знаменателем */
+  .frac{display:inline-flex;flex-direction:column;text-align:center;vertical-align:middle;
+    line-height:1.08;margin:0 .12em;font-family:ui-monospace,Menlo,monospace;font-weight:700}
+  .frac>span{display:block;padding:0 .4em}
+  .frac .n{border-bottom:2px solid currentColor}
+  .op{font-family:ui-monospace,Menlo,monospace;font-weight:700;padding:0 .12em}
+  .hl-lcd{color:var(--accent);font-weight:800}
+  .hl-m1{color:var(--pos);font-weight:800}
+  .hl-m2{color:var(--zero);font-weight:800}
+
+  /* Главная формула */
+  .hero-formula{
+    margin-top:2.2rem;
+    background:var(--ink);color:#fff;border-radius:14px;
+    padding:1.6rem 1.4rem;text-align:center;
+  }
+  .hero-formula .lbl{
+    font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;
+    color:#9aa6c9;margin:0 0 .7rem;
+  }
+  .hero-formula .eq{
+    font-family:ui-monospace,"SF Mono",Menlo,monospace;
+    font-size:clamp(1.35rem,5.2vw,1.9rem);font-weight:700;letter-spacing:.01em;
+    display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:.15em;
+  }
+  .hero-formula .eq i{color:#8ea0ff;font-style:italic;font-weight:700}
+  .hero-formula .note{font-size:.86rem;color:#9aa6c9;margin:.9rem 0 0}
+
+  /* Пререквизит */
+  .recall{
+    background:var(--accent-soft);border-radius:12px;padding:1rem 1.15rem;
+    font-size:.96rem;
+  }
+  .recall p{margin:.35rem 0}
+  .recall b{color:var(--ink)}
+
+  /* Алгоритм — шаги */
+  .algo{
+    background:var(--card);border:1px solid var(--line);border-radius:12px;
+    padding:1.2rem 1.3rem;
+  }
+  ol.steps{margin:0;padding:0;list-style:none;counter-reset:s;display:flex;flex-direction:column;gap:.7rem}
+  ol.steps li{position:relative;padding-left:2.1rem;counter-increment:s}
+  ol.steps li::before{
+    content:counter(s);position:absolute;left:0;top:.05rem;
+    width:1.5rem;height:1.5rem;border-radius:50%;
+    background:var(--accent-soft);color:var(--accent);
+    font-size:.82rem;font-weight:700;display:flex;align-items:center;justify-content:center;
+  }
+  ol.steps .m{font-family:ui-monospace,Menlo,monospace;font-weight:600;color:var(--ink)}
+
+  /* Наглядность — бар-модель */
+  .barmodel{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:1.2rem 1.3rem;margin-top:.5rem}
+  .barmodel .brow{margin:.7rem 0}
+  .barmodel .blabel{font-size:.9rem;color:var(--muted);margin:0 0 .3rem}
+  .barmodel .blabel b{color:var(--ink)}
+  .barmodel .bar{display:grid;grid-template-columns:repeat(6,1fr);gap:3px}
+  .barmodel .cell{height:1.9rem;background:#EEF0F5;border-radius:4px;border:1px solid var(--line)}
+  .barmodel .cell.f1{background:var(--pos-bg);border-color:var(--pos)}
+  .barmodel .cell.f2{background:var(--zero-bg);border-color:var(--zero)}
+  .barmodel .sum{font-size:.92rem;color:var(--muted);margin:.9rem 0 0}
+  .barmodel .sum b{color:var(--ink)}
+
+  /* Интерактивный разбор — стеаппер */
+  .stepper{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.2rem 1.3rem;margin-top:.5rem}
+  .stepper .task{
+    font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.2rem;text-align:center;
+    padding:.9rem;background:var(--accent-soft);border-radius:10px;color:var(--ink);
+    display:flex;align-items:center;justify-content:center;gap:.2em;
+  }
+  .stepper .steps-box{margin-top:1rem;display:flex;flex-direction:column;gap:.7rem}
+  .stepper .step{
+    padding:.7rem .9rem;border:1px solid var(--line);border-radius:10px;background:#FCFDFF;
+    font-size:.97rem;display:flex;gap:.6rem;align-items:baseline;
+  }
+  .stepper .step .no{font-weight:800;color:var(--accent);white-space:nowrap}
+  .stepper .step .frac{font-size:.95em}
+  .stepper .ctl{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:1rem}
+  .stepper .ctl button{font:inherit;font-weight:700;font-size:.9rem;cursor:pointer;border:none;border-radius:9px;padding:.55rem .95rem;color:#fff;background:var(--accent)}
+  .stepper .ctl button.ghost{background:transparent;color:var(--accent);border:1px solid var(--accent)}
+  .stepper .ctl button:disabled{opacity:.45;cursor:default}
+  .stepper .ctl button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+  .stepper .hint{font-size:.9rem;color:var(--muted);margin:.9rem 0 0}
+
+  /* Практика */
+  .drill{display:flex;flex-direction:column;gap:.7rem}
+  details{
+    background:var(--card);border:1px solid var(--line);border-radius:10px;
+    padding:.85rem 1.05rem;
+  }
+  details[open]{border-color:var(--accent)}
+  summary{
+    cursor:pointer;font-weight:600;list-style:none;
+    display:flex;justify-content:space-between;align-items:center;gap:1rem;
+  }
+  summary::-webkit-details-marker{display:none}
+  summary:focus-visible{outline:3px solid var(--accent);outline-offset:3px;border-radius:6px}
+  summary .q{font-family:ui-monospace,Menlo,monospace;display:flex;align-items:center;gap:.15em;flex-wrap:wrap}
+  summary .tag{
+    font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);
+    border:1px solid var(--line);border-radius:20px;padding:.1rem .55rem;white-space:nowrap;
+  }
+  summary::after{
+    content:"показать ответ";font-size:.78rem;color:var(--accent);font-weight:600;white-space:nowrap;
+  }
+  details[open] summary::after{content:"скрыть"}
+  .ans{margin-top:.7rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.96rem;color:var(--muted)}
+  .ans .m{font-family:ui-monospace,Menlo,monospace;color:var(--ink);font-weight:600}
+  .ans .frac{color:var(--ink)}
+
+  /* Ошибки */
+  ul.pitfalls{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:.6rem}
+  ul.pitfalls li{padding-left:1.5rem;position:relative;font-size:.98rem}
+  ul.pitfalls li::before{
+    content:"×";position:absolute;left:0;top:-.05rem;color:var(--neg);font-weight:700;font-size:1.1rem;
+  }
+  ul.pitfalls b{color:var(--ink)}
+
+  .next{
+    background:var(--accent);color:#fff;border-radius:12px;padding:1.2rem 1.3rem;
+  }
+  .next h2{color:#fff}
+  .next .eq{
+    font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.15rem;
+    margin:.6rem 0 .3rem;display:flex;align-items:center;gap:.2em;flex-wrap:wrap;
+  }
+  .next p{color:#dfe4fb;font-size:.96rem;margin:.4rem 0 0}
+  .foot{margin-top:2.4rem;font-size:.82rem;color:var(--muted);text-align:center}
+
+  @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+<style>
+.oge-tip{display:flex;gap:.8rem;align-items:flex-start;background:#FFF8E7;border:1px solid #F0D98A;border-left:4px solid #E0A315;border-radius:10px;padding:.85rem 1.05rem;margin:1.5rem 0}
+.oge-tip .b{font-size:.72rem;font-weight:800;letter-spacing:.03em;color:#8A6A15;white-space:nowrap;text-transform:uppercase;padding-top:.15rem}
+.oge-tip .x{font-size:.95rem;line-height:1.5}
+</style>
+
+<!--LESSON-NAV-TOP--><style>.lnav{--lnav-accent:#3D5AF1}.lnav a{text-decoration:none;font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif}.lnav-top{max-width:820px;margin:0 auto;padding:.75rem clamp(1rem,4vw,1.5rem) .1rem}.lnav-top a{display:inline-flex;align-items:center;gap:.35rem;color:var(--lnav-accent);font-weight:600;font-size:.9rem}.lnav-top a:hover{text-decoration:underline}.lnav-bot{max-width:820px;margin:2.6rem auto 3rem;padding:1.1rem clamp(1rem,4vw,1.5rem) 0;border-top:1px solid #E4E8EF;display:flex;align-items:stretch;gap:.55rem}.lnav-bot a{min-width:0;display:flex;flex-direction:column;justify-content:center;gap:.15rem;border:1px solid #E4E8EF;border-radius:12px;padding:.65rem .85rem;color:#182233;background:#fff;transition:border-color .1s,transform .08s}.lnav-bot a:hover{border-color:var(--lnav-accent);transform:translateY(-1px)}.lnav-bot .prev,.lnav-bot .next{flex:1 1 0}.lnav-bot .next{text-align:right}.lnav-bot .dir{font-size:.72rem;color:#8A93A6;font-weight:600}.lnav-bot .ttl{font-size:.9rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.lnav-bot .to-cat{flex:0 0 auto;flex-direction:row;align-items:center;justify-content:center;color:var(--lnav-accent);font-weight:700;font-size:.85rem;white-space:nowrap}@media(max-width:420px){.lnav-bot .to-cat span{display:none}.lnav-bot .to-cat{padding:.65rem .7rem}}</style><nav class="lnav lnav-top"><a href="./catalog.html">← Все темы</a></nav><!--/LESSON-NAV-TOP-->
+<div class="wrap">
+
+  <header>
+    <p class="eyebrow">Алгебра · 8 класс</p>
+    <h1>Сложение и вычитание дробей с разными знаменателями</h1>
+    <p class="lede">Складывать можно только одинаковые доли. Поэтому сначала приводим дроби к общему знаменателю — <em>а уже потом работаем с числителями.</em></p>
+  </header>
+
+  <div class="hero-formula">
+    <p class="lbl">Базовая формула</p>
+    <div class="eq">
+      <span class="frac"><span class="n"><i>a</i></span><span class="d"><i>b</i></span></span>
+      <span class="op">+</span>
+      <span class="frac"><span class="n"><i>c</i></span><span class="d"><i>d</i></span></span>
+      <span class="op">=</span>
+      <span class="frac"><span class="n"><i>a</i>·<i>d</i> + <i>c</i>·<i>b</i></span><span class="d"><i>b</i>·<i>d</i></span></span>
+    </div>
+    <p class="note"><i>a</i>, <i>c</i> — числители; <i>b</i>, <i>d</i> — знаменатели. При вычитании между числителями стоит «−». Условие: <i>b</i> ≠ 0, <i>d</i> ≠ 0.</p>
+  </div>
+
+  <section>
+    <p class="kicker">Зачем это нужно</p>
+    <h2>Нельзя складывать разные доли</h2>
+    <p>Дробь — это сколько-то одинаковых долей. <span class="frac"><span class="n">3</span><span class="d">7</span></span> — три седьмых доли. Складывать напрямую можно только доли <strong>одного размера</strong>: седьмые с седьмыми, пятые с пятыми.</p>
+    <p>Главное заблуждение: «чтобы сложить дроби, надо сложить и числители, и знаменатели». То есть <span class="frac"><span class="n">1</span><span class="d">2</span></span> <span class="op">+</span> <span class="frac"><span class="n">1</span><span class="d">3</span></span> <span class="op">=</span> <span class="frac"><span class="n">2</span><span class="d">5</span></span>. Это неверно: <span class="frac"><span class="n">1</span><span class="d">2</span></span> уже больше, чем <span class="frac"><span class="n">2</span><span class="d">5</span></span> — значит «сумма» получилась <em>меньше</em> одного из слагаемых. Бессмыслица. Поэтому дроби сначала приводят к общему знаменателю.</p>
+    <p>Этот навык нужен постоянно: без него не упростить выражение, не решить дробно-рациональное уравнение, не сложить две скорости работы («труба наполняет бассейн за 3 часа, сливает за 5 — что в час?»).</p>
+    <div class="oge-tip"><div class="b">🎯 В ОГЭ · Задание 8</div><div class="x">Преобразование дробей и рациональных выражений — типичная часть задания 8. Умение привести дроби к общему знаменателю и сложить их нужно, чтобы упрощать выражения и решать дробно-рациональные уравнения.</div></div>
+  </section>
+
+  <section>
+    <p class="kicker">Что вспомнить с прошлого шага</p>
+    <div class="recall">
+      <p><b>Приведение к общему знаменателю.</b> Дробь можно заменить на равную ей: домножаем числитель <em>и</em> знаменатель на одно и то же число — значение дроби не меняется.</p>
+      <p><b>Сложение дробей с одинаковыми знаменателями.</b> Складывают только числители, знаменатель оставляют общий: <span class="frac"><span class="n">a</span><span class="d">c</span></span> <span class="op">+</span> <span class="frac"><span class="n">b</span><span class="d">c</span></span> <span class="op">=</span> <span class="frac"><span class="n">a + b</span><span class="d">c</span></span>.</p>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Ядро темы · алгоритм</p>
+    <h2>Четыре шага</h2>
+    <div class="algo">
+      <ol class="steps">
+        <li><b>Найти общий знаменатель.</b> Это <span class="m">НОК</span> знаменателей — наименьшее число, которое делится на каждый из них.</li>
+        <li><b>Найти дополнительный множитель</b> к каждой дроби — то, на что домножили её знаменатель, чтобы получить общий: <span class="m">общий знаменатель ÷ свой знаменатель</span>. Умножаем на него и числитель, и знаменатель.</li>
+        <li><b>Сложить (вычесть) числители</b>, общий знаменатель оставить прежним.</li>
+        <li><b>Сократить результат</b>, если это возможно.</li>
+      </ol>
+    </div>
+    <p style="font-size:.92rem;color:var(--muted);margin-top:.9rem">Почему берут <strong>НОК</strong>, а не просто произведение знаменателей? Так числа получаются меньше, и сокращать в конце проще. Если знаменатели имеют общий множитель — общий знаменатель окажется меньше их произведения (например, для 6 и 8 это 24, а не 48).</p>
+  </section>
+
+  <section>
+    <p class="kicker">Разбираем шаг за шагом · интерактив</p>
+    <h2>Как найти общий знаменатель и домножить</h2>
+    <p>Эталонный пример. Нажимай «Дальше» — открывается по одному шагу. Следи за <span class="hl-m1">множителем первой дроби</span> и <span class="hl-m2">множителем второй</span>.</p>
+    <div class="stepper" id="stepper">
+      <div class="task">
+        <span class="frac"><span class="n">5</span><span class="d">6</span></span>
+        <span class="op">+</span>
+        <span class="frac"><span class="n">3</span><span class="d">8</span></span>
+        <span class="op">=</span>
+        <span style="color:var(--muted)">?</span>
+      </div>
+      <div class="steps-box">
+        <div class="step" hidden><span class="no">1</span><span>Знаменатели разные: 6 и 8. Общий — это НОК(6, 8). Разложим: 6 = 2·3, 8 = 2·2·2. Берём все множители: НОК = 2·2·2·3 = <span class="hl-lcd">24</span>.</span></div>
+        <div class="step" hidden><span class="no">2</span><span>Дополнительные множители — делим общий знаменатель на свой: 24 : 6 = <span class="hl-m1">4</span> для первой дроби, 24 : 8 = <span class="hl-m2">3</span> для второй.</span></div>
+        <div class="step" hidden><span class="no">3</span><span>Домножаем числитель и знаменатель каждой дроби: <span class="frac"><span class="n">5·<span class="hl-m1">4</span></span><span class="d">24</span></span> <span class="op">+</span> <span class="frac"><span class="n">3·<span class="hl-m2">3</span></span><span class="d">24</span></span> = <span class="frac"><span class="n">20</span><span class="d">24</span></span> <span class="op">+</span> <span class="frac"><span class="n">9</span><span class="d">24</span></span>.</span></div>
+        <div class="step" hidden><span class="no">4</span><span>Знаменатель общий — складываем только числители: <span class="frac"><span class="n">20 + 9</span><span class="d">24</span></span> = <span class="frac"><span class="n">29</span><span class="d">24</span></span>.</span></div>
+        <div class="step" hidden><span class="no">5</span><span>Сокращаем: 29 — простое число, 24 на него не делится → сократить нельзя. Ответ: <span class="frac"><span class="n">29</span><span class="d">24</span></span> = 1<span class="frac"><span class="n">5</span><span class="d">24</span></span>.</span></div>
+      </div>
+      <div class="ctl">
+        <button id="stNext" type="button">Дальше →</button>
+        <button id="stReset" type="button" class="ghost">Сначала</button>
+      </div>
+      <p class="hint" id="stHint">Открыто шагов: 0 из 5.</p>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Ещё один разбор</p>
+    <h2>С вычитанием — держим знак</h2>
+    <div class="algo">
+      <div class="task" style="font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.05rem;margin:0 0 1rem;padding-bottom:.8rem;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:.2em">
+        <span class="frac"><span class="n">7</span><span class="d">10</span></span><span class="op">−</span><span class="frac"><span class="n">2</span><span class="d">15</span></span><span class="op">=</span><span style="color:var(--muted)">?</span>
+      </div>
+      <ol class="steps">
+        <li>НОК(10, 15): 10 = 2·5, 15 = 3·5, общий множитель 5 → <span class="m">НОК = 2·3·5 = 30</span> (не 150!).</li>
+        <li>Множители: <span class="m">30 : 10 = 3</span>, <span class="m">30 : 15 = 2</span>.</li>
+        <li>Домножаем: <span class="frac"><span class="n">7·3</span><span class="d">30</span></span> <span class="op">−</span> <span class="frac"><span class="n">2·2</span><span class="d">30</span></span> = <span class="frac"><span class="n">21</span><span class="d">30</span></span> <span class="op">−</span> <span class="frac"><span class="n">4</span><span class="d">30</span></span>.</li>
+        <li>Вычитаем числители: <span class="frac"><span class="n">21 − 4</span><span class="d">30</span></span> = <span class="frac"><span class="n">17</span><span class="d">30</span></span>.</li>
+        <li>17 — простое, 30 на него не делится → ответ <span class="frac"><span class="n">17</span><span class="d">30</span></span>.</li>
+      </ol>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Наглядно · один размер долей</p>
+    <h2>Почему общий знаменатель = «единый размер»</h2>
+    <p>Возьмём <span class="frac"><span class="n">1</span><span class="d">2</span></span> <span class="op">+</span> <span class="frac"><span class="n">1</span><span class="d">3</span></span>. Разобьём оба прямоугольника на <strong>шестые</strong> доли — тогда доли станут одного размера, и их можно сложить:</p>
+    <div class="barmodel">
+      <div class="brow">
+        <p class="blabel"><b>1/2 = 3/6</b> — половина это три шестых</p>
+        <div class="bar">
+          <span class="cell f1"></span><span class="cell f1"></span><span class="cell f1"></span>
+          <span class="cell"></span><span class="cell"></span><span class="cell"></span>
+        </div>
+      </div>
+      <div class="brow">
+        <p class="blabel"><b>1/3 = 2/6</b> — треть это две шестых</p>
+        <div class="bar">
+          <span class="cell f2"></span><span class="cell f2"></span>
+          <span class="cell"></span><span class="cell"></span><span class="cell"></span><span class="cell"></span>
+        </div>
+      </div>
+      <div class="brow">
+        <p class="blabel"><b>сумма = 5/6</b> — три зелёных и две жёлтых доли</p>
+        <div class="bar">
+          <span class="cell f1"></span><span class="cell f1"></span><span class="cell f1"></span>
+          <span class="cell f2"></span><span class="cell f2"></span>
+          <span class="cell"></span>
+        </div>
+      </div>
+      <p class="sum">Закрашено <b>5 из 6</b> долей → <span class="frac"><span class="n">1</span><span class="d">2</span></span> <span class="op">+</span> <span class="frac"><span class="n">1</span><span class="d">3</span></span> <span class="op">=</span> <span class="frac"><span class="n">5</span><span class="d">6</span></span>. А «сложить знаменатели» дало бы <span class="frac"><span class="n">2</span><span class="d">5</span></span> — что меньше даже половины. Видно, что так нельзя.</p>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Тренажёр · бесконечная практика</p>
+    <h2>Сложи или вычти дроби сам</h2>
+    <p>Нажми «Новый пример» и посчитай. Ответ введи <strong>несократимой дробью</strong> вида <span class="math">a/b</span>, целым числом или смешанной дробью (например <span class="math">1 5/24</span>). Потом проверь себя или посмотри пошаговое решение.</p>
+    <div class="trainer">
+      <div class="tr-eq" id="trEq"></div>
+      <div class="tr-ctl">
+        <button id="trNew" type="button">🎲 Новый пример</button>
+        <input id="trAns" type="text" placeholder="напр.  29/24   или   1 5/24   или   2" aria-label="Ответ">
+        <button id="trCheck" type="button" class="sec">Проверить</button>
+        <button id="trShow" type="button" class="ghost">Показать решение</button>
+      </div>
+      <div id="trResult" class="tr-result"></div>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Теперь ты · нажми, чтобы проверить</p>
+    <h2>Практика по нарастанию</h2>
+    <div class="drill">
+      <details>
+        <summary><span class="q">Общий знаменатель и множители для <span class="frac"><span class="n">1</span><span class="d">4</span></span> и <span class="frac"><span class="n">1</span><span class="d">6</span></span>?</span><span class="tag">понимание</span></summary>
+        <div class="ans"><span class="m">НОК(4, 6) = 12.</span> Множители: <span class="m">12 : 4 = 3</span> к первой дроби, <span class="m">12 : 6 = 2</span> ко второй.</div>
+      </details>
+      <details>
+        <summary><span class="q">Вычисли: <span class="frac"><span class="n">2</span><span class="d">3</span></span> + <span class="frac"><span class="n">1</span><span class="d">9</span></span></span><span class="tag">применение</span></summary>
+        <div class="ans"><span class="m">НОК = 9;</span> <span class="frac"><span class="n">6</span><span class="d">9</span></span> + <span class="frac"><span class="n">1</span><span class="d">9</span></span> = <span class="frac"><span class="n">7</span><span class="d">9</span></span>.</div>
+      </details>
+      <details>
+        <summary><span class="q">Вычисли: <span class="frac"><span class="n">5</span><span class="d">12</span></span> − <span class="frac"><span class="n">1</span><span class="d">8</span></span></span><span class="tag">применение</span></summary>
+        <div class="ans"><span class="m">НОК(12, 8) = 24;</span> <span class="frac"><span class="n">10</span><span class="d">24</span></span> − <span class="frac"><span class="n">3</span><span class="d">24</span></span> = <span class="frac"><span class="n">7</span><span class="d">24</span></span>.</div>
+      </details>
+      <details>
+        <summary><span class="q">Вычисли: <span class="frac"><span class="n">1</span><span class="d">2</span></span> + <span class="frac"><span class="n">1</span><span class="d">3</span></span> + <span class="frac"><span class="n">1</span><span class="d">6</span></span></span><span class="tag">применение</span></summary>
+        <div class="ans"><span class="m">НОК = 6;</span> <span class="frac"><span class="n">3</span><span class="d">6</span></span> + <span class="frac"><span class="n">2</span><span class="d">6</span></span> + <span class="frac"><span class="n">1</span><span class="d">6</span></span> = <span class="frac"><span class="n">6</span><span class="d">6</span></span> = <strong>1</strong>.</div>
+      </details>
+      <details>
+        <summary><span class="q">Найди ошибку: <span class="frac"><span class="n">1</span><span class="d">4</span></span> + <span class="frac"><span class="n">1</span><span class="d">6</span></span> = <span class="frac"><span class="n">2</span><span class="d">10</span></span> = <span class="frac"><span class="n">1</span><span class="d">5</span></span></span><span class="tag">анализ</span></summary>
+        <div class="ans">Здесь <b>сложили знаменатели</b> (4 + 6 = 10) и числители — так нельзя. Общий знаменатель 12: <span class="frac"><span class="n">3</span><span class="d">12</span></span> + <span class="frac"><span class="n">2</span><span class="d">12</span></span> = <span class="frac"><span class="n">5</span><span class="d">12</span></span>. Прикидка: сумма должна быть больше <span class="frac"><span class="n">1</span><span class="d">4</span></span>, а <span class="frac"><span class="n">1</span><span class="d">5</span></span> меньше — сразу видно, что ответ неверный.</div>
+      </details>
+      <details>
+        <summary><span class="q">Что изменится в <span class="frac"><span class="n">7</span><span class="d">10</span></span> − <span class="frac"><span class="n">2</span><span class="d">15</span></span>, если знак поменять на «+»?</span><span class="tag">анализ</span></summary>
+        <div class="ans"><span class="m">НОК = 30;</span> <span class="frac"><span class="n">21</span><span class="d">30</span></span> + <span class="frac"><span class="n">4</span><span class="d">30</span></span> = <span class="frac"><span class="n">25</span><span class="d">30</span></span> = <span class="frac"><span class="n">5</span><span class="d">6</span></span> (сократили на 5). Было <span class="frac"><span class="n">17</span><span class="d">30</span></span> — при сложении числитель стал больше, и ответ сократился.</div>
+      </details>
+      <details>
+        <summary><span class="q">Обратная задача: к <span class="frac"><span class="n">5</span><span class="d">12</span></span> прибавили дробь со знаменателем 4 и получили <span class="frac"><span class="n">2</span><span class="d">3</span></span>. Какую дробь прибавили?</span><span class="tag">анализ</span></summary>
+        <div class="ans">Приведём к 12: <span class="frac"><span class="n">2</span><span class="d">3</span></span> = <span class="frac"><span class="n">8</span><span class="d">12</span></span>. Тогда прибавили <span class="frac"><span class="n">8</span><span class="d">12</span></span> − <span class="frac"><span class="n">5</span><span class="d">12</span></span> = <span class="frac"><span class="n">3</span><span class="d">12</span></span> = <span class="frac"><span class="n">1</span><span class="d">4</span></span>. Знаменатель 4 — сходится.</div>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Где чаще всего ошибаются</p>
+    <h2>Лови эти ловушки</h2>
+    <ul class="pitfalls">
+      <li><b>Складывают знаменатели.</b> <span class="math">1/2 + 1/3 ≠ 2/5</span>. Складывают только числители, общий знаменатель остаётся один. Проверяй прикидкой: сумма должна быть больше каждого слагаемого.</li>
+      <li><b>Ошибка в дополнительном множителе.</b> Домножили числитель, а знаменатель забыли (или наоборот). Всегда пиши множитель к обеим частям дроби и проговаривай «общий знаменатель ÷ свой знаменатель».</li>
+      <li><b>Теряют знак при вычитании.</b> Минус относится ко <em>всему</em> числителю второй дроби: <span class="math">x/c − (m+n)/c = (x−m−n)/c</span>. Бери второй числитель в скобки и раскрывай аккуратно.</li>
+      <li><b>Не сокращают ответ.</b> Оставляют <span class="frac"><span class="n">18</span><span class="d">12</span></span> вместо <span class="frac"><span class="n">3</span><span class="d">2</span></span>. Последним шагом всегда проверяй, есть ли общий делитель.</li>
+    </ul>
+  </section>
+
+  <section>
+    <p class="kicker">Проверь себя · объясни своими словами</p>
+    <h2>Три вопроса на понимание</h2>
+    <div class="drill">
+      <details>
+        <summary><span class="q">Почему дроби нельзя складывать, пока знаменатели разные?</span><span class="tag">понимание</span></summary>
+        <div class="ans">Потому что это доли разного размера. Складывать можно только одинаковые доли, поэтому дроби сначала приводят к общему знаменателю.</div>
+      </details>
+      <details>
+        <summary><span class="q">Что такое дополнительный множитель и как его найти?</span><span class="tag">понимание</span></summary>
+        <div class="ans">Это число, на которое домножают дробь, чтобы её знаменатель стал общим. Находят его делением: <span class="m">общий знаменатель ÷ свой знаменатель</span>.</div>
+      </details>
+      <details>
+        <summary><span class="q">Какой последний шаг почти всегда нужен?</span><span class="tag">понимание</span></summary>
+        <div class="ans">Сократить результат — проверить, есть ли у числителя и знаменателя общий делитель.</div>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <div class="next">
+      <h2>Что дальше</h2>
+      <p>Тот же приём — общий знаменатель, множители, действие с числителями — работает и с <strong>алгебраическими</strong> дробями, где в знаменателе стоят буквы (тогда добавляется ОДЗ: знаменатель ≠ 0):</p>
+      <div class="eq">
+        <span class="frac"><span class="n">1</span><span class="d">x</span></span>
+        <span class="op">+</span>
+        <span class="frac"><span class="n">1</span><span class="d">y</span></span>
+        <span class="op">=</span>
+        <span class="frac"><span class="n">y + x</span><span class="d">x·y</span></span>
+      </div>
+      <p>Дальше это ведёт к тождественным преобразованиям дробей и к дробно-рациональным уравнениям.</p>
+    </div>
+  </section>
+
+  <p class="foot">Проверка на выходе: почему нельзя складывать разные доли? · как найти дополнительный множитель? · какой последний шаг после сложения дробей?</p>
+
+</div>
+
+<style>
+  .trainer{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.2rem 1.3rem;margin-top:1rem}
+  .tr-eq{font-family:ui-monospace,Menlo,monospace;font-weight:800;font-size:clamp(1.3rem,5vw,1.7rem);text-align:center;padding:1rem;background:var(--accent-soft);border-radius:10px;color:var(--ink);display:flex;align-items:center;justify-content:center;gap:.15em;flex-wrap:wrap}
+  .tr-eq .frac{font-size:.92em}
+  .tr-ctl{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.9rem;align-items:center}
+  .tr-ctl button{font:inherit;font-weight:700;font-size:.9rem;cursor:pointer;border:none;border-radius:9px;padding:.55rem .95rem;color:#fff;background:var(--accent)}
+  .tr-ctl button.sec{background:var(--pos)}
+  .tr-ctl button.ghost{background:transparent;color:var(--accent);border:1px solid var(--accent)}
+  .tr-ctl input{flex:1;min-width:150px;font:inherit;padding:.5rem .7rem;border:1px solid var(--line);border-radius:9px;background:#fff;color:var(--ink)}
+  .tr-ctl button:focus-visible,.tr-ctl input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+  .tr-result{margin-top:.9rem;font-size:.96rem;min-height:1.2rem}
+  .tr-result .ok{color:var(--pos);font-weight:700}
+  .tr-result .bad{color:var(--neg);font-weight:700}
+  .tr-result .sol{margin-top:.7rem;padding:.85rem 1rem;background:#FCFBFE;border:1px solid var(--line);border-radius:10px;font-size:.92rem;line-height:1.9}
+  .tr-result .sol-row{margin:.15rem 0;display:flex;gap:.5rem;align-items:baseline;flex-wrap:wrap}
+  .tr-result .sol-row b{color:var(--accent)}
+  .tr-result .sol .frac{font-size:.95em}
+</style>
+
+<script>
+/* Интерактивный пошаговый разбор */
+(function(){
+  var box=document.getElementById('stepper'); if(!box) return;
+  var steps=box.querySelectorAll('.step');
+  var next=document.getElementById('stNext'), reset=document.getElementById('stReset');
+  var hint=document.getElementById('stHint');
+  var shown=0;
+  function render(){
+    for(var i=0;i<steps.length;i++){ steps[i].hidden = i>=shown; }
+    next.disabled = shown>=steps.length;
+    hint.textContent = 'Открыто шагов: '+shown+' из '+steps.length+(shown>=steps.length?' — готово!':'.');
+  }
+  next.addEventListener('click',function(){ if(shown<steps.length){ shown++; render(); } });
+  reset.addEventListener('click',function(){ shown=0; render(); });
+  render();
+})();
+</script>
+
+<script>
+/* Тренажёр-генератор: сумма/разность дробей с разными знаменателями */
+(function(){
+  var eqEl=document.getElementById('trEq'), ansEl=document.getElementById('trAns'), resEl=document.getElementById('trResult');
+  if(!eqEl) return;
+  var DENOMS=[2,3,4,5,6,8,9,10,12,15];
+  var cur=null;
+
+  function ri(min,max){ return Math.floor(Math.random()*(max-min+1))+min; }
+  function gcd(a,b){ a=Math.abs(a); b=Math.abs(b); while(b){ var t=b; b=a%b; a=t; } return a||1; }
+  function lcm(a,b){ return Math.abs(a*b)/gcd(a,b); }
+
+  function fracSpan(n,d){ return '<span class="frac"><span class="n">'+n+'</span><span class="d">'+d+'</span></span>'; }
+
+  function genFrac(den){
+    var num;
+    do{ num=ri(1,den-1); }while(gcd(num,den)!==1);
+    return {n:num, d:den};
+  }
+
+  function generate(){
+    var b,d,L,tries=0;
+    do{
+      b=DENOMS[ri(0,DENOMS.length-1)];
+      d=DENOMS[ri(0,DENOMS.length-1)];
+      L=lcm(b,d);
+      tries++;
+    }while((b===d || L>60) && tries<200);
+    var f1=genFrac(b), f2=genFrac(d);
+    var op=Math.random()<0.5?'+':'−';
+    /* при вычитании гарантируем неотрицательный результат */
+    if(op==='−' && f1.n*f2.d < f2.n*f1.d){ var t=f1; f1=f2; f2=t; }
+    var m1=L/f1.d, m2=L/f2.d;
+    var rn1=f1.n*m1, rn2=f2.n*m2;
+    var num = op==='+' ? rn1+rn2 : rn1-rn2;
+    var g=gcd(num,L);
+    cur={f1:f1,f2:f2,op:op,lcd:L,m1:m1,m2:m2,rn1:rn1,rn2:rn2,num:num,g:g,rN:num/g,rD:L/g};
+    renderEq();
+    resEl.innerHTML=''; ansEl.value='';
+  }
+
+  function renderEq(){
+    eqEl.innerHTML = fracSpan(cur.f1.n,cur.f1.d)+' <span class="op">'+cur.op+'</span> '+
+                     fracSpan(cur.f2.n,cur.f2.d)+' <span class="op">=</span> <span style="color:var(--muted)">?</span>';
+  }
+
+  function ansForm(c){
+    if(c.rD===1) return '<b>'+c.rN+'</b>';
+    var s=fracSpan(c.rN,c.rD);
+    if(c.rN>c.rD){
+      var w=Math.floor(c.rN/c.rD), r=c.rN%c.rD;
+      if(r!==0) s += ' = '+w+fracSpan(r,c.rD);
+    }
+    return '<b>'+s+'</b>';
+  }
+
+  function solutionHTML(){
+    var c=cur, o=c.op;
+    var h='<div class="sol">';
+    h+='<div class="sol-row"><b>1.</b> Общий знаменатель: НОК('+c.f1.d+', '+c.f2.d+') = <span class="hl-lcd">'+c.lcd+'</span>.</div>';
+    h+='<div class="sol-row"><b>2.</b> Множители: '+c.lcd+' : '+c.f1.d+' = <span class="hl-m1">'+c.m1+'</span>,  '+c.lcd+' : '+c.f2.d+' = <span class="hl-m2">'+c.m2+'</span>.</div>';
+    h+='<div class="sol-row"><b>3.</b> Домножаем: '+fracSpan(c.f1.n+'·'+c.m1,c.lcd)+' <span class="op">'+o+'</span> '+fracSpan(c.f2.n+'·'+c.m2,c.lcd)+' = '+fracSpan(c.rn1,c.lcd)+' <span class="op">'+o+'</span> '+fracSpan(c.rn2,c.lcd)+'.</div>';
+    h+='<div class="sol-row"><b>4.</b> '+(o==='+'?'Складываем':'Вычитаем')+' числители: '+fracSpan(c.rn1+' '+o+' '+c.rn2,c.lcd)+' = '+fracSpan(c.num,c.lcd)+'.</div>';
+    if(c.g===1){
+      h+='<div class="sol-row"><b>5.</b> Сокращать нечем — числитель и знаменатель взаимно простые. Ответ: '+ansForm(c)+'.</div>';
+    } else {
+      h+='<div class="sol-row"><b>5.</b> Сокращаем на '+c.g+': '+fracSpan(c.num,c.lcd)+' = '+ansForm(c)+'.</div>';
+    }
+    return h+'</div>';
+  }
+
+  function parseAns(raw){
+    raw = raw.trim().replace(/−/g,'-').replace(/\s+/g,' ');
+    raw = raw.replace(/(\d)\s*,\s*(\d)/g,'$1.$2');
+    raw = raw.replace(/\s*\/\s*/g,'/');            /* убираем пробелы вокруг дроби */
+    raw = raw.replace(/^[xх]\s*=\s*/i,'').trim();
+    var m;
+    if((m=raw.match(/^(-?\d+)\s+(\d+)\/(\d+)$/))){        /* смешанная: w n/d */
+      var w=parseInt(m[1],10), n=parseInt(m[2],10), d=parseInt(m[3],10);
+      if(d===0) return null;
+      var sign=w<0?-1:1;
+      return {n:sign*(Math.abs(w)*d+n), d:d};
+    }
+    if((m=raw.match(/^(-?\d+)\/(-?\d+)$/))){              /* дробь a/b */
+      var n2=parseInt(m[1],10), d2=parseInt(m[2],10);
+      if(d2===0) return null;
+      if(d2<0){ n2=-n2; d2=-d2; }
+      return {n:n2, d:d2};
+    }
+    if((m=raw.match(/^(-?\d+)$/))){                        /* целое */
+      return {n:parseInt(m[1],10), d:1};
+    }
+    if((m=raw.match(/^(-?\d*\.\d+)$/))){                   /* десятичная */
+      return {val:parseFloat(m[1])};
+    }
+    return null;
+  }
+
+  function isEqual(a){
+    if(a.val!==undefined){ return Math.abs(a.val - cur.rN/cur.rD) < 0.001; }
+    return a.n*cur.rD === cur.rN*a.d;
+  }
+
+  function check(){
+    var raw=ansEl.value;
+    if(!raw.trim()){ resEl.innerHTML='<span class="bad">Введи ответ дробью, напр. 29/24, или нажми «Показать решение».</span>'; return; }
+    var a=parseAns(raw);
+    if(!a){ resEl.innerHTML='<span class="bad">Не понял запись. Введи дробь вида a/b, целое число или смешанную дробь (напр. 1 5/24).</span>'; return; }
+    if(isEqual(a)){
+      var note='';
+      if(a.d && a.d>1 && gcd(Math.abs(a.n),a.d)!==1){ note=' Значение верное, но дробь ещё можно сократить.'; }
+      resEl.innerHTML='<span class="ok">✓ Верно!'+note+'</span>'+solutionHTML();
+    } else {
+      resEl.innerHTML='<span class="bad">✗ Пока не то. Проверь общий знаменатель и дополнительные множители.</span>'+solutionHTML();
+    }
+  }
+
+  document.getElementById('trNew').addEventListener('click',function(){ generate(); ansEl.focus(); });
+  document.getElementById('trCheck').addEventListener('click',check);
+  document.getElementById('trShow').addEventListener('click',function(){ resEl.innerHTML=solutionHTML(); });
+  ansEl.addEventListener('keydown',function(e){ if(e.key==='Enter') check(); });
+
+  generate();  /* первичный рендер — без focus() */
+})();
+</script>
+<!--LESSON-NAV-BOT--><nav class="lnav lnav-bot"><a class="prev" href="./alg8-sokrashchenie-drobej.html"><span class="dir">← Предыдущая</span><span class="ttl">Сокращение рациональных дробей</span></a><a class="to-cat" href="./catalog.html">📚 <span>Все темы</span></a><a class="next" href="./alg8-umnozhenie-delenie-drobej.html"><span class="dir">Следующая →</span><span class="ttl">Умножение, деление и возведение дроби в степень</span></a></nav><!--/LESSON-NAV-BOT-->

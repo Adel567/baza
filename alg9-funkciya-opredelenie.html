@@ -1,0 +1,737 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Функция, область определения и множество значений — урок, алгебра 9 класс</title>
+<style>
+  :root{
+    --paper:#F6F7F9;
+    --card:#FFFFFF;
+    --ink:#1B2333;
+    --muted:#5A6478;
+    --line:#E2E5EC;
+    --accent:#3B4FD0;
+    --accent-soft:#EAEDFB;
+    --pos:#1E8E5A;   /* всё разрешено / диапазон y */
+    --pos-bg:#E7F4EC;
+    --zero:#B9791A;  /* корень: ≥ */
+    --zero-bg:#FBF1DC;
+    --neg:#C0455B;   /* дробь: ≠ / запрет */
+    --neg-bg:#F9E9EC;
+  }
+  *{box-sizing:border-box}
+  body{margin:0}
+  .wrap{
+    max-width:760px;
+    margin:0 auto;
+    padding:clamp(1.4rem,4vw,3rem) clamp(1.1rem,4vw,2rem) 4rem;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    font-size:17px;
+    line-height:1.62;
+    -webkit-font-smoothing:antialiased;
+  }
+  .eyebrow{
+    font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--accent);font-weight:600;margin:0 0 .5rem;
+  }
+  h1{
+    font-family:Georgia,"Times New Roman",serif;
+    font-size:clamp(1.9rem,6.2vw,2.7rem);
+    line-height:1.06;margin:0;font-weight:700;letter-spacing:-.01em;
+    text-wrap:balance;
+  }
+  .lede{
+    font-size:1.08rem;color:var(--muted);margin:.7rem 0 0;max-width:60ch;
+    text-wrap:pretty;
+  }
+  h2{
+    font-family:Georgia,serif;font-size:1.32rem;font-weight:700;
+    margin:0 0 .1rem;letter-spacing:-.005em;
+  }
+  section{margin-top:2.6rem}
+  .kicker{
+    font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--muted);font-weight:600;margin:0 0 .8rem;
+    display:flex;align-items:center;gap:.6rem;
+  }
+  .kicker::before{
+    content:"";width:1.4rem;height:2px;background:var(--accent);border-radius:2px;
+  }
+  p{margin:.65rem 0}
+  strong{font-weight:650}
+  .math{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-weight:600}
+  sup{font-size:.72em}
+
+  /* Главная запись */
+  .hero-formula{
+    margin-top:2.2rem;
+    background:var(--ink);color:#fff;border-radius:14px;
+    padding:1.6rem 1.4rem;text-align:center;
+  }
+  .hero-formula .lbl{
+    font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;
+    color:#9aa6c9;margin:0 0 .7rem;
+  }
+  .hero-formula .eq{
+    font-family:ui-monospace,"SF Mono",Menlo,monospace;
+    font-size:clamp(1.7rem,6vw,2.4rem);font-weight:700;letter-spacing:.01em;
+  }
+  .hero-formula .eq b{color:#8ea0ff;font-weight:700}
+  .hero-formula .note{font-size:.86rem;color:#9aa6c9;margin:.8rem 0 0}
+
+  /* Пререквизит */
+  .recall{
+    background:var(--accent-soft);border-radius:12px;padding:1rem 1.15rem;
+    font-size:.96rem;
+  }
+  .recall p{margin:.3rem 0}
+  .recall b{color:var(--ink)}
+
+  /* Определения D и E крупно */
+  .de-grid{display:grid;gap:.85rem;margin-top:.6rem}
+  @media(min-width:600px){.de-grid{grid-template-columns:1fr 1fr}}
+  .de-card{border-radius:12px;padding:1.1rem 1.15rem;border:1px solid var(--line);background:var(--card)}
+  .de-card.d{border-top:4px solid var(--accent);background:var(--accent-soft)}
+  .de-card.e{border-top:4px solid var(--pos);background:var(--pos-bg)}
+  .de-tag{font-family:ui-monospace,Menlo,monospace;font-weight:800;font-size:.9rem;letter-spacing:.02em}
+  .de-card.d .de-tag{color:var(--accent)}
+  .de-card.e .de-tag{color:var(--pos)}
+  .de-big{font-size:1.12rem;font-weight:700;margin:.5rem 0 .35rem;line-height:1.3}
+  .de-card p{margin:.2rem 0 0;font-size:.92rem;color:var(--muted)}
+  .de-card p b{color:var(--ink)}
+
+  /* Три типа ограничений */
+  .cases{display:grid;gap:.85rem;margin-top:.4rem}
+  @media(min-width:620px){.cases{grid-template-columns:repeat(3,1fr)}}
+  .case{
+    border-radius:12px;padding:1.05rem 1.1rem;border:1px solid var(--line);
+    background:var(--card);display:flex;flex-direction:column;gap:.35rem;
+  }
+  .case .sign{font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.05rem}
+  .case .count{font-weight:700;font-size:1.05rem;font-family:ui-monospace,Menlo,monospace}
+  .case .desc{font-size:.9rem;color:var(--muted)}
+  .case.pos{border-top:4px solid var(--pos);background:var(--pos-bg)}
+  .case.pos .sign,.case.pos .count{color:var(--pos)}
+  .case.zero{border-top:4px solid var(--zero);background:var(--zero-bg)}
+  .case.zero .sign,.case.zero .count{color:var(--zero)}
+  .case.neg{border-top:4px solid var(--neg);background:var(--neg-bg)}
+  .case.neg .sign,.case.neg .count{color:var(--neg)}
+
+  /* Разбор */
+  .worked{
+    background:var(--card);border:1px solid var(--line);border-radius:12px;
+    padding:1.2rem 1.3rem;margin-top:.6rem;
+  }
+  .worked + .worked{margin-top:1rem}
+  .worked .task{
+    font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.05rem;
+    margin:0 0 1rem;padding-bottom:.8rem;border-bottom:1px solid var(--line);
+  }
+  ol.steps{margin:0;padding:0;list-style:none;counter-reset:s;display:flex;flex-direction:column;gap:.7rem}
+  ol.steps li{position:relative;padding-left:2.1rem;counter-increment:s}
+  ol.steps li::before{
+    content:counter(s);position:absolute;left:0;top:.05rem;
+    width:1.5rem;height:1.5rem;border-radius:50%;
+    background:var(--accent-soft);color:var(--accent);
+    font-size:.82rem;font-weight:700;display:flex;align-items:center;justify-content:center;
+  }
+  ol.steps .m{font-family:ui-monospace,Menlo,monospace;font-weight:600;color:var(--ink)}
+  .verdict{
+    margin-top:1rem;padding:.7rem 1rem;background:var(--pos-bg);
+    border-radius:9px;font-weight:600;color:var(--pos);font-size:.98rem;
+    font-family:ui-monospace,Menlo,monospace;
+  }
+
+  /* Практика */
+  .drill{display:flex;flex-direction:column;gap:.7rem}
+  details{
+    background:var(--card);border:1px solid var(--line);border-radius:10px;
+    padding:.85rem 1.05rem;
+  }
+  details[open]{border-color:var(--accent)}
+  summary{
+    cursor:pointer;font-weight:600;list-style:none;
+    display:flex;justify-content:space-between;align-items:center;gap:1rem;
+  }
+  summary::-webkit-details-marker{display:none}
+  summary:focus-visible{outline:3px solid var(--accent);outline-offset:2px;border-radius:6px}
+  summary .q{font-family:ui-monospace,Menlo,monospace}
+  summary .tag{
+    font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);
+    border:1px solid var(--line);border-radius:20px;padding:.1rem .55rem;white-space:nowrap;
+  }
+  summary::after{
+    content:"показать ответ";font-size:.78rem;color:var(--accent);font-weight:600;white-space:nowrap;
+  }
+  details[open] summary::after{content:"скрыть"}
+  .ans{margin-top:.7rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.96rem;color:var(--muted)}
+  .ans .m{font-family:ui-monospace,Menlo,monospace;color:var(--ink);font-weight:600}
+
+  /* Ошибки */
+  ul.pitfalls{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:.6rem}
+  ul.pitfalls li{padding-left:1.5rem;position:relative;font-size:.98rem}
+  ul.pitfalls li::before{
+    content:"×";position:absolute;left:0;top:-.05rem;color:var(--neg);font-weight:700;font-size:1.1rem;
+  }
+  ul.pitfalls b{color:var(--ink)}
+
+  /* Проверка понимания */
+  ul.selfcheck{margin:.3rem 0 0;padding-left:1.2rem}
+  ul.selfcheck li{margin:.4rem 0}
+
+  .next{
+    background:var(--accent);color:#fff;border-radius:12px;padding:1.2rem 1.3rem;
+  }
+  .next h2{color:#fff}
+  .next .eq{
+    font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.15rem;
+    margin:.6rem 0 .3rem;
+  }
+  .next p{color:#dfe4fb;font-size:.96rem;margin:.4rem 0 0}
+  .foot{margin-top:2.4rem;font-size:.82rem;color:var(--muted);text-align:center}
+
+  @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+<style>
+.oge-tip{display:flex;gap:.8rem;align-items:flex-start;background:#FFF8E7;border:1px solid #F0D98A;border-left:4px solid #E0A315;border-radius:10px;padding:.85rem 1.05rem;margin:1.5rem 0}
+.oge-tip .b{font-size:.72rem;font-weight:800;letter-spacing:.03em;color:#8A6A15;white-space:nowrap;text-transform:uppercase;padding-top:.15rem}
+.oge-tip .x{font-size:.95rem;line-height:1.5}
+</style>
+
+<!--LESSON-NAV-TOP--><style>.lnav{--lnav-accent:#3D5AF1}.lnav a{text-decoration:none;font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif}.lnav-top{max-width:820px;margin:0 auto;padding:.75rem clamp(1rem,4vw,1.5rem) .1rem}.lnav-top a{display:inline-flex;align-items:center;gap:.35rem;color:var(--lnav-accent);font-weight:600;font-size:.9rem}.lnav-top a:hover{text-decoration:underline}.lnav-bot{max-width:820px;margin:2.6rem auto 3rem;padding:1.1rem clamp(1rem,4vw,1.5rem) 0;border-top:1px solid #E4E8EF;display:flex;align-items:stretch;gap:.55rem}.lnav-bot a{min-width:0;display:flex;flex-direction:column;justify-content:center;gap:.15rem;border:1px solid #E4E8EF;border-radius:12px;padding:.65rem .85rem;color:#182233;background:#fff;transition:border-color .1s,transform .08s}.lnav-bot a:hover{border-color:var(--lnav-accent);transform:translateY(-1px)}.lnav-bot .prev,.lnav-bot .next{flex:1 1 0}.lnav-bot .next{text-align:right}.lnav-bot .dir{font-size:.72rem;color:#8A93A6;font-weight:600}.lnav-bot .ttl{font-size:.9rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.lnav-bot .to-cat{flex:0 0 auto;flex-direction:row;align-items:center;justify-content:center;color:var(--lnav-accent);font-weight:700;font-size:.85rem;white-space:nowrap}@media(max-width:420px){.lnav-bot .to-cat span{display:none}.lnav-bot .to-cat{padding:.65rem .7rem}}</style><nav class="lnav lnav-top"><a href="./catalog.html">← Все темы</a></nav><!--/LESSON-NAV-TOP-->
+<div class="wrap">
+
+  <header>
+    <p class="eyebrow">Алгебра · 9 класс</p>
+    <h1>Функция, область определения и множество значений</h1>
+    <p class="lede">Функция — это «машина»: один вход даёт ровно один выход. Осталось понять, <em>что ей можно давать на вход</em> и <em>что она может выдать.</em></p>
+  </header>
+
+  <div class="hero-formula">
+    <p class="lbl">Функция — это правило</p>
+    <div class="eq">y = <b>f</b>(x)</div>
+    <p class="note">каждому допустимому x — ровно один y</p>
+  </div>
+
+  <section>
+    <p class="kicker">Зачем это нужно</p>
+    <h2>Одна величина решает судьбу другой</h2>
+    <p>Стоимость поездки в такси зависит от расстояния, время закипания воды — от высоты над морем, тормозной путь — от скорости. Везде, где одна величина <strong>однозначно</strong> определяется другой, работает функция. И дальше в математике на функции опирается почти всё: свойства функций, квадратичная функция, графики уравнений.</p>
+    <p>Главное заблуждение: <strong>«функция — это просто формула с иксом»</strong>. Нет. Формула — лишь один способ задать функцию. Сама функция — это правило соответствия, и у него важно не только «как записано», но и <strong>для каких x оно вообще имеет смысл</strong>.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Что вспомнить с прошлых шагов</p>
+    <div class="recall">
+      <p><b>Координатная плоскость.</b> Точка задаётся парой <span class="math">(x; y)</span>: по горизонтали — ось <span class="math">Ox</span>, по вертикали — ось <span class="math">Oy</span>.</p>
+      <p><b>График функции.</b> Каждому <span class="math">x</span> отвечает точка <span class="math">(x; y)</span>; все такие точки вместе рисуют линию графика.</p>
+      <p>Эти две вещи нам и понадобятся: <span class="math">x</span> живёт на <span class="math">Ox</span>, <span class="math">y</span> — на <span class="math">Oy</span>.</p>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Ядро темы — три слова</p>
+    <h2>Функция, D(f) и E(f)</h2>
+    <p><strong>Функция</strong> — это правило, которое <strong>каждому</strong> допустимому <span class="math">x</span> ставит в соответствие <strong>ровно один</strong> <span class="math">y</span>. Ключевое — «ровно один»: если одному <span class="math">x</span> отвечают два разных <span class="math">y</span>, это уже не функция.</p>
+    <p><span class="math">x</span> — независимая переменная (аргумент), то, что мы «подаём на вход». <span class="math">y</span> — значение функции, то, что «получаем на выходе». Записывают <span class="math">y = f(x)</span> — «игрек равен эф от икс».</p>
+    <div class="de-grid">
+      <div class="de-card d">
+        <div class="de-tag">D(f) · область определения</div>
+        <div class="de-big">какие x можно подставить</div>
+        <p>Все допустимые входы. На графике — проекция на ось <b>Ox</b>.</p>
+      </div>
+      <div class="de-card e">
+        <div class="de-tag">E(f) · множество значений</div>
+        <div class="de-big">какие y при этом получаются</div>
+        <p>Все выходы функции. На графике — проекция на ось <b>Oy</b>.</p>
+      </div>
+    </div>
+    <p style="font-size:.92rem;color:var(--muted);margin-top:.9rem">Запомни: <strong>D — про вход (x)</strong>, <strong>E — про выход (y)</strong>. «D» — от слова «<em>определения</em>»: подставляем x, чтобы <em>определить</em>, имеет ли смысл.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Как найти D(f) по формуле</p>
+    <h2>Берём все числа и выбрасываем запрещённое</h2>
+    <p>Область определения ищут так: берут всю числовую прямую и убирают то, что подставлять <strong>нельзя</strong>. Запретов всего два вида — и оба сразу видно по формуле.</p>
+    <div class="cases">
+      <div class="case pos">
+        <div class="sign">y = 2x + 5</div>
+        <div class="count">все числа</div>
+        <div class="desc">Многочлен (линейная, квадратичная): ни дроби, ни корня — подставляй что угодно. <span class="math">D = (−∞; +∞)</span>.</div>
+      </div>
+      <div class="case zero">
+        <div class="sign">y = √(x − a)</div>
+        <div class="count">x ≥ a</div>
+        <div class="desc">Корень: под квадратным корнем не бывает минуса. Пишем <span class="math">x − a ≥ 0</span>. Ноль под корнем можно.</div>
+      </div>
+      <div class="case neg">
+        <div class="sign">y = k / (x − a)</div>
+        <div class="count">x ≠ a</div>
+        <div class="desc">Дробь: на ноль делить нельзя. Приравниваем знаменатель к нулю и <strong>выбрасываем</strong> этот x.</div>
+      </div>
+    </div>
+    <p style="font-size:.92rem;color:var(--muted);margin-top:.9rem">Особый случай: если корень стоит <strong>в знаменателе</strong> <span class="math">√(x − a)</span>, то запрета сразу два — и не минус, и не ноль. Значит <span class="math">x − a &gt; 0</span> (строго). А <strong>множество значений E(f)</strong> обычно читают по графику или из свойств формулы: например, у <span class="math">y = x²</span> все <span class="math">y ≥ 0</span>, ведь квадрат не бывает отрицательным.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Разбираем вместе · думаю вслух</p>
+    <h2>Эталонный разбор</h2>
+
+    <div class="worked">
+      <p class="task">Найти D(f):&nbsp; y = (x + 1) / (x − 3)</p>
+      <ol class="steps">
+        <li>Смотрю на выражение: есть <span class="m">дробь</span>. Значит есть запрет — на ноль делить нельзя, поэтому знаменатель <span class="m">≠ 0</span>. Почему именно знаменатель: числитель может быть любым, а вот деление на ноль не определено.</li>
+        <li>Приравниваю знаменатель к нулю, чтобы найти запрещённую точку: <span class="m">x − 3 = 0</span>, отсюда <span class="m">x = 3</span>.</li>
+        <li>Больше ограничений нет: корней и других дробей в формуле не видно.</li>
+        <li>Выбрасываю точку <span class="m">x = 3</span> из числовой прямой.</li>
+      </ol>
+      <div class="verdict">D(f) = все числа, кроме 3 → (−∞; 3) ∪ (3; +∞)</div>
+    </div>
+
+    <div class="worked">
+      <p class="task">Найти D(f):&nbsp; y = √(x − 4)</p>
+      <ol class="steps">
+        <li>Есть <span class="m">квадратный корень</span> → подкоренное выражение не может быть отрицательным: <span class="m">x − 4 ≥ 0</span>.</li>
+        <li>Решаю неравенство: <span class="m">x ≥ 4</span>.</li>
+        <li>Ноль под корнем <em>допустим</em> (<span class="m">√0 = 0</span>), поэтому точка 4 <strong>входит</strong> — скобка квадратная.</li>
+      </ol>
+      <div class="verdict">D(f) = [4; +∞)</div>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Наглядно · график и оси</p>
+    <h2>D(f) — тень на Ox, E(f) — тень на Oy</h2>
+    <p>Возьми график и «спроецируй» его на оси. Тень на горизонтальной оси <span class="math">Ox</span> — это <strong style="color:var(--accent)">область определения D(f)</strong>. Тень на вертикальной оси <span class="math">Oy</span> — это <strong style="color:var(--pos)">множество значений E(f)</strong>. Переключи функцию и посмотри, как меняются тени.</p>
+    <div class="para">
+      <div class="ptabs">
+        <button data-fn="sq" class="on" type="button">y = x²</button>
+        <button data-fn="root" type="button">y = √(x − 4)</button>
+      </div>
+      <canvas id="proj" width="640" height="400" aria-label="График функции с подсвеченными проекциями на оси Ox и Oy"></canvas>
+      <div class="plegend">
+        <span class="lg d">D(f) — проекция на Ox</span>
+        <span class="lg e">E(f) — проекция на Oy</span>
+      </div>
+      <p class="para-eq" id="projTitle">y = x²</p>
+    </div>
+    <p style="font-size:.9rem;color:var(--muted)">Обрати внимание: у <span class="math">y = x²</span> синяя тень заполняет <em>всю</em> ось Ox (D — все числа), а зелёная тень покрывает только верх Oy (E = [0; +∞), ниже нуля точек нет). У <span class="math">y = √(x − 4)</span> график вообще существует только начиная с <span class="math">x = 4</span> — поэтому синяя тень начинается там.</p>
+
+    <p class="kicker" style="margin-top:2rem">Тест вертикальной прямой</p>
+    <h2>А это вообще функция?</h2>
+    <p>Быстрый способ проверить график: проведи по нему <strong>вертикальную прямую</strong>. Если хоть одна вертикаль пересекает линию больше одного раза — значит одному <span class="math">x</span> отвечают два <span class="math">y</span>, и это <strong>не функция</strong>.</p>
+    <div class="vlt">
+      <figure class="vcard ok">
+        <svg viewBox="0 0 200 170" role="img" aria-label="Парабола: вертикаль пересекает один раз">
+          <line x1="10" y1="145" x2="190" y2="145" stroke="#C7CDD9" stroke-width="1.5"/>
+          <line x1="100" y1="15" x2="100" y2="160" stroke="#1E8E5A" stroke-width="1.5" stroke-dasharray="5 4"/>
+          <path d="M30,45 Q100,178 170,45" fill="none" stroke="#1B2333" stroke-width="3"/>
+          <circle cx="100" cy="108" r="5" fill="#1E8E5A"/>
+        </svg>
+        <figcaption><b>✓ Функция.</b> Вертикаль пересекает график <b>1 раз</b>.</figcaption>
+      </figure>
+      <figure class="vcard bad">
+        <svg viewBox="0 0 200 170" role="img" aria-label="Окружность: вертикаль пересекает два раза">
+          <line x1="10" y1="145" x2="190" y2="145" stroke="#C7CDD9" stroke-width="1.5"/>
+          <line x1="100" y1="15" x2="100" y2="160" stroke="#C0455B" stroke-width="1.5" stroke-dasharray="5 4"/>
+          <circle cx="100" cy="85" r="48" fill="none" stroke="#1B2333" stroke-width="3"/>
+          <circle cx="100" cy="37" r="5" fill="#C0455B"/>
+          <circle cx="100" cy="133" r="5" fill="#C0455B"/>
+        </svg>
+        <figcaption><b>✗ Не функция.</b> Вертикаль пересекает окружность <b>2 раза</b>.</figcaption>
+      </figure>
+    </div>
+
+    <div class="oge-tip"><div class="b">🎯 В ОГЭ</div><div class="x"><b>Задание 11.</b> По графику функции нужно прочитать её свойства. Область определения — это проекция графика на ось <b>Ox</b>, множество значений — проекция на ось <b>Oy</b>. Научился «отбрасывать тени» на оси — читаешь ответ прямо с картинки.</div></div>
+  </section>
+
+  <section>
+    <p class="kicker">Тренажёр · бесконечная практика</p>
+    <h2>Найди область определения сам</h2>
+    <p>Нажми «Новое» — появится функция. Определи её <strong>область определения</strong> и запиши ответ: <span class="math">x≠3</span>, или <span class="math">x≥4</span>, или <span class="math">все числа</span>. Потом проверь себя или посмотри пошаговое решение.</p>
+    <div class="trainer">
+      <div class="tr-eq" id="trEq">y = <span class="frac"><span class="fn">1</span><span class="fd">(x − 3)</span></span></div>
+      <div class="tr-ctl">
+        <button id="trNew" type="button">🎲 Новое</button>
+        <input id="trAns" type="text" placeholder="напр.  x≠3   или   x≥4   или   все числа" aria-label="Ответ">
+        <button id="trCheck" type="button" class="sec">Проверить</button>
+        <button id="trShow" type="button" class="ghost">Показать решение</button>
+      </div>
+      <div id="trResult" class="tr-result"></div>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Теперь ты · нажми, чтобы проверить</p>
+    <h2>Практика по нарастанию</h2>
+    <div class="drill">
+
+      <details>
+        <summary><span class="q">Является ли функцией график окружности?</span><span class="tag">понимание</span></summary>
+        <div class="ans"><strong>Нет.</strong> Вертикальная прямая пересекает окружность в двух точках — значит одному <span class="m">x</span> соответствуют два <span class="m">y</span>. А у функции выход должен быть ровно один.</div>
+      </details>
+
+      <details>
+        <summary><span class="q">Прочитай запись y = f(x). Что такое D(f) и E(f)?</span><span class="tag">понимание</span></summary>
+        <div class="ans">«Игрек равен эф от икс»: <span class="m">f</span> — правило, <span class="m">f(x)</span> — результат применения правила к числу <span class="m">x</span>. <span class="m">D(f)</span> — допустимые входы (какие x можно подставить), <span class="m">E(f)</span> — получаемые выходы (какие y при этом выходят).</div>
+      </details>
+
+      <details>
+        <summary><span class="q">D(f):  y = 5x − 7</span><span class="tag">применение</span></summary>
+        <div class="ans">Многочлен, ни дроби, ни корня — запретов нет. <span class="m">D(f) = (−∞; +∞)</span>, все числа.</div>
+      </details>
+
+      <details>
+        <summary><span class="q">D(f):  y = 8/x</span><span class="tag">применение</span></summary>
+        <div class="ans">Есть дробь → знаменатель <span class="m">≠ 0</span>: <span class="m">x ≠ 0</span>. Значит <span class="m">D(f) = (−∞; 0) ∪ (0; +∞)</span>.</div>
+      </details>
+
+      <details>
+        <summary><span class="q">D(f):  y = √(3 − x)</span><span class="tag">применение</span></summary>
+        <div class="ans">Под корнем ≥ 0: <span class="m">3 − x ≥ 0</span> → <span class="m">x ≤ 3</span>. Значит <span class="m">D(f) = (−∞; 3]</span>. (Осторожно со знаком: тут вычитается сам x, поэтому получилось <span class="m">≤</span>, а не <span class="m">≥</span>.)</div>
+      </details>
+
+      <details>
+        <summary><span class="q">D(f):  y = 1/√(x − 2)</span><span class="tag">применение</span></summary>
+        <div class="ans">Два требования сразу: корень (под ним ≥ 0) <em>и</em> деление на него (≠ 0). Значит <span class="m">x − 2 &gt; 0</span> — строго. <span class="m">D(f) = (2; +∞)</span>. Точка 2 <strong>не</strong> входит, ведь <span class="m">√0 = 0</span>, а на ноль делить нельзя.</div>
+      </details>
+
+      <details>
+        <summary><span class="q">Что изменится в D(f) у y = 1/(x − 3), если знаменатель заменить на (x − 3)²?</span><span class="tag">анализ</span></summary>
+        <div class="ans"><strong>Ничего не изменится:</strong> по-прежнему <span class="m">x ≠ 3</span>. Квадрат <span class="m">(x − 3)²</span> обращается в ноль ровно там же, где и <span class="m">(x − 3)</span> — при <span class="m">x = 3</span>. Значит запретная точка та же.</div>
+      </details>
+
+      <details>
+        <summary><span class="q">По графику параболы y = x² определи множество значений E(f).</span><span class="tag">анализ</span></summary>
+        <div class="ans"><span class="m">E(f) = [0; +∞)</span>. Ветви параболы идут вверх, ниже нуля точек нет, а самая нижняя точка — вершина <span class="m">(0; 0)</span>. Значит <span class="m">y</span> принимает все значения от 0 и выше.</div>
+      </details>
+
+      <details>
+        <summary><span class="q">Найди ошибку: «D(f) для y = √(x − 4) — это x &gt; 4»</span><span class="tag">анализ</span></summary>
+        <div class="ans"><strong>Ошибка в знаке.</strong> Под корнем допустим и ноль: при <span class="m">x = 4</span> получаем <span class="m">√0 = 0</span> — это нормальное значение. Значит неравенство <strong>нестрогое</strong>: <span class="m">x ≥ 4</span>, и <span class="m">D(f) = [4; +∞)</span> со скобкой квадратной. Строгий знак <span class="m">&gt;</span> был бы, только если корень стоял в знаменателе.</div>
+      </details>
+
+      <details>
+        <summary><span class="q">Придумай формулу, у которой D(f) — все числа, кроме 0 и 5.</span><span class="tag">анализ</span></summary>
+        <div class="ans">Нужно, чтобы знаменатель обращался в ноль при <span class="m">x = 0</span> и при <span class="m">x = 5</span>. Например, <span class="m">y = 1 / (x·(x − 5))</span>: знаменатель равен нулю ровно при <span class="m">x = 0</span> и <span class="m">x = 5</span>, эти точки и выпадают.</div>
+      </details>
+
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Где чаще всего ошибаются</p>
+    <h2>Лови эти четыре ловушки</h2>
+    <ul class="pitfalls">
+      <li><b>Путают D(f) и E(f).</b> «Область определения — это игреки» — нет. <span class="math">D</span> — про <span class="math">x</span> (вход), <span class="math">E</span> — про <span class="math">y</span> (выход).</li>
+      <li><b>Забывают исключить ноль знаменателя.</b> Пишут <span class="math">D = все числа</span> для <span class="math">y = 1/(x − 3)</span>. Есть дробь → приравняй знаменатель к нулю и выброси этот корень.</li>
+      <li><b>Неверный знак у корня.</b> Для <span class="math">√(x − 4)</span> пишут <span class="math">x − 4 &gt; 0</span> вместо <span class="math">≥ 0</span>. Под корнем ноль допустим (<span class="math">√0 = 0</span>) → знак нестрогий. Строго <span class="math">&gt;</span> — только если корень в знаменателе.</li>
+      <li><b>«Любой график — функция».</b> Считают функцией даже график, где вертикаль пересекает линию дважды. Всегда делай тест вертикальной прямой.</li>
+    </ul>
+  </section>
+
+  <section>
+    <p class="kicker">Проверь себя · объясни своими словами</p>
+    <h2>Три вопроса на понимание</h2>
+    <ul class="selfcheck">
+      <li>Чем область определения отличается от множества значений? <span style="color:var(--muted)">(D — допустимые x; E — получаемые y.)</span></li>
+      <li>Какие два запрета чаще всего сужают область определения? <span style="color:var(--muted)">(Ноль в знаменателе; отрицательное число под квадратным корнем.)</span></li>
+      <li>Как по графику быстро понять, что перед тобой функция? <span style="color:var(--muted)">(Любая вертикальная прямая пересекает график не больше одного раза.)</span></li>
+    </ul>
+  </section>
+
+  <section>
+    <div class="next">
+      <h2>Что дальше</h2>
+      <p>Ты умеешь находить, где функция «живёт» (D) и что «выдаёт» (E). Дальше эти два множества станут инструментом:</p>
+      <div class="eq">D(f) · E(f) → свойства функции</div>
+      <p><strong>Свойства функций</strong> — возрастание и убывание, нули, чётность (всё читается по графику). А потом — <strong>квадратичная функция</strong> <span class="math">y = ax² + bx + c</span> со своим графиком-параболой, где D и E ты уже сможешь назвать сразу.</p>
+    </div>
+  </section>
+
+  <p class="foot">Проверка на выходе: чем D(f) отличается от E(f)? · какие два запрета сужают D(f)? · назови D(f) для y = √(x − 1).</p>
+
+</div>
+
+<style>
+  .para{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.1rem 1.1rem 1rem;margin:1rem 0}
+  .para canvas{width:100%;height:auto;display:block;border-radius:10px;background:#FCFDFF}
+  .ptabs{display:flex;gap:.5rem;margin-bottom:.85rem;flex-wrap:wrap}
+  .ptabs button{font:inherit;font-weight:700;font-size:.9rem;cursor:pointer;border:1px solid var(--line);border-radius:9px;padding:.45rem .9rem;background:#fff;color:var(--muted);font-family:ui-monospace,Menlo,monospace}
+  .ptabs button.on{background:var(--accent-soft);color:var(--accent);border-color:var(--accent)}
+  .ptabs button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+  .plegend{display:flex;gap:1.1rem;flex-wrap:wrap;justify-content:center;margin-top:.8rem;font-size:.82rem;font-weight:600}
+  .plegend .lg{display:inline-flex;align-items:center;gap:.4rem}
+  .plegend .lg::before{content:"";width:.85rem;height:.85rem;border-radius:3px}
+  .plegend .lg.d{color:var(--accent)}
+  .plegend .lg.d::before{background:var(--accent)}
+  .plegend .lg.e{color:var(--pos)}
+  .plegend .lg.e::before{background:var(--pos)}
+  .para-eq{text-align:center;font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.1rem;margin:.7rem 0 0;color:var(--ink)}
+
+  .vlt{display:grid;gap:.85rem;margin-top:.6rem}
+  @media(min-width:520px){.vlt{grid-template-columns:1fr 1fr}}
+  .vcard{margin:0;border:1px solid var(--line);border-radius:12px;background:var(--card);padding:.6rem .6rem .9rem;text-align:center}
+  .vcard.ok{border-top:4px solid var(--pos)}
+  .vcard.bad{border-top:4px solid var(--neg)}
+  .vcard svg{width:100%;height:auto;display:block}
+  .vcard figcaption{font-size:.9rem;color:var(--muted);margin-top:.3rem}
+  .vcard b{color:var(--ink)}
+</style>
+
+<script>
+(function(){
+  var cv=document.getElementById('proj'); if(!cv) return;
+  var ctx=cv.getContext('2d');
+  var title=document.getElementById('projTitle');
+  var tabs=document.querySelectorAll('.ptabs button');
+  var W=640,H=400,dpr=1;
+  var DCOL='#3B4FD0', ECOL='#1E8E5A';
+
+  var cfgs={
+    sq:{ title:'y = x²', f:function(x){return x*x;},
+         xmin:-4.5,xmax:4.5,ymin:-1.6,ymax:11,
+         dAll:true, dStart:-4.5, dLabel:'D(f): все числа',
+         eStart:0, eLabel:'E(f) = [0; +∞)' },
+    root:{ title:'y = √(x − 4)', f:function(x){return Math.sqrt(x-4);},
+         xmin:-1,xmax:13,ymin:-1.4,ymax:5,
+         dAll:false, dStart:4, dLabel:'D(f) = [4; +∞)',
+         eStart:0, eLabel:'E(f) = [0; +∞)' }
+  };
+  var cur='sq';
+
+  function resize(){
+    var cssW=cv.clientWidth||640; dpr=Math.min(window.devicePixelRatio||1,2);
+    W=cssW; H=Math.round(cssW*0.62);
+    cv.width=W*dpr; cv.height=H*dpr; cv.style.height=H+'px';
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+  }
+
+  function draw(){
+    var c=cfgs[cur];
+    var xmin=c.xmin,xmax=c.xmax,ymin=c.ymin,ymax=c.ymax;
+    var sx=W/(xmax-xmin), sy=H/(ymax-ymin);
+    function X(x){ return (x-xmin)*sx; }
+    function Y(y){ return H-(y-ymin)*sy; }
+
+    ctx.clearRect(0,0,W,H);
+
+    // полоса области определения (вертикальная, синяя)
+    var dS = c.dAll ? xmin : c.dStart;
+    ctx.fillStyle='rgba(59,79,208,0.09)';
+    ctx.fillRect(X(dS),0, W-X(dS), H);
+    // полоса множества значений (горизонтальная, зелёная): y >= eStart
+    ctx.fillStyle='rgba(30,142,90,0.12)';
+    ctx.fillRect(0, Y(ymax), W, Y(c.eStart)-Y(ymax));
+
+    // сетка
+    ctx.strokeStyle='#EDEFF4'; ctx.lineWidth=1;
+    for(var gx=Math.ceil(xmin);gx<=xmax;gx++){ ctx.beginPath(); ctx.moveTo(X(gx),0); ctx.lineTo(X(gx),H); ctx.stroke(); }
+    for(var gy=Math.ceil(ymin);gy<=ymax;gy++){ ctx.beginPath(); ctx.moveTo(0,Y(gy)); ctx.lineTo(W,Y(gy)); ctx.stroke(); }
+
+    // оси
+    ctx.strokeStyle='#9AA3B2'; ctx.lineWidth=1.4;
+    ctx.beginPath(); ctx.moveTo(0,Y(0)); ctx.lineTo(W,Y(0)); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(X(0),0); ctx.lineTo(X(0),H); ctx.stroke();
+
+    // кривая (только там, где функция определена)
+    ctx.strokeStyle='#1B2333'; ctx.lineWidth=3; ctx.beginPath();
+    var started=false;
+    for(var px=0;px<=W;px++){
+      var x=xmin+px/sx;
+      if(!c.dAll && x<c.dStart-1e-9) continue;
+      var y=c.f(x);
+      if(isNaN(y)) continue;
+      var py=Y(y);
+      if(py<-40||py>H+40){ started=false; continue; }
+      if(!started){ ctx.moveTo(px,py); started=true; } else ctx.lineTo(px,py);
+    }
+    ctx.stroke();
+
+    // подсветка D(f) на оси Ox
+    ctx.lineCap='round';
+    ctx.strokeStyle=DCOL; ctx.lineWidth=5;
+    ctx.beginPath(); ctx.moveTo(X(dS)+(c.dAll?4:0),Y(0)); ctx.lineTo(W-4,Y(0)); ctx.stroke();
+    if(!c.dAll){ ctx.fillStyle=DCOL; ctx.beginPath(); ctx.arc(X(c.dStart),Y(0),5,0,7); ctx.fill(); }
+
+    // подсветка E(f) на оси Oy
+    ctx.strokeStyle=ECOL; ctx.lineWidth=5;
+    ctx.beginPath(); ctx.moveTo(X(0),Y(c.eStart)); ctx.lineTo(X(0),Y(ymax)+2); ctx.stroke();
+    ctx.fillStyle=ECOL; ctx.beginPath(); ctx.arc(X(0),Y(c.eStart),5,0,7); ctx.fill();
+    ctx.lineCap='butt';
+
+    // подписи
+    ctx.font='700 13px system-ui,-apple-system,sans-serif';
+    ctx.textAlign='left';
+    ctx.fillStyle=DCOL; ctx.fillText(c.dLabel, 8, H-8);
+    ctx.fillStyle=ECOL; ctx.fillText(c.eLabel, X(0)+8, 16);
+  }
+
+  tabs.forEach(function(btn){
+    btn.addEventListener('click',function(){
+      cur=btn.getAttribute('data-fn');
+      tabs.forEach(function(b){ b.classList.remove('on'); });
+      btn.classList.add('on');
+      title.textContent=cfgs[cur].title;
+      draw();
+    });
+  });
+  window.addEventListener('resize',function(){ resize(); draw(); });
+  resize(); draw();
+})();
+</script>
+
+<style>
+  .trainer{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.2rem 1.3rem;margin-top:1rem}
+  .tr-eq{font-family:ui-monospace,Menlo,monospace;font-weight:800;font-size:clamp(1.3rem,5vw,1.7rem);text-align:center;padding:1rem;background:var(--accent-soft);border-radius:10px;color:var(--ink);display:flex;justify-content:center;align-items:center;gap:.15em;flex-wrap:wrap}
+  .tr-eq .frac{display:inline-flex;flex-direction:column;text-align:center;vertical-align:middle;margin:0 .2em;line-height:1.15}
+  .tr-eq .frac .fn{padding:0 .45em .05em;border-bottom:2px solid currentColor}
+  .tr-eq .frac .fd{padding:.05em .45em 0}
+  .tr-eq .rad{border-top:2px solid currentColor;padding:0 .25em;margin-left:-.08em}
+  .tr-ctl{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.9rem;align-items:center}
+  .tr-ctl button{font:inherit;font-weight:700;font-size:.9rem;cursor:pointer;border:none;border-radius:9px;padding:.55rem .95rem;color:#fff;background:var(--accent)}
+  .tr-ctl button.sec{background:var(--pos)}
+  .tr-ctl button.ghost{background:transparent;color:var(--accent);border:1px solid var(--accent)}
+  .tr-ctl input{flex:1;min-width:150px;font:inherit;padding:.5rem .7rem;border:1px solid var(--line);border-radius:9px;background:#fff;color:var(--ink)}
+  .tr-ctl button:focus-visible,.tr-ctl input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+  .tr-result{margin-top:.9rem;font-size:.96rem;min-height:1.2rem}
+  .tr-result .ok{color:var(--pos);font-weight:700}
+  .tr-result .bad{color:var(--neg);font-weight:700}
+  .tr-result .sol{margin-top:.7rem;padding:.85rem 1rem;background:#FCFBFE;border:1px solid var(--line);border-radius:10px;font-size:.92rem;line-height:1.8}
+  .tr-result .sol b{color:var(--accent)}
+</style>
+
+<script>
+(function(){
+  var eqEl=document.getElementById('trEq'), ansEl=document.getElementById('trAns'), resEl=document.getElementById('trResult');
+  if(!eqEl) return;
+
+  // стартовая задача совпадает с показанной в разметке: y = 1/(x − 3)
+  var cur={kind:'neq', a:3, sq:false};
+
+  function ri(a,b){ return Math.floor(Math.random()*(b-a+1))+a; }
+  function nz(v){ return v===0?1:v; }
+  function fmtNum(x){ var n=Math.round(x*100)/100; if(n===0)n=0; return (n<0?'−':'')+Math.abs(n); }
+  function xExpr(a){ if(a===0) return 'x'; return a>0 ? ('x − '+a) : ('x + '+(-a)); }
+  function frac(n,d){ return '<span class="frac"><span class="fn">'+n+'</span><span class="fd">'+d+'</span></span>'; }
+  function rad(inner){ return '√<span class="rad">'+inner+'</span>'; }
+
+  function genLinear(){
+    var k=nz(ri(-4,4)), b=ri(-8,8);
+    var s=(k===1?'x':(k===-1?'−x':fmtNum(k)+'x'));
+    if(b>0) s+=' + '+b; else if(b<0) s+=' − '+(-b);
+    return {kind:'all', html:'y = '+s};
+  }
+  function genQuad(){
+    var a=ri(1,2), b=ri(-4,4), c=ri(-6,6);
+    var s=(a===1?'':fmtNum(a))+'x²';
+    if(b>0) s+=' + '+(b===1?'':b)+'x'; else if(b<0) s+=' − '+((-b)===1?'':(-b))+'x';
+    if(c>0) s+=' + '+c; else if(c<0) s+=' − '+(-c);
+    return {kind:'all', html:'y = '+s};
+  }
+  function genFrac(){
+    var a=ri(-6,6);
+    var nums=['1','2','3','5','7','x + 1'];
+    var num=nums[ri(0,nums.length-1)];
+    var den=(a===0)?'x':'('+xExpr(a)+')';
+    return {kind:'neq', a:a, sq:false, html:'y = '+frac(num,den)};
+  }
+  function genFracSq(){
+    var a=ri(-5,5);
+    var num=['1','2','3'][ri(0,2)];
+    var den=(a===0)?'x²':'('+xExpr(a)+')²';
+    return {kind:'neq', a:a, sq:true, html:'y = '+frac(num,den)};
+  }
+  function genRoot(){
+    var a=ri(-5,6);
+    return {kind:'geq', a:a, html:'y = '+rad(xExpr(a))};
+  }
+  function genRootRev(){
+    var a=ri(1,7);
+    return {kind:'leq', a:a, html:'y = '+rad(a+' − x')};
+  }
+  function generate(){
+    var t=Math.random(), q;
+    if(t<0.16) q=genLinear();
+    else if(t<0.30) q=genQuad();
+    else if(t<0.55) q=genFrac();
+    else if(t<0.70) q=genFracSq();
+    else if(t<0.88) q=genRoot();
+    else q=genRootRev();
+    cur=q;
+    eqEl.innerHTML=q.html; resEl.innerHTML=''; ansEl.value='';
+  }
+
+  function solutionHTML(){
+    var q=cur, h='<div class="sol">', av=fmtNum(q.a);
+    if(q.kind==='all'){
+      h+='Смотрю на формулу: <b>ни дроби, ни корня</b>.<br>';
+      h+='Подставить можно любое число — запретов нет.<br>';
+      h+='<b>D(f) = (−∞; +∞)</b> — все числа.';
+    } else if(q.kind==='neq'){
+      h+='Есть <b>дробь</b> → на ноль делить нельзя, знаменатель ≠ 0.<br>';
+      if(q.sq) h+='Знаменатель — квадрат, он равен нулю только при x = '+av+' (там же, где и без квадрата).<br>';
+      else h+='Приравниваю знаменатель к нулю: '+xExpr(q.a)+' = 0 → x = '+av+'.<br>';
+      h+='Эту точку выбрасываю: <b>x ≠ '+av+'</b>.<br>';
+      h+='D(f) = (−∞; '+av+') ∪ ('+av+'; +∞).';
+    } else if(q.kind==='geq'){
+      h+='Есть <b>корень</b> → под корнем не может быть минуса: '+xExpr(q.a)+' ≥ 0.<br>';
+      h+='Решаю: <b>x ≥ '+av+'</b>.<br>';
+      h+='Ноль под корнем допустим (√0 = 0) → точка '+av+' входит, скобка квадратная.<br>';
+      h+='D(f) = ['+av+'; +∞).';
+    } else {
+      h+='Есть <b>корень</b> → под корнем ≥ 0: '+q.a+' − x ≥ 0.<br>';
+      h+='Решаю: <b>x ≤ '+av+'</b> (перенёс x, знак развернулся).<br>';
+      h+='D(f) = (−∞; '+av+'].';
+    }
+    return h+'</div>';
+  }
+
+  function normalize(s){
+    return s.toLowerCase()
+      .replace(/−/g,'-')
+      .replace(/(\d),(\d)/g,'$1.$2')
+      .replace(/\s+/g,'')
+      .replace(/>=|=>|⩾/g,'≥')
+      .replace(/<=|=</g,'≤')
+      .replace(/⩽/g,'≤')
+      .replace(/!=|<>/g,'≠');
+  }
+  function firstNum(n){ var m=n.match(/-?\d+(?:\.\d+)?/); return m?parseFloat(m[0]):NaN; }
+
+  function check(){
+    var raw=ansEl.value;
+    if(!raw.trim()){ resEl.innerHTML='<span class="bad">Введи ответ или нажми «Показать решение».</span>'; return; }
+    var n=normalize(raw), ok=false, msg='', av=fmtNum(cur.a);
+
+    if(cur.kind==='all'){
+      if(/все|любы|действ|беск|∞/.test(n) || n==='r' || /∈r$/.test(n) || n==='любое'){ ok=true; }
+      else msg='Здесь нет ни дроби, ни корня — подставить можно любое число. Ответ: все числа, (−∞; +∞).';
+    } else if(cur.kind==='neq'){
+      var num=firstNum(n), hasNeq=n.indexOf('≠')>=0||n.indexOf('кроме')>=0, hasRel=/[≠≥≤<>=]/.test(n);
+      if(num===cur.a && (hasNeq || !hasRel)) ok=true;
+      else msg='В дроби знаменатель ≠ 0. Приравняй знаменатель к нулю — эта точка выпадает. Верно: x ≠ '+av+'.';
+    } else if(cur.kind==='geq'){
+      var g=firstNum(n), hasGeq=n.indexOf('≥')>=0||(n.indexOf('[')>=0&&n.indexOf('∞')>=0), strictGt=n.indexOf('>')>=0&&n.indexOf('≥')<0;
+      if(g===cur.a && hasGeq) ok=true;
+      else if(g===cur.a && strictGt) msg='Почти! Но под корнем ноль допустим (√0 = 0) — знак нестрогий: x ≥ '+av+' (а не >).';
+      else msg='Под корнем должно быть ≥ 0. Реши неравенство. Верно: x ≥ '+av+'.';
+    } else {
+      var l=firstNum(n), hasLeq=n.indexOf('≤')>=0||(n.indexOf(']')>=0&&n.indexOf('∞')>=0), strictLt=n.indexOf('<')>=0&&n.indexOf('≤')<0;
+      if(l===cur.a && hasLeq) ok=true;
+      else if(l===cur.a && strictLt) msg='Почти! Ноль под корнем допустим — знак нестрогий: x ≤ '+av+'.';
+      else msg='Под корнем ≥ 0: '+cur.a+' − x ≥ 0 → x ≤ '+av+'.';
+    }
+
+    if(ok) resEl.innerHTML='<span class="ok">✓ Верно!</span>'+solutionHTML();
+    else resEl.innerHTML='<span class="bad">✗ '+msg+'</span>'+solutionHTML();
+  }
+
+  document.getElementById('trNew').addEventListener('click',function(){ generate(); ansEl.focus(); });
+  document.getElementById('trCheck').addEventListener('click',check);
+  document.getElementById('trShow').addEventListener('click',function(){ resEl.innerHTML=solutionHTML(); });
+  ansEl.addEventListener('keydown',function(e){ if(e.key==='Enter') check(); });
+})();
+</script>
+<!--LESSON-NAV-BOT--><nav class="lnav lnav-bot"><a class="prev" href="./geo8-opisannaya-okruzhnost.html"><span class="dir">← Предыдущая</span><span class="ttl">Описанная окружность</span></a><a class="to-cat" href="./catalog.html">📚 <span>Все темы</span></a><a class="next" href="./alg9-sposoby-zadaniya-funkcii.html"><span class="dir">Следующая →</span><span class="ttl">Способы задания функции</span></a></nav><!--/LESSON-NAV-BOT-->

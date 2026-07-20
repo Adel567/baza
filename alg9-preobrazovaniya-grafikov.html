@@ -1,0 +1,705 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Преобразования графиков функций — урок, алгебра 9 класс</title>
+<style>
+  :root{
+    --paper:#F6F7F9;
+    --card:#FFFFFF;
+    --ink:#1B2333;
+    --muted:#5A6478;
+    --line:#E2E5EC;
+    --accent:#3B4FD0;
+    --accent-soft:#EAEDFB;
+    --pos:#1E8E5A;   /* растяжение/сжатие */
+    --pos-bg:#E7F4EC;
+    --zero:#B9791A;  /* акцент-предупреждение */
+    --zero-bg:#FBF1DC;
+    --neg:#C0455B;   /* отражения */
+    --neg-bg:#F9E9EC;
+  }
+  *{box-sizing:border-box}
+  body{margin:0}
+  .wrap{
+    max-width:760px;
+    margin:0 auto;
+    padding:clamp(1.4rem,4vw,3rem) clamp(1.1rem,4vw,2rem) 4rem;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    font-size:17px;
+    line-height:1.62;
+    -webkit-font-smoothing:antialiased;
+  }
+  .eyebrow{
+    font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--accent);font-weight:600;margin:0 0 .5rem;
+  }
+  h1{
+    font-family:Georgia,"Times New Roman",serif;
+    font-size:clamp(2rem,7vw,2.9rem);
+    line-height:1.05;margin:0;font-weight:700;letter-spacing:-.01em;
+    text-wrap:balance;
+  }
+  .lede{
+    font-size:1.08rem;color:var(--muted);margin:.7rem 0 0;max-width:60ch;
+    text-wrap:pretty;
+  }
+  h2{
+    font-family:Georgia,serif;font-size:1.32rem;font-weight:700;
+    margin:0 0 .1rem;letter-spacing:-.005em;
+  }
+  section{margin-top:2.6rem}
+  .kicker{
+    font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--muted);font-weight:600;margin:0 0 .8rem;
+    display:flex;align-items:center;gap:.6rem;
+  }
+  .kicker::before{
+    content:"";width:1.4rem;height:2px;background:var(--accent);border-radius:2px;
+  }
+  p{margin:.65rem 0}
+  strong{font-weight:650}
+  .math{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-weight:600}
+  sup{font-size:.72em}
+
+  /* Hero */
+  .hero-formula{
+    margin-top:2.2rem;
+    background:var(--ink);color:#fff;border-radius:14px;
+    padding:1.6rem 1.4rem;text-align:center;
+  }
+  .hero-formula .lbl{
+    font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;
+    color:#9aa6c9;margin:0 0 .7rem;
+  }
+  .hero-formula .eq{
+    font-family:ui-monospace,"SF Mono",Menlo,monospace;
+    font-size:clamp(1.25rem,4.6vw,1.75rem);font-weight:700;letter-spacing:.01em;
+  }
+  .hero-formula .eq b{color:#8ea0ff;font-weight:700}
+  .hero-formula .note{font-size:.86rem;color:#9aa6c9;margin:.9rem 0 0}
+
+  /* Пререквизит / проверка */
+  .recall{
+    background:var(--accent-soft);border-radius:12px;padding:1rem 1.15rem;
+    font-size:.96rem;
+  }
+  .recall p{margin:.3rem 0}
+
+  /* Принцип «внутри / снаружи» */
+  .principle{
+    display:grid;gap:.7rem;margin-top:.6rem;
+  }
+  @media(min-width:560px){.principle{grid-template-columns:1fr 1fr}}
+  .principle .p{
+    border:1px solid var(--line);border-radius:12px;padding:1rem 1.1rem;background:var(--card);
+  }
+  .principle .p .t{font-weight:700;font-size:.98rem;margin-bottom:.25rem;display:flex;align-items:center;gap:.5rem}
+  .principle .p.out .t{color:var(--accent)}
+  .principle .p.in .t{color:var(--neg)}
+  .principle .p .d{font-size:.92rem;color:var(--muted)}
+  .principle .p .d b{color:var(--ink)}
+
+  /* Семейства правил */
+  .fam{
+    border:1px solid var(--line);border-radius:13px;overflow:hidden;background:var(--card);margin-top:1rem;
+  }
+  .fam > header{
+    padding:.7rem 1.05rem;font-weight:700;font-size:.95rem;color:#fff;
+    display:flex;align-items:center;gap:.55rem;
+  }
+  .fam.shift > header{background:var(--accent)}
+  .fam.scale > header{background:var(--pos)}
+  .fam.mirror > header{background:var(--neg)}
+  .rule{
+    display:flex;align-items:center;gap:.9rem;flex-wrap:wrap;
+    padding:.7rem 1.05rem;border-top:1px solid var(--line);
+  }
+  .rule .rf{
+    font-family:ui-monospace,Menlo,monospace;font-weight:800;font-size:1.02rem;
+    min-width:9.5ch;color:var(--ink);
+  }
+  .rule .arr{color:var(--muted);font-weight:700}
+  .rule .rd{font-size:.93rem;color:var(--muted);flex:1;min-width:12ch}
+  .rule .rd b{color:var(--ink)}
+  .rule.warn{background:var(--zero-bg)}
+  .rule.warn .rd b{color:var(--zero)}
+  .badge{
+    font-size:.66rem;font-weight:800;letter-spacing:.05em;text-transform:uppercase;
+    padding:.15rem .5rem;border-radius:20px;background:var(--zero);color:#fff;white-space:nowrap;
+  }
+
+  /* Контринтуитивный callout */
+  .flip{
+    margin-top:1.1rem;background:var(--zero-bg);border:1px solid #F0D98A;border-left:4px solid var(--zero);
+    border-radius:11px;padding:1rem 1.15rem;
+  }
+  .flip .h{font-weight:700;color:var(--zero);margin:0 0 .35rem;display:flex;align-items:center;gap:.5rem}
+  .flip p{margin:.35rem 0;font-size:.96rem}
+  .flip .m{font-family:ui-monospace,Menlo,monospace;font-weight:700;color:var(--ink)}
+
+  /* Разбор */
+  .worked{
+    background:var(--card);border:1px solid var(--line);border-radius:12px;
+    padding:1.2rem 1.3rem;
+  }
+  .worked .task{
+    font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.05rem;
+    margin:0 0 1rem;padding-bottom:.8rem;border-bottom:1px solid var(--line);
+  }
+  ol.steps{margin:0;padding:0;list-style:none;counter-reset:s;display:flex;flex-direction:column;gap:.7rem}
+  ol.steps li{position:relative;padding-left:2.1rem;counter-increment:s}
+  ol.steps li::before{
+    content:counter(s);position:absolute;left:0;top:.05rem;
+    width:1.5rem;height:1.5rem;border-radius:50%;
+    background:var(--accent-soft);color:var(--accent);
+    font-size:.82rem;font-weight:700;display:flex;align-items:center;justify-content:center;
+  }
+  ol.steps .m{font-family:ui-monospace,Menlo,monospace;font-weight:600;color:var(--ink)}
+  ol.steps .why{color:var(--muted);font-style:italic}
+  .verdict{
+    margin-top:1rem;padding:.7rem 1rem;background:var(--pos-bg);
+    border-radius:9px;font-weight:600;color:var(--pos);font-size:.98rem;
+  }
+
+  /* Наглядность — серия */
+  .series{display:grid;gap:.7rem;margin-top:.5rem}
+  @media(min-width:560px){.series{grid-template-columns:repeat(2,1fr)}}
+  @media(min-width:720px){.series{grid-template-columns:repeat(4,1fr)}}
+  .scard{
+    border:1px solid var(--line);border-radius:11px;padding:.85rem .9rem;background:var(--card);
+    display:flex;flex-direction:column;gap:.3rem;
+  }
+  .scard .sf{font-family:ui-monospace,Menlo,monospace;font-weight:800;font-size:1rem}
+  .scard .sd{font-size:.85rem;color:var(--muted)}
+  .scard.base{border-top:4px solid var(--muted)}
+  .scard.up{border-top:4px solid var(--accent)}.scard.up .sf{color:var(--accent)}
+  .scard.right{border-top:4px solid var(--zero)}.scard.right .sf{color:var(--zero)}
+  .scard.down{border-top:4px solid var(--neg)}.scard.down .sf{color:var(--neg)}
+
+  /* Практика */
+  .drill{display:flex;flex-direction:column;gap:.7rem}
+  details{
+    background:var(--card);border:1px solid var(--line);border-radius:10px;
+    padding:.85rem 1.05rem;
+  }
+  details[open]{border-color:var(--accent)}
+  summary{
+    cursor:pointer;font-weight:600;list-style:none;
+    display:flex;justify-content:space-between;align-items:center;gap:1rem;
+  }
+  summary::-webkit-details-marker{display:none}
+  summary:focus-visible{outline:3px solid var(--accent);outline-offset:3px;border-radius:6px}
+  summary .q{font-family:ui-monospace,Menlo,monospace}
+  summary .tag{
+    font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);
+    border:1px solid var(--line);border-radius:20px;padding:.1rem .55rem;white-space:nowrap;
+  }
+  summary::after{
+    content:"показать ответ";font-size:.78rem;color:var(--accent);font-weight:600;white-space:nowrap;
+  }
+  details[open] summary::after{content:"скрыть"}
+  .ans{margin-top:.7rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.96rem;color:var(--muted)}
+  .ans .m{font-family:ui-monospace,Menlo,monospace;color:var(--ink);font-weight:600}
+
+  /* Ошибки */
+  ul.pitfalls{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:.6rem}
+  ul.pitfalls li{padding-left:1.5rem;position:relative;font-size:.98rem}
+  ul.pitfalls li::before{
+    content:"×";position:absolute;left:0;top:-.05rem;color:var(--neg);font-weight:700;font-size:1.1rem;
+  }
+  ul.pitfalls b{color:var(--ink)}
+
+  .next{background:var(--accent);color:#fff;border-radius:12px;padding:1.2rem 1.3rem}
+  .next h2{color:#fff}
+  .next .eq{font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.25rem;margin:.6rem 0 .3rem}
+  .next p{color:#dfe4fb;font-size:.96rem;margin:.4rem 0 0}
+  .foot{margin-top:2.4rem;font-size:.82rem;color:var(--muted);text-align:center}
+
+  @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+<style>
+.oge-tip{display:flex;gap:.8rem;align-items:flex-start;background:#FFF8E7;border:1px solid #F0D98A;border-left:4px solid #E0A315;border-radius:10px;padding:.85rem 1.05rem;margin:1.5rem 0}
+.oge-tip .b{font-size:.72rem;font-weight:800;letter-spacing:.03em;color:#8A6A15;white-space:nowrap;text-transform:uppercase;padding-top:.15rem}
+.oge-tip .x{font-size:.95rem;line-height:1.5}
+</style>
+
+<!--LESSON-NAV-TOP--><style>.lnav{--lnav-accent:#3D5AF1}.lnav a{text-decoration:none;font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif}.lnav-top{max-width:820px;margin:0 auto;padding:.75rem clamp(1rem,4vw,1.5rem) .1rem}.lnav-top a{display:inline-flex;align-items:center;gap:.35rem;color:var(--lnav-accent);font-weight:600;font-size:.9rem}.lnav-top a:hover{text-decoration:underline}.lnav-bot{max-width:820px;margin:2.6rem auto 3rem;padding:1.1rem clamp(1rem,4vw,1.5rem) 0;border-top:1px solid #E4E8EF;display:flex;align-items:stretch;gap:.55rem}.lnav-bot a{min-width:0;display:flex;flex-direction:column;justify-content:center;gap:.15rem;border:1px solid #E4E8EF;border-radius:12px;padding:.65rem .85rem;color:#182233;background:#fff;transition:border-color .1s,transform .08s}.lnav-bot a:hover{border-color:var(--lnav-accent);transform:translateY(-1px)}.lnav-bot .prev,.lnav-bot .next{flex:1 1 0}.lnav-bot .next{text-align:right}.lnav-bot .dir{font-size:.72rem;color:#8A93A6;font-weight:600}.lnav-bot .ttl{font-size:.9rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.lnav-bot .to-cat{flex:0 0 auto;flex-direction:row;align-items:center;justify-content:center;color:var(--lnav-accent);font-weight:700;font-size:.85rem;white-space:nowrap}@media(max-width:420px){.lnav-bot .to-cat span{display:none}.lnav-bot .to-cat{padding:.65rem .7rem}}</style><nav class="lnav lnav-top"><a href="./catalog.html">← Все темы</a></nav><!--/LESSON-NAV-TOP-->
+<div class="wrap">
+
+  <header>
+    <p class="eyebrow">Алгебра · 9 класс</p>
+    <h1>Преобразования графиков функций</h1>
+    <p class="lede">Ты уже умеешь строить один «базовый» график. Отсюда десятки других получаются <em>одним движением</em> — сдвинуть, растянуть, отразить. Точки считать не нужно.</p>
+  </header>
+
+  <div class="hero-formula">
+    <p class="lbl">Одна идея на всю тему</p>
+    <div class="eq">y = <b>f(x)</b> &nbsp;→&nbsp; сдвиг · растяжение · отражение</div>
+    <p class="note">Берём готовый график и двигаем/деформируем его. Форма сохраняется — меняется только положение или масштаб.</p>
+  </div>
+
+  <section>
+    <p class="kicker">Зачем это нужно</p>
+    <h2>Не строить каждый график с нуля</h2>
+    <p>Представь, что ты уже знаешь параболу <span class="math">y = x²</span>. Тогда график <span class="math">y = (x − 3)² + 2</span> не надо считать по точкам — это та же парабола, просто сдвинутая. Зная преобразование, ты видишь в новом графике «переодетый» знакомый.</p>
+    <p>Главное заблуждение: <strong>«чтобы построить новый график, надо посчитать таблицу из 10 точек»</strong>. Неправда. Если умеешь читать преобразование — достаточно сдвинуть или растянуть уже готовый график. Этот навык — ключ к следующей теме: формула <span class="math">y = a(x − m)² + n</span> читается как «возьми <span class="math">y = x²</span>, сдвинь и растяни».</p>
+  </section>
+
+  <section>
+    <p class="kicker">Что вспомнить с прошлых шагов</p>
+    <div class="recall">
+      <p><strong>График функции</strong> — это множество точек <span class="math">(x; y)</span>, где <span class="math">y = f(x)</span>. Каждой <span class="math">x</span> соответствует своя высота.</p>
+      <p><strong>Читать график</strong> — по точке на нём называть её координаты <span class="math">(x; y)</span>. Именно точки мы и будем двигать.</p>
+      <p>Значок <span class="math">f(x)</span> — это «высота графика над точкой <span class="math">x</span>». Всё, что делаем <em>с f(x)</em> — меняет высоту; всё, что делаем <em>с x</em> — меняет, откуда мы эту высоту берём.</p>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Главное различие темы</p>
+    <h2>Снаружи или внутри?</h2>
+    <p>Всё делится на два случая — и это ключ ко всему. Смотри, где стоит изменение: снаружи функции (с самим <span class="math">f(x)</span>) или внутри аргумента (с <span class="math">x</span>).</p>
+    <div class="principle">
+      <div class="p out">
+        <div class="t">🟦 Снаружи — с f(x)</div>
+        <div class="d">Прибавили, умножили или поставили минус <b>перед</b> f. Действует по оси <b>y</b> (вертикаль) и «как ожидаешь».</div>
+      </div>
+      <div class="p in">
+        <div class="t">🟥 Внутри — с x</div>
+        <div class="d">Изменили <b>сам аргумент</b> в скобке: f(x + a), f(kx), f(−x). Действует по оси <b>x</b> (горизонталь) и часто «наоборот» интуиции.</div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Ядро · все правила разом</p>
+    <h2>Что делает каждое изменение</h2>
+    <p>Пусть дан график <span class="math">y = f(x)</span>. Дальше <span class="math">a</span>, <span class="math">b</span> — положительные числа сдвига, <span class="math">k &gt; 0</span> — коэффициент. Вот полный набор:</p>
+
+    <div class="fam shift">
+      <header>🟦 Сдвиги — по оси y (снаружи) и по оси x (внутри)</header>
+      <div class="rule">
+        <span class="rf">f(x) + a</span><span class="arr">→</span>
+        <span class="rd">сдвиг <b>вверх</b> на <b>a</b>. По оси y.</span>
+      </div>
+      <div class="rule">
+        <span class="rf">f(x) − a</span><span class="arr">→</span>
+        <span class="rd">сдвиг <b>вниз</b> на <b>a</b>. По оси y.</span>
+      </div>
+      <div class="rule warn">
+        <span class="rf">f(x + a)</span><span class="arr">→</span>
+        <span class="rd">сдвиг <b>ВЛЕВО</b> на a. Наоборот знаку!</span><span class="badge">внимание</span>
+      </div>
+      <div class="rule warn">
+        <span class="rf">f(x − a)</span><span class="arr">→</span>
+        <span class="rd">сдвиг <b>ВПРАВО</b> на a. Наоборот знаку!</span><span class="badge">внимание</span>
+      </div>
+    </div>
+
+    <div class="flip">
+      <p class="h">⚠️ Самое коварное место темы</p>
+      <p><span class="m">f(x + a)</span> уезжает <strong>влево</strong>, а <span class="m">f(x − a)</span> — <strong>вправо</strong>. Знак «плюс» внутри тянет график в минусовую сторону оси. Это против интуиции — почти все ошибаются здесь.</p>
+      <p><strong>Приём-спасатель:</strong> спроси «при каком x скобка обнуляется?». Для <span class="m">(x + 3)</span> это <span class="m">x = −3</span> → значит вершина уехала <strong>влево</strong>, в −3. Для <span class="m">(x − 3)</span> обнуление при <span class="m">x = 3</span> → <strong>вправо</strong>.</p>
+    </div>
+
+    <div class="fam scale">
+      <header>🟩 Растяжение и сжатие — множитель</header>
+      <div class="rule">
+        <span class="rf">k·f(x)</span><span class="arr">→</span>
+        <span class="rd"><b>k &gt; 1</b>: растяжение вдоль оси y в k раз (график «круче»). <b>0 &lt; k &lt; 1</b>: сжатие к оси x.</span>
+      </div>
+      <div class="rule warn">
+        <span class="rf">f(k·x)</span><span class="arr">→</span>
+        <span class="rd"><b>k &gt; 1</b>: сжатие к оси y в k раз. <b>0 &lt; k &lt; 1</b>: растяжение от оси y. По x «наоборот».</span><span class="badge">внимание</span>
+      </div>
+    </div>
+
+    <div class="fam mirror">
+      <header>🟥 Отражения — минус</header>
+      <div class="rule">
+        <span class="rf">−f(x)</span><span class="arr">→</span>
+        <span class="rd">отражение относительно оси <b>x</b>: график переворачивается <b>сверху вниз</b> (верх↔низ).</span>
+      </div>
+      <div class="rule">
+        <span class="rf">f(−x)</span><span class="arr">→</span>
+        <span class="rd">отражение относительно оси <b>y</b>: график переворачивается <b>слева направо</b> (лево↔право).</span>
+      </div>
+    </div>
+
+    <p style="font-size:.92rem;color:var(--muted);margin-top:1rem">Если действий несколько — сначала разбираемся с тем, что <strong>внутри</strong> аргумента (с x), потом с множителем и знаком <strong>снаружи</strong>.</p>
+
+    <div class="oge-tip"><div class="b">🎯 В ОГЭ</div><div class="x"><b>Задание 11 — графики функций.</b> Нужно сопоставить формулу с картинкой графика. Понимая сдвиги и отражения, ты сразу видишь, из какой базовой функции «сделан» график, и не гадаешь. А в развёрнутой (второй) части экзамена построение графика встречается в задачах на функции.</div></div>
+  </section>
+
+  <section>
+    <p class="kicker">Покрути сам · интерактив</p>
+    <h2>Двигай параболу y = x²</h2>
+    <p>Пунктиром — базовая <span class="math">f(x) = x²</span>, сплошной линией — результат. Меняй ползунки и жми кнопки отражений: смотри, как каждое изменение двигает или переворачивает график. Формула сверху обновляется в записи через <span class="math">f</span>.</p>
+    <div class="viz">
+      <canvas id="viz" width="640" height="400" aria-label="Интерактивный график преобразований параболы"></canvas>
+      <p class="viz-eq"><span id="vizFormula">y = f(x)</span></p>
+      <div class="viz-ctl">
+        <label>сдвиг по y &nbsp;<b>b</b> <span id="vb" class="sval">0</span><input id="sb" type="range" min="-5" max="5" step="1" value="0" aria-label="Сдвиг по вертикали b"></label>
+        <label>сдвиг по x &nbsp;<b>a</b> <span id="va" class="sval">0</span><input id="sa" type="range" min="-5" max="5" step="1" value="0" aria-label="Сдвиг по горизонтали a в f(x+a)"></label>
+        <label>растяжение &nbsp;<b>k</b> <span id="vk" class="sval">1</span><input id="sk" type="range" min="0.5" max="3" step="0.5" value="1" aria-label="Вертикальное растяжение k"></label>
+      </div>
+      <div class="viz-btns">
+        <button id="bRx" type="button" aria-pressed="false">−f(x) · отразить ↕</button>
+        <button id="bRy" type="button" aria-pressed="false">f(−x) · отразить ↔</button>
+        <button id="bReset" type="button" class="ghost">сброс</button>
+      </div>
+      <p class="viz-legend"><span class="lg-base">—&nbsp;—</span> базовая f(x) = x² &nbsp;·&nbsp; <span class="lg-res">———</span> результат</p>
+      <p class="viz-hint">Обрати внимание: сдвиг по x при <span class="math">a &gt; 0</span> (то есть <span class="math">f(x + a)</span>) тянет параболу <strong>влево</strong>. А кнопка <span class="math">f(−x)</span> на симметричной параболе одна ничего не меняет — попробуй сначала сдвинуть по x, потом отразить.</p>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Разбираем вместе · думаю вслух</p>
+    <h2>Строим y = (x − 3)² + 2</h2>
+    <div class="worked">
+      <p class="task">Построить y = (x − 3)² + 2, отталкиваясь от y = x²</p>
+      <ol class="steps">
+        <li>Базовый график: <span class="m">y = x²</span> — парабола с вершиной в <span class="m">(0; 0)</span>. <span class="why">Это наш знакомый, от него пляшем.</span></li>
+        <li>Смотрю внутрь скобки: <span class="m">(x − 3)</span>. <span class="why">Спрашиваю «когда скобка = 0?» → при x = 3.</span> Значит сдвиг <strong>вправо</strong> на 3.</li>
+        <li>Смотрю снаружи: <span class="m">+ 2</span>. <span class="why">Прибавили к самой функции → поднимаем.</span> Сдвиг <strong>вверх</strong> на 2.</li>
+        <li>Собираю: та же парабола, вершина уехала из <span class="m">(0; 0)</span> в <span class="m">(3; 2)</span>.</li>
+      </ol>
+      <div class="verdict">Итог: парабола той же формы с вершиной в точке (3; 2). Ветви вверх.</div>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Наглядность · меняем по одному</p>
+    <h2>Одна парабола — четыре судьбы</h2>
+    <p>Меняем в <span class="math">y = x²</span> по одному кусочку и смотрим, за что отвечает каждый:</p>
+    <div class="series">
+      <div class="scard base">
+        <div class="sf">y = x²</div>
+        <div class="sd">База. Вершина (0; 0), ветви вверх.</div>
+      </div>
+      <div class="scard up">
+        <div class="sf">y = x² + 1</div>
+        <div class="sd">Снаружи +1 → вверх на 1. Вершина (0; 1).</div>
+      </div>
+      <div class="scard right">
+        <div class="sf">y = (x − 1)²</div>
+        <div class="sd">Внутри −1 → вправо на 1. Вершина (1; 0).</div>
+      </div>
+      <div class="scard down">
+        <div class="sf">y = −x²</div>
+        <div class="sd">Минус снаружи → отражение ↕. Ветви вниз.</div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Теперь ты · нажми, чтобы проверить</p>
+    <h2>Практика по нарастанию</h2>
+    <div class="drill">
+      <details>
+        <summary><span class="q">Куда сдвинется график при y = f(x) − 5?</span><span class="tag">понимание</span></summary>
+        <div class="ans">Число вычли <span class="m">снаружи</span> (у самой f) → сдвиг по оси y. <strong>Вниз на 5.</strong></div>
+      </details>
+      <details>
+        <summary><span class="q">Опиши сдвиг: y = f(x − 6)</span><span class="tag">понимание</span></summary>
+        <div class="ans">Внутри скобки «−6». Скобка обнуляется при <span class="m">x = 6</span> → уехало <strong>вправо на 6</strong> (знак «наоборот»).</div>
+      </details>
+      <details>
+        <summary><span class="q">y = f(x + 2): опиши преобразование и сдвинь точку (4; 1)</span><span class="tag">применение</span></summary>
+        <div class="ans">Внутри «+2» → сдвиг <strong>влево на 2</strong>. Точка <span class="m">(4; 1)</span> уедет влево на 2 → <strong>(2; 1)</strong> <span class="m">(x: 4 − 2 = 2, y не меняется)</span>.</div>
+      </details>
+      <details>
+        <summary><span class="q">Чем f(2x) отличается от 2·f(x)?</span><span class="tag">применение</span></summary>
+        <div class="ans"><span class="m">f(2x)</span> — 2 внутри (у x) → <strong>сжатие к оси y</strong> в 2 раза. <span class="m">2·f(x)</span> — 2 снаружи → <strong>растяжение вдоль оси y</strong> в 2 раза. Разные оси!</div>
+      </details>
+      <details>
+        <summary><span class="q">Что изменится: сначала f(−x), потом −f(x) для y = x²?</span><span class="tag">анализ</span></summary>
+        <div class="ans"><span class="m">f(−x)</span> — отражение по оси y. Но парабола <span class="m">y = x²</span> симметрична относительно оси y → <strong>не меняется</strong>. Затем <span class="m">−f(x)</span> — отражение по оси x → ветви <strong>вниз</strong>. Итог <span class="m">y = −x²</span>. Для <em>несимметричной</em> функции первый шаг уже дал бы видимое изменение — вот в чём разница.</div>
+      </details>
+      <details>
+        <summary><span class="q">Обратная задача: параболу y = x² сдвинули так, что вершина оказалась в (−2; 3). Формула?</span><span class="tag">анализ</span></summary>
+        <div class="ans">Вершина уехала <strong>влево на 2</strong> → внутри нужна скобка <span class="m">(x + 2)</span> (плюс, потому что «наоборот»). И <strong>вверх на 3</strong> → снаружи <span class="m">+ 3</span>. Ответ: <span class="m">y = (x + 2)² + 3</span>. Проверка: скобка = 0 при x = −2, высота +3. ✓</div>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Тренажёр · бесконечная практика</p>
+    <h2>Куда перейдёт точка?</h2>
+    <p>Тебе дают преобразование графика <span class="math">y = f(x)</span> и точку на исходном графике. Скажи, в какую точку она перейдёт. Введи <strong>две координаты через точку с запятой</strong> (например <span class="math">−1; 3</span>). Настоящий минус набирать не нужно — обычный «-» тоже подойдёт.</p>
+    <div class="trainer">
+      <div class="tr-eq" id="trEq"></div>
+      <div class="tr-ctl">
+        <button id="trNew" type="button">🎲 Новое задание</button>
+        <input id="trAns" type="text" placeholder="напр.  −1; 3" aria-label="Ответ: две координаты">
+        <button id="trCheck" type="button" class="sec">Проверить</button>
+        <button id="trShow" type="button" class="ghost">Показать решение</button>
+      </div>
+      <div id="trResult" class="tr-result"></div>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Где чаще всего ошибаются</p>
+    <h2>Лови эти ловушки</h2>
+    <ul class="pitfalls">
+      <li><b>Путают направление сдвига при f(x + a).</b> Видят «+a» и едут вправо. На деле <span class="math">f(x + a)</span> едет <strong>влево</strong>. Спасение: «при каком x скобка = 0?» → туда и уехало.</li>
+      <li><b>Смешивают растяжение и сжатие.</b> Думают, <span class="math">f(kx)</span> при <span class="math">k &gt; 1</span> растягивает по x. Наоборот: по оси x всё зеркально — <span class="math">k &gt; 1</span> <strong>сжимает</strong> к оси y. Проверяй по одной точке.</li>
+      <li><b>Путают −f(x) и f(−x).</b> Минус <strong>снаружи</strong> (перед f) — отражение через ось x (верх↔низ). Минус <strong>внутри</strong> (у x) — через ось y (лево↔право).</li>
+      <li><b>Путают «внутри» и «снаружи».</b> Всё, что делаешь с <span class="math">x</span> в скобке — по горизонтали и часто наоборот. Всё, что с <span class="math">f(x)</span> снаружи — по вертикали и «как ждёшь».</li>
+    </ul>
+  </section>
+
+  <section>
+    <p class="kicker">Проверь себя · объясни словами</p>
+    <div class="recall">
+      <p>1. Куда сдвинется график при переходе от <span class="math">y = f(x)</span> к <span class="math">y = f(x − 6)</span>? <em>(вправо на 6)</em></p>
+      <p>2. Что делает минус в записи <span class="math">y = −f(x)</span>? <em>(отражает относительно оси x)</em></p>
+      <p>3. Чем отличается <span class="math">f(2x)</span> от <span class="math">2·f(x)</span> по действию на график? <em>(первое — сжатие по оси x; второе — растяжение по оси y)</em></p>
+      <p style="margin-top:.6rem"><strong>Итог одной фразой:</strong> зная базовый график <span class="math">y = f(x)</span>, любой родственный строят сдвигом, растяжением, сжатием или отражением. Изменения с <span class="math">x</span> работают по горизонтали (часто «наоборот»), а с <span class="math">f(x)</span> — по вертикали.</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="next">
+      <h2>Что дальше</h2>
+      <p>Всё это собирается в одной формуле квадратичной функции — и вершина читается сразу, без вычислений:</p>
+      <div class="eq">y = a(x − m)² + n</div>
+      <p>Сдвиг вправо на m, вверх на n, растяжение в a раз — вершина в точке (m; n). Ты уже умеешь это прочитать.</p>
+    </div>
+  </section>
+
+  <p class="foot">Проверка на выходе: в какую сторону едет f(x + 4)? · что делает f(−x)? · где вершина у y = (x − 5)² − 1?</p>
+
+</div>
+
+<style>
+  .viz{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.1rem 1.1rem 1rem;margin:1rem 0}
+  .viz canvas{width:100%;height:auto;display:block;border-radius:10px;background:#FCFDFF}
+  .viz-eq{text-align:center;font-family:ui-monospace,Menlo,monospace;font-weight:800;font-size:1.15rem;margin:.9rem 0 .2rem;color:var(--ink)}
+  .viz-ctl{display:grid;gap:.6rem;margin-top:.7rem}
+  @media(min-width:560px){.viz-ctl{grid-template-columns:repeat(3,1fr)}}
+  .viz-ctl label{display:flex;align-items:center;gap:.45rem;font-weight:600;font-size:.9rem}
+  .viz-ctl label b{font-family:ui-monospace,Menlo,monospace}
+  .viz-ctl input[type=range]{flex:1;accent-color:var(--accent);min-width:0}
+  .viz-ctl input[type=range]:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+  .viz-ctl .sval{min-width:2.4ch;text-align:right;color:var(--accent);font-variant-numeric:tabular-nums;font-family:ui-monospace,Menlo,monospace;font-weight:700}
+  .viz-btns{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.9rem}
+  .viz-btns button{font:inherit;font-weight:700;font-size:.86rem;cursor:pointer;border:1px solid var(--line);border-radius:9px;padding:.5rem .85rem;background:#fff;color:var(--ink)}
+  .viz-btns button[aria-pressed="true"]{background:var(--neg);color:#fff;border-color:var(--neg)}
+  .viz-btns button.ghost{color:var(--muted)}
+  .viz-btns button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+  .viz-legend{font-size:.85rem;color:var(--muted);margin:.8rem 0 0;text-align:center}
+  .viz-legend .lg-base{color:#9AA3B2;font-weight:700;font-family:ui-monospace,Menlo,monospace}
+  .viz-legend .lg-res{color:var(--accent);font-weight:700;font-family:ui-monospace,Menlo,monospace}
+  .viz-hint{font-size:.88rem;color:var(--muted);margin:.7rem 0 0}
+</style>
+
+<script>
+(function(){
+  var canvas=document.getElementById('viz'); if(!canvas) return;
+  var ctx=canvas.getContext('2d');
+  var sa=document.getElementById('sa'), sb=document.getElementById('sb'), sk=document.getElementById('sk');
+  var va=document.getElementById('va'), vb=document.getElementById('vb'), vk=document.getElementById('vk');
+  var bRx=document.getElementById('bRx'), bRy=document.getElementById('bRy'), bReset=document.getElementById('bReset');
+  var formulaEl=document.getElementById('vizFormula');
+  var vSign=1, hSign=1;                 // vSign: -f(x) ↕   hSign: f(-x) ↔
+  var xMin=-6, xMax=6, yMin=-10, yMax=14;
+  var W=640,H=400,dpr=1;
+
+  function num(n){ n=Math.round(n*100)/100; return (n<0?'−':'')+Math.abs(n); }
+
+  function resize(){
+    var cssW=canvas.clientWidth||640; dpr=Math.min(window.devicePixelRatio||1,2);
+    W=cssW; H=Math.round(cssW*0.66);
+    canvas.width=W*dpr; canvas.height=H*dpr; canvas.style.height=H+'px';
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+  }
+  function X(x){ return (x-xMin)/(xMax-xMin)*W; }
+  function Y(y){ return H-(y-yMin)/(yMax-yMin)*H; }
+
+  function curve(fn,color,dash,width){
+    ctx.strokeStyle=color; ctx.lineWidth=width; ctx.setLineDash(dash);
+    ctx.beginPath(); var first=true;
+    for(var px=0;px<=W;px+=2){
+      var x=xMin+(px/W)*(xMax-xMin);
+      var y=fn(x); var py=Y(y);
+      // клип по вертикали, чтобы не рисовать далеко за краем
+      if(py< -50) py=-50; if(py> H+50) py=H+50;
+      if(first){ ctx.moveTo(px,py); first=false; } else ctx.lineTo(px,py);
+    }
+    ctx.stroke(); ctx.setLineDash([]);
+  }
+  function dot(x,y,color,hollow){
+    ctx.fillStyle=color; ctx.beginPath(); ctx.arc(X(x),Y(y),6,0,7); ctx.fill();
+    if(hollow){ ctx.fillStyle='#FCFDFF'; ctx.beginPath(); ctx.arc(X(x),Y(y),2.6,0,7); ctx.fill(); }
+    else{ ctx.fillStyle='#fff'; ctx.beginPath(); ctx.arc(X(x),Y(y),2.4,0,7); ctx.fill(); }
+  }
+
+  function draw(){
+    var a=parseFloat(sa.value), b=parseFloat(sb.value), k=parseFloat(sk.value);
+    va.textContent=num(a); vb.textContent=num(b); vk.textContent=(''+k).replace('.',',');
+
+    ctx.clearRect(0,0,W,H);
+    // сетка
+    ctx.strokeStyle='#EDEFF4'; ctx.lineWidth=1;
+    for(var gx=xMin;gx<=xMax;gx++){ ctx.beginPath(); ctx.moveTo(X(gx),0); ctx.lineTo(X(gx),H); ctx.stroke(); }
+    for(var gy=yMin;gy<=yMax;gy+=2){ ctx.beginPath(); ctx.moveTo(0,Y(gy)); ctx.lineTo(W,Y(gy)); ctx.stroke(); }
+    // оси
+    ctx.strokeStyle='#9AA3B2'; ctx.lineWidth=1.5;
+    ctx.beginPath(); ctx.moveTo(0,Y(0)); ctx.lineTo(W,Y(0)); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(X(0),0); ctx.lineTo(X(0),H); ctx.stroke();
+    // метки осей
+    ctx.fillStyle='#8A93A6'; ctx.font='11px ui-monospace,Menlo,monospace';
+    ctx.textAlign='center'; ctx.textBaseline='top';
+    [-4,-2,2,4].forEach(function(t){ ctx.fillText(t,X(t),Y(0)+4); });
+    ctx.textAlign='left'; ctx.textBaseline='middle';
+    [-8,-4,4,8,12].forEach(function(t){ ctx.fillText(t,X(0)+5,Y(t)); });
+
+    // базовая f(x)=x² пунктиром
+    curve(function(x){ return x*x; }, '#9AA3B2', [6,5], 2);
+    dot(0,0,'#9AA3B2',true);
+
+    // результат: g(x) = vSign * k * (hSign*x + a)^2 + b
+    var col=getCSS('--accent');
+    curve(function(x){ var t=hSign*x+a; return vSign*k*t*t+b; }, col, [], 3);
+    // вершина результата: hSign*x+a=0 -> x = -a*hSign, y = b
+    dot(-a*hSign, b, col, false);
+
+    // формула в записи через f
+    var s='y = ';
+    if(vSign<0) s+='−';
+    if(k!==1) s+=(''+k).replace('.',',')+'·';
+    s+='f(';
+    s+=(hSign<0?'−x':'x');
+    if(a>0) s+=' + '+a; else if(a<0) s+=' − '+Math.abs(a);
+    s+=')';
+    if(b>0) s+=' + '+b; else if(b<0) s+=' − '+Math.abs(b);
+    formulaEl.textContent=s;
+  }
+  function getCSS(v){ return getComputedStyle(document.documentElement).getPropertyValue(v).trim()||'#3B4FD0'; }
+
+  [sa,sb,sk].forEach(function(s){ s.addEventListener('input',draw); });
+  bRx.addEventListener('click',function(){ vSign*=-1; bRx.setAttribute('aria-pressed', vSign<0?'true':'false'); draw(); });
+  bRy.addEventListener('click',function(){ hSign*=-1; bRy.setAttribute('aria-pressed', hSign<0?'true':'false'); draw(); });
+  bReset.addEventListener('click',function(){
+    sa.value=0; sb.value=0; sk.value=1; vSign=1; hSign=1;
+    bRx.setAttribute('aria-pressed','false'); bRy.setAttribute('aria-pressed','false'); draw();
+  });
+  window.addEventListener('resize',function(){ resize(); draw(); });
+  resize(); draw();
+})();
+</script>
+
+<style>
+  .trainer{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.2rem 1.3rem;margin-top:1rem}
+  .tr-eq{padding:1rem;background:var(--accent-soft);border-radius:10px;text-align:center}
+  .tr-eq .tr-op{font-family:ui-monospace,Menlo,monospace;font-weight:800;font-size:clamp(1.3rem,5vw,1.7rem);color:var(--ink)}
+  .tr-eq .tr-pt{font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1rem;color:var(--accent);margin-top:.45rem}
+  .tr-ctl{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.9rem;align-items:center}
+  .tr-ctl button{font:inherit;font-weight:700;font-size:.9rem;cursor:pointer;border:none;border-radius:9px;padding:.55rem .95rem;color:#fff;background:var(--accent)}
+  .tr-ctl button.sec{background:var(--pos)}
+  .tr-ctl button.ghost{background:transparent;color:var(--accent);border:1px solid var(--accent)}
+  .tr-ctl input{flex:1;min-width:150px;font:inherit;padding:.5rem .7rem;border:1px solid var(--line);border-radius:9px;background:#fff;color:var(--ink)}
+  .tr-ctl button:focus-visible,.tr-ctl input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+  .tr-result{margin-top:.9rem;font-size:.96rem;min-height:1.2rem}
+  .tr-result .ok{color:var(--pos);font-weight:700}
+  .tr-result .bad{color:var(--neg);font-weight:700}
+  .tr-result .sol{margin-top:.7rem;padding:.85rem 1rem;background:#FCFBFE;border:1px solid var(--line);border-radius:10px;font-size:.92rem;line-height:1.7}
+  .tr-result .sol .m{font-family:ui-monospace,Menlo,monospace;color:var(--ink);font-weight:600}
+  .tr-result .sol b{color:var(--accent)}
+</style>
+
+<script>
+(function(){
+  var eqEl=document.getElementById('trEq'), ansEl=document.getElementById('trAns'), resEl=document.getElementById('trResult');
+  if(!eqEl) return;
+  var cur=null;
+
+  function ri(min,max){ return Math.floor(Math.random()*(max-min+1))+min; }
+  function nz(min,max){ var v=0; while(v===0){ v=ri(min,max); } return v; }
+  function d(n){ return n<0 ? ('−'+Math.abs(n)) : (''+n); }      // число с настоящим минусом
+  function P(x,y){ return '('+d(x)+'; '+d(y)+')'; }
+
+  function genTask(){
+    var t=ri(0,5), x0=nz(-4,4), y0=nz(-4,4), X, Y, label, rule, calc;
+    if(t===0){                                   // f(x) ± b  — по y
+      var b=nz(-5,5);
+      label='y = f(x) '+(b>0?'+ '+b:'− '+(-b));
+      X=x0; Y=y0+b;
+      rule='Число прибавили снаружи (к самой f) → сдвиг по оси y '+(b>0?'вверх':'вниз')+' на '+Math.abs(b)+'. У точки меняется только y.';
+      calc='y: '+d(y0)+(b>0?' + '+b:' − '+(-b))+' = '+d(Y)+',  x без изменений.';
+    } else if(t===1){                            // f(x ± a) — по x, «наоборот»
+      var a=nz(-5,5);
+      label='y = f(x '+(a>0?'+ '+a:'− '+(-a))+')';
+      X=x0-a; Y=y0;
+      rule='Число внутри аргумента (у x) → сдвиг по оси x '+(a>0?'влево':'вправо')+' на '+Math.abs(a)+' («наоборот» знаку). y не меняется.';
+      calc='скобка x '+(a>0?'+ '+a:'− '+(-a))+' должна дать прежний '+d(x0)+' → x = '+d(x0)+(a>0?' − '+a:' + '+(-a))+' = '+d(X)+'.';
+    } else if(t===2){                            // -f(x)  ↕
+      label='y = −f(x)';
+      X=x0; Y=-y0;
+      rule='Минус снаружи (перед f) → отражение относительно оси x (верх↔низ). У точки меняет знак y.';
+      calc='y меняет знак: '+d(y0)+' → '+d(Y)+',  x без изменений.';
+    } else if(t===3){                            // f(-x)  ↔
+      label='y = f(−x)';
+      X=-x0; Y=y0;
+      rule='Минус внутри (у x) → отражение относительно оси y (лево↔право). У точки меняет знак x.';
+      calc='x меняет знак: '+d(x0)+' → '+d(X)+',  y без изменений.';
+    } else if(t===4){                            // k·f(x)  растяжение по y
+      var k=ri(2,3);
+      label='y = '+k+'·f(x)';
+      X=x0; Y=k*y0;
+      rule='Множитель '+k+' снаружи → растяжение вдоль оси y в '+k+' раза. y умножается на '+k+'.';
+      calc='y: '+k+'·'+d(y0)+' = '+d(Y)+',  x без изменений.';
+    } else {                                     // f(kx)  сжатие по x
+      var k2=ri(2,3), m=nz(-2,2);
+      x0=k2*m;                                   // гарантируем целый результат x0/k2
+      label='y = f('+k2+'x)';
+      X=x0/k2; Y=y0;
+      rule='Множитель '+k2+' внутри (у x) → сжатие к оси y в '+k2+' раза. x делится на '+k2+'.';
+      calc='x: '+d(x0)+' / '+k2+' = '+d(X)+',  y без изменений.';
+    }
+    cur={label:label, rule:rule, calc:calc, X:X, Y:Y, x0:x0, y0:y0};
+  }
+
+  function render(){
+    eqEl.innerHTML='<div class="tr-op">'+cur.label+'</div><div class="tr-pt">точка '+P(cur.x0,cur.y0)+' &nbsp;→&nbsp; ?</div>';
+    resEl.innerHTML=''; ansEl.value='';
+  }
+  function solutionHTML(){
+    return '<div class="sol"><b>Преобразование:</b> '+cur.label+'<br>'
+      +cur.rule+'<br>'
+      +'<span class="m">'+cur.calc+'</span><br>'
+      +'<b>Ответ:</b> <span class="m">'+P(cur.X,cur.Y)+'</span></div>';
+  }
+  function check(){
+    var raw=ansEl.value.trim();
+    if(!raw){ resEl.innerHTML='<span class="bad">Введи ответ или нажми «Показать решение».</span>'; return; }
+    // ответы — только целые координаты, поэтому запятую считаем разделителем, а не десятичной
+    var norm=raw.replace(/−/g,'-');
+    var nums=norm.match(/-?\d+/g);
+    if(!nums || nums.length<2){
+      resEl.innerHTML='<span class="bad">Нужны две координаты через точку с запятой, напр. «−1; 3».</span>'; return;
+    }
+    var gx=parseFloat(nums[0]), gy=parseFloat(nums[1]);
+    var ok=Math.abs(gx-cur.X)<0.01 && Math.abs(gy-cur.Y)<0.01;
+    if(ok){ resEl.innerHTML='<span class="ok">✓ Верно! Точка перешла в '+P(cur.X,cur.Y)+'.</span>'+solutionHTML(); }
+    else{
+      var hint='';
+      if(Math.abs(gx-cur.X)>=0.01 && Math.abs(gy-cur.Y)<0.01){ hint=' Проверь координату x — где изменение: внутри f или снаружи?'; }
+      else if(Math.abs(gy-cur.Y)>=0.01 && Math.abs(gx-cur.X)<0.01){ hint=' Проверь координату y.'; }
+      resEl.innerHTML='<span class="bad">✗ Пока не то.'+hint+'</span>'+solutionHTML();
+    }
+  }
+
+  document.getElementById('trNew').addEventListener('click',function(){ genTask(); render(); ansEl.focus(); });
+  document.getElementById('trCheck').addEventListener('click',check);
+  document.getElementById('trShow').addEventListener('click',function(){ resEl.innerHTML=solutionHTML(); });
+  ansEl.addEventListener('keydown',function(e){ if(e.key==='Enter') check(); });
+
+  // первичная генерация — БЕЗ focus (иначе автоскролл к тренажёру)
+  genTask(); render();
+})();
+</script>
+<!--LESSON-NAV-BOT--><nav class="lnav lnav-bot"><a class="prev" href="./alg9-chetnost-funkcii.html"><span class="dir">← Предыдущая</span><span class="ttl">Чётность и нечётность функции</span></a><a class="to-cat" href="./catalog.html">📚 <span>Все темы</span></a><a class="next" href="./alg9-kvadratichnaya-opredelenie.html"><span class="dir">Следующая →</span><span class="ttl">Квадратичная функция и парабола</span></a></nav><!--/LESSON-NAV-BOT-->

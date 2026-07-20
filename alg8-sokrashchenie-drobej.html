@@ -1,0 +1,639 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Сокращение алгебраических дробей — урок, алгебра 8 класс</title>
+<style>
+  :root{
+    --paper:#F6F7F9;
+    --card:#FFFFFF;
+    --ink:#1B2333;
+    --muted:#5A6478;
+    --line:#E2E5EC;
+    --accent:#3B4FD0;
+    --accent-soft:#EAEDFB;
+    --pos:#1E8E5A;   /* верный / сокращено */
+    --pos-bg:#E7F4EC;
+    --hl:#B9791A;    /* общий множитель */
+    --hl-bg:#FBF1DC;
+    --neg:#C0455B;   /* ошибка / вычёркиваем */
+    --neg-bg:#F9E9EC;
+  }
+  *{box-sizing:border-box}
+  body{margin:0}
+  .wrap{
+    max-width:760px;
+    margin:0 auto;
+    padding:clamp(1.4rem,4vw,3rem) clamp(1.1rem,4vw,2rem) 4rem;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    font-size:17px;
+    line-height:1.62;
+    -webkit-font-smoothing:antialiased;
+  }
+  .eyebrow{
+    font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--accent);font-weight:600;margin:0 0 .5rem;
+  }
+  h1{
+    font-family:Georgia,"Times New Roman",serif;
+    font-size:clamp(2rem,6.5vw,2.9rem);
+    line-height:1.06;margin:0;font-weight:700;letter-spacing:-.01em;
+    text-wrap:balance;
+  }
+  .lede{
+    font-size:1.08rem;color:var(--muted);margin:.7rem 0 0;max-width:60ch;
+    text-wrap:pretty;
+  }
+  h2{
+    font-family:Georgia,serif;font-size:1.32rem;font-weight:700;
+    margin:0 0 .1rem;letter-spacing:-.005em;
+  }
+  section{margin-top:2.6rem}
+  .kicker{
+    font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--muted);font-weight:600;margin:0 0 .8rem;
+    display:flex;align-items:center;gap:.6rem;
+  }
+  .kicker::before{
+    content:"";width:1.4rem;height:2px;background:var(--accent);border-radius:2px;
+  }
+  p{margin:.65rem 0}
+  strong{font-weight:650}
+  .math{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-weight:600}
+  sup{font-size:.72em}
+
+  /* Дробь: числитель над знаменателем */
+  .frac{
+    display:inline-flex;flex-direction:column;text-align:center;vertical-align:middle;
+    font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-weight:700;
+    margin:0 .18em;line-height:1.24;
+  }
+  .frac>span{padding:0 .55em;white-space:nowrap}
+  .frac .num{padding-bottom:.05em}
+  .frac .den{border-top:2px solid currentColor;padding-top:.14em;margin-top:.12em}
+  .hl{background:var(--hl-bg);color:var(--hl);border-radius:5px;padding:0 .2em;font-weight:800}
+  .cut{color:var(--neg);text-decoration:line-through;text-decoration-thickness:2px;opacity:.6}
+  .res{color:var(--pos)}
+
+  /* Главная формула */
+  .hero-formula{
+    margin-top:2.2rem;
+    background:var(--ink);color:#fff;border-radius:14px;
+    padding:1.6rem 1.4rem;text-align:center;
+  }
+  .hero-formula .lbl{
+    font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;
+    color:#9aa6c9;margin:0 0 .9rem;
+  }
+  .hero-formula .eq{
+    font-family:ui-monospace,"SF Mono",Menlo,monospace;
+    font-size:clamp(1.5rem,5.5vw,2.1rem);font-weight:700;
+    display:flex;align-items:center;justify-content:center;gap:.5em;flex-wrap:wrap;
+  }
+  .hero-formula .frac .den{border-top-color:#fff}
+  .hero-formula .frac b{color:#8ea0ff}
+  .hero-formula .note{font-size:.86rem;color:#9aa6c9;margin:1rem 0 0}
+
+  /* Пререквизит */
+  .recall{
+    background:var(--accent-soft);border-radius:12px;padding:1rem 1.15rem;
+    font-size:.96rem;
+  }
+  .recall p{margin:.45rem 0}
+
+  /* Правило в 3 шага */
+  .rule{
+    background:var(--card);border:1px solid var(--line);border-radius:12px;
+    padding:1.1rem 1.25rem;margin-top:.6rem;
+  }
+  ol.steps{margin:0;padding:0;list-style:none;counter-reset:s;display:flex;flex-direction:column;gap:.7rem}
+  ol.steps li{position:relative;padding-left:2.1rem;counter-increment:s}
+  ol.steps li::before{
+    content:counter(s);position:absolute;left:0;top:.05rem;
+    width:1.5rem;height:1.5rem;border-radius:50%;
+    background:var(--accent-soft);color:var(--accent);
+    font-size:.82rem;font-weight:700;display:flex;align-items:center;justify-content:center;
+  }
+  ol.steps .m{font-family:ui-monospace,Menlo,monospace;font-weight:600;color:var(--ink)}
+  .odz{
+    margin-top:1rem;padding:.7rem 1rem;background:var(--hl-bg);
+    border-radius:9px;font-size:.92rem;color:#7a5410;
+  }
+  .odz b{color:#5f4109}
+
+  /* Интерактивный степпер */
+  .stepper{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.2rem 1.2rem 1.1rem;margin-top:1rem}
+  .step-stage{
+    display:flex;align-items:center;justify-content:center;gap:.6em;flex-wrap:wrap;
+    min-height:5.2rem;font-size:clamp(1.15rem,4.5vw,1.55rem);
+    background:#FCFDFF;border:1px solid var(--line);border-radius:10px;padding:1rem .8rem;
+  }
+  .step-stage .arrow{color:var(--accent);font-weight:800;font-family:ui-monospace,Menlo,monospace}
+  .step-cap{font-size:.96rem;color:var(--muted);margin:.9rem 0 0;min-height:2.4em}
+  .step-cap b{color:var(--ink)}
+  .step-ctl{display:flex;gap:.5rem;flex-wrap:wrap;align-items:center;margin-top:1rem}
+  .step-ctl button{font:inherit;font-weight:700;font-size:.9rem;cursor:pointer;border:none;border-radius:9px;padding:.5rem .95rem;color:#fff;background:var(--accent)}
+  .step-ctl button.ghost{background:transparent;color:var(--accent);border:1px solid var(--accent)}
+  .step-ctl button:disabled{opacity:.4;cursor:not-allowed}
+  .step-count{font-size:.82rem;color:var(--muted);font-weight:600;margin-left:auto}
+  .step-ctl button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+
+  /* Представления: числа и буквы */
+  .repr{overflow-x:auto;margin-top:.6rem;-webkit-overflow-scrolling:touch}
+  .repr table{border-collapse:collapse;width:100%;min-width:520px;background:var(--card);border-radius:12px}
+  .repr th,.repr td{border:1px solid var(--line);padding:.75rem .9rem;text-align:left;vertical-align:top}
+  .repr th{background:var(--accent-soft);color:var(--accent);font-size:.8rem;letter-spacing:.06em;text-transform:uppercase}
+  .repr td .math{font-size:.95rem}
+  .repr td .note{display:block;font-size:.85rem;color:var(--muted);margin-top:.35rem}
+
+  /* Разбор (статический) */
+  .worked{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:1.2rem 1.3rem}
+  .worked .task{
+    font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.05rem;
+    margin:0 0 1rem;padding-bottom:.8rem;border-bottom:1px solid var(--line);
+    display:flex;align-items:center;gap:.5em;flex-wrap:wrap;
+  }
+  .verdict{margin-top:1rem;padding:.7rem 1rem;background:var(--pos-bg);border-radius:9px;font-weight:600;color:var(--pos);font-size:.98rem}
+
+  /* Практика */
+  .drill{display:flex;flex-direction:column;gap:.7rem}
+  details{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:.85rem 1.05rem}
+  details[open]{border-color:var(--accent)}
+  summary{cursor:pointer;font-weight:600;list-style:none;display:flex;justify-content:space-between;align-items:center;gap:1rem}
+  summary::-webkit-details-marker{display:none}
+  summary .q{font-family:ui-monospace,Menlo,monospace;display:flex;align-items:center;gap:.4em;flex-wrap:wrap}
+  summary .tag{font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);border:1px solid var(--line);border-radius:20px;padding:.1rem .55rem;white-space:nowrap}
+  summary::after{content:"ответ";font-size:.78rem;color:var(--accent);font-weight:600;white-space:nowrap}
+  details[open] summary::after{content:"скрыть"}
+  summary:focus-visible{outline:3px solid var(--accent);outline-offset:3px;border-radius:6px}
+  .ans{margin-top:.7rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.96rem;color:var(--muted)}
+  .ans .m{font-family:ui-monospace,Menlo,monospace;color:var(--ink);font-weight:600}
+
+  /* Ошибки */
+  ul.pitfalls{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:.6rem}
+  ul.pitfalls li{padding-left:1.5rem;position:relative;font-size:.98rem}
+  ul.pitfalls li::before{content:"\00d7";position:absolute;left:0;top:-.05rem;color:var(--neg);font-weight:700;font-size:1.1rem}
+  ul.pitfalls b{color:var(--ink)}
+
+  .next{background:var(--accent);color:#fff;border-radius:12px;padding:1.2rem 1.3rem}
+  .next h2{color:#fff}
+  .next .eq{font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.2rem;margin:.6rem 0 .3rem}
+  .next p{color:#dfe4fb;font-size:.96rem;margin:.4rem 0 0}
+  .foot{margin-top:2.4rem;font-size:.82rem;color:var(--muted);text-align:center}
+
+  @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+<style>
+.oge-tip{display:flex;gap:.8rem;align-items:flex-start;background:#FFF8E7;border:1px solid #F0D98A;border-left:4px solid #E0A315;border-radius:10px;padding:.85rem 1.05rem;margin:1.5rem 0}
+.oge-tip .b{font-size:.72rem;font-weight:800;letter-spacing:.03em;color:#8A6A15;white-space:nowrap;text-transform:uppercase;padding-top:.15rem}
+.oge-tip .x{font-size:.95rem;line-height:1.5}
+</style>
+
+<!--LESSON-NAV-TOP--><style>.lnav{--lnav-accent:#3D5AF1}.lnav a{text-decoration:none;font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif}.lnav-top{max-width:820px;margin:0 auto;padding:.75rem clamp(1rem,4vw,1.5rem) .1rem}.lnav-top a{display:inline-flex;align-items:center;gap:.35rem;color:var(--lnav-accent);font-weight:600;font-size:.9rem}.lnav-top a:hover{text-decoration:underline}.lnav-bot{max-width:820px;margin:2.6rem auto 3rem;padding:1.1rem clamp(1rem,4vw,1.5rem) 0;border-top:1px solid #E4E8EF;display:flex;align-items:stretch;gap:.55rem}.lnav-bot a{min-width:0;display:flex;flex-direction:column;justify-content:center;gap:.15rem;border:1px solid #E4E8EF;border-radius:12px;padding:.65rem .85rem;color:#182233;background:#fff;transition:border-color .1s,transform .08s}.lnav-bot a:hover{border-color:var(--lnav-accent);transform:translateY(-1px)}.lnav-bot .prev,.lnav-bot .next{flex:1 1 0}.lnav-bot .next{text-align:right}.lnav-bot .dir{font-size:.72rem;color:#8A93A6;font-weight:600}.lnav-bot .ttl{font-size:.9rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.lnav-bot .to-cat{flex:0 0 auto;flex-direction:row;align-items:center;justify-content:center;color:var(--lnav-accent);font-weight:700;font-size:.85rem;white-space:nowrap}@media(max-width:420px){.lnav-bot .to-cat span{display:none}.lnav-bot .to-cat{padding:.65rem .7rem}}</style><nav class="lnav lnav-top"><a href="./catalog.html">← Все темы</a></nav><!--/LESSON-NAV-TOP-->
+<div class="wrap">
+
+  <header>
+    <p class="eyebrow">Алгебра · 8 класс</p>
+    <h1>Сокращение алгебраических дробей</h1>
+    <p class="lede">Ты уже сокращал 6/8&nbsp;=&nbsp;3/4. С буквами всё то же самое — только сначала надо разложить числитель и знаменатель <em>на множители.</em></p>
+  </header>
+
+  <div class="hero-formula">
+    <p class="lbl">Что значит «сократить»</p>
+    <div class="eq">
+      <span class="frac"><span class="num">a · <b>c</b></span><span class="den">b · <b>c</b></span></span>
+      <span>=</span>
+      <span class="frac"><span class="num">a</span><span class="den">b</span></span>
+    </div>
+    <p class="note">Делим числитель и знаменатель на общий множитель <b style="color:#8ea0ff">c</b> (при c ≠ 0). Значение дроби не меняется — запись проще.</p>
+  </div>
+
+  <section>
+    <p class="kicker">Зачем это нужно</p>
+    <h2>Дробь надо доводить до простого вида</h2>
+    <p>С обыкновенными дробями ты уже сокращал: <span class="math">6/8 = 3/4</span>. С буквенными (рациональными) дробями всё то же самое, только вместо чисел сверху и снизу стоят многочлены.</p>
+    <p>Зачем это нужно:</p>
+    <ul>
+      <li>Несокращённая дробь — это «неприведённый» ответ. За <span class="math">(2x + 4)/(x² − 4)</span> вместо аккуратного <span class="math">2/(x − 2)</span> снимут балл — это как написать 6/8 вместо 3/4.</li>
+      <li>Дальше ты будешь умножать, делить и складывать дроби. Если сокращать <strong>до</strong> действий, выражения становятся в разы проще — и меньше шансов ошибиться.</li>
+    </ul>
+    <p>Главное заблуждение, с которым разбираемся сразу: «раз сверху и снизу есть одинаковая буква — её можно вычеркнуть». <strong>Нет.</strong> Сокращать можно только <strong>общий множитель всей дроби</strong>, а не букву внутри суммы.</p>
+    <div class="oge-tip">
+      <div class="b">🎯 В ОГЭ · Задание&nbsp;8</div>
+      <div class="x">Преобразование алгебраических выражений. Сокращать дробь нужно всегда: несокращённый ответ считают незаконченным. За <b>(2x&nbsp;+&nbsp;4)/(x²&nbsp;−&nbsp;4)</b> вместо <b>2/(x&nbsp;−&nbsp;2)</b> снимают балл.</div>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Что вспомнить с прошлых шагов</p>
+    <div class="recall">
+      <p><strong>Основное свойство дроби.</strong> Значение дроби не изменится, если числитель и знаменатель умножить или разделить на одно и то же ненулевое число или выражение. На этом и стоит сокращение.</p>
+      <p><strong>Разложение на множители (7 класс)</strong> — два инструмента:</p>
+      <p>• вынести общий множитель за скобку: <span class="math">3x + 6 = 3(x + 2)</span>;</p>
+      <p>• разность квадратов: <span class="math">a² − b² = (a − b)(a + b)</span>, например <span class="math">x² − 4 = (x − 2)(x + 2)</span>.</p>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Правило — вся суть темы</p>
+    <h2>Сокращаем в три шага</h2>
+    <p><strong>Рациональная дробь</strong> — это дробь вида <span class="math">P/Q</span>, где <span class="math">P</span> и <span class="math">Q</span> — многочлены, причём <span class="math">Q ≠ 0</span> (на ноль делить нельзя). Главная идея: <strong>делить можно только множители</strong>. Поэтому:</p>
+    <div class="rule">
+      <ol class="steps">
+        <li>Разложи <span class="m">числитель</span> на множители.</li>
+        <li>Разложи <span class="m">знаменатель</span> на множители.</li>
+        <li>Найди <span class="m">общий множитель</span> и раздели на него сверху и снизу — вычеркни его.</li>
+      </ol>
+      <div class="odz"><b>ОДЗ.</b> Значения, при которых знаменатель был равен нулю, остаются запрещёнными <b>даже после сокращения</b>. Сократили <span class="math">(x − 2)</span> — но если этот множитель обнулял знаменатель, ограничение <span class="math">x ≠ 2</span> сохраняется.</div>
+    </div>
+    <p style="font-size:.92rem;color:var(--muted);margin-top:.9rem">Если разложить не получилось и общего множителя нет — сокращать нечего, дробь так и остаётся.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Разбираем по шагам · интерактив</p>
+    <h2>Как сокращается дробь</h2>
+    <p>Возьмём <span class="math">(3x + 6)/(x² − 4)</span> и пройдём весь путь. Жми <strong>«Следующий шаг»</strong> — на каждом шаге смотри, что меняется, и где загорается общий множитель.</p>
+    <div class="stepper">
+      <div class="step-stage" id="stStage"></div>
+      <p class="step-cap" id="stCap"></p>
+      <div class="step-ctl">
+        <button id="stPrev" type="button" class="ghost">← Назад</button>
+        <button id="stNext" type="button">Следующий шаг →</button>
+        <button id="stReset" type="button" class="ghost">↺ Сначала</button>
+        <span id="stCount" class="step-count"></span>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Разбираем вместе</p>
+    <h2>Ещё пример — целый ответ</h2>
+    <div class="worked">
+      <p class="task">Сократить <span class="frac"><span class="num">2x² + 6x</span><span class="den">x² + 3x</span></span></p>
+      <ol class="steps">
+        <li>Числитель: выносим <span class="m">2x</span> за скобку → <span class="m">2x(x + 3)</span>.</li>
+        <li>Знаменатель: выносим <span class="m">x</span> за скобку → <span class="m">x(x + 3)</span>.</li>
+        <li>Общий множитель — <span class="m">x(x + 3)</span>. Делим на него сверху и снизу.</li>
+      </ol>
+      <div class="verdict">Ответ: 2 &nbsp;(при x ≠ 0 и x ≠ −3).</div>
+    </div>
+    <p style="font-size:.92rem;color:var(--muted);margin-top:.9rem">Заметь: сократился весь <span class="math">x(x + 3)</span> целиком, и наверху остался просто множитель <span class="math">2</span>. Это нормально — иногда после сокращения дробь превращается в число.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Наглядность · несколько представлений</p>
+    <h2>Числа и буквы — один и тот же приём</h2>
+    <p>Посмотри на две строки рядом. Слева — обыкновенная дробь, справа — буквенная. Что общего в способе?</p>
+    <div class="repr">
+      <table>
+        <tr><th>Числа</th><th>Буквы</th></tr>
+        <tr>
+          <td>
+            <span class="math">6/8 = (2·3)/(2·<span class="hl">4</span>)... </span>
+            <span class="math">= (<span class="hl">2</span>·3)/(<span class="hl">2</span>·4) = 3/4</span>
+            <span class="note">делим на общий множитель <b>2</b></span>
+          </td>
+          <td>
+            <span class="math">(3·<span class="hl">(x+2)</span>) / ((x−2)·<span class="hl">(x+2)</span>) = 3/(x−2)</span>
+            <span class="note">делим на общий множитель <b>(x + 2)</b></span>
+          </td>
+        </tr>
+      </table>
+    </div>
+    <p style="font-size:.92rem;color:var(--muted);margin-top:.9rem">И там, и там вычёркивается <strong>общий множитель</strong> — только у чисел это 2, а у букв целая скобка (x + 2).</p>
+    <p><strong>Быстрая проверка на ошибку.</strong> Многие думают, что <span class="math">(x + 4)/x = 4</span>. Проверь подстановкой <span class="math">x = 1</span>: <span class="math">(1 + 4)/1 = 5</span>, а не 4. Значит, сократить слагаемое нельзя — только множитель.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Тренажёр · бесконечная практика</p>
+    <h2>Сократи дробь сам</h2>
+    <p>Нажми «Новая дробь», разложи числитель и знаменатель на множители и сократи. Введи ответ: число (например <b>2</b>), выражение (<b>x − 3</b>), дробь (<b>3/(x−2)</b> или <b>(x−3)/3</b>) — или напиши <b>«не сокращается»</b>, если общего множителя нет. Минус пиши как обычный.</p>
+    <div class="trainer">
+      <div class="tr-eq" id="trEq"></div>
+      <div class="tr-ctl">
+        <button id="trNew" type="button">🎲 Новая дробь</button>
+        <input id="trAns" type="text" placeholder="напр.  3/(x-2)   или   2   или   не сокращается" aria-label="Ответ">
+        <button id="trCheck" type="button" class="sec">Проверить</button>
+        <button id="trShow" type="button" class="ghost">Показать решение</button>
+      </div>
+      <div id="trResult" class="tr-result"></div>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Теперь ты · нажми, чтобы проверить</p>
+    <h2>Мини-практика по уровням</h2>
+    <div class="drill">
+      <details>
+        <summary><span class="q">Можно ли сократить (a + 5)/5 на 5?</span><span class="tag">понимание</span></summary>
+        <div class="ans"><strong>Нет.</strong> Здесь 5 — это <span class="m">слагаемое</span> в сумме a + 5, а не множитель всей дроби. Сокращать слагаемые нельзя.</div>
+      </details>
+      <details>
+        <summary><span class="q">На какой множитель сократится <span class="frac"><span class="num">7(x − 1)</span><span class="den">4(x − 1)</span></span>?</span><span class="tag">понимание</span></summary>
+        <div class="ans">На общий множитель <span class="m">(x − 1)</span>. Остаётся <span class="m">7/4</span>.</div>
+      </details>
+      <details>
+        <summary><span class="q">Сократи <span class="frac"><span class="num">4x − 8</span><span class="den">x − 2</span></span></span><span class="tag">применение</span></summary>
+        <div class="ans"><span class="m">4x − 8 = 4(x − 2)</span>; сокращаем <span class="m">(x − 2)</span> → ответ <span class="m">4</span> (при x ≠ 2).</div>
+      </details>
+      <details>
+        <summary><span class="q">Сократи <span class="frac"><span class="num">m² − 9</span><span class="den">3m + 9</span></span></span><span class="tag">применение</span></summary>
+        <div class="ans"><span class="m">m² − 9 = (m − 3)(m + 3)</span>, &nbsp;<span class="m">3m + 9 = 3(m + 3)</span>; сокращаем <span class="m">(m + 3)</span> → ответ <span class="m">(m − 3)/3</span>.</div>
+      </details>
+      <details>
+        <summary><span class="q">Сократи <span class="frac"><span class="num">a² + 2ab + b²</span><span class="den">a + b</span></span></span><span class="tag">применение</span></summary>
+        <div class="ans">Числитель — это <span class="m">(a + b)²</span>. Сокращаем одну скобку <span class="m">(a + b)</span> → ответ <span class="m">a + b</span>.</div>
+      </details>
+      <details>
+        <summary><span class="q">Найди ошибку: ученик написал (x + 4)/x = 4</span><span class="tag">анализ</span></summary>
+        <div class="ans">Он <strong>сократил слагаемое</strong>. Но <span class="m">x</span> в знаменателе — это множитель, а <span class="m">x</span> сверху — часть суммы x + 4, а не множитель. Дробь <span class="m">(x + 4)/x</span> не упрощается. Проверка: при x = 1 получится 5, а не 4.</div>
+      </details>
+      <details>
+        <summary><span class="q">Что изменится: <span class="frac"><span class="num">x − 3</span><span class="den">x² − 9</span></span> → <span class="frac"><span class="num">3 − x</span><span class="den">x² − 9</span></span>?</span><span class="tag">анализ</span></summary>
+        <div class="ans">Появится минус: <span class="m">3 − x = −(x − 3)</span>. Тогда <span class="m">(3 − x)/(x² − 9) = −(x − 3)/((x − 3)(x + 3)) = −1/(x + 3)</span>. Первая дробь давала <span class="m">1/(x + 3)</span> — знак сменился.</div>
+      </details>
+      <details>
+        <summary><span class="q">Обратная задача: придумай дробь, дающую после сокращения 2/(x + 1)</span><span class="tag">анализ</span></summary>
+        <div class="ans">Умножь верх и низ на одну скобку, например на <span class="m">(x − 1)</span>: получится <span class="m">(2x − 2)/(x² − 1)</span>. Проверка: <span class="m">2(x − 1)/((x − 1)(x + 1)) = 2/(x + 1)</span>. Годится любая своя дробь, которая сворачивается к <span class="m">2/(x + 1)</span>.</div>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Где чаще всего ошибаются</p>
+    <h2>Четыре ловушки</h2>
+    <ul class="pitfalls">
+      <li><b>Сокращают слагаемое, а не множитель.</b> Самая частая: <span class="math">(a + b)/a → b</span> или <span class="math">(x + 4)/x → 4</span>. Это грубая ошибка. Проверка: можно ли числитель и знаменатель записать как произведение с одинаковой скобкой? Если нет — не сокращается.</li>
+      <li><b>Не раскладывают на множители перед сокращением.</b> Смотрят на <span class="math">(3x + 6)/(x² − 4)</span> и говорят «нельзя». А надо сначала разложить: <span class="math">3(x + 2)</span> и <span class="math">(x − 2)(x + 2)</span> — и только тогда виден общий множитель.</li>
+      <li><b>Теряют знак минус.</b> Помни: <span class="math">b − a = −(a − b)</span>. Поэтому <span class="math">(a − b)/(b − a) = −1</span>, а не 1.</li>
+      <li><b>Забывают про ОДЗ.</b> Сократили <span class="math">(x − 3)</span> и думают, что x = 3 теперь разрешён. Нет: значения, обнулявшие исходный знаменатель, остаются запрещёнными.</li>
+    </ul>
+  </section>
+
+  <section>
+    <p class="kicker">Проверь себя · объясни своими словами</p>
+    <h2>Три вопроса на понимание</h2>
+    <div class="drill">
+      <details>
+        <summary><span class="q">Что нужно сделать с числителем и знаменателем ПЕРЕД сокращением?</span><span class="tag">проверка</span></summary>
+        <div class="ans">Разложить их <strong>на множители</strong>. Делить (вычёркивать) можно только множители, а не слагаемые.</div>
+      </details>
+      <details>
+        <summary><span class="q">Почему (a + 7)/7 нельзя сократить на 7?</span><span class="tag">проверка</span></summary>
+        <div class="ans">Потому что 7 сверху — это <strong>слагаемое</strong> в сумме a + 7, а не множитель. Сократить можно было бы, только если бы весь числитель делился на 7 как множитель.</div>
+      </details>
+      <details>
+        <summary><span class="q">Сократи <span class="frac"><span class="num">x² − 25</span><span class="den">x + 5</span></span></span><span class="tag">проверка</span></summary>
+        <div class="ans"><span class="m">x² − 25 = (x − 5)(x + 5)</span>; сокращаем <span class="m">(x + 5)</span> → ответ <span class="m">x − 5</span> (при x ≠ −5).</div>
+      </details>
+    </div>
+    <p style="font-size:.92rem;color:var(--muted);margin-top:1rem"><strong>Итог одной фразой:</strong> сократить дробь — это разложить числитель и знаменатель на множители и разделить их на общий множитель (а слагаемые сокращать нельзя).</p>
+  </section>
+
+  <section>
+    <div class="next">
+      <h2>Что дальше</h2>
+      <p>Теперь ты умеешь приводить дробь к простому виду. Следующий шаг — <strong>действия с дробями</strong>:</p>
+      <div class="eq">умножение и деление · сложение с разными знаменателями</div>
+      <p>Секрет: если сокращать дробь <strong>до</strong> умножения, деления и сложения — числа и выражения становятся в разы проще, и меньше шансов ошибиться.</p>
+    </div>
+  </section>
+
+  <p class="foot">Проверка на выходе: что делаем перед сокращением? · почему (a + 7)/7 не сокращается? · сократи (x² − 25)/(x + 5).</p>
+
+</div>
+
+<style>
+  .trainer{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.2rem 1.3rem;margin-top:1rem}
+  .tr-eq{display:flex;align-items:center;justify-content:center;gap:.5em;flex-wrap:wrap;font-family:ui-monospace,Menlo,monospace;font-weight:800;font-size:clamp(1.2rem,4.5vw,1.55rem);padding:1rem;background:var(--accent-soft);border-radius:10px;color:var(--ink);min-height:4.5rem}
+  .tr-eq .arrow{color:var(--accent)}
+  .tr-ctl{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.9rem;align-items:center}
+  .tr-ctl button{font:inherit;font-weight:700;font-size:.9rem;cursor:pointer;border:none;border-radius:9px;padding:.55rem .95rem;color:#fff;background:var(--accent)}
+  .tr-ctl button.sec{background:var(--pos)}
+  .tr-ctl button.ghost{background:transparent;color:var(--accent);border:1px solid var(--accent)}
+  .tr-ctl input{flex:1;min-width:170px;font:inherit;padding:.5rem .7rem;border:1px solid var(--line);border-radius:9px;background:#fff;color:var(--ink)}
+  .tr-ctl button:focus-visible,.tr-ctl input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+  .tr-result{margin-top:.9rem;font-size:.96rem;min-height:1.2rem}
+  .tr-result .ok{color:var(--pos);font-weight:700}
+  .tr-result .bad{color:var(--neg);font-weight:700}
+  .tr-result .sol{margin-top:.7rem;padding:.85rem 1rem;background:#FCFBFE;border:1px solid var(--line);border-radius:10px;font-family:ui-monospace,Menlo,monospace;font-size:.9rem;line-height:1.9;display:flex;flex-direction:column;gap:.35rem}
+  .tr-result .sol b{color:var(--accent)}
+  .tr-result .sol .row{display:flex;align-items:center;gap:.5em;flex-wrap:wrap}
+</style>
+
+<script>
+/* ===== Интерактивный степпер: (3x + 6)/(x² − 4) ===== */
+(function(){
+  var stage=document.getElementById('stStage'); if(!stage) return;
+  var cap=document.getElementById('stCap'), count=document.getElementById('stCount');
+  var bPrev=document.getElementById('stPrev'), bNext=document.getElementById('stNext'), bReset=document.getElementById('stReset');
+
+  function frac(num,den){ return '<span class="frac"><span class="num">'+num+'</span><span class="den">'+den+'</span></span>'; }
+
+  var steps=[
+    {
+      body: frac('3x + 6','x² − 4'),
+      cap: '<b>Исходная дробь.</b> Просто вычеркнуть x или число нельзя — сокращать можно только общий множитель. Значит, сначала раскладываем числитель и знаменатель на множители.'
+    },
+    {
+      body: frac('3(x + 2)','x² − 4'),
+      cap: '<b>Числитель.</b> Выносим 3 за скобку: 3 — общий множитель слагаемых 3x и 6. Получили 3(x + 2).'
+    },
+    {
+      body: frac('3(x + 2)','(x − 2)(x + 2)'),
+      cap: '<b>Знаменатель.</b> Это разность квадратов: x² − 2² = (x − 2)(x + 2).'
+    },
+    {
+      body: frac('3<span class="hl">(x + 2)</span>','(x − 2)<span class="hl">(x + 2)</span>'),
+      cap: '<b>Общий множитель.</b> Скобка (x + 2) есть и сверху, и снизу — это множитель ВСЕЙ дроби. Её и сократим.'
+    },
+    {
+      body: frac('3<span class="cut">(x + 2)</span>','(x − 2)<span class="cut">(x + 2)</span>')
+            + '<span class="arrow">=</span>' + frac('3','x − 2'),
+      cap: '<b>Сокращаем.</b> Делим числитель и знаменатель на (x + 2) — вычёркиваем его. Ответ: <b>3/(x − 2)</b>, при x ≠ 2 и x ≠ −2 (эти значения обнуляли исходный знаменатель).'
+    }
+  ];
+
+  var i=0;
+  function render(){
+    stage.innerHTML=steps[i].body;
+    cap.innerHTML=steps[i].cap;
+    count.textContent='Шаг '+(i+1)+' / '+steps.length;
+    bPrev.disabled=(i===0);
+    bNext.disabled=(i===steps.length-1);
+  }
+  bNext.addEventListener('click',function(){ if(i<steps.length-1){ i++; render(); } });
+  bPrev.addEventListener('click',function(){ if(i>0){ i--; render(); } });
+  bReset.addEventListener('click',function(){ i=0; render(); });
+  render();
+})();
+</script>
+
+<script>
+/* ===== Тренажёр-генератор: сокращение дробей ===== */
+(function(){
+  var eqEl=document.getElementById('trEq'), ansEl=document.getElementById('trAns'), resEl=document.getElementById('trResult');
+  if(!eqEl) return;
+  var MINUS='−', SQ='²';
+  var cur=null;
+
+  function ri(min,max){ return Math.floor(Math.random()*(max-min+1))+min; }
+  function frac(num,den){ return '<span class="frac"><span class="num">'+num+'</span><span class="den">'+den+'</span></span>'; }
+  // подписанный хвостовой член: "+ 3" / "− 3"
+  function tail(v){ return (v<0? MINUS+' ':'+ ')+Math.abs(v); }
+  // линейное x + c для вывода
+  function linDisp(c){ return 'x '+tail(c); }
+
+  function pickType(){
+    if(Math.random()<0.15) return 'E';
+    return ['A','B','C','D'][Math.floor(Math.random()*4)];
+  }
+
+  function generate(){
+    var t=pickType(), a,n,k,m;
+    if(t==='A'){                         // a(x+n) / (x−n)(x+n) -> a/(x−n)
+      a=ri(2,5); n=ri(1,6);
+      cur={t:t,
+        numDisp:a+'x + '+(a*n),
+        denDisp:'x'+SQ+' '+MINUS+' '+(n*n),
+        numFac:a+'(x + '+n+')',
+        denFac:'(x '+MINUS+' '+n+')(x + '+n+')',
+        common:'(x + '+n+')',
+        ans:{kind:'ratio', num:a, c:-n} };
+    } else if(t==='B'){                  // a·x(x+n) / x(x+n) -> a
+      a=ri(2,5); n=ri(1,6);
+      var nx=(n===1?'x':n+'x');
+      cur={t:t,
+        numDisp:a+'x'+SQ+' + '+(a*n)+'x',
+        denDisp:'x'+SQ+' + '+nx,
+        numFac:a+'x(x + '+n+')',
+        denFac:'x(x + '+n+')',
+        common:'x(x + '+n+')',
+        ans:{kind:'int', v:a} };
+    } else if(t==='C'){                  // (x−n)(x+n) / k(x+n) -> (x−n)/k
+      k=ri(2,5); n=ri(1,6);
+      cur={t:t,
+        numDisp:'x'+SQ+' '+MINUS+' '+(n*n),
+        denDisp:k+'x + '+(k*n),
+        numFac:'(x '+MINUS+' '+n+')(x + '+n+')',
+        denFac:k+'(x + '+n+')',
+        common:'(x + '+n+')',
+        ans:{kind:'linOverNum', c:-n, den:k} };
+    } else if(t==='D'){                  // (x+n)² / (x+n) -> x+n
+      n=ri(1,7);
+      cur={t:t,
+        numDisp:'x'+SQ+' + '+(2*n)+'x + '+(n*n),
+        denDisp:'x + '+n,
+        numFac:'(x + '+n+')'+SQ,
+        denFac:'(x + '+n+')',
+        common:'(x + '+n+')',
+        ans:{kind:'lin', c:n} };
+    } else {                             // E: (x−n)(x+n) / (x+m), m≠±n -> не сокращается
+      n=ri(2,6);
+      do{ m=ri(-6,6); } while(m===0 || m===n || m===-n);
+      cur={t:t,
+        numDisp:'x'+SQ+' '+MINUS+' '+(n*n),
+        denDisp:linDisp(m),
+        numFac:'(x '+MINUS+' '+n+')(x + '+n+')',
+        denFac:'(x '+tail(m)+')',
+        common:null,
+        ans:{kind:'none'} };
+    }
+    render();
+  }
+
+  function render(){
+    eqEl.innerHTML=frac(cur.numDisp,cur.denDisp)+'<span class="arrow">=</span>?';
+    resEl.innerHTML=''; ansEl.value='';
+  }
+
+  // нормализация ответа
+  function norm(s){
+    return String(s).toLowerCase()
+      .replace(/−/g,'-')            // настоящий минус -> дефис
+      .replace(/[хХ]/g,'x')    // кириллическая х -> латинская x
+      .replace(/(\d),(\d)/g,'$1.$2')     // запятая-десятичная -> точка
+      .replace(/\s+/g,'');
+  }
+  function stripParen(v){ return (v.length>1 && v.charAt(0)==='(' && v.charAt(v.length-1)===')') ? v.slice(1,-1) : v; }
+
+  // формы линейного x + c
+  function linForms(c){
+    if(c===0) return ['x'];
+    if(c>0)  return ['x+'+c, c+'+x'];
+    return ['x-'+(-c), '-'+(-c)+'+x'];
+  }
+
+  function accInt(v,val){ return /^[+]?\d+(?:\.\d+)?$/.test(v) && parseFloat(v)===val; }
+  function accLin(v,c){
+    var forms=linForms(c), t=stripParen(v);
+    return forms.indexOf(v)!==-1 || forms.indexOf(t)!==-1;
+  }
+  function accRatio(v,num,c){
+    var t=stripParen(v), dens=linForms(c), out=[];
+    dens.forEach(function(d){ out.push(num+'/('+d+')'); });
+    return out.indexOf(v)!==-1 || out.indexOf(t)!==-1;
+  }
+  function accLinOverNum(v,c,den){
+    var t=stripParen(v), lins=linForms(c), out=[];
+    lins.forEach(function(l){ out.push('('+l+')/'+den); });
+    return out.indexOf(v)!==-1 || out.indexOf(t)!==-1;
+  }
+  function accNone(v){ return /несокра|^нет$|нельзя|неможетбытьсокра|немож/.test(v); }
+
+  function isCorrect(v){
+    var A=cur.ans;
+    if(A.kind==='none')      return accNone(v);
+    if(A.kind==='int')       return accInt(v,A.v);
+    if(A.kind==='lin')       return accLin(v,A.c);
+    if(A.kind==='ratio')     return accRatio(v,A.num,A.c);
+    if(A.kind==='linOverNum')return accLinOverNum(v,A.c,A.den);
+    return false;
+  }
+
+  function ansHTML(){
+    var A=cur.ans;
+    if(A.kind==='int')       return '<b class="res">'+A.v+'</b>';
+    if(A.kind==='lin')       return '<b class="res">'+('x '+tail(A.c))+'</b>';
+    if(A.kind==='ratio')     return frac(''+A.num, 'x '+tail(A.c));
+    if(A.kind==='linOverNum')return frac('x '+tail(A.c), ''+A.den);
+    return '<b class="res">дробь не сокращается</b>';
+  }
+
+  function solutionHTML(){
+    var A=cur.ans, h='<div class="sol">';
+    if(A.kind==='none'){
+      h+='<div class="row"><b>1.</b> Числитель: '+cur.numFac+'.</div>';
+      h+='<div class="row"><b>2.</b> Знаменатель '+cur.denFac+' — это уже один множитель.</div>';
+      h+='<div class="row"><b>3.</b> Общего множителя нет → '+ansHTML()+'. Вычёркивать слагаемые нельзя.</div>';
+    } else {
+      h+='<div class="row"><b>1.</b> Раскладываем: '+frac(cur.numFac,cur.denFac)+'</div>';
+      h+='<div class="row"><b>2.</b> Общий множитель — '+cur.common+'. Делим на него сверху и снизу.</div>';
+      h+='<div class="row"><b>3.</b> Ответ: '+ansHTML()+'</div>';
+    }
+    return h+'</div>';
+  }
+
+  function check(){
+    if(!ansEl.value.trim()){ resEl.innerHTML='<span class="bad">Введи ответ или нажми «Показать решение».</span>'; return; }
+    var v=norm(ansEl.value);
+    if(isCorrect(v)){
+      resEl.innerHTML='<span class="ok">✓ Верно!</span>'+solutionHTML();
+    } else {
+      var hint = (cur.ans.kind==='none')
+        ? ' Здесь общего множителя нет — дробь не сокращается.'
+        : ' Разложи числитель и знаменатель на множители и вычеркни общую скобку.';
+      resEl.innerHTML='<span class="bad">✗ Пока не то.'+hint+'</span>'+solutionHTML();
+    }
+  }
+
+  document.getElementById('trNew').addEventListener('click',function(){ generate(); ansEl.focus(); });
+  document.getElementById('trCheck').addEventListener('click',check);
+  document.getElementById('trShow').addEventListener('click',function(){ resEl.innerHTML=solutionHTML(); });
+  ansEl.addEventListener('keydown',function(e){ if(e.key==='Enter') check(); });
+
+  generate();   // стартовая задача без focus (не автоскроллим)
+})();
+</script>
+<!--LESSON-NAV-BOT--><nav class="lnav lnav-bot"><a class="prev" href="./alg8-osnovnoe-svojstvo-drobi.html"><span class="dir">← Предыдущая</span><span class="ttl">Основное свойство рациональной дроби</span></a><a class="to-cat" href="./catalog.html">📚 <span>Все темы</span></a><a class="next" href="./alg8-slozhenie-drobej-raznye-znam.html"><span class="dir">Следующая →</span><span class="ttl">Сложение и вычитание дробей с разными знаменателями</span></a></nav><!--/LESSON-NAV-BOT-->

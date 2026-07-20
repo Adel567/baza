@@ -1,0 +1,658 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Вынесение множителя из-под корня — урок, алгебра 8 класс</title>
+<style>
+  :root{
+    --paper:#F6F7F9;
+    --card:#FFFFFF;
+    --ink:#1B2333;
+    --muted:#5A6478;
+    --line:#E2E5EC;
+    --accent:#3B4FD0;
+    --accent-soft:#EAEDFB;
+    --pos:#1E8E5A;   /* k ≥ 0 */
+    --pos-bg:#E7F4EC;
+    --zero:#B9791A;  /* модуль / буква */
+    --zero-bg:#FBF1DC;
+    --neg:#C0455B;   /* k < 0 */
+    --neg-bg:#F9E9EC;
+  }
+  *{box-sizing:border-box}
+  body{margin:0}
+  .wrap{
+    max-width:760px;
+    margin:0 auto;
+    padding:clamp(1.4rem,4vw,3rem) clamp(1.1rem,4vw,2rem) 4rem;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    font-size:17px;
+    line-height:1.62;
+    -webkit-font-smoothing:antialiased;
+  }
+  .eyebrow{
+    font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--accent);font-weight:600;margin:0 0 .5rem;
+  }
+  h1{
+    font-family:Georgia,"Times New Roman",serif;
+    font-size:clamp(2rem,6.4vw,2.9rem);
+    line-height:1.06;margin:0;font-weight:700;letter-spacing:-.01em;
+    text-wrap:balance;
+  }
+  .lede{
+    font-size:1.08rem;color:var(--muted);margin:.7rem 0 0;max-width:60ch;
+    text-wrap:pretty;
+  }
+  h2{
+    font-family:Georgia,serif;font-size:1.32rem;font-weight:700;
+    margin:0 0 .1rem;letter-spacing:-.005em;
+  }
+  section{margin-top:2.6rem}
+  .kicker{
+    font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--muted);font-weight:600;margin:0 0 .8rem;
+    display:flex;align-items:center;gap:.6rem;
+  }
+  .kicker::before{
+    content:"";width:1.4rem;height:2px;background:var(--accent);border-radius:2px;
+  }
+  p{margin:.65rem 0}
+  strong{font-weight:650}
+  .math{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-weight:600}
+  sup{font-size:.72em}
+  /* корень с чертой */
+  .rd{white-space:nowrap}
+  .rd u{text-decoration:none;border-top:2px solid currentColor;padding:0 .18em 0 .04em;margin-left:-.04em}
+
+  /* Главная формула */
+  .hero-formula{
+    margin-top:2.2rem;
+    background:var(--ink);color:#fff;border-radius:14px;
+    padding:1.6rem 1.4rem;text-align:center;
+  }
+  .hero-formula .lbl{
+    font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;
+    color:#9aa6c9;margin:0 0 .7rem;
+  }
+  .hero-formula .eq{
+    font-family:ui-monospace,"SF Mono",Menlo,monospace;
+    font-size:clamp(1.6rem,5.5vw,2.3rem);font-weight:700;letter-spacing:.01em;
+  }
+  .hero-formula .eq b{color:#8ea0ff;font-weight:700}
+  .hero-formula .note{font-size:.86rem;color:#9aa6c9;margin:.9rem 0 0}
+
+  /* Пререквизит */
+  .recall{
+    background:var(--accent-soft);border-radius:12px;padding:1rem 1.15rem;
+    font-size:.96rem;
+  }
+  .recall p{margin:.3rem 0}
+
+  /* Два направления */
+  .ways{display:grid;gap:.85rem;margin-top:.4rem}
+  @media(min-width:600px){.ways{grid-template-columns:1fr 1fr}}
+  .way{
+    border-radius:12px;padding:1.05rem 1.15rem;border:1px solid var(--line);
+    background:var(--card);display:flex;flex-direction:column;gap:.4rem;
+  }
+  .way.out{border-top:4px solid var(--accent)}
+  .way.in{border-top:4px solid var(--pos)}
+  .way .lab{font-weight:700;font-size:1rem}
+  .way.out .lab{color:var(--accent)}
+  .way.in .lab{color:var(--pos)}
+  .way .eq{font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.05rem}
+  .way .desc{font-size:.9rem;color:var(--muted)}
+
+  /* Три случая знака (внесение) */
+  .cases{display:grid;gap:.85rem;margin-top:.4rem}
+  @media(min-width:620px){.cases{grid-template-columns:repeat(3,1fr)}}
+  .case{
+    border-radius:12px;padding:1.05rem 1.1rem;border:1px solid var(--line);
+    background:var(--card);display:flex;flex-direction:column;gap:.35rem;
+  }
+  .case .sign{font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.05rem}
+  .case .eqc{font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1rem}
+  .case .desc{font-size:.88rem;color:var(--muted)}
+  .case.pos{border-top:4px solid var(--pos);background:var(--pos-bg)}
+  .case.pos .sign{color:var(--pos)}
+  .case.zero{border-top:4px solid var(--zero);background:var(--zero-bg)}
+  .case.zero .sign{color:var(--zero)}
+  .case.neg{border-top:4px solid var(--neg);background:var(--neg-bg)}
+  .case.neg .sign{color:var(--neg)}
+
+  /* Разбор */
+  .worked{
+    background:var(--card);border:1px solid var(--line);border-radius:12px;
+    padding:1.2rem 1.3rem;
+  }
+  .worked .task{
+    font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.05rem;
+    margin:0 0 1rem;padding-bottom:.8rem;border-bottom:1px solid var(--line);
+  }
+  ol.steps{margin:0;padding:0;list-style:none;counter-reset:s;display:flex;flex-direction:column;gap:.7rem}
+  ol.steps li{
+    position:relative;padding-left:2.1rem;counter-increment:s;
+  }
+  ol.steps li::before{
+    content:counter(s);position:absolute;left:0;top:.05rem;
+    width:1.5rem;height:1.5rem;border-radius:50%;
+    background:var(--accent-soft);color:var(--accent);
+    font-size:.82rem;font-weight:700;display:flex;align-items:center;justify-content:center;
+  }
+  ol.steps .m{font-family:ui-monospace,Menlo,monospace;font-weight:600;color:var(--ink)}
+  .verdict{
+    margin-top:1rem;padding:.7rem 1rem;background:var(--pos-bg);
+    border-radius:9px;font-weight:600;color:var(--pos);font-size:.98rem;
+    font-family:ui-monospace,Menlo,monospace;
+  }
+
+  /* Наглядность / таблица квадратов */
+  .approx{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:1rem 1.2rem;font-size:.96rem}
+  .approx .m{font-family:ui-monospace,Menlo,monospace;font-weight:600;color:var(--ink)}
+  .sqwrap{overflow-x:auto;margin-top:1.1rem;border:1px solid var(--line);border-radius:12px}
+  table.sq{border-collapse:collapse;width:100%;min-width:520px;font-family:ui-monospace,Menlo,monospace;font-size:.92rem}
+  table.sq th,table.sq td{border:1px solid var(--line);padding:.5rem .3rem;text-align:center}
+  table.sq th{background:var(--accent-soft);color:var(--accent);font-weight:700}
+  table.sq td{background:var(--card)}
+  table.sq caption{caption-side:top;text-align:left;font-family:system-ui,sans-serif;font-size:.9rem;color:var(--muted);padding:0 0 .5rem}
+
+  /* Практика */
+  .drill{display:flex;flex-direction:column;gap:.7rem}
+  details{
+    background:var(--card);border:1px solid var(--line);border-radius:10px;
+    padding:.85rem 1.05rem;
+  }
+  details[open]{border-color:var(--accent)}
+  summary{
+    cursor:pointer;font-weight:600;list-style:none;
+    display:flex;justify-content:space-between;align-items:center;gap:1rem;
+  }
+  summary::-webkit-details-marker{display:none}
+  summary:focus-visible{outline:3px solid var(--accent);outline-offset:3px;border-radius:6px}
+  summary .q{font-family:ui-monospace,Menlo,monospace}
+  summary .tag{
+    font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);
+    border:1px solid var(--line);border-radius:20px;padding:.1rem .55rem;white-space:nowrap;
+  }
+  summary::after{
+    content:"показать ответ";font-size:.78rem;color:var(--accent);font-weight:600;white-space:nowrap;
+  }
+  details[open] summary::after{content:"скрыть"}
+  .ans{margin-top:.7rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.96rem;color:var(--muted)}
+  .ans .m{font-family:ui-monospace,Menlo,monospace;color:var(--ink);font-weight:600}
+
+  /* Ошибки */
+  ul.pitfalls{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:.6rem}
+  ul.pitfalls li{
+    padding-left:1.5rem;position:relative;font-size:.98rem;
+  }
+  ul.pitfalls li::before{
+    content:"×";position:absolute;left:0;top:-.05rem;color:var(--neg);font-weight:700;font-size:1.1rem;
+  }
+  ul.pitfalls b{color:var(--ink)}
+
+  .next{
+    background:var(--accent);color:#fff;border-radius:12px;padding:1.2rem 1.3rem;
+  }
+  .next h2{color:#fff}
+  .next .eq{
+    font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.15rem;
+    margin:.6rem 0 .3rem;
+  }
+  .next p{color:#dfe4fb;font-size:.96rem;margin:.4rem 0 0}
+  .foot{margin-top:2.4rem;font-size:.82rem;color:var(--muted);text-align:center}
+
+  @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+<style>
+.oge-tip{display:flex;gap:.8rem;align-items:flex-start;background:#FFF8E7;border:1px solid #F0D98A;border-left:4px solid #E0A315;border-radius:10px;padding:.85rem 1.05rem;margin:1.5rem 0}
+.oge-tip .b{font-size:.72rem;font-weight:800;letter-spacing:.03em;color:#8A6A15;white-space:nowrap;text-transform:uppercase;padding-top:.15rem}
+.oge-tip .x{font-size:.95rem;line-height:1.5}
+</style>
+
+<!--LESSON-NAV-TOP--><style>.lnav{--lnav-accent:#3D5AF1}.lnav a{text-decoration:none;font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif}.lnav-top{max-width:820px;margin:0 auto;padding:.75rem clamp(1rem,4vw,1.5rem) .1rem}.lnav-top a{display:inline-flex;align-items:center;gap:.35rem;color:var(--lnav-accent);font-weight:600;font-size:.9rem}.lnav-top a:hover{text-decoration:underline}.lnav-bot{max-width:820px;margin:2.6rem auto 3rem;padding:1.1rem clamp(1rem,4vw,1.5rem) 0;border-top:1px solid #E4E8EF;display:flex;align-items:stretch;gap:.55rem}.lnav-bot a{min-width:0;display:flex;flex-direction:column;justify-content:center;gap:.15rem;border:1px solid #E4E8EF;border-radius:12px;padding:.65rem .85rem;color:#182233;background:#fff;transition:border-color .1s,transform .08s}.lnav-bot a:hover{border-color:var(--lnav-accent);transform:translateY(-1px)}.lnav-bot .prev,.lnav-bot .next{flex:1 1 0}.lnav-bot .next{text-align:right}.lnav-bot .dir{font-size:.72rem;color:#8A93A6;font-weight:600}.lnav-bot .ttl{font-size:.9rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.lnav-bot .to-cat{flex:0 0 auto;flex-direction:row;align-items:center;justify-content:center;color:var(--lnav-accent);font-weight:700;font-size:.85rem;white-space:nowrap}@media(max-width:420px){.lnav-bot .to-cat span{display:none}.lnav-bot .to-cat{padding:.65rem .7rem}}</style><nav class="lnav lnav-top"><a href="./catalog.html">← Все темы</a></nav><!--/LESSON-NAV-TOP-->
+<div class="wrap">
+
+  <header>
+    <p class="eyebrow">Алгебра · 8 класс</p>
+    <h1>Вынесение множителя из-под корня</h1>
+    <p class="lede">Как превратить <span class="rd">√<u>72</u></span> в аккуратное <span class="math">6√2</span> — и как занести множитель обратно под корень. Одно свойство, прочитанное в две стороны.</p>
+  </header>
+
+  <div class="hero-formula">
+    <p class="lbl">Вынесение множителя</p>
+    <div class="eq"><span class="rd">√(<u><b>a</b>²·b</u>)</span> = <b>a</b><span class="rd">√<u>b</u></span></div>
+    <p class="note">под корнем выделяем точный квадрат <b>a²</b> и выводим <b>a</b> наружу · обратное действие — внесение: k√a = √(k²·a)</p>
+  </div>
+
+  <section>
+    <p class="kicker">Зачем это нужно</p>
+    <h2>Чтобы корни можно было сравнивать и складывать</h2>
+    <p>Корни вроде <span class="math">√50</span> или <span class="math">√72</span> неудобно сравнивать, складывать и подставлять в формулы. Приведём их к «стандартному» виду — <span class="math">√50 = 5√2</span>, <span class="math">√72 = 6√2</span> — и сразу видно, что это «похожие» корни (оба с <span class="math">√2</span>). Их можно складывать: <span class="math">5√2 + 6√2 = 11√2</span>. Без вынесения множителя так не сделать.</p>
+    <p>Навык нужен везде дальше: при сложении и вычитании корней, при сокращении дробей с корнями, при освобождении от иррациональности в знаменателе, в теореме Пифагора (стороны часто получаются вида <span class="math">√8</span>, <span class="math">√18</span> и приводятся к <span class="math">2√2</span>, <span class="math">3√2</span>).</p>
+    <p><strong>Главное заблуждение:</strong> «упростить корень — значит посчитать его на калькуляторе». Нет: <span class="math">√50 ≈ 7,07</span> — это приближённое десятичное значение, а <span class="math">5√2</span> — точная упрощённая форма. В алгебре нужна именно точная запись.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Что вспомнить с прошлого шага</p>
+    <div class="recall">
+      <p>Вся тема опирается на одно свойство корня из произведения (для неотрицательных множителей):</p>
+      <p><span class="math">√(a·b) = √a · √b</span></p>
+      <p>И на условие ОДЗ: всё, что стоит <strong>под знаком √, должно быть ≥ 0</strong>.</p>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Суть темы</p>
+    <h2>Одно свойство — два направления</h2>
+    <p>Вынесение и внесение — это одно и то же свойство <span class="math">√(a·b) = √a·√b</span>, применённое в две разные стороны:</p>
+    <div class="ways">
+      <div class="way out">
+        <div class="lab">→ Вынесение множителя</div>
+        <div class="eq"><span class="rd">√(<u>a²·b</u>)</span> = a<span class="rd">√<u>b</u></span></div>
+        <div class="desc">Из подкоренного числа выделяем множитель — точный квадрат — и «выводим» его наружу уже без корня. Точный квадрат «развязывается» (√ от квадрата даёт само число), остаток остаётся под корнем.</div>
+      </div>
+      <div class="way in">
+        <div class="lab">← Внесение множителя</div>
+        <div class="eq">k<span class="rd">√<u>a</u></span> = <span class="rd">√(<u>k²·a</u>)</span></div>
+        <div class="desc">Множитель перед корнем заносим внутрь, возведя его в квадрат. Тот же закон справа налево: ведь <span class="math">k = √(k²)</span>, поэтому <span class="math">k·√a = √(k²·a)</span>.</div>
+      </div>
+    </div>
+  </section>
+
+  <div class="oge-tip"><div class="b">🎯 В ОГЭ · Задание 6</div><div class="x">Действия с корнями — это №6 первой части (короткий ответ). Умение привести корень к виду <b>a√b</b> и обратно нужно, чтобы упростить выражение и получить целое число в ответе.</div></div>
+
+  <section>
+    <p class="kicker">Разбираем вместе · думаю вслух</p>
+    <h2>Эталонный пример: вынести множитель из <span class="rd">√<u>72</u></span></h2>
+    <div class="worked">
+      <p class="task">Вынести множитель: <span class="rd">√<u>72</u></span></p>
+      <ol class="steps">
+        <li>Раскладываю 72 на <strong>наибольший точный квадрат</strong> и остаток: <span class="m">72 = 36 · 2</span> (36 — точный квадрат, ведь <span class="m">6² = 36</span>). <em>Почему 36, а не 4 или 9: берём наибольший квадрат-делитель, чтобы сразу довести до конца.</em></li>
+        <li>Разбиваю корень по свойству <span class="m">√(a·b) = √a·√b</span>: &nbsp;<span class="m">√72 = √36 · √2</span>.</li>
+        <li>Извлекаю точный квадрат: <span class="m">√36 = 6</span>. Значит <span class="m">√72 = 6√2</span>.</li>
+        <li>Под корнем остался множитель 2 — он не квадрат, дальше не упрощается. Готово.</li>
+      </ol>
+      <div class="verdict">√72 = 6√2</div>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Покрути сам · шаг за шагом</p>
+    <h2>Разложи корень по шагам</h2>
+    <p>Выбери число, потом жми «Показать шаг» — и следи, как подкоренное число раскладывается на квадрат и остаток, а множитель выходит наружу.</p>
+    <div class="stepbox">
+      <div class="step-pick" id="sbPick">
+        <button type="button" data-n="50">√50</button>
+        <button type="button" data-n="72" class="on">√72</button>
+        <button type="button" data-n="200">√200</button>
+      </div>
+      <div class="step-eq" id="sbEq"><span class="rd">√<u>72</u></span></div>
+      <ol class="sb-steps" id="sbSteps"></ol>
+      <div class="step-ctl">
+        <button type="button" id="sbNext">Показать шаг →</button>
+        <button type="button" id="sbReset" class="ghost">Сбросить</button>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Обратное действие</p>
+    <h2>Внесение множителя под корень</h2>
+    <p>Чтобы занести множитель под корень, его <strong>возводят в квадрат</strong> (ведь <span class="math">3 = √9</span>, а не <span class="math">√3</span>). Разбор с пропущенным шагом — внести множитель под корень в <span class="math">3√5</span>:</p>
+    <div class="worked">
+      <p class="task">Внести под корень: 3√5</p>
+      <ol class="steps">
+        <li>Множитель 3 заносим под корень, возведя в квадрат: <span class="m">3 = √(3²) = √9</span>.</li>
+        <li>Собираем под один корень: <span class="m">3√5 = √9 · √5 = √(9·5)</span>.</li>
+        <li>Перемножаем под корнем: <span class="m">9·5 = 45</span>.</li>
+      </ol>
+      <div class="verdict">3√5 = √45</div>
+    </div>
+    <p style="margin-top:1.4rem">Но со знаком нужно быть внимательным. Под корнем <strong>не может прятаться минус</strong> — поэтому заносится только модуль множителя:</p>
+    <div class="cases">
+      <div class="case pos">
+        <div class="sign">k ≥ 0</div>
+        <div class="eqc">k√a = √(k²·a)</div>
+        <div class="desc">Просто заносим квадрат множителя под корень. Пример: 2√7 = √28.</div>
+      </div>
+      <div class="case neg">
+        <div class="sign">k &lt; 0</div>
+        <div class="eqc">k√a = −√(k²·a)</div>
+        <div class="desc">Минус остаётся снаружи, под корень уходит только |k|. Пример: −4√2 = −√32.</div>
+      </div>
+      <div class="case zero">
+        <div class="sign">буква a</div>
+        <div class="eqc">√(a²·b) = |a|√b</div>
+        <div class="desc">При выносе буквы появляется модуль: корень всегда неотрицателен, √(a²) = |a|, а не a.</div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Проверь глазами · несколько представлений</p>
+    <h2>Точная форма и приближение — одно число</h2>
+    <div class="approx">
+      <p>Полезно прикинуть значение и убедиться, что преобразование верное:</p>
+      <p><span class="m">√72 ≈ 8,49</span> &nbsp;и&nbsp; <span class="m">6√2 ≈ 6 · 1,414 ≈ 8,49</span> — числа совпали.</p>
+      <p style="margin:.5rem 0 0;color:var(--muted)">Точная форма <span class="m">6√2</span> и приближённая <span class="m">8,49</span> — это одно и то же число, просто записанное по-разному.</p>
+    </div>
+    <div class="sqwrap">
+      <table class="sq">
+        <caption>Таблица точных квадратов — на неё опираемся, когда ищем квадрат-делитель:</caption>
+        <thead>
+          <tr><th>n</th><td>1</td><td>2</td><td>3</td><td>4</td><td>5</td><td>6</td><td>7</td><td>8</td><td>9</td><td>10</td></tr>
+        </thead>
+        <tbody>
+          <tr><th>n²</th><td>1</td><td>4</td><td>9</td><td>16</td><td>25</td><td>36</td><td>49</td><td>64</td><td>81</td><td>100</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p style="font-size:.92rem;color:var(--muted)">Вопрос на понимание: какой наибольший квадрат из таблицы делит 200? (Это 100, поэтому √200 = 10√2.)</p>
+  </section>
+
+  <section>
+    <p class="kicker">Теперь ты · нажми, чтобы проверить</p>
+    <h2>Мини-практика по уровням</h2>
+    <div class="drill">
+      <details>
+        <summary><span class="q">Что больше: √48 или 4√3?</span><span class="tag">понимание</span></summary>
+        <div class="ans">Это <strong>одно и то же число</strong>: <span class="m">√48 = √(16·3) = 4√3</span>. Ни одно не больше другого.</div>
+      </details>
+      <details>
+        <summary><span class="q">Вынеси множитель: √18, √98, √75</span><span class="tag">применение</span></summary>
+        <div class="ans"><span class="m">√18 = √(9·2) = 3√2</span>; &nbsp;<span class="m">√98 = √(49·2) = 7√2</span>; &nbsp;<span class="m">√75 = √(25·3) = 5√3</span>.</div>
+      </details>
+      <details>
+        <summary><span class="q">Внеси под корень: 2√7, 5√2, 10√3</span><span class="tag">применение</span></summary>
+        <div class="ans"><span class="m">2√7 = √(4·7) = √28</span>; &nbsp;<span class="m">5√2 = √(25·2) = √50</span>; &nbsp;<span class="m">10√3 = √(100·3) = √300</span>.</div>
+      </details>
+      <details>
+        <summary><span class="q">Что изменится, если множитель отрицательный? Внеси −4√2</span><span class="tag">анализ</span></summary>
+        <div class="ans"><span class="m">−4√2 = −√32</span>. Под корень заносится только <span class="m">|−4| = 4</span> (то есть 16), а <strong>минус остаётся снаружи</strong>.</div>
+      </details>
+      <details>
+        <summary><span class="q">Найди ошибку: ученик написал √32 = 16√2</span><span class="tag">анализ</span></summary>
+        <div class="ans">Правильно <span class="m">√32 = √(16·2) = 4√2</span>. Ученик вынес сам квадрат 16 вместо его корня 4.</div>
+      </details>
+      <details>
+        <summary><span class="q">Обратная задача: какое число под корнем даёт 3√6?</span><span class="tag">анализ</span></summary>
+        <div class="ans">Вносим обратно: <span class="m">3√6 = √(9·6) = √54</span>.</div>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Тренажёр · бесконечная практика</p>
+    <h2>Вынеси множитель из-под корня сам</h2>
+    <p>Нажми «Новый корень» и вынеси множитель. Пиши ответ в виде <b>4√3</b> (можно и <b>4 sqrt 3</b>), или просто число, если корень извлекается нацело. Потом проверь себя или посмотри пошаговое решение.</p>
+    <div class="trainer">
+      <div class="tr-eq" id="trEq"><span class="rd">√<u>48</u></span></div>
+      <div class="tr-ctl">
+        <button id="trNew" type="button">🎲 Новый корень</button>
+        <input id="trAns" type="text" placeholder="напр.  4√3   или   6" aria-label="Ответ">
+        <button id="trCheck" type="button" class="sec">Проверить</button>
+        <button id="trShow" type="button" class="ghost">Показать решение</button>
+      </div>
+      <div id="trResult" class="tr-result"></div>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Где чаще всего ошибаются</p>
+    <h2>Лови эти четыре ловушки</h2>
+    <ul class="pitfalls">
+      <li><b>Вносят отрицательный множитель без учёта знака.</b> Пишут <span class="math">−4√2 = √32</span>, теряя минус. Правильно <span class="math">−4√2 = −√32</span>: под корнем не может прятаться минус.</li>
+      <li><b>Раскладывают на неудачные множители и не доводят до конца.</b> Для <span class="math">√72</span> берут <span class="math">9·8</span> и останавливаются на <span class="math">3√8</span>, хотя <span class="math">8 = 4·2</span> ещё содержит квадрат. Ищи <strong>наибольший</strong> квадрат-делитель.</li>
+      <li><b>Забывают модуль при переменной.</b> Пишут <span class="math">√(a²·b) = a√b</span> при любом a, хотя <span class="math">√(a²) = |a|</span>, а не a.</li>
+      <li><b>Возводят множитель не в ту степень при внесении.</b> Заносят <span class="math">3√5</span> как <span class="math">√15</span> вместо <span class="math">√45</span>. Множитель именно <strong>возводится в квадрат</strong>: 3 = √9, а не √3.</li>
+    </ul>
+  </section>
+
+  <section>
+    <p class="kicker">Проверка понимания · объясни своими словами</p>
+    <h2>Три вопроса на выход</h2>
+    <div class="drill">
+      <details>
+        <summary><span class="q">Чему равно √98 после вынесения множителя?</span><span class="tag">проверка</span></summary>
+        <div class="ans"><span class="m">√98 = √(49·2) = 7√2</span>.</div>
+      </details>
+      <details>
+        <summary><span class="q">Как внести 5 под корень в 5√3?</span><span class="tag">проверка</span></summary>
+        <div class="ans"><span class="m">5² = 25</span>, значит <span class="m">5√3 = √(25·3) = √75</span>.</div>
+      </details>
+      <details>
+        <summary><span class="q">Почему −2√3 нельзя записать как √12?</span><span class="tag">проверка</span></summary>
+        <div class="ans">Потому что <span class="m">√12</span> положительно, а <span class="m">−2√3</span> отрицательно. Верно <span class="m">−2√3 = −√12</span>.</div>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <div class="next">
+      <h2>Что дальше</h2>
+      <p>Теперь, когда корни можно приводить к виду <span class="math">a√b</span>, откроются полноценные преобразования с корнями:</p>
+      <div class="eq">5√2 + 6√2 = 11√2</div>
+      <p>Сложение и вычитание «похожих» корней, сокращение дробей с корнями, освобождение от иррациональности — всё держится на этом навыке.</p>
+    </div>
+  </section>
+
+  <p class="foot">Проверка на выходе: вынеси множитель из √50 · внеси 2 под корень в 2√5 · почему −3√2 ≠ √18?</p>
+
+</div>
+
+<style>
+  .stepbox{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.1rem 1.2rem;margin-top:1rem}
+  .step-pick{display:flex;gap:.5rem;flex-wrap:wrap}
+  .step-pick button{font:inherit;font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:.95rem;cursor:pointer;border:1px solid var(--line);border-radius:9px;padding:.4rem .85rem;background:#fff;color:var(--ink)}
+  .step-pick button.on{background:var(--accent-soft);border-color:var(--accent);color:var(--accent)}
+  .step-pick button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+  .step-eq{text-align:center;font-size:clamp(1.5rem,6vw,2rem);font-weight:800;padding:.9rem;margin:.9rem 0 0;background:var(--accent-soft);border-radius:10px;color:var(--ink)}
+  ol.sb-steps{list-style:none;margin:.9rem 0 0;padding:0;display:flex;flex-direction:column;gap:.55rem;min-height:.5rem}
+  ol.sb-steps li{background:#FCFBFE;border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:9px;padding:.6rem .8rem;font-size:.95rem}
+  ol.sb-steps li .m{font-family:ui-monospace,Menlo,monospace;font-weight:600;color:var(--ink)}
+  ol.sb-steps li.final{border-left-color:var(--pos);background:var(--pos-bg);font-weight:600}
+  ol.sb-steps li.final .m{color:var(--pos)}
+  .step-ctl{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.9rem}
+  .step-ctl button{font:inherit;font-weight:700;font-size:.9rem;cursor:pointer;border:none;border-radius:9px;padding:.55rem .95rem;color:#fff;background:var(--accent)}
+  .step-ctl button.ghost{background:transparent;color:var(--accent);border:1px solid var(--accent)}
+  .step-ctl button[disabled]{opacity:.45;cursor:default}
+  .step-ctl button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+
+  .trainer{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.2rem 1.3rem;margin-top:1rem}
+  .tr-eq{font-family:ui-monospace,Menlo,monospace;font-weight:800;font-size:clamp(1.5rem,6vw,2rem);text-align:center;padding:1rem;background:var(--accent-soft);border-radius:10px;color:var(--ink)}
+  .tr-ctl{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.9rem;align-items:center}
+  .tr-ctl button{font:inherit;font-weight:700;font-size:.9rem;cursor:pointer;border:none;border-radius:9px;padding:.55rem .95rem;color:#fff;background:var(--accent)}
+  .tr-ctl button.sec{background:var(--pos)}
+  .tr-ctl button.ghost{background:transparent;color:var(--accent);border:1px solid var(--accent)}
+  .tr-ctl input{flex:1;min-width:150px;font:inherit;padding:.5rem .7rem;border:1px solid var(--line);border-radius:9px;background:#fff;color:var(--ink)}
+  .tr-ctl button:focus-visible,.tr-ctl input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+  .tr-result{margin-top:.9rem;font-size:.96rem;min-height:1.2rem}
+  .tr-result .ok{color:var(--pos);font-weight:700}
+  .tr-result .bad{color:var(--neg);font-weight:700}
+  .tr-result .sol{margin-top:.7rem;padding:.85rem 1rem;background:#FCFBFE;border:1px solid var(--line);border-radius:10px;font-family:ui-monospace,Menlo,monospace;font-size:.9rem;line-height:1.85}
+  .tr-result .sol b{color:var(--accent)}
+</style>
+
+<script>
+/* ── Общий помощник: наибольший делитель-квадрат ── */
+function largestSquareDiv(k){
+  var best=1;
+  for(var d=2; d*d<=k; d++){ if(k%(d*d)===0) best=d; }
+  return best; // d, такое что d² | k и d максимально
+}
+
+/* ── Интерактивный пошаговый разбор ── */
+(function(){
+  var pick=document.getElementById('sbPick'), eqEl=document.getElementById('sbEq');
+  var stepsEl=document.getElementById('sbSteps');
+  var btnNext=document.getElementById('sbNext'), btnReset=document.getElementById('sbReset');
+  if(!pick||!eqEl) return;
+  var n=72, steps=[], shown=0;
+
+  function rad(x){ return '<span class="rd">√<u>'+x+'</u></span>'; }
+
+  function build(num){
+    var d=largestSquareDiv(num), sq=d*d, rem=num/sq;
+    if(rem===1){ // num — полный квадрат
+      return [
+        'Число '+num+' — это <span class="m">'+d+'²</span>, то есть само полный квадрат.',
+        'Извлекаем целиком: <span class="m">'+rad(num)+' = '+d+'</span> — множителя под корнем не остаётся.',
+        {f:true, t:'Готово: <span class="m">'+rad(num)+' = '+d+'</span>'}
+      ];
+    }
+    if(d===1){ // нет квадратных делителей
+      return [
+        'У числа '+num+' нет делителей — точных квадратов (кроме 1).',
+        'Выносить нечего: <span class="m">'+rad(num)+'</span> уже в простейшем виде.',
+        {f:true, t:'Готово: <span class="m">'+rad(num)+'</span> не упрощается'}
+      ];
+    }
+    return [
+      'Ищем наибольший квадрат-делитель: <span class="m">'+num+' = '+sq+' · '+rem+'</span> &nbsp;('+sq+' = '+d+'²).',
+      'Разбиваем корень: <span class="m">'+rad(num)+' = '+rad(sq)+' · '+rad(rem)+'</span>.',
+      'Извлекаем квадрат: <span class="m">'+rad(sq)+' = '+d+'</span>.',
+      {f:true, t:'Готово: <span class="m">'+rad(num)+' = '+d+rad(rem)+'</span>'}
+    ];
+  }
+
+  function reset(){
+    steps=build(n); shown=0; stepsEl.innerHTML='';
+    eqEl.innerHTML=rad(n);
+    btnNext.disabled=false; btnNext.textContent='Показать шаг →';
+  }
+  function nextStep(){
+    if(shown>=steps.length) return;
+    var s=steps[shown], li=document.createElement('li');
+    if(typeof s==='object'){ li.className='final'; li.innerHTML=s.t; } else li.innerHTML=s;
+    stepsEl.appendChild(li);
+    shown++;
+    if(shown>=steps.length){ btnNext.disabled=true; btnNext.textContent='Все шаги показаны'; }
+  }
+
+  pick.addEventListener('click',function(e){
+    var b=e.target.closest('button[data-n]'); if(!b) return;
+    Array.prototype.forEach.call(pick.querySelectorAll('button'),function(x){ x.classList.remove('on'); });
+    b.classList.add('on');
+    n=parseInt(b.getAttribute('data-n'),10);
+    reset();
+  });
+  btnNext.addEventListener('click',nextStep);
+  btnReset.addEventListener('click',reset);
+  reset();
+})();
+
+/* ── Тренажёр-генератор: вынести множитель из √k ── */
+(function(){
+  var eqEl=document.getElementById('trEq'), ansEl=document.getElementById('trAns'), resEl=document.getElementById('trResult');
+  if(!eqEl) return;
+  // cur: {k, coef, rad, kind}  — kind: 'main' | 'square' | 'simple'
+  var cur={k:48, coef:4, rad:3, kind:'main'};
+  function ri(min,max){ return Math.floor(Math.random()*(max-min+1))+min; }
+  function rad(x){ return '<span class="rd">√<u>'+x+'</u></span>'; }
+
+  function generate(){
+    var r=Math.random();
+    if(r<0.12){                         // полный квадрат: √36 = 6
+      var a=ri(2,12); cur={k:a*a, coef:a, rad:1, kind:'square'};
+    } else if(r<0.24){                  // уже упрощён: √7
+      var sf=[2,3,5,6,7,10,11,13,14,15]; var b=sf[ri(0,sf.length-1)];
+      cur={k:b, coef:1, rad:b, kind:'simple'};
+    } else {                            // основной: √48 = 4√3
+      var A=ri(2,7), SF=[2,3,5,6,7,10]; var B=SF[ri(0,SF.length-1)];
+      cur={k:A*A*B, coef:A, rad:B, kind:'main'};
+    }
+    eqEl.innerHTML=rad(cur.k); resEl.innerHTML=''; ansEl.value='';
+  }
+
+  function ansStr(c){
+    if(c.rad===1) return ''+c.coef;                 // полный квадрат
+    return (c.coef===1?'':c.coef)+'√'+c.rad;        // a√b или √b
+  }
+
+  // Разбираем запись ученика в {coef, rad}
+  function parseAns(raw){
+    var s=(raw||'').toLowerCase()
+      .replace(/−/g,'-')                        // настоящий минус → дефис
+      .replace(/(\d),(\d)/g,'$1.$2')                 // запятая → точка
+      .replace(/sqrt|корень|root/g,'√')             // sqrt → √
+      .replace(/[·*×]/g,'')                          // знаки умножения
+      .replace(/[()]/g,'')                           // скобки
+      .replace(/\s+/g,'')                            // пробелы
+      .replace(/^x=|=/,'');                          // срез «x=»
+    if(s==='') return null;
+    var coef, radv, i=s.indexOf('√');
+    if(i>=0){
+      var left=s.slice(0,i), right=s.slice(i+1);
+      if(right==='') return null;
+      radv=Number(right);
+      if(!Number.isInteger(radv) || radv<=0) return null;
+      if(left===''||left==='+') coef=1;
+      else if(left==='-') coef=-1;
+      else coef=Number(left);
+      if(isNaN(coef)) return null;
+    } else {
+      coef=Number(s); radv=1;
+      if(!Number.isInteger(coef)) return null;
+    }
+    return {coef:coef, rad:radv};
+  }
+
+  // Приводим (coef, rad) к простейшему виду
+  function canon(coef, rd){
+    if(rd<=1) return {c:coef, r:1};
+    var d=largestSquareDiv(rd);
+    return {c:coef*d, r:rd/(d*d)};
+  }
+
+  function solutionHTML(){
+    var c=cur, h='<div class="sol">';
+    if(c.kind==='square'){
+      h+=rad(c.k)+'<br>';
+      h+=c.k+' = '+c.coef+'² — это сам полный квадрат<br>';
+      h+='√'+c.k+' извлекается нацело: <b>'+c.coef+'</b> (под корнем ничего не остаётся)';
+    } else if(c.kind==='simple'){
+      h+=rad(c.k)+'<br>';
+      h+='у числа '+c.k+' нет квадратных делителей, кроме 1<br>';
+      h+='выносить нечего — <b>√'+c.k+'</b> уже в простейшем виде';
+    } else {
+      var sq=c.coef*c.coef;
+      h+=rad(c.k)+'<br>';
+      h+=c.k+' = <b>'+sq+'</b> · '+c.rad+'   ('+sq+' = '+c.coef+'² — наибольший квадрат-делитель)<br>';
+      h+='√'+c.k+' = √'+sq+' · √'+c.rad+'<br>';
+      h+='√'+sq+' = '+c.coef+'<br>';
+      h+='Ответ: √'+c.k+' = <b>'+c.coef+'√'+c.rad+'</b>';
+    }
+    return h+'</div>';
+  }
+
+  function check(){
+    var parsed=parseAns(ansEl.value);
+    if(!parsed){
+      resEl.innerHTML='<span class="bad">Не понял запись. Введи ответ вида «4√3», «√7» или число, напр. «6».</span>';
+      return;
+    }
+    var got=canon(parsed.coef, parsed.rad);          // упрощаем запись ученика
+    var ok = (got.c===cur.coef && got.r===cur.rad);  // cur уже в простейшем виде
+    if(ok){
+      // верно, но записал не до конца упрощённо (напр. √48 вместо 4√3)
+      var raw = !(parsed.coef===cur.coef && parsed.rad===cur.rad);
+      var note = (raw && cur.kind==='main')
+        ? ' <span style="color:var(--muted)">(по значению верно; в простейшем виде — '+ansStr(cur)+')</span>'
+        : '';
+      resEl.innerHTML='<span class="ok">✓ Верно!'+(note?'':' Отлично.')+'</span>'+note+solutionHTML();
+    } else {
+      resEl.innerHTML='<span class="bad">✗ Пока не то. Разложи число на наибольший точный квадрат и остаток.</span>'+solutionHTML();
+    }
+  }
+
+  document.getElementById('trNew').addEventListener('click',generate);
+  document.getElementById('trCheck').addEventListener('click',check);
+  document.getElementById('trShow').addEventListener('click',function(){ resEl.innerHTML=solutionHTML(); });
+  ansEl.addEventListener('keydown',function(e){ if(e.key==='Enter') check(); });
+  // первичный рендер — без focus()
+})();
+</script>
+<!--LESSON-NAV-BOT--><nav class="lnav lnav-bot"><a class="prev" href="./alg8-svojstva-kvadratnogo-kornya.html"><span class="dir">← Предыдущая</span><span class="ttl">Свойства квадратного корня (произведение и частное)</span></a><a class="to-cat" href="./catalog.html">📚 <span>Все темы</span></a><a class="next" href="./alg8-preobrazovaniya-s-kornyami.html"><span class="dir">Следующая →</span><span class="ttl">Преобразование выражений с квадратными корнями</span></a></nav><!--/LESSON-NAV-BOT-->

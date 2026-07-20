@@ -1,0 +1,635 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Текстовые задачи через системы уравнений — алгебра 9 класс</title>
+<style>
+  :root{
+    --paper:#F6F7F9;
+    --card:#FFFFFF;
+    --ink:#1B2333;
+    --muted:#5A6478;
+    --line:#E2E5EC;
+    --accent:#3B4FD0;
+    --accent-soft:#EAEDFB;
+    --pos:#1E8E5A;
+    --pos-bg:#E7F4EC;
+    --zero:#B9791A;
+    --zero-bg:#FBF1DC;
+    --neg:#C0455B;
+    --neg-bg:#F9E9EC;
+  }
+  *{box-sizing:border-box}
+  body{margin:0}
+  .wrap{
+    max-width:760px;
+    margin:0 auto;
+    padding:clamp(1.4rem,4vw,3rem) clamp(1.1rem,4vw,2rem) 4rem;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    font-size:17px;
+    line-height:1.62;
+    -webkit-font-smoothing:antialiased;
+  }
+  .eyebrow{
+    font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--accent);font-weight:600;margin:0 0 .5rem;
+  }
+  h1{
+    font-family:Georgia,"Times New Roman",serif;
+    font-size:clamp(2rem,6.4vw,2.9rem);
+    line-height:1.06;margin:0;font-weight:700;letter-spacing:-.01em;
+    text-wrap:balance;
+  }
+  .lede{
+    font-size:1.08rem;color:var(--muted);margin:.7rem 0 0;max-width:60ch;
+    text-wrap:pretty;
+  }
+  h2{
+    font-family:Georgia,serif;font-size:1.32rem;font-weight:700;
+    margin:0 0 .1rem;letter-spacing:-.005em;
+  }
+  section{margin-top:2.6rem}
+  .kicker{
+    font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--muted);font-weight:600;margin:0 0 .8rem;
+    display:flex;align-items:center;gap:.6rem;
+  }
+  .kicker::before{
+    content:"";width:1.4rem;height:2px;background:var(--accent);border-radius:2px;
+  }
+  p{margin:.65rem 0}
+  strong{font-weight:650}
+  .math{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-weight:600}
+  sup{font-size:.72em}
+
+  /* Главная идея */
+  .hero-formula{
+    margin-top:2.2rem;
+    background:var(--ink);color:#fff;border-radius:14px;
+    padding:1.6rem 1.4rem;text-align:center;
+  }
+  .hero-formula .lbl{
+    font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;
+    color:#9aa6c9;margin:0 0 .8rem;
+  }
+  .hero-formula .sys{
+    display:inline-flex;align-items:stretch;gap:.6rem;text-align:left;
+    font-family:ui-monospace,"SF Mono",Menlo,monospace;
+    font-size:clamp(1rem,3.6vw,1.25rem);font-weight:700;
+  }
+  .hero-formula .sys .brace{
+    font-size:2.7em;line-height:.9;font-weight:400;color:#8ea0ff;
+    display:flex;align-items:center;
+  }
+  .hero-formula .sys .rows{display:flex;flex-direction:column;justify-content:center;gap:.35rem}
+  .hero-formula .sys .rows span b{color:#8ea0ff;font-weight:700}
+  .hero-formula .note{font-size:.88rem;color:#9aa6c9;margin:1rem 0 0}
+  .hero-formula .note b{color:#c7cffb}
+
+  /* Пререквизит */
+  .recall{
+    background:var(--accent-soft);border-radius:12px;padding:1rem 1.15rem;
+    font-size:.96rem;
+  }
+  .recall p{margin:.3rem 0}
+
+  /* Три модели / случаи */
+  .cases{display:grid;gap:.85rem;margin-top:.4rem}
+  @media(min-width:620px){.cases{grid-template-columns:repeat(3,1fr)}}
+  .case{
+    border-radius:12px;padding:1.05rem 1.1rem;border:1px solid var(--line);
+    background:var(--card);display:flex;flex-direction:column;gap:.4rem;
+  }
+  .case .sign{font-weight:700;font-size:1.02rem}
+  .case .frm{font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1rem}
+  .case .desc{font-size:.88rem;color:var(--muted)}
+  .case.pos{border-top:4px solid var(--accent)}
+  .case.pos .sign{color:var(--accent)}
+  .case.pos .frm{color:var(--accent)}
+  .case.zero{border-top:4px solid var(--pos)}
+  .case.zero .sign{color:var(--pos)}
+  .case.zero .frm{color:var(--pos)}
+  .case.neg{border-top:4px solid var(--zero)}
+  .case.neg .sign{color:var(--zero)}
+  .case.neg .frm{color:var(--zero)}
+
+  /* Алгоритм 4 шага */
+  ol.algo{margin:.2rem 0 0;padding:0;list-style:none;counter-reset:s;display:flex;flex-direction:column;gap:.65rem}
+  ol.algo li{position:relative;padding-left:2.1rem;counter-increment:s}
+  ol.algo li::before{
+    content:counter(s);position:absolute;left:0;top:.05rem;
+    width:1.5rem;height:1.5rem;border-radius:50%;
+    background:var(--accent-soft);color:var(--accent);
+    font-size:.82rem;font-weight:700;display:flex;align-items:center;justify-content:center;
+  }
+  ol.algo b{color:var(--ink)}
+
+  /* Таблица условий */
+  .tblwrap{overflow-x:auto;margin-top:.4rem}
+  table.cond{border-collapse:collapse;width:100%;min-width:340px;font-size:.96rem;background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+  table.cond th,table.cond td{padding:.6rem .8rem;text-align:center;border-bottom:1px solid var(--line)}
+  table.cond thead th{background:var(--accent-soft);color:var(--accent);font-size:.82rem;letter-spacing:.03em}
+  table.cond tbody td:first-child{text-align:left;font-weight:600}
+  table.cond tbody tr:last-child td{border-bottom:none}
+  table.cond .m{font-family:ui-monospace,Menlo,monospace;font-weight:700}
+
+  /* Разбор */
+  .worked{
+    background:var(--card);border:1px solid var(--line);border-radius:12px;
+    padding:1.2rem 1.3rem;
+  }
+  .worked .task{
+    font-size:1rem;font-weight:600;
+    margin:0 0 1rem;padding-bottom:.8rem;border-bottom:1px solid var(--line);
+  }
+  ol.steps{margin:0;padding:0;list-style:none;counter-reset:s;display:flex;flex-direction:column;gap:.7rem}
+  ol.steps li{position:relative;padding-left:2.1rem;counter-increment:s}
+  ol.steps li::before{
+    content:counter(s);position:absolute;left:0;top:.05rem;
+    width:1.5rem;height:1.5rem;border-radius:50%;
+    background:var(--accent-soft);color:var(--accent);
+    font-size:.82rem;font-weight:700;display:flex;align-items:center;justify-content:center;
+  }
+  ol.steps .m{font-family:ui-monospace,Menlo,monospace;font-weight:600;color:var(--ink)}
+  .verdict{
+    margin-top:1rem;padding:.7rem 1rem;background:var(--pos-bg);
+    border-radius:9px;font-weight:600;color:var(--pos);font-size:.98rem;
+  }
+
+  /* Система (запись фигурной скобкой) */
+  .sysbox{display:inline-flex;align-items:stretch;gap:.5rem;font-family:ui-monospace,Menlo,monospace;font-weight:600;margin:.2rem 0}
+  .sysbox .brace{font-size:2.3em;line-height:.85;font-weight:400;color:var(--accent);display:flex;align-items:center}
+  .sysbox .rows{display:flex;flex-direction:column;justify-content:center;gap:.25rem}
+
+  /* Пошаговый разбор составления системы */
+  .builder{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.2rem 1.3rem;margin-top:1rem}
+  .builder .prob{font-size:.98rem;background:var(--accent-soft);border-radius:10px;padding:.85rem 1rem;margin:0 0 1rem}
+  .bstep{opacity:0;max-height:0;overflow:hidden;transition:opacity .25s ease}
+  .bstep.on{opacity:1;max-height:600px;margin:.55rem 0}
+  .bstep .lab{font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);font-weight:700;margin:0 0 .2rem}
+  .bstep .body{font-size:.98rem}
+  .bstep .m{font-family:ui-monospace,Menlo,monospace;font-weight:600}
+  .bctl{display:flex;gap:.5rem;flex-wrap:wrap;align-items:center;margin-top:1rem}
+  .bctl button{font:inherit;font-weight:700;font-size:.9rem;cursor:pointer;border:none;border-radius:9px;padding:.55rem .95rem;color:#fff;background:var(--accent)}
+  .bctl button.ghost{background:transparent;color:var(--accent);border:1px solid var(--accent)}
+  .bctl button:disabled{opacity:.4;cursor:default}
+  .bctl button:focus-visible,.builder button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+  .bprog{font-size:.85rem;color:var(--muted);font-weight:600;margin-left:auto}
+
+  /* Практика */
+  .drill{display:flex;flex-direction:column;gap:.7rem}
+  details{
+    background:var(--card);border:1px solid var(--line);border-radius:10px;
+    padding:.85rem 1.05rem;
+  }
+  details[open]{border-color:var(--accent)}
+  summary{
+    cursor:pointer;font-weight:600;list-style:none;
+    display:flex;justify-content:space-between;align-items:center;gap:1rem;
+  }
+  summary::-webkit-details-marker{display:none}
+  summary:focus-visible{outline:3px solid var(--accent);outline-offset:2px;border-radius:4px}
+  summary .q{flex:1;min-width:0}
+  summary .tag{
+    font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);
+    border:1px solid var(--line);border-radius:20px;padding:.1rem .55rem;white-space:nowrap;
+  }
+  summary::after{
+    content:"показать";font-size:.78rem;color:var(--accent);font-weight:600;white-space:nowrap;
+  }
+  details[open] summary::after{content:"скрыть"}
+  .ans{margin-top:.7rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.96rem;color:var(--muted)}
+  .ans .m{font-family:ui-monospace,Menlo,monospace;color:var(--ink);font-weight:600}
+
+  /* Ошибки */
+  ul.pitfalls{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:.6rem}
+  ul.pitfalls li{padding-left:1.5rem;position:relative;font-size:.98rem}
+  ul.pitfalls li::before{
+    content:"×";position:absolute;left:0;top:-.05rem;color:var(--neg);font-weight:700;font-size:1.1rem;
+  }
+  ul.pitfalls b{color:var(--ink)}
+
+  /* Проверка понимания */
+  ol.selfcheck{margin:.2rem 0 0;padding-left:1.3rem;display:flex;flex-direction:column;gap:.4rem}
+  ol.selfcheck li{padding-left:.2rem}
+
+  .next{
+    background:var(--accent);color:#fff;border-radius:12px;padding:1.2rem 1.3rem;
+  }
+  .next h2{color:#fff}
+  .next .eq{
+    font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.15rem;
+    margin:.6rem 0 .3rem;
+  }
+  .next p{color:#dfe4fb;font-size:.96rem;margin:.4rem 0 0}
+  .foot{margin-top:2.4rem;font-size:.82rem;color:var(--muted);text-align:center}
+
+  @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+<style>
+.oge-tip{display:flex;gap:.8rem;align-items:flex-start;background:#FFF8E7;border:1px solid #F0D98A;border-left:4px solid #E0A315;border-radius:10px;padding:.85rem 1.05rem;margin:1.5rem 0}
+.oge-tip .b{font-size:.72rem;font-weight:800;letter-spacing:.03em;color:#8A6A15;white-space:nowrap;text-transform:uppercase;padding-top:.15rem}
+.oge-tip .x{font-size:.95rem;line-height:1.5}
+</style>
+
+<!--LESSON-NAV-TOP--><style>.lnav{--lnav-accent:#3D5AF1}.lnav a{text-decoration:none;font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif}.lnav-top{max-width:820px;margin:0 auto;padding:.75rem clamp(1rem,4vw,1.5rem) .1rem}.lnav-top a{display:inline-flex;align-items:center;gap:.35rem;color:var(--lnav-accent);font-weight:600;font-size:.9rem}.lnav-top a:hover{text-decoration:underline}.lnav-bot{max-width:820px;margin:2.6rem auto 3rem;padding:1.1rem clamp(1rem,4vw,1.5rem) 0;border-top:1px solid #E4E8EF;display:flex;align-items:stretch;gap:.55rem}.lnav-bot a{min-width:0;display:flex;flex-direction:column;justify-content:center;gap:.15rem;border:1px solid #E4E8EF;border-radius:12px;padding:.65rem .85rem;color:#182233;background:#fff;transition:border-color .1s,transform .08s}.lnav-bot a:hover{border-color:var(--lnav-accent);transform:translateY(-1px)}.lnav-bot .prev,.lnav-bot .next{flex:1 1 0}.lnav-bot .next{text-align:right}.lnav-bot .dir{font-size:.72rem;color:#8A93A6;font-weight:600}.lnav-bot .ttl{font-size:.9rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.lnav-bot .to-cat{flex:0 0 auto;flex-direction:row;align-items:center;justify-content:center;color:var(--lnav-accent);font-weight:700;font-size:.85rem;white-space:nowrap}@media(max-width:420px){.lnav-bot .to-cat span{display:none}.lnav-bot .to-cat{padding:.65rem .7rem}}</style><nav class="lnav lnav-top"><a href="./catalog.html">← Все темы</a></nav><!--/LESSON-NAV-TOP-->
+<div class="wrap">
+
+  <header>
+    <p class="eyebrow">Алгебра · 9 класс</p>
+    <h1>Текстовые задачи через системы уравнений</h1>
+    <p class="lede">Как перевести условие про две машины, две трубы или два сплава на язык математики — и получить ответ, <em>а не угадать его.</em></p>
+  </header>
+
+  <div class="hero-formula">
+    <p class="lbl">Что мы составляем</p>
+    <div class="sys">
+      <span class="brace">&#123;</span>
+      <span class="rows">
+        <span><b>первое</b> условие задачи</span>
+        <span><b>второе</b> условие задачи</span>
+      </span>
+    </div>
+    <p class="note">Две неизвестные величины · два условия · <b>два уравнения</b> — это и есть система.</p>
+  </div>
+
+  <div class="oge-tip"><div class="b">🎯 В ОГЭ · Задание 21</div><div class="x">Текстовая задача из <b>второй части</b> — её решают <b>с полным решением</b>: вводят переменные, составляют систему и записывают ответ с проверкой по смыслу.</div></div>
+
+  <section>
+    <p class="kicker">Зачем это нужно</p>
+    <h2>Одного уравнения не хватает</h2>
+    <p>Многие задачи содержат сразу <strong>две</strong> неизвестные величины, связанные <strong>двумя</strong> условиями: два пешехода идут навстречу, две трубы наполняют бассейн, два сплава смешивают в нужной пропорции. Одного уравнения тут мало — нужна система из двух уравнений с двумя неизвестными.</p>
+    <p>Типичное заблуждение: <em>«если задача про две машины, надо просто найти разность скоростей».</em> Нет — пока не введёшь переменные и не запишешь <strong>оба</strong> условия в виде уравнений, ответ угадать нельзя. Перевод текста в систему — это и есть главный навык темы.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Что вспомнить с прошлых шагов</p>
+    <div class="recall">
+      <p>Саму систему ты уже умеешь решать — <strong>подстановкой</strong> и <strong>сложением</strong>. Здесь ничего нового в решении нет.</p>
+      <p>Если переменная попадёт в знаменатель (время <span class="math">= s / v</span>), пригодятся <strong>дробно-рациональные уравнения</strong> и условие <span class="math">v &#8800; 0</span>.</p>
+      <p>Новое и главное — <strong>перевод</strong> текста в уравнения. Само решение — по накатанной.</p>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Ядро темы</p>
+    <h2>Алгоритм: текст → система → ответ</h2>
+    <ol class="algo">
+      <li><b>Ввести переменные.</b> Каждой искомой величине дать букву и подписать словами с единицами: «пусть <span class="math">x</span> — скорость пешехода, км/ч».</li>
+      <li><b>Составить уравнения.</b> Каждое условие задачи записать формулой — по базовой модели (см. ниже). Два условия → два уравнения.</li>
+      <li><b>Решить систему</b> подстановкой или сложением.</li>
+      <li><b>Проверить корни по смыслу</b> и записать ответ с единицами. Скорость, время, масса — <em>положительные</em>, поэтому отрицательные корни обычно посторонние.</li>
+    </ol>
+
+    <p style="margin-top:1.4rem">Три «рабочие» модели, из которых чаще всего собирают уравнения:</p>
+    <div class="cases">
+      <div class="case pos">
+        <div class="sign">Движение</div>
+        <div class="frm">s = v · t</div>
+        <div class="desc">путь = скорость · время</div>
+      </div>
+      <div class="case zero">
+        <div class="sign">Работа</div>
+        <div class="frm">A = p · t</div>
+        <div class="desc">объём = производительность · время; часто весь объём берут за 1</div>
+      </div>
+      <div class="case neg">
+        <div class="sign">Смеси и сплавы</div>
+        <div class="frm">m = M · c</div>
+        <div class="desc">масса вещества = масса раствора · концентрация (доля)</div>
+      </div>
+    </div>
+    <p style="font-size:.9rem;color:var(--muted);margin-top:.9rem">Проценты переводим в доли: <span class="math">20% = 0,2</span>. И следим за единицами: скорость в км/ч — значит время в часах, а не в минутах.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Наглядность · таблица условий</p>
+    <h2>Заполни таблицу — уравнения «считываются» сами</h2>
+    <p>Главный приём для задач на движение: столбцы <span class="math">v · t · s</span>, строки — для каждого участника. Пример «навстречу за 3 ч»:</p>
+    <div class="tblwrap">
+      <table class="cond">
+        <thead><tr><th></th><th>v, км/ч</th><th>t, ч</th><th>s, км</th></tr></thead>
+        <tbody>
+          <tr><td>пешеход</td><td class="m">x</td><td class="m">3</td><td class="m">3x</td></tr>
+          <tr><td>велосипедист</td><td class="m">y</td><td class="m">3</td><td class="m">3y</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>Правый столбец даёт первое уравнение: вместе прошли всё расстояние, <span class="math">3x + 3y = 90</span>. А фраза «на 10 км/ч больше» — второе: <span class="math">y &#8722; x = 10</span>. Так таблица превращается в систему.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Разбираем вместе · думаю вслух</p>
+    <h2>Эталонный пример: движение навстречу</h2>
+    <div class="worked">
+      <p class="task">Из двух городов на расстоянии <b>90 км</b> навстречу выехали велосипедист и пешеход и встретились через <b>3 ч</b>. Скорость велосипедиста на <b>10 км/ч</b> больше. Найди скорости.</p>
+      <ol class="steps">
+        <li><b>Ввожу переменные.</b> Пусть <span class="m">x</span> — скорость пешехода (км/ч), <span class="m">y</span> — скорость велосипедиста (км/ч). Спрашивают именно их — удобно.</li>
+        <li><b>Первое условие (расстояние).</b> За 3 ч пешеход прошёл <span class="m">3x</span>, велосипедист — <span class="m">3y</span>, вместе всё расстояние: <span class="m">3x + 3y = 90</span>.</li>
+        <li><b>Второе условие (разность).</b> «На 10 больше» — это разность: <span class="m">y &#8722; x = 10</span>.</li>
+        <li><b>Решаю.</b> Первое делю на 3: <span class="m">x + y = 30</span>. Из второго <span class="m">y = x + 10</span>. Подставляю: <span class="m">2x + 10 = 30</span>, значит <span class="m">x = 10</span>, тогда <span class="m">y = 20</span>.</li>
+        <li><b>Проверяю по смыслу.</b> Скорости положительные — годятся. Проверка: <span class="m">3·10 + 3·20 = 90</span> км. Верно.</li>
+      </ol>
+      <div class="verdict">Ответ: пешеход 10 км/ч, велосипедист 20 км/ч.</div>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Собери систему сам · шаг за шагом</p>
+    <h2>Как условие превращается в два уравнения</h2>
+    <p>Тот же пример, но разбираем <strong>составление</strong> по кусочкам. Жми «Дальше» — и следи, откуда берётся каждая строка системы.</p>
+    <div class="builder">
+      <p class="prob">Из двух городов на расстоянии <b>90 км</b> навстречу выехали велосипедист и пешеход и встретились через <b>3 ч</b>. Скорость велосипедиста на <b>10 км/ч</b> больше пешехода. Найди скорости.</p>
+
+      <div class="bstep" data-i="1">
+        <p class="lab">Шаг 1 · Что за неизвестные</p>
+        <p class="body">Спрашивают две скорости — вводим две буквы: <span class="m">x</span> — скорость пешехода (км/ч), <span class="m">y</span> — скорость велосипедиста (км/ч).</p>
+      </div>
+      <div class="bstep" data-i="2">
+        <p class="lab">Шаг 2 · Первое уравнение (расстояние)</p>
+        <p class="body">За 3 ч пешеход прошёл <span class="m">3x</span>, велосипедист — <span class="m">3y</span>. Навстречу — значит вместе покрыли все 90 км: <span class="m">3x + 3y = 90</span>.</p>
+      </div>
+      <div class="bstep" data-i="3">
+        <p class="lab">Шаг 3 · Второе уравнение (разность)</p>
+        <p class="body">«На 10 км/ч больше» — это <em>разность</em> скоростей, а не сумма: <span class="m">y &#8722; x = 10</span>.</p>
+      </div>
+      <div class="bstep" data-i="4">
+        <p class="lab">Шаг 4 · Записываем систему</p>
+        <p class="body">
+          <span class="sysbox"><span class="brace">&#123;</span><span class="rows"><span>3x + 3y = 90</span><span>y &#8722; x = 10</span></span></span>
+          &nbsp;→&nbsp; делим первое на 3 &nbsp;→&nbsp;
+          <span class="sysbox"><span class="brace">&#123;</span><span class="rows"><span>x + y = 30</span><span>y = x + 10</span></span></span>
+        </p>
+      </div>
+      <div class="bstep" data-i="5">
+        <p class="lab">Шаг 5 · Решаем и проверяем</p>
+        <p class="body">Подстановка: <span class="m">x + (x + 10) = 30</span> → <span class="m">2x = 20</span> → <span class="m">x = 10</span>, <span class="m">y = 20</span>. Обе положительны, проверка <span class="m">3·10 + 3·20 = 90</span> ✓.<br><b>Пешеход 10 км/ч, велосипедист 20 км/ч.</b></p>
+      </div>
+
+      <div class="bctl">
+        <button id="bNext" type="button">Дальше →</button>
+        <button id="bReset" type="button" class="ghost">Сначала</button>
+        <span id="bProg" class="bprog">0 / 5</span>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Теперь ты · нажми, чтобы проверить</p>
+    <h2>Мини-практика по нарастанию</h2>
+    <div class="drill">
+      <details>
+        <summary><span class="q">В двух корзинах 40 яблок, в первой на 6 больше, чем во второй. Составь оба уравнения.</span><span class="tag">понимание</span></summary>
+        <div class="ans">Пусть <span class="m">x</span> — яблок в первой, <span class="m">y</span> — во второй. Условия: <span class="m">x + y = 40</span> и <span class="m">x &#8722; y = 6</span>. (Если решить: <span class="m">x = 23, y = 17</span>.)</div>
+      </details>
+      <details>
+        <summary><span class="q">Сумма двух чисел равна 25, а их разность равна 7. Найди эти числа.</span><span class="tag">применение</span></summary>
+        <div class="ans"><span class="m">x + y = 25, x &#8722; y = 7</span>. Сложив уравнения: <span class="m">2x = 32, x = 16</span>, тогда <span class="m">y = 9</span>. → <strong>16 и 9.</strong></div>
+      </details>
+      <details>
+        <summary><span class="q">Две трубы вместе наполняют бассейн за 6 ч; первая — на 5 ч быстрее второй. Как выглядит система?</span><span class="tag">применение</span></summary>
+        <div class="ans">Пусть <span class="m">x</span> и <span class="m">y</span> — время (ч) каждой трубы отдельно, производительности <span class="m">1/x</span> и <span class="m">1/y</span>. Система: <span class="m">1/x + 1/y = 1/6</span> и <span class="m">y = x + 5</span>. → <strong>первая 10 ч, вторая 15 ч.</strong></div>
+      </details>
+      <details>
+        <summary><span class="q">В той задаче про трубы вышли корни x = 10 и x = &#8722;3. Какой посторонний и почему?</span><span class="tag">анализ</span></summary>
+        <div class="ans">Посторонний — <span class="m">x = &#8722;3</span>: время наполнения не может быть отрицательным, такое «в задаче не бывает». Остаётся <span class="m">x = 10</span>. А если бы первая труба была быстрее не на 5, а на 4 часа — поменялось бы второе уравнение: <span class="m">y = x + 4</span> вместо <span class="m">y = x + 5</span>.</div>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Тренажёр · бесконечная практика</p>
+    <h2>Составь и реши сам</h2>
+    <p>Нажми «Новая задача». Введи переменные, составь два уравнения, реши систему и впиши ответ. Формат ввода подсказан под условием. Потом проверь себя или посмотри пошаговое решение с составлением системы.</p>
+    <div class="trainer">
+      <div class="tr-eq" id="trEq">условие…</div>
+      <div class="tr-hint" id="trHint"></div>
+      <div class="tr-ctl">
+        <button id="trNew" type="button">🎲 Новая задача</button>
+        <input id="trAns" type="text" placeholder="ответ" aria-label="Ответ">
+        <button id="trCheck" type="button" class="sec">Проверить</button>
+        <button id="trShow" type="button" class="ghost">Показать решение</button>
+      </div>
+      <div id="trResult" class="tr-result"></div>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Где чаще всего ошибаются</p>
+    <h2>Лови эти ловушки</h2>
+    <ul class="pitfalls">
+      <li><b>Путают, что обозначили.</b> Ввели скорость, а в уравнение подставляют время. Всегда подписывай буквы словами и единицами: «<span class="math">x</span> — скорость, км/ч».</li>
+      <li><b>Неверно переводят слова.</b> «На 10 больше» — это разность (<span class="math">y &#8722; x = 10</span>), а «в 3 раза больше» — это <span class="math">y = 3x</span>. Проговори условие вслух и сверь с записью.</li>
+      <li><b>Берут посторонние корни.</b> Отрицательная скорость, отрицательное время, дробное число людей не подходят. После решения спроси: «а такое в задаче бывает?»</li>
+      <li><b>Путают единицы.</b> Скорость в км/ч, а время дано в минутах — приведи всё к одним единицам <em>до</em> составления уравнений.</li>
+      <li><b>Теряют минус в скобках</b> вроде <span class="math">(10y + x) &#8722; (10x + y)</span>. Раскрывай по одному знаку, потом приводи подобные.</li>
+    </ul>
+  </section>
+
+  <section>
+    <p class="kicker">Проверка понимания · объясни своими словами</p>
+    <h2>Три вопроса на выходе</h2>
+    <ol class="selfcheck">
+      <li>Сколько уравнений нужно, чтобы найти две неизвестные величины, и почему?</li>
+      <li>По какой формуле связаны путь, скорость и время? А объём работы, производительность и время?</li>
+      <li>Почему после решения системы обязательно проверять корни по смыслу? Приведи пример «лишнего» корня.</li>
+    </ol>
+  </section>
+
+  <section>
+    <div class="next">
+      <h2>Что дальше</h2>
+      <p>Ты научился переводить условие в систему и отбрасывать посторонние корни. Следующий шаг — задачи, где мало решить, надо выбрать <strong>лучшее</strong>:</p>
+      <div class="eq">текстовые задачи на оптимум</div>
+      <p>наибольшее / наименьшее значение — сколько взять, чтобы получилось выгоднее всего.</p>
+    </div>
+  </section>
+
+  <p class="foot">Проверка на выходе: две неизвестные — сколько уравнений? · «на 10 больше» — это сумма или разность? · почему отрицательное время — посторонний корень?</p>
+
+</div>
+
+<style>
+  .trainer{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.2rem 1.3rem;margin-top:1rem}
+  .tr-eq{font-size:1.02rem;line-height:1.55;padding:1rem 1.1rem;background:var(--accent-soft);border-radius:10px;color:var(--ink)}
+  .tr-eq b{color:var(--accent)}
+  .tr-hint{font-size:.86rem;color:var(--muted);margin-top:.55rem}
+  .tr-hint b{color:var(--ink)}
+  .tr-ctl{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.9rem;align-items:center}
+  .tr-ctl button{font:inherit;font-weight:700;font-size:.9rem;cursor:pointer;border:none;border-radius:9px;padding:.55rem .95rem;color:#fff;background:var(--accent)}
+  .tr-ctl button.sec{background:var(--pos)}
+  .tr-ctl button.ghost{background:transparent;color:var(--accent);border:1px solid var(--accent)}
+  .tr-ctl input{flex:1;min-width:150px;font:inherit;padding:.5rem .7rem;border:1px solid var(--line);border-radius:9px;background:#fff;color:var(--ink)}
+  .tr-ctl button:focus-visible,.tr-ctl input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+  .tr-result{margin-top:.9rem;font-size:.96rem;min-height:1.2rem}
+  .tr-result .ok{color:var(--pos);font-weight:700}
+  .tr-result .bad{color:var(--neg);font-weight:700}
+  .tr-result .sol{margin-top:.7rem;padding:.85rem 1rem;background:#FCFBFE;border:1px solid var(--line);border-radius:10px;font-size:.92rem;line-height:1.75}
+  .tr-result .sol .m{font-family:ui-monospace,Menlo,monospace;font-weight:600}
+  .tr-result .sol b{color:var(--accent)}
+  .tr-result .sol .lead{font-weight:700;color:var(--ink);display:block;margin-bottom:.2rem}
+</style>
+
+<script>
+(function(){
+  // ---- Пошаговый разбор составления системы ----
+  var steps=[].slice.call(document.querySelectorAll('.builder .bstep'));
+  var bNext=document.getElementById('bNext'), bReset=document.getElementById('bReset'), bProg=document.getElementById('bProg');
+  if(steps.length && bNext){
+    var shown=0, total=steps.length;
+    function render(){
+      steps.forEach(function(s,i){ s.classList.toggle('on', i<shown); });
+      bProg.textContent=shown+' / '+total;
+      bNext.disabled = shown>=total;
+      bNext.textContent = shown>=total ? 'Готово ✓' : 'Дальше →';
+    }
+    bNext.addEventListener('click',function(){ if(shown<total){ shown++; render(); } });
+    bReset.addEventListener('click',function(){ shown=0; render(); });
+    render();
+  }
+})();
+</script>
+
+<script>
+(function(){
+  var eqEl=document.getElementById('trEq'), hintEl=document.getElementById('trHint'),
+      ansEl=document.getElementById('trAns'), resEl=document.getElementById('trResult');
+  if(!eqEl) return;
+
+  function ri(min,max){ return Math.floor(Math.random()*(max-min+1))+min; }
+  // настоящий минус U+2212 в выводе
+  function mn(n){ return (n<0?'−':'')+Math.abs(n); }
+
+  // ---- Генераторы задач (все дают целочисленный ответ) ----
+  function genMotion(){
+    var vSlow=ri(3,15), d=ri(2,12), vFast=vSlow+d, t=ri(2,5);
+    var S=t*(vSlow+vFast);
+    return {
+      type:'motion',
+      story:'Из двух городов на расстоянии <b>'+S+' км</b> навстречу выехали велосипедист и пешеход и встретились через <b>'+t+' ч</b>. Скорость велосипедиста на <b>'+d+' км/ч</b> больше скорости пешехода. Найди обе скорости (км/ч).',
+      hint:'Формат: <b>две скорости</b> через точку с запятой, в любом порядке. Напр. «'+vSlow+'; '+vFast+'».',
+      kind:'pair', answers:[vSlow,vFast],
+      d:{t:t,S:S,dd:d,vSlow:vSlow,vFast:vFast,sum:vSlow+vFast}
+    };
+  }
+  function genSumDiff(){
+    var apples = Math.random()<0.5;
+    var big=ri(12,45), small=ri(2,big-2), sum=big+small, diff=big-small;
+    if(apples){
+      return {
+        type:'sumdiff',
+        story:'В двух корзинах вместе <b>'+sum+'</b> яблок, а в первой на <b>'+diff+'</b> яблок больше, чем во второй. Сколько яблок в каждой корзине?',
+        hint:'Формат: <b>два числа</b> через точку с запятой, в любом порядке. Напр. «'+big+'; '+small+'».',
+        kind:'pair', answers:[big,small],
+        d:{sum:sum,diff:diff,big:big,small:small,unit:'яблок',w1:'в первой корзине',w2:'во второй'}
+      };
+    }
+    return {
+      type:'sumdiff',
+      story:'Сумма двух чисел равна <b>'+sum+'</b>, а их разность равна <b>'+diff+'</b>. Найди эти числа.',
+      hint:'Формат: <b>два числа</b> через точку с запятой, в любом порядке. Напр. «'+big+'; '+small+'».',
+      kind:'pair', answers:[big,small],
+      d:{sum:sum,diff:diff,big:big,small:small,unit:'',w1:'большее число',w2:'меньшее'}
+    };
+  }
+  function genDigits(){
+    var x=ri(1,7), k=ri(1,9-x), y=x+k; // y>x, обе цифры 1..9
+    var s=x+y, inc=9*k, num=10*x+y, rev=10*y+x;
+    return {
+      type:'digits',
+      story:'Сумма цифр двузначного числа равна <b>'+s+'</b>. Если поменять цифры местами, число увеличится на <b>'+inc+'</b>. Найди исходное число.',
+      hint:'Формат: <b>одно двузначное число</b>. Напр. «'+num+'».',
+      kind:'single', answers:[num],
+      d:{s:s,inc:inc,x:x,y:y,k:k,num:num,rev:rev}
+    };
+  }
+  var gens=[genMotion,genMotion,genSumDiff,genSumDiff,genDigits];
+
+  var cur=null;
+
+  function solutionHTML(q){
+    var d=q.d, h='<div class="sol">';
+    if(q.type==='motion'){
+      h+='<span class="lead">Составляем систему</span>';
+      h+='Пусть <span class="m">x</span> — скорость пешехода, <span class="m">y</span> — велосипедиста (км/ч).<br>';
+      h+='За '+d.t+' ч вместе прошли всё расстояние: <span class="m">'+d.t+'x + '+d.t+'y = '+d.S+'</span>.<br>';
+      h+='Велосипедист на '+d.dd+' км/ч быстрее: <span class="m">y − x = '+d.dd+'</span>.<br>';
+      h+='<span class="lead" style="margin-top:.4rem">Решаем</span>';
+      h+='Делим первое на '+d.t+': <span class="m">x + y = '+d.sum+'</span>. Подставляем <span class="m">y = x + '+d.dd+'</span>:<br>';
+      h+='<span class="m">2x + '+d.dd+' = '+d.sum+'</span> → <span class="m">x = '+d.vSlow+'</span>, <span class="m">y = '+d.vFast+'</span>.<br>';
+      h+='Обе скорости положительны — годятся.<br>';
+      h+='<b>Ответ: пешеход '+d.vSlow+' км/ч, велосипедист '+d.vFast+' км/ч.</b>';
+    } else if(q.type==='sumdiff'){
+      h+='<span class="lead">Составляем систему</span>';
+      h+='Пусть <span class="m">x</span> — '+d.w1+', <span class="m">y</span> — '+d.w2+'.<br>';
+      h+='Сумма: <span class="m">x + y = '+d.sum+'</span>. Разность: <span class="m">x − y = '+d.diff+'</span>.<br>';
+      h+='<span class="lead" style="margin-top:.4rem">Решаем сложением</span>';
+      h+='Складываем уравнения: <span class="m">2x = '+(d.sum+d.diff)+'</span> → <span class="m">x = '+d.big+'</span>, тогда <span class="m">y = '+d.small+'</span>.<br>';
+      if(d.unit){ h+='<b>Ответ: '+d.big+' и '+d.small+' '+d.unit+'.</b>'; }
+      else{ h+='<b>Ответ: '+d.big+' и '+d.small+'.</b>'; }
+    } else {
+      h+='<span class="lead">Составляем систему</span>';
+      h+='Пусть <span class="m">x</span> — цифра десятков, <span class="m">y</span> — цифра единиц. Число равно <span class="m">10x + y</span>.<br>';
+      h+='Сумма цифр: <span class="m">x + y = '+d.s+'</span>.<br>';
+      h+='Перестановка увеличивает на '+d.inc+': <span class="m">(10y + x) − (10x + y) = '+d.inc+'</span>, то есть <span class="m">9y − 9x = '+d.inc+'</span> → <span class="m">y − x = '+d.k+'</span>.<br>';
+      h+='<span class="lead" style="margin-top:.4rem">Решаем сложением</span>';
+      h+='<span class="m">x + y = '+d.s+'</span> и <span class="m">y − x = '+d.k+'</span> → <span class="m">2y = '+(d.s+d.k)+'</span> → <span class="m">y = '+d.y+'</span>, <span class="m">x = '+d.x+'</span>.<br>';
+      h+='Число: <span class="m">10·'+d.x+' + '+d.y+' = '+d.num+'</span>. Проверка: '+d.rev+' − '+d.num+' = '+d.inc+' ✓.<br>';
+      h+='<b>Ответ: '+d.num+'.</b>';
+    }
+    return h+'</div>';
+  }
+
+  function generate(){
+    cur=gens[ri(0,gens.length-1)]();
+    eqEl.innerHTML=cur.story;
+    hintEl.innerHTML=cur.hint;
+    resEl.innerHTML='';
+    ansEl.value='';
+    ansEl.placeholder = cur.kind==='single' ? 'напр.  47' : 'напр.  16; 9';
+    // НЕ вызываем focus() при первичной генерации/смене задачи
+  }
+
+  function parseNums(raw){
+    // 1) настоящий минус → обычный; 2) числа-разделители ; , пробел
+    var s=raw.trim().toLowerCase().replace(/−/g,'-');
+    // срез «x=», «y=» перед числами
+    s=s.replace(/[xху][₁₂12]?\s*=/g,' ');
+    var parts=s.split(/[;,\s]+/).filter(function(p){return p!=='';});
+    // одиночное десятичное с запятой («0,5») уже разбилось бы — но ответы целые, так что ок
+    var nums=parts.map(function(p){ return parseFloat(p.replace(/,/g,'.')); });
+    return nums;
+  }
+
+  function check(){
+    if(!cur){ return; }
+    var raw=ansEl.value;
+    if(!raw.trim()){ resEl.innerHTML='<span class="bad">Впиши ответ или нажми «Показать решение».</span>'; return; }
+    var got=parseNums(raw);
+    if(!got.length || got.some(function(n){return isNaN(n);})){
+      resEl.innerHTML='<span class="bad">Не понял запись. Введи '+(cur.kind==='single'?'число':'числа через точку с запятой')+'.</span>';
+      return;
+    }
+    // дедуп + сортировка
+    got=got.filter(function(v,i){return got.indexOf(v)===i;}).sort(function(a,b){return a-b;});
+    var exp=cur.answers.slice().sort(function(a,b){return a-b;});
+    var ok = got.length===exp.length && exp.every(function(v,i){return Math.abs(v-got[i])<1e-6;});
+    if(ok){
+      resEl.innerHTML='<span class="ok">✓ Верно! Отлично.</span>'+solutionHTML(cur);
+    } else {
+      var hint = (cur.kind==='pair' && got.length<2) ? ' Подсказка: в ответе две величины — впиши обе через точку с запятой.' : '';
+      resEl.innerHTML='<span class="bad">✗ Пока не то.'+hint+'</span>'+solutionHTML(cur);
+    }
+  }
+
+  document.getElementById('trNew').addEventListener('click',generate);
+  document.getElementById('trCheck').addEventListener('click',check);
+  document.getElementById('trShow').addEventListener('click',function(){ if(cur){ resEl.innerHTML=solutionHTML(cur); } });
+  ansEl.addEventListener('keydown',function(e){ if(e.key==='Enter') check(); });
+
+  // стартовая задача — валидный seed (без focus)
+  generate();
+})();
+</script>
+<!--LESSON-NAV-BOT--><nav class="lnav lnav-bot"><a class="prev" href="./alg9-sistema-slozhenie.html"><span class="dir">← Предыдущая</span><span class="ttl">Решение систем способом сложения</span></a><a class="to-cat" href="./catalog.html">📚 <span>Все темы</span></a><a class="next" href="./alg9-arifmeticheskaya-progressiya.html"><span class="dir">Следующая →</span><span class="ttl">Арифметическая прогрессия и её n-й член</span></a></nav><!--/LESSON-NAV-BOT-->

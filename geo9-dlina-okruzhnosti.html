@@ -1,0 +1,650 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Длина окружности и длина дуги — урок, геометрия 9 класс</title>
+<style>
+  :root{
+    --paper:#F6F7F9;
+    --card:#FFFFFF;
+    --ink:#1B2333;
+    --muted:#5A6478;
+    --line:#E2E5EC;
+    --accent:#3B4FD0;
+    --accent-soft:#EAEDFB;
+    --pos:#1E8E5A;
+    --pos-bg:#E7F4EC;
+    --zero:#B9791A;
+    --zero-bg:#FBF1DC;
+    --neg:#C0455B;
+    --neg-bg:#F9E9EC;
+  }
+  *{box-sizing:border-box}
+  body{margin:0}
+  .wrap{
+    max-width:760px;
+    margin:0 auto;
+    padding:clamp(1.4rem,4vw,3rem) clamp(1.1rem,4vw,2rem) 4rem;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    font-size:17px;
+    line-height:1.62;
+    -webkit-font-smoothing:antialiased;
+  }
+  .eyebrow{
+    font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--accent);font-weight:600;margin:0 0 .5rem;
+  }
+  h1{
+    font-family:Georgia,"Times New Roman",serif;
+    font-size:clamp(2.1rem,7vw,3rem);
+    line-height:1.05;margin:0;font-weight:700;letter-spacing:-.01em;
+    text-wrap:balance;
+  }
+  .lede{
+    font-size:1.08rem;color:var(--muted);margin:.7rem 0 0;max-width:60ch;
+    text-wrap:pretty;
+  }
+  h2{
+    font-family:Georgia,serif;font-size:1.32rem;font-weight:700;
+    margin:0 0 .1rem;letter-spacing:-.005em;
+  }
+  section{margin-top:2.6rem}
+  .kicker{
+    font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--muted);font-weight:600;margin:0 0 .8rem;
+    display:flex;align-items:center;gap:.6rem;
+  }
+  .kicker::before{
+    content:"";width:1.4rem;height:2px;background:var(--accent);border-radius:2px;
+  }
+  p{margin:.65rem 0}
+  strong{font-weight:650}
+  .math{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-weight:600}
+  sup{font-size:.72em}
+
+  /* Главная формула */
+  .hero-formula{
+    margin-top:2.2rem;
+    background:var(--ink);color:#fff;border-radius:14px;
+    padding:1.6rem 1.4rem;text-align:center;
+  }
+  .hero-formula .lbl{
+    font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;
+    color:#9aa6c9;margin:0 0 .7rem;
+  }
+  .hero-formula .eq{
+    font-family:ui-monospace,"SF Mono",Menlo,monospace;
+    font-size:clamp(1.5rem,5.4vw,2.1rem);font-weight:700;letter-spacing:.01em;
+  }
+  .hero-formula .eq + .eq{margin-top:.55rem}
+  .hero-formula .eq b{color:#8ea0ff;font-weight:700}
+  .hero-formula .sep{height:1px;background:#2c3550;margin:1.1rem 0;border:0}
+  .hero-formula .note{font-size:.86rem;color:#9aa6c9;margin:.9rem 0 0}
+
+  /* Пререквизит */
+  .recall{
+    background:var(--accent-soft);border-radius:12px;padding:1rem 1.15rem;
+    font-size:.96rem;
+  }
+  .recall p{margin:.3rem 0}
+
+  /* Две формы формулы / варианты */
+  .cases{display:grid;gap:.85rem;margin-top:.4rem}
+  @media(min-width:620px){.cases{grid-template-columns:repeat(2,1fr)}}
+  .case{
+    border-radius:12px;padding:1.05rem 1.1rem;border:1px solid var(--line);
+    background:var(--card);display:flex;flex-direction:column;gap:.35rem;
+    border-top:4px solid var(--accent);
+  }
+  .case .sign{font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.15rem;color:var(--accent)}
+  .case .count{font-weight:650;font-size:1rem}
+  .case .desc{font-size:.9rem;color:var(--muted)}
+  .case.arc{border-top-color:var(--pos)}
+  .case.arc .sign{color:var(--pos)}
+
+  /* Разбор */
+  .worked{
+    background:var(--card);border:1px solid var(--line);border-radius:12px;
+    padding:1.2rem 1.3rem;
+  }
+  .worked + .worked{margin-top:1rem}
+  .worked .task{
+    font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.02rem;
+    margin:0 0 1rem;padding-bottom:.8rem;border-bottom:1px solid var(--line);
+  }
+  ol.steps{margin:0;padding:0;list-style:none;counter-reset:s;display:flex;flex-direction:column;gap:.7rem}
+  ol.steps li{
+    position:relative;padding-left:2.1rem;counter-increment:s;
+  }
+  ol.steps li::before{
+    content:counter(s);position:absolute;left:0;top:.05rem;
+    width:1.5rem;height:1.5rem;border-radius:50%;
+    background:var(--accent-soft);color:var(--accent);
+    font-size:.82rem;font-weight:700;display:flex;align-items:center;justify-content:center;
+  }
+  ol.steps .m{font-family:ui-monospace,Menlo,monospace;font-weight:600;color:var(--ink)}
+  .verdict{
+    margin-top:1rem;padding:.7rem 1rem;background:var(--pos-bg);
+    border-radius:9px;font-weight:600;color:var(--pos);font-size:.98rem;
+  }
+
+  /* Практика */
+  .drill{display:flex;flex-direction:column;gap:.7rem}
+  details{
+    background:var(--card);border:1px solid var(--line);border-radius:10px;
+    padding:.85rem 1.05rem;
+  }
+  details[open]{border-color:var(--accent)}
+  summary{
+    cursor:pointer;font-weight:600;list-style:none;
+    display:flex;justify-content:space-between;align-items:center;gap:1rem;
+  }
+  summary::-webkit-details-marker{display:none}
+  summary:focus-visible{outline:3px solid var(--accent);outline-offset:2px;border-radius:6px}
+  summary .q{font-family:ui-monospace,Menlo,monospace}
+  summary .tag{
+    font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);
+    border:1px solid var(--line);border-radius:20px;padding:.1rem .55rem;white-space:nowrap;
+  }
+  summary::after{
+    content:"показать ответ";font-size:.78rem;color:var(--accent);font-weight:600;white-space:nowrap;
+  }
+  details[open] summary::after{content:"скрыть"}
+  .ans{margin-top:.7rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.96rem;color:var(--muted)}
+  .ans .m{font-family:ui-monospace,Menlo,monospace;color:var(--ink);font-weight:600}
+
+  /* Ошибки */
+  ul.pitfalls{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:.6rem}
+  ul.pitfalls li{
+    padding-left:1.5rem;position:relative;font-size:.98rem;
+  }
+  ul.pitfalls li::before{
+    content:"×";position:absolute;left:0;top:-.05rem;color:var(--neg);font-weight:700;font-size:1.1rem;
+  }
+  ul.pitfalls b{color:var(--ink)}
+
+  .next{
+    background:var(--accent);color:#fff;border-radius:12px;padding:1.2rem 1.3rem;
+  }
+  .next h2{color:#fff}
+  .next .eq{
+    font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.25rem;
+    margin:.6rem 0 .3rem;
+  }
+  .next p{color:#dfe4fb;font-size:.96rem;margin:.4rem 0 0}
+  .foot{margin-top:2.4rem;font-size:.82rem;color:var(--muted);text-align:center}
+
+  /* Семейство: одна окружность, меняем угол */
+  .family{
+    margin-top:1.1rem;background:var(--card);border:1px solid var(--line);
+    border-radius:12px;padding:1.1rem 1.2rem;
+  }
+  .family .cap{font-size:.94rem;color:var(--muted);margin:0 0 .85rem}
+  .family .cap b{color:var(--ink)}
+  .frow{
+    display:flex;align-items:center;gap:.7rem;flex-wrap:wrap;
+    padding:.55rem 0;border-top:1px dashed var(--line);
+    font-family:ui-monospace,Menlo,monospace;
+  }
+  .frow:first-of-type{border-top:none}
+  .frow .fe{font-weight:700;font-size:1rem;min-width:12ch}
+  .frow .fe u{text-decoration:none;padding:0 .12em;border-radius:4px;font-weight:800;background:var(--pos-bg);color:var(--pos)}
+  .frow .fd{font-size:.86rem;color:var(--muted);flex:1;min-width:11ch}
+  .frow .fd b{color:var(--ink)}
+  .pill{
+    font-size:.72rem;font-weight:700;letter-spacing:.03em;text-transform:uppercase;
+    padding:.18rem .55rem;border-radius:20px;white-space:nowrap;
+    background:var(--pos-bg);color:var(--pos);
+  }
+
+  @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+<style>
+.oge-tip{display:flex;gap:.8rem;align-items:flex-start;background:#FFF8E7;border:1px solid #F0D98A;border-left:4px solid #E0A315;border-radius:10px;padding:.85rem 1.05rem;margin:1.5rem 0}
+.oge-tip .b{font-size:.72rem;font-weight:800;letter-spacing:.03em;color:#8A6A15;white-space:nowrap;text-transform:uppercase;padding-top:.15rem}
+.oge-tip .x{font-size:.95rem;line-height:1.5}
+</style>
+
+<!--LESSON-NAV-TOP--><style>.lnav{--lnav-accent:#3D5AF1}.lnav a{text-decoration:none;font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif}.lnav-top{max-width:820px;margin:0 auto;padding:.75rem clamp(1rem,4vw,1.5rem) .1rem}.lnav-top a{display:inline-flex;align-items:center;gap:.35rem;color:var(--lnav-accent);font-weight:600;font-size:.9rem}.lnav-top a:hover{text-decoration:underline}.lnav-bot{max-width:820px;margin:2.6rem auto 3rem;padding:1.1rem clamp(1rem,4vw,1.5rem) 0;border-top:1px solid #E4E8EF;display:flex;align-items:stretch;gap:.55rem}.lnav-bot a{min-width:0;display:flex;flex-direction:column;justify-content:center;gap:.15rem;border:1px solid #E4E8EF;border-radius:12px;padding:.65rem .85rem;color:#182233;background:#fff;transition:border-color .1s,transform .08s}.lnav-bot a:hover{border-color:var(--lnav-accent);transform:translateY(-1px)}.lnav-bot .prev,.lnav-bot .next{flex:1 1 0}.lnav-bot .next{text-align:right}.lnav-bot .dir{font-size:.72rem;color:#8A93A6;font-weight:600}.lnav-bot .ttl{font-size:.9rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.lnav-bot .to-cat{flex:0 0 auto;flex-direction:row;align-items:center;justify-content:center;color:var(--lnav-accent);font-weight:700;font-size:.85rem;white-space:nowrap}@media(max-width:420px){.lnav-bot .to-cat span{display:none}.lnav-bot .to-cat{padding:.65rem .7rem}}</style><nav class="lnav lnav-top"><a href="./catalog.html">← Все темы</a></nav><!--/LESSON-NAV-TOP-->
+<div class="wrap">
+
+  <header>
+    <p class="eyebrow">Геометрия · 9 класс</p>
+    <h1>Длина окружности и длина дуги</h1>
+    <p class="lede">Периметр круга и его кусок-дугу считают по двум формулам — и обе вырастают из одного числа <em>π</em>.</p>
+  </header>
+
+  <div class="hero-formula">
+    <p class="lbl">Длина окружности</p>
+    <div class="eq">C = 2π<b>R</b> = π<b>d</b></div>
+    <hr class="sep">
+    <p class="lbl">Длина дуги в n градусов</p>
+    <div class="eq">l = (π<b>R</b><b>n</b>) / 180</div>
+    <p class="note">R — радиус, d — диаметр (d = 2R), n — центральный угол дуги, π ≈ 3,14</p>
+  </div>
+
+  <div class="oge-tip"><div class="b">🎯 В ОГЭ · Задание 16</div><div class="x">В первой части часто просят длину окружности или дуги по радиусу и центральному углу. Формулы <b>C = 2πR</b> и <b>l = πRn/180</b> закрывают такие номера про окружность и круг за минуту.</div></div>
+
+  <section>
+    <p class="kicker">Зачем это нужно</p>
+    <h2>Периметр круга и путь по кривой</h2>
+    <p>Длина окружности — это «периметр круга»: сколько пройдёт колесо за один полный оборот, сколько ленты нужно, чтобы обтянуть круглый стол, какой длины обод колеса. За один оборот колесо проезжает ровно одну длину окружности.</p>
+    <p>Длина дуги — это «кусок» окружности. Она нужна каждый раз, когда движение идёт по кривой: сколько проедет колесо, повернувшись на 60°; какой длины перила вдоль закруглённой части трибуны.</p>
+    <p>Главное заблуждение: «дуга — это про градусы, значит и ответ в градусах». Нет: градусы задают, какую <strong>долю</strong> окружности мы берём, а сама длина — линейная величина, в сантиметрах и метрах, как любой отрезок.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Что вспомнить с прошлого шага</p>
+    <div class="recall">
+      <p><strong>Радиус R</strong> — расстояние от центра до окружности. <strong>Диаметр d</strong> проходит через центр, <span class="math">d = 2R</span>.</p>
+      <p><strong>π ≈ 3,14</strong> — постоянное число. Отношение длины любой окружности к её диаметру всегда равно π: <span class="math">C / d = π</span>.</p>
+      <p><strong>Центральный угол n</strong> — угол с вершиной в центре; полный угол — 360°.</p>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Ядро темы</p>
+    <h2>Две формулы — под то, что дано</h2>
+    <p>Формула длины окружности одна, но записана в двух видах — выбирай под то, что дано: радиус или диаметр.</p>
+    <div class="cases">
+      <div class="case">
+        <div class="sign">C = 2πR</div>
+        <div class="count">Дан радиус</div>
+        <div class="desc">Берём эту запись, если известен радиус R.</div>
+      </div>
+      <div class="case">
+        <div class="sign">C = πd</div>
+        <div class="count">Дан диаметр</div>
+        <div class="desc">Берём эту, если известен диаметр d. Помни: d = 2R.</div>
+      </div>
+    </div>
+    <p style="margin-top:1.1rem">А длину дуги не запоминают отдельно — её берут как <strong>долю n/360</strong> от целой окружности:</p>
+    <div class="cases">
+      <div class="case arc">
+        <div class="sign">l = (n/360)·2πR</div>
+        <div class="count">Смысл: доля окружности</div>
+        <div class="desc">Дуга в n° составляет долю n/360 от полной длины.</div>
+      </div>
+      <div class="case arc">
+        <div class="sign">l = (πRn)/180</div>
+        <div class="count">Та же формула, свёрнутая</div>
+        <div class="desc">Потому что (n/360)·2πR = (πRn)/180. Считать удобнее так.</div>
+      </div>
+    </div>
+    <p style="font-size:.92rem;color:var(--muted);margin-top:.9rem">Проверка на краях: при <span class="math">n = 360</span> дуга — вся окружность, <span class="math">l = 2πR</span>; при <span class="math">n = 180</span> — половина, <span class="math">l = πR</span>.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Одна окружность, меняем только угол</p>
+    <h2>Как дуга растёт вместе с углом</h2>
+    <div class="family">
+      <p class="cap">Радиус держим <b>R = 6 см</b>, крутим только центральный угол <b>n</b>. Дуга — это доля <b>n/360</b> от полной длины <span class="math">C = 12π</span>:</p>
+      <div class="frow">
+        <span class="fe">n = <u>90°</u></span>
+        <span class="fd">доля 1/4 · l = (π·6·90)/180 = <b>3π ≈ 9,42</b></span>
+        <span class="pill">1/4 круга</span>
+      </div>
+      <div class="frow">
+        <span class="fe">n = <u>120°</u></span>
+        <span class="fd">доля 1/3 · l = (π·6·120)/180 = <b>4π ≈ 12,56</b></span>
+        <span class="pill">1/3 круга</span>
+      </div>
+      <div class="frow">
+        <span class="fe">n = <u>180°</u></span>
+        <span class="fd">доля 1/2 · l = (π·6·180)/180 = <b>6π ≈ 18,84</b></span>
+        <span class="pill">1/2 круга</span>
+      </div>
+      <p class="cap" style="margin:.85rem 0 0">Больше угол — больше доля — длиннее дуга, строго пропорционально. При том же угле, но большем радиусе дуга тоже растёт: <span class="math">l</span> пропорциональна и <span class="math">n</span>, и <span class="math">R</span>.</p>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Покрути сам · интерактив</p>
+    <h2>Окружность, радиус и дуга — вживую</h2>
+    <p>Двигай ползунки: <span class="math">R</span> меняет размер круга, <span class="math">n</span> — какую часть окружности выделить дугой. Смотри, как пересчитываются длина окружности и длина дуги.</p>
+    <div class="para">
+      <canvas id="circ" width="560" height="360" aria-label="Интерактивная окружность с дугой"></canvas>
+      <div class="sliders">
+        <label>R <span id="vr" class="sval">5</span><input id="sr" type="range" min="1" max="10" step="1" value="5"></label>
+        <label>n <span id="vn" class="sval">90°</span><input id="sn" type="range" min="0" max="360" step="15" value="90"></label>
+      </div>
+      <div class="live">
+        <div class="live-row"><span class="live-lbl">Длина окружности</span><span id="liveC" class="live-val">C = 10π ≈ 31,4 см</span></div>
+        <div class="live-row arc"><span class="live-lbl">Длина дуги</span><span id="liveL" class="live-val">l = (π·5·90)/180 ≈ 7,85 см</span></div>
+      </div>
+    </div>
+    <p style="font-size:.9rem;color:var(--muted)">Поставь <span class="math">n = 360</span> — дуга обходит всю окружность, и её длина совпадает с <span class="math">C</span>. Поставь <span class="math">n = 180</span> — ровно половина.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Разбираем вместе</p>
+    <h2>Эталонные примеры</h2>
+    <div class="worked">
+      <p class="task">Радиус R = 5 см. Найти длину окружности C. (π ≈ 3,14)</p>
+      <ol class="steps">
+        <li>Дан радиус — берём запись через радиус: <span class="m">C = 2πR</span>.</li>
+        <li>Подставляем R = 5: <span class="m">C = 2·π·5 = 10π</span> — это точный ответ.</li>
+        <li>Нужно число — заменяем π ≈ 3,14: <span class="m">C ≈ 10·3,14 = 31,4</span>.</li>
+        <li>Единицы: радиус был в см, значит и <span class="m">C ≈ 31,4 см</span>.</li>
+      </ol>
+      <div class="verdict">Ответ: C = 10π ≈ 31,4 см.</div>
+    </div>
+    <div class="worked">
+      <p class="task">Радиус R = 6 см, центральный угол n = 60°. Найти длину дуги l.</p>
+      <ol class="steps">
+        <li>Понимаю долю: <span class="m">60/360 = 1/6</span> окружности. <em>Дуга — та же доля от длины, что угол от 360°.</em></li>
+        <li>Длина всей окружности: <span class="m">C = 2π·6 = 12π</span> см.</li>
+        <li>Беру 1/6 от неё: <span class="m">l = (1/6)·12π = 2π</span> см.</li>
+        <li>Проверка по свёрнутой формуле: <span class="m">(π·6·60)/180 = 360π/180 = 2π</span> — совпало. Приближённо <span class="m">2π ≈ 6,28 см</span>.</li>
+      </ol>
+      <div class="verdict">Ответ: l = 2π ≈ 6,28 см.</div>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Теперь ты · нажми, чтобы проверить</p>
+    <h2>Мини-практика</h2>
+    <div class="drill">
+      <details>
+        <summary><span class="q">R = 10 см. Найди C. (π≈3,14)</span><span class="tag">применение</span></summary>
+        <div class="ans"><span class="m">C = 2π·10 = 20π ≈ 62,8 см.</span></div>
+      </details>
+      <details>
+        <summary><span class="q">Бассейн d = 6 м. Плитка по краю?</span><span class="tag">применение</span></summary>
+        <div class="ans"><span class="m">Дан диаметр: C = πd = 6π ≈ 18,84 м.</span></div>
+      </details>
+      <details>
+        <summary><span class="q">R = 9 см, n = 120°. Найди l.</span><span class="tag">применение</span></summary>
+        <div class="ans"><span class="m">l = (π·9·120)/180 = 1080π/180 = 6π ≈ 18,84 см.</span></div>
+      </details>
+      <details>
+        <summary><span class="q">Обратная: C = 18,84 см. Найди R.</span><span class="tag">анализ</span></summary>
+        <div class="ans"><span class="m">C = 2πR → R = C/(2π) = 18,84/(2·3,14) = 18,84/6,28 = 3 см.</span></div>
+      </details>
+      <details>
+        <summary><span class="q">Обратная: l = 4π см при R = 8. Найди n.</span><span class="tag">анализ</span></summary>
+        <div class="ans"><span class="m">4π = (π·8·n)/180 → 4·180 = 8n → n = 90°.</span></div>
+      </details>
+      <details>
+        <summary><span class="q">Найди ошибку: «R = 4, значит C = π·4 = 4π ≈ 12,56 см».</span><span class="tag">анализ</span></summary>
+        <div class="ans">Использована формула через диаметр (πd) вместо радиуса. Дан радиус, значит <span class="m">C = 2πR = 2·π·4 = 8π ≈ 25,12 см</span>.</div>
+      </details>
+      <details>
+        <summary><span class="q">Найди ошибку: «R = 6, n = 90 → l = (π·6·90)/360 = 1,5π».</span><span class="tag">анализ</span></summary>
+        <div class="ans">В формуле длины дуги делят на <b>180</b>, а не на 360. Верно: <span class="m">l = (π·6·90)/180 = 3π ≈ 9,42 см</span>.</div>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Тренажёр · бесконечная практика</p>
+    <h2>Реши задачу сам</h2>
+    <p>Нажми «Новая задача» и реши её. Ответ можно вводить <b>через π</b> (напр. <span class="math">6π</span>, можно писать <span class="math">6*pi</span> или <span class="math">6 pi</span>) <b>или числом</b> при π ≈ 3,14 (напр. <span class="math">18,84</span>). Для обратных задач (найти радиус или угол) — просто числом.</p>
+    <div class="trainer">
+      <div class="tr-eq" id="trEq">Дан радиус R = 5 см. Найди длину окружности C.</div>
+      <div class="tr-hint" id="trHint">Введи ответ через π (напр. 10π) или числом при π ≈ 3,14.</div>
+      <div class="tr-ctl">
+        <button id="trNew" type="button">🎲 Новая задача</button>
+        <input id="trAns" type="text" placeholder="напр.  10π   или   31,4" aria-label="Ответ">
+        <button id="trCheck" type="button" class="sec">Проверить</button>
+        <button id="trShow" type="button" class="ghost">Показать решение</button>
+      </div>
+      <div id="trResult" class="tr-result"></div>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Где чаще всего ошибаются</p>
+    <h2>Лови эти ловушки</h2>
+    <ul class="pitfalls">
+      <li><b>Путают 2πR и πd.</b> Берут запись «через радиус», а подставляют диаметр (или наоборот). Спроси себя, что дано, и выбери формулу под это. Сомневаешься — переведи всё в радиус: R = d/2 и считай C = 2πR.</li>
+      <li><b>Забывают про π.</b> Пишут C = 2R и считают это ответом. Без π получается просто диаметр, а не длина: множитель π обязателен.</li>
+      <li><b>Путают длину и площадь.</b> Приписывают длине см² или берут формулу πR². Длина — линейная величина (см, м), с π в <em>первой</em> степени радиуса.</li>
+      <li><b>В дуге забывают делить на 360.</b> Считают l = 2πR и берут всю окружность, игнорируя угол. Всегда сначала спроси: «какую долю n/360 это даёт?»</li>
+      <li><b>Путают деление на 180 и на 360.</b> В формуле длины дуги стоит 180 (потому что 2π/360 = π/180). А на 360 делят в площади сектора — это уже другая величина.</li>
+    </ul>
+  </section>
+
+  <section>
+    <div class="next">
+      <h2>Что дальше</h2>
+      <p>От линии переходим к площади. Сколько места занимает весь круг:</p>
+      <div class="eq">S = πR²</div>
+      <p>А площадь сектора — это та же доля n/360, но уже от площади круга:</p>
+      <div class="eq">S = (πR²n) / 360</div>
+      <p>Сравни: у дуги делили на 180 (линия), у сектора — на 360 (площадь). Единицы подскажут, что именно ищут.</p>
+    </div>
+  </section>
+
+  <p class="foot">Проверка на выходе: запиши C через радиус и через диаметр по памяти · во сколько раз вырастет длина, если R увеличить втрое? · почему длину нельзя мерить в см²?</p>
+
+</div>
+
+<style>
+  .para{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.1rem 1.1rem 1rem;margin:1rem 0}
+  .para canvas{width:100%;height:auto;display:block;border-radius:10px;background:#FCFDFF}
+  .sliders{display:grid;gap:.6rem;margin-top:.9rem}
+  @media(min-width:520px){.sliders{grid-template-columns:repeat(2,1fr)}}
+  .sliders label{display:flex;align-items:center;gap:.5rem;font-weight:700;font-family:ui-monospace,Menlo,monospace}
+  .sliders input[type=range]{flex:1;accent-color:var(--accent)}
+  .sliders input[type=range]:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+  .sliders .sval{min-width:3.4ch;text-align:right;color:var(--accent);font-variant-numeric:tabular-nums}
+  .live{margin-top:1rem;display:flex;flex-direction:column;gap:.5rem}
+  .live-row{display:flex;justify-content:space-between;align-items:baseline;gap:.8rem;padding:.55rem .8rem;border-radius:9px;background:var(--accent-soft)}
+  .live-row.arc{background:var(--pos-bg)}
+  .live-lbl{font-size:.8rem;letter-spacing:.04em;text-transform:uppercase;font-weight:700;color:var(--muted)}
+  .live-val{font-family:ui-monospace,Menlo,monospace;font-weight:700;color:var(--ink);text-align:right}
+  .live-row.arc .live-val{color:var(--pos)}
+</style>
+
+<script>
+(function(){
+  var canvas=document.getElementById('circ'); if(!canvas) return;
+  var ctx=canvas.getContext('2d');
+  var sr=document.getElementById('sr'), sn=document.getElementById('sn');
+  var vr=document.getElementById('vr'), vn=document.getElementById('vn');
+  var liveC=document.getElementById('liveC'), liveL=document.getElementById('liveL');
+  var W=560,H=360,dpr=1;
+
+  function dec(x){ var n=Math.round(x*100)/100; return (''+n).replace('.',','); }
+  function accent(){ return getComputedStyle(document.documentElement).getPropertyValue('--accent').trim()||'#3B4FD0'; }
+  function pos(){ return getComputedStyle(document.documentElement).getPropertyValue('--pos').trim()||'#1E8E5A'; }
+
+  function resize(){
+    var cssW=canvas.clientWidth||560; dpr=Math.min(window.devicePixelRatio||1,2);
+    W=cssW; H=Math.round(cssW*0.64);
+    canvas.width=W*dpr; canvas.height=H*dpr; canvas.style.height=H+'px';
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+  }
+
+  function pt(cx,cy,rp,a){ return [cx+rp*Math.cos(a), cy-rp*Math.sin(a)]; }
+
+  function draw(){
+    var R=parseInt(sr.value,10), n=parseInt(sn.value,10);
+    vr.textContent=R; vn.textContent=n+'°';
+    ctx.clearRect(0,0,W,H);
+    var cx=W/2, cy=H/2;
+    var maxRp=Math.min(W,H)/2-34;
+    var rp=Math.max(24,(R/10)*maxRp);
+    var col=accent(), acol=pos();
+
+    // сектор-заливка выделенной дуги
+    if(n>0){
+      var steps=Math.max(2,Math.round(n/2));
+      ctx.beginPath(); ctx.moveTo(cx,cy);
+      for(var i=0;i<=steps;i++){ var a=(n*i/steps)*Math.PI/180; var p=pt(cx,cy,rp,a); ctx.lineTo(p[0],p[1]); }
+      ctx.closePath();
+      ctx.fillStyle='rgba(30,142,90,0.13)'; ctx.fill();
+    }
+
+    // полная окружность
+    ctx.beginPath(); ctx.arc(cx,cy,rp,0,Math.PI*2);
+    ctx.strokeStyle='#C7CCD8'; ctx.lineWidth=2; ctx.stroke();
+
+    // радиусы к концам дуги
+    ctx.strokeStyle='#9AA3B2'; ctx.lineWidth=1.5;
+    var pa=pt(cx,cy,rp,0), pb=pt(cx,cy,rp,n*Math.PI/180);
+    ctx.beginPath(); ctx.moveTo(cx,cy); ctx.lineTo(pa[0],pa[1]); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(cx,cy); ctx.lineTo(pb[0],pb[1]); ctx.stroke();
+
+    // выделенная дуга
+    if(n>0){
+      ctx.beginPath();
+      var st=Math.max(2,Math.round(n));
+      for(var j=0;j<=st;j++){ var aa=(n*j/st)*Math.PI/180; var q=pt(cx,cy,rp,aa); if(j===0)ctx.moveTo(q[0],q[1]); else ctx.lineTo(q[0],q[1]); }
+      ctx.strokeStyle=acol; ctx.lineWidth=5; ctx.lineCap='round'; ctx.stroke(); ctx.lineCap='butt';
+    }
+
+    // центр
+    ctx.fillStyle='#5A6478'; ctx.beginPath(); ctx.arc(cx,cy,3.5,0,Math.PI*2); ctx.fill();
+
+    // подписи
+    ctx.fillStyle=acol; ctx.font='700 14px ui-monospace,Menlo,monospace';
+    ctx.textAlign='left'; ctx.textBaseline='middle';
+    var mid=(n/2)*Math.PI/180, lp=pt(cx,cy,rp+16,mid);
+    if(n>0){ ctx.fillText('l', lp[0]-4, lp[1]); }
+    ctx.fillStyle='#5A6478'; ctx.font='700 13px ui-monospace,Menlo,monospace';
+    ctx.fillText('R', (cx+pa[0])/2, cy-10);
+
+    // живые значения
+    var C=2*R;                 // коэффициент при π
+    var arcVal=R*n/180;        // коэффициент при π у дуги
+    liveC.textContent='C = 2πR = '+C+'π ≈ '+dec(C*3.14)+' см';
+    liveL.textContent='l = (π·'+R+'·'+n+')/180 ≈ '+dec(arcVal*3.14)+' см';
+  }
+
+  [sr,sn].forEach(function(s){ s.addEventListener('input',draw); });
+  window.addEventListener('resize',function(){ resize(); draw(); });
+  resize(); draw();
+})();
+</script>
+
+<style>
+  .trainer{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.2rem 1.3rem;margin-top:1rem}
+  .tr-eq{font-weight:700;font-size:clamp(1.05rem,3.4vw,1.25rem);text-align:center;padding:1rem;background:var(--accent-soft);border-radius:10px;color:var(--ink);line-height:1.4}
+  .tr-hint{font-size:.85rem;color:var(--muted);text-align:center;margin-top:.6rem}
+  .tr-ctl{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.9rem;align-items:center}
+  .tr-ctl button{font:inherit;font-weight:700;font-size:.9rem;cursor:pointer;border:none;border-radius:9px;padding:.55rem .95rem;color:#fff;background:var(--accent)}
+  .tr-ctl button.sec{background:var(--pos)}
+  .tr-ctl button.ghost{background:transparent;color:var(--accent);border:1px solid var(--accent)}
+  .tr-ctl input{flex:1;min-width:150px;font:inherit;padding:.5rem .7rem;border:1px solid var(--line);border-radius:9px;background:#fff;color:var(--ink)}
+  .tr-ctl button:focus-visible,.tr-ctl input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+  .tr-result{margin-top:.9rem;font-size:.96rem;min-height:1.2rem}
+  .tr-result .ok{color:var(--pos);font-weight:700}
+  .tr-result .bad{color:var(--neg);font-weight:700}
+  .tr-result .sol{margin-top:.7rem;padding:.85rem 1rem;background:#FCFBFE;border:1px solid var(--line);border-radius:10px;font-family:ui-monospace,Menlo,monospace;font-size:.9rem;line-height:1.8}
+  .tr-result .sol b{color:var(--accent)}
+</style>
+
+<script>
+(function(){
+  var eqEl=document.getElementById('trEq'), hintEl=document.getElementById('trHint');
+  var ansEl=document.getElementById('trAns'), resEl=document.getElementById('trResult');
+  if(!eqEl) return;
+
+  var DIV=[30,45,60,90,120,180]; // углы-делители 360, дают «красивые» дуги
+  var cur=null;
+
+  function ri(min,max){ return Math.floor(Math.random()*(max-min+1))+min; }
+  function dec(x){ var n=Math.round(x*100)/100; return (''+n).replace('.',','); }
+
+  // разбор ответа: настоящий минус → дефис, запятая → точка, нормализация записи π
+  function parseAns(raw){
+    var s=(''+raw).trim().toLowerCase();
+    s=s.replace(/−/g,'-').replace(/(\d),(\d)/g,'$1.$2');
+    s=s.replace(/\s+/g,'').replace(/\*/g,'');
+    s=s.replace(/пи|pi|π|п/g,'p'); // 6π, 6*pi, 6 pi, 6пи, 6п → 6p
+    var hasPi=s.indexOf('p')>=0;
+    var num=s.replace(/p/g,'');
+    if(hasPi && num==='') num='1';   // «π» одиночное = 1π
+    // берём первое число (срез + дедуп лишних символов)
+    var m=num.match(/-?\d+(?:\.\d+)?/);
+    var val=m?parseFloat(m[0]):NaN;
+    return {hasPi:hasPi, val:val};
+  }
+
+  // типы: C_R, C_D (ответ kπ), ARC (ответ kπ), R_C (ответ число), N_ARC (ответ градусы)
+  function generate(){
+    var t=ri(1,5), q;
+    if(t===1){ var R=ri(2,12); q={type:'C_R', R:R, k:2*R, kind:'pi'}; }
+    else if(t===2){ var d=ri(2,14); q={type:'C_D', d:d, k:d, kind:'pi'}; }
+    else if(t===3){ // длина дуги: k=R*n/180 целое
+      var R2,n2,k2,tr=0;
+      do{ R2=ri(2,14); n2=DIV[ri(0,DIV.length-1)]; k2=R2*n2/180; tr++; } while(!(k2===Math.round(k2) && k2>=1) && tr<80);
+      if(!(k2===Math.round(k2)&&k2>=1)){ R2=6; n2=120; k2=4; }
+      q={type:'ARC', R:R2, n:n2, k:k2, kind:'pi'};
+    }
+    else if(t===4){ var k4=2*ri(2,10); q={type:'R_C', k:k4, answer:k4/2, kind:'num', tol:0.05}; }
+    else { // обратная: дана дуга kπ и R, найти n
+      var R5,n5,k5,tr2=0;
+      do{ R5=ri(2,14); n5=DIV[ri(0,DIV.length-1)]; k5=R5*n5/180; tr2++; } while(!(k5===Math.round(k5) && k5>=1) && tr2<80);
+      if(!(k5===Math.round(k5)&&k5>=1)){ R5=6; n5=120; k5=4; }
+      q={type:'N_ARC', R:R5, n:n5, k:k5, answer:n5, kind:'num', tol:0.5};
+    }
+    cur=q; render();
+  }
+
+  function render(){
+    var q=cur, txt='', hint='';
+    if(q.type==='C_R'){ txt='Дан радиус R = '+q.R+' см. Найди длину окружности C.'; hint='Введи ответ через π (напр. '+q.k+'π) или числом при π ≈ 3,14.'; }
+    else if(q.type==='C_D'){ txt='Дан диаметр d = '+q.d+' см. Найди длину окружности C.'; hint='Введи ответ через π (напр. '+q.k+'π) или числом при π ≈ 3,14.'; }
+    else if(q.type==='ARC'){ txt='Радиус R = '+q.R+' см, центральный угол дуги n = '+q.n+'°. Найди длину дуги l.'; hint='Введи ответ через π (напр. '+q.k+'π) или числом при π ≈ 3,14.'; }
+    else if(q.type==='R_C'){ txt='Длина окружности C = '+q.k+'π см. Найди радиус R.'; hint='Ответ — числом (целое), напр. '+q.answer+'.'; }
+    else { txt='Длина дуги l = '+q.k+'π см при радиусе R = '+q.R+' см. Найди центральный угол n.'; hint='Ответ — числом в градусах, напр. '+q.answer+'.'; }
+    eqEl.textContent=txt; hintEl.textContent=hint;
+    resEl.innerHTML=''; ansEl.value='';
+  }
+
+  function solutionHTML(){
+    var q=cur, h='<div class="sol">';
+    if(q.type==='C_R'){
+      h+='Дан радиус → C = 2πR<br>';
+      h+='C = 2·π·'+q.R+' = <b>'+q.k+'π</b><br>';
+      h+='≈ '+q.k+'·3,14 = '+dec(q.k*3.14)+' см';
+    } else if(q.type==='C_D'){
+      h+='Дан диаметр → C = πd<br>';
+      h+='C = π·'+q.d+' = <b>'+q.k+'π</b><br>';
+      h+='≈ '+q.k+'·3,14 = '+dec(q.k*3.14)+' см';
+    } else if(q.type==='ARC'){
+      h+='Доля дуги: '+q.n+'/360<br>';
+      h+='l = (π·R·n)/180 = (π·'+q.R+'·'+q.n+')/180<br>';
+      h+='= '+(q.R*q.n)+'π/180 = <b>'+q.k+'π</b> ≈ '+dec(q.k*3.14)+' см';
+    } else if(q.type==='R_C'){
+      h+='C = 2πR → R = C/(2π)<br>';
+      h+='R = '+q.k+'π / (2π) = '+q.k+'/2 = <b>'+q.answer+' см</b>';
+    } else {
+      h+='l = (πRn)/180 → n = 180·l/(πR)<br>';
+      h+='n = 180·'+q.k+'π / (π·'+q.R+') = '+(180*q.k)+'/'+q.R+' = <b>'+q.answer+'°</b>';
+    }
+    return h+'</div>';
+  }
+
+  function check(){
+    var q=cur, p=parseAns(ansEl.value);
+    if(ansEl.value.trim()===''){ resEl.innerHTML='<span class="bad">Введи ответ или нажми «Показать решение».</span>'; return; }
+    if(isNaN(p.val)){ resEl.innerHTML='<span class="bad">Не понял запись. '+hintEl.textContent+'</span>'; return; }
+    var ok;
+    if(q.kind==='pi'){
+      var tol=0.06*q.k+0.06;
+      var okPi = p.hasPi && Math.abs(p.val-q.k)<0.02;
+      var okNum = !p.hasPi && (Math.abs(p.val-q.k*3.14)<tol || Math.abs(p.val-q.k*Math.PI)<tol);
+      ok=okPi||okNum;
+    } else {
+      if(p.hasPi){ resEl.innerHTML='<span class="bad">✗ Здесь ответ — просто число (без π). '+hintEl.textContent+'</span>'+solutionHTML(); return; }
+      ok=Math.abs(p.val-q.answer)<(q.tol||0.05);
+    }
+    if(ok){ resEl.innerHTML='<span class="ok">✓ Верно! Отлично.</span>'+solutionHTML(); }
+    else{ resEl.innerHTML='<span class="bad">✗ Пока не то — посмотри разбор.</span>'+solutionHTML(); }
+  }
+
+  document.getElementById('trNew').addEventListener('click',generate);
+  document.getElementById('trCheck').addEventListener('click',check);
+  document.getElementById('trShow').addEventListener('click',function(){ resEl.innerHTML=solutionHTML(); });
+  ansEl.addEventListener('keydown',function(e){ if(e.key==='Enter') check(); });
+
+  // стартовая задача = та, что показана в разметке (C по R=5). Без focus при первичном рендере.
+  cur={type:'C_R', R:5, k:10, kind:'pi'};
+})();
+</script>
+<!--LESSON-NAV-BOT--><nav class="lnav lnav-bot"><a class="prev" href="./geo9-pravilnyj-mnogougolnik.html"><span class="dir">← Предыдущая</span><span class="ttl">Правильный многоугольник и его элементы</span></a><a class="to-cat" href="./catalog.html">📚 <span>Все темы</span></a><a class="next" href="./geo9-ploschad-kruga.html"><span class="dir">Следующая →</span><span class="ttl">Площадь круга</span></a></nav><!--/LESSON-NAV-BOT-->

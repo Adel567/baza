@@ -1,0 +1,557 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Правильный многоугольник — урок, геометрия 9 класс</title>
+<style>
+  :root{
+    --paper:#F6F7F9;
+    --card:#FFFFFF;
+    --ink:#1B2333;
+    --muted:#5A6478;
+    --line:#E2E5EC;
+    --accent:#3B4FD0;
+    --accent-soft:#EAEDFB;
+    --cen:#3B4FD0;    /* центральный угол β */
+    --cen-bg:#EAEDFB;
+    --int:#1E8E5A;    /* внутренний угол α */
+    --int-bg:#E7F4EC;
+    --pos:#1E8E5A;
+    --pos-bg:#E7F4EC;
+    --neg:#C0455B;
+    --neg-bg:#F9E9EC;
+  }
+  *{box-sizing:border-box}
+  body{margin:0}
+  .wrap{
+    max-width:760px;
+    margin:0 auto;
+    padding:clamp(1.4rem,4vw,3rem) clamp(1.1rem,4vw,2rem) 4rem;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    font-size:17px;
+    line-height:1.62;
+    -webkit-font-smoothing:antialiased;
+  }
+  .eyebrow{
+    font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--accent);font-weight:600;margin:0 0 .5rem;
+  }
+  h1{
+    font-family:Georgia,"Times New Roman",serif;
+    font-size:clamp(2.1rem,7vw,3rem);
+    line-height:1.05;margin:0;font-weight:700;letter-spacing:-.01em;
+    text-wrap:balance;
+  }
+  .lede{
+    font-size:1.08rem;color:var(--muted);margin:.7rem 0 0;max-width:60ch;
+    text-wrap:pretty;
+  }
+  h2{
+    font-family:Georgia,serif;font-size:1.32rem;font-weight:700;
+    margin:0 0 .1rem;letter-spacing:-.005em;
+  }
+  section{margin-top:2.6rem}
+  .kicker{
+    font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--muted);font-weight:600;margin:0 0 .8rem;
+    display:flex;align-items:center;gap:.6rem;
+  }
+  .kicker::before{
+    content:"";width:1.4rem;height:2px;background:var(--accent);border-radius:2px;
+  }
+  p{margin:.65rem 0}
+  strong{font-weight:650}
+  .math{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-weight:600}
+  sup{font-size:.72em}
+
+  /* Главная формула */
+  .hero-formula{
+    margin-top:2.2rem;
+    background:var(--ink);color:#fff;border-radius:14px;
+    padding:1.6rem 1.4rem;text-align:center;
+  }
+  .hero-formula .lbl{
+    font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;
+    color:#9aa6c9;margin:0 0 .7rem;
+  }
+  .hero-formula .eq{
+    font-family:ui-monospace,"SF Mono",Menlo,monospace;
+    font-size:clamp(1.35rem,5vw,1.9rem);font-weight:700;letter-spacing:.01em;
+  }
+  .hero-formula .eq b{color:#8ea0ff;font-weight:700}
+  .hero-formula .eq .g{color:#7ee0a6;font-weight:700}
+  .hero-formula .note{font-size:.86rem;color:#9aa6c9;margin:.9rem 0 0;line-height:1.5}
+
+  /* Пререквизит */
+  .recall{
+    background:var(--accent-soft);border-radius:12px;padding:1rem 1.15rem;
+    font-size:.96rem;
+  }
+  .recall p{margin:.3rem 0}
+
+  /* Два угла — цвет-код */
+  .anglecards{display:grid;gap:.85rem;margin-top:.4rem}
+  @media(min-width:600px){.anglecards{grid-template-columns:repeat(2,1fr)}}
+  .case{
+    border-radius:12px;padding:1.05rem 1.1rem;border:1px solid var(--line);
+    background:var(--card);display:flex;flex-direction:column;gap:.35rem;
+  }
+  .case .sign{font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.05rem}
+  .case .count{font-weight:650;font-size:1rem}
+  .case .desc{font-size:.9rem;color:var(--muted)}
+  .case.cen{border-top:4px solid var(--cen);background:var(--cen-bg)}
+  .case.cen .sign{color:var(--cen)}
+  .case.int{border-top:4px solid var(--int);background:var(--int-bg)}
+  .case.int .sign{color:var(--int)}
+
+  /* Таблица «варьируем n» */
+  .tw{overflow-x:auto;margin-top:.4rem}
+  .vtab{width:100%;border-collapse:collapse;font-size:.95rem}
+  .vtab th,.vtab td{border:1px solid var(--line);padding:.5rem .7rem;text-align:center;font-family:ui-monospace,Menlo,monospace}
+  .vtab th{background:var(--accent-soft);color:var(--accent);font-weight:700;white-space:nowrap}
+  .vtab td.b{color:var(--cen);font-weight:700}
+  .vtab td.a{color:var(--int);font-weight:700}
+
+  /* Разбор */
+  .worked{
+    background:var(--card);border:1px solid var(--line);border-radius:12px;
+    padding:1.2rem 1.3rem;
+  }
+  .worked .task{
+    font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.02rem;
+    margin:0 0 1rem;padding-bottom:.8rem;border-bottom:1px solid var(--line);
+  }
+  ol.steps{margin:0;padding:0;list-style:none;counter-reset:s;display:flex;flex-direction:column;gap:.7rem}
+  ol.steps li{
+    position:relative;padding-left:2.1rem;counter-increment:s;
+  }
+  ol.steps li::before{
+    content:counter(s);position:absolute;left:0;top:.05rem;
+    width:1.5rem;height:1.5rem;border-radius:50%;
+    background:var(--accent-soft);color:var(--accent);
+    font-size:.82rem;font-weight:700;display:flex;align-items:center;justify-content:center;
+  }
+  ol.steps .m{font-family:ui-monospace,Menlo,monospace;font-weight:600;color:var(--ink)}
+  .verdict{
+    margin-top:1rem;padding:.7rem 1rem;background:var(--pos-bg);
+    border-radius:9px;font-weight:600;color:var(--pos);font-size:.98rem;
+  }
+
+  /* Практика */
+  .drill{display:flex;flex-direction:column;gap:.7rem}
+  details{
+    background:var(--card);border:1px solid var(--line);border-radius:10px;
+    padding:.85rem 1.05rem;
+  }
+  details[open]{border-color:var(--accent)}
+  summary{
+    cursor:pointer;font-weight:600;list-style:none;
+    display:flex;justify-content:space-between;align-items:center;gap:1rem;
+  }
+  summary::-webkit-details-marker{display:none}
+  summary:focus-visible{outline:3px solid var(--accent);outline-offset:2px;border-radius:6px}
+  summary .q{font-size:.98rem}
+  summary .tag{
+    font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);
+    border:1px solid var(--line);border-radius:20px;padding:.1rem .55rem;white-space:nowrap;
+  }
+  summary::after{
+    content:"показать ответ";font-size:.78rem;color:var(--accent);font-weight:600;white-space:nowrap;
+  }
+  details[open] summary::after{content:"скрыть"}
+  .ans{margin-top:.7rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.96rem;color:var(--muted)}
+  .ans .m{font-family:ui-monospace,Menlo,monospace;color:var(--ink);font-weight:600}
+
+  /* Ошибки */
+  ul.pitfalls{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:.6rem}
+  ul.pitfalls li{
+    padding-left:1.5rem;position:relative;font-size:.98rem;
+  }
+  ul.pitfalls li::before{
+    content:"×";position:absolute;left:0;top:-.05rem;color:var(--neg);font-weight:700;font-size:1.1rem;
+  }
+  ul.pitfalls b{color:var(--ink)}
+
+  .next{
+    background:var(--accent);color:#fff;border-radius:12px;padding:1.2rem 1.3rem;
+  }
+  .next h2{color:#fff}
+  .next .eq{
+    font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.1rem;
+    margin:.6rem 0 .3rem;
+  }
+  .next p{color:#dfe4fb;font-size:.96rem;margin:.4rem 0 0}
+  .foot{margin-top:2.4rem;font-size:.82rem;color:var(--muted);text-align:center}
+
+  @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+<style>
+.oge-tip{display:flex;gap:.8rem;align-items:flex-start;background:#FFF8E7;border:1px solid #F0D98A;border-left:4px solid #E0A315;border-radius:10px;padding:.85rem 1.05rem;margin:1.5rem 0}
+.oge-tip .b{font-size:.72rem;font-weight:800;letter-spacing:.03em;color:#8A6A15;white-space:nowrap;text-transform:uppercase;padding-top:.15rem}
+.oge-tip .x{font-size:.95rem;line-height:1.5}
+</style>
+
+<!--LESSON-NAV-TOP--><style>.lnav{--lnav-accent:#3D5AF1}.lnav a{text-decoration:none;font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif}.lnav-top{max-width:820px;margin:0 auto;padding:.75rem clamp(1rem,4vw,1.5rem) .1rem}.lnav-top a{display:inline-flex;align-items:center;gap:.35rem;color:var(--lnav-accent);font-weight:600;font-size:.9rem}.lnav-top a:hover{text-decoration:underline}.lnav-bot{max-width:820px;margin:2.6rem auto 3rem;padding:1.1rem clamp(1rem,4vw,1.5rem) 0;border-top:1px solid #E4E8EF;display:flex;align-items:stretch;gap:.55rem}.lnav-bot a{min-width:0;display:flex;flex-direction:column;justify-content:center;gap:.15rem;border:1px solid #E4E8EF;border-radius:12px;padding:.65rem .85rem;color:#182233;background:#fff;transition:border-color .1s,transform .08s}.lnav-bot a:hover{border-color:var(--lnav-accent);transform:translateY(-1px)}.lnav-bot .prev,.lnav-bot .next{flex:1 1 0}.lnav-bot .next{text-align:right}.lnav-bot .dir{font-size:.72rem;color:#8A93A6;font-weight:600}.lnav-bot .ttl{font-size:.9rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.lnav-bot .to-cat{flex:0 0 auto;flex-direction:row;align-items:center;justify-content:center;color:var(--lnav-accent);font-weight:700;font-size:.85rem;white-space:nowrap}@media(max-width:420px){.lnav-bot .to-cat span{display:none}.lnav-bot .to-cat{padding:.65rem .7rem}}</style><nav class="lnav lnav-top"><a href="./catalog.html">← Все темы</a></nav><!--/LESSON-NAV-TOP-->
+<div class="wrap">
+
+  <header>
+    <p class="eyebrow">Геометрия · 9 класс</p>
+    <h1>Правильный многоугольник</h1>
+    <p class="lede">Соты, гайки, знак «стоп» — фигуры с равными сторонами <em>и</em> равными углами. У каждой ровно два угла, которые надо уметь считать: <em>центральный</em> и <em>внутренний.</em></p>
+  </header>
+
+  <div class="hero-formula">
+    <p class="lbl">Два угла правильного n-угольника</p>
+    <div class="eq"><span class="g">α</span> = 180°·(n − 2) / n</div>
+    <div class="eq" style="margin-top:.55rem"><b>β</b> = 360° / n</div>
+    <p class="note"><span style="color:#7ee0a6">α</span> — внутренний угол (при вершине), <span style="color:#8ea0ff">β</span> — центральный угол (при центре).<br>Всегда верна проверка: α + β = 180°.</p>
+  </div>
+
+  <div class="oge-tip"><div class="b">🎯 В ОГЭ · Задание 16</div><div class="x">Углы правильного многоугольника и его связь с вписанной и описанной окружностью — типичный сюжет геометрического задания 16. Часто спрашивают внутренний или центральный угол, либо число сторон по данному углу.</div></div>
+
+  <section>
+    <p class="kicker">Зачем это нужно</p>
+    <h2>Не всё, у чего равны стороны, — правильное</h2>
+    <p>Правильные многоугольники окружают нас: <strong>соты пчёл</strong> (шестиугольники), гайки и болты (шестигранник), плитка, дорожный знак «стоп» (восьмиугольник). Они выглядят идеально симметрично, потому что у них равны <strong>и стороны, и углы</strong> сразу.</p>
+    <p>Главное заблуждение: «если все стороны равны — фигура правильная». Неверно. У <strong>ромба</strong> четыре равные стороны, но углы разные — он <strong>не</strong> правильный. У <strong>прямоугольника</strong> равны углы, но не стороны — тоже не правильный. А вот <strong>квадрат</strong> — правильный четырёхугольник: у него равны и стороны, и углы.</p>
+    <p>В самой геометрии это ключ к следующему: через правильные n-угольники выводят длину окружности и площадь круга (окружность — «предел» такого многоугольника при большом n), а ещё строят вписанные и описанные окружности.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Что вспомнить с прошлого шага</p>
+    <div class="recall">
+      <p>В любом <strong>треугольнике</strong> сумма углов равна <span class="math">180°</span>.</p>
+      <p>Выпуклый <span class="math">n</span>-угольник разбивается на <span class="math">(n − 2)</span> треугольника (проведи диагонали из одной вершины). Отсюда и берётся сумма его углов.</p>
+      <p>«Правильный» = <strong>выпуклый</strong> + все стороны равны + все углы равны. Оба условия обязательны.</p>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Вся суть — два разных угла</p>
+    <h2>Центральный β и внутренний α</h2>
+    <p>Соедини <strong>центр</strong> правильного многоугольника со всеми вершинами — фигура распадётся на <span class="math">n</span> одинаковых равнобедренных треугольников. Появляются два угла, и их важно не путать:</p>
+    <div class="anglecards">
+      <div class="case cen">
+        <div class="sign">β = 360° / n</div>
+        <div class="count">Центральный угол</div>
+        <div class="desc">При <strong>центре</strong> — между двумя радиусами к соседним вершинам. Полный угол 360° делится поровну на n частей.</div>
+      </div>
+      <div class="case int">
+        <div class="sign">α = 180°·(n − 2) / n</div>
+        <div class="count">Внутренний угол</div>
+        <div class="desc">При <strong>вершине</strong> — между двумя сторонами. Это сумма всех углов <span class="math">180°·(n − 2)</span>, делённая на число углов <span class="math">n</span>.</div>
+      </div>
+    </div>
+    <p style="font-size:.92rem;color:var(--muted);margin-top:.9rem">Проверка на каждом шаге: <strong>α + β = 180°</strong> (ведь α = 180° − β). Если сходится — не ошибся.</p>
+    <p style="font-size:.92rem;color:var(--muted)">У правильного многоугольника есть <strong>центр</strong> — точка, равноудалённая от всех вершин (через них проходит <em>описанная</em> окружность) и от всех сторон (их касается <em>вписанная</em> окружность).</p>
+  </section>
+
+  <section>
+    <p class="kicker">Покрути сам · интерактив</p>
+    <h2>Меняем число сторон</h2>
+    <p>Двигай ползунок <span class="math">n</span> и смотри, как пересчитываются оба угла. Все вершины лежат на <strong>описанной окружности</strong> (штриховая). <span style="color:var(--cen);font-weight:650">Синим</span> — центральный угол β, <span style="color:var(--int);font-weight:650">зелёным</span> — внутренний α.</p>
+    <div class="viz">
+      <canvas id="poly" width="640" height="460" aria-label="Правильный многоугольник с описанной окружностью"></canvas>
+      <div id="polyRead" class="poly-read"></div>
+      <div class="viz-ctl">
+        <label>n = <span id="nVal" class="sval">6</span><input id="nSlide" type="range" min="3" max="12" step="1" value="6" aria-label="Число сторон n"></label>
+      </div>
+      <p class="viz-cap">Штриховая линия — <strong>описанная окружность</strong>: она проходит через все вершины. Чем больше <span class="math">n</span>, тем меньше центральный угол и тем ближе многоугольник к окружности.</p>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Разбираем вместе</p>
+    <h2>Эталонный пример: шестиугольник</h2>
+    <div class="worked">
+      <p class="task">Правильный шестиугольник (n = 6) → найди центральный и внутренний углы.</p>
+      <ol class="steps">
+        <li>Центральный угол: <span class="m">β = 360° / n = 360° / 6 = 60°</span>. Почему: вокруг центра полный угол 360°, делим его на 6 равных частей — по числу сторон.</li>
+        <li>Сумма всех углов: <span class="m">S = 180°·(n − 2) = 180°·(6 − 2) = 180°·4 = 720°</span>.</li>
+        <li>Внутренний угол: <span class="m">α = S / n = 720° / 6 = 120°</span>. Делим именно на <span class="m">n = 6</span> — столько у фигуры углов.</li>
+        <li>Проверка: <span class="m">α + β = 120° + 60° = 180°</span>. Сходится — значит, не ошиблись.</li>
+      </ol>
+      <div class="verdict">Ответ: β = 60°, α = 120°.</div>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Что меняется, что остаётся</p>
+    <h2>Таблица: варьируем n</h2>
+    <p>Формулы одни и те же — меняем только число сторон:</p>
+    <div class="tw">
+      <table class="vtab">
+        <thead>
+          <tr><th>n</th><th>β = 360 / n</th><th>α = 180·(n−2) / n</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>3</td><td class="b">120°</td><td class="a">60°</td></tr>
+          <tr><td>4</td><td class="b">90°</td><td class="a">90°</td></tr>
+          <tr><td>6</td><td class="b">60°</td><td class="a">120°</td></tr>
+          <tr><td>12</td><td class="b">30°</td><td class="a">150°</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p style="font-size:.92rem;color:var(--muted);margin-top:.9rem">Обрати внимание на квадрат (<span class="math">n = 4</span>): у него центральный и внутренний углы совпали — по 90°. А у треугольника (<span class="math">n = 3</span>) наоборот: центральный (120°) больше внутреннего (60°).</p>
+  </section>
+
+  <section>
+    <p class="kicker">Теперь ты · нажми, чтобы проверить</p>
+    <h2>Мини-практика</h2>
+    <div class="drill">
+      <details>
+        <summary><span class="q">Какие из фигур правильные: квадрат, ромб (не квадрат), равносторонний треугольник, прямоугольник (не квадрат)?</span><span class="tag">понимание</span></summary>
+        <div class="ans">Правильные — <strong>квадрат</strong> и <strong>равносторонний треугольник</strong> (равны и стороны, и углы). Ромб — нет (не равны углы), прямоугольник — нет (не равны стороны).</div>
+      </details>
+      <details>
+        <summary><span class="q">Найди внутренний угол правильного пятиугольника (n = 5).</span><span class="tag">применение</span></summary>
+        <div class="ans"><span class="m">α = 180°·(5 − 2) / 5 = 540° / 5 = 108°.</span></div>
+      </details>
+      <details>
+        <summary><span class="q">Центральный угол правильного многоугольника равен 36°. Сколько у него сторон и чему равен внутренний угол?</span><span class="tag">анализ</span></summary>
+        <div class="ans">Из <span class="m">β = 360°/n</span> получаем <span class="m">n = 360° / 36° = 10</span> — правильный десятиугольник. Внутренний угол <span class="m">α = 180° − 36° = 144°.</span></div>
+      </details>
+      <details>
+        <summary><span class="q">Найди ошибку: для правильного пятиугольника ученик взял S = 180°·5 = 900°, значит α = 900° / 5 = 180°.</span><span class="tag">анализ</span></summary>
+        <div class="ans">Сумма углов считается по <span class="m">180°·(n − 2)</span>, а не <span class="m">180°·n</span>. Верно: <span class="m">S = 180°·(5 − 2) = 540°</span>, тогда <span class="m">α = 540° / 5 = 108°.</span> (Угол 180° вообще невозможен — он развёрнутый.)</div>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Тренажёр · бесконечная практика</p>
+    <h2>Реши задачу сам</h2>
+    <p>Нажми «Новая задача». Ответ введи <b>числом</b> (градусы или число сторон), можно с точкой или запятой. Потом проверь себя или посмотри пошаговое решение.</p>
+    <div class="trainer">
+      <div class="tr-eq" id="trEq">Правильный <b>6</b>-угольник.<br>Найди <b>внутренний</b> угол α (в градусах).</div>
+      <div class="tr-ctl">
+        <button id="trNew" type="button">🎲 Новая задача</button>
+        <input id="trAns" type="text" placeholder="напр.  120   или   10" aria-label="Ответ">
+        <button id="trCheck" type="button" class="sec">Проверить</button>
+        <button id="trShow" type="button" class="ghost">Показать решение</button>
+      </div>
+      <div id="trResult" class="tr-result"></div>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Где чаще всего ошибаются</p>
+    <h2>Лови эти ловушки</h2>
+    <ul class="pitfalls">
+      <li><b>Путают центральный и внутренний угол.</b> Центральный <span class="math">β = 360°/n</span> — в центре (между радиусами), внутренний <span class="math">α</span> — при вершине (между сторонами). Для шестиугольника это 60° и 120° — разные числа. Всегда проверяй <span class="math">α + β = 180°</span>.</li>
+      <li><b>Считают фигуру правильной по одним лишь равным сторонам.</b> Ромб — контрпример. Нужны равные стороны <em>и</em> равные углы одновременно.</li>
+      <li><b>Ошибаются в формуле суммы углов.</b> Берут <span class="math">180°·n</span> вместо <span class="math">180°·(n − 2)</span>. Вычитаем 2, потому что n-угольник разбивается на <span class="math">(n − 2)</span> треугольника.</li>
+      <li><b>Делят сумму не на то число.</b> Внутренний угол — это <span class="math">S = 180°(n − 2)</span>, делённая на <strong>n</strong> (число углов), а не на <span class="math">(n − 2)</span>.</li>
+    </ul>
+  </section>
+
+  <section>
+    <div class="next">
+      <h2>Что дальше</h2>
+      <p>Ты уже знаешь, что через все вершины проходит <strong>описанная</strong> окружность, а всех сторон касается <strong>вписанная</strong>. Следующий шаг — научиться связывать эти окружности со стороной многоугольника:</p>
+      <div class="eq">сторона ↔ радиус вписанной и описанной окружностей</div>
+      <p>Отсюда выходим на длину окружности и площадь круга.</p>
+    </div>
+  </section>
+
+  <p class="foot">Проверка на выходе: назови два условия правильного многоугольника · формула центрального угла? внутреннего? · чему равны углы квадрата (n = 4)?</p>
+
+</div>
+
+<style>
+  .viz{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.1rem 1.1rem 1rem;margin:1rem 0}
+  .viz canvas{width:100%;height:auto;display:block;border-radius:10px;background:#FCFDFF}
+  .poly-read{text-align:center;font-size:.96rem;margin:.8rem 0 0;line-height:1.6}
+  .poly-read b{color:var(--ink);font-family:ui-monospace,Menlo,monospace}
+  .viz-ctl{margin-top:.9rem}
+  .viz-ctl label{display:flex;align-items:center;gap:.6rem;font-weight:700;font-family:ui-monospace,Menlo,monospace}
+  .viz-ctl input[type=range]{flex:1;accent-color:var(--accent)}
+  .viz-ctl input[type=range]:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+  .viz-ctl .sval{min-width:2.2ch;text-align:right;color:var(--accent);font-variant-numeric:tabular-nums}
+  .viz-cap{font-size:.88rem;color:var(--muted);margin:.85rem 0 0;line-height:1.5}
+</style>
+
+<script>
+(function(){
+  var cv=document.getElementById('poly'); if(!cv) return;
+  var ctx=cv.getContext('2d');
+  var slider=document.getElementById('nSlide'), nVal=document.getElementById('nVal'), readout=document.getElementById('polyRead');
+  var W=640,H=460,dpr=1;
+  var CEN='#3B4FD0', INT='#1E8E5A';
+
+  function resize(){
+    var cssW=cv.clientWidth||640; dpr=Math.min(window.devicePixelRatio||1,2);
+    W=cssW; H=Math.round(cssW*0.72);
+    cv.width=W*dpr; cv.height=H*dpr; cv.style.height=H+'px';
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+  }
+  function norm(a){ a=a%(2*Math.PI); if(a<0)a+=2*Math.PI; return a; }
+  function rrect(x,y,w,h,r){ ctx.beginPath(); ctx.moveTo(x+r,y); ctx.arcTo(x+w,y,x+w,y+h,r); ctx.arcTo(x+w,y+h,x,y+h,r); ctx.arcTo(x,y+h,x,y,r); ctx.arcTo(x,y,x+w,y,r); ctx.closePath(); }
+
+  // сектор-дуга между a1 и a2, проходящая через направление through
+  function arcSector(cx,cy,r,a1,a2,through,stroke,fill){
+    var A1=norm(a1),A2=norm(a2),T=norm(through);
+    var sweep=norm(A2-A1), tRel=norm(T-A1);
+    var acw=!(tRel<=sweep);
+    ctx.beginPath(); ctx.moveTo(cx,cy); ctx.arc(cx,cy,r,A1,A2,acw); ctx.closePath();
+    ctx.fillStyle=fill; ctx.fill();
+    ctx.beginPath(); ctx.arc(cx,cy,r,A1,A2,acw); ctx.strokeStyle=stroke; ctx.lineWidth=2.5; ctx.stroke();
+  }
+  function label(x,y,txt,color){
+    ctx.font='700 14px system-ui,-apple-system,Segoe UI,Roboto,sans-serif';
+    var w=ctx.measureText(txt).width, padX=6, h=20;
+    ctx.fillStyle='rgba(255,255,255,0.92)'; rrect(x-w/2-padX, y-h/2, w+2*padX, h, 6); ctx.fill();
+    ctx.fillStyle=color; ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.fillText(txt,x,y+1);
+  }
+
+  function draw(){
+    var n=parseInt(slider.value,10);
+    var a=180*(n-2)/n, b=360/n;
+    nVal.textContent=n;
+    ctx.clearRect(0,0,W,H);
+    var cx=W/2, cy=H*0.47, R=Math.min(W,H)*0.34;
+
+    // описанная окружность (штрих)
+    ctx.setLineDash([6,5]); ctx.strokeStyle='#C4CADA'; ctx.lineWidth=1.5;
+    ctx.beginPath(); ctx.arc(cx,cy,R,0,2*Math.PI); ctx.stroke(); ctx.setLineDash([]);
+
+    // вершины
+    var V=[];
+    for(var i=0;i<n;i++){ var th=-Math.PI/2 + i*2*Math.PI/n; V.push({x:cx+R*Math.cos(th), y:cy+R*Math.sin(th), th:th}); }
+
+    // многоугольник
+    ctx.beginPath();
+    V.forEach(function(p,i){ if(i) ctx.lineTo(p.x,p.y); else ctx.moveTo(p.x,p.y); });
+    ctx.closePath();
+    ctx.fillStyle='rgba(27,35,51,0.03)'; ctx.fill();
+    ctx.strokeStyle='#1B2333'; ctx.lineWidth=2.5; ctx.stroke();
+
+    // радиусы к вершинам 0 и 1 — центральный угол
+    ctx.strokeStyle=CEN; ctx.lineWidth=2;
+    [0,1].forEach(function(i){ ctx.beginPath(); ctx.moveTo(cx,cy); ctx.lineTo(V[i].x,V[i].y); ctx.stroke(); });
+    var secR=Math.min(32,R*0.5);
+    var midC={x:(V[0].x+V[1].x)/2,y:(V[0].y+V[1].y)/2};
+    var thC=Math.atan2(midC.y-cy,midC.x-cx);
+    arcSector(cx,cy,secR, V[0].th, V[1].th, thC, CEN, 'rgba(59,79,208,0.14)');
+
+    // центр
+    ctx.fillStyle=CEN; ctx.beginPath(); ctx.arc(cx,cy,3.5,0,7); ctx.fill();
+
+    // внутренний угол в одной вершине
+    var k=Math.round(n/2)%n;
+    var Vk=V[k], Vp=V[(k-1+n)%n], Vn=V[(k+1)%n];
+    var aPrev=Math.atan2(Vp.y-Vk.y,Vp.x-Vk.x);
+    var aNext=Math.atan2(Vn.y-Vk.y,Vn.x-Vk.x);
+    var thI=Math.atan2(cy-Vk.y,cx-Vk.x);
+    arcSector(Vk.x,Vk.y,22, aPrev, aNext, thI, INT, 'rgba(30,142,90,0.18)');
+
+    // точки-вершины
+    ctx.fillStyle='#1B2333'; V.forEach(function(p){ ctx.beginPath(); ctx.arc(p.x,p.y,3,0,7); ctx.fill(); });
+
+    // подписи
+    label(cx+Math.cos(thC)*(secR+22), cy+Math.sin(thC)*(secR+22), 'β = '+b+'°', CEN);
+    label(Vk.x+Math.cos(thI)*40, Vk.y+Math.sin(thI)*40, 'α = '+a+'°', INT);
+
+    readout.innerHTML='центральный β = <b>'+b+'°</b> &nbsp;·&nbsp; внутренний α = <b>'+a+'°</b><br>проверка: α + β = '+a+' + '+b+' = 180°';
+  }
+
+  slider.addEventListener('input',draw);
+  window.addEventListener('resize',function(){ resize(); draw(); });
+  resize(); draw();
+})();
+</script>
+
+<style>
+  .trainer{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.2rem 1.3rem;margin-top:1rem}
+  .tr-eq{font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-weight:600;font-size:clamp(1.05rem,3.6vw,1.3rem);line-height:1.45;text-align:center;padding:1rem;background:var(--accent-soft);border-radius:10px;color:var(--ink)}
+  .tr-eq b{color:var(--accent);font-weight:800}
+  .tr-ctl{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.9rem;align-items:center}
+  .tr-ctl button{font:inherit;font-weight:700;font-size:.9rem;cursor:pointer;border:none;border-radius:9px;padding:.55rem .95rem;color:#fff;background:var(--accent)}
+  .tr-ctl button.sec{background:var(--pos)}
+  .tr-ctl button.ghost{background:transparent;color:var(--accent);border:1px solid var(--accent)}
+  .tr-ctl input{flex:1;min-width:150px;font:inherit;padding:.5rem .7rem;border:1px solid var(--line);border-radius:9px;background:#fff;color:var(--ink)}
+  .tr-ctl button:focus-visible,.tr-ctl input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+  .tr-result{margin-top:.9rem;font-size:.96rem;min-height:1.2rem}
+  .tr-result .ok{color:var(--pos);font-weight:700}
+  .tr-result .bad{color:var(--neg);font-weight:700}
+  .tr-result .sol{margin-top:.7rem;padding:.85rem 1rem;background:#FCFBFE;border:1px solid var(--line);border-radius:10px;font-family:ui-monospace,Menlo,monospace;font-size:.9rem;line-height:1.85}
+  .tr-result .sol b{color:var(--accent)}
+</style>
+
+<script>
+(function(){
+  var eqEl=document.getElementById('trEq'), ansEl=document.getElementById('trAns'), resEl=document.getElementById('trResult');
+  if(!eqEl) return;
+  // n делят 360 → углы всегда целые
+  var POOL=[3,4,5,6,8,9,10,12,15,18,20];
+  var cur={type:'int', n:6};
+
+  function pick(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+  function interior(n){ return 180*(n-2)/n; }
+  function central(n){ return 360/n; }
+
+  function taskHTML(q){
+    var n=q.n, a=interior(n), b=central(n);
+    if(q.type==='int')      return 'Правильный <b>'+n+'</b>-угольник.<br>Найди <b>внутренний</b> угол α (в градусах).';
+    if(q.type==='cen')      return 'Правильный <b>'+n+'</b>-угольник.<br>Найди <b>центральный</b> угол β (в градусах).';
+    if(q.type==='nFromCen') return 'Центральный угол правильного многоугольника<br>β = <b>'+b+'°</b>. Сколько у него сторон n?';
+    return 'Внутренний угол правильного многоугольника<br>α = <b>'+a+'°</b>. Сколько у него сторон n?';
+  }
+  function expected(q){
+    if(q.type==='int') return interior(q.n);
+    if(q.type==='cen') return central(q.n);
+    return q.n; // nFromCen / nFromInt
+  }
+  function unitOf(q){ return (q.type==='nFromCen'||q.type==='nFromInt') ? ' сторон' : '°'; }
+
+  function solHTML(q){
+    var n=q.n, a=interior(n), b=central(n), S=180*(n-2), h='<div class="sol">';
+    if(q.type==='int'){
+      h+='n = '+n+'<br>';
+      h+='S = 180°·(n − 2) = 180°·'+(n-2)+' = '+S+'°<br>';
+      h+='α = S / n = '+S+'° / '+n+' = <b>'+a+'°</b><br>';
+      h+='Проверка: β = 360°/'+n+' = '+b+'°, &nbsp;α + β = '+a+' + '+b+' = 180°. ✓';
+    } else if(q.type==='cen'){
+      h+='n = '+n+'<br>';
+      h+='β = 360° / n = 360° / '+n+' = <b>'+b+'°</b><br>';
+      h+='Проверка: α = 180° − β = 180° − '+b+' = '+a+'°.';
+    } else if(q.type==='nFromCen'){
+      h+='β = 360° / n &nbsp;⟹&nbsp; n = 360° / β<br>';
+      h+='n = 360° / '+b+'° = <b>'+n+'</b> &nbsp;(правильный '+n+'-угольник)<br>';
+      h+='Заодно: α = 180° − '+b+' = '+a+'°.';
+    } else { // nFromInt
+      h+='α + β = 180° &nbsp;⟹&nbsp; β = 180° − α = 180° − '+a+' = '+b+'°<br>';
+      h+='n = 360° / β = 360° / '+b+'° = <b>'+n+'</b> &nbsp;(правильный '+n+'-угольник)';
+    }
+    return h+'</div>';
+  }
+
+  function generate(){
+    var t=pick(['int','cen','nFromCen','nFromInt']), n=pick(POOL);
+    cur={type:t, n:n};
+    eqEl.innerHTML=taskHTML(cur); resEl.innerHTML=''; ansEl.value='';
+    ansEl.focus(); // фокус — только по клику пользователя
+  }
+  function check(){
+    var exp=expected(cur);
+    var raw=ansEl.value.trim().toLowerCase().replace(/−/g,'-').replace(/(\d),(\d)/g,'$1.$2');
+    if(!raw){ resEl.innerHTML='<span class="bad">Введи ответ числом или нажми «Показать решение».</span>'; return; }
+    var parts=raw.split(/[^0-9.\-]+/).filter(function(s){ return s!=='' && s!=='-' && s!=='.'; });
+    var got=parts.map(parseFloat).filter(function(x){ return !isNaN(x); });
+    got=got.filter(function(v,i){ return got.indexOf(v)===i; }); // дедуп
+    if(!got.length){ resEl.innerHTML='<span class="bad">Не понял запись. Введи ответ числом (градусы или число сторон).</span>'; return; }
+    var g=got[0]; // берём первое число
+    var ok=Math.abs(g-exp)<0.5;
+    if(ok){ resEl.innerHTML='<span class="ok">✓ Верно! '+exp+unitOf(cur)+'.</span>'+solHTML(cur); }
+    else  { resEl.innerHTML='<span class="bad">✗ Пока не то. Правильный ответ — '+exp+unitOf(cur)+'. Разбор ниже.</span>'+solHTML(cur); }
+  }
+
+  document.getElementById('trNew').addEventListener('click',generate);
+  document.getElementById('trCheck').addEventListener('click',check);
+  document.getElementById('trShow').addEventListener('click',function(){ resEl.innerHTML=solHTML(cur); });
+  ansEl.addEventListener('keydown',function(e){ if(e.key==='Enter') check(); });
+})();
+</script>
+<!--LESSON-NAV-BOT--><nav class="lnav lnav-bot"><a class="prev" href="./geo9-trig-teorema-kosinusov.html"><span class="dir">← Предыдущая</span><span class="ttl">Теорема косинусов</span></a><a class="to-cat" href="./catalog.html">📚 <span>Все темы</span></a><a class="next" href="./geo9-dlina-okruzhnosti.html"><span class="dir">Следующая →</span><span class="ttl">Длина окружности</span></a></nav><!--/LESSON-NAV-BOT-->
