@@ -1,0 +1,634 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Сложение рациональных чисел — урок, математика 6 класс</title>
+<style>
+  :root{
+    --paper:#F6F7F9;
+    --card:#FFFFFF;
+    --ink:#1B2333;
+    --muted:#5A6478;
+    --line:#E2E5EC;
+    --accent:#3B4FD0;
+    --accent-soft:#EAEDFB;
+    --pos:#1E8E5A;   /* одинаковые знаки · шаг вправо (+) */
+    --pos-bg:#E7F4EC;
+    --zero:#B9791A;  /* сумма противоположных = 0 */
+    --zero-bg:#FBF1DC;
+    --neg:#C0455B;   /* ошибки */
+    --neg-bg:#F9E9EC;
+    --diff:#6B46C8;  /* разные знаки · шаг влево (−) */
+    --diff-bg:#EEE8FA;
+  }
+  *{box-sizing:border-box}
+  body{margin:0}
+  .wrap{
+    max-width:760px;
+    margin:0 auto;
+    padding:clamp(1.4rem,4vw,3rem) clamp(1.1rem,4vw,2rem) 4rem;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    font-size:17px;
+    line-height:1.62;
+    -webkit-font-smoothing:antialiased;
+  }
+  .eyebrow{
+    font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--accent);font-weight:600;margin:0 0 .5rem;
+  }
+  h1{
+    font-family:Georgia,"Times New Roman",serif;
+    font-size:clamp(2rem,7vw,2.9rem);
+    line-height:1.05;margin:0;font-weight:700;letter-spacing:-.01em;
+    text-wrap:balance;
+  }
+  .lede{
+    font-size:1.08rem;color:var(--muted);margin:.7rem 0 0;max-width:60ch;
+    text-wrap:pretty;
+  }
+  h2{
+    font-family:Georgia,serif;font-size:1.32rem;font-weight:700;
+    margin:0 0 .1rem;letter-spacing:-.005em;
+  }
+  section{margin-top:2.6rem}
+  .kicker{
+    font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--muted);font-weight:600;margin:0 0 .8rem;
+    display:flex;align-items:center;gap:.6rem;
+  }
+  .kicker::before{
+    content:"";width:1.4rem;height:2px;background:var(--accent);border-radius:2px;
+  }
+  p{margin:.65rem 0}
+  strong{font-weight:650}
+  .math{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-weight:600}
+
+  /* Главная идея */
+  .hero-formula{
+    margin-top:2.2rem;
+    background:var(--ink);color:#fff;border-radius:14px;
+    padding:1.6rem 1.4rem;text-align:center;
+  }
+  .hero-formula .lbl{
+    font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;
+    color:#9aa6c9;margin:0 0 .7rem;
+  }
+  .hero-formula .eq{
+    font-family:Georgia,serif;
+    font-size:clamp(1.5rem,5.5vw,2.1rem);font-weight:700;letter-spacing:.01em;
+  }
+  .hero-formula .eq b{color:#8ea0ff;font-weight:700}
+  .hero-formula .note{font-size:.9rem;color:#9aa6c9;margin:.9rem auto 0;max-width:44ch}
+
+  /* Пререквизит */
+  .recall{
+    background:var(--accent-soft);border-radius:12px;padding:1rem 1.15rem;
+    font-size:.96rem;
+  }
+  .recall p{margin:.3rem 0}
+
+  /* Два правила */
+  .cases{display:grid;gap:.85rem;margin-top:.4rem}
+  @media(min-width:600px){.cases{grid-template-columns:repeat(2,1fr)}}
+  .case{
+    border-radius:12px;padding:1.05rem 1.1rem;border:1px solid var(--line);
+    background:var(--card);display:flex;flex-direction:column;gap:.4rem;
+  }
+  .case .sign{font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.05rem}
+  .case .count{font-weight:700;font-size:1.05rem}
+  .case .desc{font-size:.92rem;color:var(--muted)}
+  .case.same{border-top:4px solid var(--pos);background:var(--pos-bg)}
+  .case.same .sign{color:var(--pos)}
+  .case.diff{border-top:4px solid var(--diff);background:var(--diff-bg)}
+  .case.diff .sign{color:var(--diff)}
+  .zero-note{
+    margin-top:.9rem;background:var(--zero-bg);border:1px solid #F0D98A;border-radius:12px;
+    padding:.9rem 1.1rem;font-size:.96rem;
+  }
+  .zero-note b{color:var(--zero)}
+  .zero-note .math{color:var(--ink)}
+
+  /* Разбор */
+  .worked{
+    background:var(--card);border:1px solid var(--line);border-radius:12px;
+    padding:1.2rem 1.3rem;margin-top:.9rem;
+  }
+  .worked .task{
+    font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.05rem;
+    margin:0 0 1rem;padding-bottom:.8rem;border-bottom:1px solid var(--line);
+  }
+  .worked .task.same{color:var(--pos)}
+  .worked .task.diff{color:var(--diff)}
+  ol.steps{margin:0;padding:0;list-style:none;counter-reset:s;display:flex;flex-direction:column;gap:.7rem}
+  ol.steps li{
+    position:relative;padding-left:2.1rem;counter-increment:s;
+  }
+  ol.steps li::before{
+    content:counter(s);position:absolute;left:0;top:.05rem;
+    width:1.5rem;height:1.5rem;border-radius:50%;
+    background:var(--accent-soft);color:var(--accent);
+    font-size:.82rem;font-weight:700;display:flex;align-items:center;justify-content:center;
+  }
+  ol.steps .m{font-family:ui-monospace,Menlo,monospace;font-weight:600;color:var(--ink)}
+  ol.steps .why{color:var(--muted);font-size:.92rem}
+  .verdict{
+    margin-top:1rem;padding:.7rem 1rem;background:var(--pos-bg);
+    border-radius:9px;font-weight:700;color:var(--pos);font-size:1rem;
+    font-family:ui-monospace,Menlo,monospace;
+  }
+  .verdict.diff{background:var(--diff-bg);color:var(--diff)}
+
+  /* Практика */
+  .drill{display:flex;flex-direction:column;gap:.7rem}
+  details{
+    background:var(--card);border:1px solid var(--line);border-radius:10px;
+    padding:.85rem 1.05rem;
+  }
+  details[open]{border-color:var(--accent)}
+  summary{
+    cursor:pointer;font-weight:600;list-style:none;
+    display:flex;justify-content:space-between;align-items:center;gap:1rem;
+  }
+  summary::-webkit-details-marker{display:none}
+  summary:focus-visible{outline:3px solid var(--accent);outline-offset:3px;border-radius:6px}
+  summary .q{font-family:ui-monospace,Menlo,monospace}
+  summary .tag{
+    font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);
+    border:1px solid var(--line);border-radius:20px;padding:.1rem .55rem;white-space:nowrap;
+  }
+  summary::after{
+    content:"показать ответ";font-size:.78rem;color:var(--accent);font-weight:600;white-space:nowrap;
+  }
+  details[open] summary::after{content:"скрыть"}
+  .ans{margin-top:.7rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.96rem;color:var(--muted)}
+  .ans .m{font-family:ui-monospace,Menlo,monospace;color:var(--ink);font-weight:600}
+
+  /* Ошибки */
+  ul.pitfalls{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:.6rem}
+  ul.pitfalls li{
+    padding-left:1.5rem;position:relative;font-size:.98rem;
+  }
+  ul.pitfalls li::before{
+    content:"\00D7";position:absolute;left:0;top:-.05rem;color:var(--neg);font-weight:700;font-size:1.1rem;
+  }
+  ul.pitfalls b{color:var(--ink)}
+
+  .summary-box{
+    margin-top:1.2rem;background:var(--card);border:1px solid var(--line);border-left:4px solid var(--accent);
+    border-radius:10px;padding:1rem 1.15rem;font-size:.98rem;
+  }
+  .summary-box b{color:var(--ink)}
+
+  .next{
+    background:var(--accent);color:#fff;border-radius:12px;padding:1.2rem 1.3rem;
+  }
+  .next h2{color:#fff}
+  .next .eq{
+    font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.2rem;
+    margin:.6rem 0 .3rem;
+  }
+  .next p{color:#dfe4fb;font-size:.96rem;margin:.4rem 0 0}
+  .foot{margin-top:2.4rem;font-size:.82rem;color:var(--muted);text-align:center}
+
+  @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+<style>
+.oge-tip{display:flex;gap:.8rem;align-items:flex-start;background:#FFF8E7;border:1px solid #F0D98A;border-left:4px solid #E0A315;border-radius:10px;padding:.85rem 1.05rem;margin:1.5rem 0}
+.oge-tip .b{font-size:.72rem;font-weight:800;letter-spacing:.03em;color:#8A6A15;white-space:nowrap;text-transform:uppercase;padding-top:.15rem}
+.oge-tip .x{font-size:.95rem;line-height:1.5}
+</style>
+
+<!--LESSON-NAV-TOP--><style>.lnav{--lnav-accent:#3D5AF1}.lnav a{text-decoration:none;font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif}.lnav-top{max-width:820px;margin:0 auto;padding:.75rem clamp(1rem,4vw,1.5rem) .1rem}.lnav-top a{display:inline-flex;align-items:center;gap:.35rem;color:var(--lnav-accent);font-weight:600;font-size:.9rem}.lnav-top a:hover{text-decoration:underline}.lnav-bot{max-width:820px;margin:2.6rem auto 3rem;padding:1.1rem clamp(1rem,4vw,1.5rem) 0;border-top:1px solid #E4E8EF;display:flex;align-items:stretch;gap:.55rem}.lnav-bot a{min-width:0;display:flex;flex-direction:column;justify-content:center;gap:.15rem;border:1px solid #E4E8EF;border-radius:12px;padding:.65rem .85rem;color:#182233;background:#fff;transition:border-color .1s,transform .08s}.lnav-bot a:hover{border-color:var(--lnav-accent);transform:translateY(-1px)}.lnav-bot .prev,.lnav-bot .next{flex:1 1 0}.lnav-bot .next{text-align:right}.lnav-bot .dir{font-size:.72rem;color:#8A93A6;font-weight:600}.lnav-bot .ttl{font-size:.9rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.lnav-bot .to-cat{flex:0 0 auto;flex-direction:row;align-items:center;justify-content:center;color:var(--lnav-accent);font-weight:700;font-size:.85rem;white-space:nowrap}@media(max-width:420px){.lnav-bot .to-cat span{display:none}.lnav-bot .to-cat{padding:.65rem .7rem}}</style><nav class="lnav lnav-top"><a href="./catalog.html">← Все темы</a></nav><!--/LESSON-NAV-TOP-->
+<div class="wrap">
+
+  <header>
+    <p class="eyebrow">Математика · 6 класс</p>
+    <h1>Сложение рациональных чисел</h1>
+    <p class="lede">Плюсы и минусы, длинные и короткие шаги по числовой прямой. Разберёшься, когда числа складываются, а когда — гасят друг друга.</p>
+  </header>
+
+  <div class="hero-formula">
+    <p class="lbl">Главное правило темы</p>
+    <div class="eq">Сначала смотри на <b>знаки</b></div>
+    <p class="note">У чисел с одинаковыми знаками и у чисел с разными знаками — разные правила сложения. Ниже разберём оба.</p>
+  </div>
+
+  <section>
+    <p class="kicker">Зачем это нужно</p>
+    <h2>Складывать — не всегда «увеличивать»</h2>
+    <p>Рациональные числа — это все целые и дробные числа со знаком «плюс» или «минус» (и ноль). Складывать их приходится постоянно: посчитать баланс на счёте, где были и приходы, и расходы; узнать итоговое изменение температуры за день (утром было <span class="math">−5&nbsp;°C</span>, потом потеплело на <span class="math">8&nbsp;°C</span>); понять, на сколько поднялся водолаз. Везде, где есть «вверх — вниз», «должен — имею», «холоднее — теплее», нужно складывать числа с разными знаками.</p>
+    <p>Житейское заблуждение: <strong>«при сложении число всегда становится больше»</strong>. Это верно только для положительных чисел. Прибавил отрицательное — результат <em>уменьшился</em>: <span class="math">3 + (−5) = −2</span>. Складывать — не значит увеличивать.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Что вспомнить с прошлых шагов</p>
+    <div class="recall">
+      <p><strong>Модуль числа</strong> <span class="math">|x|</span> — это расстояние от нуля, без учёта знака. Он всегда неотрицателен: <span class="math">|−7| = 7</span>, <span class="math">|5| = 5</span>. Считай модуль «длиной шага».</p>
+      <p><strong>Сравнение по модулю.</strong> Умей быстро сказать, у какого из двух чисел модуль больше: у <span class="math">−9</span> модуль <span class="math">9</span>, у <span class="math">5</span> модуль <span class="math">5</span>, значит по модулю <span class="math">−9</span> «сильнее».</p>
+      <p>Оба навыка нужны прямо сейчас: все правила сложения формулируются <strong>через модули и знаки</strong>.</p>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Ядро · два правила знаков</p>
+    <h2>Смотрим на знаки слагаемых</h2>
+    <p>Представь каждое число как шаг по числовой прямой: положительное — шаг <strong>вправо</strong>, отрицательное — шаг <strong>влево</strong>. От того, в одну сторону шаги или в разные, и зависит правило:</p>
+    <div class="cases">
+      <div class="case same">
+        <div class="sign">(−) + (−) &nbsp;или&nbsp; (+) + (+)</div>
+        <div class="count">Одинаковые знаки</div>
+        <div class="desc">Оба шага в одну сторону, пути суммируются. <b>Складываем модули</b> и ставим перед результатом <b>общий знак</b>.</div>
+      </div>
+      <div class="case diff">
+        <div class="sign">(−) + (+)</div>
+        <div class="count">Разные знаки</div>
+        <div class="desc">Шаги в разные стороны, частично гасят друг друга. <b>Из большего модуля вычитаем меньший</b> и берём <b>знак числа с бóльшим модулем</b>.</div>
+      </div>
+    </div>
+    <div class="zero-note">
+      <b>Особые случаи.</b> Прибавление нуля ничего не меняет: <span class="math">a + 0 = a</span>. А сумма двух <b>противоположных</b> чисел всегда равна нулю: <span class="math">a + (−a) = 0</span> — шаги равны по длине, но в разные стороны, и полностью гасят друг друга.
+    </div>
+    <p style="font-size:.92rem;color:var(--muted);margin-top:.9rem">Запомни как считалочку: <strong>одинаковые знаки — складываю; разные знаки — вычитаю.</strong> А знак результата у разных знаков даёт тот, кто «сильнее» по модулю.</p>
+    <div class="oge-tip"><div class="b">🎯 В ОГЭ</div><div class="x"><b>Задание 6.</b> Действия с положительными и отрицательными числами — фундамент всех вычислений ОГЭ (№6) и любых преобразований. Правило знаков должно работать на автомате.</div></div>
+  </section>
+
+  <section>
+    <p class="kicker">Разбираем вместе · думаю вслух</p>
+    <h2>Эталон 1 — одинаковые знаки</h2>
+    <div class="worked">
+      <p class="task same">−7 + (−4) &nbsp;=&nbsp; ?</p>
+      <ol class="steps">
+        <li>Смотрю на знаки: оба <span class="m">минус</span> → знаки одинаковые, работаю по <b>первому правилу</b>.</li>
+        <li>Складываю модули: <span class="m">|−7| + |−4| = 7 + 4 = 11</span>. <span class="why">Почему складываю: оба шага влево, пути суммируются.</span></li>
+        <li>Ставлю общий знак «минус»: <span class="m">−11</span>. <span class="why">Почему минус: оба слагаемых отрицательны, значит и сумма отрицательна.</span></li>
+      </ol>
+      <div class="verdict">−7 + (−4) = −11</div>
+    </div>
+
+    <h2 style="margin-top:2rem">Эталон 2 — разные знаки</h2>
+    <div class="worked">
+      <p class="task diff">−9 + 5 &nbsp;=&nbsp; ?</p>
+      <ol class="steps">
+        <li>Смотрю на знаки: один <span class="m">минус</span>, другой <span class="m">плюс</span> → знаки разные, работаю по <b>второму правилу</b>.</li>
+        <li>Нахожу модули: <span class="m">|−9| = 9</span>, <span class="m">|5| = 5</span>. Бóльший модуль — у <span class="m">−9</span>.</li>
+        <li>Из большего модуля вычитаю меньший: <span class="m">9 − 5 = 4</span>. <span class="why">Почему вычитаю: шаги в разные стороны, они частично гасятся.</span></li>
+        <li>Знак беру у числа с бóльшим модулем, то есть у <span class="m">−9</span> → «минус»: <span class="m">−4</span>.</li>
+      </ol>
+      <div class="verdict diff">−9 + 5 = −4</div>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Наглядно · прыжки по числовой прямой</p>
+    <h2>Сложение — это два шага от нуля</h2>
+    <p>Встань на ноль и сделай два шага: первый — на первое число, второй — на второе. Положительное тянет <strong>вправо</strong>, отрицательное — <strong>влево</strong>. Где остановился — там и сумма. Нажми и посмотри:</p>
+    <div class="numline">
+      <canvas id="numline" width="640" height="270" aria-label="Числовая прямая: прыжки при сложении"></canvas>
+      <div class="nl-legend">
+        <span><i class="dot pos"></i>шаг вправо — прибавляем положительное (+)</span>
+        <span><i class="dot dif"></i>шаг влево — прибавляем отрицательное (−)</span>
+      </div>
+      <div class="nl-ctl">
+        <button id="nlA" type="button">▶ −7 + (−4)</button>
+        <button id="nlB" type="button" class="alt">▶ −9 + 5</button>
+      </div>
+      <p class="nl-hint">В первом примере оба шага влево — пути складываются, ушли далеко в минус. Во втором шаги в разные стороны — второй частично отматывает назад.</p>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Теперь ты · нажми, чтобы проверить</p>
+    <h2>Практика по нарастанию</h2>
+    <div class="drill">
+      <details>
+        <summary><span class="q">−6 + (−2) — какое это правило?</span><span class="tag">понимание</span></summary>
+        <div class="ans">Оба числа отрицательные → знаки <strong>одинаковые</strong>, значит первое правило: складываем модули и оставляем минус. <span class="m">−6 + (−2) = −8.</span></div>
+      </details>
+      <details>
+        <summary><span class="q">Назови модули чисел −12 и 7</span><span class="tag">понимание</span></summary>
+        <div class="ans"><span class="m">|−12| = 12</span>, <span class="m">|7| = 7</span>. Модуль — это расстояние до нуля, он всегда неотрицателен.</div>
+      </details>
+      <details>
+        <summary><span class="q">−15 + (−5)</span><span class="tag">применение</span></summary>
+        <div class="ans">Одинаковые знаки: <span class="m">15 + 5 = 20</span>, общий знак минус → <span class="m">−20.</span></div>
+      </details>
+      <details>
+        <summary><span class="q">14 + (−9)</span><span class="tag">применение</span></summary>
+        <div class="ans">Разные знаки: <span class="m">14 − 9 = 5</span>, бóльший модуль у <span class="m">14</span> (плюс) → <span class="m">5.</span></div>
+      </details>
+      <details>
+        <summary><span class="q">−20 + 20</span><span class="tag">применение</span></summary>
+        <div class="ans">Числа противоположные → полностью гасятся: <span class="m">0.</span></div>
+      </details>
+      <details>
+        <summary><span class="q">−2,4 + (−1,6)</span><span class="tag">применение</span></summary>
+        <div class="ans">Одинаковые знаки: <span class="m">2,4 + 1,6 = 4,0</span>, общий знак минус → <span class="m">−4.</span></div>
+      </details>
+      <details>
+        <summary><span class="q">Что изменится в −8 + 3, если поменять оба знака?</span><span class="tag">анализ</span></summary>
+        <div class="ans">Сначала: <span class="m">−8 + 3 = −5</span> (разные знаки, <span class="m">8 − 3 = 5</span>, знак минуса). После замены знаков получаем <span class="m">8 + (−3) = 5</span>. Ответ стал <strong>противоположным</strong>: был <span class="m">−5</span> — стал <span class="m">5</span>.</div>
+      </details>
+      <details>
+        <summary><span class="q">Найди ошибку: −7 + 10 = −3</span><span class="tag">анализ</span></summary>
+        <div class="ans">Знаки разные, поэтому модули <strong>вычитаем</strong>: <span class="m">10 − 7 = 3</span>. Бóльший модуль у <span class="m">10</span> (плюс), значит знак «+». Верно: <span class="m">−7 + 10 = 3</span>, а не <span class="m">−3</span>.</div>
+      </details>
+      <details>
+        <summary><span class="q">Первое слагаемое −6, сумма −10. Найди второе</span><span class="tag">анализ</span></summary>
+        <div class="ans">Нужно <span class="m">−6 + ? = −10</span>. От <span class="m">−6</span> до <span class="m">−10</span> — ещё <strong>4 шага влево</strong>, то есть прибавили <span class="m">−4</span>. Второе слагаемое <span class="m">−4</span>. Проверка: <span class="m">−6 + (−4) = −10.</span></div>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Тренажёр · бесконечная практика</p>
+    <h2>Найди сумму сам</h2>
+    <p>Нажми «Новый пример» и посчитай сумму. Ответ введи числом: минус пиши знаком «−» или «-», дробную часть — через запятую или точку (например <b>−4</b> или <b>2,5</b>). Если числа противоположные — ответ <b>0</b>. Потом проверь себя или посмотри пошаговый разбор.</p>
+    <div class="trainer">
+      <div class="tr-eq" id="trEq">−7 + (−4)</div>
+      <div class="tr-ctl">
+        <button id="trNew" type="button">🎲 Новый пример</button>
+        <input id="trAns" type="text" inputmode="text" placeholder="напр.  −4   или   2,5" aria-label="Твой ответ">
+        <button id="trCheck" type="button" class="sec">Проверить</button>
+        <button id="trShow" type="button" class="ghost">Показать разбор</button>
+      </div>
+      <div id="trResult" class="tr-result"></div>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Где чаще всего ошибаются</p>
+    <h2>Лови эти ловушки</h2>
+    <ul class="pitfalls">
+      <li><b>При разных знаках складывают модули вместо вычитания.</b> Пишут <span class="math">−9 + 5 = −14</span>. Разные знаки — это перетягивание каната: числа частично гасятся, поэтому модули <em>вычитают</em>, а не складывают.</li>
+      <li><b>Неверно определяют знак суммы.</b> Пишут <span class="math">−9 + 5 = +4</span>. Знак всегда берётся у числа с бóльшим модулем; здесь <span class="math">|−9| &gt; |5|</span>, значит знак «−», ответ <span class="math">−4</span>.</li>
+      <li><b>Путают правила для одинаковых и разных знаков.</b> Сначала всегда смотри на знаки: одинаковые → складываем модули и сохраняем знак; разные → вычитаем модули и берём знак большего.</li>
+      <li><b>Теряют минус в записи.</b> <span class="math">−7 + (−4)</span> превращают в <span class="math">−7 + 4</span>. Аккуратно записывай скобки и проговаривай «минус четыре».</li>
+    </ul>
+  </section>
+
+  <section>
+    <p class="kicker">Проверь, что понял</p>
+    <h2>Объясни своими словами</h2>
+    <div class="drill">
+      <details>
+        <summary><span class="q">Чем порядок действий при одинаковых знаках отличается от разных?</span><span class="tag">проверка</span></summary>
+        <div class="ans">При <strong>одинаковых</strong> знаках модули <strong>складывают</strong> и оставляют общий знак. При <strong>разных</strong> — из большего модуля <strong>вычитают</strong> меньший и берут знак числа с бóльшим модулем.</div>
+      </details>
+      <details>
+        <summary><span class="q">Чему равна сумма 13 + (−13)?</span><span class="tag">проверка</span></summary>
+        <div class="ans"><span class="m">0</span>. Это противоположные числа — равные по модулю, но с разными знаками, они полностью гасят друг друга.</div>
+      </details>
+      <details>
+        <summary><span class="q">В сумме −10 + 4 какой знак у результата и почему?</span><span class="tag">проверка</span></summary>
+        <div class="ans">Знак «<strong>минус</strong>»: модуль <span class="m">|−10| = 10</span> больше, чем <span class="m">|4| = 4</span>, значит «побеждает» <span class="m">−10</span>. Считаем: <span class="m">10 − 4 = 6</span> → ответ <span class="m">−6</span>.</div>
+      </details>
+    </div>
+    <div class="summary-box">
+      <b>Итог темы.</b> При <b>одинаковых</b> знаках модули складывают и оставляют общий знак, а при <b>разных</b> — из большего модуля вычитают меньший и берут знак числа с бóльшим модулем.
+    </div>
+  </section>
+
+  <section>
+    <div class="next">
+      <h2>Что дальше</h2>
+      <p>Ты научился складывать числа со знаками — это фундамент. Следующий шаг:</p>
+      <div class="eq">Вычитание рациональных чисел</div>
+      <p>Оно целиком опирается на это же правило знаков. Доведи сложение до автоматизма — и вычитание пойдёт легко.</p>
+    </div>
+  </section>
+
+  <p class="foot">Проверка на выходе: какое правило у одинаковых знаков? · чему равно a + (−a)? · какой знак у −10 + 4 и почему?</p>
+
+</div>
+
+<style>
+  .numline{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.1rem 1.1rem 1rem;margin:1rem 0}
+  .numline canvas{width:100%;height:auto;display:block;border-radius:10px;background:#FCFDFF}
+  .nl-legend{display:flex;flex-wrap:wrap;gap:.4rem 1.2rem;margin:.8rem 0 0;font-size:.86rem;color:var(--muted)}
+  .nl-legend span{display:inline-flex;align-items:center;gap:.4rem}
+  .nl-legend .dot{width:.75rem;height:.75rem;border-radius:50%;display:inline-block}
+  .nl-legend .dot.pos{background:var(--pos)}
+  .nl-legend .dot.dif{background:var(--diff)}
+  .nl-ctl{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.9rem}
+  .nl-ctl button{font:inherit;font-weight:700;font-size:.92rem;cursor:pointer;border:none;border-radius:9px;padding:.55rem 1rem;color:#fff;background:var(--diff)}
+  .nl-ctl button.alt{background:var(--pos)}
+  .nl-ctl button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+  .nl-hint{font-size:.9rem;color:var(--muted);margin:.9rem 0 0}
+</style>
+
+<script>
+(function(){
+  var canvas=document.getElementById('numline'); if(!canvas) return;
+  var ctx=canvas.getContext('2d');
+  var W=640,H=250,dpr=1;
+  var VMIN=-13, VMAX=3, PAD=26, BASEFRAC=0.58;
+  var mm=window.matchMedia && window.matchMedia('(prefers-reduced-motion:reduce)');
+  var reduce=mm && mm.matches;
+  var raf=null, current=null;
+  var examples={ a:{a:-7,b:-4}, b:{a:-9,b:5} };
+
+  function css(v){ return getComputedStyle(document.documentElement).getPropertyValue(v).trim(); }
+  function resize(){
+    var cssW=canvas.clientWidth||640; dpr=Math.min(window.devicePixelRatio||1,2);
+    W=cssW; H=Math.max(180, Math.round(cssW*0.42));
+    canvas.width=W*dpr; canvas.height=H*dpr; canvas.style.height=H+'px';
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+  }
+  function xOf(v){ return PAD + (v-VMIN)*((W-2*PAD)/(VMAX-VMIN)); }
+  function baseY(){ return H*BASEFRAC; }
+  function fmtSigned(v){ return (v<0?'−':'+')+Math.abs(v); }
+
+  function drawLine(){
+    ctx.clearRect(0,0,W,H);
+    var by=baseY();
+    ctx.strokeStyle=css('--muted')||'#5A6478'; ctx.lineWidth=2; ctx.lineCap='butt';
+    ctx.beginPath(); ctx.moveTo(xOf(VMIN),by); ctx.lineTo(xOf(VMAX),by); ctx.stroke();
+    ctx.fillStyle=css('--muted');
+    ctx.beginPath(); ctx.moveTo(xOf(VMAX)+2,by); ctx.lineTo(xOf(VMAX)-7,by-4); ctx.lineTo(xOf(VMAX)-7,by+4); ctx.closePath(); ctx.fill();
+    ctx.font='11px system-ui,-apple-system,sans-serif'; ctx.textAlign='center';
+    for(var v=VMIN; v<=VMAX; v++){
+      var x=xOf(v), zero=(v===0);
+      ctx.strokeStyle= zero ? css('--ink') : '#D7DBE4';
+      ctx.lineWidth= zero ? 2 : 1;
+      ctx.beginPath(); ctx.moveTo(x,by-5); ctx.lineTo(x,by+5); ctx.stroke();
+      if(v%2===0){ ctx.fillStyle= zero ? css('--ink') : css('--muted'); ctx.fillText(''+v, x, by+18); }
+    }
+  }
+  function dot(v){
+    var by=baseY(), x=xOf(v);
+    ctx.fillStyle=css('--ink'); ctx.beginPath(); ctx.arc(x,by,5,0,7); ctx.fill();
+    ctx.fillStyle='#fff'; ctx.beginPath(); ctx.arc(x,by,2,0,7); ctx.fill();
+  }
+  function hop(from,to,color,prog,label){
+    var by=baseY(), x0=xOf(from), x1=xOf(to);
+    var span=Math.abs(x1-x0), lift=Math.min(span*0.5+8, by-26);
+    ctx.strokeStyle=color; ctx.lineWidth=3; ctx.lineCap='round'; ctx.beginPath();
+    var steps=48;
+    for(var i=0;i<=steps;i++){
+      var p=(i/steps)*prog, x=x0+(x1-x0)*p, y=by-Math.sin(Math.PI*p)*lift;
+      if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+    }
+    ctx.stroke();
+    if(prog>0.28){
+      ctx.fillStyle=color; ctx.font='bold 13px ui-monospace,Menlo,monospace'; ctx.textAlign='center';
+      ctx.fillText(label, (x0+x1)/2, by-lift-7);
+    }
+    if(prog>=0.999){
+      ctx.fillStyle=color; ctx.beginPath();
+      ctx.moveTo(x1,by+1); ctx.lineTo(x1-5,by-9); ctx.lineTo(x1+5,by-9); ctx.closePath(); ctx.fill();
+    }
+  }
+  function render(a,b,t1,t2){
+    drawLine();
+    var colA = a<0 ? css('--diff') : css('--pos');
+    var colB = b<0 ? css('--diff') : css('--pos');
+    hop(0, a, colA, t1, fmtSigned(a));
+    if(t1>=1) hop(a, a+b, colB, t2, fmtSigned(b));
+    dot(0);
+    if(t1>=1 && t2>=1){
+      dot(a+b);
+      var by=baseY(), x=xOf(a+b);
+      ctx.fillStyle=css('--ink'); ctx.font='bold 14px ui-monospace,Menlo,monospace'; ctx.textAlign='center';
+      ctx.fillText('= '+fmtSigned(a+b), x, by+36);
+    }
+  }
+  function idle(){
+    drawLine(); dot(0);
+    ctx.fillStyle=css('--muted'); ctx.font='12px system-ui,-apple-system,sans-serif'; ctx.textAlign='center';
+    ctx.fillText('Выбери пример и нажми кнопку ниже', W/2, 20);
+  }
+  function play(ex){
+    current=ex;
+    if(raf) cancelAnimationFrame(raf);
+    if(reduce){ render(ex.a,ex.b,1,1); return; }
+    var start=null, D1=650, gap=200, D2=650;
+    function frame(ts){
+      if(!start) start=ts;
+      var el=ts-start;
+      var t1=Math.min(el/D1,1);
+      var t2 = el>D1+gap ? Math.min((el-D1-gap)/D2,1) : 0;
+      render(ex.a, ex.b, t1, (t1>=1?t2:0));
+      if(t1<1 || t2<1) raf=requestAnimationFrame(frame);
+    }
+    raf=requestAnimationFrame(frame);
+  }
+
+  document.getElementById('nlA').addEventListener('click',function(){ play(examples.a); });
+  document.getElementById('nlB').addEventListener('click',function(){ play(examples.b); });
+  window.addEventListener('resize',function(){ resize(); if(current) render(current.a,current.b,1,1); else idle(); });
+  resize(); idle();
+})();
+</script>
+
+<style>
+  .trainer{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.2rem 1.3rem;margin-top:1rem}
+  .tr-eq{font-family:ui-monospace,Menlo,monospace;font-weight:800;font-size:clamp(1.4rem,6vw,1.9rem);text-align:center;padding:1rem;background:var(--accent-soft);border-radius:10px;color:var(--ink)}
+  .tr-ctl{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.9rem;align-items:center}
+  .tr-ctl button{font:inherit;font-weight:700;font-size:.9rem;cursor:pointer;border:none;border-radius:9px;padding:.55rem .95rem;color:#fff;background:var(--accent)}
+  .tr-ctl button.sec{background:var(--pos)}
+  .tr-ctl button.ghost{background:transparent;color:var(--accent);border:1px solid var(--accent)}
+  .tr-ctl input{flex:1;min-width:150px;font:inherit;padding:.5rem .7rem;border:1px solid var(--line);border-radius:9px;background:#fff;color:var(--ink)}
+  .tr-ctl button:focus-visible,.tr-ctl input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+  .tr-result{margin-top:.9rem;font-size:.96rem;min-height:1.2rem}
+  .tr-result .ok{color:var(--pos);font-weight:700}
+  .tr-result .bad{color:var(--neg);font-weight:700}
+  .tr-result .sol{margin-top:.7rem;padding:.85rem 1rem;background:#FCFBFE;border:1px solid var(--line);border-radius:10px;font-family:ui-monospace,Menlo,monospace;font-size:.9rem;line-height:1.8}
+  .tr-result .sol b{color:var(--accent)}
+</style>
+
+<script>
+(function(){
+  var eqEl=document.getElementById('trEq'), ansEl=document.getElementById('trAns'), resEl=document.getElementById('trResult');
+  if(!eqEl) return;
+  var cur={at:-70, bt:-40}; /* стартовый пример = −7 + (−4), совпадает с разбором */
+
+  function ri(min,max){ return Math.floor(Math.random()*(max-min+1))+min; }
+  function pick(a){ return a[Math.floor(Math.random()*a.length)]; }
+
+  /* значения хранятся в «десятых долях» (целое = value*10), чтобы не ловить ошибки дробей */
+  function fmtT(t){
+    var neg=t<0, a=Math.abs(t), w=Math.floor(a/10), f=a%10;
+    var s = f===0 ? (''+w) : (w+','+f);
+    return (neg?'−':'')+s;
+  }
+  function fmtTask(at,bt){
+    var right = bt<0 ? ('('+fmtT(bt)+')') : fmtT(bt);
+    return fmtT(at)+' + '+right;
+  }
+  function magT(decimal){ return decimal ? ri(11,99) : ri(1,20)*10; }
+
+  function generate(){
+    var decimal = Math.random()<0.4;
+    var mode = pick(['same','same','same','diff','diff','diff','opp']);
+    var at,bt;
+    if(mode==='same'){
+      var sgn = Math.random()<0.55 ? -1 : 1;
+      at = sgn*magT(decimal); bt = sgn*magT(decimal);
+    } else if(mode==='opp'){
+      var m = magT(decimal), s = Math.random()<0.5 ? -1 : 1;
+      at = s*m; bt = -s*m;
+    } else {
+      var m1=magT(decimal), m2=magT(decimal), k=0;
+      while(m1===m2 && k<40){ m2=magT(decimal); k++; }
+      if(m1===m2) m2 = m1 + 10;
+      if(Math.random()<0.5){ at=m1; bt=-m2; } else { at=-m1; bt=m2; }
+    }
+    cur={at:at, bt:bt};
+    eqEl.textContent=fmtTask(at,bt);
+    resEl.innerHTML=''; ansEl.value='';
+  }
+
+  function solve(at,bt){
+    var sum=at+bt, ma=Math.abs(at), mb=Math.abs(bt);
+    var kase = (sum===0) ? 'opp' : ((at<0)===(bt<0) ? 'same' : 'diff');
+    return {sum:sum, ma:ma, mb:mb, kase:kase};
+  }
+
+  function solutionHTML(){
+    var at=cur.at, bt=cur.bt, s=solve(at,bt);
+    var h='<div class="sol">';
+    h+='Задача: <b>'+fmtTask(at,bt)+'</b><br>';
+    if(s.kase==='same'){
+      h+='Знаки одинаковые → <b>складываем модули</b>.<br>';
+      h+='|'+fmtT(at)+'| + |'+fmtT(bt)+'| = '+fmtT(s.ma)+' + '+fmtT(s.mb)+' = '+fmtT(s.ma+s.mb)+'<br>';
+      h+='Общий знак «'+(at<0?'минус':'плюс')+'» → ответ: <b>'+fmtT(s.sum)+'</b>';
+    } else if(s.kase==='opp'){
+      h+='Знаки разные, а <b>модули равны</b> ('+fmtT(s.ma)+' = '+fmtT(s.mb)+').<br>';
+      h+='Противоположные числа гасят друг друга → ответ: <b>0</b>';
+    } else {
+      var big=Math.max(s.ma,s.mb), small=Math.min(s.ma,s.mb);
+      var bigNeg = (s.ma>s.mb) ? (at<0) : (bt<0);
+      h+='Знаки разные → <b>из большего модуля вычитаем меньший</b>.<br>';
+      h+='|'+fmtT(at)+'| = '+fmtT(s.ma)+', |'+fmtT(bt)+'| = '+fmtT(s.mb)+'. Больше — '+fmtT(big)+'.<br>';
+      h+=fmtT(big)+' − '+fmtT(small)+' = '+fmtT(big-small)+'<br>';
+      h+='Знак — как у числа с бóльшим модулем («'+(bigNeg?'минус':'плюс')+'») → ответ: <b>'+fmtT(s.sum)+'</b>';
+    }
+    return h+'</div>';
+  }
+
+  function check(){
+    var s=solve(cur.at,cur.bt);
+    var raw=ansEl.value.trim();
+    if(!raw){ resEl.innerHTML='<span class="bad">Введи ответ или нажми «Показать разбор».</span>'; return; }
+    var norm=raw.replace(/−/g,'-').replace(/\s+/g,'').replace(/(\d),(\d)/g,'$1.$2');
+    var got=parseFloat(norm);
+    if(isNaN(got)){
+      resEl.innerHTML='<span class="bad">Не понял запись. Введи число, например −4 или 2,5.</span>'; return;
+    }
+    var exp=s.sum/10;
+    if(Math.abs(got-exp)<0.001){
+      resEl.innerHTML='<span class="ok">✓ Верно! '+fmtTask(cur.at,cur.bt)+' = '+fmtT(s.sum)+'</span>'+solutionHTML();
+    } else {
+      resEl.innerHTML='<span class="bad">✗ Пока не то. Разбери по шагам ниже.</span>'+solutionHTML();
+    }
+  }
+
+  eqEl.textContent=fmtTask(cur.at,cur.bt);
+  document.getElementById('trNew').addEventListener('click',generate);
+  document.getElementById('trCheck').addEventListener('click',check);
+  document.getElementById('trShow').addEventListener('click',function(){ resEl.innerHTML=solutionHTML(); });
+  ansEl.addEventListener('keydown',function(e){ if(e.key==='Enter') check(); });
+})();
+</script>
+<!--LESSON-NAV-BOT--><nav class="lnav lnav-bot"><a class="prev" href="./m6-modul-chisla.html"><span class="dir">← Предыдущая</span><span class="ttl">Модуль числа</span></a><a class="to-cat" href="./catalog.html">📚 <span>Все темы</span></a><a class="next" href="./m6-umnozhenie-delenie-racionalnyh.html"><span class="dir">Следующая →</span><span class="ttl">Умножение и деление рациональных чисел</span></a></nav><!--/LESSON-NAV-BOT-->

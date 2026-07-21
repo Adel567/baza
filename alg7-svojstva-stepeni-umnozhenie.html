@@ -1,0 +1,520 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Умножение и деление степеней — урок, алгебра 7 класс</title>
+<style>
+  :root{
+    --paper:#F6F7F9;
+    --card:#FFFFFF;
+    --ink:#1B2333;
+    --muted:#5A6478;
+    --line:#E2E5EC;
+    --accent:#3B4FD0;
+    --accent-soft:#EAEDFB;
+    --pos:#1E8E5A;   /* второй множитель / деление */
+    --pos-bg:#E7F4EC;
+    --zero:#B9791A;
+    --zero-bg:#FBF1DC;
+    --neg:#C0455B;   /* ошибка / сокращение */
+    --neg-bg:#F9E9EC;
+  }
+  *{box-sizing:border-box}
+  body{margin:0}
+  .wrap{
+    max-width:760px;
+    margin:0 auto;
+    padding:clamp(1.4rem,4vw,3rem) clamp(1.1rem,4vw,2rem) 4rem;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    font-size:17px;
+    line-height:1.62;
+    -webkit-font-smoothing:antialiased;
+  }
+  .eyebrow{
+    font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--accent);font-weight:600;margin:0 0 .5rem;
+  }
+  h1{
+    font-family:Georgia,"Times New Roman",serif;
+    font-size:clamp(2rem,7vw,2.9rem);
+    line-height:1.06;margin:0;font-weight:700;letter-spacing:-.01em;
+    text-wrap:balance;
+  }
+  .lede{
+    font-size:1.08rem;color:var(--muted);margin:.7rem 0 0;max-width:60ch;
+    text-wrap:pretty;
+  }
+  h2{
+    font-family:Georgia,serif;font-size:1.32rem;font-weight:700;
+    margin:0 0 .1rem;letter-spacing:-.005em;
+  }
+  section{margin-top:2.6rem}
+  .kicker{
+    font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--muted);font-weight:600;margin:0 0 .8rem;
+    display:flex;align-items:center;gap:.6rem;
+  }
+  .kicker::before{
+    content:"";width:1.4rem;height:2px;background:var(--accent);border-radius:2px;
+  }
+  p{margin:.65rem 0}
+  strong{font-weight:650}
+  .math{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-weight:600}
+  sup{font-size:.72em}
+
+  /* Главная формула — два правила */
+  .hero-formula{
+    margin-top:2.2rem;
+    background:var(--ink);color:#fff;border-radius:14px;
+    padding:1.5rem 1.4rem;text-align:center;
+  }
+  .hero-formula .lbl{
+    font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;
+    color:#9aa6c9;margin:0 0 1rem;
+  }
+  .hero-formula .eq{
+    font-family:ui-monospace,"SF Mono",Menlo,monospace;
+    font-size:clamp(1.5rem,6vw,2.1rem);font-weight:700;letter-spacing:.01em;
+  }
+  .hero-formula .eq b{color:#8ea0ff;font-weight:800}
+  .hero-formula .rsub{font-size:.85rem;color:#c3ccea;margin:.35rem 0 0;font-weight:600}
+  .hero-formula .divider{height:1px;background:#33405f;margin:1.15rem 0}
+  .hero-formula .note{font-size:.84rem;color:#9aa6c9;margin:1.1rem 0 0}
+
+  /* Пререквизит */
+  .recall{
+    background:var(--accent-soft);border-radius:12px;padding:1rem 1.15rem;
+    font-size:.96rem;
+  }
+  .recall p{margin:.3rem 0}
+
+  /* Два правила — карточки */
+  .rules{display:grid;gap:.85rem;margin-top:.4rem}
+  @media(min-width:600px){.rules{grid-template-columns:1fr 1fr}}
+  .rule{
+    border-radius:12px;padding:1.05rem 1.15rem;border:1px solid var(--line);
+    background:var(--card);display:flex;flex-direction:column;gap:.45rem;
+  }
+  .rule.mul{border-top:4px solid var(--accent);background:var(--accent-soft)}
+  .rule.div{border-top:4px solid var(--pos);background:var(--pos-bg)}
+  .rule .rname{font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;font-weight:700}
+  .rule.mul .rname{color:var(--accent)}
+  .rule.div .rname{color:var(--pos)}
+  .rule .req{font-family:ui-monospace,Menlo,monospace;font-weight:800;font-size:1.15rem}
+  .rule .rwhat{font-size:.92rem;color:var(--muted)}
+  .rule .rwhat b{color:var(--ink)}
+
+  /* Разбор */
+  .worked{
+    background:var(--card);border:1px solid var(--line);border-radius:12px;
+    padding:1.2rem 1.3rem;
+  }
+  .worked .task{
+    font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.1rem;
+    margin:0 0 1rem;padding-bottom:.8rem;border-bottom:1px solid var(--line);
+  }
+  ol.steps{margin:0;padding:0;list-style:none;counter-reset:s;display:flex;flex-direction:column;gap:.7rem}
+  ol.steps li{position:relative;padding-left:2.1rem;counter-increment:s}
+  ol.steps li::before{
+    content:counter(s);position:absolute;left:0;top:.05rem;
+    width:1.5rem;height:1.5rem;border-radius:50%;
+    background:var(--accent-soft);color:var(--accent);
+    font-size:.82rem;font-weight:700;display:flex;align-items:center;justify-content:center;
+  }
+  ol.steps .m{font-family:ui-monospace,Menlo,monospace;font-weight:600;color:var(--ink)}
+  .verdict{
+    margin-top:1rem;padding:.7rem 1rem;background:var(--pos-bg);
+    border-radius:9px;font-weight:600;color:var(--pos);font-size:.98rem;
+    font-family:ui-monospace,Menlo,monospace;
+  }
+
+  /* Развёрнутая запись (цвет-код множителей) */
+  .expand-box{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:1.1rem 1.2rem;margin-top:.5rem}
+  .expand-box + .expand-box{margin-top:.85rem}
+  .expand{font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.02rem;line-height:1.9;overflow-x:auto;white-space:nowrap}
+  .expand .g1{color:var(--accent)}
+  .expand .g2{color:var(--pos)}
+  .expand .gx{color:var(--neg);text-decoration:line-through;opacity:.75}
+  .expand .op{color:var(--muted);font-weight:600}
+  .cap{font-size:.9rem;color:var(--muted);margin:.6rem 0 0}
+  .cap b{color:var(--ink)}
+  .ptable{display:flex;flex-wrap:wrap;gap:.4rem;margin:.9rem 0 0}
+  .ptable span{font-family:ui-monospace,Menlo,monospace;font-size:.86rem;background:var(--paper);border:1px solid var(--line);border-radius:7px;padding:.25rem .5rem}
+
+  /* Практика */
+  .drill{display:flex;flex-direction:column;gap:.7rem}
+  details{
+    background:var(--card);border:1px solid var(--line);border-radius:10px;
+    padding:.85rem 1.05rem;
+  }
+  details[open]{border-color:var(--accent)}
+  summary{
+    cursor:pointer;font-weight:600;list-style:none;
+    display:flex;justify-content:space-between;align-items:center;gap:1rem;
+  }
+  summary::-webkit-details-marker{display:none}
+  summary:focus-visible{outline:3px solid var(--accent);outline-offset:2px;border-radius:6px}
+  summary .q{font-family:ui-monospace,Menlo,monospace}
+  summary .tag{
+    font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);
+    border:1px solid var(--line);border-radius:20px;padding:.1rem .55rem;white-space:nowrap;
+  }
+  summary::after{
+    content:"показать";font-size:.78rem;color:var(--accent);font-weight:600;white-space:nowrap;
+  }
+  details[open] summary::after{content:"скрыть"}
+  .ans{margin-top:.7rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.96rem;color:var(--muted)}
+  .ans .m{font-family:ui-monospace,Menlo,monospace;color:var(--ink);font-weight:600}
+
+  /* Ошибки */
+  ul.pitfalls{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:.6rem}
+  ul.pitfalls li{padding-left:1.5rem;position:relative;font-size:.98rem}
+  ul.pitfalls li::before{content:"\00D7";position:absolute;left:0;top:-.05rem;color:var(--neg);font-weight:700;font-size:1.1rem}
+  ul.pitfalls b{color:var(--ink)}
+  ul.pitfalls .m{font-family:ui-monospace,Menlo,monospace;font-weight:600}
+  .bad{color:var(--neg)}
+  .good{color:var(--pos)}
+
+  .next{background:var(--accent);color:#fff;border-radius:12px;padding:1.2rem 1.3rem}
+  .next h2{color:#fff}
+  .next .eq{font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.2rem;margin:.6rem 0 .3rem}
+  .next p{color:#dfe4fb;font-size:.96rem;margin:.4rem 0 0}
+  .foot{margin-top:2.4rem;font-size:.82rem;color:var(--muted);text-align:center}
+</style>
+
+<style>
+.oge-tip{display:flex;gap:.8rem;align-items:flex-start;background:#FFF8E7;border:1px solid #F0D98A;border-left:4px solid #E0A315;border-radius:10px;padding:.85rem 1.05rem;margin:1.5rem 0}
+.oge-tip .b{font-size:.72rem;font-weight:800;letter-spacing:.03em;color:#8A6A15;white-space:nowrap;text-transform:uppercase;padding-top:.15rem}
+.oge-tip .x{font-size:.95rem;line-height:1.5}
+</style>
+
+<!--LESSON-NAV-TOP--><style>.lnav{--lnav-accent:#3D5AF1}.lnav a{text-decoration:none;font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif}.lnav-top{max-width:820px;margin:0 auto;padding:.75rem clamp(1rem,4vw,1.5rem) .1rem}.lnav-top a{display:inline-flex;align-items:center;gap:.35rem;color:var(--lnav-accent);font-weight:600;font-size:.9rem}.lnav-top a:hover{text-decoration:underline}.lnav-bot{max-width:820px;margin:2.6rem auto 3rem;padding:1.1rem clamp(1rem,4vw,1.5rem) 0;border-top:1px solid #E4E8EF;display:flex;align-items:stretch;gap:.55rem}.lnav-bot a{min-width:0;display:flex;flex-direction:column;justify-content:center;gap:.15rem;border:1px solid #E4E8EF;border-radius:12px;padding:.65rem .85rem;color:#182233;background:#fff;transition:border-color .1s,transform .08s}.lnav-bot a:hover{border-color:var(--lnav-accent);transform:translateY(-1px)}.lnav-bot .prev,.lnav-bot .next{flex:1 1 0}.lnav-bot .next{text-align:right}.lnav-bot .dir{font-size:.72rem;color:#8A93A6;font-weight:600}.lnav-bot .ttl{font-size:.9rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.lnav-bot .to-cat{flex:0 0 auto;flex-direction:row;align-items:center;justify-content:center;color:var(--lnav-accent);font-weight:700;font-size:.85rem;white-space:nowrap}@media(max-width:420px){.lnav-bot .to-cat span{display:none}.lnav-bot .to-cat{padding:.65rem .7rem}}</style><nav class="lnav lnav-top"><a href="./catalog.html">← Все темы</a></nav><!--/LESSON-NAV-TOP-->
+<div class="wrap">
+
+  <header>
+    <p class="eyebrow">Алгебра · 7 класс</p>
+    <h1>Умножение и деление степеней с одинаковым основанием</h1>
+    <p class="lede">Два коротких правила, которые заменяют длинные вычисления «в столбик». Главное — не перепутать: показатели <em>складывают</em>, а не перемножают.</p>
+  </header>
+
+  <div class="hero-formula">
+    <p class="lbl">Два правила степеней</p>
+    <div class="eq">a<sup>m</sup> · a<sup>n</sup> = a<sup>m<b>+</b>n</sup></div>
+    <p class="rsub">умножаем степени → показатели <b>складываем</b></p>
+    <div class="divider"></div>
+    <div class="eq">a<sup>m</sup> : a<sup>n</sup> = a<sup>m<b>−</b>n</sup></div>
+    <p class="rsub">делим степени → показатели <b>вычитаем</b></p>
+    <p class="note">Основание a — одно и то же. При делении a ≠ 0 и m &gt; n.</p>
+  </div>
+
+  <section>
+    <p class="kicker">Зачем это нужно</p>
+    <h2>Чтобы считать быстро, а не «в столбик»</h2>
+    <p>Степень — это короткая запись многократного умножения. Но как только в выражении встречается <strong>произведение</strong> или <strong>частное</strong> степеней, расписывать всё длинной цепочкой становится долго и легко ошибиться. Свойства степеней позволяют считать в одну строчку: вместо того чтобы заново выписывать 2·2·2·2·2 через 2·2·2, ты просто складываешь показатели.</p>
+    <p>Этот навык — фундамент всей дальнейшей алгебры: одночлены и многочлены, преобразование выражений, формулы сокращённого умножения, а позже — стандартный вид числа в физике (масса электрона, расстояние до звёзд).</p>
+    <p>Типичное заблуждение звучит так: <span class="bad">«раз это умножение степеней, значит надо перемножить показатели»</span>. Нет — показатели <strong>складываются</strong>. Именно эта путаница и есть главная ловушка темы.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Что вспомнить перед стартом</p>
+    <div class="recall">
+      <p><strong>Степень с натуральным показателем.</strong> Запись <span class="math">a<sup>n</sup></span> означает «число a умножили само на себя n раз»: <span class="math">a<sup>n</sup> = a·a·…·a</span> (n множителей).</p>
+      <p><strong>a</strong> — основание (что умножаем), <strong>n</strong> — показатель (сколько раз повторяем множитель).</p>
+      <p>И запомни: у одиночной буквы показатель равен единице — <span class="math">a = a<sup>1</sup></span>.</p>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Ядро темы — два правила</p>
+    <h2>Складываем или вычитаем показатели</h2>
+    <p>Работает только при <strong>одинаковом основании</strong> — когда обе степени построены из одного и того же числа a.</p>
+    <div class="rules">
+      <div class="rule mul">
+        <div class="rname">Умножение</div>
+        <div class="req">a<sup>m</sup> · a<sup>n</sup> = a<sup>m+n</sup></div>
+        <div class="rwhat">Основание оставляем прежним, показатели <b>складываем</b>.</div>
+      </div>
+      <div class="rule div">
+        <div class="rname">Деление</div>
+        <div class="req">a<sup>m</sup> : a<sup>n</sup> = a<sup>m−n</sup></div>
+        <div class="rwhat">Основание оставляем прежним, показатели <b>вычитаем</b> (при a ≠ 0 и m &gt; n).</div>
+      </div>
+    </div>
+
+    <p style="margin-top:1.3rem"><strong>Почему складываем.</strong> Запись <span class="math">a<sup>m</sup></span> — это m множителей a. Рядом стоит <span class="math">a<sup>n</sup></span> — ещё n таких же множителей. При умножении мы просто продолжаем умножать то же число: было m множителей, добавили ещё n — всего стало <strong>m + n</strong> множителей. Поэтому показатели складываются.</p>
+    <p><strong>Почему вычитаем.</strong> При делении наоборот: из m множителей a часть сокращается. Делим на <span class="math">a<sup>n</sup></span> — значит n множителей уходят, остаётся <strong>m − n</strong>. Поэтому показатели вычитаются.</p>
+    <p style="font-size:.92rem;color:var(--muted)">Условие <span class="math">m &gt; n</span> в 7 классе нужно, чтобы показатель остался натуральным. Случаи <span class="math">m = n</span> и <span class="math">m &lt; n</span> разбираются позже — вместе со степенью с нулевым и целым показателем.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Разбираем вместе · думаю вслух</p>
+    <h2>Эталонный пример</h2>
+    <div class="worked">
+      <p class="task">Вычислить 3<sup>4</sup> · 3<sup>2</sup></p>
+      <ol class="steps">
+        <li>Смотрю на основания: оба равны <span class="m">3</span>, они одинаковые — значит, правило применимо. <em>Правило работает только при равных основаниях.</em></li>
+        <li>Действие — умножение, поэтому показатели <strong>складываю</strong>: <span class="m">4 + 2 = 6</span>. <em>К четырём множителям-тройкам добавил ещё два — всего шесть троек.</em></li>
+        <li>Основание оставляю прежним: <span class="m">3<sup>4</sup> · 3<sup>2</sup> = 3<sup>4+2</sup> = 3<sup>6</sup></span>.</li>
+        <li>Довожу до числа: <span class="m">3<sup>6</sup> = 729</span>.</li>
+      </ol>
+      <div class="verdict">Ответ: 3<sup>6</sup> = 729</div>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Наглядно · откуда берётся сложение</p>
+    <h2>Распиши степени в ряд</h2>
+    <p>Разверни каждую степень в цепочку множителей — и сразу видно, почему показатели складываются, а при делении вычитаются.</p>
+
+    <div class="expand-box">
+      <div class="cap" style="margin:0 0 .6rem"><b>Умножение:</b> 2<sup>3</sup> · 2<sup>2</sup></div>
+      <div class="expand">2<sup>3</sup> <span class="op">·</span> 2<sup>2</sup> = (<span class="g1">2·2·2</span>) <span class="op">·</span> (<span class="g2">2·2</span>) = <span class="g1">2·2·2</span><span class="op">·</span><span class="g2">2·2</span> = 2<sup>5</sup></div>
+      <p class="cap">Сосчитай двойки в ряду: <b><span style="color:var(--accent)">3</span> + <span style="color:var(--pos)">2</span> = 5</b>. Множители просто встают друг за другом — их количество и есть новый показатель.</p>
+      <div class="ptable">
+        <span>2<sup>1</sup>=2</span><span>2<sup>2</sup>=4</span><span>2<sup>3</sup>=8</span><span>2<sup>4</sup>=16</span><span>2<sup>5</sup>=32</span>
+      </div>
+      <p class="cap">Проверка числами: <b>4 · 8 = 32 = 2<sup>5</sup></b> — значит 2<sup>2</sup>·2<sup>3</sup> = 2<sup>5</sup>, сложилось верно.</p>
+    </div>
+
+    <div class="expand-box">
+      <div class="cap" style="margin:0 0 .6rem"><b>Деление:</b> a<sup>7</sup> : a<sup>3</sup></div>
+      <div class="expand"><span class="g1">a·a·a·a</span><span class="gx">·a·a·a</span> &nbsp;→&nbsp; сокращаем <span style="color:var(--neg)">3</span> множителя</div>
+      <p class="cap">Из <b>7</b> множителей a убираем <b>3</b> — остаётся <b><span style="color:var(--accent)">7 − 3 = 4</span></b>. Поэтому <span class="math">a<sup>7</sup> : a<sup>3</sup> = a<sup>4</sup></span>.</p>
+    </div>
+
+    <div class="oge-tip"><div class="b">🎯 В ОГЭ</div><div class="x"><b>Задания 6 и 8.</b> Свойства степеней постоянно нужны в вычислениях (№6) и преобразованиях выражений (№8). Путаница «сложить или умножить показатели» — частая потеря балла.</div></div>
+  </section>
+
+  <section>
+    <p class="kicker">Теперь ты · нажми, чтобы проверить</p>
+    <h2>Мини-практика</h2>
+    <p>Сначала реши сам, потом раскрой ответ.</p>
+    <div class="drill">
+      <details>
+        <summary><span class="q">Прочитай 5<sup>6</sup>: назови основание и показатель</span><span class="tag">понимание</span></summary>
+        <div class="ans">Основание — <span class="m">5</span>, показатель — <span class="m">6</span>. Читается «пять в шестой степени».</div>
+      </details>
+      <details>
+        <summary><span class="q">2<sup>3</sup> · 2<sup>4</sup></span><span class="tag">применение</span></summary>
+        <div class="ans">Основания одинаковые, умножаем → складываем: <span class="m">2<sup>3</sup> · 2<sup>4</sup> = 2<sup>3+4</sup> = 2<sup>7</sup></span> (= 128).</div>
+      </details>
+      <details>
+        <summary><span class="q">y<sup>9</sup> : y<sup>4</sup>&nbsp; (y ≠ 0)</span><span class="tag">применение</span></summary>
+        <div class="ans">Делим → вычитаем: <span class="m">y<sup>9</sup> : y<sup>4</sup> = y<sup>9−4</sup> = y<sup>5</sup></span>.</div>
+      </details>
+      <details>
+        <summary><span class="q">c<sup>2</sup> · c<sup>5</sup> · c</span><span class="tag">применение</span></summary>
+        <div class="ans">Помни, что <span class="m">c = c<sup>1</sup></span>. Складываем все показатели: <span class="m">c<sup>2+5+1</sup> = c<sup>8</sup></span>.</div>
+      </details>
+      <details>
+        <summary><span class="q">Найди ошибку: 4<sup>3</sup> · 4<sup>2</sup> = 4<sup>6</sup></span><span class="tag">анализ</span></summary>
+        <div class="ans">Ученик <b>перемножил</b> показатели: <span class="m">3·2 = 6</span>. Так нельзя — их надо <b>складывать</b>: <span class="m">4<sup>3+2</sup> = 4<sup>5</sup></span>. Верный ответ — <span class="good">4<sup>5</sup></span>.</div>
+      </details>
+      <details>
+        <summary><span class="q">Можно ли так: 2<sup>3</sup> · 5<sup>2</sup> = 10<sup>5</sup>?</span><span class="tag">анализ</span></summary>
+        <div class="ans">Нет. Основания <b>разные</b> (2 и 5), свойство не работает. Считаем по отдельности: <span class="m">2<sup>3</sup> · 5<sup>2</sup> = 8 · 25 = 200</span>.</div>
+      </details>
+      <details>
+        <summary><span class="q">Представь a<sup>9</sup> в виде произведения двух степеней с основанием a (два варианта)</span><span class="tag">анализ</span></summary>
+        <div class="ans">Подойдут любые два показателя, дающие в сумме 9. Например: <span class="m">a<sup>4</sup> · a<sup>5</sup></span> или <span class="m">a<sup>2</sup> · a<sup>7</sup></span>.</div>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Тренажёр · бесконечная практика</p>
+    <h2>Реши сам — генератор заданий</h2>
+    <p>Нажми «Новое задание», упрости выражение и запиши результат в виде <b>a^k</b> (степень — через «крышечку» ^, например <span class="math">a^8</span> или <span class="math">2^5</span>). Потом проверь себя или посмотри пошаговый разбор с раскрытыми множителями.</p>
+    <div class="trainer">
+      <div class="tr-eq" id="trEq">a<sup>3</sup> · a<sup>2</sup></div>
+      <div class="tr-ctl">
+        <button id="trNew" type="button">🎲 Новое задание</button>
+        <input id="trAns" type="text" inputmode="text" autocomplete="off" placeholder="напр.  a^5" aria-label="Ответ в виде a^k">
+        <button id="trCheck" type="button" class="sec">Проверить</button>
+        <button id="trShow" type="button" class="ghost">Показать разбор</button>
+      </div>
+      <div id="trResult" class="tr-result"></div>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Где чаще всего ошибаются</p>
+    <h2>Лови эти четыре ловушки</h2>
+    <ul class="pitfalls">
+      <li><b>Перемножают показатели вместо сложения.</b> <span class="m bad">3<sup>4</sup>·3<sup>2</sup> = 3<sup>8</sup></span> — неверно. Надо складывать: <span class="m good">3<sup>4+2</sup> = 3<sup>6</sup></span>. Вспомни смысл: было 4 множителя, добавили 2 — стало 6, а не 8.</li>
+      <li><b>При делении делят показатели.</b> <span class="m bad">a<sup>6</sup>:a<sup>2</sup> = a<sup>3</sup></span> — неверно. Показатели вычитаются: <span class="m good">a<sup>6−2</sup> = a<sup>4</sup></span>.</li>
+      <li><b>Применяют свойство к разным основаниям.</b> <span class="m bad">2<sup>3</sup>·5<sup>2</sup> = 10<sup>5</sup></span> — неверно. Основания разные — сначала проверь, что они совпадают; здесь считаем отдельно: <span class="m good">8·25 = 200</span>.</li>
+      <li><b>Теряют множитель первой степени.</b> <span class="m bad">x<sup>5</sup>·x = x<sup>5</sup></span> — неверно, забыли, что <span class="m">x = x<sup>1</sup></span>. Правильно: <span class="m good">x<sup>5+1</sup> = x<sup>6</sup></span>.</li>
+    </ul>
+  </section>
+
+  <section>
+    <p class="kicker">Проверка понимания</p>
+    <h2>Объясни своими словами</h2>
+    <div class="drill">
+      <details>
+        <summary><span class="q">Чему равно a<sup>5</sup> · a<sup>3</sup>?</span><span class="tag">проверка</span></summary>
+        <div class="ans"><span class="m">a<sup>5+3</sup> = a<sup>8</sup></span>.</div>
+      </details>
+      <details>
+        <summary><span class="q">Чему равно b<sup>7</sup> : b<sup>2</sup> при b ≠ 0?</span><span class="tag">проверка</span></summary>
+        <div class="ans"><span class="m">b<sup>7−2</sup> = b<sup>5</sup></span>.</div>
+      </details>
+      <details>
+        <summary><span class="q">Можно ли применить свойство к 3<sup>4</sup> · 7<sup>2</sup>?</span><span class="tag">проверка</span></summary>
+        <div class="ans">Нельзя: основания разные (3 и 7). Свойство работает только при <b>одинаковом</b> основании.</div>
+      </details>
+      <details>
+        <summary><span class="q">Почему при умножении показатели складывают, а не умножают?</span><span class="tag">объясни</span></summary>
+        <div class="ans">Потому что степень — это повтор умножения. У <span class="m">a<sup>m</sup></span> ровно m множителей, у <span class="m">a<sup>n</sup></span> — ещё n. Перемножая их, мы просто ставим множители в один ряд, и их становится <span class="m">m + n</span>. Растёт именно <b>число множителей</b> — сложением.</div>
+      </details>
+    </div>
+    <p style="margin-top:1.1rem;font-weight:600">Итог одной фразой: при умножении степеней с одинаковым основанием показатели складывают, при делении — вычитают, а основание оставляют тем же.</p>
+  </section>
+
+  <section>
+    <div class="next">
+      <h2>Что дальше</h2>
+      <p>Ты научился складывать и вычитать показатели. Следующий шаг — что делать, когда степень возводят ещё в одну степень:</p>
+      <div class="eq">(a<sup>m</sup>)<sup>n</sup> = ?</div>
+      <p>Это тема «возведение степени в степень». А случаи <span class="math">m = n</span> и <span class="math">m &lt; n</span> при делении приведут тебя к степени с нулевым и целым показателем.</p>
+    </div>
+  </section>
+
+  <p class="foot">Проверка на выходе: запиши правило умножения по памяти · что делаешь с показателями при делении? · можно ли применить свойство к 2<sup>3</sup> · 5<sup>2</sup>?</p>
+
+</div>
+
+<style>
+  .trainer{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.2rem 1.3rem;margin-top:1rem}
+  .tr-eq{font-family:ui-monospace,Menlo,monospace;font-weight:800;font-size:clamp(1.4rem,5vw,1.8rem);text-align:center;padding:1rem;background:var(--accent-soft);border-radius:10px;color:var(--ink)}
+  .tr-eq sup{font-size:.6em}
+  .tr-ctl{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.9rem;align-items:center}
+  .tr-ctl button{font:inherit;font-weight:700;font-size:.9rem;cursor:pointer;border:none;border-radius:9px;padding:.55rem .95rem;color:#fff;background:var(--accent)}
+  .tr-ctl button.sec{background:var(--pos)}
+  .tr-ctl button.ghost{background:transparent;color:var(--accent);border:1px solid var(--accent)}
+  .tr-ctl input{flex:1;min-width:150px;font:inherit;padding:.5rem .7rem;border:1px solid var(--line);border-radius:9px;background:#fff;color:var(--ink)}
+  .tr-ctl button:focus-visible,.tr-ctl input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+  .tr-result{margin-top:.9rem;font-size:.96rem;min-height:1.2rem}
+  .tr-result .ok{color:var(--pos);font-weight:700}
+  .tr-result .no{color:var(--neg);font-weight:700}
+  .tr-result .sol{margin-top:.7rem;padding:.85rem 1rem;background:#FCFBFE;border:1px solid var(--line);border-radius:10px;font-size:.92rem;line-height:1.85}
+  .tr-result .sol .expand{font-size:.95rem;white-space:normal;line-height:2}
+  .tr-result .sol b{color:var(--accent)}
+</style>
+
+<script>
+(function(){
+  var eqEl=document.getElementById('trEq'),
+      ansEl=document.getElementById('trAns'),
+      resEl=document.getElementById('trResult');
+  if(!eqEl) return;
+
+  var MINUS='−'; // настоящий минус
+  var BASES=['a','b','c','x','y','k','p','2','3','5'];
+  var cur={base:'a', op:'mul', m:3, n:2, res:5};
+
+  function ri(min,max){ return Math.floor(Math.random()*(max-min+1))+min; }
+  function sup(v){ return '<sup>'+v+'</sup>'; }
+
+  function fmtEq(q){
+    var sep = q.op==='mul' ? ' · ' : ' : ';
+    return q.base+sup(q.m)+sep+q.base+sup(q.n);
+  }
+
+  function generate(){
+    var base=BASES[ri(0,BASES.length-1)];
+    var op = Math.random()<0.5 ? 'mul' : 'div';
+    var m,n,res;
+    if(op==='mul'){
+      m=ri(2,5); n=ri(2,5); res=m+n;
+    } else {
+      n=ri(1,4); m=n+ri(1,5); res=m-n; // m > n гарантированно
+    }
+    cur={base:base, op:op, m:m, n:n, res:res};
+    eqEl.innerHTML=fmtEq(cur);
+    resEl.innerHTML='';
+    ansEl.value='';
+  }
+
+  // --- разбор с раскрытыми множителями (цвет-код) ---
+  function run(base,cls,k){
+    var a=[]; for(var i=0;i<k;i++) a.push('<span class="'+cls+'">'+base+'</span>');
+    return a.join('·');
+  }
+  function cancelRun(base,m,res){
+    var a=[]; for(var i=0;i<m;i++){ a.push('<span class="'+(i<res?'g1':'gx')+'">'+base+'</span>'); }
+    return a.join('·');
+  }
+  function solutionHTML(){
+    var q=cur, h='<div class="sol">';
+    h+='Основания одинаковые ('+q.base+'). ';
+    if(q.op==='mul'){
+      h+='Действие — умножение, поэтому показатели <b>складываем</b>: '+q.m+' + '+q.n+' = '+q.res+'.';
+      h+='<div class="expand" style="margin-top:.6rem">'
+        + q.base+sup(q.m)+' <span class="op">·</span> '+q.base+sup(q.n)
+        + ' = ('+run(q.base,'g1',q.m)+')<span class="op">·</span>('+run(q.base,'g2',q.n)+')'
+        + ' = '+q.base+sup(q.res)+'</div>';
+      h+='<div style="margin-top:.5rem">Ответ: <b>'+q.base+sup(q.res)+'</b></div>';
+    } else {
+      h+='Действие — деление, поэтому показатели <b>вычитаем</b>: '+q.m+' '+MINUS+' '+q.n+' = '+q.res+'.';
+      h+='<div class="expand" style="margin-top:.6rem">'
+        + q.base+sup(q.m)+' : '+q.base+sup(q.n)
+        + ' → сокращаем '+q.n+' множ.: '+cancelRun(q.base,q.m,q.res)
+        + ' = '+q.base+sup(q.res)+'</div>';
+      h+='<div style="margin-top:.5rem">Ответ: <b>'+q.base+sup(q.res)+'</b></div>';
+    }
+    return h+'</div>';
+  }
+
+  // --- нормализация ответа ученика ---
+  function norm(s){
+    s=(s||'').toLowerCase().trim();
+    var sm={'⁰':'0','¹':'1','²':'2','³':'3','⁴':'4','⁵':'5','⁶':'6','⁷':'7','⁸':'8','⁹':'9'};
+    s=s.replace(/[⁰¹²³⁴⁵⁶⁷⁸⁹]+/g,function(rn){
+      var out=''; for(var i=0;i<rn.length;i++) out+=sm[rn[i]]; return '^'+out;
+    });
+    s=s.replace(/\s+/g,'');
+    s=s.replace(/\^{2,}/g,'^');
+    s=s.replace(/[*·]/g,'');
+    return s;
+  }
+  function parseAns(s){
+    var m=s.match(/^([a-z]|\d+)\^(\d+)$/);
+    if(m) return {base:m[1], exp:parseInt(m[2],10)};
+    var m2=s.match(/^([a-z])(\d+)$/); // «a8» без крышечки
+    if(m2) return {base:m2[1], exp:parseInt(m2[2],10)};
+    return null;
+  }
+
+  function check(){
+    var s=norm(ansEl.value);
+    if(!s){ resEl.innerHTML='<span class="no">Введи ответ в виде a^k или нажми «Показать разбор».</span>'; return; }
+    var p=parseAns(s), ok=false;
+    if(p){
+      ok = (p.base===cur.base.toLowerCase()) && (p.exp===cur.res);
+    } else if(/^\d+$/.test(s) && /^\d+$/.test(cur.base)){
+      // ученик посчитал числовое значение (для числового основания)
+      ok = (parseInt(s,10)===Math.pow(parseInt(cur.base,10),cur.res));
+    }
+    if(ok){
+      resEl.innerHTML='<span class="ok">✓ Верно!</span>'+solutionHTML();
+    } else {
+      var hint = cur.op==='mul'
+        ? ' Показатели надо сложить: '+cur.m+' + '+cur.n+'.'
+        : ' Показатели надо вычесть: '+cur.m+' '+MINUS+' '+cur.n+'.';
+      resEl.innerHTML='<span class="no">✗ Пока не то.'+hint+'</span>'+solutionHTML();
+    }
+  }
+
+  document.getElementById('trNew').addEventListener('click',generate);
+  document.getElementById('trCheck').addEventListener('click',check);
+  document.getElementById('trShow').addEventListener('click',function(){ resEl.innerHTML=solutionHTML(); });
+  ansEl.addEventListener('keydown',function(e){ if(e.key==='Enter') check(); });
+
+  // первичный рендер стартового (валидного) задания — БЕЗ focus()
+  eqEl.innerHTML=fmtEq(cur);
+})();
+</script>
+<!--LESSON-NAV-BOT--><nav class="lnav lnav-bot"><a class="prev" href="./alg7-linejnaya-funkciya.html"><span class="dir">← Предыдущая</span><span class="ttl">Линейная функция y = kx + b</span></a><a class="to-cat" href="./catalog.html">📚 <span>Все темы</span></a><a class="next" href="./alg7-mnogochlen-standartnyj-vid.html"><span class="dir">Следующая →</span><span class="ttl">Многочлен и его стандартный вид</span></a></nav><!--/LESSON-NAV-BOT-->
