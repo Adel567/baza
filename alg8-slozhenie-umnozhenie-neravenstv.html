@@ -1,0 +1,766 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Сложение и умножение неравенств, оценка выражений — урок, алгебра 8 класс</title>
+<style>
+  :root{
+    --paper:#F6F7F9;
+    --card:#FFFFFF;
+    --ink:#1B2333;
+    --muted:#5A6478;
+    --line:#E2E5EC;
+    --accent:#3B4FD0;
+    --accent-soft:#EAEDFB;
+    --pos:#1E8E5A;   /* сложение — можно всегда */
+    --pos-bg:#E7F4EC;
+    --zero:#B9791A;  /* умножение — только для положительных */
+    --zero-bg:#FBF1DC;
+    --neg:#C0455B;   /* вычитание/деление — почленно нельзя */
+    --neg-bg:#F9E9EC;
+  }
+  *{box-sizing:border-box}
+  body{margin:0}
+  .wrap{
+    max-width:760px;
+    margin:0 auto;
+    padding:clamp(1.4rem,4vw,3rem) clamp(1.1rem,4vw,2rem) 4rem;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    font-size:17px;
+    line-height:1.62;
+    -webkit-font-smoothing:antialiased;
+  }
+  .eyebrow{
+    font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--accent);font-weight:600;margin:0 0 .5rem;
+  }
+  h1{
+    font-family:Georgia,"Times New Roman",serif;
+    font-size:clamp(1.9rem,6.4vw,2.8rem);
+    line-height:1.06;margin:0;font-weight:700;letter-spacing:-.01em;
+    text-wrap:balance;
+  }
+  .lede{
+    font-size:1.08rem;color:var(--muted);margin:.7rem 0 0;max-width:60ch;
+    text-wrap:pretty;
+  }
+  h2{
+    font-family:Georgia,serif;font-size:1.32rem;font-weight:700;
+    margin:0 0 .1rem;letter-spacing:-.005em;
+  }
+  section{margin-top:2.6rem}
+  .kicker{
+    font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--muted);font-weight:600;margin:0 0 .8rem;
+    display:flex;align-items:center;gap:.6rem;
+  }
+  .kicker::before{
+    content:"";width:1.4rem;height:2px;background:var(--accent);border-radius:2px;
+  }
+  p{margin:.65rem 0}
+  strong{font-weight:650}
+  .math{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-weight:600}
+  sup{font-size:.72em}
+
+  /* Главное правило */
+  .hero-formula{
+    margin-top:2.2rem;
+    background:var(--ink);color:#fff;border-radius:14px;
+    padding:1.5rem 1.2rem;text-align:center;
+  }
+  .hero-formula .lbl{
+    font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;
+    color:#9aa6c9;margin:0 0 .7rem;
+  }
+  .hero-formula .eq{
+    font-family:ui-monospace,"SF Mono",Menlo,monospace;
+    font-size:clamp(1.05rem,4.4vw,1.55rem);font-weight:700;letter-spacing:.01em;
+    line-height:1.5;
+  }
+  .hero-formula .eq b{color:#8ea0ff;font-weight:700}
+  .hero-formula .sep{height:1px;background:#39415c;margin:1rem 0}
+  .hero-formula .note{font-size:.86rem;color:#9aa6c9;margin:.8rem 0 0}
+
+  /* Пререквизит */
+  .recall{
+    background:var(--accent-soft);border-radius:12px;padding:1rem 1.15rem;
+    font-size:.96rem;
+  }
+  .recall p{margin:.3rem 0}
+
+  /* Три действия */
+  .cases{display:grid;gap:.85rem;margin-top:.4rem}
+  @media(min-width:620px){.cases{grid-template-columns:repeat(3,1fr)}}
+  .case{
+    border-radius:12px;padding:1.05rem 1.1rem;border:1px solid var(--line);
+    background:var(--card);display:flex;flex-direction:column;gap:.35rem;
+  }
+  .case .sign{font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.05rem}
+  .case .count{font-weight:650;font-size:1rem}
+  .case .desc{font-size:.9rem;color:var(--muted)}
+  .case.pos{border-top:4px solid var(--pos);background:var(--pos-bg)}
+  .case.pos .sign{color:var(--pos)}
+  .case.zero{border-top:4px solid var(--zero);background:var(--zero-bg)}
+  .case.zero .sign{color:var(--zero)}
+  .case.neg{border-top:4px solid var(--neg);background:var(--neg-bg)}
+  .case.neg .sign{color:var(--neg)}
+
+  /* Разбор */
+  .worked{
+    background:var(--card);border:1px solid var(--line);border-radius:12px;
+    padding:1.2rem 1.3rem;
+  }
+  .worked .task{
+    font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1rem;
+    margin:0 0 1rem;padding-bottom:.8rem;border-bottom:1px solid var(--line);
+  }
+  ol.steps{margin:0;padding:0;list-style:none;counter-reset:s;display:flex;flex-direction:column;gap:.7rem}
+  ol.steps li{
+    position:relative;padding-left:2.1rem;counter-increment:s;
+  }
+  ol.steps li::before{
+    content:counter(s);position:absolute;left:0;top:.05rem;
+    width:1.5rem;height:1.5rem;border-radius:50%;
+    background:var(--accent-soft);color:var(--accent);
+    font-size:.82rem;font-weight:700;display:flex;align-items:center;justify-content:center;
+  }
+  ol.steps .m{font-family:ui-monospace,Menlo,monospace;font-weight:600;color:var(--ink)}
+  .verdict{
+    margin-top:1rem;padding:.7rem 1rem;background:var(--pos-bg);
+    border-radius:9px;font-weight:600;color:var(--pos);font-size:.98rem;
+    font-family:ui-monospace,Menlo,monospace;
+  }
+  .verdict.warn{background:var(--neg-bg);color:var(--neg)}
+
+  /* Площадная модель */
+  .grid4{width:100%;border-collapse:collapse;margin-top:.6rem;font-family:ui-monospace,Menlo,monospace;font-size:.92rem}
+  .grid4 th,.grid4 td{border:1px solid var(--line);padding:.5rem .55rem;text-align:center;background:var(--card)}
+  .grid4 th{background:var(--accent-soft);color:var(--accent);font-weight:700}
+  .grid4 td.lo{background:var(--pos-bg);color:var(--pos);font-weight:700}
+  .grid4 td.hi{background:var(--zero-bg);color:var(--zero);font-weight:700}
+  .scrollx{overflow-x:auto}
+
+  /* Практика */
+  .drill{display:flex;flex-direction:column;gap:.7rem}
+  details{
+    background:var(--card);border:1px solid var(--line);border-radius:10px;
+    padding:.85rem 1.05rem;
+  }
+  details[open]{border-color:var(--accent)}
+  summary{
+    cursor:pointer;font-weight:600;list-style:none;
+    display:flex;justify-content:space-between;align-items:center;gap:1rem;
+  }
+  summary::-webkit-details-marker{display:none}
+  summary:focus-visible{outline:3px solid var(--accent);outline-offset:3px;border-radius:6px}
+  summary .q{font-family:ui-monospace,Menlo,monospace;font-size:.94rem}
+  summary .tag{
+    font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);
+    border:1px solid var(--line);border-radius:20px;padding:.1rem .55rem;white-space:nowrap;
+  }
+  summary::after{
+    content:"ответ";font-size:.78rem;color:var(--accent);font-weight:600;white-space:nowrap;
+  }
+  details[open] summary::after{content:"скрыть"}
+  .ans{margin-top:.7rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.96rem;color:var(--muted)}
+  .ans .m{font-family:ui-monospace,Menlo,monospace;color:var(--ink);font-weight:600}
+
+  /* Ошибки */
+  ul.pitfalls{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:.6rem}
+  ul.pitfalls li{
+    padding-left:1.5rem;position:relative;font-size:.98rem;
+  }
+  ul.pitfalls li::before{
+    content:"×";position:absolute;left:0;top:-.05rem;color:var(--neg);font-weight:700;font-size:1.1rem;
+  }
+  ul.pitfalls b{color:var(--ink)}
+
+  .next{
+    background:var(--accent);color:#fff;border-radius:12px;padding:1.2rem 1.3rem;
+  }
+  .next h2{color:#fff}
+  .next .eq{
+    font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.05rem;
+    margin:.6rem 0 .3rem;
+  }
+  .next p{color:#dfe4fb;font-size:.96rem;margin:.4rem 0 0}
+  .foot{margin-top:2.4rem;font-size:.82rem;color:var(--muted);text-align:center}
+
+  @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+<style>
+.oge-tip{display:flex;gap:.8rem;align-items:flex-start;background:#FFF8E7;border:1px solid #F0D98A;border-left:4px solid #E0A315;border-radius:10px;padding:.85rem 1.05rem;margin:1.5rem 0}
+.oge-tip .b{font-size:.72rem;font-weight:800;letter-spacing:.03em;color:#8A6A15;white-space:nowrap;text-transform:uppercase;padding-top:.15rem}
+.oge-tip .x{font-size:.95rem;line-height:1.5}
+</style>
+
+<!--LESSON-NAV-TOP--><style>.lnav{--lnav-accent:#3D5AF1}.lnav a{text-decoration:none;font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif}.lnav-top{max-width:820px;margin:0 auto;padding:.75rem clamp(1rem,4vw,1.5rem) .1rem}.lnav-top a{display:inline-flex;align-items:center;gap:.35rem;color:var(--lnav-accent);font-weight:600;font-size:.9rem}.lnav-top a:hover{text-decoration:underline}.lnav-bot{max-width:820px;margin:2.6rem auto 3rem;padding:1.1rem clamp(1rem,4vw,1.5rem) 0;border-top:1px solid #E4E8EF;display:flex;align-items:stretch;gap:.55rem}.lnav-bot a{min-width:0;display:flex;flex-direction:column;justify-content:center;gap:.15rem;border:1px solid #E4E8EF;border-radius:12px;padding:.65rem .85rem;color:#182233;background:#fff;transition:border-color .1s,transform .08s}.lnav-bot a:hover{border-color:var(--lnav-accent);transform:translateY(-1px)}.lnav-bot .prev,.lnav-bot .next{flex:1 1 0}.lnav-bot .next{text-align:right}.lnav-bot .dir{font-size:.72rem;color:#8A93A6;font-weight:600}.lnav-bot .ttl{font-size:.9rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.lnav-bot .to-cat{flex:0 0 auto;flex-direction:row;align-items:center;justify-content:center;color:var(--lnav-accent);font-weight:700;font-size:.85rem;white-space:nowrap}@media(max-width:420px){.lnav-bot .to-cat span{display:none}.lnav-bot .to-cat{padding:.65rem .7rem}}</style><nav class="lnav lnav-top"><a href="./catalog.html">← Все темы</a></nav><!--/LESSON-NAV-TOP-->
+<div class="wrap">
+
+  <header>
+    <p class="eyebrow">Алгебра · 8 класс</p>
+    <h1>Сложение и умножение неравенств. Оценка выражений</h1>
+    <p class="lede">Точное значение неизвестно — известны только границы. Научимся из границ слагаемых получать границы суммы, разности и произведения.</p>
+  </header>
+
+  <div class="hero-formula">
+    <p class="lbl">Два правила, которые надо знать наизусть</p>
+    <div class="eq">если <b>a</b> &gt; b и <b>c</b> &gt; d, то <b>a</b> + <b>c</b> &gt; b + d</div>
+    <div class="sep"></div>
+    <div class="eq">если <b>a</b> &gt; b &gt; 0 и <b>c</b> &gt; d &gt; 0, то <b>a</b>·<b>c</b> &gt; b·d</div>
+    <p class="note">Складывать неравенства одного знака можно всегда. Перемножать — только когда все четыре числа положительны.</p>
+  </div>
+
+  <section>
+    <p class="kicker">Зачем это нужно</p>
+    <h2>Когда точного числа нет, а ответ нужен</h2>
+    <p>Ты измерил комнату: длина получилась где-то <span class="math">от 4,2 до 4,5 м</span>, ширина — <span class="math">от 3,0 до 3,2 м</span>. Какой может быть площадь? Точного числа нет ни у длины, ни у ширины — значит, и площадь получится не числом, а <strong>промежутком</strong>. Чтобы его найти, надо уметь «складывать» и «перемножать» неравенства: из оценок отдельных величин получать оценку результата.</p>
+    <p>Это базовый навык приближённых вычислений: периметр и площадь, стоимость покупки при скачущих ценах, физическое измерение с допуском. И дальше он понадобится в системах неравенств.</p>
+    <p><strong>Главный миф, который надо разрушить прямо сейчас:</strong> «с уравнениями всё можно делать одинаково — значит, и неравенства можно вычитать и делить почленно так же». Нет. Вычитать и делить неравенства почленно <strong>нельзя</strong>, а умножать можно только при дополнительном условии. Об этом весь урок.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Что вспомнить с прошлого шага</p>
+    <div class="recall">
+      <p>Запись <span class="math">3 &lt; a &lt; 5</span> читается «a больше 3 и меньше 5», то есть a лежит между 3 и 5.</p>
+      <p>К обеим частям неравенства можно прибавлять одно и то же число — знак сохраняется.</p>
+      <p>При умножении обеих частей на <strong>отрицательное</strong> число знак неравенства <strong>переворачивается</strong>: из <span class="math">1 &lt; y</span> получается <span class="math">−1 &gt; −y</span>.</p>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Вся тема на одной картинке</p>
+    <h2>Три действия — три разных ответа</h2>
+    <p>Запомни цвет-код: зелёное делаем смело, жёлтое — только с проверкой, красное — не делаем никогда.</p>
+    <div class="cases">
+      <div class="case pos">
+        <div class="sign">a + c &gt; b + d</div>
+        <div class="count">Сложение — можно всегда</div>
+        <div class="desc">Неравенства одного знака складываем почленно. Никаких условий на знаки чисел нет.</div>
+      </div>
+      <div class="case zero">
+        <div class="sign">a·c &gt; b·d</div>
+        <div class="count">Умножение — только для положительных</div>
+        <div class="desc">Нужно, чтобы <b>все четыре</b> числа были положительны. Иначе правило ломается.</div>
+      </div>
+      <div class="case neg">
+        <div class="sign">a − c &gt; b − d</div>
+        <div class="count">Вычитание — почленно нельзя</div>
+        <div class="desc">И деление тоже. Разность оценивают иначе: сначала переворот, потом сложение.</div>
+      </div>
+    </div>
+    <p style="font-size:.92rem;color:var(--muted);margin-top:.9rem">Словами: <strong>«большее плюс большее даёт большее»</strong> — верно всегда. <strong>«Большее на большее даёт большее»</strong> — верно только для положительных чисел.</p>
+
+    <div class="oge-tip"><div class="b">🎯 В ОГЭ</div><div class="x"><b>Задания 13 и 21.</b> Оценка выражения — типовой вопрос «между какими числами лежит»: складывать и умножать неравенства можно, но только по правилам.</div></div>
+  </section>
+
+  <section>
+    <p class="kicker">Правило крупно</p>
+    <h2>Оценка выражения: границы результата</h2>
+    <p>Пусть про величины известны их границы:</p>
+    <div class="worked">
+      <p class="task">m &lt; x &lt; M &nbsp;&nbsp;и&nbsp;&nbsp; p &lt; y &lt; P</p>
+      <ol class="steps">
+        <li><b>Сумма</b> (всегда): <span class="m">m + p &lt; x + y &lt; M + P</span>. Нижняя граница суммы — сумма двух <strong>нижних</strong>, верхняя — сумма двух <strong>верхних</strong>.</li>
+        <li><b>Произведение</b> (только если все границы положительны): <span class="m">m·p &lt; x·y &lt; M·P</span>.</li>
+        <li><b>Разность</b>: сначала переворачиваем неравенство для y, умножая на −1: <span class="m">−P &lt; −y &lt; −p</span>. Затем складываем с неравенством для x: <span class="m">m − P &lt; x − y &lt; M − p</span>.</li>
+      </ol>
+      <div class="verdict">Смысл: наименьшее значение суммы — когда оба слагаемых наименьшие; наибольшее — когда оба наибольшие.</div>
+    </div>
+    <p style="font-size:.94rem;color:var(--muted)">В прикладных задачах единицы сохраняются: метры складываем с метрами, а при умножении длин получаем м<sup>2</sup>.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Покрути сам · интерактив</p>
+    <h2>Две вилки на прямой — и что выходит в ответе</h2>
+    <p>Двигай границы: <span class="math">a</span> лежит где-то на своей полоске, <span class="math">b</span> — на своей. Внизу видно, какая полоска получается у суммы и у разности. Смотри, какие концы складываются между собой.</p>
+    <div class="sim">
+      <canvas id="nline" width="640" height="250" aria-label="Числовая прямая с вилками для a, b, a+b и a−b"></canvas>
+      <div class="sliders">
+        <label>a от <span id="val" class="sval">3</span><input id="sal" type="range" min="-10" max="10" step="1" value="3" aria-label="нижняя граница a"></label>
+        <label>a до <span id="var" class="sval">5</span><input id="sar" type="range" min="-10" max="10" step="1" value="5" aria-label="верхняя граница a"></label>
+        <label>b от <span id="vbl" class="sval">2</span><input id="sbl" type="range" min="-10" max="10" step="1" value="2" aria-label="нижняя граница b"></label>
+        <label>b до <span id="vbr" class="sval">4</span><input id="sbr" type="range" min="-10" max="10" step="1" value="4" aria-label="верхняя граница b"></label>
+      </div>
+      <div class="outs">
+        <div class="out pos"><span class="ol">a + b</span><span class="ov" id="oSum">5 &lt; a + b &lt; 9</span><span class="oh" id="hSum"></span></div>
+        <div class="out neg"><span class="ol">a − b</span><span class="ov" id="oDif">−1 &lt; a − b &lt; 3</span><span class="oh" id="hDif"></span></div>
+        <div class="out zero"><span class="ol">a · b</span><span class="ov" id="oMul">6 &lt; a · b &lt; 20</span><span class="oh" id="hMul"></span></div>
+      </div>
+      <div class="corners">
+        <p class="cap">Все четыре крайних произведения — из них и берутся границы:</p>
+        <div class="scrollx">
+          <table class="grid4">
+            <tr><th></th><th id="cbL">b = 2</th><th id="cbR">b = 4</th></tr>
+            <tr><th id="caL">a = 3</th><td id="c11">6</td><td id="c12">12</td></tr>
+            <tr><th id="caR">a = 5</th><td id="c21">10</td><td id="c22">20</td></tr>
+          </table>
+        </div>
+        <p class="cap" id="mulNote"></p>
+      </div>
+    </div>
+    <p style="font-size:.9rem;color:var(--muted)">Поставь границы <span class="math">a</span> отрицательными (например, от −5 до −3) и посмотри на таблицу: наименьшее произведение окажется совсем не в углу «нижняя × нижняя». Вот почему для отрицательных правило «перемножаем нижние с нижними» не работает.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Разбираем вместе · думаю вслух</p>
+    <h2>Эталонный пример</h2>
+    <div class="worked">
+      <p class="task">Дано: 3 &lt; a &lt; 5 и 2 &lt; b &lt; 4. Оценить a + b и a·b.</p>
+      <ol class="steps">
+        <li>Смотрю на знаки: оба неравенства «меньше», значит смысл одинаковый — <strong>складывать можно</strong>.</li>
+        <li>Складываю нижние границы: <span class="m">3 + 2 = 5</span>. Почему именно нижние с нижними: самая маленькая сумма получится, когда оба слагаемых самые маленькие.</li>
+        <li>Складываю верхние: <span class="m">5 + 4 = 9</span>. Самая большая сумма — когда оба слагаемых самые большие.</li>
+        <li>Записываю: <span class="m">5 &lt; a + b &lt; 9</span>.</li>
+        <li>Теперь произведение. Проверяю условие: все четыре границы (3, 5, 2, 4) положительны — <strong>перемножать можно</strong>.</li>
+        <li>Нижняя: <span class="m">3·2 = 6</span>; верхняя: <span class="m">5·4 = 20</span>. Произведение положительных чисел тем больше, чем больше множители.</li>
+      </ol>
+      <div class="verdict">5 &lt; a + b &lt; 9 &nbsp;&nbsp;и&nbsp;&nbsp; 6 &lt; a·b &lt; 20</div>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Самое трудное место</p>
+    <h2>Разность: переворот, потом сложение</h2>
+    <p>Вычитать неравенства напрямую нельзя. Правильный путь — превратить вычитание в сложение.</p>
+    <div class="worked">
+      <p class="task">Дано: 10 &lt; x &lt; 12 и 1 &lt; y &lt; 3. Оценить x − y.</p>
+      <ol class="steps">
+        <li>Замечаю: <span class="m">x − y = x + (−y)</span>. Значит, мне нужна оценка для <span class="m">−y</span>, а не для y.</li>
+        <li>Умножаю неравенство <span class="m">1 &lt; y &lt; 3</span> на −1 и <strong>переворачиваю знаки</strong>: <span class="m">−3 &lt; −y &lt; −1</span>. Обрати внимание: границы поменялись местами, «−3» стала нижней.</li>
+        <li>Теперь складываю два неравенства одного знака: <span class="m">10 + (−3) &lt; x − y &lt; 12 + (−1)</span>.</li>
+        <li>Считаю: <span class="m">7 &lt; x − y &lt; 11</span>.</li>
+      </ol>
+      <div class="verdict">7 &lt; x − y &lt; 11</div>
+      <p style="margin-top:1rem;font-size:.94rem;color:var(--muted)">Короткий вывод из этой цепочки: у разности <strong>нижняя граница = нижняя x минус <em>верхняя</em> y</strong>, а верхняя = верхняя x минус нижняя y. Границы вычитаемого идут «крест-накрест».</p>
+    </div>
+    <div class="worked" style="margin-top:1rem;border-color:var(--neg)">
+      <p class="task" style="color:var(--neg)">А если бы вычли почленно?</p>
+      <p style="margin:0;font-size:.96rem">Получилось бы <span class="math">10 − 1 &lt; x − y &lt; 12 − 3</span>, то есть <span class="math">9 &lt; x − y &lt; 9</span> — бессмыслица. Проверь подстановкой: при <span class="math">x = 10,5</span> и <span class="math">y = 2,5</span> разность равна <span class="math">8</span>, и она в «ответ» 9 &lt; … &lt; 9 не попадает. Значит, почленное вычитание — ошибка.</p>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Наглядность</p>
+    <h2>Площадная модель произведения</h2>
+    <p>Пусть у прямоугольника сторона <span class="math">a</span> лежит между 3 и 5, а сторона <span class="math">b</span> — между 2 и 4. Самый маленький прямоугольник — <span class="math">3 × 2 = 6</span>, самый большой — <span class="math">5 × 4 = 20</span>. Площадь любого промежуточного прямоугольника зажата между ними.</p>
+    <div class="scrollx">
+      <table class="grid4">
+        <tr><th></th><th>b = 2</th><th>b = 4</th></tr>
+        <tr><th>a = 3</th><td class="lo">3·2 = 6</td><td>3·4 = 12</td></tr>
+        <tr><th>a = 5</th><td>5·2 = 10</td><td class="hi">5·4 = 20</td></tr>
+      </table>
+    </div>
+    <p style="font-size:.94rem;color:var(--muted)">Для положительных чисел наименьшее всегда в углу «нижняя × нижняя», наибольшее — «верхняя × верхняя». Именно эту картинку и описывает правило умножения.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Теперь ты · нажми, чтобы проверить</p>
+    <h2>Мини-практика</h2>
+    <div class="drill">
+      <details>
+        <summary><span class="q">7 &lt; a &lt; 9, 3 &lt; b &lt; 5 → оцени a + b</span><span class="tag">применение</span></summary>
+        <div class="ans">Складываем нижние и верхние: <span class="m">7 + 3 = 10</span>, <span class="m">9 + 5 = 14</span>. Ответ: <span class="m">10 &lt; a + b &lt; 14</span>.</div>
+      </details>
+      <details>
+        <summary><span class="q">2 &lt; p &lt; 4, 6 &lt; q &lt; 10 → оцени p·q</span><span class="tag">применение</span></summary>
+        <div class="ans">Все границы положительны — перемножать можно: <span class="m">2·6 = 12</span>, <span class="m">4·10 = 40</span>. Ответ: <span class="m">12 &lt; p·q &lt; 40</span>.</div>
+      </details>
+      <details>
+        <summary><span class="q">5 &lt; a &lt; 6 см, 8 &lt; b &lt; 9 см → оцени P = 2(a + b)</span><span class="tag">применение</span></summary>
+        <div class="ans">Сначала сумма: <span class="m">13 &lt; a + b &lt; 15</span>. Умножаем всё на 2 (число положительное, знак не меняется): <span class="m">26 &lt; P &lt; 30</span> см.</div>
+      </details>
+      <details>
+        <summary><span class="q">Что изменится, если −5 &lt; a &lt; −3, а 2 &lt; b &lt; 4?</span><span class="tag">анализ</span></summary>
+        <div class="ans">Правило умножения тут не работает: границы a отрицательны. Механически вышло бы «−10 &lt; a·b &lt; −12» — нижняя граница больше верхней, бессмыслица. Считаем перебором четырёх крайних произведений: <span class="m">(−5)·2 = −10, (−5)·4 = −20, (−3)·2 = −6, (−3)·4 = −12</span>. Наименьшее −20, наибольшее −6, значит <span class="m">−20 &lt; a·b &lt; −6</span>. Причина поломки: у отрицательных чисел «больше по модулю» значит «меньше», и умножение на положительное b переворачивает порядок.</div>
+      </details>
+      <details>
+        <summary><span class="q">Найди ошибку: из 10 &lt; x &lt; 12 и 1 &lt; y &lt; 3 ученик написал 9 &lt; x − y &lt; 9</span><span class="tag">анализ</span></summary>
+        <div class="ans">Ошибка — почленное вычитание, так делать нельзя. Правильно: переворачиваем <span class="m">1 &lt; y &lt; 3</span> в <span class="m">−3 &lt; −y &lt; −1</span> и складываем: <span class="m">7 &lt; x − y &lt; 11</span>.</div>
+      </details>
+      <details>
+        <summary><span class="q">Известно: 5 &lt; a + b &lt; 11 и 1 &lt; b &lt; 3. Что можно сказать про a?</span><span class="tag">анализ</span></summary>
+        <div class="ans">Замечаем, что <span class="m">a = (a + b) − b</span>. Переворачиваем неравенство для b: <span class="m">−3 &lt; −b &lt; −1</span>. Складываем: <span class="m">5 + (−3) &lt; a &lt; 11 + (−1)</span>, то есть <span class="m">2 &lt; a &lt; 10</span>.</div>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Тренажёр · бесконечная практика</p>
+    <h2>Оцени выражение сам</h2>
+    <p>Нажми «Новая задача». Ответ — <b>пара границ</b>. Записывай как угодно: <span class="math">3; 8</span>, <span class="math">3 8</span>, <span class="math">от 3 до 8</span> или <span class="math">3&lt;x&lt;8</span>. Минус пиши обычным дефисом.</p>
+    <div class="trainer">
+      <div class="tr-eq" id="trEq"></div>
+      <div class="tr-ctl">
+        <button id="trNew" type="button">🎲 Новая задача</button>
+        <input id="trAns" type="text" inputmode="text" placeholder="напр.  5; 9   или   от 5 до 9" aria-label="Ответ: две границы">
+        <button id="trCheck" type="button" class="sec">Проверить</button>
+        <button id="trShow" type="button" class="ghost">Показать решение</button>
+      </div>
+      <div id="trResult" class="tr-result"></div>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Где чаще всего ошибаются</p>
+    <h2>Лови эти четыре ловушки</h2>
+    <ul class="pitfalls">
+      <li><b>Перемножают неравенства с отрицательными частями.</b> Из <span class="math">−5 &lt; a &lt; −3</span> и <span class="math">2 &lt; b &lt; 4</span> пишут «−10 &lt; a·b &lt; −12» — нижняя граница вышла больше верхней, это уже не неравенство. Проверяй перед умножением: все четыре числа положительны? Если нет — разбирай случаи, перебирая крайние произведения.</li>
+      <li><b>Вычитают неравенства почленно.</b> Из <span class="math">a &gt; b</span> и <span class="math">c &gt; d</span> делают «a − c &gt; b − d». Неверно. Вычитать и делить неравенства почленно нельзя: разность оценивают через переворот и сложение.</li>
+      <li><b>Складывают границы «крест-накрест».</b> Берут нижнюю границу одного и верхнюю другого. Помни: нижняя граница суммы — сумма двух <strong>нижних</strong>, верхняя — сумма двух <strong>верхних</strong>. Крест-накрест идут только границы вычитаемого.</li>
+      <li><b>Забывают перевернуть знак.</b> Умножая неравенство на −1, пишут «1 &lt; −y &lt; 3» вместо «−3 &lt; −y &lt; −1». При умножении или делении на отрицательное число знак всегда переворачивается.</li>
+    </ul>
+  </section>
+
+  <section>
+    <p class="kicker">Проверь себя без подглядывания</p>
+    <h2>Три вопроса на понимание</h2>
+    <div class="drill">
+      <details>
+        <summary><span class="q">Сформулируй правило сложения двух неравенств одного знака</span><span class="tag">объясни</span></summary>
+        <div class="ans">Если <span class="m">a &gt; b</span> и <span class="m">c &gt; d</span>, то <span class="m">a + c &gt; b + d</span>. То же для знака «меньше». Ограничений на знаки чисел нет.</div>
+      </details>
+      <details>
+        <summary><span class="q">При каком условии два неравенства можно почленно перемножать?</span><span class="tag">объясни</span></summary>
+        <div class="ans">Когда неравенства одного знака и <b>все четыре числа положительны</b>: из <span class="m">a &gt; b &gt; 0</span> и <span class="m">c &gt; d &gt; 0</span> следует <span class="m">a·c &gt; b·d</span>.</div>
+      </details>
+      <details>
+        <summary><span class="q">Дано 1 &lt; a &lt; 2 и 4 &lt; b &lt; 5. Оцени a + b и a·b</span><span class="tag">применение</span></summary>
+        <div class="ans"><span class="m">5 &lt; a + b &lt; 7</span>; всё положительно, поэтому <span class="m">4 &lt; a·b &lt; 10</span>.</div>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <div class="next">
+      <h2>Что дальше</h2>
+      <p>Итог одним предложением: неравенства одного знака можно почленно складывать всегда, перемножать — только когда все части положительны, а вычитать и делить почленно нельзя.</p>
+      <div class="eq">системы неравенств</div>
+      <p>Дальше два неравенства будут стоять не рядом, а связкой «и»: нужно найти числа, которые подходят сразу обоим. Оценка выражений — прямая подготовка к этому.</p>
+    </div>
+  </section>
+
+  <p class="foot">Проверка на выходе: сложи 3 &lt; a &lt; 5 и 2 &lt; b &lt; 4 · назови условие для умножения · оцени x − y при 10 &lt; x &lt; 12 и 1 &lt; y &lt; 3.</p>
+
+</div>
+
+<style>
+  .sim{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.1rem 1rem 1rem;margin:1rem 0}
+  .sim canvas{width:100%;height:auto;display:block;border-radius:10px;background:#FCFDFF}
+  .sliders{display:grid;gap:.55rem;margin-top:.9rem}
+  @media(min-width:560px){.sliders{grid-template-columns:repeat(2,1fr);column-gap:1rem}}
+  .sliders label{display:flex;align-items:center;gap:.45rem;font-weight:700;font-family:ui-monospace,Menlo,monospace;font-size:.92rem}
+  .sliders input[type=range]{flex:1;min-width:0;accent-color:var(--accent)}
+  .sliders input[type=range]:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+  .sliders .sval{min-width:3.2ch;text-align:right;color:var(--accent);font-variant-numeric:tabular-nums}
+  .outs{display:grid;gap:.5rem;margin-top:1rem}
+  .out{display:flex;flex-wrap:wrap;align-items:baseline;gap:.5rem;padding:.55rem .8rem;border-radius:10px;font-family:ui-monospace,Menlo,monospace}
+  .out .ol{font-weight:800;font-size:.9rem;min-width:5.5ch}
+  .out .ov{font-weight:700;font-size:1rem}
+  .out .oh{font-size:.78rem;opacity:.85;flex-basis:100%;font-family:system-ui,sans-serif}
+  .out.pos{background:var(--pos-bg);color:var(--pos)}
+  .out.neg{background:var(--neg-bg);color:var(--neg)}
+  .out.zero{background:var(--zero-bg);color:var(--zero)}
+  .corners{margin-top:1rem}
+  .corners .cap{font-size:.88rem;color:var(--muted);margin:.2rem 0 .3rem}
+</style>
+
+<script>
+(function(){
+  var cv=document.getElementById('nline'); if(!cv) return;
+  var ctx=cv.getContext('2d');
+  var S={al:document.getElementById('sal'),ar:document.getElementById('sar'),bl:document.getElementById('sbl'),br:document.getElementById('sbr')};
+  var V={al:document.getElementById('val'),ar:document.getElementById('var'),bl:document.getElementById('vbl'),br:document.getElementById('vbr')};
+  var W=640,H=250,dpr=1;
+
+  function mn(n){ return (n<0?'−':'')+Math.abs(n); }
+  function css(v){ return getComputedStyle(document.documentElement).getPropertyValue(v).trim()||'#3B4FD0'; }
+
+  function ext(f,A,B){
+    var v=[f(A[0],B[0]),f(A[0],B[1]),f(A[1],B[0]),f(A[1],B[1])];
+    return [Math.min.apply(null,v),Math.max.apply(null,v)];
+  }
+
+  function resize(){
+    var w=cv.clientWidth||640; dpr=Math.min(window.devicePixelRatio||1,2);
+    W=w; H=Math.max(210,Math.min(260,Math.round(w*0.46)));
+    cv.width=W*dpr; cv.height=H*dpr; cv.style.height=H+'px';
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+  }
+
+  function niceStep(raw){
+    var p=Math.pow(10,Math.floor(Math.log(raw)/Math.LN10));
+    var n=raw/p;
+    var m = n<1.5?1 : n<3?2 : n<7?5 : 10;
+    return m*p;
+  }
+
+  function draw(){
+    var al=parseInt(S.al.value,10), ar=parseInt(S.ar.value,10);
+    var bl=parseInt(S.bl.value,10), br=parseInt(S.br.value,10);
+    if(al>=ar){ if(this===S.al){ ar=Math.min(10,al+1); S.ar.value=ar; if(al>=ar){ al=ar-1; S.al.value=al; } }
+                else { al=Math.max(-10,ar-1); S.al.value=al; if(al>=ar){ ar=al+1; S.ar.value=ar; } } }
+    if(bl>=br){ if(this===S.bl){ br=Math.min(10,bl+1); S.br.value=br; if(bl>=br){ bl=br-1; S.bl.value=bl; } }
+                else { bl=Math.max(-10,br-1); S.bl.value=bl; if(bl>=br){ br=bl+1; S.br.value=br; } } }
+    V.al.textContent=mn(al); V.ar.textContent=mn(ar); V.bl.textContent=mn(bl); V.br.textContent=mn(br);
+
+    var A=[al,ar], B=[bl,br];
+    var sum=ext(function(x,y){return x+y;},A,B);
+    var dif=ext(function(x,y){return x-y;},A,B);
+    var mul=ext(function(x,y){return x*y;},A,B);
+
+    var rows=[
+      {t:'a',      lo:al,     hi:ar,     c:css('--accent'), h:''},
+      {t:'b',      lo:bl,     hi:br,     c:css('--muted'),  h:''},
+      {t:'a + b',  lo:sum[0], hi:sum[1], c:css('--pos'),    h:mn(al)+' + '+mn(bl)+'   и   '+mn(ar)+' + '+mn(br)},
+      {t:'a − b',  lo:dif[0], hi:dif[1], c:css('--neg'),    h:mn(al)+' − '+mn(br)+'   и   '+mn(ar)+' − '+mn(bl)}
+    ];
+
+    var lo=Infinity, hi=-Infinity;
+    rows.forEach(function(r){ if(r.lo<lo)lo=r.lo; if(r.hi>hi)hi=r.hi; });
+    var pad=Math.max(1,(hi-lo)*0.1); lo-=pad; hi+=pad;
+    if(hi-lo<1){ hi+=0.5; lo-=0.5; }
+
+    var L=46, R=14, TOP=14, AX=H-24;
+    function X(v){ return L+(v-lo)/(hi-lo)*(W-L-R); }
+
+    ctx.clearRect(0,0,W,H);
+
+    // ось
+    ctx.strokeStyle='#C7CDDA'; ctx.lineWidth=1.5;
+    ctx.beginPath(); ctx.moveTo(L-6,AX); ctx.lineTo(W-4,AX); ctx.stroke();
+    var step=niceStep((hi-lo)/6);
+    ctx.fillStyle='#8A93A6'; ctx.font='11px system-ui,sans-serif'; ctx.textAlign='center';
+    var t0=Math.ceil(lo/step)*step;
+    for(var t=t0;t<=hi+1e-9;t+=step){
+      var x=X(t);
+      ctx.strokeStyle='#E7EAF1'; ctx.lineWidth=1;
+      ctx.beginPath(); ctx.moveTo(x,TOP); ctx.lineTo(x,AX); ctx.stroke();
+      ctx.strokeStyle='#C7CDDA';
+      ctx.beginPath(); ctx.moveTo(x,AX); ctx.lineTo(x,AX+4); ctx.stroke();
+      ctx.fillText(mn(Math.round(t*100)/100),x,AX+16);
+    }
+    // ноль
+    if(lo<0&&hi>0){ ctx.strokeStyle='#AAB2C2'; ctx.lineWidth=1.5; ctx.beginPath(); ctx.moveTo(X(0),TOP); ctx.lineTo(X(0),AX); ctx.stroke(); }
+
+    var gap=(AX-TOP-8)/rows.length;
+    rows.forEach(function(r,i){
+      var y=TOP+gap*i+gap/2;
+      ctx.fillStyle=r.c; ctx.font='bold 12px ui-monospace,Menlo,monospace'; ctx.textAlign='left';
+      ctx.fillText(r.t,4,y+4);
+      var x1=X(r.lo), x2=X(r.hi);
+      ctx.strokeStyle=r.c; ctx.lineWidth=7; ctx.lineCap='round';
+      ctx.beginPath(); ctx.moveTo(x1,y); ctx.lineTo(x2,y); ctx.stroke();
+      ctx.fillStyle='#fff';
+      [x1,x2].forEach(function(x){ ctx.beginPath(); ctx.arc(x,y,2.2,0,7); ctx.fill(); });
+      ctx.fillStyle=r.c; ctx.font='11px ui-monospace,Menlo,monospace';
+      if(x2-x1>62){
+        ctx.textAlign='left';  ctx.fillText(mn(r.lo),x1-2,y-9);
+        ctx.textAlign='right'; ctx.fillText(mn(r.hi),x2+2,y-9);
+      } else {
+        ctx.textAlign='center'; ctx.fillText(mn(r.lo)+'…'+mn(r.hi),(x1+x2)/2,y-9);
+      }
+    });
+
+    document.getElementById('oSum').innerHTML=mn(sum[0])+' &lt; a + b &lt; '+mn(sum[1]);
+    document.getElementById('oDif').innerHTML=mn(dif[0])+' &lt; a − b &lt; '+mn(dif[1]);
+    document.getElementById('oMul').innerHTML=mn(mul[0])+' &lt; a · b &lt; '+mn(mul[1]);
+    document.getElementById('hSum').textContent='нижняя = '+mn(al)+' + '+mn(bl)+', верхняя = '+mn(ar)+' + '+mn(br)+' — нижняя с нижней, верхняя с верхней';
+    document.getElementById('hDif').textContent='нижняя = '+mn(al)+' − '+mn(br)+', верхняя = '+mn(ar)+' − '+mn(bl)+' — границы b идут крест-накрест';
+
+    var pos = al>0&&ar>0&&bl>0&&br>0;
+    document.getElementById('hMul').textContent = pos
+      ? 'все границы положительны — правило работает: нижняя = '+mn(al)+'·'+mn(bl)+', верхняя = '+mn(ar)+'·'+mn(br)
+      : 'среди границ есть неположительные — почленно перемножать нельзя, границы берём перебором из таблицы';
+    document.getElementById('mulNote').textContent = pos
+      ? 'Всё положительно: наименьшее в левом верхнем углу, наибольшее — в правом нижнем.'
+      : 'Правило «нижняя × нижняя» здесь не действует: наименьшее и наибольшее могут оказаться в любых углах.';
+
+    document.getElementById('caL').textContent='a = '+mn(al);
+    document.getElementById('caR').textContent='a = '+mn(ar);
+    document.getElementById('cbL').textContent='b = '+mn(bl);
+    document.getElementById('cbR').textContent='b = '+mn(br);
+    var ids=['c11','c12','c21','c22'], vals=[al*bl,al*br,ar*bl,ar*br];
+    ids.forEach(function(id,k){
+      var el=document.getElementById(id);
+      el.textContent=mn(vals[k]);
+      el.className = vals[k]===mul[0] ? 'lo' : (vals[k]===mul[1] ? 'hi' : '');
+    });
+  }
+
+  Object.keys(S).forEach(function(k){ S[k].addEventListener('input',draw); });
+  window.addEventListener('resize',function(){ resize(); draw(); });
+  resize(); draw();
+})();
+</script>
+
+<style>
+  .trainer{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.2rem 1.1rem;margin-top:1rem}
+  .tr-eq{font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:clamp(.98rem,3.6vw,1.15rem);line-height:1.6;text-align:center;padding:1rem .8rem;background:var(--accent-soft);border-radius:10px;color:var(--ink)}
+  .tr-eq b{display:block;font-size:1.1em;margin-top:.4rem;color:var(--accent)}
+  .tr-ctl{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.9rem;align-items:center}
+  .tr-ctl button{font:inherit;font-weight:700;font-size:.9rem;cursor:pointer;border:none;border-radius:9px;padding:.55rem .95rem;color:#fff;background:var(--accent)}
+  .tr-ctl button.sec{background:var(--pos)}
+  .tr-ctl button.ghost{background:transparent;color:var(--accent);border:1px solid var(--accent)}
+  .tr-ctl input{flex:1;min-width:150px;font:inherit;padding:.5rem .7rem;border:1px solid var(--line);border-radius:9px;background:#fff;color:var(--ink)}
+  .tr-ctl button:focus-visible,.tr-ctl input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+  .tr-result{margin-top:.9rem;font-size:.96rem;min-height:1.2rem}
+  .tr-result .ok{color:var(--pos);font-weight:700}
+  .tr-result .bad{color:var(--neg);font-weight:700}
+  .tr-result .sol{margin-top:.7rem;padding:.85rem 1rem;background:#FCFBFE;border:1px solid var(--line);border-radius:10px;font-family:ui-monospace,Menlo,monospace;font-size:.88rem;line-height:1.8;overflow-x:auto}
+  .tr-result .sol b{color:var(--accent)}
+</style>
+
+<script>
+var TRN=(function(){
+  function ri(a,b){ return Math.floor(Math.random()*(b-a+1))+a; }
+  function mn(n){ return (n<0?'−':'')+Math.abs(n); }
+  function iv(lo,name,hi){ return mn(lo)+' &lt; '+name+' &lt; '+mn(hi); }
+  function ext(f,A,B){
+    var v=[f(A[0],B[0]),f(A[0],B[1]),f(A[1],B[0]),f(A[1],B[1])];
+    return [Math.min.apply(null,v),Math.max.apply(null,v)];
+  }
+  var TYPES=['sum','dif','mul','per','area','inv'];
+
+  function span(lo,hi,w){ var a=ri(lo,hi); return [a,a+ri(1,w)]; }
+
+  function makeTask(type){
+    if(!type) type=TYPES[ri(0,TYPES.length-1)];
+    var t={type:type};
+    if(type==='sum'||type==='dif'){ t.A=span(-9,7,5); t.B=span(-9,7,5); }
+    else if(type==='mul'){
+      if(Math.random()<0.65){ t.A=span(1,8,5); t.B=span(1,8,5); }
+      else { t.A=span(-9,3,6); t.B=span(-9,6,5); }
+    }
+    else if(type==='per'||type==='area'){ t.A=span(1,9,4); t.B=span(1,9,4); }
+    else { t.A=span(2,12,8); t.B=span(-4,6,4); }   // inv: A — границы суммы a+b, B — границы b
+    return t;
+  }
+
+  function fn(type){
+    if(type==='sum') return function(x,y){return x+y;};
+    if(type==='dif') return function(x,y){return x-y;};
+    if(type==='mul'||type==='area') return function(x,y){return x*y;};
+    if(type==='per') return function(x,y){return 2*(x+y);};
+    return function(s,y){return s-y;};            // inv
+  }
+
+  // честный ответ — перебором крайних комбинаций
+  function answer(t){ return ext(fn(t.type),t.A,t.B); }
+
+  function statement(t){
+    var m=t.A[0],M=t.A[1],p=t.B[0],P=t.B[1];
+    if(t.type==='sum') return 'Известно, что '+iv(m,'x',M)+' и '+iv(p,'y',P)+'.<b>Оцени x + y</b>';
+    if(t.type==='dif') return 'Известно, что '+iv(m,'x',M)+' и '+iv(p,'y',P)+'.<b>Оцени x − y</b>';
+    if(t.type==='mul') return 'Известно, что '+iv(m,'x',M)+' и '+iv(p,'y',P)+'.<b>Оцени x · y</b>';
+    if(t.type==='per') return 'Стороны прямоугольника (в см): '+iv(m,'a',M)+' и '+iv(p,'b',P)+'.<b>Оцени периметр P = 2(a + b)</b>';
+    if(t.type==='area') return 'Стороны прямоугольника (в см): '+iv(m,'a',M)+' и '+iv(p,'b',P)+'.<b>Оцени площадь S = a · b</b>';
+    return 'Известно, что '+iv(m,'a + b',M)+' и '+iv(p,'b',P)+'.<b>Между какими числами лежит a?</b>';
+  }
+
+  // решение считает границы «по правилу» — и возвращает их для сверки с перебором
+  function solution(t){
+    var m=t.A[0],M=t.A[1],p=t.B[0],P=t.B[1],lo,hi,h='<div class="sol">';
+    if(t.type==='sum'){
+      lo=m+p; hi=M+P;
+      h+='Знаки одинаковые → неравенства можно почленно сложить.<br>';
+      h+='нижняя: '+mn(m)+' + '+mn(p)+' = <b>'+mn(lo)+'</b><br>';
+      h+='верхняя: '+mn(M)+' + '+mn(P)+' = <b>'+mn(hi)+'</b><br>';
+      h+='Ответ: '+iv(lo,'x + y',hi);
+    } else if(t.type==='dif'){
+      lo=m-P; hi=M-p;
+      h+='Вычитать почленно нельзя. Переворачиваем неравенство для y:<br>';
+      h+='из '+iv(p,'y',P)+' получаем '+iv(-P,'−y',-p)+'<br>';
+      h+='Складываем с неравенством для x:<br>';
+      h+='нижняя: '+mn(m)+' + ('+mn(-P)+') = <b>'+mn(lo)+'</b><br>';
+      h+='верхняя: '+mn(M)+' + ('+mn(-p)+') = <b>'+mn(hi)+'</b><br>';
+      h+='Ответ: '+iv(lo,'x − y',hi);
+    } else if(t.type==='mul'){
+      if(m>0&&M>0&&p>0&&P>0){
+        lo=m*p; hi=M*P;
+        h+='Все четыре границы положительны → перемножать можно.<br>';
+        h+='нижняя: '+mn(m)+' · '+mn(p)+' = <b>'+mn(lo)+'</b><br>';
+        h+='верхняя: '+mn(M)+' · '+mn(P)+' = <b>'+mn(hi)+'</b><br>';
+      } else {
+        var e=ext(function(x,y){return x*y;},t.A,t.B); lo=e[0]; hi=e[1];
+        h+='Среди границ есть неположительные → почленно перемножать НЕЛЬЗЯ.<br>';
+        h+='Перебираем четыре крайних произведения:<br>';
+        h+=mn(m)+'·'+mn(p)+' = '+mn(m*p)+', &nbsp;'+mn(m)+'·'+mn(P)+' = '+mn(m*P)+'<br>';
+        h+=mn(M)+'·'+mn(p)+' = '+mn(M*p)+', &nbsp;'+mn(M)+'·'+mn(P)+' = '+mn(M*P)+'<br>';
+        h+='наименьшее <b>'+mn(lo)+'</b>, наибольшее <b>'+mn(hi)+'</b><br>';
+      }
+      h+='Ответ: '+iv(lo,'x · y',hi);
+    } else if(t.type==='per'){
+      lo=2*(m+p); hi=2*(M+P);
+      h+='Сначала оцениваем сумму сторон: '+iv(m+p,'a + b',M+P)+'<br>';
+      h+='Умножаем на 2 (число положительное, знак не меняется):<br>';
+      h+='нижняя: 2 · '+mn(m+p)+' = <b>'+mn(lo)+'</b>, верхняя: 2 · '+mn(M+P)+' = <b>'+mn(hi)+'</b><br>';
+      h+='Ответ: '+iv(lo,'P',hi)+' (см)';
+    } else if(t.type==='area'){
+      lo=m*p; hi=M*P;
+      h+='Стороны положительны → неравенства можно перемножить.<br>';
+      h+='нижняя: '+mn(m)+' · '+mn(p)+' = <b>'+mn(lo)+'</b><br>';
+      h+='верхняя: '+mn(M)+' · '+mn(P)+' = <b>'+mn(hi)+'</b><br>';
+      h+='Ответ: '+iv(lo,'S',hi)+' (см²)';
+    } else {
+      lo=m-P; hi=M-p;
+      h+='Замечаем: a = (a + b) − b.<br>';
+      h+='Переворачиваем неравенство для b: из '+iv(p,'b',P)+' получаем '+iv(-P,'−b',-p)+'<br>';
+      h+='Складываем с '+iv(m,'a + b',M)+':<br>';
+      h+='нижняя: '+mn(m)+' + ('+mn(-P)+') = <b>'+mn(lo)+'</b><br>';
+      h+='верхняя: '+mn(M)+' + ('+mn(-p)+') = <b>'+mn(hi)+'</b><br>';
+      h+='Ответ: '+iv(lo,'a',hi);
+    }
+    return {lo:lo,hi:hi,html:h+'</div>'};
+  }
+
+  function parse(raw){
+    var s=String(raw).replace(/−/g,'-').replace(/(\d),(\d)/g,'$1.$2');
+    s=s.replace(/[^0-9.\-]+/g,' ');
+    var parts=s.split(/\s+/).filter(function(v){ return v!=='' && v!=='-' && v!=='.'; });
+    var nums=parts.map(function(v){ return parseFloat(v); }).filter(function(v){ return !isNaN(v); });
+    return nums;
+  }
+
+  return {TYPES:TYPES,makeTask:makeTask,answer:answer,statement:statement,solution:solution,parse:parse,mn:mn};
+})();
+</script>
+
+<script>
+(function(){
+  var eqEl=document.getElementById('trEq'), ansEl=document.getElementById('trAns'), resEl=document.getElementById('trResult');
+  if(!eqEl) return;
+  var cur=TRN.makeTask('sum');
+
+  function render(){ eqEl.innerHTML=TRN.statement(cur); resEl.innerHTML=''; ansEl.value=''; }
+
+  function check(){
+    var raw=ansEl.value.trim();
+    if(!raw){ resEl.innerHTML='<span class="bad">Введи две границы, например «5; 9».</span>'; return; }
+    var nums=TRN.parse(raw);
+    if(nums.length!==2){
+      resEl.innerHTML='<span class="bad">Не понял запись. Нужны ровно две границы: «5; 9», «от 5 до 9» или «5&lt;x&lt;9».</span>';
+      return;
+    }
+    var got=[Math.min(nums[0],nums[1]),Math.max(nums[0],nums[1])];
+    var exp=TRN.answer(cur);
+    var ok=Math.abs(got[0]-exp[0])<0.01 && Math.abs(got[1]-exp[1])<0.01;
+    if(ok){ resEl.innerHTML='<span class="ok">✓ Верно! Границы найдены правильно.</span>'+TRN.solution(cur).html; }
+    else{
+      var hint='';
+      if(cur.type==='dif') hint=' Подсказка: разность нельзя вычитать почленно — сначала переверни неравенство для вычитаемого.';
+      else if(cur.type==='inv') hint=' Подсказка: a = (a + b) − b, дальше переворот и сложение.';
+      else if(cur.type==='mul') hint=' Подсказка: проверь, все ли границы положительны.';
+      resEl.innerHTML='<span class="bad">✗ Пока не то.'+hint+'</span>'+TRN.solution(cur).html;
+    }
+  }
+
+  document.getElementById('trNew').addEventListener('click',function(){ cur=TRN.makeTask(); render(); ansEl.focus(); });
+  document.getElementById('trCheck').addEventListener('click',check);
+  document.getElementById('trShow').addEventListener('click',function(){ resEl.innerHTML=TRN.solution(cur).html; });
+  ansEl.addEventListener('keydown',function(e){ if(e.key==='Enter') check(); });
+  render();
+})();
+</script>
+<!--LESSON-NAV-BOT--><nav class="lnav lnav-bot"><a class="prev" href="./alg8-chislovye-neravenstva.html"><span class="dir">← Предыдущая</span><span class="ttl">Числовые неравенства и их свойства</span></a><a class="to-cat" href="./catalog.html">📚 <span>Все темы</span></a><a class="next" href="./alg8-chislovye-promezhutki.html"><span class="dir">Следующая →</span><span class="ttl">Числовые промежутки и их обозначения</span></a></nav><!--/LESSON-NAV-BOT-->

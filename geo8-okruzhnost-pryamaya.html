@@ -1,0 +1,727 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Взаимное расположение прямой и окружности — урок, геометрия 8 класс</title>
+<style>
+  :root{
+    --paper:#F6F7F9;
+    --card:#FFFFFF;
+    --ink:#1B2333;
+    --muted:#5A6478;
+    --line:#E2E5EC;
+    --accent:#3B4FD0;
+    --accent-soft:#EAEDFB;
+    --pos:#1E8E5A;   /* d < R — две точки */
+    --pos-bg:#E7F4EC;
+    --zero:#B9791A;  /* d = R — касание */
+    --zero-bg:#FBF1DC;
+    --neg:#C0455B;   /* d > R — нет точек */
+    --neg-bg:#F9E9EC;
+  }
+  *{box-sizing:border-box}
+  body{margin:0}
+  .wrap{
+    max-width:760px;
+    margin:0 auto;
+    padding:clamp(1.4rem,4vw,3rem) clamp(1.1rem,4vw,2rem) 4rem;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    font-size:17px;
+    line-height:1.62;
+    -webkit-font-smoothing:antialiased;
+  }
+  .eyebrow{
+    font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--accent);font-weight:600;margin:0 0 .5rem;
+  }
+  h1{
+    font-family:Georgia,"Times New Roman",serif;
+    font-size:clamp(1.9rem,6.4vw,2.8rem);
+    line-height:1.06;margin:0;font-weight:700;letter-spacing:-.01em;
+    text-wrap:balance;
+  }
+  .lede{
+    font-size:1.08rem;color:var(--muted);margin:.7rem 0 0;max-width:60ch;
+    text-wrap:pretty;
+  }
+  h2{
+    font-family:Georgia,serif;font-size:1.32rem;font-weight:700;
+    margin:0 0 .1rem;letter-spacing:-.005em;
+  }
+  section{margin-top:2.6rem}
+  .kicker{
+    font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--muted);font-weight:600;margin:0 0 .8rem;
+    display:flex;align-items:center;gap:.6rem;
+  }
+  .kicker::before{
+    content:"";width:1.4rem;height:2px;background:var(--accent);border-radius:2px;
+  }
+  p{margin:.65rem 0}
+  strong{font-weight:650}
+  .math{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-weight:600}
+  sup{font-size:.72em}
+
+  /* Главная формула */
+  .hero-formula{
+    margin-top:2.2rem;
+    background:var(--ink);color:#fff;border-radius:14px;
+    padding:1.6rem 1.4rem;text-align:center;
+  }
+  .hero-formula .lbl{
+    font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;
+    color:#9aa6c9;margin:0 0 .7rem;
+  }
+  .hero-formula .eq{
+    font-family:ui-monospace,"SF Mono",Menlo,monospace;
+    font-size:clamp(1.35rem,5vw,2rem);font-weight:700;letter-spacing:.01em;
+  }
+  .hero-formula .eq b{color:#8ea0ff;font-weight:700}
+  .hero-formula .note{font-size:.86rem;color:#9aa6c9;margin:.8rem 0 0}
+
+  /* Пререквизит */
+  .recall{
+    background:var(--accent-soft);border-radius:12px;padding:1rem 1.15rem;
+    font-size:.96rem;
+  }
+  .recall p{margin:.3rem 0}
+
+  /* Три случая */
+  .cases{display:grid;gap:.85rem;margin-top:.4rem}
+  @media(min-width:620px){.cases{grid-template-columns:repeat(3,1fr)}}
+  .case{
+    border-radius:12px;padding:1.05rem 1.1rem;border:1px solid var(--line);
+    background:var(--card);display:flex;flex-direction:column;gap:.35rem;
+  }
+  .case .sign{font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.15rem}
+  .case .count{font-weight:650;font-size:1rem}
+  .case .desc{font-size:.9rem;color:var(--muted)}
+  .case.pos{border-top:4px solid var(--pos);background:var(--pos-bg)}
+  .case.pos .sign{color:var(--pos)}
+  .case.zero{border-top:4px solid var(--zero);background:var(--zero-bg)}
+  .case.zero .sign{color:var(--zero)}
+  .case.neg{border-top:4px solid var(--neg);background:var(--neg-bg)}
+  .case.neg .sign{color:var(--neg)}
+
+  /* Разбор */
+  .worked{
+    background:var(--card);border:1px solid var(--line);border-radius:12px;
+    padding:1.2rem 1.3rem;
+  }
+  .worked + .worked{margin-top:1rem}
+  .worked .task{
+    font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1rem;
+    margin:0 0 1rem;padding-bottom:.8rem;border-bottom:1px solid var(--line);
+    line-height:1.5;
+  }
+  ol.steps{margin:0;padding:0;list-style:none;counter-reset:s;display:flex;flex-direction:column;gap:.7rem}
+  ol.steps li{
+    position:relative;padding-left:2.1rem;counter-increment:s;
+  }
+  ol.steps li::before{
+    content:counter(s);position:absolute;left:0;top:.05rem;
+    width:1.5rem;height:1.5rem;border-radius:50%;
+    background:var(--accent-soft);color:var(--accent);
+    font-size:.82rem;font-weight:700;display:flex;align-items:center;justify-content:center;
+  }
+  ol.steps .m{font-family:ui-monospace,Menlo,monospace;font-weight:600;color:var(--ink)}
+  .verdict{
+    margin-top:1rem;padding:.7rem 1rem;background:var(--pos-bg);
+    border-radius:9px;font-weight:600;color:var(--pos);font-size:.98rem;
+  }
+  .verdict.zero{background:var(--zero-bg);color:var(--zero)}
+  .verdict.neg{background:var(--neg-bg);color:var(--neg)}
+
+  /* Таблица-критерий */
+  .tbox{overflow-x:auto;margin-top:.9rem;-webkit-overflow-scrolling:touch}
+  table.crit{border-collapse:collapse;width:100%;min-width:340px;background:var(--card);
+    border:1px solid var(--line);border-radius:12px;overflow:hidden;font-size:.95rem}
+  table.crit th,table.crit td{padding:.6rem .8rem;text-align:left;border-bottom:1px solid var(--line)}
+  table.crit th{font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600}
+  table.crit tr:last-child td{border-bottom:none}
+  table.crit td:first-child{font-family:ui-monospace,Menlo,monospace;font-weight:700;white-space:nowrap}
+  table.crit tr.r-pos td:first-child{color:var(--pos)}
+  table.crit tr.r-zero td:first-child{color:var(--zero)}
+  table.crit tr.r-neg td:first-child{color:var(--neg)}
+  table.crit td.n{font-weight:700;text-align:center;width:4rem}
+
+  /* Практика */
+  .drill{display:flex;flex-direction:column;gap:.7rem}
+  details{
+    background:var(--card);border:1px solid var(--line);border-radius:10px;
+    padding:.85rem 1.05rem;
+  }
+  details[open]{border-color:var(--accent)}
+  summary{
+    cursor:pointer;font-weight:600;list-style:none;
+    display:flex;justify-content:space-between;align-items:center;gap:1rem;
+  }
+  summary::-webkit-details-marker{display:none}
+  summary:focus-visible{outline:3px solid var(--accent);outline-offset:3px;border-radius:6px}
+  summary .q{font-size:.97rem}
+  summary .tag{
+    font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);
+    border:1px solid var(--line);border-radius:20px;padding:.1rem .55rem;white-space:nowrap;
+  }
+  summary::after{
+    content:"ответ";font-size:.78rem;color:var(--accent);font-weight:600;white-space:nowrap;
+  }
+  details[open] summary::after{content:"скрыть"}
+  .ans{margin-top:.7rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.96rem;color:var(--muted)}
+  .ans .m{font-family:ui-monospace,Menlo,monospace;color:var(--ink);font-weight:600}
+
+  /* Ошибки */
+  ul.pitfalls{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:.6rem}
+  ul.pitfalls li{
+    padding-left:1.5rem;position:relative;font-size:.98rem;
+  }
+  ul.pitfalls li::before{
+    content:"×";position:absolute;left:0;top:-.05rem;color:var(--neg);font-weight:700;font-size:1.1rem;
+  }
+  ul.pitfalls b{color:var(--ink)}
+
+  .next{
+    background:var(--accent);color:#fff;border-radius:12px;padding:1.2rem 1.3rem;
+  }
+  .next h2{color:#fff}
+  .next .eq{
+    font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.15rem;
+    margin:.6rem 0 .3rem;
+  }
+  .next p{color:#dfe4fb;font-size:.96rem;margin:.4rem 0 0}
+  .next a{color:#fff;font-weight:700}
+  .foot{margin-top:2.4rem;font-size:.82rem;color:var(--muted);text-align:center}
+
+  .selfcheck{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:1.1rem 1.25rem}
+  .selfcheck ol{margin:.3rem 0 0;padding-left:1.2rem}
+  .selfcheck li{margin:.35rem 0}
+
+  @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+<style>
+.oge-tip{display:flex;gap:.8rem;align-items:flex-start;background:#FFF8E7;border:1px solid #F0D98A;border-left:4px solid #E0A315;border-radius:10px;padding:.85rem 1.05rem;margin:1.5rem 0}
+.oge-tip .b{font-size:.72rem;font-weight:800;letter-spacing:.03em;color:#8A6A15;white-space:nowrap;text-transform:uppercase;padding-top:.15rem}
+.oge-tip .x{font-size:.95rem;line-height:1.5}
+</style>
+
+<!--LESSON-NAV-TOP--><style>.lnav{--lnav-accent:#3D5AF1}.lnav a{text-decoration:none;font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif}.lnav-top{max-width:820px;margin:0 auto;padding:.75rem clamp(1rem,4vw,1.5rem) .1rem}.lnav-top a{display:inline-flex;align-items:center;gap:.35rem;color:var(--lnav-accent);font-weight:600;font-size:.9rem}.lnav-top a:hover{text-decoration:underline}.lnav-bot{max-width:820px;margin:2.6rem auto 3rem;padding:1.1rem clamp(1rem,4vw,1.5rem) 0;border-top:1px solid #E4E8EF;display:flex;align-items:stretch;gap:.55rem}.lnav-bot a{min-width:0;display:flex;flex-direction:column;justify-content:center;gap:.15rem;border:1px solid #E4E8EF;border-radius:12px;padding:.65rem .85rem;color:#182233;background:#fff;transition:border-color .1s,transform .08s}.lnav-bot a:hover{border-color:var(--lnav-accent);transform:translateY(-1px)}.lnav-bot .prev,.lnav-bot .next{flex:1 1 0}.lnav-bot .next{text-align:right}.lnav-bot .dir{font-size:.72rem;color:#8A93A6;font-weight:600}.lnav-bot .ttl{font-size:.9rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.lnav-bot .to-cat{flex:0 0 auto;flex-direction:row;align-items:center;justify-content:center;color:var(--lnav-accent);font-weight:700;font-size:.85rem;white-space:nowrap}@media(max-width:420px){.lnav-bot .to-cat span{display:none}.lnav-bot .to-cat{padding:.65rem .7rem}}</style><nav class="lnav lnav-top"><a href="./catalog.html">← Все темы</a></nav><!--/LESSON-NAV-TOP-->
+<div class="wrap">
+
+  <header>
+    <p class="eyebrow">Геометрия · 8 класс</p>
+    <h1>Прямая и окружность: сколько общих точек</h1>
+    <p class="lede">Чтобы узнать ответ, нужно всего одно число — расстояние от центра до прямой. Сравнил его с радиусом — и всё ясно, <em>даже не рисуя чертёж.</em></p>
+  </header>
+
+  <div class="hero-formula">
+    <p class="lbl">Весь критерий в одной строке</p>
+    <div class="eq"><b>d</b> &lt; R → 2 &nbsp;·&nbsp; <b>d</b> = R → 1 &nbsp;·&nbsp; <b>d</b> &gt; R → 0</div>
+    <p class="note">R — радиус окружности, d — расстояние от центра до прямой (длина перпендикуляра)</p>
+  </div>
+
+  <section>
+    <p class="kicker">Зачем это нужно</p>
+    <h2>Корабль и опасная зона</h2>
+    <p>Вокруг маяка есть опасная зона — круг радиуса 3 км. Корабль идёт по прямому курсу. Войдёт он в зону или пройдёт мимо?</p>
+    <p>Ответ зависит только от одного: <strong>насколько близко курс подходит к маяку</strong>. Та же идея работает у спутника, пролетающего над зоной видимости, у дороги, огибающей круглое озеро, у луча света, скользящего по краю линзы.</p>
+    <p>И сразу разрушим главный миф: <em>«раз прямая бесконечная, она обязательно пересечёт круг»</em>. Не обязательно! Прямая может пройти совсем рядом и не задеть окружность. Всё решает расстояние от центра до прямой, а не длина прямой — продлевай её хоть до края Вселенной, ближе к центру она от этого не станет.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Что вспомнить с прошлых тем</p>
+    <div class="recall">
+      <p><strong>Расстояние от точки до прямой</strong> — это длина <em>перпендикуляра</em>, опущенного из точки на прямую. Самый короткий путь. Любой наклонный отрезок будет длиннее.</p>
+      <p><strong>Окружность радиуса R</strong> — это все точки, удалённые от центра O ровно на R. Не больше и не меньше.</p>
+      <p><strong>Прямоугольный треугольник и теорема Пифагора:</strong> в треугольнике с прямым углом квадрат гипотенузы равен сумме квадратов катетов. Пригодится в конце — когда будем считать длину куска прямой внутри круга.</p>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Ядро темы</p>
+    <h2>Три случая — и больше никаких</h2>
+    <p>Возьми окружность с центром <span class="math">O</span> и радиусом <span class="math">R</span> и любую прямую. Опусти из <span class="math">O</span> перпендикуляр на прямую и обозначь его длину <span class="math">d</span>. Всё, дальше только сравнение двух чисел:</p>
+    <div class="cases">
+      <div class="case pos">
+        <div class="sign">d &lt; R</div>
+        <div class="count">2 общие точки</div>
+        <div class="desc">Прямая подошла ближе радиуса — «врезалась» внутрь. Такая прямая называется <b>секущей</b>.</div>
+      </div>
+      <div class="case zero">
+        <div class="sign">d = R</div>
+        <div class="count">1 общая точка</div>
+        <div class="desc">Прямая ровно на краю — только задевает окружность. Это <b>касательная</b>.</div>
+      </div>
+      <div class="case neg">
+        <div class="sign">d &gt; R</div>
+        <div class="count">0 общих точек</div>
+        <div class="desc">Прямая дальше, чем радиус — проходит мимо, не пересекаются.</div>
+      </div>
+    </div>
+
+    <div class="tbox">
+      <table class="crit">
+        <tr><th>Соотношение</th><th>Как называется прямая</th><th>Точек</th></tr>
+        <tr class="r-pos"><td>d &lt; R</td><td>секущая</td><td class="n">2</td></tr>
+        <tr class="r-zero"><td>d = R</td><td>касательная</td><td class="n">1</td></tr>
+        <tr class="r-neg"><td>d &gt; R</td><td>не пересекаются</td><td class="n">0</td></tr>
+      </table>
+    </div>
+
+    <p><strong>Почему так?</strong> Окружность — это точки на расстоянии ровно <span class="math">R</span> от центра. Чем ближе прямая к центру, тем «глубже» она заходит в круг. Сравнение <span class="math">d</span> с <span class="math">R</span> и говорит, дотянулась прямая до окружности или нет.</p>
+    <p style="font-size:.92rem;color:var(--muted)">Обозначения: <span class="math">R &gt; 0</span>, <span class="math">d ≥ 0</span> (если прямая проходит через центр, то <span class="math">d = 0</span> — это тоже секущая). Единицы у <span class="math">d</span> и <span class="math">R</span> обязаны быть одинаковыми: сравнивать сантиметры с метрами нельзя.</p>
+
+    <div class="oge-tip"><div class="b">🎯 В ОГЭ</div><div class="x"><b>Задание 16.</b> Сравнение расстояния от центра с радиусом сразу говорит, сколько общих точек: две, одна или ни одной — а касание даёт прямой угол.</div></div>
+  </section>
+
+  <section>
+    <p class="kicker">Покрути сам · интерактив</p>
+    <h2>Двигай прямую и следи за точками</h2>
+    <p>Меняй радиус <span class="math">R</span> и расстояние <span class="math">d</span> — прямая честно переезжает, а точки пересечения считаются по формуле, а не «на глазок». Сначала <strong>предскажи</strong>, сколько будет точек, потом проверь.</p>
+    <div class="sim">
+      <canvas id="cvs" width="640" height="520" aria-label="Окружность и прямая: интерактивный чертёж"></canvas>
+      <div id="simVerdict" class="sim-verdict">d = 3 &lt; R = 5 · две точки (секущая)</div>
+      <div class="sliders">
+        <label>R <span id="vR" class="sval">5</span><input id="sR" type="range" min="1" max="6" step="0.5" value="5" aria-label="Радиус"></label>
+        <label>d <span id="vd" class="sval">3</span><input id="sd" type="range" min="0" max="8" step="0.5" value="3" aria-label="Расстояние от центра до прямой"></label>
+      </div>
+      <p class="sim-note" id="simNote"></p>
+    </div>
+    <p style="font-size:.9rem;color:var(--muted)">Поймай момент, когда две точки сливаются в одну — это и есть <span class="math">d = R</span>, граница между «две» и «ни одной». Обрати внимание: перпендикуляр из центра всегда попадает ровно в <em>середину</em> отрезка между точками пересечения.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Разбираю вслух</p>
+    <h2>Эталонные примеры</h2>
+
+    <div class="worked">
+      <p class="task">Радиус окружности R = 5 см, расстояние от центра до прямой d = 3 см. Как расположены прямая и окружность?</p>
+      <ol class="steps">
+        <li>Выписываю данные: <span class="m">R = 5, d = 3</span>. <em>Почему:</em> критерий работает через сравнение именно этих двух чисел, больше ничего не нужно.</li>
+        <li>Сравниваю: <span class="m">3 &lt; 5</span>, то есть <span class="m">d &lt; R</span>. <em>Почему:</em> проверяю, ближе прямая к центру, чем радиус, или дальше.</li>
+        <li>Смотрю по таблице: случай <span class="m">d &lt; R</span> — это секущая. <em>Почему:</em> прямая зашла внутрь круга, а значит, вошла и вышла — две точки.</li>
+      </ol>
+      <div class="verdict">Ответ: прямая — секущая, 2 общие точки.</div>
+    </div>
+
+    <div class="worked">
+      <p class="task">Та же окружность (R = 5), d = 3. Найди длину отрезка прямой внутри круга — хорды.</p>
+      <ol class="steps">
+        <li>Рисую перпендикуляр <span class="m">OH</span> из центра на прямую: <span class="m">OH = d = 3</span>, точка H — его основание. Обозначаю точки пересечения A и B.</li>
+        <li>Соединяю центр с точкой A: <span class="m">OA = R = 5</span>, ведь A лежит на окружности. Получился треугольник <span class="m">OHA</span> с прямым углом при H.</li>
+        <li>Теорема Пифагора: <span class="m">AH² = OA² − OH² = 5² − 3² = 25 − 9 = 16</span>, значит <span class="m">AH = 4</span>. <em>Почему:</em> AH — катет, OA — гипотенуза.</li>
+        <li>Перпендикуляр из центра делит хорду пополам, поэтому <span class="m">AB = 2 · AH = 2 · 4 = 8</span>.</li>
+      </ol>
+      <div class="verdict">Ответ: хорда равна 8 см. Общая формула: половина хорды = √(R² − d²).</div>
+    </div>
+
+    <div class="worked">
+      <p class="task">Радиус окружности 6 см. Прямая проходит на расстоянии 7 см от центра. Сколько общих точек?</p>
+      <ol class="steps">
+        <li>Данные: <span class="m">R = 6, d = 7</span>.</li>
+        <li>Сравниваю: <span class="m">7 &gt; 6</span>, то есть <span class="m">d &gt; R</span>.</li>
+        <li>Прямая держится дальше, чем радиус — до окружности не дотягивается ни в одной точке.</li>
+      </ol>
+      <div class="verdict neg">Ответ: не пересекаются, 0 общих точек.</div>
+    </div>
+
+    <div class="worked">
+      <p class="task">Прямая была секущей: d = 2 см при R = 5 см. Её начали отодвигать от центра. При каком d она станет касательной?</p>
+      <ol class="steps">
+        <li>Касательная — это ровно случай <span class="m">d = R</span>. <em>Почему:</em> одна общая точка бывает только на границе.</li>
+        <li>Радиус при отодвигании прямой не меняется: <span class="m">R = 5</span>.</li>
+        <li>Значит, момент касания наступит при <span class="m">d = 5</span> см. Дальше (<span class="m">d &gt; 5</span>) точек уже не будет.</li>
+      </ol>
+      <div class="verdict zero">Ответ: при d = 5 см. Порядок при отодвигании всегда такой: 2 точки → 1 → 0.</div>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Тренажёр · бесконечная практика</p>
+    <h2>Реши сам — задачи не кончатся</h2>
+    <p>Нажимай «Новая задача». Числовые ответы вводи цифрами (единицы писать не обязательно), а где нужно выбрать число точек — жми кнопку. Не получилось — открой пошаговое решение.</p>
+    <div class="trainer">
+      <div class="tr-q" id="trQ">Загрузка…</div>
+      <div id="trBtns" class="tr-btns" hidden>
+        <button type="button" data-n="0">0 точек</button>
+        <button type="button" data-n="1">1 точка</button>
+        <button type="button" data-n="2">2 точки</button>
+      </div>
+      <div class="tr-ctl">
+        <button id="trNew" type="button">🎲 Новая задача</button>
+        <span id="trInp" class="tr-inp">
+          <input id="trAns" type="text" inputmode="text" placeholder="ответ числом" aria-label="Ответ">
+          <button id="trCheck" type="button" class="sec">Проверить</button>
+        </span>
+        <button id="trShow" type="button" class="ghost">Показать решение</button>
+      </div>
+      <div id="trResult" class="tr-result"></div>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Теперь ты · нажми, чтобы проверить</p>
+    <h2>Мини-практика</h2>
+    <div class="drill">
+      <details>
+        <summary><span class="q">Назови все три случая и число общих точек в каждом.</span><span class="tag">понимание</span></summary>
+        <div class="ans"><span class="m">d &lt; R</span> — секущая, 2 точки; <span class="m">d = R</span> — касательная, 1 точка; <span class="m">d &gt; R</span> — не пересекаются, 0 точек.</div>
+      </details>
+      <details>
+        <summary><span class="q">R = 10 см, d = 10 см. Расположение и число точек?</span><span class="tag">применение</span></summary>
+        <div class="ans"><span class="m">10 = 10</span>, то есть <span class="m">d = R</span> → <strong>касательная, 1 общая точка.</strong></div>
+      </details>
+      <details>
+        <summary><span class="q">R = 13 см, d = 5 см. Найди длину хорды.</span><span class="tag">применение</span></summary>
+        <div class="ans">Половина хорды <span class="m">= √(13² − 5²) = √(169 − 25) = √144 = 12</span>. Вся хорда <span class="m">= 2 · 12 = 24</span> см.</div>
+      </details>
+      <details>
+        <summary><span class="q">Известно, что прямая — касательная к окружности радиуса 8 см. Чему равно d?</span><span class="tag">применение</span></summary>
+        <div class="ans">Касательная ⇔ <span class="m">d = R</span>, поэтому <span class="m">d = 8</span> см.</div>
+      </details>
+      <details>
+        <summary><span class="q">Найди ошибку: «d = 4 см, R = 4 см, значит d &lt; R, прямая секущая».</span><span class="tag">анализ</span></summary>
+        <div class="ans">Ошибка в сравнении: 4 <em>не меньше</em> 4, здесь <span class="m">d = R</span>. Верный вывод — <strong>касательная, 1 общая точка</strong>, а не секущая.</div>
+      </details>
+      <details>
+        <summary><span class="q">Что произойдёт с числом точек, если прямую медленно приближать к центру?</span><span class="tag">анализ</span></summary>
+        <div class="ans">Сначала точек нет (<span class="m">d &gt; R</span>), в момент <span class="m">d = R</span> появляется одна — касание, дальше (<span class="m">d &lt; R</span>) их две, и хорда становится всё длиннее. Самая длинная хорда — при <span class="m">d = 0</span>: это диаметр, <span class="m">2R</span>.</div>
+      </details>
+      <details>
+        <summary><span class="q">Прямая пересекает окружность радиуса 25 по хорде 48. Что изменится, если хорду увеличить?</span><span class="tag">анализ</span></summary>
+        <div class="ans">Сейчас <span class="m">d = √(25² − 24²) = √(625 − 576) = √49 = 7</span>. Если хорда длиннее, половина хорды больше, значит <span class="m">√(R² − d²)</span> больше, а <span class="m">d</span> — <strong>меньше</strong>: прямая подошла ближе к центру.</div>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Где чаще всего ошибаются</p>
+    <h2>Лови эти ловушки</h2>
+    <ul class="pitfalls">
+      <li><b>Путают d с радиусом.</b> Подставляют вместо d длину какого-то наклонного отрезка от центра до прямой. <em>Лечится так:</em> d — это только перпендикуляр, самый короткий отрезок от O до прямой. Всегда отмечай прямой угол на чертеже.</li>
+      <li><b>Меряют расстояние не по перпендикуляру.</b> Берут расстояние до случайной точки прямой. <em>Лечится так:</em> кратчайшее расстояние от точки до прямой всегда даёт перпендикуляр — других вариантов для d не бывает.</li>
+      <li><b>Не различают случаи.</b> Получив d и R, забывают, какой знак к чему ведёт. <em>Лечится так:</em> запомни логику «ближе центра (d &lt; R) — врезается, значит 2 точки», остальное восстановишь.</li>
+      <li><b>Считают, что бесконечная прямая обязана пересечь круг.</b> <em>Лечится так:</em> при d &gt; R прямая проходит мимо, сколько бы её ни продлевали — она не приближается к центру.</li>
+      <li><b>Сравнивают разные единицы.</b> d в сантиметрах, R в метрах — и сравнивают голые числа. <em>Лечится так:</em> сначала приведи к одним единицам, потом сравнивай.</li>
+      <li><b>В задаче на хорду забывают удвоить.</b> <span class="math">√(R² − d²)</span> — это только <em>половина</em> хорды, ведь перпендикуляр делит её пополам. Вся хорда вдвое больше.</li>
+    </ul>
+  </section>
+
+  <section>
+    <p class="kicker">Объясни своими словами</p>
+    <h2>Проверка понимания</h2>
+    <div class="selfcheck">
+      <ol>
+        <li>Какое <em>одно</em> число надо сравнить с радиусом, чтобы определить расположение прямой и окружности?</li>
+        <li>При каком соотношении d и R прямая является касательной?</li>
+        <li>Если d = 9 см и R = 9 см — сколько общих точек?</li>
+        <li>Почему длина прямой никак не влияет на ответ?</li>
+      </ol>
+    </div>
+  </section>
+
+  <section>
+    <div class="next">
+      <h2>Что дальше</h2>
+      <p>Ты научился отличать три случая. Самый интересный из них — пограничный, <span class="math">d = R</span>:</p>
+      <div class="eq">d = R → касательная</div>
+      <p>В следующей теме — <a href="./geo8-kasatelnaya.html">касательная к окружности</a> — разбираемся, чем эта единственная точка так хороша: там радиус в точке касания перпендикулярен прямой, и на этом строится половина задач ОГЭ про окружность.</p>
+    </div>
+  </section>
+
+  <p class="foot">Проверка на выходе: назови три случая по памяти · чему равно d у касательной · как найти хорду, зная R и d.</p>
+
+</div>
+
+<style>
+  .sim{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.1rem 1.1rem 1rem;margin:1rem 0}
+  .sim canvas{width:100%;height:auto;display:block;border-radius:10px;background:#FCFDFF}
+  .sim-verdict{text-align:center;font-weight:700;font-size:clamp(.92rem,3.4vw,1.05rem);margin:.8rem 0 0;padding:.55rem .5rem;border-radius:9px;font-family:ui-monospace,Menlo,monospace}
+  .sim-verdict.pos{background:var(--pos-bg);color:var(--pos)}
+  .sim-verdict.zero{background:var(--zero-bg);color:var(--zero)}
+  .sim-verdict.neg{background:var(--neg-bg);color:var(--neg)}
+  .sliders{display:grid;gap:.6rem;margin-top:.9rem}
+  @media(min-width:520px){.sliders{grid-template-columns:repeat(2,1fr)}}
+  .sliders label{display:flex;align-items:center;gap:.5rem;font-weight:700;font-family:ui-monospace,Menlo,monospace}
+  .sliders input[type=range]{flex:1;min-width:0;accent-color:var(--accent)}
+  .sliders input[type=range]:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+  .sliders .sval{min-width:3ch;text-align:right;color:var(--accent);font-variant-numeric:tabular-nums}
+  .sim-note{text-align:center;font-family:ui-monospace,Menlo,monospace;font-size:.88rem;margin:.8rem 0 0;color:var(--muted);min-height:1.2em}
+  .sim-note b{color:var(--ink)}
+</style>
+
+<script>
+(function(){
+  var canvas=document.getElementById('cvs'); if(!canvas) return;
+  var ctx=canvas.getContext('2d');
+  var sR=document.getElementById('sR'), sd=document.getElementById('sd');
+  var vR=document.getElementById('vR'), vd=document.getElementById('vd');
+  var verdict=document.getElementById('simVerdict'), note=document.getElementById('simNote');
+  var W=640,H=520,dpr=1;
+  var UX=14, UY=15.5; /* сколько единиц влезает по ширине и высоте */
+
+  function num(n){ n=Math.round(n*100)/100; return String(n).replace('-','−'); }
+  function css(v){ return getComputedStyle(document.documentElement).getPropertyValue(v).trim()||'#3B4FD0'; }
+
+  function resize(){
+    var cssW=canvas.clientWidth||640;
+    dpr=Math.min(window.devicePixelRatio||1,2);
+    W=cssW; H=Math.round(cssW*1.05);
+    canvas.width=Math.round(W*dpr); canvas.height=Math.round(H*dpr);
+    canvas.style.height=H+'px';
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+  }
+
+  function draw(){
+    var R=parseFloat(sR.value), d=parseFloat(sd.value);
+    vR.textContent=num(R); vd.textContent=num(d);
+
+    var s=Math.min(W/UX, H/UY);              /* пикселей на единицу */
+    var ox=W/2, oy=(H - s*UY)/2 + s*6.6;     /* центр окружности */
+    var ly=oy + d*s;                          /* прямая (горизонталь) */
+
+    ctx.clearRect(0,0,W,H);
+
+    var eps=1e-9, col, state;
+    if(d < R-eps){ col=css('--pos'); state='pos'; }
+    else if(d > R+eps){ col=css('--neg'); state='neg'; }
+    else { col=css('--zero'); state='zero'; }
+
+    /* окружность */
+    ctx.strokeStyle=col; ctx.lineWidth=3;
+    ctx.beginPath(); ctx.arc(ox,oy,R*s,0,Math.PI*2); ctx.stroke();
+
+    /* прямая */
+    ctx.strokeStyle='#3B4FD0'; ctx.lineWidth=2.5;
+    ctx.beginPath(); ctx.moveTo(6,ly); ctx.lineTo(W-6,ly); ctx.stroke();
+
+    /* точки пересечения */
+    var half = (R*R - d*d);
+    half = half > 0 ? Math.sqrt(half) : 0;
+
+    if(state==='pos'){
+      /* хорда */
+      ctx.strokeStyle=col; ctx.lineWidth=6; ctx.lineCap='round';
+      ctx.beginPath(); ctx.moveTo(ox-half*s,ly); ctx.lineTo(ox+half*s,ly); ctx.stroke();
+      ctx.lineCap='butt';
+      /* радиус к правой точке */
+      ctx.strokeStyle='#9AA3B2'; ctx.lineWidth=1.6; ctx.setLineDash([5,4]);
+      ctx.beginPath(); ctx.moveTo(ox,oy); ctx.lineTo(ox+half*s,ly); ctx.stroke();
+      ctx.setLineDash([]);
+    }
+
+    /* перпендикуляр из центра */
+    ctx.strokeStyle='#1B2333'; ctx.lineWidth=2;
+    ctx.beginPath(); ctx.moveTo(ox,oy); ctx.lineTo(ox,ly); ctx.stroke();
+
+    /* прямой угол в основании */
+    if(d>0.01){
+      var q=Math.min(11, s*0.55);
+      ctx.strokeStyle='#1B2333'; ctx.lineWidth=1.4;
+      ctx.beginPath(); ctx.moveTo(ox+q,ly); ctx.lineTo(ox+q,ly-q); ctx.lineTo(ox,ly-q); ctx.stroke();
+    }
+
+    /* точки */
+    function dot(x,y,c){
+      ctx.fillStyle=c; ctx.beginPath(); ctx.arc(x,y,6,0,Math.PI*2); ctx.fill();
+      ctx.fillStyle='#fff'; ctx.beginPath(); ctx.arc(x,y,2.4,0,Math.PI*2); ctx.fill();
+    }
+    if(state==='pos'){ dot(ox-half*s,ly,col); dot(ox+half*s,ly,col); }
+    else if(state==='zero'){ dot(ox,ly,col); }
+
+    /* центр O */
+    ctx.fillStyle='#1B2333'; ctx.beginPath(); ctx.arc(ox,oy,3.5,0,Math.PI*2); ctx.fill();
+
+    /* подписи */
+    var fs=Math.max(11, Math.min(15, W/28));
+    ctx.font='600 '+fs+'px ui-monospace, Menlo, monospace';
+    ctx.fillStyle='#1B2333'; ctx.textAlign='right'; ctx.textBaseline='middle';
+    ctx.fillText('O', ox-8, oy-8);
+    ctx.textAlign='left';
+    ctx.fillText('d = '+num(d), ox+6, (oy+ly)/2);
+
+    /* радиус вправо-вверх для наглядности */
+    ctx.strokeStyle='#9AA3B2'; ctx.lineWidth=1.6; ctx.setLineDash([5,4]);
+    var ang=-Math.PI/4;
+    ctx.beginPath(); ctx.moveTo(ox,oy); ctx.lineTo(ox+Math.cos(ang)*R*s, oy+Math.sin(ang)*R*s); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle='#5A6478'; ctx.textAlign='left';
+    ctx.fillText('R = '+num(R), ox+Math.cos(ang)*R*s*0.55+6, oy+Math.sin(ang)*R*s*0.55-6);
+
+    if(state==='pos' && half>0.05){
+      ctx.fillStyle=col; ctx.textAlign='center'; ctx.textBaseline='top';
+      ctx.fillText('половина хорды = '+num(half), ox+half*s/2, ly+8);
+    }
+
+    /* вердикт */
+    verdict.className='sim-verdict '+state;
+    if(state==='pos') verdict.textContent='d = '+num(d)+' < R = '+num(R)+' · две точки (секущая)';
+    else if(state==='zero') verdict.textContent='d = R = '+num(R)+' · одна точка (касание)';
+    else verdict.textContent='d = '+num(d)+' > R = '+num(R)+' · общих точек нет';
+
+    if(state==='pos'){
+      note.innerHTML='половина хорды = √(R² − d²) = √('+num(R*R)+' − '+num(d*d)+') = <b>'+num(half)+'</b>,&nbsp; вся хорда = <b>'+num(2*half)+'</b>';
+    } else if(state==='zero'){
+      note.innerHTML='R² − d² = 0 → две точки слились в одну';
+    } else {
+      note.innerHTML='R² − d² = '+num(R*R-d*d)+' &lt; 0 → корня нет, значит нет и точек';
+    }
+  }
+
+  [sR,sd].forEach(function(el){ el.addEventListener('input',draw); });
+  window.addEventListener('resize',function(){ resize(); draw(); });
+  resize(); draw();
+})();
+</script>
+
+<style>
+  .trainer{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.2rem 1.3rem;margin-top:1rem}
+  .tr-q{font-weight:700;font-size:clamp(1rem,3.8vw,1.12rem);line-height:1.5;padding:1rem;background:var(--accent-soft);border-radius:10px;color:var(--ink)}
+  .tr-q b{font-family:ui-monospace,Menlo,monospace}
+  .tr-btns{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.9rem}
+  .tr-btns button{flex:1 1 6rem;font:inherit;font-weight:700;font-size:.92rem;cursor:pointer;
+    border:1px solid var(--accent);background:#fff;color:var(--accent);border-radius:9px;padding:.6rem .5rem}
+  .tr-btns button:hover{background:var(--accent-soft)}
+  .tr-ctl{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.9rem;align-items:center}
+  .tr-inp{display:flex;gap:.5rem;flex:1 1 14rem;min-width:0}
+  .tr-ctl button{font:inherit;font-weight:700;font-size:.9rem;cursor:pointer;border:none;border-radius:9px;padding:.55rem .95rem;color:#fff;background:var(--accent)}
+  .tr-ctl button.sec{background:var(--pos)}
+  .tr-ctl button.ghost{background:transparent;color:var(--accent);border:1px solid var(--accent)}
+  .tr-ctl input{flex:1;min-width:0;font:inherit;padding:.5rem .7rem;border:1px solid var(--line);border-radius:9px;background:#fff;color:var(--ink)}
+  .trainer button:focus-visible,.trainer input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+  .tr-result{margin-top:.9rem;font-size:.96rem;min-height:1.2rem}
+  .tr-result .ok{color:var(--pos);font-weight:700}
+  .tr-result .bad{color:var(--neg);font-weight:700}
+  .tr-result .sol{margin-top:.7rem;padding:.85rem 1rem;background:#FCFBFE;border:1px solid var(--line);border-radius:10px;font-family:ui-monospace,Menlo,monospace;font-size:.9rem;line-height:1.8;overflow-x:auto}
+  .tr-result .sol b{color:var(--accent)}
+</style>
+
+<script>
+(function(){
+  var qEl=document.getElementById('trQ'), ansEl=document.getElementById('trAns'), resEl=document.getElementById('trResult');
+  var btnBox=document.getElementById('trBtns'), inpBox=document.getElementById('trInp');
+  if(!qEl) return;
+  var cur=null;
+
+  function ri(a,b){ return Math.floor(Math.random()*(b-a+1))+a; }
+  var TRIPLES=[[3,4,5],[5,12,13],[8,15,17],[7,24,25],[20,21,29],[12,35,37],[9,40,41]];
+
+  /* пифагорова тройка: катет d, катет half, гипотенуза R */
+  function genPyth(){
+    var t=TRIPLES[ri(0,TRIPLES.length-1)];
+    var kmax=Math.floor(60/t[2]); if(kmax<1) kmax=1; if(kmax>4) kmax=4;
+    var k=ri(1,kmax);
+    var a=t[0]*k, b=t[1]*k, c=t[2]*k;
+    if(Math.random()<0.5){ var tmp=a; a=b; b=tmp; }
+    return {d:a, half:b, R:c};
+  }
+
+  function generate(focus){
+    var r=Math.random(), q;
+    if(r<0.34){
+      var R=ri(2,20), d, m=Math.random();
+      if(m<0.34) d=R;
+      else if(m<0.67) d=ri(1,R-1);
+      else d=ri(R+1,R+12);
+      q={type:'count', R:R, d:d, ans:(d<R?2:(d===R?1:0))};
+    } else if(r<0.60){
+      var p1=genPyth();
+      q={type:'chord', R:p1.R, d:p1.d, half:p1.half, ans:2*p1.half};
+    } else if(r<0.85){
+      var p2=genPyth();
+      q={type:'dist', R:p2.R, d:p2.d, half:p2.half, chord:2*p2.half, ans:p2.d};
+    } else {
+      var R2=ri(2,30);
+      q={type:'tangent', R:R2, ans:R2};
+    }
+    cur=q;
+    render();
+    if(focus && cur.type!=='count' && ansEl) ansEl.focus();
+  }
+
+  function questionHTML(q){
+    if(q.type==='count')
+      return 'Радиус окружности <b>R = '+q.R+' см</b>, расстояние от центра до прямой <b>d = '+q.d+' см</b>. Сколько у них общих точек?';
+    if(q.type==='chord')
+      return 'Прямая пересекает окружность радиуса <b>R = '+q.R+'</b> и проходит на расстоянии <b>d = '+q.d+'</b> от центра. Найди длину хорды.';
+    if(q.type==='dist')
+      return 'В окружности радиуса <b>R = '+q.R+'</b> проведена хорда длиной <b>'+q.chord+'</b>. Найди расстояние от центра до этой хорды.';
+    return 'Радиус окружности <b>R = '+q.R+' см</b>. При каком расстоянии d от центра до прямой она станет касательной?';
+  }
+
+  function render(){
+    qEl.innerHTML=questionHTML(cur);
+    resEl.innerHTML='';
+    if(cur.type==='count'){
+      btnBox.hidden=false; inpBox.style.display='none';
+    } else {
+      btnBox.hidden=true; inpBox.style.display='flex';
+      if(ansEl) ansEl.value='';
+    }
+  }
+
+  function solutionHTML(){
+    var q=cur, h='<div class="sol">';
+    if(q.type==='count'){
+      h+='R = '+q.R+', d = '+q.d+'<br>';
+      if(q.ans===2) h+='Сравниваем: '+q.d+' &lt; '+q.R+' → <b>d &lt; R</b><br>Прямая — секущая, общих точек <b>2</b>.';
+      else if(q.ans===1) h+='Сравниваем: '+q.d+' = '+q.R+' → <b>d = R</b><br>Прямая — касательная, общая точка <b>1</b>.';
+      else h+='Сравниваем: '+q.d+' &gt; '+q.R+' → <b>d &gt; R</b><br>Прямая проходит мимо, общих точек <b>0</b>.';
+    } else if(q.type==='chord'){
+      h+='d = '+q.d+' &lt; R = '+q.R+' → прямая секущая, хорда есть.<br>';
+      h+='Половина хорды = √(R² − d²) = √('+(q.R*q.R)+' − '+(q.d*q.d)+') = √'+(q.R*q.R-q.d*q.d)+' = <b>'+q.half+'</b><br>';
+      h+='Перпендикуляр делит хорду пополам, поэтому хорда = 2 · '+q.half+' = <b>'+q.ans+'</b>';
+    } else if(q.type==='dist'){
+      h+='Половина хорды = '+q.chord+' : 2 = '+q.half+'<br>';
+      h+='Треугольник «центр — середина хорды — конец хорды» прямоугольный, гипотенуза R.<br>';
+      h+='d = √(R² − ('+q.chord+'/2)²) = √('+(q.R*q.R)+' − '+(q.half*q.half)+') = √'+(q.R*q.R-q.half*q.half)+' = <b>'+q.ans+'</b>';
+    } else {
+      h+='Касательная ⇔ d = R.<br>Радиус R = '+q.R+', значит <b>d = '+q.ans+'</b> см.<br>';
+      h+='(при d &lt; '+q.R+' точек две, при d &gt; '+q.R+' — ни одной)';
+    }
+    return h+'</div>';
+  }
+
+  function parseNum(raw){
+    var s=String(raw).replace(/−/g,'-');
+    s=s.replace(/(\d),(\d)/g,'$1.$2');
+    s=s.trim();
+    s=s.replace(/\s*(см|мм|дм|м|cm|mm|км)\.?$/i,'');
+    s=s.replace(/\s+/g,'').trim();
+    if(!/^-?\d+(\.\d+)?$/.test(s)) return NaN;
+    return parseFloat(s);
+  }
+
+  function verdict(ok, extra){
+    resEl.innerHTML='<span class="'+(ok?'ok':'bad')+'">'+(ok?'✓ Верно!':'✗ Пока не то.'+(extra?' '+extra:''))+'</span>'+solutionHTML();
+  }
+
+  function checkNum(){
+    var v=parseNum(ansEl.value);
+    if(!ansEl.value.trim()){ resEl.innerHTML='<span class="bad">Введи ответ числом или открой решение.</span>'; return; }
+    if(isNaN(v)){ resEl.innerHTML='<span class="bad">Не понял запись. Введи только число, например 12.</span>'; return; }
+    var hint='';
+    if(cur.type==='chord' && Math.abs(v-cur.half)<1e-6) hint='Это половина хорды — не забудь умножить на 2.';
+    if(cur.type==='dist' && Math.abs(v-cur.chord/2)<1e-6) hint='Ты нашёл половину хорды, а нужно расстояние до центра.';
+    verdict(Math.abs(v-cur.ans)<1e-6, hint);
+  }
+
+  btnBox.addEventListener('click',function(e){
+    var b=e.target.closest('button'); if(!b) return;
+    verdict(parseInt(b.getAttribute('data-n'),10)===cur.ans, '');
+  });
+  document.getElementById('trNew').addEventListener('click',function(){ generate(true); });
+  document.getElementById('trCheck').addEventListener('click',checkNum);
+  document.getElementById('trShow').addEventListener('click',function(){ resEl.innerHTML=solutionHTML(); });
+  ansEl.addEventListener('keydown',function(e){ if(e.key==='Enter') checkNum(); });
+
+  /* стартовая задача — без фокуса */
+  cur={type:'chord', R:5, d:3, half:4, ans:8};
+  render();
+
+  if(typeof window!=='undefined'){
+    window.__trainerDebug={ gen:function(){ generate(false); return cur; }, sol:function(){ return solutionHTML(); }, parse:parseNum };
+  }
+})();
+</script>
+<!--LESSON-NAV-BOT--><nav class="lnav lnav-bot"><a class="prev" href="./geo8-znacheniya-trig-funkcij.html"><span class="dir">← Предыдущая</span><span class="ttl">Значения тригонометрических функций для 30°, 45°, 60°</span></a><a class="to-cat" href="./catalog.html">📚 <span>Все темы</span></a><a class="next" href="./geo8-kasatelnaya.html"><span class="dir">Следующая →</span><span class="ttl">Касательная к окружности</span></a></nav><!--/LESSON-NAV-BOT-->

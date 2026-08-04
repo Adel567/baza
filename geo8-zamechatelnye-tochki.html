@@ -1,0 +1,861 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Замечательные точки треугольника — урок, геометрия 8 класс</title>
+<style>
+  :root{
+    --paper:#F6F7F9;
+    --card:#FFFFFF;
+    --ink:#1B2333;
+    --muted:#5A6478;
+    --line:#E2E5EC;
+    --accent:#3B4FD0;
+    --accent-soft:#EAEDFB;
+    --pos:#1E8E5A;   /* инцентр */
+    --pos-bg:#E7F4EC;
+    --zero:#B9791A;  /* центроид */
+    --zero-bg:#FBF1DC;
+    --neg:#C0455B;   /* ортоцентр */
+    --neg-bg:#F9E9EC;
+  }
+  *{box-sizing:border-box}
+  body{margin:0}
+  .wrap{
+    max-width:760px;
+    margin:0 auto;
+    padding:clamp(1.4rem,4vw,3rem) clamp(1.1rem,4vw,2rem) 4rem;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    font-size:17px;
+    line-height:1.62;
+    -webkit-font-smoothing:antialiased;
+  }
+  .eyebrow{
+    font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--accent);font-weight:600;margin:0 0 .5rem;
+  }
+  h1{
+    font-family:Georgia,"Times New Roman",serif;
+    font-size:clamp(1.9rem,6.4vw,2.9rem);
+    line-height:1.05;margin:0;font-weight:700;letter-spacing:-.01em;
+    text-wrap:balance;
+  }
+  .lede{
+    font-size:1.08rem;color:var(--muted);margin:.7rem 0 0;max-width:60ch;
+    text-wrap:pretty;
+  }
+  h2{
+    font-family:Georgia,serif;font-size:1.32rem;font-weight:700;
+    margin:0 0 .1rem;letter-spacing:-.005em;
+  }
+  section{margin-top:2.6rem}
+  .kicker{
+    font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--muted);font-weight:600;margin:0 0 .8rem;
+    display:flex;align-items:center;gap:.6rem;
+  }
+  .kicker::before{
+    content:"";width:1.4rem;height:2px;background:var(--accent);border-radius:2px;
+  }
+  p{margin:.65rem 0}
+  strong{font-weight:650}
+  .math{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-weight:600}
+  sup{font-size:.72em}
+
+  /* Главный блок */
+  .hero-formula{
+    margin-top:2.2rem;
+    background:var(--ink);color:#fff;border-radius:14px;
+    padding:1.5rem 1.3rem;text-align:center;
+  }
+  .hero-formula .lbl{
+    font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;
+    color:#9aa6c9;margin:0 0 .8rem;
+  }
+  .hero-formula .eq{
+    font-family:ui-monospace,"SF Mono",Menlo,monospace;
+    font-size:clamp(1rem,3.6vw,1.25rem);font-weight:700;line-height:1.9;
+  }
+  .hero-formula .eq b{color:#8ea0ff;font-weight:700}
+  .hero-formula .note{font-size:.86rem;color:#9aa6c9;margin:.9rem 0 0}
+
+  /* Пререквизит */
+  .recall{
+    background:var(--accent-soft);border-radius:12px;padding:1rem 1.15rem;
+    font-size:.96rem;
+  }
+  .recall p{margin:.35rem 0}
+  .recall b{color:var(--ink)}
+
+  /* Четыре точки */
+  .pts{display:grid;gap:.85rem;margin-top:.4rem}
+  @media(min-width:620px){.pts{grid-template-columns:repeat(2,1fr)}}
+  .pt{
+    border-radius:12px;padding:1.05rem 1.1rem;border:1px solid var(--line);
+    background:var(--card);display:flex;flex-direction:column;gap:.3rem;
+  }
+  .pt .who{font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:.95rem}
+  .pt .name{font-weight:700;font-size:1.05rem}
+  .pt .desc{font-size:.9rem;color:var(--muted)}
+  .pt .where{font-size:.84rem;font-weight:650;margin-top:.25rem}
+  .pt.bis{border-top:4px solid var(--pos);background:var(--pos-bg)}
+  .pt.bis .who,.pt.bis .where{color:var(--pos)}
+  .pt.perp{border-top:4px solid var(--accent);background:var(--accent-soft)}
+  .pt.perp .who,.pt.perp .where{color:var(--accent)}
+  .pt.alt{border-top:4px solid var(--neg);background:var(--neg-bg)}
+  .pt.alt .who,.pt.alt .where{color:var(--neg)}
+  .pt.med{border-top:4px solid var(--zero);background:var(--zero-bg)}
+  .pt.med .who,.pt.med .where{color:var(--zero)}
+
+  /* Разбор */
+  .worked{
+    background:var(--card);border:1px solid var(--line);border-radius:12px;
+    padding:1.2rem 1.3rem;
+  }
+  .worked .task{
+    font-weight:700;font-size:1.02rem;
+    margin:0 0 1rem;padding-bottom:.8rem;border-bottom:1px solid var(--line);
+  }
+  ol.steps{margin:0;padding:0;list-style:none;counter-reset:s;display:flex;flex-direction:column;gap:.7rem}
+  ol.steps li{position:relative;padding-left:2.1rem;counter-increment:s}
+  ol.steps li::before{
+    content:counter(s);position:absolute;left:0;top:.05rem;
+    width:1.5rem;height:1.5rem;border-radius:50%;
+    background:var(--accent-soft);color:var(--accent);
+    font-size:.82rem;font-weight:700;display:flex;align-items:center;justify-content:center;
+  }
+  ol.steps .m{font-family:ui-monospace,Menlo,monospace;font-weight:600;color:var(--ink)}
+  .verdict{
+    margin-top:1rem;padding:.7rem 1rem;background:var(--pos-bg);
+    border-radius:9px;font-weight:600;color:var(--pos);font-size:.98rem;
+  }
+
+  /* Практика */
+  .drill{display:flex;flex-direction:column;gap:.7rem}
+  details{
+    background:var(--card);border:1px solid var(--line);border-radius:10px;
+    padding:.85rem 1.05rem;
+  }
+  details[open]{border-color:var(--accent)}
+  summary{
+    cursor:pointer;font-weight:600;list-style:none;
+    display:flex;justify-content:space-between;align-items:flex-start;gap:1rem;
+  }
+  summary:focus-visible{outline:3px solid var(--accent);outline-offset:3px;border-radius:6px}
+  summary::-webkit-details-marker{display:none}
+  summary .q{min-width:0}
+  summary .tag{
+    font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);
+    border:1px solid var(--line);border-radius:20px;padding:.1rem .55rem;white-space:nowrap;
+  }
+  .ans{margin-top:.7rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.96rem;color:var(--muted)}
+  .ans .m{font-family:ui-monospace,Menlo,monospace;color:var(--ink);font-weight:600}
+
+  /* Ошибки */
+  ul.pitfalls{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:.6rem}
+  ul.pitfalls li{padding-left:1.5rem;position:relative;font-size:.98rem}
+  ul.pitfalls li::before{
+    content:"×";position:absolute;left:0;top:-.05rem;color:var(--neg);font-weight:700;font-size:1.1rem;
+  }
+  ul.pitfalls b{color:var(--ink)}
+
+  .next{background:var(--accent);color:#fff;border-radius:12px;padding:1.2rem 1.3rem}
+  .next h2{color:#fff}
+  .next p{color:#dfe4fb;font-size:.96rem;margin:.5rem 0 0}
+  .next a{color:#fff;font-weight:700}
+  .foot{margin-top:2.4rem;font-size:.82rem;color:var(--muted);text-align:center}
+
+  /* Таблица-шпаргалка */
+  .tbox{overflow-x:auto;margin-top:.6rem;border:1px solid var(--line);border-radius:12px;background:var(--card)}
+  table{border-collapse:collapse;width:100%;min-width:460px;font-size:.92rem}
+  th,td{padding:.6rem .75rem;text-align:left;border-bottom:1px solid var(--line)}
+  th{background:#F0F2F7;font-size:.78rem;letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
+  tr:last-child td{border-bottom:none}
+  td b{font-weight:700}
+
+  @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+<style>
+.oge-tip{display:flex;gap:.8rem;align-items:flex-start;background:#FFF8E7;border:1px solid #F0D98A;border-left:4px solid #E0A315;border-radius:10px;padding:.85rem 1.05rem;margin:1.5rem 0}
+.oge-tip .b{font-size:.72rem;font-weight:800;letter-spacing:.03em;color:#8A6A15;white-space:nowrap;text-transform:uppercase;padding-top:.15rem}
+.oge-tip .x{font-size:.95rem;line-height:1.5}
+</style>
+
+<!--LESSON-NAV-TOP--><style>.lnav{--lnav-accent:#3D5AF1}.lnav a{text-decoration:none;font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif}.lnav-top{max-width:820px;margin:0 auto;padding:.75rem clamp(1rem,4vw,1.5rem) .1rem}.lnav-top a{display:inline-flex;align-items:center;gap:.35rem;color:var(--lnav-accent);font-weight:600;font-size:.9rem}.lnav-top a:hover{text-decoration:underline}.lnav-bot{max-width:820px;margin:2.6rem auto 3rem;padding:1.1rem clamp(1rem,4vw,1.5rem) 0;border-top:1px solid #E4E8EF;display:flex;align-items:stretch;gap:.55rem}.lnav-bot a{min-width:0;display:flex;flex-direction:column;justify-content:center;gap:.15rem;border:1px solid #E4E8EF;border-radius:12px;padding:.65rem .85rem;color:#182233;background:#fff;transition:border-color .1s,transform .08s}.lnav-bot a:hover{border-color:var(--lnav-accent);transform:translateY(-1px)}.lnav-bot .prev,.lnav-bot .next{flex:1 1 0}.lnav-bot .next{text-align:right}.lnav-bot .dir{font-size:.72rem;color:#8A93A6;font-weight:600}.lnav-bot .ttl{font-size:.9rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.lnav-bot .to-cat{flex:0 0 auto;flex-direction:row;align-items:center;justify-content:center;color:var(--lnav-accent);font-weight:700;font-size:.85rem;white-space:nowrap}@media(max-width:420px){.lnav-bot .to-cat span{display:none}.lnav-bot .to-cat{padding:.65rem .7rem}}</style><nav class="lnav lnav-top"><a href="./catalog.html">← Все темы</a></nav><!--/LESSON-NAV-TOP-->
+<div class="wrap">
+
+  <header>
+    <p class="eyebrow">Геометрия · 8 класс</p>
+    <h1>Замечательные точки треугольника</h1>
+    <p class="lede">В треугольнике есть четыре набора линий — и каждый набор из трёх линий сходится ровно в <em>одной</em> точке. Не в трёх разных, а в одной. Вот это и правда замечательно.</p>
+  </header>
+
+  <div class="hero-formula">
+    <p class="lbl">Четыре точки — четыре набора линий</p>
+    <div class="eq">
+      биссектрисы → <b>инцентр I</b><br>
+      серединные перпендикуляры → <b>центр O</b><br>
+      высоты → <b>ортоцентр H</b><br>
+      медианы → <b>центроид M</b>
+    </div>
+    <p class="note">I — центр вписанной окружности, O — центр описанной</p>
+  </div>
+
+  <section>
+    <p class="kicker">Зачем это нужно</p>
+    <h2>Три линии, одна точка</h2>
+    <p>Проведи в треугольнике три биссектрисы. Казалось бы, три прямые должны пересечься попарно — в трёх разных точках. Но нет: они проходят через <strong>одну общую точку</strong>. И так с каждым из четырёх наборов линий. Эти четыре точки и называют замечательными.</p>
+    <p>Где это работает:</p>
+    <p>· Две из них — это <strong>центр вписанной и центр описанной окружности</strong>. Без них ты просто не построишь окружность, вписанную в треугольник или описанную около него.</p>
+    <p>· Точка пересечения медиан — это <strong>центр тяжести</strong>. Вырежи треугольник из картона: он будет балансировать на кончике карандаша именно в этой точке. Отсюда физика и техника.</p>
+    <p>А теперь главный миф, который надо сломать сразу: <strong>«все эти точки всегда внутри треугольника»</strong>. Неправда. У тупоугольного треугольника центр описанной окружности и точка пересечения высот вылезают <strong>наружу</strong>. Ниже ты увидишь это своими глазами.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Что вспомнить перед стартом</p>
+    <div class="recall">
+      <p><b>Медиана</b> — отрезок от вершины к <em>середине</em> противоположной стороны.</p>
+      <p><b>Биссектриса</b> — линия, которая делит угол пополам.</p>
+      <p><b>Высота</b> — перпендикуляр из вершины к прямой, содержащей противоположную сторону. Слово «прямой» тут важно: иногда сторону приходится продлить.</p>
+      <p><b>Серединный перпендикуляр</b> к отрезку — прямая, перпендикулярная отрезку и проходящая через его середину. Это не чевиана: она не идёт из вершины, она «вырастает» из середины стороны.</p>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Ядро темы</p>
+    <h2>Четыре точки по порядку</h2>
+    <p>Смотри на них через одну идею — <strong>что эта линия уравнивает</strong>. Тогда путать перестанешь.</p>
+    <div class="pts">
+      <div class="pt bis">
+        <div class="who">биссектрисы → I</div>
+        <div class="name">Инцентр</div>
+        <div class="desc">Биссектриса состоит из точек, равноудалённых от сторон угла. Значит, общая точка трёх биссектрис равноудалена от всех трёх <strong>сторон</strong> — а это в точности центр <strong>вписанной</strong> окружности.</div>
+        <div class="where">Всегда ВНУТРИ треугольника</div>
+      </div>
+      <div class="pt perp">
+        <div class="who">серед. перпендикуляры → O</div>
+        <div class="name">Центр описанной окружности</div>
+        <div class="desc">Серединный перпендикуляр состоит из точек, равноудалённых от концов отрезка. Значит, общая точка трёх таких прямых равноудалена от всех трёх <strong>вершин</strong> — это центр <strong>описанной</strong> окружности.</div>
+        <div class="where">Внутри · на стороне · снаружи</div>
+      </div>
+      <div class="pt alt">
+        <div class="who">высоты → H</div>
+        <div class="name">Ортоцентр</div>
+        <div class="desc">Точка пересечения трёх высот. Если треугольник тупоугольный, высоты пересекаются уже за пределами фигуры — приходится продлевать стороны и сами высоты.</div>
+        <div class="where">Внутри · в вершине прямого угла · снаружи</div>
+      </div>
+      <div class="pt med">
+        <div class="who">медианы → M</div>
+        <div class="name">Центроид (центр тяжести)</div>
+        <div class="desc">Точка пересечения трёх медиан. У неё есть отдельное числовое свойство: она делит каждую медиану в отношении <strong>2 : 1</strong>, считая <strong>от вершины</strong>.</div>
+        <div class="where">Всегда ВНУТРИ треугольника</div>
+      </div>
+    </div>
+
+    <div class="tbox">
+      <table>
+        <tr><th>Линии</th><th>Точка</th><th>Равноудалена от…</th><th>Где лежит</th></tr>
+        <tr><td>биссектрисы</td><td><b>I</b>, инцентр</td><td>трёх <b>сторон</b></td><td>всегда внутри</td></tr>
+        <tr><td>серединные перпендикуляры</td><td><b>O</b></td><td>трёх <b>вершин</b></td><td>может быть снаружи</td></tr>
+        <tr><td>высоты</td><td><b>H</b>, ортоцентр</td><td>—</td><td>может быть снаружи</td></tr>
+        <tr><td>медианы</td><td><b>M</b>, центроид</td><td>— (зато делит 2 : 1)</td><td>всегда внутри</td></tr>
+      </table>
+    </div>
+
+    <p style="font-size:.92rem;color:var(--muted);margin-top:.9rem">Считалочка на два слова: <strong>биссектрисы — стороны — вписанная</strong>; <strong>серединные перпендикуляры — вершины — описанная</strong>.</p>
+
+    <div class="oge-tip"><div class="b">🎯 В ОГЭ</div><div class="x"><b>Задания 16 и 24–25.</b> Центр вписанной окружности, центр описанной, точка пересечения медиан — знание, где они лежат и какие свойства имеют, часто и есть ключ к задаче.</div></div>
+  </section>
+
+  <section>
+    <p class="kicker">Покрути сам · интерактив</p>
+    <h2>Один треугольник, четыре точки</h2>
+    <p>Двигай ползунки — вершины <span class="math">B</span> и <span class="math">C</span> поедут, треугольник поменяет форму. Переключай наборы линий и следи за точкой. Особенно за <strong>H</strong> и <strong>O</strong>: сделай треугольник тупоугольным (утяни <span class="math">C</span> далеко вбок) — и они уйдут наружу. Это не поломка чертежа, это факт.</p>
+    <div class="fig">
+      <div class="modes" role="group" aria-label="Какие линии показать">
+        <button type="button" data-mode="med" class="on">Медианы · M</button>
+        <button type="button" data-mode="bis">Биссектрисы · I</button>
+        <button type="button" data-mode="alt">Высоты · H</button>
+        <button type="button" data-mode="perp">Серед. перпендикуляры · O</button>
+      </div>
+      <canvas id="tri" width="640" height="440" aria-label="Интерактивный чертёж треугольника с замечательными точками"></canvas>
+      <div id="triBadge" class="fig-badge">остроугольный</div>
+      <div id="triInfo" class="fig-info">—</div>
+      <div class="sliders">
+        <label>B<sub>x</sub> <span id="vbx" class="sval">5</span><input id="sbx" type="range" min="0" max="8" step="0.5" value="5" aria-label="Вершина B по горизонтали"></label>
+        <label>C<sub>x</sub> <span id="vcx" class="sval">−1</span><input id="scx" type="range" min="-9" max="9" step="0.5" value="-1" aria-label="Вершина C по горизонтали"></label>
+        <label>C<sub>y</sub> <span id="vcy" class="sval">5</span><input id="scy" type="range" min="2" max="8" step="0.5" value="5" aria-label="Вершина C по вертикали"></label>
+      </div>
+      <p class="fig-hint">Подсказка: чертёж сам отъезжает и приближается, чтобы точка была видна, даже когда она далеко за треугольником.</p>
+    </div>
+    <p style="font-size:.9rem;color:var(--muted)">Проверь предсказанием: прежде чем двигать ползунок, скажи вслух, куда поедет точка — внутрь или наружу. Потом двигай и смотри, угадал ли.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Разбираем вместе</p>
+    <h2>Эталонный пример: правило 2 : 1</h2>
+    <div class="worked">
+      <p class="task">Медианы треугольника пересекаются в точке M. Медиана AK = 12 см. Найти AM и MK.</p>
+      <ol class="steps">
+        <li>Вспоминаем правило: точка пересечения медиан делит каждую медиану в отношении <span class="m">2 : 1</span>, считая <strong>от вершины</strong>. Значит <span class="m">AM : MK = 2 : 1</span>.</li>
+        <li>Раз отношение 2 : 1 — вся медиана состоит из <span class="m">2 + 1 = 3</span> равных частей. Почему 3: две части до точки M плюс одна часть после неё.</li>
+        <li>Находим одну часть: <span class="m">12 : 3 = 4</span> см.</li>
+        <li>От вершины идут две части: <span class="m">AM = 2 · 4 = 8</span> см. Это бо́льший кусок — он от вершины.</li>
+        <li>До середины стороны — одна часть: <span class="m">MK = 4</span> см.</li>
+      </ol>
+      <div class="verdict">Ответ: AM = 8 см, MK = 4 см. Проверка: 8 + 4 = 12 — вся медиана, и 8 : 4 = 2 : 1 — верно.</div>
+    </div>
+    <p style="font-size:.94rem;color:var(--muted)">Весь приём — в одной фразе: <strong>раздели длину медианы на 3</strong>, дальше две части и одна часть.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Тренажёр · бесконечная практика</p>
+    <h2>Проверь себя на случайных задачах</h2>
+    <p>Нажимай «Новая задача». Где нужно выбрать — жми кнопку с вариантом. Где нужно число — впиши его (единицы можно не писать; дробное — хоть через точку, хоть через запятую).</p>
+    <div class="trainer">
+      <div class="tr-q" id="trQ">Задача загружается…</div>
+      <div id="trOpts" class="tr-opts"></div>
+      <div class="tr-ctl" id="trCtl">
+        <input id="trAns" type="text" inputmode="text" placeholder="напр.  8   или  6,5" aria-label="Ответ">
+        <button id="trCheck" type="button" class="sec">Проверить</button>
+      </div>
+      <div class="tr-ctl">
+        <button id="trNew" type="button">🎲 Новая задача</button>
+        <button id="trShow" type="button" class="ghost">Показать решение</button>
+      </div>
+      <div id="trResult" class="tr-result"></div>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Теперь ты · нажми, чтобы проверить</p>
+    <h2>Практика по нарастанию</h2>
+    <div class="drill">
+      <details>
+        <summary><span class="q">Точкой пересечения каких линий является центр вписанной окружности? А центр описанной?</span><span class="tag">понимание</span></summary>
+        <div class="ans">Центр вписанной — точка пересечения <strong>биссектрис</strong> (равноудалена от сторон). Центр описанной — точка пересечения <strong>серединных перпендикуляров</strong> (равноудалена от вершин).</div>
+      </details>
+      <details>
+        <summary><span class="q">Медиана треугольника равна 18 см. На какие два отрезка её делит точка пересечения медиан?</span><span class="tag">применение</span></summary>
+        <div class="ans">Одна часть: <span class="m">18 : 3 = 6</span> см. От вершины — две части: <span class="m">2 · 6 = 12</span> см, до середины стороны — <span class="m">6</span> см. Ответ: <strong>12 см и 6 см.</strong></div>
+      </details>
+      <details>
+        <summary><span class="q">Медианы пересекаются в точке M. Отрезок от вершины до M равен 10 см. Чему равна вся медиана?</span><span class="tag">применение</span></summary>
+        <div class="ans">От вершины до M — это <em>две</em> части, значит одна часть <span class="m">= 10 : 2 = 5</span> см. Вся медиана = 3 части <span class="m">= 3 · 5 = 15</span> см. Ответ: <strong>15 см.</strong></div>
+      </details>
+      <details>
+        <summary><span class="q">В прямоугольном треугольнике с прямым углом C гипотенуза AB = 10 см. Где центр описанной окружности и чему равен радиус?</span><span class="tag">применение</span></summary>
+        <div class="ans">Центр описанной окружности — <strong>середина гипотенузы AB</strong>. Радиус <span class="m">R = 10 : 2 = 5</span> см.</div>
+      </details>
+      <details>
+        <summary><span class="q">Что изменится, если треугольник тупоугольный: где окажутся центр описанной окружности и ортоцентр?</span><span class="tag">анализ</span></summary>
+        <div class="ans">Оба <strong>выходят за пределы треугольника</strong>. Ортоцентр — потому что высоты пересекаются только на продолжениях; центр описанной — потому что он «убегает» от тупого угла в сторону от треугольника. А вот инцентр и центроид остаются внутри.</div>
+      </details>
+      <details>
+        <summary><span class="q">Найди ошибку: «центр вписанной окружности может лежать вне треугольника».</span><span class="tag">анализ</span></summary>
+        <div class="ans">Утверждение <strong>ошибочно</strong>. Инцентр всегда внутри: он лежит на биссектрисе каждого угла, а биссектриса угла идёт внутрь треугольника — значит их общая точка тоже внутри. Наружу могут уйти только ортоцентр и центр описанной окружности.</div>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Где чаще всего ошибаются</p>
+    <h2>Лови эти четыре ловушки</h2>
+    <ul class="pitfalls">
+      <li><b>Путают, какие линии дают какую точку.</b> Запоминай через равноудалённость: биссектрисы → равноудалён от <strong>сторон</strong> → вписанная; серединные перпендикуляры → равноудалён от <strong>вершин</strong> → описанная.</li>
+      <li><b>Путают вписанную и описанную окружности.</b> Вписанная сидит внутри и касается сторон. Описанная снаружи и проходит через вершины. Центр «работает» с тем, чего окружность касается или через что проходит.</li>
+      <li><b>Делят медиану наоборот.</b> Бо́льшая часть (2 части) — от <strong>вершины</strong> до точки пересечения, меньшая (1 часть) — от точки до середины стороны. Не наоборот.</li>
+      <li><b>Считают, что все точки всегда внутри.</b> Внутри всегда — только инцентр и центроид. Ортоцентр и центр описанной окружности у тупоугольного треугольника лежат снаружи, а у прямоугольного H попадает в вершину прямого угла, а O — в середину гипотенузы.</li>
+    </ul>
+  </section>
+
+  <section>
+    <p class="kicker">Проверка понимания</p>
+    <h2>Объясни своими словами</h2>
+    <div class="recall">
+      <p>1. Точкой пересечения каких линий является центр вписанной окружности?</p>
+      <p>2. В каком отношении и от какой точки делятся медианы их общей точкой?</p>
+      <p>3. У какого треугольника центр описанной окружности лежит прямо на его стороне — и в каком именно месте?</p>
+      <p style="margin-top:.7rem;color:var(--muted)">Ответь вслух, не подглядывая. Потом сверься: биссектрис · 2 : 1 от вершины · у прямоугольного, в середине гипотенузы.</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="next">
+      <h2>Что дальше</h2>
+      <p>Ты узнал, <em>где</em> живут центры двух окружностей. Дальше — сами окружности: как найти их радиусы и как решать задачи.</p>
+      <p>→ <a href="./geo8-vpisannaya-okruzhnost.html">Вписанная окружность</a> — та, у которой центр в инцентре.</p>
+      <p>→ <a href="./geo8-opisannaya-okruzhnost.html">Описанная окружность</a> — та, у которой центр в точке O.</p>
+    </div>
+  </section>
+
+  <p class="foot">Итог одним предложением: в любом треугольнике биссектрисы, серединные перпендикуляры, высоты и медианы пересекаются каждый набор в своей единственной точке, и две из этих точек — центры вписанной и описанной окружностей.</p>
+
+</div>
+
+<style>
+  .fig{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.1rem 1.1rem 1rem;margin:1rem 0}
+  .fig canvas{width:100%;height:auto;display:block;border-radius:10px;background:#FCFDFF;margin-top:.8rem}
+  .modes{display:flex;flex-wrap:wrap;gap:.4rem}
+  .modes button{
+    font:inherit;font-size:.82rem;font-weight:700;cursor:pointer;
+    border:1px solid var(--line);background:#fff;color:var(--muted);
+    border-radius:20px;padding:.35rem .8rem;
+  }
+  .modes button.on{background:var(--accent);border-color:var(--accent);color:#fff}
+  .modes button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+  .fig-badge{
+    display:inline-block;margin-top:.8rem;font-size:.74rem;font-weight:800;
+    letter-spacing:.06em;text-transform:uppercase;padding:.2rem .65rem;border-radius:20px;
+    background:var(--accent-soft);color:var(--accent);
+  }
+  .fig-info{margin-top:.5rem;font-size:.94rem;font-weight:600;line-height:1.5}
+  .fig-info .out{color:var(--neg)}
+  .fig-info .in{color:var(--pos)}
+  .fig-hint{font-size:.82rem;color:var(--muted);margin:.7rem 0 0}
+  .sliders{display:grid;gap:.55rem;margin-top:.9rem}
+  @media(min-width:520px){.sliders{grid-template-columns:repeat(3,1fr)}}
+  .sliders label{display:flex;align-items:center;gap:.5rem;font-weight:700;font-family:ui-monospace,Menlo,monospace;font-size:.9rem}
+  .sliders input[type=range]{flex:1;min-width:0;accent-color:var(--accent)}
+  .sliders input[type=range]:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+  .sliders .sval{min-width:3.2ch;text-align:right;color:var(--accent);font-variant-numeric:tabular-nums}
+</style>
+
+<script>
+(function(){
+  var cv=document.getElementById('tri'); if(!cv) return;
+  var ctx=cv.getContext('2d');
+  var sbx=document.getElementById('sbx'), scx=document.getElementById('scx'), scy=document.getElementById('scy');
+  var vbx=document.getElementById('vbx'), vcx=document.getElementById('vcx'), vcy=document.getElementById('vcy');
+  var badge=document.getElementById('triBadge'), info=document.getElementById('triInfo');
+  var W=640,H=440,dpr=1,mode='med';
+  var COL={med:'#B9791A',bis:'#1E8E5A',alt:'#C0455B',perp:'#3B4FD0'};
+
+  function num(n){ n=Math.round(n*100)/100; return (n<0?'−':'')+Math.abs(n); }
+  function num1(n){ n=Math.round(n*10)/10; var s=String(Math.abs(n)).replace('.',','); return (n<0?'−':'')+s; }
+
+  function sub(p,q){ return {x:p.x-q.x,y:p.y-q.y}; }
+  function add(p,q){ return {x:p.x+q.x,y:p.y+q.y}; }
+  function mul(p,k){ return {x:p.x*k,y:p.y*k}; }
+  function len(p){ return Math.sqrt(p.x*p.x+p.y*p.y); }
+  function mid(p,q){ return {x:(p.x+q.x)/2,y:(p.y+q.y)/2}; }
+  function cross(p,q){ return p.x*q.y-p.y*q.x; }
+  /* пересечение прямых p+t*d и q+s*e */
+  function meet(p,d,q,e){
+    var den=cross(d,e);
+    if(Math.abs(den)<1e-9) return null;
+    var t=cross(sub(q,p),e)/den;
+    return {x:p.x+t*d.x, y:p.y+t*d.y};
+  }
+  function foot(P,Q,R){ /* основание перпендикуляра из R на прямую PQ */
+    var d=sub(Q,P), t=((R.x-P.x)*d.x+(R.y-P.y)*d.y)/(d.x*d.x+d.y*d.y);
+    return {x:P.x+t*d.x, y:P.y+t*d.y, t:t};
+  }
+
+  function geom(){
+    var A={x:-5,y:-3};
+    var B={x:parseFloat(sbx.value), y:-3};
+    var C={x:parseFloat(scx.value), y:parseFloat(scy.value)};
+    var a=len(sub(B,C)), b=len(sub(C,A)), c=len(sub(A,B));
+    var area=Math.abs(cross(sub(B,A),sub(C,A)))/2;
+    var G={x:(A.x+B.x+C.x)/3, y:(A.y+B.y+C.y)/3};
+    var I={x:(a*A.x+b*B.x+c*C.x)/(a+b+c), y:(a*A.y+b*B.y+c*C.y)/(a+b+c)};
+    var r=area/((a+b+c)/2);
+    /* центр описанной — пересечение серединных перпендикуляров (честно, аналитически) */
+    var mAB=mid(A,B), mBC=mid(B,C);
+    var dAB=sub(B,A), dBC=sub(C,B);
+    var O=meet(mAB,{x:-dAB.y,y:dAB.x}, mBC,{x:-dBC.y,y:dBC.x});
+    var R=O?len(sub(A,O)):0;
+    /* ортоцентр — пересечение двух высот */
+    var Hp=meet(A,{x:-(C.y-B.y),y:(C.x-B.x)}, B,{x:-(C.y-A.y),y:(C.x-A.x)});
+    return {A:A,B:B,C:C,a:a,b:b,c:c,area:area,G:G,I:I,r:r,O:O,R:R,H:Hp};
+  }
+
+  function kind(g){
+    var s=[g.a*g.a,g.b*g.b,g.c*g.c].sort(function(x,y){return x-y;});
+    var d=s[2]-(s[0]+s[1]), sc=s[2];
+    if(Math.abs(d)<sc*0.004) return 'right';
+    return d>0?'obtuse':'acute';
+  }
+  function inside(g,P){
+    if(!P) return false;
+    var s1=cross(sub(g.B,g.A),sub(P,g.A)), s2=cross(sub(g.C,g.B),sub(P,g.B)), s3=cross(sub(g.A,g.C),sub(P,g.C));
+    return (s1>=-1e-9&&s2>=-1e-9&&s3>=-1e-9)||(s1<=1e-9&&s2<=1e-9&&s3<=1e-9);
+  }
+
+  function resize(){
+    var cssW=cv.clientWidth||640; dpr=Math.min(window.devicePixelRatio||1,2);
+    W=cssW; H=Math.round(cssW*0.72);
+    cv.width=Math.round(W*dpr); cv.height=Math.round(H*dpr); cv.style.height=H+'px';
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+  }
+
+  var S=1, OX=0, OY=0;
+  function fit(pts){
+    var minx=1e9,maxx=-1e9,miny=1e9,maxy=-1e9;
+    pts.forEach(function(p){ if(!p) return;
+      if(p.x<minx)minx=p.x; if(p.x>maxx)maxx=p.x;
+      if(p.y<miny)miny=p.y; if(p.y>maxy)maxy=p.y; });
+    var pad=1.4;
+    minx-=pad; maxx+=pad; miny-=pad; maxy+=pad;
+    var w=Math.max(maxx-minx,1), h=Math.max(maxy-miny,1);
+    S=Math.min(W/w, H/h);
+    var cx0=(minx+maxx)/2, cy0=(miny+maxy)/2;
+    OX=W/2-cx0*S; OY=H/2+cy0*S;
+  }
+  function PX(p){ return OX+p.x*S; }
+  function PY(p){ return OY-p.y*S; }
+
+  function line(p,q,col,wid,dash){
+    ctx.save(); ctx.strokeStyle=col; ctx.lineWidth=wid||2;
+    ctx.setLineDash(dash||[]);
+    ctx.beginPath(); ctx.moveTo(PX(p),PY(p)); ctx.lineTo(PX(q),PY(q)); ctx.stroke(); ctx.restore();
+  }
+  function longLine(p,d,col,wid,dash){
+    var L=Math.max(W,H)/S*1.5, n=len(d)||1;
+    var u={x:d.x/n,y:d.y/n};
+    line({x:p.x-u.x*L,y:p.y-u.y*L},{x:p.x+u.x*L,y:p.y+u.y*L},col,wid,dash);
+  }
+  function dot(p,col,rr){
+    ctx.fillStyle=col; ctx.beginPath(); ctx.arc(PX(p),PY(p),rr||6,0,7); ctx.fill();
+    ctx.fillStyle='#fff'; ctx.beginPath(); ctx.arc(PX(p),PY(p),(rr||6)*0.36,0,7); ctx.fill();
+  }
+  function label(p,txt,col,dx,dy){
+    ctx.save();
+    ctx.font='700 15px ui-monospace,Menlo,monospace';
+    ctx.fillStyle='#fff'; ctx.strokeStyle='#fff'; ctx.lineWidth=4; ctx.lineJoin='round';
+    ctx.strokeText(txt,PX(p)+(dx||0),PY(p)+(dy||0));
+    ctx.fillStyle=col; ctx.fillText(txt,PX(p)+(dx||0),PY(p)+(dy||0));
+    ctx.restore();
+  }
+  function circle(cn,rad,col){
+    ctx.save(); ctx.strokeStyle=col; ctx.lineWidth=2; ctx.setLineDash([]);
+    ctx.beginPath(); ctx.arc(PX(cn),PY(cn),rad*S,0,7); ctx.stroke(); ctx.restore();
+  }
+
+  function draw(){
+    var g=geom();
+    vbx.textContent=num(g.B.x); vcx.textContent=num(g.C.x); vcy.textContent=num(g.C.y);
+    var col=COL[mode];
+    var pts=[g.A,g.B,g.C];
+    var P=null;
+    if(mode==='med') P=g.G;
+    if(mode==='bis') P=g.I;
+    if(mode==='alt') P=g.H;
+    if(mode==='perp') P=g.O;
+    if(P) pts.push(P);
+    if(mode==='bis' && P) pts.push({x:P.x-g.r,y:P.y-g.r},{x:P.x+g.r,y:P.y+g.r});
+    if(mode==='perp' && P) pts.push({x:P.x-g.R,y:P.y-g.R},{x:P.x+g.R,y:P.y+g.R});
+    fit(pts);
+
+    ctx.clearRect(0,0,W,H);
+    /* треугольник */
+    ctx.save();
+    ctx.beginPath();
+    ctx.moveTo(PX(g.A),PY(g.A)); ctx.lineTo(PX(g.B),PY(g.B)); ctx.lineTo(PX(g.C),PY(g.C)); ctx.closePath();
+    ctx.fillStyle='#F2F4F9'; ctx.fill();
+    ctx.strokeStyle='#5A6478'; ctx.lineWidth=2.2; ctx.stroke();
+    ctx.restore();
+
+    var k=kind(g);
+    var V=[g.A,g.B,g.C];
+    var infoHTML='';
+
+    if(mode==='med'){
+      var Ma=mid(g.B,g.C), Mb=mid(g.C,g.A), Mc=mid(g.A,g.B);
+      line(g.A,Ma,col,2.4); line(g.B,Mb,col,2.4); line(g.C,Mc,col,2.4);
+      dot(Ma,'#9AA3B2',4); dot(Mb,'#9AA3B2',4); dot(Mc,'#9AA3B2',4);
+      dot(P,col,7); label(P,'M',col,10,-8);
+      var d1=len(sub(P,g.A)), d2=len(sub(Ma,P));
+      infoHTML='Медианы сходятся в центроиде <b>M</b> — <span class="in">всегда внутри</span>. '+
+               'Замерь: AM = '+num1(d1)+', MK = '+num1(d2)+' → AM : MK = '+num1(d1/d2)+' : 1, то есть <b>2 : 1</b>.';
+    }
+    else if(mode==='bis'){
+      var Fa={x:(g.b*g.B.x+g.c*g.C.x)/(g.b+g.c), y:(g.b*g.B.y+g.c*g.C.y)/(g.b+g.c)};
+      var Fb={x:(g.c*g.C.x+g.a*g.A.x)/(g.c+g.a), y:(g.c*g.C.y+g.a*g.A.y)/(g.c+g.a)};
+      var Fc={x:(g.a*g.A.x+g.b*g.B.x)/(g.a+g.b), y:(g.a*g.A.y+g.b*g.B.y)/(g.a+g.b)};
+      line(g.A,Fa,col,2.4); line(g.B,Fb,col,2.4); line(g.C,Fc,col,2.4);
+      circle(P,g.r,col);
+      dot(P,col,7); label(P,'I',col,10,-8);
+      infoHTML='Биссектрисы сходятся в инцентре <b>I</b> — <span class="in">всегда внутри</span>. '+
+               'Он равноудалён от всех сторон, это расстояние и есть радиус вписанной окружности: r = '+num1(g.r)+'.';
+    }
+    else if(mode==='alt'){
+      V.forEach(function(vx,i){
+        var Q1=V[(i+1)%3], Q2=V[(i+2)%3];
+        var f=foot(Q1,Q2,vx);
+        if(f.t<0) line(Q1,f,'#B7BECC',1.4,[5,5]);
+        if(f.t>1) line(Q2,f,'#B7BECC',1.4,[5,5]);
+        line(vx,f,col,2.4,(f.t<0||f.t>1)?[7,5]:[]);
+        dot(f,'#9AA3B2',4);
+      });
+      if(P){
+        if(!inside(g,P)){ line(g.A,P,'#E3B5BE',1.2,[4,4]); }
+        dot(P,col,7); label(P,'H',col,10,-8);
+      }
+      infoHTML='Высоты сходятся в ортоцентре <b>H</b>. Сейчас он '+
+        (k==='right' ? '<span class="out">точно в вершине прямого угла</span>.'
+         : (inside(g,P)?'<span class="in">внутри треугольника</span>.':'<span class="out">ВНЕ треугольника</span> — высоты пришлось продлить (пунктир).'));
+    }
+    else {
+      [[g.A,g.B],[g.B,g.C],[g.C,g.A]].forEach(function(sd){
+        var m=mid(sd[0],sd[1]), d=sub(sd[1],sd[0]);
+        longLine(m,{x:-d.y,y:d.x},col,2,[8,5]);
+        dot(m,'#9AA3B2',4);
+      });
+      if(P){
+        circle(P,g.R,col);
+        dot(P,col,7); label(P,'O',col,10,-8);
+      }
+      infoHTML='Серединные перпендикуляры сходятся в точке <b>O</b> — центре описанной окружности, R = '+num1(g.R)+'. Сейчас она '+
+        (k==='right' ? '<span class="out">лежит ровно на середине гипотенузы</span>.'
+         : (inside(g,P)?'<span class="in">внутри треугольника</span>.':'<span class="out">ВНЕ треугольника</span>.'));
+    }
+
+    label(g.A,'A','#3A4358',-20,14);
+    label(g.B,'B','#3A4358',10,14);
+    label(g.C,'C','#3A4358',-4,-10);
+
+    badge.textContent = k==='right'?'прямоугольный':(k==='obtuse'?'тупоугольный':'остроугольный');
+    badge.style.background = k==='acute'?'#EAEDFB':(k==='right'?'#FBF1DC':'#F9E9EC');
+    badge.style.color = k==='acute'?'#3B4FD0':(k==='right'?'#B9791A':'#C0455B');
+    info.innerHTML=infoHTML;
+  }
+
+  Array.prototype.forEach.call(document.querySelectorAll('.modes button'),function(btn){
+    btn.addEventListener('click',function(){
+      Array.prototype.forEach.call(document.querySelectorAll('.modes button'),function(b){ b.classList.remove('on'); });
+      btn.classList.add('on'); mode=btn.getAttribute('data-mode'); draw();
+    });
+  });
+  [sbx,scx,scy].forEach(function(s){ s.addEventListener('input',draw); });
+  window.addEventListener('resize',function(){ resize(); draw(); });
+  resize(); draw();
+})();
+</script>
+
+<style>
+  .trainer{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.2rem 1.3rem;margin-top:1rem}
+  .tr-q{font-weight:700;font-size:1.02rem;line-height:1.55;padding:1rem;background:var(--accent-soft);border-radius:10px;color:var(--ink)}
+  .tr-opts{display:grid;gap:.5rem;margin-top:.9rem}
+  @media(min-width:520px){.tr-opts{grid-template-columns:repeat(2,1fr)}}
+  .tr-opts button{
+    font:inherit;font-size:.92rem;font-weight:650;text-align:left;cursor:pointer;
+    border:1px solid var(--line);background:#fff;color:var(--ink);border-radius:10px;padding:.6rem .85rem;
+  }
+  .tr-opts button:hover{border-color:var(--accent)}
+  .tr-opts button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+  .tr-ctl{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.7rem;align-items:center}
+  .tr-ctl button{font:inherit;font-weight:700;font-size:.9rem;cursor:pointer;border:none;border-radius:9px;padding:.55rem .95rem;color:#fff;background:var(--accent)}
+  .tr-ctl button.sec{background:var(--pos)}
+  .tr-ctl button.ghost{background:transparent;color:var(--accent);border:1px solid var(--accent)}
+  .tr-ctl input{flex:1;min-width:150px;font:inherit;padding:.5rem .7rem;border:1px solid var(--line);border-radius:9px;background:#fff;color:var(--ink)}
+  .tr-ctl button:focus-visible,.tr-ctl input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+  .tr-result{margin-top:.9rem;font-size:.96rem;min-height:1.2rem}
+  .tr-result .ok{color:var(--pos);font-weight:700}
+  .tr-result .bad{color:var(--neg);font-weight:700}
+  .tr-result .sol{margin-top:.7rem;padding:.85rem 1rem;background:#FCFBFE;border:1px solid var(--line);border-radius:10px;font-size:.92rem;line-height:1.75}
+  .tr-result .sol b{color:var(--accent)}
+</style>
+
+<script>
+(function(){
+  var qEl=document.getElementById('trQ'), optEl=document.getElementById('trOpts'),
+      ctlEl=document.getElementById('trCtl'), ansEl=document.getElementById('trAns'),
+      resEl=document.getElementById('trResult');
+  if(!qEl) return;
+
+  function ri(min,max){ return min+Math.floor(Math.random()*(max-min+1)); }
+  function pick(arr){ return arr[ri(0,arr.length-1)]; }
+  function fnum(x){
+    var n=Math.round(x*1000)/1000;
+    var s=String(Math.abs(n)).replace('.',',');
+    return (n<0?'−':'')+s;
+  }
+
+  /* «−» → «-», десятичная запятая → точка, единицы отбрасываем, дробь a/b понимаем */
+  function parseNum(raw){
+    var s=String(raw).replace(/−/g,'-');
+    s=s.replace(/(\d),(\d)/g,'$1.$2');
+    s=s.trim();
+    s=s.replace(/[^0-9.\-\/]/g,'');           // выкидываем «см», «м», пробелы и прочее
+    if(s==='') return NaN;
+    var m=s.match(/^(-?\d+(?:\.\d+)?)\/(-?\d+(?:\.\d+)?)$/);
+    if(m){
+      var den=parseFloat(m[2]);
+      if(!isFinite(den) || den===0) return NaN;
+      var nu=parseFloat(m[1]);
+      if(!isFinite(nu)) return NaN;
+      return nu/den;
+    }
+    if(!/^-?\d+(\.\d+)?$/.test(s)) return NaN;
+    var v=parseFloat(s);
+    return isFinite(v)?v:NaN;
+  }
+
+  var LINES=['биссектрис','серединных перпендикуляров','высот','медиан'];
+  var WHATS=[
+    {d:'центр вписанной окружности', i:0,
+     w:'Биссектриса — это множество точек, равноудалённых от сторон угла. Значит, общая точка трёх биссектрис равноудалена от всех трёх сторон — это и есть центр вписанной окружности.'},
+    {d:'центр описанной окружности', i:1,
+     w:'Серединный перпендикуляр — множество точек, равноудалённых от концов отрезка. Общая точка трёх таких прямых равноудалена от всех трёх вершин — это центр описанной окружности.'},
+    {d:'ортоцентр треугольника', i:2,
+     w:'Ортоцентр по определению — точка пересечения высот треугольника.'},
+    {d:'центр тяжести (центроид) треугольника', i:3,
+     w:'Центр тяжести — это точка пересечения медиан. Именно в ней картонный треугольник балансирует на кончике карандаша.'},
+    {d:'точка, равноудалённая от всех трёх сторон треугольника', i:0,
+     w:'Равноудалённость от СТОРОН — это про биссектрисы. Их общая точка (инцентр) и есть центр вписанной окружности.'},
+    {d:'точка, равноудалённая от всех трёх вершин треугольника', i:1,
+     w:'Равноудалённость от ВЕРШИН — это про серединные перпендикуляры. Их общая точка — центр описанной окружности.'},
+    {d:'точка, которая делит каждую из этих линий в отношении 2 : 1, считая от вершины', i:3,
+     w:'Свойство 2 : 1 — фирменный признак медиан и их точки пересечения (центроида).'}
+  ];
+  var RTOPT=['в вершине прямого угла','в середине гипотенузы','в середине катета','вне треугольника'];
+  var TRIPLES=[[3,4,5],[6,8,10],[5,12,13],[8,15,17],[9,12,15],[7,24,25],[20,21,29],[12,16,20],[10,24,26],[15,20,25]];
+
+  var cur=null;
+
+  function shuffle(list, correctIdx){
+    var idx=list.map(function(_,i){return i;});
+    for(var i=idx.length-1;i>0;i--){ var j=ri(0,i), t=idx[i]; idx[i]=idx[j]; idx[j]=t; }
+    var opts=idx.map(function(k){ return list[k]; });
+    return {opts:opts, ok:idx.indexOf(correctIdx)};
+  }
+
+  function makeWhat(){
+    var it=pick(WHATS);
+    var sh=shuffle(LINES, it.i);
+    return {
+      mode:'mcq',
+      q:'Точкой пересечения каких линий является <b>'+it.d+'</b>?',
+      opts:sh.opts, ok:sh.ok,
+      sol:'<div class="sol">Ответ: <b>'+LINES[it.i]+'</b>.<br>'+it.w+'</div>'
+    };
+  }
+
+  function makeRightCenter(){
+    var sh=shuffle(RTOPT, 1);
+    var legs=pick(TRIPLES), k=ri(1,2);
+    var a=legs[0]*k, b=legs[1]*k, c=legs[2]*k;
+    return {
+      mode:'mcq',
+      q:'В прямоугольном треугольнике катеты равны '+a+' и '+b+', гипотенуза '+c+'. <b>Где лежит центр описанной окружности?</b>',
+      opts:sh.opts, ok:sh.ok,
+      sol:'<div class="sol">Ответ: <b>в середине гипотенузы</b>.<br>'+
+          'Центр описанной окружности — точка пересечения серединных перпендикуляров, он равноудалён от вершин. '+
+          'У прямоугольного треугольника эта точка попадает ровно на середину гипотенузы, поэтому R = '+c+' : 2 = <b>'+fnum(c/2)+'</b>.</div>'
+    };
+  }
+
+  function makeMedian(){
+    var k=ri(2,9), whole=3*k, big=2*k, small=k;
+    var v=ri(0,4), q, ans, sol;
+    if(v===0){
+      q='Медианы треугольника пересекаются в точке M. Медиана AK = '+whole+' см. Найди <b>AM</b> (от вершины A до точки M).';
+      ans=big;
+      sol='Точка пересечения делит медиану в отношении 2 : 1 от вершины, то есть медиана — это 3 равные части.<br>'+
+          'Одна часть: '+whole+' : 3 = <b>'+k+'</b> см.<br>AM — это 2 части: 2 · '+k+' = <b>'+big+'</b> см.';
+    } else if(v===1){
+      q='Медианы треугольника пересекаются в точке M. Медиана AK = '+whole+' см. Найди <b>MK</b> (от точки M до середины стороны).';
+      ans=small;
+      sol='Медиана делится точкой M на 3 равные части (2 : 1 от вершины).<br>'+
+          'Одна часть: '+whole+' : 3 = <b>'+k+'</b> см.<br>MK — это как раз 1 часть: <b>'+small+'</b> см.';
+    } else if(v===2){
+      q='Медианы пересекаются в точке M. Отрезок AM (от вершины до M) равен '+big+' см. Найди <b>всю медиану AK</b>.';
+      ans=whole;
+      sol='От вершины до M — это 2 части.<br>Одна часть: '+big+' : 2 = <b>'+k+'</b> см.<br>'+
+          'Вся медиана = 3 части: 3 · '+k+' = <b>'+whole+'</b> см.';
+    } else if(v===3){
+      q='Медианы пересекаются в точке M. Отрезок MK (от M до середины стороны) равен '+small+' см. Найди <b>всю медиану AK</b>.';
+      ans=whole;
+      sol='MK — это 1 часть, значит одна часть = <b>'+small+'</b> см.<br>'+
+          'Вся медиана = 3 части: 3 · '+small+' = <b>'+whole+'</b> см.';
+    } else {
+      q='Медианы пересекаются в точке M. Отрезок AM (от вершины) равен '+big+' см. Найди <b>MK</b>.';
+      ans=small;
+      sol='AM — это 2 части, значит одна часть = '+big+' : 2 = <b>'+k+'</b> см.<br>'+
+          'MK — это 1 часть: <b>'+small+'</b> см.';
+    }
+    return {mode:'num', q:q, ans:ans, unit:'см',
+      sol:'<div class="sol">'+sol+'<br>Ответ: <b>'+fnum(ans)+'</b> см. Проверка: '+big+' + '+small+' = '+whole+', и '+big+' : '+small+' = 2 : 1.</div>'};
+  }
+
+  function makeRightR(){
+    var t=pick(TRIPLES), k=ri(1,2);
+    var a=t[0]*k, b=t[1]*k, c=t[2]*k;
+    if(ri(0,1)===0){
+      return {mode:'num',
+        q:'В прямоугольном треугольнике катеты равны '+a+' см и '+b+' см. Найди <b>радиус описанной окружности</b>.',
+        ans:c/2, unit:'см',
+        sol:'<div class="sol">Центр описанной окружности прямоугольного треугольника — середина гипотенузы, поэтому R = половина гипотенузы.<br>'+
+            'Сначала гипотенуза по теореме Пифагора: c² = '+a+'² + '+b+'² = '+(a*a)+' + '+(b*b)+' = '+(a*a+b*b)+', значит c = <b>'+c+'</b> см.<br>'+
+            'R = '+c+' : 2 = <b>'+fnum(c/2)+'</b> см.</div>'};
+    }
+    return {mode:'num',
+      q:'В прямоугольном треугольнике гипотенуза равна '+c+' см. Найди <b>радиус описанной окружности</b>.',
+      ans:c/2, unit:'см',
+      sol:'<div class="sol">Центр описанной окружности прямоугольного треугольника лежит в середине гипотенузы, а радиус — это расстояние до вершины, то есть половина гипотенузы.<br>'+
+          'R = '+c+' : 2 = <b>'+fnum(c/2)+'</b> см.</div>'};
+  }
+
+  function build(){
+    var t=ri(0,3);
+    if(t===0) return makeWhat();
+    if(t===1) return makeRightCenter();
+    if(t===2) return makeMedian();
+    return makeRightR();
+  }
+
+  function render(){
+    qEl.innerHTML=cur.q;
+    resEl.innerHTML='';
+    optEl.innerHTML='';
+    if(cur.mode==='mcq'){
+      ctlEl.style.display='none';
+      optEl.style.display='';
+      cur.opts.forEach(function(txt,i){
+        var b=document.createElement('button');
+        b.type='button'; b.textContent=txt;
+        b.addEventListener('click',function(){ checkMcq(i); });
+        optEl.appendChild(b);
+      });
+    } else {
+      optEl.style.display='none';
+      ctlEl.style.display='';
+      ansEl.value='';
+    }
+  }
+
+  function checkMcq(i){
+    if(i===cur.ok) resEl.innerHTML='<span class="ok">✓ Верно!</span>'+cur.sol;
+    else resEl.innerHTML='<span class="bad">✗ Не то. Ты выбрал: «'+cur.opts[i]+'».</span>'+cur.sol;
+  }
+
+  function checkNum(){
+    var raw=ansEl.value;
+    if(!String(raw).trim()){ resEl.innerHTML='<span class="bad">Введи число или нажми «Показать решение».</span>'; return; }
+    var got=parseNum(raw);
+    if(isNaN(got)){
+      resEl.innerHTML='<span class="bad">Не понял запись. Введи число, например «8», «6,5» или «13/2».</span>'; return;
+    }
+    if(Math.abs(got-cur.ans)<1e-6) resEl.innerHTML='<span class="ok">✓ Верно!</span>'+cur.sol;
+    else resEl.innerHTML='<span class="bad">✗ Пока не то. Правильный ответ: '+fnum(cur.ans)+' '+(cur.unit||'')+'.</span>'+cur.sol;
+  }
+
+  function newTask(focus){
+    cur=build(); render();
+    if(focus && cur.mode==='num' && ansEl.focus) ansEl.focus();
+  }
+
+  document.getElementById('trNew').addEventListener('click',function(){ newTask(true); });
+  document.getElementById('trCheck').addEventListener('click',checkNum);
+  document.getElementById('trShow').addEventListener('click',function(){ resEl.innerHTML=cur.sol; });
+  ansEl.addEventListener('keydown',function(e){ if(e.key==='Enter') checkNum(); });
+
+  newTask(false);
+
+  if(typeof window!=='undefined'){ window.__trTest={build:build, parseNum:parseNum}; }
+})();
+</script>
+<!--LESSON-NAV-BOT--><nav class="lnav lnav-bot"><a class="prev" href="./geo8-vpisannyj-chetyrehugolnik.html"><span class="dir">← Предыдущая</span><span class="ttl">Вписанный четырёхугольник</span></a><a class="to-cat" href="./catalog.html">📚 <span>Все темы</span></a><a class="next" href="./alg9-funkciya-opredelenie.html"><span class="dir">Следующая →</span><span class="ttl">Функция, область определения и множество значений</span></a></nav><!--/LESSON-NAV-BOT-->

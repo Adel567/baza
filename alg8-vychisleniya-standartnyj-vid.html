@@ -1,0 +1,821 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Вычисления с числами в стандартном виде — урок, алгебра 8 класс</title>
+<style>
+  :root{
+    --paper:#F6F7F9;
+    --card:#FFFFFF;
+    --ink:#1B2333;
+    --muted:#5A6478;
+    --line:#E2E5EC;
+    --accent:#3B4FD0;
+    --accent-soft:#EAEDFB;
+    --pos:#1E8E5A;
+    --pos-bg:#E7F4EC;
+    --zero:#B9791A;
+    --zero-bg:#FBF1DC;
+    --neg:#C0455B;
+    --neg-bg:#F9E9EC;
+  }
+  *{box-sizing:border-box}
+  body{margin:0}
+  .wrap{
+    max-width:760px;
+    margin:0 auto;
+    padding:clamp(1.4rem,4vw,3rem) clamp(1.1rem,4vw,2rem) 4rem;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    font-size:17px;
+    line-height:1.62;
+    -webkit-font-smoothing:antialiased;
+  }
+  .eyebrow{
+    font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--accent);font-weight:600;margin:0 0 .5rem;
+  }
+  h1{
+    font-family:Georgia,"Times New Roman",serif;
+    font-size:clamp(1.9rem,6.6vw,2.8rem);
+    line-height:1.06;margin:0;font-weight:700;letter-spacing:-.01em;
+    text-wrap:balance;
+  }
+  .lede{
+    font-size:1.08rem;color:var(--muted);margin:.7rem 0 0;max-width:60ch;
+    text-wrap:pretty;
+  }
+  h2{
+    font-family:Georgia,serif;font-size:1.32rem;font-weight:700;
+    margin:0 0 .1rem;letter-spacing:-.005em;
+  }
+  section{margin-top:2.6rem}
+  .kicker{
+    font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--muted);font-weight:600;margin:0 0 .8rem;
+    display:flex;align-items:center;gap:.6rem;
+  }
+  .kicker::before{
+    content:"";width:1.4rem;height:2px;background:var(--accent);border-radius:2px;
+  }
+  p{margin:.65rem 0}
+  strong{font-weight:650}
+  .math{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-weight:600}
+  sup{font-size:.72em}
+
+  /* Главная формула */
+  .hero-formula{
+    margin-top:2.2rem;
+    background:var(--ink);color:#fff;border-radius:14px;
+    padding:1.5rem 1.1rem;text-align:center;
+  }
+  .hero-formula .lbl{
+    font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;
+    color:#9aa6c9;margin:0 0 .7rem;
+  }
+  .hero-formula .eq{
+    font-family:ui-monospace,"SF Mono",Menlo,monospace;
+    font-size:clamp(1rem,4.3vw,1.45rem);font-weight:700;letter-spacing:.01em;
+    margin:.35rem 0;
+  }
+  .hero-formula .eq b{color:#8ea0ff;font-weight:700}
+  .hero-formula .note{font-size:.86rem;color:#9aa6c9;margin:.9rem 0 0}
+
+  /* Пререквизит */
+  .recall{
+    background:var(--accent-soft);border-radius:12px;padding:1rem 1.15rem;
+    font-size:.96rem;
+  }
+  .recall p{margin:.3rem 0}
+
+  /* Два канала */
+  .cases{display:grid;gap:.85rem;margin-top:.4rem}
+  @media(min-width:620px){.cases{grid-template-columns:repeat(2,1fr)}}
+  .case{
+    border-radius:12px;padding:1.05rem 1.1rem;border:1px solid var(--line);
+    background:var(--card);display:flex;flex-direction:column;gap:.35rem;
+  }
+  .case .sign{font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.05rem}
+  .case .count{font-weight:650;font-size:1rem}
+  .case .desc{font-size:.9rem;color:var(--muted)}
+  .case.pos{border-top:4px solid var(--pos);background:var(--pos-bg)}
+  .case.pos .sign{color:var(--pos)}
+  .case.zero{border-top:4px solid var(--zero);background:var(--zero-bg)}
+  .case.zero .sign{color:var(--zero)}
+  .case.neg{border-top:4px solid var(--neg);background:var(--neg-bg)}
+  .case.neg .sign{color:var(--neg)}
+
+  /* Разбор */
+  .worked{
+    background:var(--card);border:1px solid var(--line);border-radius:12px;
+    padding:1.2rem 1.15rem;
+  }
+  .worked .task{
+    font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.02rem;
+    margin:0 0 1rem;padding-bottom:.8rem;border-bottom:1px solid var(--line);
+  }
+  ol.steps{margin:0;padding:0;list-style:none;counter-reset:s;display:flex;flex-direction:column;gap:.7rem}
+  ol.steps li{position:relative;padding-left:2.1rem;counter-increment:s}
+  ol.steps li::before{
+    content:counter(s);position:absolute;left:0;top:.05rem;
+    width:1.5rem;height:1.5rem;border-radius:50%;
+    background:var(--accent-soft);color:var(--accent);
+    font-size:.82rem;font-weight:700;display:flex;align-items:center;justify-content:center;
+  }
+  ol.steps .m{font-family:ui-monospace,Menlo,monospace;font-weight:600;color:var(--ink)}
+  ol.steps .why{color:var(--muted);font-size:.9rem}
+  .verdict{
+    margin-top:1rem;padding:.7rem 1rem;background:var(--pos-bg);
+    border-radius:9px;font-weight:600;color:var(--pos);font-size:.98rem;
+    font-family:ui-monospace,Menlo,monospace;
+  }
+
+  /* Практика */
+  .drill{display:flex;flex-direction:column;gap:.7rem}
+  details{
+    background:var(--card);border:1px solid var(--line);border-radius:10px;
+    padding:.85rem 1.05rem;
+  }
+  details[open]{border-color:var(--accent)}
+  summary{
+    cursor:pointer;font-weight:600;list-style:none;
+    display:flex;justify-content:space-between;align-items:center;gap:.7rem;flex-wrap:wrap;
+  }
+  summary::-webkit-details-marker{display:none}
+  summary:focus-visible{outline:3px solid var(--accent);outline-offset:3px;border-radius:6px}
+  summary .q{font-family:ui-monospace,Menlo,monospace;min-width:0}
+  summary .tag{
+    font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);
+    border:1px solid var(--line);border-radius:20px;padding:.1rem .55rem;white-space:nowrap;
+  }
+  summary::after{
+    content:"показать ответ";font-size:.78rem;color:var(--accent);font-weight:600;white-space:nowrap;
+  }
+  details[open] summary::after{content:"скрыть"}
+  .ans{margin-top:.7rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.96rem;color:var(--muted)}
+  .ans .m{font-family:ui-monospace,Menlo,monospace;color:var(--ink);font-weight:600}
+
+  /* Ошибки */
+  ul.pitfalls{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:.6rem}
+  ul.pitfalls li{padding-left:1.5rem;position:relative;font-size:.98rem}
+  ul.pitfalls li::before{
+    content:"×";position:absolute;left:0;top:-.05rem;color:var(--neg);font-weight:700;font-size:1.1rem;
+  }
+  ul.pitfalls b{color:var(--ink)}
+
+  .next{background:var(--accent);color:#fff;border-radius:12px;padding:1.2rem 1.15rem}
+  .next h2{color:#fff}
+  .next .eq{
+    font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.1rem;
+    margin:.6rem 0 .3rem;
+  }
+  .next p{color:#dfe4fb;font-size:.96rem;margin:.4rem 0 0}
+  .foot{margin-top:2.4rem;font-size:.82rem;color:var(--muted);text-align:center}
+
+  /* Лесенка масштабов (статичная таблица) */
+  .ladder{
+    margin-top:.6rem;background:var(--card);border:1px solid var(--line);
+    border-radius:12px;padding:.9rem 1rem;overflow-x:auto;
+  }
+  .ladder table{border-collapse:collapse;width:100%;font-size:.93rem}
+  .ladder th,.ladder td{padding:.42rem .5rem;text-align:left;border-bottom:1px solid var(--line)}
+  .ladder th{font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600}
+  .ladder tr:last-child td{border-bottom:none}
+  .ladder td.m{font-family:ui-monospace,Menlo,monospace;font-weight:700;white-space:nowrap}
+  .ladder td.r{color:var(--muted)}
+
+  @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+<style>
+.oge-tip{display:flex;gap:.8rem;align-items:flex-start;background:#FFF8E7;border:1px solid #F0D98A;border-left:4px solid #E0A315;border-radius:10px;padding:.85rem 1.05rem;margin:1.5rem 0}
+.oge-tip .b{font-size:.72rem;font-weight:800;letter-spacing:.03em;color:#8A6A15;white-space:nowrap;text-transform:uppercase;padding-top:.15rem}
+.oge-tip .x{font-size:.95rem;line-height:1.5}
+</style>
+
+<!--LESSON-NAV-TOP--><style>.lnav{--lnav-accent:#3D5AF1}.lnav a{text-decoration:none;font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif}.lnav-top{max-width:820px;margin:0 auto;padding:.75rem clamp(1rem,4vw,1.5rem) .1rem}.lnav-top a{display:inline-flex;align-items:center;gap:.35rem;color:var(--lnav-accent);font-weight:600;font-size:.9rem}.lnav-top a:hover{text-decoration:underline}.lnav-bot{max-width:820px;margin:2.6rem auto 3rem;padding:1.1rem clamp(1rem,4vw,1.5rem) 0;border-top:1px solid #E4E8EF;display:flex;align-items:stretch;gap:.55rem}.lnav-bot a{min-width:0;display:flex;flex-direction:column;justify-content:center;gap:.15rem;border:1px solid #E4E8EF;border-radius:12px;padding:.65rem .85rem;color:#182233;background:#fff;transition:border-color .1s,transform .08s}.lnav-bot a:hover{border-color:var(--lnav-accent);transform:translateY(-1px)}.lnav-bot .prev,.lnav-bot .next{flex:1 1 0}.lnav-bot .next{text-align:right}.lnav-bot .dir{font-size:.72rem;color:#8A93A6;font-weight:600}.lnav-bot .ttl{font-size:.9rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.lnav-bot .to-cat{flex:0 0 auto;flex-direction:row;align-items:center;justify-content:center;color:var(--lnav-accent);font-weight:700;font-size:.85rem;white-space:nowrap}@media(max-width:420px){.lnav-bot .to-cat span{display:none}.lnav-bot .to-cat{padding:.65rem .7rem}}</style><nav class="lnav lnav-top"><a href="./catalog.html">← Все темы</a></nav><!--/LESSON-NAV-TOP-->
+<div class="wrap">
+
+  <header>
+    <p class="eyebrow">Алгебра · 8 класс</p>
+    <h1>Вычисления с числами в стандартном виде</h1>
+    <p class="lede">Умножать миллиарды на миллиардные доли в столбик невозможно. А через степени десятки — <em>в одну строчку.</em></p>
+  </header>
+
+  <div class="hero-formula">
+    <p class="lbl">Два правила — вся тема</p>
+    <div class="eq">(<b>a</b>·10<sup>m</sup>) · (<b>b</b>·10<sup>n</sup>) = (<b>a</b>·<b>b</b>) · 10<sup>m+n</sup></div>
+    <div class="eq">(<b>a</b>·10<sup>m</sup>) : (<b>b</b>·10<sup>n</sup>) = (<b>a</b>:<b>b</b>) · 10<sup>m−n</sup></div>
+    <p class="note">Мантиссы считаем между собой, показатели — отдельно. Потом результат нормируем.</p>
+  </div>
+
+  <section>
+    <p class="kicker">Зачем это нужно</p>
+    <h2>Чтобы не выписывать десятки нулей</h2>
+    <p>Масса Земли — <span class="math">5 970 000 000 000 000 000 000 000</span> кг. Диаметр атома — <span class="math">0,0000000001</span> м. Такие числа записывают в стандартном виде, и <strong>считать их приходится тоже в этом виде</strong>: иначе пришлось бы выписывать все нули и почти наверняка где-то сбиться.</p>
+    <p>Это рабочий инструмент физики, химии, астрономии и инженерии: скорость света, число молекул, размеры клеток. Калькулятор, кстати, тоже отвечает так: <span class="math">3.2E8</span> — это и есть <span class="math">3,2·10<sup>8</sup></span>.</p>
+    <p>Типичное заблуждение: «зачем степени, проще выписать все нули». На практике именно нули и теряются — стандартный вид как раз защищает от этой ошибки.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Что вспомнить с прошлых шагов</p>
+    <div class="recall">
+      <p><strong>Стандартный вид числа</strong> — это <span class="math">a·10<sup>n</sup></span>, где <span class="math">1 ≤ a &lt; 10</span>, а <span class="math">n</span> — целое (может быть отрицательным).</p>
+      <p><span class="math">a</span> называют <strong>мантиссой</strong> (значащая часть), <span class="math">n</span> — <strong>порядком</strong>.</p>
+      <p><strong>Свойства степеней с основанием 10:</strong> <span class="math">10<sup>m</sup> · 10<sup>n</sup> = 10<sup>m+n</sup></span>, &nbsp;<span class="math">10<sup>m</sup> : 10<sup>n</sup> = 10<sup>m−n</sup></span>.</p>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Суть темы</p>
+    <h2>Число распадается на два независимых канала</h2>
+    <p>В записи <span class="math">a·10<sup>n</sup></span> мантисса хранит <strong>значащие цифры</strong>, а степень десятки — <strong>масштаб</strong>: насколько число большое или маленькое. И считаются эти два канала <em>по отдельности, не смешиваясь</em>.</p>
+    <div class="cases">
+      <div class="case pos">
+        <div class="sign">a · b</div>
+        <div class="count">Канал цифр</div>
+        <div class="desc">Мантиссы перемножаем (или делим) обычным способом — это маленькие числа от 1 до 10, считаются устно.</div>
+      </div>
+      <div class="case zero">
+        <div class="sign">10<sup>m</sup> · 10<sup>n</sup></div>
+        <div class="count">Канал масштаба</div>
+        <div class="desc">Показатели складываем (при умножении) или вычитаем (при делении). Сами десятки перемножать не надо.</div>
+      </div>
+    </div>
+    <p style="font-size:.92rem;color:var(--muted);margin-top:.9rem">Запомни как считалочку: <strong>цифры — к цифрам, показатели — к показателям.</strong></p>
+  </section>
+
+  <section>
+    <p class="kicker">Обязательный последний шаг</p>
+    <h2>Нормировка: возвращаем мантиссу в рамки</h2>
+    <p>После счёта мантисса может вылезти за границы <span class="math">1 ≤ a &lt; 10</span>. Произведение <span class="math">a·b</span> лежит где-то от 1 до 100, а частное <span class="math">a:b</span> — от 0,1 до 10. Если вылезла — <strong>её приводят обратно</strong>:</p>
+    <div class="cases">
+      <div class="case neg">
+        <div class="sign">a·b ≥ 10</div>
+        <div class="count">Делим мантиссу на 10, к порядку +1</div>
+        <div class="desc"><span class="math">12·10<sup>13</sup> = 1,2·10<sup>14</sup></span> — один десяток «переехал» в порядок.</div>
+      </div>
+      <div class="case neg">
+        <div class="sign">a:b &lt; 1</div>
+        <div class="count">Умножаем мантиссу на 10, из порядка −1</div>
+        <div class="desc"><span class="math">0,3·10<sup>5</sup> = 3·10<sup>4</sup></span> — десяток «переехал» обратно в мантиссу.</div>
+      </div>
+    </div>
+    <p style="font-size:.94rem;margin-top:1rem"><strong>Важное ограничение.</strong> Складывать и вычитать так <em>нельзя</em> — правило «отдельно цифры, отдельно показатели» работает только для умножения и деления. При сложении и вычитании сначала приводят числа к одинаковому порядку.</p>
+
+    <div class="oge-tip"><div class="b">🎯 В ОГЭ</div><div class="x"><b>Задания 6 и 8.</b> Стандартный вид — это про огромные и крошечные числа: перемножить их в столбик невозможно, а через степени десятки — в одну строчку.</div></div>
+  </section>
+
+  <section>
+    <p class="kicker">Покрути сам · интерактив</p>
+    <h2>Шкала масштабов: один шаг порядка = один разряд</h2>
+    <p>Двигай нижний ползунок — меняется порядок. Смотри, как в обычной записи <strong>запятая переезжает ровно на одну цифру</strong>, а значащие цифры остаются те же. Верхний ползунок меняет саму мантиссу.</p>
+    <div class="scale">
+      <div class="sc-obj">
+        <div class="sc-emoji" id="scEmoji">🧍</div>
+        <div class="sc-name" id="scName">рост человека</div>
+      </div>
+      <div class="sc-rows">
+        <div class="sc-row"><span class="lbl">обычная запись</span><span class="val" id="scPlain">1 м</span></div>
+        <div class="sc-row"><span class="lbl">стандартный вид</span><span class="val hi" id="scSci">1·10<sup>0</sup> м</span></div>
+      </div>
+      <div class="sc-ctl">
+        <label for="scMant">мантисса <span class="sval" id="scMantV">1</span></label>
+        <input id="scMant" type="range" min="10" max="99" step="1" value="10" aria-label="Мантисса">
+      </div>
+      <div class="sc-ctl">
+        <label for="scExp">порядок <span class="sval" id="scExpV">0</span></label>
+        <input id="scExp" type="range" min="-9" max="9" step="1" value="0" aria-label="Порядок — показатель степени десятки">
+      </div>
+      <div class="sc-ticks"><span>10⁻⁹</span><span>10⁻⁴</span><span>10⁰</span><span>10⁴</span><span>10⁹</span></div>
+      <p class="sc-hint" id="scHint"></p>
+    </div>
+    <p style="font-size:.9rem;color:var(--muted)">Поставь порядок на <span class="math">0</span> и подними до <span class="math">3</span> — получишь то же самое число, но в тысячу раз больше: цифры не изменились, изменился только масштаб. Ровно это и происходит при нормировке.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Разбираем вместе</p>
+    <h2>Эталонный пример «думаю вслух»</h2>
+    <div class="worked">
+      <p class="task">(3·10<sup>5</sup>) · (4·10<sup>8</sup>) = ?</p>
+      <ol class="steps">
+        <li>Перемножаем мантиссы: <span class="m">3 · 4 = 12</span>. <span class="why">Почему: значащие части считаем отдельно от масштаба.</span></li>
+        <li>Складываем порядки: <span class="m">10<sup>5</sup> · 10<sup>8</sup> = 10<sup>5+8</sup> = 10<sup>13</sup></span>. <span class="why">Почему: при умножении степеней с одинаковым основанием показатели складываются.</span></li>
+        <li>Промежуточный результат: <span class="m">12·10<sup>13</sup></span>. <span class="why">Почему это ещё не ответ: мантисса 12 ≥ 10, значит это не стандартный вид.</span></li>
+        <li>Нормируем: <span class="m">12 = 1,2·10</span>, поэтому <span class="m">12·10<sup>13</sup> = 1,2·10<sup>14</sup></span>. <span class="why">Почему: один десяток «переехал» из мантиссы в порядок.</span></li>
+      </ol>
+      <div class="verdict">Ответ: 1,2·10<sup>14</sup></div>
+    </div>
+
+    <div class="worked" style="margin-top:1rem">
+      <p class="task">(6·10<sup>−3</sup>) : (2·10<sup>4</sup>) = ?&nbsp;&nbsp;<span style="font-weight:400;color:var(--muted);font-family:system-ui,sans-serif;font-size:.9rem">допиши сам</span></p>
+      <ol class="steps">
+        <li>Мантиссы: <span class="m">6 : 2 = 3</span>.</li>
+        <li>Порядки: <span class="m">10<sup>−3</sup> : 10<sup>4</sup> = 10<sup>−3−4</sup> = 10<sup>▢</sup></span> ← впиши показатель. <span class="why">Из верхнего показателя вычитаем нижний — аккуратно со знаком.</span></li>
+        <li>Ответ: <span class="m">3·10<sup>▢</sup></span>. Мантисса 3 уже в рамках <span class="m">[1; 10)</span>, нормировать не нужно.</li>
+      </ol>
+      <details style="margin-top:.9rem">
+        <summary><span class="q">Проверить показатель</span><span class="tag">самопроверка</span></summary>
+        <div class="ans">Показатель равен <span class="m">−7</span>: <span class="m">−3 − 4 = −7</span>. Ответ: <span class="m">3·10<sup>−7</sup></span>.</div>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Наглядность</p>
+    <h2>Масштабная лесенка</h2>
+    <p>Выпиши степени десятки столбиком — и станет видно, что переход на одну ступень вверх это просто «<span class="math">×10</span>». Тогда сложение и вычитание показателей — это шаги по этой лесенке.</p>
+    <div class="ladder">
+      <table>
+        <tr><th>Степень</th><th>Обычная запись</th><th>Шаг</th></tr>
+        <tr><td class="m">10<sup>6</sup></td><td class="m">1 000 000</td><td class="r">↑ ×10</td></tr>
+        <tr><td class="m">10<sup>5</sup></td><td class="m">100 000</td><td class="r">↑ ×10</td></tr>
+        <tr><td class="m">10<sup>4</sup></td><td class="m">10 000</td><td class="r">↑ ×10</td></tr>
+        <tr><td class="m">10<sup>3</sup></td><td class="m">1 000</td><td class="r">↑ ×10</td></tr>
+        <tr><td class="m">10<sup>2</sup></td><td class="m">100</td><td class="r">↑ ×10</td></tr>
+        <tr><td class="m">10<sup>1</sup></td><td class="m">10</td><td class="r">↑ ×10</td></tr>
+        <tr><td class="m">10<sup>0</sup></td><td class="m">1</td><td class="r">↑ ×10</td></tr>
+        <tr><td class="m">10<sup>−1</sup></td><td class="m">0,1</td><td class="r">↑ ×10</td></tr>
+        <tr><td class="m">10<sup>−2</sup></td><td class="m">0,01</td><td class="r">↑ ×10</td></tr>
+        <tr><td class="m">10<sup>−3</sup></td><td class="m">0,001</td><td class="r">↑ ×10</td></tr>
+      </table>
+    </div>
+    <p style="margin-top:1.1rem"><strong>Прикидка порядка — ключевой навык темы.</strong> Прежде чем считать <span class="math">(5·10<sup>4</sup>)·(4·10<sup>4</sup>)</span>, предскажи порядок ответа на глазок: «примерно 10 в восьмой или в девятой?» Потом посчитай и объясни себе, откуда взялась лишняя степень.</p>
+    <details>
+      <summary><span class="q">Проверить предсказание</span><span class="tag">предскажи → проверь</span></summary>
+      <div class="ans">Мантиссы: <span class="m">5·4 = 20</span>, порядки: <span class="m">4+4 = 8</span>, то есть <span class="m">20·10<sup>8</sup></span>. Мантисса вылезла за 10 — нормируем: <span class="m">2·10<sup>9</sup></span>. Лишняя степень появилась именно из-за того, что <span class="m">5·4 = 20 ≥ 10</span>.</div>
+    </details>
+  </section>
+
+  <section>
+    <p class="kicker">Теперь ты · нажми, чтобы проверить</p>
+    <h2>Мини-практика</h2>
+    <div class="drill">
+      <details>
+        <summary><span class="q">7,5·10<sup>−4</sup> — где мантисса, где порядок?</span><span class="tag">понимание</span></summary>
+        <div class="ans">Мантисса <span class="m">7,5</span> (значащая часть, она в рамках <span class="m">1 ≤ a &lt; 10</span>), порядок <span class="m">−4</span> (показатель степени десятки). Отрицательный порядок значит, что число маленькое.</div>
+      </details>
+      <details>
+        <summary><span class="q">Является ли 15·10<sup>3</sup> стандартным видом?</span><span class="tag">понимание</span></summary>
+        <div class="ans">Нет: мантисса <span class="m">15</span> больше 10. Нормируем: <span class="m">15·10<sup>3</sup> = 1,5·10<sup>4</sup></span>.</div>
+      </details>
+      <details>
+        <summary><span class="q">(2·10<sup>7</sup>) · (3·10<sup>2</sup>)</span><span class="tag">применение</span></summary>
+        <div class="ans">Мантиссы: <span class="m">2·3 = 6</span>. Порядки: <span class="m">7+2 = 9</span>. Мантисса 6 в рамках, нормировать не нужно. Ответ: <span class="m">6·10<sup>9</sup></span>.</div>
+      </details>
+      <details>
+        <summary><span class="q">(9·10<sup>5</sup>) : (3·10<sup>9</sup>)</span><span class="tag">применение</span></summary>
+        <div class="ans">Мантиссы: <span class="m">9:3 = 3</span>. Порядки: <span class="m">5−9 = −4</span>. Ответ: <span class="m">3·10<sup>−4</sup></span>.</div>
+      </details>
+      <details>
+        <summary><span class="q">(8·10<sup>6</sup>) · (5·10<sup>−2</sup>)</span><span class="tag">применение</span></summary>
+        <div class="ans">Мантиссы: <span class="m">8·5 = 40</span>. Порядки: <span class="m">6 + (−2) = 4</span>, получилось <span class="m">40·10<sup>4</sup></span>. Нормируем: <span class="m">40 = 4·10</span>, значит ответ <span class="m">4·10<sup>5</sup></span>.</div>
+      </details>
+      <details>
+        <summary><span class="q">Что изменится: в (4·10<sup>3</sup>)·(5·10<sup>3</sup>) мантиссы дают 20</span><span class="tag">анализ</span></summary>
+        <div class="ans">Наивно ждём порядок <span class="m">10<sup>3+3</sup> = 10<sup>6</sup></span>. Но <span class="m">4·5 = 20 ≥ 10</span>, и при нормировке появляется ещё <span class="m">+1</span> к порядку: <span class="m">20·10<sup>6</sup> = 2·10<sup>7</sup></span>. Вывод: если мантиссы в произведении дают 10 и больше, порядок ответа на единицу выше ожидаемого.</div>
+      </details>
+      <details>
+        <summary><span class="q">Найди ошибку: (3·10<sup>4</sup>)·(3·10<sup>2</sup>) = 9·10<sup>8</sup></span><span class="tag">анализ</span></summary>
+        <div class="ans">Ученик <em>перемножил</em> показатели: <span class="m">4·2 = 8</span>. А при умножении степеней показатели <strong>складывают</strong>: <span class="m">4+2 = 6</span>. Верный ответ: <span class="m">9·10<sup>6</sup></span>.</div>
+      </details>
+      <details>
+        <summary><span class="q">Обратная задача: два числа, произведение которых 1,5·10<sup>10</sup></span><span class="tag">анализ</span></summary>
+        <div class="ans">Например, <span class="m">3·10<sup>4</sup></span> и <span class="m">5·10<sup>5</sup></span>: мантиссы <span class="m">3·5 = 15</span>, порядки <span class="m">4+5 = 9</span>, итого <span class="m">15·10<sup>9</sup> = 1,5·10<sup>10</sup></span>. Подходят и другие пары — проверь свою тем же способом.</div>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Тренажёр · бесконечная практика</p>
+    <h2>Считай сам — задания генерируются заново</h2>
+    <p>Нажми «Новое задание», реши и введи ответ. Записывать можно как удобно: <span class="math">3,2·10^5</span>, <span class="math">3,2*10^5</span>, <span class="math">3.2e5</span> — всё это принимается. Показатель бывает отрицательным: <span class="math">7,5e-4</span>.</p>
+    <div class="trainer">
+      <div class="tr-type">
+        <label for="trType">Тип задания</label>
+        <select id="trType">
+          <option value="any">все вперемешку</option>
+          <option value="mul">умножение</option>
+          <option value="div">деление</option>
+          <option value="norm">привести к стандартному виду</option>
+          <option value="write">записать в стандартном виде</option>
+          <option value="cmp">сравнить по порядку</option>
+        </select>
+      </div>
+      <div class="tr-q" id="trQ">(3·10<sup>5</sup>) · (4·10<sup>8</sup>)</div>
+      <div class="tr-hint" id="trHint">Запиши ответ в стандартном виде.</div>
+      <div class="tr-ctl">
+        <button id="trNew" type="button">🎲 Новое задание</button>
+        <input id="trAns" type="text" inputmode="text" autocomplete="off" placeholder="напр.  1,2·10^14" aria-label="Ответ">
+        <button id="trCheck" type="button" class="sec">Проверить</button>
+        <button id="trShow" type="button" class="ghost">Показать решение</button>
+      </div>
+      <div id="trResult" class="tr-result"></div>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Где чаще всего ошибаются</p>
+    <h2>Лови эти четыре ловушки</h2>
+    <ul class="pitfalls">
+      <li><b>Не нормируют результат.</b> Оставляют <span class="math">12·10<sup>13</sup></span> или <span class="math">0,3·10<sup>5</sup></span> как окончательный ответ. <em>Как не допустить:</em> после счёта всегда проверяй мантиссу — она должна быть <span class="math">1 ≤ a &lt; 10</span>; если нет, сдвинь запятую и поправь порядок.</li>
+      <li><b>Перемножают порядки вместо сложения.</b> Пишут <span class="math">10<sup>5</sup> · 10<sup>8</sup> = 10<sup>40</sup></span>. <em>Как не допустить:</em> помни «умножаем числа — складываем показатели»; проверь на простом: <span class="math">10<sup>2</sup>·10<sup>3</sup> = 100·1000 = 100 000 = 10<sup>5</sup></span>, а не <span class="math">10<sup>6</sup></span>.</li>
+      <li><b>Теряют минус в отрицательном порядке.</b> В делении <span class="math">10<sup>−3</sup> : 10<sup>4</sup></span> пишут <span class="math">10<sup>−3+4</sup> = 10<sup>1</sup></span> вместо <span class="math">10<sup>−3−4</sup> = 10<sup>−7</sup></span>. <em>Как не допустить:</em> при делении из верхнего показателя <strong>вычитают</strong> нижний, аккуратно со знаками.</li>
+      <li><b>Пытаются складывать «по тому же правилу».</b> <span class="math">2·10<sup>3</sup> + 3·10<sup>5</sup> ≠ 5·10<sup>8</sup></span>. <em>Как не допустить:</em> у сложения и вычитания правило другое — сначала уравнять порядки. «Отдельно цифры, отдельно показатели» — только для умножения и деления.</li>
+    </ul>
+  </section>
+
+  <section>
+    <p class="kicker">Проверка понимания</p>
+    <h2>Объясни своими словами</h2>
+    <div class="drill">
+      <details>
+        <summary><span class="q">Чему равно 10<sup>6</sup> · 10<sup>−2</sup>?</span><span class="tag">вопрос 1</span></summary>
+        <div class="ans"><span class="m">10<sup>6+(−2)</sup> = 10<sup>4</sup></span>.</div>
+      </details>
+      <details>
+        <summary><span class="q">Запись 45·10<sup>2</sup> — стандартный вид? Если нет, исправь</span><span class="tag">вопрос 2</span></summary>
+        <div class="ans">Нет, мантисса 45 больше 10. Правильно: <span class="m">4,5·10<sup>3</sup></span>.</div>
+      </details>
+      <details>
+        <summary><span class="q">Что делают с показателями при делении?</span><span class="tag">вопрос 3</span></summary>
+        <div class="ans">Вычитают: верхний минус нижний. <span class="m">10<sup>m</sup> : 10<sup>n</sup> = 10<sup>m−n</sup></span>.</div>
+      </details>
+    </div>
+    <p style="margin-top:1rem;font-size:.95rem;color:var(--muted)">Скажи вслух одной фразой: чтобы умножить или разделить числа в стандартном виде, отдельно считают мантиссы и отдельно — степени десятки (складывая или вычитая показатели), а затем результат нормируют к виду <span class="math">a·10<sup>n</sup></span> с <span class="math">1 ≤ a &lt; 10</span>.</p>
+  </section>
+
+  <section>
+    <div class="next">
+      <h2>Что дальше</h2>
+      <p>Ты научился считать «цифры отдельно, масштаб отдельно». Дальше в геометрии появится величина, у которой тоже две независимые характеристики — <strong>вектор</strong>:</p>
+      <div class="eq">длина + направление</div>
+      <p>Идея та же: одна сущность, но описывается двумя частями, и каждая живёт по своим правилам.</p>
+    </div>
+  </section>
+
+  <p class="foot">Проверка на выходе: назови правило для умножения · назови правило для деления · что делать, если мантисса получилась 20?</p>
+
+</div>
+
+<style>
+  .scale{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.1rem 1rem;margin:1rem 0}
+  .sc-obj{display:flex;align-items:center;gap:.8rem;padding:.6rem .8rem;background:var(--accent-soft);border-radius:10px}
+  .sc-emoji{font-size:2rem;line-height:1}
+  .sc-name{font-weight:650;font-size:.98rem;color:var(--ink)}
+  .sc-rows{margin-top:.9rem;display:flex;flex-direction:column;gap:.45rem}
+  .sc-row{display:flex;align-items:baseline;gap:.6rem;flex-wrap:wrap;
+    padding:.45rem .1rem;border-bottom:1px dashed var(--line)}
+  .sc-row:last-child{border-bottom:none}
+  .sc-row .lbl{font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600;flex:0 0 auto;min-width:11ch}
+  .sc-row .val{font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.02rem;
+    overflow-wrap:anywhere;min-width:0}
+  .sc-row .val.hi{color:var(--accent)}
+  .sc-ctl{display:flex;align-items:center;gap:.7rem;margin-top:.85rem;flex-wrap:wrap}
+  .sc-ctl label{font-size:.8rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);
+    font-weight:600;flex:0 0 auto;min-width:12ch}
+  .sc-ctl .sval{font-family:ui-monospace,Menlo,monospace;color:var(--accent);font-weight:700;
+    font-size:.95rem;text-transform:none;letter-spacing:0}
+  .sc-ctl input[type=range]{flex:1;min-width:150px;accent-color:var(--accent)}
+  .sc-ctl input[type=range]:focus-visible{outline:3px solid var(--accent);outline-offset:3px;border-radius:6px}
+  .sc-ticks{display:flex;justify-content:space-between;font-family:ui-monospace,Menlo,monospace;
+    font-size:.75rem;color:var(--muted);margin-top:.25rem}
+  .sc-hint{margin:.9rem 0 0;font-size:.9rem;color:var(--muted);min-height:2.6em}
+  .sc-hint b{color:var(--ink)}
+</style>
+
+<script>
+(function(){
+  var eExp=document.getElementById('scExp'), eMant=document.getElementById('scMant');
+  if(!eExp||!eMant) return;
+  var oEmoji=document.getElementById('scEmoji'), oName=document.getElementById('scName'),
+      oPlain=document.getElementById('scPlain'), oSci=document.getElementById('scSci'),
+      oExpV=document.getElementById('scExpV'), oMantV=document.getElementById('scMantV'),
+      oHint=document.getElementById('scHint');
+
+  var OBJ={
+    '-9':['🧪','молекула — примерно нанометр'],
+    '-8':['🦠','оболочка вируса'],
+    '-7':['🦠','вирус гриппа'],
+    '-6':['🧫','бактерия'],
+    '-5':['🩸','клетка крови'],
+    '-4':['💇','толщина волоса'],
+    '-3':['🧂','крупинка соли'],
+    '-2':['🪙','монета в поперечнике'],
+    '-1':['✋','ладонь'],
+    '0':['🧍','рост человека'],
+    '1':['🏠','трёхэтажный дом'],
+    '2':['🏟','футбольное поле'],
+    '3':['🌉','городской квартал'],
+    '4':['✈️','высота полёта самолёта'],
+    '5':['🚀','граница космоса'],
+    '6':['🌙','радиус Луны'],
+    '7':['🌍','диаметр Земли'],
+    '8':['🛰','четверть пути до Луны'],
+    '9':['☀️','диаметр Солнца']
+  };
+
+  function rep(ch,k){ var s=''; for(var i=0;i<k;i++) s+=ch; return s; }
+  function group(s){
+    if(s.length<5) return s;
+    var out='', c=0;
+    for(var i=s.length-1;i>=0;i--){ out=s[i]+out; c++; if(c%3===0&&i>0) out=' '+out; }
+    return out;
+  }
+  /* D — значащие цифры, n — порядок: значение = (D с запятой после первой цифры)·10^n */
+  function plainOf(D,n){
+    var L=D.length, p=L-1-n;
+    if(p<=0) return group(D+rep('0',-p));
+    if(p<L) return group(D.slice(0,L-p))+','+D.slice(L-p);
+    return '0,'+rep('0',p-L)+D;
+  }
+  function supn(n){ return '10<sup>'+(n<0?'−':'')+Math.abs(n)+'</sup>'; }
+
+  function draw(){
+    var n=parseInt(eExp.value,10), d=parseInt(eMant.value,10);
+    var D=(d%10===0)? String(d/10) : String(d);      /* 30 → "3", 32 → "32" */
+    var mant=(d%10===0)? String(d/10) : (String(d).charAt(0)+','+String(d).charAt(1));
+    var o=OBJ[String(n)]||['📏','масштаб'];
+    oEmoji.textContent=o[0]; oName.textContent=o[1];
+    oExpV.textContent=(n<0?'−':'')+Math.abs(n);
+    oMantV.textContent=mant;
+    oPlain.textContent=plainOf(D,n)+' м';
+    oSci.innerHTML=mant+'·'+supn(n)+' м';
+    var up = n+1<=9 ? plainOf(D,n+1) : null;
+    oHint.innerHTML = up
+      ? 'Шаг ползунка вверх — и число становится <b>'+up+'</b>: те же цифры, запятая переехала на один разряд вправо. Порядок вырос с '+supn(n)+' до '+supn(n+1)+'.'
+      : 'Дальше вверх шкала уже не идёт — но правило то же: +1 к порядку = запятая на разряд вправо.';
+  }
+  eExp.addEventListener('input',draw);
+  eMant.addEventListener('input',draw);
+  draw();
+})();
+</script>
+
+<style>
+  .trainer{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.1rem 1rem;margin-top:1rem}
+  .tr-type{display:flex;align-items:center;gap:.6rem;flex-wrap:wrap;margin-bottom:.9rem}
+  .tr-type label{font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600}
+  .tr-type select{font:inherit;font-size:.9rem;padding:.35rem .5rem;border:1px solid var(--line);
+    border-radius:8px;background:#fff;color:var(--ink);max-width:100%}
+  .tr-type select:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+  .tr-q{font-family:ui-monospace,Menlo,monospace;font-weight:800;font-size:clamp(1.05rem,4.6vw,1.5rem);
+    text-align:center;padding:1rem .7rem;background:var(--accent-soft);border-radius:10px;color:var(--ink);
+    overflow-wrap:anywhere}
+  .tr-hint{text-align:center;font-size:.85rem;color:var(--muted);margin-top:.5rem}
+  .tr-ctl{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.9rem;align-items:center}
+  .tr-ctl button{font:inherit;font-weight:700;font-size:.9rem;cursor:pointer;border:none;border-radius:9px;
+    padding:.55rem .95rem;color:#fff;background:var(--accent)}
+  .tr-ctl button.sec{background:var(--pos)}
+  .tr-ctl button.ghost{background:transparent;color:var(--accent);border:1px solid var(--accent)}
+  .tr-ctl input{flex:1;min-width:140px;font:inherit;padding:.5rem .7rem;border:1px solid var(--line);
+    border-radius:9px;background:#fff;color:var(--ink)}
+  .tr-ctl button:focus-visible,.tr-ctl input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+  .tr-result{margin-top:.9rem;font-size:.96rem;min-height:1.2rem}
+  .tr-result .ok{color:var(--pos);font-weight:700}
+  .tr-result .bad{color:var(--neg);font-weight:700}
+  .tr-result .warn{color:var(--zero);font-weight:700}
+  .tr-result .sol{margin-top:.7rem;padding:.85rem .9rem;background:#FCFBFE;border:1px solid var(--line);
+    border-radius:10px;font-family:ui-monospace,Menlo,monospace;font-size:.88rem;line-height:1.85;
+    overflow-wrap:anywhere}
+  .tr-result .sol b{color:var(--accent)}
+</style>
+
+<script>
+(function(){
+  var qEl=document.getElementById('trQ'), ansEl=document.getElementById('trAns'),
+      resEl=document.getElementById('trResult'), typeEl=document.getElementById('trType'),
+      hintEl=document.getElementById('trHint');
+  if(!qEl) return;
+
+  var MINUS='−';
+  var MANT=[1.2,1.5,2,2.5,3,4,5,6,7,8,9];
+  var cur=null;
+
+  function ri(a,b){ return Math.floor(Math.random()*(b-a+1))+a; }
+  function pick(A){ return A[Math.floor(Math.random()*A.length)]; }
+  function r6(x){ return Math.round(x*1e6)/1e6; }
+  function dec(x){
+    var v=Math.round(Math.abs(x)*1e6)/1e6;
+    return (x<0?MINUS:'')+String(v).replace('.',',');
+  }
+  function ex(e){ return '10<sup>'+(e<0?MINUS:'')+Math.abs(e)+'</sup>'; }
+  function sci(m,e){ return dec(m)+'·'+ex(e); }
+  function sgn(e){ return (e<0?MINUS:'')+Math.abs(e); }
+  function rep(ch,k){ var s=''; for(var i=0;i<k;i++) s+=ch; return s; }
+  function group(s){
+    if(s.length<5) return s;
+    var out='', c=0;
+    for(var i=s.length-1;i>=0;i--){ out=s[i]+out; c++; if(c%3===0&&i>0) out=' '+out; }
+    return out;
+  }
+  /* значащие цифры D (строка) при порядке n → обычная запись */
+  function plainOf(D,n){
+    var L=D.length, p=L-1-n;
+    if(p<=0) return group(D+rep('0',-p));
+    if(p<L) return group(D.slice(0,L-p))+','+D.slice(L-p);
+    return '0,'+rep('0',p-L)+D;
+  }
+
+  /* ---------- генераторы ---------- */
+  function genMul(){
+    var a=pick(MANT), b=pick(MANT), m=ri(-8,9), n=ri(-8,9);
+    var p=r6(a*b), M=p, E=m+n, normed=false;
+    if(M>=10){ M=r6(M/10); E=E+1; normed=true; }
+    return {t:'mul',a:a,b:b,m:m,n:n,p:p,M:M,E:E,normed:normed};
+  }
+  function genDiv(){
+    var a,b,q,ok=false;
+    for(var i=0;i<300;i++){
+      a=pick(MANT); b=pick(MANT); q=a/b;
+      if(Math.abs(q*1000-Math.round(q*1000))<1e-9){ q=Math.round(q*1000)/1000; ok=true; break; }
+    }
+    if(!ok){ a=6; b=2; q=3; }
+    var m=ri(-8,9), n=ri(-8,9);
+    var M=q, E=m-n, normed=false;
+    if(M<1){ M=r6(M*10); E=E-1; normed=true; }
+    return {t:'div',a:a,b:b,m:m,n:n,q:q,M:M,E:E,normed:normed};
+  }
+  function genNorm(){
+    var d1=ri(1,9), d2=ri(0,9);
+    var M=r6(d1+d2/10);
+    var k=pick([-2,-1,1,2]);
+    var E=ri(-7,8);
+    var shown=r6(M*Math.pow(10,k));
+    return {t:'norm',shown:shown,shownE:E-k,k:k,M:M,E:E};
+  }
+  function genWrite(){
+    var d1=ri(1,9), d2=ri(0,9);
+    var M=r6(d1+d2/10);
+    var E=pick([-6,-5,-4,-3,-2,3,4,5,6,7,8]);
+    var D=(d2===0)? String(d1) : (String(d1)+String(d2));
+    return {t:'write',D:D,E:E,M:M,plain:plainOf(D,E)};
+  }
+  function genCmp(){
+    var m1=pick(MANT), m2=pick(MANT), e1=ri(-8,8), e2=ri(-8,8);
+    if(e1===e2 && m1===m2){ e2=(e2<8)? e2+1 : e2-1; }
+    var s=(e1>e2 || (e1===e2 && m1>m2)) ? '>' : '<';
+    return {t:'cmp',m1:m1,e1:e1,m2:m2,e2:e2,sign:s};
+  }
+  function build(t){
+    if(t==='mul') return genMul();
+    if(t==='div') return genDiv();
+    if(t==='norm') return genNorm();
+    if(t==='write') return genWrite();
+    return genCmp();
+  }
+
+  /* ---------- отображение ---------- */
+  function questionHTML(q){
+    if(q.t==='mul') return '('+sci(q.a,q.m)+') · ('+sci(q.b,q.n)+')';
+    if(q.t==='div') return '('+sci(q.a,q.m)+') : ('+sci(q.b,q.n)+')';
+    if(q.t==='norm') return sci(q.shown,q.shownE)+' &nbsp;=&nbsp; ?';
+    if(q.t==='write') return q.plain;
+    return sci(q.m1,q.e1)+' &nbsp;?&nbsp; '+sci(q.m2,q.e2);
+  }
+  function hintText(q){
+    if(q.t==='cmp') return 'Какой знак поставить: > или < ?';
+    if(q.t==='write') return 'Запиши это число в стандартном виде.';
+    if(q.t==='norm') return 'Приведи запись к стандартному виду (1 ≤ a < 10).';
+    return 'Запиши ответ в стандартном виде.';
+  }
+  function solutionHTML(q){
+    var h='<div class="sol">';
+    if(q.t==='mul'){
+      h+='Мантиссы: '+dec(q.a)+' · '+dec(q.b)+' = <b>'+dec(q.p)+'</b><br>';
+      h+='Порядки: '+sgn(q.m)+' + '+(q.n<0?'('+sgn(q.n)+')':sgn(q.n))+' = <b>'+sgn(q.m+q.n)+'</b><br>';
+      if(q.normed){
+        h+='Промежуточно: '+dec(q.p)+'·'+ex(q.m+q.n)+' — мантисса ≥ 10, это ещё не стандартный вид<br>';
+        h+='Нормируем: делим мантиссу на 10, к порядку +1<br>';
+      } else {
+        h+='Мантисса '+dec(q.p)+' уже в рамках [1; 10) — нормировать не нужно<br>';
+      }
+      h+='Ответ: <b>'+sci(q.M,q.E)+'</b>';
+    } else if(q.t==='div'){
+      h+='Мантиссы: '+dec(q.a)+' : '+dec(q.b)+' = <b>'+dec(q.q)+'</b><br>';
+      h+='Порядки: '+sgn(q.m)+' − '+(q.n<0?'('+sgn(q.n)+')':sgn(q.n))+' = <b>'+sgn(q.m-q.n)+'</b><br>';
+      if(q.normed){
+        h+='Промежуточно: '+dec(q.q)+'·'+ex(q.m-q.n)+' — мантисса &lt; 1, это ещё не стандартный вид<br>';
+        h+='Нормируем: умножаем мантиссу на 10, из порядка −1<br>';
+      } else {
+        h+='Мантисса '+dec(q.q)+' уже в рамках [1; 10) — нормировать не нужно<br>';
+      }
+      h+='Ответ: <b>'+sci(q.M,q.E)+'</b>';
+    } else if(q.t==='norm'){
+      h+='Мантисса '+dec(q.shown)+' вне рамок [1; 10)<br>';
+      if(q.k>0){
+        h+='Сдвигаем запятую влево на '+q.k+' → мантисса '+dec(q.M)+', к порядку +'+q.k+'<br>';
+      } else {
+        h+='Сдвигаем запятую вправо на '+Math.abs(q.k)+' → мантисса '+dec(q.M)+', из порядка −'+Math.abs(q.k)+'<br>';
+      }
+      h+='Порядок: '+sgn(q.shownE)+' + ('+sgn(q.k)+') = <b>'+sgn(q.E)+'</b><br>';
+      h+='Ответ: <b>'+sci(q.M,q.E)+'</b>';
+    } else if(q.t==='write'){
+      h+='Значащие цифры: <b>'+q.D.split('').join(' ')+'</b> → мантисса '+dec(q.M)+'<br>';
+      h+=(q.E>0? 'Запятую надо сдвинуть влево на '+q.E+' разряд(ов)':'Запятую надо сдвинуть вправо на '+Math.abs(q.E)+' разряд(ов)')+'<br>';
+      h+='Порядок: <b>'+sgn(q.E)+'</b><br>';
+      h+='Ответ: <b>'+sci(q.M,q.E)+'</b>';
+    } else {
+      if(q.e1!==q.e2){
+        h+='Порядки разные: '+sgn(q.e1)+' и '+sgn(q.e2)+'<br>';
+        h+='Больше то число, у которого порядок больше — мантиссы уже не важны<br>';
+      } else {
+        h+='Порядки одинаковые ('+sgn(q.e1)+') — сравниваем мантиссы: '+dec(q.m1)+' и '+dec(q.m2)+'<br>';
+      }
+      h+='Ответ: <b>'+sci(q.m1,q.e1)+' '+q.sign+' '+sci(q.m2,q.e2)+'</b>';
+    }
+    return h+'</div>';
+  }
+
+  /* ---------- разбор ответа ученика ---------- */
+  var SUP={'⁰':'0','¹':'1','²':'2','³':'3','⁴':'4','⁵':'5',
+           '⁶':'6','⁷':'7','⁸':'8','⁹':'9','⁻':'-','⁺':'+'};
+  function parseSci(str){
+    var s=String(str).replace(/−/g,'-').replace(/[–—]/g,'-');
+    s=s.replace(/(\d),(\d)/g,'$1.$2');
+    s=s.trim().toLowerCase();
+    s=s.replace(/[⁰¹²³⁴⁵⁶⁷⁸⁹⁻⁺]+/g,function(g){
+      var r=''; for(var i=0;i<g.length;i++){ r+=(SUP[g[i]]||''); } return '^'+r;
+    });
+    s=s.replace(/[\s\u00A0\u2009\u202F\u2007]/g,'');
+    s=s.replace(/[×⋅∙•·*xх]/g,'*');
+    s=s.replace(/\^+/g,'^');
+    s=s.replace(/\*?10\^/g,'e');
+    s=s.replace(/\*10$/,'e1');
+    if(s.charAt(0)==='e') s='1'+s;
+    var mm=s.match(/^([+-]?\d+(?:\.\d+)?)(?:e([+-]?\d+))?$/);
+    if(!mm) return null;
+    var m=parseFloat(mm[1]);
+    var hasExp=(mm[2]!==undefined && mm[2]!=='');
+    var e=hasExp? parseInt(mm[2],10) : 0;
+    if(!isFinite(m)||!isFinite(e)) return null;
+    return {m:m,e:e,hasExp:hasExp};
+  }
+  function sameValue(pm,pe,M,E){
+    if(pm===0) return M===0;
+    var d=(pe-E);
+    if(Math.abs(d)>30) return false;
+    return Math.abs(pm*Math.pow(10,d)-M) < 1e-6*Math.max(1,Math.abs(M));
+  }
+
+  /* ---------- UI ---------- */
+  function render(){
+    qEl.innerHTML=questionHTML(cur);
+    hintEl.textContent=hintText(cur);
+    resEl.innerHTML='';
+    ansEl.value='';
+    ansEl.placeholder = (cur.t==='cmp') ? 'напр.  >' : 'напр.  1,2·10^14';
+  }
+  function generate(focus){
+    var t=typeEl.value;
+    if(t==='any') t=pick(['mul','div','norm','write','cmp']);
+    cur=build(t);
+    render();
+    if(focus && ansEl.focus) ansEl.focus();
+  }
+  function check(){
+    var raw=String(ansEl.value||'').trim();
+    if(!raw){ resEl.innerHTML='<span class="bad">Введи ответ или нажми «Показать решение».</span>'; return; }
+    if(cur.t==='cmp'){
+      var low=raw.toLowerCase(), got=null;
+      if(low.indexOf('>')>=0) got='>';
+      else if(low.indexOf('<')>=0) got='<';
+      else if(/больш|перв/.test(low)) got='>';
+      else if(/меньш|втор/.test(low)) got='<';
+      if(!got){ resEl.innerHTML='<span class="bad">Не понял запись. Поставь знак > или < между числами.</span>'; return; }
+      if(got===cur.sign) resEl.innerHTML='<span class="ok">✓ Верно!</span>'+solutionHTML(cur);
+      else resEl.innerHTML='<span class="bad">✗ Пока не то. Сначала сравни порядки.</span>'+solutionHTML(cur);
+      return;
+    }
+    var p=parseSci(raw);
+    if(!p){
+      resEl.innerHTML='<span class="bad">Не понял запись. Пиши так: 3,2·10^5 или 3,2*10^5 или 3.2e5.</span>';
+      return;
+    }
+    if(!sameValue(p.m,p.e,cur.M,cur.E)){
+      resEl.innerHTML='<span class="bad">✗ Пока не то — посмотри разбор.</span>'+solutionHTML(cur);
+      return;
+    }
+    var am=Math.abs(p.m);
+    if(!p.hasExp || am<1 || am>=10){
+      resEl.innerHTML='<span class="warn">⚠ По величине верно, но это ещё не стандартный вид: мантисса должна быть от 1 до 10, и нужна степень десятки.</span>'+solutionHTML(cur);
+      return;
+    }
+    resEl.innerHTML='<span class="ok">✓ Верно! Отлично.</span>'+solutionHTML(cur);
+  }
+
+  document.getElementById('trNew').addEventListener('click',function(){ generate(true); });
+  document.getElementById('trCheck').addEventListener('click',check);
+  document.getElementById('trShow').addEventListener('click',function(){ resEl.innerHTML=solutionHTML(cur); });
+  typeEl.addEventListener('change',function(){ generate(false); });
+  ansEl.addEventListener('keydown',function(e){ if(e.key==='Enter') check(); });
+
+  cur={t:'mul',a:3,b:4,m:5,n:8,p:12,M:1.2,E:14,normed:true};
+  render();
+
+  if(typeof module!=='undefined' && module.exports){
+    module.exports={build:build,questionHTML:questionHTML,solutionHTML:solutionHTML,
+                    parseSci:parseSci,sameValue:sameValue,plainOf:plainOf};
+  }
+})();
+</script>
+<!--LESSON-NAV-BOT--><nav class="lnav lnav-bot"><a class="prev" href="./alg8-standartnyj-vid-chisla.html"><span class="dir">← Предыдущая</span><span class="ttl">Стандартный вид числа</span></a><a class="to-cat" href="./catalog.html">📚 <span>Все темы</span></a><a class="next" href="./geo8-mnogougolnik.html"><span class="dir">Следующая →</span><span class="ttl">Многоугольник и сумма углов</span></a></nav><!--/LESSON-NAV-BOT-->

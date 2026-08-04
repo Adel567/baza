@@ -1,0 +1,834 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Уравнение окружности — урок, геометрия 9 класс</title>
+<style>
+  :root{
+    --paper:#F6F7F9;
+    --card:#FFFFFF;
+    --ink:#1B2333;
+    --muted:#5A6478;
+    --line:#E2E5EC;
+    --accent:#3B4FD0;
+    --accent-soft:#EAEDFB;
+    --pos:#1E8E5A;   /* на окружности */
+    --pos-bg:#E7F4EC;
+    --zero:#B9791A;  /* внутри */
+    --zero-bg:#FBF1DC;
+    --neg:#C0455B;   /* снаружи / ошибка */
+    --neg-bg:#F9E9EC;
+  }
+  *{box-sizing:border-box}
+  body{margin:0}
+  .wrap{
+    max-width:760px;
+    margin:0 auto;
+    padding:clamp(1.4rem,4vw,3rem) clamp(1.1rem,4vw,2rem) 4rem;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    font-size:17px;
+    line-height:1.62;
+    -webkit-font-smoothing:antialiased;
+  }
+  .eyebrow{
+    font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--accent);font-weight:600;margin:0 0 .5rem;
+  }
+  h1{
+    font-family:Georgia,"Times New Roman",serif;
+    font-size:clamp(2rem,7vw,2.9rem);
+    line-height:1.05;margin:0;font-weight:700;letter-spacing:-.01em;
+    text-wrap:balance;
+  }
+  .lede{
+    font-size:1.08rem;color:var(--muted);margin:.7rem 0 0;max-width:60ch;
+    text-wrap:pretty;
+  }
+  h2{
+    font-family:Georgia,serif;font-size:1.32rem;font-weight:700;
+    margin:0 0 .1rem;letter-spacing:-.005em;
+  }
+  section{margin-top:2.6rem}
+  .kicker{
+    font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--muted);font-weight:600;margin:0 0 .8rem;
+    display:flex;align-items:center;gap:.6rem;
+  }
+  .kicker::before{
+    content:"";width:1.4rem;height:2px;background:var(--accent);border-radius:2px;
+  }
+  p{margin:.65rem 0}
+  strong{font-weight:650}
+  .math{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-weight:600}
+  sup{font-size:.72em}
+  a{color:var(--accent)}
+
+  /* Главная формула */
+  .hero-formula{
+    margin-top:2.2rem;
+    background:var(--ink);color:#fff;border-radius:14px;
+    padding:1.6rem 1.1rem;text-align:center;
+  }
+  .hero-formula .lbl{
+    font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;
+    color:#9aa6c9;margin:0 0 .7rem;
+  }
+  .hero-formula .eq{
+    font-family:ui-monospace,"SF Mono",Menlo,monospace;
+    font-size:clamp(1.25rem,5.4vw,2.1rem);font-weight:700;letter-spacing:.01em;
+  }
+  .hero-formula .eq b{color:#8ea0ff;font-weight:700}
+  .hero-formula .note{font-size:.86rem;color:#9aa6c9;margin:.8rem 0 0}
+
+  /* Пререквизит */
+  .recall{
+    background:var(--accent-soft);border-radius:12px;padding:1rem 1.15rem;
+    font-size:.96rem;
+  }
+  .recall p{margin:.3rem 0}
+
+  /* Три случая */
+  .cases{display:grid;gap:.85rem;margin-top:.4rem}
+  @media(min-width:620px){.cases{grid-template-columns:repeat(3,1fr)}}
+  .case{
+    border-radius:12px;padding:1.05rem 1.1rem;border:1px solid var(--line);
+    background:var(--card);display:flex;flex-direction:column;gap:.35rem;
+  }
+  .case .sign{font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.05rem}
+  .case .count{font-weight:650;font-size:1rem}
+  .case .desc{font-size:.9rem;color:var(--muted)}
+  .case.pos{border-top:4px solid var(--pos);background:var(--pos-bg)}
+  .case.pos .sign{color:var(--pos)}
+  .case.zero{border-top:4px solid var(--zero);background:var(--zero-bg)}
+  .case.zero .sign{color:var(--zero)}
+  .case.neg{border-top:4px solid var(--neg);background:var(--neg-bg)}
+  .case.neg .sign{color:var(--neg)}
+
+  /* Разбор */
+  .worked{
+    background:var(--card);border:1px solid var(--line);border-radius:12px;
+    padding:1.2rem 1.15rem;
+  }
+  .worked + .worked{margin-top:1rem}
+  .worked .task{
+    font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1rem;
+    margin:0 0 1rem;padding-bottom:.8rem;border-bottom:1px solid var(--line);
+  }
+  ol.steps{margin:0;padding:0;list-style:none;counter-reset:s;display:flex;flex-direction:column;gap:.7rem}
+  ol.steps li{position:relative;padding-left:2.1rem;counter-increment:s}
+  ol.steps li::before{
+    content:counter(s);position:absolute;left:0;top:.05rem;
+    width:1.5rem;height:1.5rem;border-radius:50%;
+    background:var(--accent-soft);color:var(--accent);
+    font-size:.82rem;font-weight:700;display:flex;align-items:center;justify-content:center;
+  }
+  ol.steps .m{font-family:ui-monospace,Menlo,monospace;font-weight:600;color:var(--ink)}
+  .verdict{
+    margin-top:1rem;padding:.7rem 1rem;background:var(--pos-bg);
+    border-radius:9px;font-weight:600;color:var(--pos);font-size:.98rem;
+    font-family:ui-monospace,Menlo,monospace;
+  }
+
+  /* Практика */
+  .drill{display:flex;flex-direction:column;gap:.7rem}
+  details{
+    background:var(--card);border:1px solid var(--line);border-radius:10px;
+    padding:.85rem 1.05rem;
+  }
+  details[open]{border-color:var(--accent)}
+  summary{
+    cursor:pointer;font-weight:600;list-style:none;
+    display:flex;justify-content:space-between;align-items:flex-start;gap:.8rem;flex-wrap:wrap;
+  }
+  summary::-webkit-details-marker{display:none}
+  summary:focus-visible{outline:3px solid var(--accent);outline-offset:3px;border-radius:6px}
+  summary .q{font-family:ui-monospace,Menlo,monospace;flex:1;min-width:12ch}
+  summary .tag{
+    font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);
+    border:1px solid var(--line);border-radius:20px;padding:.1rem .55rem;white-space:nowrap;
+  }
+  .ans{margin-top:.7rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.96rem;color:var(--muted)}
+  .ans .m{font-family:ui-monospace,Menlo,monospace;color:var(--ink);font-weight:600}
+
+  /* Ошибки */
+  ul.pitfalls{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:.6rem}
+  ul.pitfalls li{padding-left:1.5rem;position:relative;font-size:.98rem}
+  ul.pitfalls li::before{
+    content:"×";position:absolute;left:0;top:-.05rem;color:var(--neg);font-weight:700;font-size:1.1rem;
+  }
+  ul.pitfalls b{color:var(--ink)}
+
+  .next{background:var(--accent);color:#fff;border-radius:12px;padding:1.2rem 1.2rem}
+  .next h2{color:#fff}
+  .next .eq{
+    font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:clamp(1rem,4.4vw,1.25rem);
+    margin:.6rem 0 .3rem;
+  }
+  .next p{color:#dfe4fb;font-size:.96rem;margin:.4rem 0 0}
+  .foot{margin-top:2.4rem;font-size:.82rem;color:var(--muted);text-align:center}
+
+  /* Вариативный ряд */
+  .family{
+    margin-top:1.1rem;background:var(--card);border:1px solid var(--line);
+    border-radius:12px;padding:1.1rem 1.1rem;
+  }
+  .family .cap{font-size:.94rem;color:var(--muted);margin:0 0 .85rem}
+  .family .cap b{color:var(--ink)}
+  .frow{
+    display:flex;align-items:center;gap:.7rem;flex-wrap:wrap;
+    padding:.55rem 0;border-top:1px dashed var(--line);
+    font-family:ui-monospace,Menlo,monospace;
+  }
+  .frow:first-of-type{border-top:none}
+  .frow .fe{font-weight:700;font-size:.98rem;min-width:15ch}
+  .frow .fe u{text-decoration:none;padding:0 .12em;border-radius:4px;font-weight:800;background:var(--accent-soft);color:var(--accent)}
+  .frow .fd{font-size:.86rem;color:var(--muted);flex:1;min-width:9ch}
+  .frow .fd b{color:var(--ink)}
+
+  .tbl-wrap{overflow-x:auto;margin-top:.6rem}
+  table{border-collapse:collapse;font-size:.95rem;min-width:100%}
+  th,td{border:1px solid var(--line);padding:.5rem .7rem;text-align:left;background:var(--card)}
+  th{background:var(--accent-soft);font-size:.8rem;text-transform:uppercase;letter-spacing:.06em;color:var(--accent)}
+  td.m{font-family:ui-monospace,Menlo,monospace;font-weight:600}
+
+  @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+<style>
+.oge-tip{display:flex;gap:.8rem;align-items:flex-start;background:#FFF8E7;border:1px solid #F0D98A;border-left:4px solid #E0A315;border-radius:10px;padding:.85rem 1.05rem;margin:1.5rem 0}
+.oge-tip .b{font-size:.72rem;font-weight:800;letter-spacing:.03em;color:#8A6A15;white-space:nowrap;text-transform:uppercase;padding-top:.15rem}
+.oge-tip .x{font-size:.95rem;line-height:1.5}
+</style>
+
+<!--LESSON-NAV-TOP--><style>.lnav{--lnav-accent:#3D5AF1}.lnav a{text-decoration:none;font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif}.lnav-top{max-width:820px;margin:0 auto;padding:.75rem clamp(1rem,4vw,1.5rem) .1rem}.lnav-top a{display:inline-flex;align-items:center;gap:.35rem;color:var(--lnav-accent);font-weight:600;font-size:.9rem}.lnav-top a:hover{text-decoration:underline}.lnav-bot{max-width:820px;margin:2.6rem auto 3rem;padding:1.1rem clamp(1rem,4vw,1.5rem) 0;border-top:1px solid #E4E8EF;display:flex;align-items:stretch;gap:.55rem}.lnav-bot a{min-width:0;display:flex;flex-direction:column;justify-content:center;gap:.15rem;border:1px solid #E4E8EF;border-radius:12px;padding:.65rem .85rem;color:#182233;background:#fff;transition:border-color .1s,transform .08s}.lnav-bot a:hover{border-color:var(--lnav-accent);transform:translateY(-1px)}.lnav-bot .prev,.lnav-bot .next{flex:1 1 0}.lnav-bot .next{text-align:right}.lnav-bot .dir{font-size:.72rem;color:#8A93A6;font-weight:600}.lnav-bot .ttl{font-size:.9rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.lnav-bot .to-cat{flex:0 0 auto;flex-direction:row;align-items:center;justify-content:center;color:var(--lnav-accent);font-weight:700;font-size:.85rem;white-space:nowrap}@media(max-width:420px){.lnav-bot .to-cat span{display:none}.lnav-bot .to-cat{padding:.65rem .7rem}}</style><nav class="lnav lnav-top"><a href="./catalog.html">← Все темы</a></nav><!--/LESSON-NAV-TOP-->
+<div class="wrap">
+
+  <header>
+    <p class="eyebrow">Геометрия · 9 класс · метод координат</p>
+    <h1>Уравнение окружности</h1>
+    <p class="lede">Окружность можно не только начертить циркулем — её можно <em>записать формулой</em>, в которую спрятаны центр и радиус.</p>
+  </header>
+
+  <div class="hero-formula">
+    <p class="lbl">Уравнение окружности</p>
+    <div class="eq">(x − <b>a</b>)<sup>2</sup> + (y − <b>b</b>)<sup>2</sup> = <b>R</b><sup>2</sup></div>
+    <p class="note">C(a; b) — центр, R — радиус, (x; y) — любая точка окружности</p>
+  </div>
+
+  <section>
+    <p class="kicker">Зачем это нужно</p>
+    <h2>Окружность как формула, а не как чертёж</h2>
+    <p>До этого окружность была для тебя чертежом: ножка циркуля в центре, грифель ведёт линию на одинаковом расстоянии. Метод координат позволяет описать ту же самую линию <strong>одним уравнением</strong>, в которое «зашиты» центр и радиус.</p>
+    <p>Зачем это надо:</p>
+    <ul>
+      <li>решать геометрические задачи вычислениями, а не построением (например, найти точки пересечения окружности и прямой);</li>
+      <li>задавать окружность в программах, играх, на картах — зона действия вышки связи, радиус доставки, орбита. Компьютер не «рисует циркулем», он работает с уравнением;</li>
+      <li>готовиться к старшим классам: окружность, эллипс и парабола там изучаются именно через уравнения.</li>
+    </ul>
+    <p>Типичное заблуждение: «уравнение — это где есть только x» или «окружность нельзя записать формулой, ведь это кривая». На самом деле уравнение окружности связывает <span class="math">x</span> и <span class="math">y</span>, и любая точка <span class="math">(x; y)</span>, которая ему удовлетворяет, лежит ровно на окружности. Ни одной лишней, ни одной пропущенной.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Что вспомнить с прошлого шага</p>
+    <h2>Формула расстояния — фундамент</h2>
+    <div class="recall">
+      <p>Расстояние между точками <span class="math">C(a; b)</span> и <span class="math">M(x; y)</span>:</p>
+      <p class="math" style="font-size:1.05rem">CM = √((x − a)² + (y − b)²)</p>
+      <p>Если забыл, откуда она берётся — вернись к теме <a href="./geo9-koord-rasstoyanie.html">«Расстояние между двумя точками»</a>. Всё уравнение окружности вырастет ровно из неё.</p>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Суть · откуда берётся формула</p>
+    <h2>Три строчки — и уравнение готово</h2>
+    <p>Окружность — это множество всех точек плоскости, удалённых от центра на <strong>одно и то же</strong> расстояние (радиус). Значит, точка лежит на окружности тогда и только тогда, когда расстояние от неё до центра равно радиусу. Дальше просто переводим это условие на язык алгебры.</p>
+    <div class="worked">
+      <ol class="steps">
+        <li>Пусть центр — <span class="m">C(a; b)</span>, радиус — <span class="m">R</span>, а <span class="m">M(x; y)</span> — произвольная точка плоскости.</li>
+        <li>Расстояние до центра по формуле: <span class="m">CM = √((x − a)² + (y − b)²)</span>.</li>
+        <li>Точка лежит на окружности ⟺ <span class="m">CM = R</span>, то есть <span class="m">√((x − a)² + (y − b)²) = R</span>.</li>
+        <li>Корень мешает — возведём обе части в квадрат: <span class="m">(x − a)² + (y − b)² = R²</span>.</li>
+      </ol>
+      <div class="verdict">(x − a)² + (y − b)² = R²</div>
+    </div>
+    <p>Смысл: уравнение — это записанное алгеброй условие «расстояние до центра равно радиусу». Оно не «приближает» окружность, а описывает её <strong>точно</strong>: подставил координаты точки — равенство верное, значит точка на окружности; неверное — не на ней.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Ядро темы</p>
+    <h2>Что есть что в формуле</h2>
+    <div class="tbl-wrap">
+      <table>
+        <tr><th>Буква</th><th>Что означает</th><th>Важно</th></tr>
+        <tr><td class="m">x, y</td><td>координаты произвольной точки на окружности</td><td>переменные — их не находим</td></tr>
+        <tr><td class="m">a, b</td><td>координаты центра C(a; b)</td><td>фиксированные числа</td></tr>
+        <tr><td class="m">R</td><td>радиус, R &gt; 0</td><td>в уравнении стоит <b>R²</b>, а не R</td></tr>
+      </table>
+    </div>
+    <p><strong>Частный случай.</strong> Если центр в начале координат <span class="math">O(0; 0)</span>, то <span class="math">a = 0</span>, <span class="math">b = 0</span>, скобки пропадают и уравнение становится совсем коротким:</p>
+    <p class="math" style="font-size:1.15rem;text-align:center">x² + y² = R²</p>
+    <p>Три детали, за которые цепляются на экзамене:</p>
+    <ul>
+      <li>В скобках стоит <strong>вычитание</strong> координат центра: <span class="math">(x − a)</span> и <span class="math">(y − b)</span>. Поэтому если центр <span class="math">(3; −2)</span>, то <span class="math">b = −2</span>, и <span class="math">(y − b) = (y − (−2)) = (y + 2)</span>.</li>
+      <li>Справа всегда <strong>R²</strong>. Если справа стоит число, то радиус <span class="math">R = √(этого числа)</span>.</li>
+      <li>Единиц измерения тут нет (это координатная плоскость), но <span class="math">a</span>, <span class="math">b</span>, <span class="math">R</span> измеряются в одних и тех же единицах — клетках чертежа.</li>
+    </ul>
+    <div class="oge-tip"><div class="b">🎯 В ОГЭ</div><div class="x"><b>Метод координат, вторая часть.</b> По уравнению сразу виден центр и радиус — и наоборот: зная центр и радиус, уравнение пишут в одну строчку.</div></div>
+  </section>
+
+  <section>
+    <p class="kicker">Разбираем вместе · думаю вслух</p>
+    <h2>Эталонный пример</h2>
+    <div class="worked">
+      <p class="task">Записать уравнение окружности с центром C(3; −1) и радиусом R = 5.</p>
+      <ol class="steps">
+        <li>Берём формулу <span class="m">(x − a)² + (y − b)² = R²</span> — потому что именно она задаёт любую окружность по центру и радиусу.</li>
+        <li>Центр <span class="m">C(3; −1)</span>, значит <span class="m">a = 3</span>, <span class="m">b = −1</span>. Подставляем a: получается <span class="m">(x − 3)</span>.</li>
+        <li>Подставляем b: <span class="m">(y − b) = (y − (−1)) = (y + 1)</span>. Вот он, ключевой момент со знаком: минус на минус даёт плюс.</li>
+        <li>Радиус <span class="m">R = 5</span>, значит <span class="m">R² = 25</span> — радиус обязательно возводим в квадрат.</li>
+      </ol>
+      <div class="verdict">(x − 3)² + (y + 1)² = 25</div>
+      <p style="font-size:.92rem;color:var(--muted);margin:.8rem 0 0">Проверка смысла: читаем уравнение обратно — центр (3; −1), радиус 5. Всё на месте.</p>
+    </div>
+
+    <div class="worked">
+      <p class="task">Обратная задача: дано (x + 4)² + (y − 2)² = 9. Найти центр и радиус.</p>
+      <ol class="steps">
+        <li>Сравниваем с шаблоном <span class="m">(x − a)² + (y − b)² = R²</span>.</li>
+        <li>В шаблоне <em>минус</em>, а у нас плюс — значит переписываем: <span class="m">(x + 4) = (x − (−4))</span>, отсюда <span class="m">a = −4</span>.</li>
+        <li>Запись <span class="m">(y − 2)</span> уже в нужном виде, отсюда <span class="m">b = 2</span>. Центр <span class="m">C(−4; 2)</span>.</li>
+        <li>Справа <span class="m">R² = 9</span>, значит <span class="m">R = √9 = 3</span> (радиус положителен, поэтому −3 не берём).</li>
+      </ol>
+      <div class="verdict">центр C(−4; 2), R = 3</div>
+    </div>
+
+    <div class="worked">
+      <p class="task">Попробуй сам: записать уравнение окружности с центром в начале координат и радиусом √7.</p>
+      <details>
+        <summary><span class="q">Подсказка и ответ</span><span class="tag">проверь себя</span></summary>
+        <div class="ans">Центр в начале координат → <span class="m">a = 0, b = 0</span>, скобок нет. Радиус <span class="m">R = √7</span>, значит <span class="m">R² = (√7)² = 7</span>. Ответ: <span class="m">x² + y² = 7</span>.</div>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Покрути сам · интерактив</p>
+    <h2>Двигаешь центр — меняются скобки</h2>
+    <p>Двигай ползунки центра <span class="math">a</span>, <span class="math">b</span> и радиуса <span class="math">R</span>. Смотри, как под чертежом само собирается уравнение. Особенно следи за знаками в скобках, когда координата центра уходит в минус.</p>
+    <div class="sim">
+      <canvas id="circCanvas" width="560" height="560" aria-label="Окружность на координатной плоскости"></canvas>
+      <p class="sim-eq" id="simEq">(x − 3)² + (y + 1)² = 25</p>
+      <div class="sliders">
+        <label>a <span id="va" class="sval">3</span><input id="sa" type="range" min="-7" max="7" step="1" value="3" aria-label="координата a центра"></label>
+        <label>b <span id="vb" class="sval">−1</span><input id="sb" type="range" min="-7" max="7" step="1" value="-1" aria-label="координата b центра"></label>
+        <label>R <span id="vr" class="sval">5</span><input id="sr" type="range" min="1" max="8" step="1" value="5" aria-label="радиус R"></label>
+      </div>
+      <div class="sim-hint">Теперь <b>ткни в любую точку чертежа</b> — проверим подстановкой, где она: на окружности, внутри или снаружи.</div>
+      <div id="ptInfo" class="pt-info">Точка пока не выбрана.</div>
+    </div>
+    <p style="font-size:.9rem;color:var(--muted)">Поставь <span class="math">a = 0</span> и <span class="math">b = 0</span> — скобки исчезнут, останется <span class="math">x² + y² = R²</span>. Это та же формула, просто центр попал в начало координат.</p>
+
+    <div class="family">
+      <p class="cap">Одна и та же окружность радиуса 2, <b>меняем только центр</b>. Проследи, в какой скобке появляется число:</p>
+      <div class="frow">
+        <span class="fe">(x − <u>3</u>)² + y² = 4</span>
+        <span class="fd">центр <b>(3; 0)</b> — уехал вправо</span>
+      </div>
+      <div class="frow">
+        <span class="fe">x² + (y − <u>3</u>)² = 4</span>
+        <span class="fd">центр <b>(0; 3)</b> — уехал вверх</span>
+      </div>
+      <div class="frow">
+        <span class="fe">(x − <u>3</u>)² + (y − <u>3</u>)² = 4</span>
+        <span class="fd">центр <b>(3; 3)</b> — вправо и вверх</span>
+      </div>
+      <p class="cap" style="margin:.85rem 0 0">Скобка с <b>x</b> отвечает за движение по горизонтали, скобка с <b>y</b> — по вертикали. Число справа за центр не отвечает вообще: оно про радиус.</p>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Три положения точки</p>
+    <h2>Подставил — и сразу видно</h2>
+    <p>Возьми точку <span class="math">M(x; y)</span>, посчитай <span class="math">(x − a)² + (y − b)²</span> и сравни с <span class="math">R²</span>:</p>
+    <div class="cases">
+      <div class="case pos">
+        <div class="sign">= R²</div>
+        <div class="count">На окружности</div>
+        <div class="desc">Расстояние до центра ровно R — равенство верное.</div>
+      </div>
+      <div class="case zero">
+        <div class="sign">&lt; R²</div>
+        <div class="count">Внутри</div>
+        <div class="desc">До центра ближе, чем радиус.</div>
+      </div>
+      <div class="case neg">
+        <div class="sign">&gt; R²</div>
+        <div class="count">Снаружи</div>
+        <div class="desc">До центра дальше, чем радиус.</div>
+      </div>
+    </div>
+    <p style="font-size:.92rem;color:var(--muted);margin-top:.9rem">Сравниваем именно <strong>квадраты</strong> — корень извлекать не нужно, знак сравнения от этого не меняется.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Тренажёр · бесконечная практика</p>
+    <h2>Реши сам</h2>
+    <p>Нажимай «Новая задача» — тип меняется случайно. Координаты пиши через точку с запятой: <span class="math">2; −3</span> (минус можно обычный дефис). Уравнение можно писать как удобно: <span class="math">(x-3)^2+(y+1)^2=25</span> — проверяется по смыслу, а не по буквам.</p>
+    <div class="trainer">
+      <div class="tr-q" id="trQ">Дано уравнение (x − 3)² + (y + 1)² = 25. Назови центр и радиус.</div>
+      <div class="tr-ctl">
+        <button id="trNew" type="button">🎲 Новая задача</button>
+        <input id="trAns" type="text" inputmode="text" placeholder="ответ" aria-label="Ответ">
+        <button id="trCheck" type="button" class="sec">Проверить</button>
+        <button id="trShow" type="button" class="ghost">Показать решение</button>
+      </div>
+      <div id="trResult" class="tr-result"></div>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Проверь себя · по нарастанию</p>
+    <h2>Мини-практика</h2>
+    <div class="drill">
+      <details>
+        <summary><span class="q">Из уравнения (x − 1)² + (y − 6)² = 16 назови центр и радиус.</span><span class="tag">понимание</span></summary>
+        <div class="ans">Обе скобки уже с минусом → <span class="m">a = 1, b = 6</span>. Справа <span class="m">R² = 16</span> → <span class="m">R = 4</span>. Ответ: центр <span class="m">(1; 6)</span>, <span class="m">R = 4</span>.</div>
+      </details>
+      <details>
+        <summary><span class="q">Какая запись задаёт окружность: x² + y² = 4 или x² − y² = 4? Почему?</span><span class="tag">понимание</span></summary>
+        <div class="ans">Окружность задаёт <span class="m">x² + y² = 4</span>: это шаблон с <span class="m">a = 0, b = 0, R² = 4</span>, то есть центр в начале координат и <span class="m">R = 2</span>. Во второй записи стоит <em>минус</em> между квадратами — на шаблон уже не похоже, это не окружность.</div>
+      </details>
+      <details>
+        <summary><span class="q">Запиши уравнение окружности с центром C(−5; 0) и радиусом 2.</span><span class="tag">применение</span></summary>
+        <div class="ans"><span class="m">a = −5</span> → <span class="m">(x − (−5)) = (x + 5)</span>. <span class="m">b = 0</span> → скобка с y пропадает, остаётся <span class="m">y²</span>. <span class="m">R² = 4</span>. Ответ: <span class="m">(x + 5)² + y² = 4</span>.</div>
+      </details>
+      <details>
+        <summary><span class="q">Лежит ли точка A(2; 3) на окружности (x − 2)² + (y + 1)² = 16?</span><span class="tag">применение</span></summary>
+        <div class="ans">Подставляем: <span class="m">(2 − 2)² + (3 + 1)² = 0 + 16 = 16</span>. Справа тоже 16 — равенство верное. Ответ: <strong>да, лежит.</strong></div>
+      </details>
+      <details>
+        <summary><span class="q">Найди ошибку: к центру (2; −3) ученик записал (x − 2)² + (y − 3)² = R².</span><span class="tag">анализ</span></summary>
+        <div class="ans">Ошибка в знаке второй скобки. <span class="m">b = −3</span>, значит <span class="m">(y − b) = (y − (−3)) = (y + 3)</span>. Правильно: <span class="m">(x − 2)² + (y + 3)² = R²</span>.</div>
+      </details>
+      <details>
+        <summary><span class="q">Как изменится уравнение, если радиус увеличить вдвое, а центр оставить прежним?</span><span class="tag">анализ</span></summary>
+        <div class="ans">Скобки слева не изменятся — центр тот же. Справа станет <span class="m">(2R)² = 4R²</span>, то есть <strong>число справа умножится на 4</strong>. Например, было <span class="m">= 9</span>, станет <span class="m">= 36</span>.</div>
+      </details>
+      <details>
+        <summary><span class="q">Окружность задана x² + y² = 25. Не строя чертёж, определи, пересекает ли она ось Ox.</span><span class="tag">анализ</span></summary>
+        <div class="ans">На оси Ox все точки имеют <span class="m">y = 0</span>. Подставляем: <span class="m">x² + 0 = 25</span>, значит <span class="m">x² = 25</span>, откуда <span class="m">x = 5</span> или <span class="m">x = −5</span>. Ответ: пересекает, в точках <span class="m">(5; 0)</span> и <span class="m">(−5; 0)</span>.</div>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Где чаще всего ошибаются</p>
+    <h2>Четыре ловушки</h2>
+    <ul class="pitfalls">
+      <li><b>Путают знак координаты центра.</b> Для центра <span class="math">(3; −1)</span> пишут <span class="math">(y − 1)²</span> вместо <span class="math">(y + 1)²</span>. Как не допустить: всегда вставляй координату <em>со своим знаком</em> в шаблон <span class="math">(y − b)</span>; если b отрицательное, минус на минус даёт плюс. Проговаривай вслух: «икс минус первая координата, игрек минус вторая».</li>
+      <li><b>Забывают возвести радиус в квадрат.</b> Для <span class="math">R = 5</span> пишут справа 5 вместо 25. Как не допустить: в формуле стоит <span class="math">R²</span>, а не R — подставил радиус, сразу возводи в квадрат.</li>
+      <li><b>Обратная ошибка при чтении.</b> Видят справа 36 и говорят «радиус 36». Как не допустить: справа стоит <span class="math">R²</span>, поэтому <span class="math">R = √36 = 6</span>.</li>
+      <li><b>Не узнают окружность без скобок.</b> <span class="math">x² + y² = 9</span> — это тоже окружность, центр в начале координат, <span class="math">R = 3</span>. Как не допустить: сравнивай с шаблоном; отсутствие скобки означает, что соответствующая координата центра равна нулю.</li>
+    </ul>
+  </section>
+
+  <section>
+    <p class="kicker">Проверка понимания</p>
+    <h2>Объясни своими словами</h2>
+    <div class="drill">
+      <details>
+        <summary><span class="q">Какой вид имеет уравнение окружности с центром (a; b) и радиусом R?</span><span class="tag">по памяти</span></summary>
+        <div class="ans"><span class="m">(x − a)² + (y − b)² = R²</span></div>
+      </details>
+      <details>
+        <summary><span class="q">В уравнении (x − 2)² + (y + 5)² = 49 — чему равны центр и радиус?</span><span class="tag">по памяти</span></summary>
+        <div class="ans"><span class="m">(y + 5) = (y − (−5))</span> → <span class="m">b = −5</span>. Центр <span class="m">(2; −5)</span>, <span class="m">R = √49 = 7</span>.</div>
+      </details>
+      <details>
+        <summary><span class="q">Почему для центра (0; −4) в скобке по y получается (y + 4)?</span><span class="tag">объясни</span></summary>
+        <div class="ans">Потому что в шаблоне стоит вычитание: <span class="m">(y − b) = (y − (−4)) = (y + 4)</span>. Минус на минус даёт плюс.</div>
+      </details>
+    </div>
+    <p style="margin-top:1rem">Скажи вслух одной фразой, что такое уравнение окружности. Должно получиться примерно так: <em>«это записанное алгеброй условие, что расстояние от точки до центра равно радиусу»</em>.</p>
+  </section>
+
+  <section>
+    <div class="next">
+      <h2>Что дальше</h2>
+      <p>Ты умеешь читать окружность по уравнению и писать уравнение по центру и радиусу. Следующий шаг — <strong>взаимное расположение</strong>: где проходит прямая относительно окружности и где лежат точки.</p>
+      <div class="eq">(x − a)² + (y − b)² &nbsp;?&nbsp; R²</div>
+      <p>Тот же самый левый кусок, только вместо знака «=» появляются «&lt;» и «&gt;» — и уравнение начинает отвечать не только «на окружности или нет», но и «внутри или снаружи».</p>
+    </div>
+  </section>
+
+  <p class="foot">Проверка на выходе: запиши формулу по памяти · назови центр и радиус в (x + 1)² + (y − 4)² = 36 · что означает число справа?</p>
+
+</div>
+
+<style>
+  .sim{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.1rem 1rem 1rem;margin:1rem 0}
+  .sim canvas{width:100%;height:auto;display:block;border-radius:10px;background:#FCFDFF;cursor:crosshair;touch-action:manipulation}
+  .sim-eq{
+    text-align:center;font-family:ui-monospace,Menlo,monospace;font-weight:800;
+    font-size:clamp(1rem,4.6vw,1.35rem);margin:.9rem 0 0;padding:.6rem .4rem;
+    background:var(--accent-soft);color:var(--ink);border-radius:10px;
+    overflow-x:auto;white-space:nowrap;
+  }
+  .sliders{display:grid;gap:.6rem;margin-top:.9rem}
+  @media(min-width:520px){.sliders{grid-template-columns:repeat(3,1fr)}}
+  .sliders label{display:flex;align-items:center;gap:.5rem;font-weight:700;font-family:ui-monospace,Menlo,monospace}
+  .sliders input[type=range]{flex:1;min-width:0;accent-color:var(--accent)}
+  .sliders input[type=range]:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+  .sliders .sval{min-width:3ch;text-align:right;color:var(--accent);font-variant-numeric:tabular-nums}
+  .sim-hint{margin-top:.9rem;font-size:.9rem;color:var(--muted)}
+  .pt-info{
+    margin-top:.6rem;padding:.7rem .85rem;border-radius:10px;background:#F4F6FA;
+    font-family:ui-monospace,Menlo,monospace;font-size:.87rem;line-height:1.7;
+    color:var(--muted);overflow-x:auto;
+  }
+  .pt-info.on{background:var(--pos-bg);color:var(--pos)}
+  .pt-info.in{background:var(--zero-bg);color:var(--zero)}
+  .pt-info.out{background:var(--neg-bg);color:var(--neg)}
+  .pt-info b{color:inherit}
+</style>
+
+<script>
+(function(){
+  var canvas=document.getElementById('circCanvas'); if(!canvas) return;
+  var ctx=canvas.getContext('2d');
+  var sa=document.getElementById('sa'), sb=document.getElementById('sb'), sr=document.getElementById('sr');
+  var va=document.getElementById('va'), vb=document.getElementById('vb'), vr=document.getElementById('vr');
+  var eqEl=document.getElementById('simEq'), ptEl=document.getElementById('ptInfo');
+  var W=560,H=560,dpr=1,RANGE=11;
+  var pick=null; // выбранная точка {x,y}
+
+  function mm(n){ return (n<0?'−':'')+Math.abs(n); }
+  function brace(v,letter){
+    if(v===0) return letter+'²';
+    return '('+letter+(v>0?' − ':' + ')+Math.abs(v)+')²';
+  }
+  // (p − c) в виде "4 − 3" / "4 + 1"
+  function diffStr(p,c){ return mm(p)+(c<0?' + ':' − ')+Math.abs(c); }
+
+  function resize(){
+    var cssW=canvas.clientWidth||560;
+    dpr=Math.min(window.devicePixelRatio||1,2);
+    W=cssW; H=cssW;
+    canvas.width=Math.round(W*dpr); canvas.height=Math.round(H*dpr);
+    canvas.style.height=H+'px';
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+  }
+  function X(x){ return W/2 + x*(W/(2*RANGE)); }
+  function Y(y){ return H/2 - y*(H/(2*RANGE)); }
+  function unX(px){ return (px - W/2)/(W/(2*RANGE)); }
+  function unY(py){ return (H/2 - py)/(H/(2*RANGE)); }
+
+  function draw(){
+    var a=parseInt(sa.value,10), b=parseInt(sb.value,10), R=parseInt(sr.value,10);
+    va.textContent=mm(a); vb.textContent=mm(b); vr.textContent=''+R;
+    ctx.clearRect(0,0,W,H);
+    var step=W/(2*RANGE);
+
+    // сетка
+    ctx.strokeStyle='#ECEFF5'; ctx.lineWidth=1;
+    for(var g=-RANGE;g<=RANGE;g++){
+      ctx.beginPath(); ctx.moveTo(X(g),0); ctx.lineTo(X(g),H); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(0,Y(g)); ctx.lineTo(W,Y(g)); ctx.stroke();
+    }
+    // оси
+    ctx.strokeStyle='#98A1B2'; ctx.lineWidth=1.6;
+    ctx.beginPath(); ctx.moveTo(0,Y(0)); ctx.lineTo(W,Y(0)); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(X(0),0); ctx.lineTo(X(0),H); ctx.stroke();
+    // подписи осей
+    ctx.fillStyle='#8A93A6'; ctx.font='600 '+Math.max(9,Math.round(step*0.46))+'px ui-monospace,Menlo,monospace';
+    ctx.textAlign='center'; ctx.textBaseline='top';
+    for(var t=-10;t<=10;t+=5){ if(t===0) continue; ctx.fillText(''+t, X(t), Y(0)+3); }
+    ctx.textAlign='right'; ctx.textBaseline='middle';
+    for(var u=-10;u<=10;u+=5){ if(u===0) continue; ctx.fillText(''+u, X(0)-4, Y(u)); }
+    ctx.textAlign='right'; ctx.textBaseline='top';
+    ctx.fillText('0', X(0)-4, Y(0)+3);
+
+    // окружность
+    ctx.strokeStyle='#3B4FD0'; ctx.lineWidth=3;
+    ctx.beginPath(); ctx.arc(X(a),Y(b),R*step,0,Math.PI*2); ctx.stroke();
+    // радиус
+    ctx.strokeStyle='#3B4FD0'; ctx.lineWidth=1.6; ctx.setLineDash([5,4]);
+    ctx.beginPath(); ctx.moveTo(X(a),Y(b)); ctx.lineTo(X(a+R),Y(b)); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle='#3B4FD0'; ctx.textAlign='center'; ctx.textBaseline='bottom';
+    ctx.font='700 '+Math.max(10,Math.round(step*0.52))+'px ui-monospace,Menlo,monospace';
+    ctx.fillText('R = '+R, X(a+R/2), Y(b)-4);
+    // центр
+    ctx.fillStyle='#1B2333'; ctx.beginPath(); ctx.arc(X(a),Y(b),5,0,Math.PI*2); ctx.fill();
+    ctx.textAlign='left'; ctx.textBaseline='top';
+    ctx.fillText('C('+mm(a)+'; '+mm(b)+')', X(a)+7, Y(b)+5);
+
+    // выбранная точка
+    if(pick){
+      var d2=(pick.x-a)*(pick.x-a)+(pick.y-b)*(pick.y-b), R2=R*R;
+      var col = d2===R2 ? '#1E8E5A' : (d2<R2 ? '#B9791A' : '#C0455B');
+      ctx.fillStyle=col; ctx.beginPath(); ctx.arc(X(pick.x),Y(pick.y),6,0,Math.PI*2); ctx.fill();
+      ctx.fillStyle='#fff'; ctx.beginPath(); ctx.arc(X(pick.x),Y(pick.y),2.4,0,Math.PI*2); ctx.fill();
+      ctx.fillStyle=col; ctx.textAlign='left'; ctx.textBaseline='bottom';
+      ctx.fillText('M('+mm(pick.x)+'; '+mm(pick.y)+')', X(pick.x)+8, Y(pick.y)-6);
+    }
+
+    eqEl.textContent = brace(a,'x')+' + '+brace(b,'y')+' = '+(R*R);
+    renderPoint(a,b,R);
+  }
+
+  function renderPoint(a,b,R){
+    if(!pick){ ptEl.className='pt-info'; ptEl.textContent='Точка пока не выбрана.'; return; }
+    var dx=pick.x-a, dy=pick.y-b, d2=dx*dx+dy*dy, R2=R*R;
+    var s='M('+mm(pick.x)+'; '+mm(pick.y)+'): ';
+    s+='('+diffStr(pick.x,a)+')² + ('+diffStr(pick.y,b)+')² = ';
+    s+=Math.abs(dx)+'² + '+Math.abs(dy)+'² = '+(dx*dx)+' + '+(dy*dy)+' = '+d2;
+    ptEl.className='pt-info';
+    if(d2===R2){ ptEl.classList.add('on'); s+='  =  R² = '+R2+'  →  точка НА окружности ✓'; }
+    else if(d2<R2){ ptEl.classList.add('in'); s+='  <  R² = '+R2+'  →  точка ВНУТРИ'; }
+    else { ptEl.classList.add('out'); s+='  >  R² = '+R2+'  →  точка СНАРУЖИ'; }
+    ptEl.textContent=s;
+  }
+
+  function onPick(ev){
+    var rect=canvas.getBoundingClientRect();
+    var cx = (ev.touches && ev.touches[0]) ? ev.touches[0].clientX : ev.clientX;
+    var cy = (ev.touches && ev.touches[0]) ? ev.touches[0].clientY : ev.clientY;
+    var px=(cx-rect.left)*(W/rect.width), py=(cy-rect.top)*(H/rect.height);
+    var x=Math.round(unX(px)), y=Math.round(unY(py));
+    if(x<-RANGE||x>RANGE||y<-RANGE||y>RANGE) return;
+    pick={x:x,y:y};
+    draw();
+  }
+
+  canvas.addEventListener('click',onPick);
+  [sa,sb,sr].forEach(function(s){ s.addEventListener('input',draw); });
+  window.addEventListener('resize',function(){ resize(); draw(); });
+  resize(); draw();
+})();
+</script>
+
+<style>
+  .trainer{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.2rem 1.1rem;margin-top:1rem}
+  .tr-q{
+    font-family:ui-monospace,Menlo,monospace;font-weight:700;
+    font-size:clamp(.95rem,3.9vw,1.1rem);line-height:1.55;text-align:center;
+    padding:1rem .7rem;background:var(--accent-soft);border-radius:10px;color:var(--ink);
+  }
+  .tr-ctl{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.9rem;align-items:center}
+  .tr-ctl button{font:inherit;font-weight:700;font-size:.9rem;cursor:pointer;border:none;border-radius:9px;padding:.55rem .95rem;color:#fff;background:var(--accent)}
+  .tr-ctl button.sec{background:var(--pos)}
+  .tr-ctl button.ghost{background:transparent;color:var(--accent);border:1px solid var(--accent)}
+  .tr-ctl input{flex:1;min-width:150px;font:inherit;padding:.5rem .7rem;border:1px solid var(--line);border-radius:9px;background:#fff;color:var(--ink)}
+  .tr-ctl button:focus-visible,.tr-ctl input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+  .tr-result{margin-top:.9rem;font-size:.96rem;min-height:1.2rem}
+  .tr-result .ok{color:var(--pos);font-weight:700}
+  .tr-result .bad{color:var(--neg);font-weight:700}
+  .tr-result .sol{margin-top:.7rem;padding:.85rem .9rem;background:#FCFBFE;border:1px solid var(--line);border-radius:10px;font-family:ui-monospace,Menlo,monospace;font-size:.88rem;line-height:1.85;overflow-x:auto}
+  .tr-result .sol b{color:var(--accent)}
+</style>
+
+<script>
+(function(){
+  var qEl=document.getElementById('trQ'), ansEl=document.getElementById('trAns'), resEl=document.getElementById('trResult');
+  var newBtn=document.getElementById('trNew'), checkBtn=document.getElementById('trCheck'), showBtn=document.getElementById('trShow');
+  if(!qEl) return;
+
+  function ri(min,max){ return Math.floor(Math.random()*(max-min+1))+min; }
+  function pickOf(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+  function mm(n){ return (n<0?'−':'')+Math.abs(n); }
+  function brace(v,letter){
+    if(v===0) return letter+'²';
+    return '('+letter+(v>0?' − ':' + ')+Math.abs(v)+')²';
+  }
+  function eqStr(a,b,R){ return brace(a,'x')+' + '+brace(b,'y')+' = '+(R*R); }
+  function diffStr(p,c){ return mm(p)+(c<0?' + ':' − ')+Math.abs(c); }
+
+  // прямоугольные тройки — чтобы радиус всегда был целым
+  var TRIPLES=[[3,4,5],[6,8,10],[5,12,13],[9,12,15],[8,15,17],[4,3,5],[12,5,13],[12,9,15]];
+
+  // сдвиг от центра до точки на окружности: {dx,dy,R}
+  function onCircleOffset(){
+    if(Math.random()<0.45){
+      var R=ri(1,9), d=pickOf([[R,0],[-R,0],[0,R],[0,-R]]);
+      return {dx:d[0],dy:d[1],R:R};
+    }
+    var t=pickOf(TRIPLES);
+    var sx=Math.random()<0.5?-1:1, sy=Math.random()<0.5?-1:1;
+    return {dx:t[0]*sx, dy:t[1]*sy, R:t[2]};
+  }
+
+  var cur=null;
+
+  function generate(){
+    var kind=pickOf(['readCR','writeEq','belongs','findR']);
+    var a,b,R,off,px,py,d2;
+    if(kind==='readCR'){
+      a=ri(-7,7); b=ri(-7,7); R=ri(1,9);
+      if(Math.random()<0.18){ a=0; }
+      if(Math.random()<0.18){ b=0; }
+      cur={kind:kind,a:a,b:b,R:R};
+    } else if(kind==='writeEq'){
+      a=ri(-7,7); b=ri(-7,7); R=ri(1,9);
+      if(Math.random()<0.18){ a=0; }
+      if(Math.random()<0.18){ b=0; }
+      cur={kind:kind,a:a,b:b,R:R};
+    } else if(kind==='belongs'){
+      a=ri(-6,6); b=ri(-6,6);
+      off=onCircleOffset(); R=off.R;
+      px=a+off.dx; py=b+off.dy;
+      if(Math.random()<0.5){ // сдвигаем точку с окружности
+        if(Math.random()<0.5) px+=pickOf([-2,-1,1,2]); else py+=pickOf([-2,-1,1,2]);
+      }
+      d2=(px-a)*(px-a)+(py-b)*(py-b);
+      cur={kind:kind,a:a,b:b,R:R,px:px,py:py,d2:d2,on:(d2===R*R)};
+    } else {
+      a=ri(-6,6); b=ri(-6,6);
+      off=onCircleOffset(); R=off.R;
+      cur={kind:kind,a:a,b:b,R:R,px:a+off.dx,py:b+off.dy};
+    }
+    render();
+    return cur;
+  }
+
+  function render(){
+    var q=cur, txt='', ph='';
+    if(q.kind==='readCR'){
+      txt='Дано уравнение '+eqStr(q.a,q.b,q.R)+'. Назови центр и радиус.';
+      ph='центр и R, напр.  3; −1; 5';
+    } else if(q.kind==='writeEq'){
+      txt='Центр C('+mm(q.a)+'; '+mm(q.b)+'), радиус R = '+q.R+'. Запиши уравнение окружности.';
+      ph='напр.  (x-3)^2+(y+1)^2=25';
+    } else if(q.kind==='belongs'){
+      txt='Лежит ли точка M('+mm(q.px)+'; '+mm(q.py)+') на окружности '+eqStr(q.a,q.b,q.R)+' ?';
+      ph='да  или  нет';
+    } else {
+      txt='Центр окружности C('+mm(q.a)+'; '+mm(q.b)+'), точка M('+mm(q.px)+'; '+mm(q.py)+') лежит на этой окружности. Найди радиус R.';
+      ph='число, напр.  5';
+    }
+    qEl.textContent=txt;
+    ansEl.value=''; ansEl.placeholder=ph;
+    resEl.innerHTML='';
+  }
+
+  // ——— разбор ответа ———
+  function normNum(s){
+    return String(s).replace(/−/g,'-').replace(/(\d),(\d)/g,'$1.$2');
+  }
+  function nums(s){
+    var t=normNum(s).replace(/[()\[\]]/g,' ').replace(/[a-zA-Zа-яА-Я=]/g,' ');
+    var parts=t.split(/[;,\s]+/).filter(function(v){ return v!==''; });
+    var out=[];
+    for(var i=0;i<parts.length;i++){
+      var v=parseFloat(parts[i]);
+      if(!isFinite(v)) return null;
+      out.push(v);
+    }
+    return out;
+  }
+  function parseEq(s){
+    var t=normNum(s).replace(/\s+/g,'').toLowerCase();
+    t=t.replace(/х/g,'x').replace(/у/g,'y').replace(/²/g,'^2').replace(/\*\*/g,'^');
+    var sides=t.split('=');
+    if(sides.length!==2) return null;
+    var L=sides[0], Rt=sides[1];
+    var r2=parseFloat(Rt);
+    if(!isFinite(r2)) return null;
+    var a=null,b=null;
+    var mx=L.match(/\(x([+-]\d+(?:\.\d+)?)\)\^?2/);
+    if(mx) a=-parseFloat(mx[1]);
+    else if(/\(x\)\^?2/.test(L)) a=0;
+    else if(/(^|[+\-])x\^2/.test(L)) a=0;
+    var my=L.match(/\(y([+-]\d+(?:\.\d+)?)\)\^?2/);
+    if(my) b=-parseFloat(my[1]);
+    else if(/\(y\)\^?2/.test(L)) b=0;
+    else if(/(^|[+\-])y\^2/.test(L)) b=0;
+    if(a===null||b===null) return null;
+    if(!isFinite(a)||!isFinite(b)) return null;
+    return {a:a,b:b,r2:r2};
+  }
+
+  function solutionHTML(){
+    var q=cur, h='<div class="sol">';
+    if(q.kind==='readCR'){
+      h+='Шаблон: <b>(x − a)² + (y − b)² = R²</b><br>';
+      h+='скобка с x: '+brace(q.a,'x')+' → a = <b>'+mm(q.a)+'</b><br>';
+      h+='скобка с y: '+brace(q.b,'y')+' → b = <b>'+mm(q.b)+'</b><br>';
+      h+='справа R² = '+(q.R*q.R)+' → R = √'+(q.R*q.R)+' = <b>'+q.R+'</b><br>';
+      h+='Ответ: центр C('+mm(q.a)+'; '+mm(q.b)+'), R = '+q.R;
+    } else if(q.kind==='writeEq'){
+      h+='a = '+mm(q.a)+', b = '+mm(q.b)+', R = '+q.R+'<br>';
+      h+='скобка с x: (x − ('+mm(q.a)+')) → '+(q.a===0?'x² (скобка пропадает)':brace(q.a,'x'))+'<br>';
+      h+='скобка с y: (y − ('+mm(q.b)+')) → '+(q.b===0?'y² (скобка пропадает)':brace(q.b,'y'))+'<br>';
+      h+='справа R² = '+q.R+'² = '+(q.R*q.R)+'<br>';
+      h+='Ответ: <b>'+eqStr(q.a,q.b,q.R)+'</b>';
+    } else if(q.kind==='belongs'){
+      h+='Подставляем координаты точки в левую часть:<br>';
+      h+='('+diffStr(q.px,q.a)+')² + ('+diffStr(q.py,q.b)+')² = ';
+      h+=Math.abs(q.px-q.a)+'² + '+Math.abs(q.py-q.b)+'² = '+((q.px-q.a)*(q.px-q.a))+' + '+((q.py-q.b)*(q.py-q.b))+' = <b>'+q.d2+'</b><br>';
+      h+='справа R² = '+(q.R*q.R)+'<br>';
+      if(q.on) h+='Ответ: '+q.d2+' = '+(q.R*q.R)+' → равенство верное, точка <b>лежит</b> на окружности.';
+      else h+='Ответ: '+q.d2+' ≠ '+(q.R*q.R)+' → равенство неверное, точка <b>не лежит</b> на окружности ('+(q.d2<q.R*q.R?'она внутри':'она снаружи')+').';
+    } else {
+      var dx=q.px-q.a, dy=q.py-q.b;
+      h+='R — это расстояние от центра до точки окружности:<br>';
+      h+='R = √(('+diffStr(q.px,q.a)+')² + ('+diffStr(q.py,q.b)+')²)<br>';
+      h+='R = √('+(dx*dx)+' + '+(dy*dy)+') = √'+(dx*dx+dy*dy)+' = <b>'+q.R+'</b><br>';
+      h+='Заодно уравнение: '+eqStr(q.a,q.b,q.R);
+    }
+    return h+'</div>';
+  }
+
+  function check(){
+    var q=cur, raw=ansEl.value.trim();
+    if(!raw){ resEl.innerHTML='<span class="bad">Введи ответ или нажми «Показать решение».</span>'; return; }
+    var ok=false, hint='';
+    if(q.kind==='readCR'){
+      var v=nums(raw);
+      if(!v || v.length!==3){
+        resEl.innerHTML='<span class="bad">Не понял запись. Нужны три числа: a; b; R — например «3; −1; 5».</span>'; return;
+      }
+      ok = (v[0]===q.a && v[1]===q.b && v[2]===q.R);
+      if(!ok && v[2]===q.R*q.R) hint=' Справа стоит R², а не R — извлеки корень.';
+      if(!ok && v[0]===-q.a && v[1]===-q.b) hint=' Перепутаны знаки центра: в скобке (x − a), значит из знака в скобке берётся противоположное число.';
+    } else if(q.kind==='writeEq'){
+      var e=parseEq(raw);
+      if(!e){
+        resEl.innerHTML='<span class="bad">Не понял запись уравнения. Пиши так: (x-3)^2+(y+1)^2=25, а при нулевой координате центра — x^2+(y+1)^2=25.</span>'; return;
+      }
+      ok = (e.a===q.a && e.b===q.b && e.r2===q.R*q.R);
+      if(!ok && e.a===q.a && e.b===q.b && e.r2===q.R) hint=' Справа должно стоять R², то есть '+q.R+'² = '+(q.R*q.R)+'.';
+      if(!ok && e.a===-q.a && e.b===-q.b) hint=' Знаки в скобках наоборот: для центра a подставляем (x − a).';
+    } else if(q.kind==='belongs'){
+      var low=raw.toLowerCase().replace(/ё/g,'е').replace(/−/g,'-');
+      var said=null;
+      if(/^(нет|не|no|-)/.test(low) || /не\s*(лежит|принадлеж)/.test(low)) said=false;
+      else if(/^(да|лежит|принадлеж|yes|\+)/.test(low)) said=true;
+      if(said===null){ resEl.innerHTML='<span class="bad">Ответь словом «да» или «нет».</span>'; return; }
+      ok = (said===q.on);
+      if(!ok) hint=' Подставь координаты точки в левую часть и сравни с числом справа.';
+    } else {
+      var w=nums(raw);
+      if(!w || w.length!==1){ resEl.innerHTML='<span class="bad">Нужно одно число — радиус.</span>'; return; }
+      ok = (w[0]===q.R);
+      if(!ok && w[0]===q.R*q.R) hint=' Ты нашёл R², а спрашивают R — извлеки корень.';
+    }
+    if(ok) resEl.innerHTML='<span class="ok">✓ Верно!</span>'+solutionHTML();
+    else resEl.innerHTML='<span class="bad">✗ Пока не то.'+hint+'</span>'+solutionHTML();
+  }
+
+  newBtn.addEventListener('click',function(){ generate(); ansEl.focus(); });
+  checkBtn.addEventListener('click',check);
+  showBtn.addEventListener('click',function(){ resEl.innerHTML=solutionHTML(); });
+  ansEl.addEventListener('keydown',function(e){ if(e.key==='Enter') check(); });
+
+  // стартовая задача (без фокуса)
+  cur={kind:'readCR',a:3,b:-1,R:5};
+  render();
+
+  if(typeof window!=='undefined'){
+    window.__trainer={generate:generate, solutionHTML:solutionHTML, parseEq:parseEq, nums:nums, get:function(){return cur;}};
+  }
+})();
+</script>
+<!--LESSON-NAV-BOT--><nav class="lnav lnav-bot"><a class="prev" href="./geo9-koord-rasstoyanie.html"><span class="dir">← Предыдущая</span><span class="ttl">Расстояние между двумя точками</span></a><a class="to-cat" href="./catalog.html">📚 <span>Все темы</span></a><a class="next" href="./geo9-trig-osnovnoe-tozhdestvo.html"><span class="dir">Следующая →</span><span class="ttl">Основное тригонометрическое тождество и формулы приведения</span></a></nav><!--/LESSON-NAV-BOT-->

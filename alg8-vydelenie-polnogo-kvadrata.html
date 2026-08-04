@@ -1,0 +1,754 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Выделение полного квадрата — урок, алгебра 8 класс</title>
+<style>
+  :root{
+    --paper:#F6F7F9;
+    --card:#FFFFFF;
+    --ink:#1B2333;
+    --muted:#5A6478;
+    --line:#E2E5EC;
+    --accent:#3B4FD0;
+    --accent-soft:#EAEDFB;
+    --pos:#1E8E5A;
+    --pos-bg:#E7F4EC;
+    --zero:#B9791A;
+    --zero-bg:#FBF1DC;
+    --neg:#C0455B;
+    --neg-bg:#F9E9EC;
+  }
+  *{box-sizing:border-box}
+  body{margin:0}
+  .wrap{
+    max-width:760px;
+    margin:0 auto;
+    padding:clamp(1.4rem,4vw,3rem) clamp(1.1rem,4vw,2rem) 4rem;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    font-size:17px;
+    line-height:1.62;
+    -webkit-font-smoothing:antialiased;
+  }
+  .eyebrow{
+    font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--accent);font-weight:600;margin:0 0 .5rem;
+  }
+  h1{
+    font-family:Georgia,"Times New Roman",serif;
+    font-size:clamp(2rem,7vw,3rem);
+    line-height:1.05;margin:0;font-weight:700;letter-spacing:-.01em;
+    text-wrap:balance;
+  }
+  .lede{
+    font-size:1.08rem;color:var(--muted);margin:.7rem 0 0;max-width:60ch;
+    text-wrap:pretty;
+  }
+  h2{
+    font-family:Georgia,serif;font-size:1.32rem;font-weight:700;
+    margin:0 0 .1rem;letter-spacing:-.005em;
+  }
+  section{margin-top:2.6rem}
+  .kicker{
+    font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--muted);font-weight:600;margin:0 0 .8rem;
+    display:flex;align-items:center;gap:.6rem;
+  }
+  .kicker::before{
+    content:"";width:1.4rem;height:2px;background:var(--accent);border-radius:2px;
+  }
+  p{margin:.65rem 0}
+  strong{font-weight:650}
+  .math{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-weight:600}
+  sup{font-size:.72em}
+  a{color:var(--accent)}
+
+  /* Главная формула */
+  .hero-formula{
+    margin-top:2.2rem;
+    background:var(--ink);color:#fff;border-radius:14px;
+    padding:1.6rem 1.2rem;text-align:center;
+  }
+  .hero-formula .lbl{
+    font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;
+    color:#9aa6c9;margin:0 0 .7rem;
+  }
+  .hero-formula .eq{
+    font-family:ui-monospace,"SF Mono",Menlo,monospace;
+    font-size:clamp(1.25rem,5.4vw,2.1rem);font-weight:700;letter-spacing:.01em;
+  }
+  .hero-formula .eq b{color:#8ea0ff;font-weight:700}
+  .hero-formula .note{font-size:.86rem;color:#9aa6c9;margin:.8rem 0 0}
+
+  /* Пререквизит */
+  .recall{
+    background:var(--accent-soft);border-radius:12px;padding:1rem 1.15rem;
+    font-size:.96rem;
+  }
+  .recall p{margin:.3rem 0}
+
+  /* Алгоритм */
+  .worked{
+    background:var(--card);border:1px solid var(--line);border-radius:12px;
+    padding:1.2rem 1.1rem;
+  }
+  .worked .task{
+    font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.05rem;
+    margin:0 0 1rem;padding-bottom:.8rem;border-bottom:1px solid var(--line);
+  }
+  ol.steps{margin:0;padding:0;list-style:none;counter-reset:s;display:flex;flex-direction:column;gap:.7rem}
+  ol.steps li{position:relative;padding-left:2.1rem;counter-increment:s}
+  ol.steps li::before{
+    content:counter(s);position:absolute;left:0;top:.05rem;
+    width:1.5rem;height:1.5rem;border-radius:50%;
+    background:var(--accent-soft);color:var(--accent);
+    font-size:.82rem;font-weight:700;display:flex;align-items:center;justify-content:center;
+  }
+  ol.steps .m{font-family:ui-monospace,Menlo,monospace;font-weight:600;color:var(--ink)}
+  ol.steps .why{color:var(--muted);font-size:.9rem;display:block}
+  .verdict{
+    margin-top:1rem;padding:.7rem 1rem;background:var(--pos-bg);
+    border-radius:9px;font-weight:600;color:var(--pos);font-size:.98rem;
+  }
+
+  /* Три исхода */
+  .cases{display:grid;gap:.85rem;margin-top:.4rem}
+  @media(min-width:620px){.cases{grid-template-columns:repeat(3,1fr)}}
+  .case{
+    border-radius:12px;padding:1.05rem 1.1rem;border:1px solid var(--line);
+    background:var(--card);display:flex;flex-direction:column;gap:.35rem;
+  }
+  .case .sign{font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.05rem}
+  .case .count{font-weight:650;font-size:1rem}
+  .case .desc{font-size:.9rem;color:var(--muted)}
+  .case.pos{border-top:4px solid var(--pos);background:var(--pos-bg)}
+  .case.pos .sign{color:var(--pos)}
+  .case.zero{border-top:4px solid var(--zero);background:var(--zero-bg)}
+  .case.zero .sign{color:var(--zero)}
+  .case.neg{border-top:4px solid var(--neg);background:var(--neg-bg)}
+  .case.neg .sign{color:var(--neg)}
+
+  /* Практика */
+  .drill{display:flex;flex-direction:column;gap:.7rem}
+  details{
+    background:var(--card);border:1px solid var(--line);border-radius:10px;
+    padding:.85rem 1.05rem;
+  }
+  details[open]{border-color:var(--accent)}
+  summary{
+    cursor:pointer;font-weight:600;list-style:none;
+    display:flex;justify-content:space-between;align-items:center;gap:.7rem;flex-wrap:wrap;
+  }
+  summary::-webkit-details-marker{display:none}
+  summary:focus-visible{outline:3px solid var(--accent);outline-offset:3px;border-radius:6px}
+  summary .q{font-family:ui-monospace,Menlo,monospace}
+  summary .tag{
+    font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);
+    border:1px solid var(--line);border-radius:20px;padding:.1rem .55rem;white-space:nowrap;
+  }
+  summary::after{
+    content:"показать ответ";font-size:.78rem;color:var(--accent);font-weight:600;white-space:nowrap;
+  }
+  details[open] summary::after{content:"скрыть"}
+  .ans{margin-top:.7rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.96rem;color:var(--muted)}
+  .ans .m{font-family:ui-monospace,Menlo,monospace;color:var(--ink);font-weight:600}
+
+  /* Ошибки */
+  ul.pitfalls{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:.6rem}
+  ul.pitfalls li{padding-left:1.5rem;position:relative;font-size:.98rem}
+  ul.pitfalls li::before{
+    content:"×";position:absolute;left:0;top:-.05rem;color:var(--neg);font-weight:700;font-size:1.1rem;
+  }
+  ul.pitfalls b{color:var(--ink)}
+
+  /* Вывод формулы */
+  .derive{
+    background:var(--card);border:1px solid var(--line);border-radius:12px;
+    padding:1.1rem 1.1rem;overflow-x:auto;
+  }
+  .derive .row{
+    font-family:ui-monospace,Menlo,monospace;font-weight:600;font-size:.95rem;
+    padding:.45rem 0;border-top:1px dashed var(--line);
+  }
+  .derive .row:first-of-type{border-top:none}
+  .derive .row span{color:var(--muted);font-family:system-ui,sans-serif;font-weight:400;font-size:.86rem;display:block}
+
+  .next{background:var(--accent);color:#fff;border-radius:12px;padding:1.2rem 1.2rem}
+  .next h2{color:#fff}
+  .next .eq{font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.1rem;margin:.6rem 0 .3rem}
+  .next p{color:#dfe4fb;font-size:.96rem;margin:.4rem 0 0}
+  .next a{color:#fff;font-weight:700}
+  .foot{margin-top:2.4rem;font-size:.82rem;color:var(--muted);text-align:center}
+
+  @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+<style>
+.oge-tip{display:flex;gap:.8rem;align-items:flex-start;background:#FFF8E7;border:1px solid #F0D98A;border-left:4px solid #E0A315;border-radius:10px;padding:.85rem 1.05rem;margin:1.5rem 0}
+.oge-tip .b{font-size:.72rem;font-weight:800;letter-spacing:.03em;color:#8A6A15;white-space:nowrap;text-transform:uppercase;padding-top:.15rem}
+.oge-tip .x{font-size:.95rem;line-height:1.5}
+</style>
+
+<!--LESSON-NAV-TOP--><style>.lnav{--lnav-accent:#3D5AF1}.lnav a{text-decoration:none;font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif}.lnav-top{max-width:820px;margin:0 auto;padding:.75rem clamp(1rem,4vw,1.5rem) .1rem}.lnav-top a{display:inline-flex;align-items:center;gap:.35rem;color:var(--lnav-accent);font-weight:600;font-size:.9rem}.lnav-top a:hover{text-decoration:underline}.lnav-bot{max-width:820px;margin:2.6rem auto 3rem;padding:1.1rem clamp(1rem,4vw,1.5rem) 0;border-top:1px solid #E4E8EF;display:flex;align-items:stretch;gap:.55rem}.lnav-bot a{min-width:0;display:flex;flex-direction:column;justify-content:center;gap:.15rem;border:1px solid #E4E8EF;border-radius:12px;padding:.65rem .85rem;color:#182233;background:#fff;transition:border-color .1s,transform .08s}.lnav-bot a:hover{border-color:var(--lnav-accent);transform:translateY(-1px)}.lnav-bot .prev,.lnav-bot .next{flex:1 1 0}.lnav-bot .next{text-align:right}.lnav-bot .dir{font-size:.72rem;color:#8A93A6;font-weight:600}.lnav-bot .ttl{font-size:.9rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.lnav-bot .to-cat{flex:0 0 auto;flex-direction:row;align-items:center;justify-content:center;color:var(--lnav-accent);font-weight:700;font-size:.85rem;white-space:nowrap}@media(max-width:420px){.lnav-bot .to-cat span{display:none}.lnav-bot .to-cat{padding:.65rem .7rem}}</style><nav class="lnav lnav-top"><a href="./catalog.html">← Все темы</a></nav><!--/LESSON-NAV-TOP-->
+<div class="wrap">
+
+  <header>
+    <p class="eyebrow">Алгебра · 8 класс</p>
+    <h1>Выделение полного квадрата</h1>
+    <p class="lede">Приём, который убирает из уравнения «лишний» x первой степени и превращает его в простое <em>(x + m)² = n</em>. Из него же выведена формула корней.</p>
+  </header>
+
+  <div class="hero-formula">
+    <p class="lbl">Ключевое равенство</p>
+    <div class="eq">(x + <b>m</b>)<sup>2</sup> = x<sup>2</sup> + 2<b>m</b>x + <b>m</b><sup>2</sup></div>
+    <p class="note">чтобы из x² + 2mx получить полный квадрат, не хватает ровно m²</p>
+  </div>
+
+  <section>
+    <p class="kicker">Зачем это нужно</p>
+    <h2>Почему «в лоб» не решается</h2>
+    <p>Полное квадратное уравнение <span class="math">ax² + bx + c = 0</span> нельзя решить простым переносом слагаемых: переменная стоит и в квадрате, и в первой степени, и они мешают друг другу. Нужен приём, который <strong>уберёт первую степень</strong> и сведёт всё к одному квадрату — тогда останется только извлечь корень.</p>
+    <p>Этот приём и называется <strong>выделение полного квадрата</strong>. Он важен по двум причинам:</p>
+    <p>· это <strong>универсальный</strong> способ решить любое квадратное уравнение — ещё до того, как ты выучил готовую формулу корней;<br>
+    · именно из него <strong>выводится</strong> сама формула корней через дискриминант. Формула — не «магия с неба», а краткая запись того, что ты сейчас будешь делать руками.</p>
+    <p>Позже тот же приём нужен, чтобы найти вершину параболы и привести квадратичную функцию к удобному виду. Так что навык работает на всю старшую школу.</p>
+    <p><strong>Типичное заблуждение:</strong> «раз есть готовая формула корней, выделение квадрата не нужно». На самом деле понимание именно этого вывода отличает того, кто <em>знает математику</em>, от того, кто <em>зазубрил формулу</em>.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Что вспомнить перед стартом</p>
+    <div class="recall">
+      <p><strong>Формула сокращённого умножения:</strong> <span class="math">(x + m)² = x² + 2mx + m²</span>.</p>
+      <p><strong>Перенос через знак равенства</strong> меняет знак слагаемого: из <span class="math">x² + 6x − 7 = 0</span> получается <span class="math">x² + 6x = 7</span>.</p>
+      <p><strong>Квадрат не бывает отрицательным:</strong> если справа после сворачивания стоит минус — корней нет.</p>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Ядро темы</p>
+    <h2>Суть в одном движении</h2>
+    <p>Мы хотим переписать левую часть так, чтобы вместо «x² и x по отдельности» получился <strong>один точный квадрат</strong> (x + m)², плюс некоторое число.</p>
+    <p>Смотри: чтобы из <span class="math">x² + 2mx</span> получить полный квадрат, не хватает ровно <span class="math">m²</span>. Мы его <strong>добавляем</strong> — но чтобы уравнение не изменилось, тут же его <strong>вычитаем</strong> (или прибавляем и справа тоже). Добавили и отняли одно и то же — значение не поменялось, а вид стал удобным.</p>
+
+    <div class="worked" style="margin-top:1.1rem">
+      <p class="task">Алгоритм для x² + px + q = 0 &nbsp;(при x² стоит 1)</p>
+      <ol class="steps">
+        <li>Перенеси свободный член вправо: <span class="m">x² + px = −q</span>.</li>
+        <li>Возьми <strong>половину</strong> коэффициента при x и возведи её <strong>в квадрат</strong>: <span class="m">(p/2)²</span>. Это и есть добавляемое число.</li>
+        <li>Прибавь <span class="m">(p/2)²</span> к <strong>обеим</strong> частям: <span class="m">x² + px + (p/2)² = −q + (p/2)²</span>.</li>
+        <li>Сверни левую часть в квадрат: <span class="m">(x + p/2)² = −q + (p/2)²</span>.</li>
+        <li>Извлеки корень с двумя знаками: <span class="m">x + p/2 = ±√(правая часть)</span>.</li>
+        <li>Вырази x.</li>
+      </ol>
+      <div class="verdict">m = p/2 — половина коэффициента при x. Она же стоит внутри скобки.</div>
+    </div>
+
+    <p style="margin-top:1.1rem">Обозначения: <span class="math">p</span> — коэффициент при x (со знаком), <span class="math">q</span> — свободный член (со знаком), <span class="math">m = p/2</span> — число внутри скобки.</p>
+
+    <h2 style="margin-top:1.6rem">А если при x² стоит не 1?</h2>
+    <p>Если уравнение <span class="math">ax² + bx + c = 0</span> и <span class="math">a ≠ 1</span> — первым делом <strong>раздели всё уравнение на a</strong>, и только потом применяй алгоритм. Например, <span class="math">2x² + 12x − 14 = 0</span> делим на 2 и получаем <span class="math">x² + 6x − 7 = 0</span> — знакомый вид с единицей при x².</p>
+
+    <h2 style="margin-top:1.6rem">Три исхода на последнем шаге</h2>
+    <p>Когда уравнение свёрнуто до <span class="math">(x + m)² = n</span>, всё решает знак числа <span class="math">n</span> справа:</p>
+    <div class="cases">
+      <div class="case pos">
+        <div class="sign">n &gt; 0</div>
+        <div class="count">Два корня</div>
+        <div class="desc">x + m = ±√n — два разных варианта.</div>
+      </div>
+      <div class="case zero">
+        <div class="sign">n = 0</div>
+        <div class="count">Один корень</div>
+        <div class="desc">x + m = 0, то есть x = −m.</div>
+      </div>
+      <div class="case neg">
+        <div class="sign">n &lt; 0</div>
+        <div class="count">Корней нет</div>
+        <div class="desc">Квадрат не бывает отрицательным.</div>
+      </div>
+    </div>
+
+    <div class="oge-tip"><div class="b">🎯 В ОГЭ</div><div class="x"><b>Задания 20–22.</b> Выделение полного квадрата — то, из чего выведена формула корней; им же находят вершину параболы и доказывают неравенства во второй части.</div></div>
+  </section>
+
+  <section>
+    <p class="kicker">Разбираем вместе · думаю вслух</p>
+    <h2>Эталонный пример</h2>
+    <div class="worked">
+      <p class="task">x² + 6x − 7 = 0</p>
+      <ol class="steps">
+        <li><span class="m">x² + 6x = 7</span>
+          <span class="why">почему: хотим слева оставить только то, из чего лепим квадрат; при переносе −7 меняет знак на +7.</span></li>
+        <li><span class="m">6 : 2 = 3, &nbsp;3² = 9</span>
+          <span class="why">почему: сначала пополам, потом в квадрат. В (x + 3)² не хватает именно 3² = 9.</span></li>
+        <li><span class="m">x² + 6x + 9 = 7 + 9, &nbsp;то есть x² + 6x + 9 = 16</span>
+          <span class="why">почему: прибавили одно и то же слева и справа — равенство сохранилось.</span></li>
+        <li><span class="m">(x + 3)² = 16</span>
+          <span class="why">почему: x² + 6x + 9 — это точный квадрат (x + 3)².</span></li>
+        <li><span class="m">x + 3 = ±4</span>
+          <span class="why">почему: квадрат равен 16, значит само выражение равно +4 или −4.</span></li>
+        <li><span class="m">x + 3 = 4 → x = 1; &nbsp;x + 3 = −4 → x = −7</span>
+          <span class="why">разбираем оба случая отдельно — отсюда и берутся два корня.</span></li>
+      </ol>
+      <div class="verdict">Ответ: x = 1; x = −7.</div>
+    </div>
+
+    <details style="margin-top:.9rem">
+      <summary><span class="q">Допиши сам: x² − 8x + 12 = 0</span><span class="tag">с пропуском</span></summary>
+      <div class="ans">
+        <span class="m">x² − 8x = −12</span><br>
+        Половина от −8 равна −4, в квадрате: <span class="m">(−4)² = 16</span>.<br>
+        <span class="m">x² − 8x + 16 = −12 + 16 = 4</span><br>
+        <span class="m">(x − 4)² = 4 → x − 4 = ±2</span><br>
+        <strong>x = 6 и x = 2.</strong>
+      </div>
+    </details>
+    <details>
+      <summary><span class="q">Реши сам: x² + 4x − 5 = 0</span><span class="tag">применение</span></summary>
+      <div class="ans"><span class="m">x² + 4x = 5; &nbsp;(4/2)² = 4; &nbsp;(x + 2)² = 9; &nbsp;x + 2 = ±3</span> → <strong>x = 1; x = −5.</strong></div>
+    </details>
+  </section>
+
+  <section>
+    <p class="kicker">Покрути сам · интерактив</p>
+    <h2>Откуда взялось слово «квадрат»</h2>
+    <p>Выражение <span class="math">x² + bx</span> можно выложить из фигур: большой квадрат со стороной <span class="math">x</span> и два прямоугольника шириной <span class="math">b/2</span>. Видно, что до целого квадрата со стороной <span class="math">x + b/2</span> не хватает одного уголка — и его площадь как раз <span class="math">(b/2)²</span>. Вот это число мы и добавляем.</p>
+    <div class="sqbox">
+      <canvas id="sqCanvas" width="640" height="470" aria-label="Площадная модель выделения полного квадрата"></canvas>
+      <div class="sliders">
+        <label>x <span id="vx" class="sval">4</span><input id="sx" type="range" min="1" max="8" step="1" value="4" aria-label="Сторона x"></label>
+        <label>b <span id="vb" class="sval">6</span><input id="sb" type="range" min="1" max="12" step="1" value="6" aria-label="Коэффициент b"></label>
+      </div>
+      <div id="sqLegend" class="sqlegend"></div>
+    </div>
+    <p style="font-size:.9rem;color:var(--muted)">Поставь b нечётным — уголок станет дробным (например, при b = 5 это 2,5 × 2,5 = 6,25). Приём работает точно так же, просто число получается не целым.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Для любознательных</p>
+    <h2>Отсюда и берётся формула корней</h2>
+    <p>Проделай тот же алгоритм не с числами, а с буквами — для <span class="math">ax² + bx + c = 0</span>:</p>
+    <div class="derive">
+      <div class="row">ax² + bx + c = 0 &nbsp;|&nbsp; : a
+        <span>сначала делим всё на a, чтобы при x² осталась единица</span></div>
+      <div class="row">x² + (b/a)·x = −c/a
+        <span>свободный член переносим вправо</span></div>
+      <div class="row">половина от b/a это b/(2a), в квадрате — b²/(4a²)
+        <span>то самое «добавляемое число» (p/2)²</span></div>
+      <div class="row">(x + b/(2a))² = b²/(4a²) − c/a = (b² − 4ac) / (4a²)
+        <span>справа приводим к общему знаменателю — и вот он, b² − 4ac, дискриминант</span></div>
+      <div class="row">x + b/(2a) = ±√D / (2a)
+        <span>извлекаем корень с двумя знаками</span></div>
+      <div class="row">x = (−b ± √D) / (2a)
+        <span>та самая формула корней</span></div>
+    </div>
+    <p style="font-size:.92rem;color:var(--muted)">Видишь: дискриминант — это просто то, что оказалось справа после сворачивания. Его знак и решает, сколько корней, ровно как в трёх исходах выше.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Тренажёр · бесконечная практика</p>
+    <h2>Три типа заданий на один приём</h2>
+    <p>Нажимай «Новое задание»: попадётся либо выделить полный квадрат, либо решить уравнение, либо найти наименьшее значение. Дробные числа пиши через точку или запятую, несколько чисел — <b>через точку с запятой</b>. Если корней нет — так и напиши: <b>нет</b>.</p>
+    <div class="trainer">
+      <div class="tr-type" id="trType">Выдели полный квадрат</div>
+      <div class="tr-eq" id="trEq">x² + 6x + 5</div>
+      <div class="tr-hint" id="trHint">Запиши в виде (x + m)² + k. Ответ: два числа через «;» — сначала m, потом k.</div>
+      <div class="tr-ctl">
+        <button id="trNew" type="button">🎲 Новое задание</button>
+        <input id="trAns" type="text" inputmode="text" placeholder="напр.  3; −4" aria-label="Ответ">
+        <button id="trCheck" type="button" class="sec">Проверить</button>
+        <button id="trShow" type="button" class="ghost">Показать решение</button>
+      </div>
+      <div id="trResult" class="tr-result"></div>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Теперь ты · нажми, чтобы проверить</p>
+    <h2>Мини-практика</h2>
+    <div class="drill">
+      <details>
+        <summary><span class="q">Каким выражением свернётся x² + 10x + 25?</span><span class="tag">понимание</span></summary>
+        <div class="ans"><span class="m">(x + 5)²</span>, потому что 10 = 2·5, а 25 = 5².</div>
+      </details>
+      <details>
+        <summary><span class="q">Что прибавить к x² − 12x до полного квадрата?</span><span class="tag">понимание</span></summary>
+        <div class="ans">Половина от −12 равна −6, в квадрате <span class="m">36</span>. Получится <span class="m">(x − 6)²</span>.</div>
+      </details>
+      <details>
+        <summary><span class="q">Реши: x² + 2x − 8 = 0</span><span class="tag">применение</span></summary>
+        <div class="ans"><span class="m">x² + 2x = 8; &nbsp;(2/2)² = 1; &nbsp;(x + 1)² = 9; &nbsp;x + 1 = ±3</span> → <strong>x = 2; x = −4.</strong></div>
+      </details>
+      <details>
+        <summary><span class="q">Реши: x² − 6x + 5 = 0</span><span class="tag">применение</span></summary>
+        <div class="ans"><span class="m">x² − 6x = −5; &nbsp;(−3)² = 9; &nbsp;(x − 3)² = 4; &nbsp;x − 3 = ±2</span> → <strong>x = 1; x = 5.</strong></div>
+      </details>
+      <details>
+        <summary><span class="q">Что изменится: сколько корней у x² + 6x + 9 = 0?</span><span class="tag">анализ</span></summary>
+        <div class="ans">Сворачивается в <span class="m">(x + 3)² = 0</span> — справа ноль. Значит корень <strong>один: x = −3</strong>.</div>
+      </details>
+      <details>
+        <summary><span class="q">Найди ошибку: x² + 6x = 7 → x² + 6x + 9 = 7</span><span class="tag">анализ</span></summary>
+        <div class="ans">Ученик прибавил 9 только слева. Что прибавил слева — прибавь и справа: должно быть <span class="m">x² + 6x + 9 = 16</span>, откуда <span class="m">(x + 3)² = 16</span>.</div>
+      </details>
+      <details>
+        <summary><span class="q">Обратная задача: подбери c, чтобы у x² − 10x + c = 0 был ровно один корень</span><span class="tag">анализ</span></summary>
+        <div class="ans">Половина от −10 это −5, в квадрате 25. При <span class="m">c = 25</span> выйдет <span class="m">(x − 5)² = 0</span> — <strong>один корень x = 5</strong>.</div>
+      </details>
+      <details>
+        <summary><span class="q">Предскажи и проверь: сколько корней у (x − 4)² = 4, у (x − 4)² = 0, у (x − 4)² = −1?</span><span class="tag">анализ</span></summary>
+        <div class="ans">Справа 4 → <strong>два</strong> корня (x = 6 и x = 2). Справа 0 → <strong>один</strong> (x = 4). Справа −1 → <strong>ни одного</strong>: квадрат не бывает отрицательным.</div>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Где чаще всего ошибаются</p>
+    <h2>Пять ловушек</h2>
+    <ul class="pitfalls">
+      <li><b>Неверно подбирают добавляемое число.</b> Берут сам коэффициент или его квадрат целиком. Делай два действия строго по порядку: <em>сначала пополам, потом в квадрат</em>. Для p = 6 это <span class="math">(6/2)² = 9</span>, а не 36.</li>
+      <li><b>Прибавляют только к одной части.</b> Добавили <span class="math">(p/2)²</span> слева и забыли справа — равенство сломалось. Правило: что прибавил слева — прибавь и справа, проговаривай это на каждом шаге.</li>
+      <li><b>Ошибаются со знаком при переносе.</b> Из <span class="math">x² + 6x − 7 = 0</span> пишут <span class="math">x² + 6x = −7</span> вместо <span class="math">= 7</span>. Через знак равенства слагаемое меняет знак на противоположный.</li>
+      <li><b>Теряют второй корень.</b> После <span class="math">(x + m)² = n</span> пишут только <span class="math">+√n</span>. Помни про ±: квадрат даёт ДВА варианта (кроме случая n = 0).</li>
+      <li><b>Забывают разделить на a при a ≠ 1.</b> Сразу делят пополам коэффициент при x, хотя при x² стоит не единица. Первым делом смотри на коэффициент при x².</li>
+    </ul>
+  </section>
+
+  <section>
+    <p class="kicker">Проверка понимания</p>
+    <h2>Объясни своими словами</h2>
+    <div class="drill">
+      <details>
+        <summary><span class="q">Какое число прибавить к обеим частям x² + 8x = 5?</span><span class="tag">вопрос</span></summary>
+        <div class="ans">Половина от 8 это 4, в квадрате <span class="m">16</span>. Получится <span class="m">(x + 4)² = 21</span>.</div>
+      </details>
+      <details>
+        <summary><span class="q">Почему при извлечении корня из (x + m)² = n появляется ±?</span><span class="tag">вопрос</span></summary>
+        <div class="ans">Потому что и <span class="m">+√n</span>, и <span class="m">−√n</span> при возведении в квадрат дают одно и то же число n.</div>
+      </details>
+      <details>
+        <summary><span class="q">Сколько корней, если справа после сворачивания стоит отрицательное число?</span><span class="tag">вопрос</span></summary>
+        <div class="ans"><strong>Ноль</strong> действительных корней: квадрат не бывает отрицательным.</div>
+      </details>
+    </div>
+    <p style="margin-top:1rem;font-size:.95rem;color:var(--muted)">Скажи вслух одной фразой: выделение полного квадрата превращает уравнение в вид <span class="math">(x + m)² = n</span>, добавляя и вычитая <span class="math">(p/2)²</span>, — и тем самым решает любое квадратное уравнение.</p>
+  </section>
+
+  <section>
+    <div class="next">
+      <h2>Что дальше</h2>
+      <p>Ты руками проделал то, что кратко записано в готовой формуле:</p>
+      <div class="eq">x = (−b ± √D) / (2a)</div>
+      <p>Дальше — <a href="./alg8-formula-kornej.html">формула корней</a>: тот же приём, но свёрнутый в одну строчку. А в 9 классе этот же квадрат <span class="math">(x + m)² + k</span> сразу даёт <a href="./alg9-kvadratichnaya-vershina.html">вершину параболы</a>: она стоит в точке (−m; k).</p>
+    </div>
+  </section>
+
+  <p class="foot">На выходе: какое число добавляют к x² + px? · почему появляется ±? · что делать, если при x² стоит 3?</p>
+
+</div>
+
+<style>
+  .sqbox{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.1rem 1rem 1rem;margin:1rem 0}
+  .sqbox canvas{width:100%;height:auto;display:block;border-radius:10px;background:#FCFDFF}
+  .sliders{display:grid;gap:.6rem;margin-top:.9rem}
+  @media(min-width:520px){.sliders{grid-template-columns:repeat(2,1fr)}}
+  .sliders label{display:flex;align-items:center;gap:.5rem;font-weight:700;font-family:ui-monospace,Menlo,monospace}
+  .sliders input[type=range]{flex:1;accent-color:var(--accent)}
+  .sliders input[type=range]:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+  .sliders .sval{min-width:3ch;text-align:right;color:var(--accent);font-variant-numeric:tabular-nums}
+  .sqlegend{margin-top:.9rem;font-family:ui-monospace,Menlo,monospace;font-size:.88rem;line-height:1.75;overflow-x:auto}
+  .sqlegend .li{display:flex;gap:.5rem;align-items:baseline;white-space:nowrap}
+  .sqlegend .dot{width:.75rem;height:.75rem;border-radius:3px;flex:0 0 auto;display:inline-block}
+  .sqlegend .tot{margin-top:.35rem;padding-top:.35rem;border-top:1px dashed var(--line);font-weight:800}
+</style>
+
+<script>
+(function(){
+  var cv=document.getElementById('sqCanvas'); if(!cv) return;
+  var ctx=cv.getContext('2d');
+  var sx=document.getElementById('sx'), sb=document.getElementById('sb');
+  var vx=document.getElementById('vx'), vb=document.getElementById('vb');
+  var leg=document.getElementById('sqLegend');
+  var W=640,H=470,dpr=1;
+  var C_X='#3B4FD0', C_R='#1E8E5A', C_C='#B9791A';
+
+  function num(n){
+    n=Math.round(n*1000)/1000;
+    var s=Math.abs(n).toString().replace('.',',');
+    return (n<0?'−':'')+s;
+  }
+  function resize(){
+    var cssW=cv.clientWidth||640;
+    dpr=Math.min(window.devicePixelRatio||1,2);
+    W=cssW; H=Math.round(cssW*0.80);
+    cv.width=Math.round(W*dpr); cv.height=Math.round(H*dpr);
+    cv.style.height=H+'px';
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+  }
+  function label(txt,cx,cy,size,color){
+    ctx.fillStyle=color; ctx.font='600 '+size+'px ui-monospace, Menlo, monospace';
+    ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.fillText(txt,cx,cy);
+  }
+  function draw(){
+    var x=parseFloat(sx.value), b=parseFloat(sb.value), h=b/2;
+    vx.textContent=num(x); vb.textContent=num(b);
+    ctx.clearRect(0,0,W,H);
+
+    var padL=34, padR=16, padT=16, padB=44;
+    var S=Math.min(W-padL-padR, H-padT-padB);
+    var side=x+h, u=S/side;
+    var ox=padL+(W-padL-padR-S)/2, oy=padT;
+    var xs=x*u, hs=h*u;
+
+    // x²
+    ctx.fillStyle='rgba(59,79,208,.16)';
+    ctx.fillRect(ox,oy,xs,xs);
+    // два прямоугольника b/2 · x
+    ctx.fillStyle='rgba(30,142,90,.18)';
+    ctx.fillRect(ox+xs,oy,hs,xs);
+    ctx.fillRect(ox,oy+xs,xs,hs);
+    // недостающий уголок
+    ctx.fillStyle='rgba(185,121,26,.22)';
+    ctx.fillRect(ox+xs,oy+xs,hs,hs);
+    ctx.save();
+    ctx.setLineDash([5,4]); ctx.strokeStyle=C_C; ctx.lineWidth=2;
+    ctx.strokeRect(ox+xs+1,oy+xs+1,hs-2,hs-2);
+    ctx.restore();
+
+    // границы
+    ctx.strokeStyle='#B9C0CE'; ctx.lineWidth=1;
+    ctx.strokeRect(ox,oy,xs,xs);
+    ctx.strokeRect(ox+xs,oy,hs,xs);
+    ctx.strokeRect(ox,oy+xs,xs,hs);
+    // внешний квадрат
+    ctx.strokeStyle=C_X; ctx.lineWidth=2.5;
+    ctx.strokeRect(ox,oy,S,S);
+
+    var fs=Math.max(10,Math.min(16,W/28));
+    // подписи площадей
+    if(xs>fs*3.4){
+      label('x² = '+num(x*x), ox+xs/2, oy+xs/2, fs, '#25306B');
+    }
+    if(hs>fs*1.5 && xs>fs*2.2){
+      label(num(h*x), ox+xs+hs/2, oy+xs/2, fs*0.85, '#14603C');
+      label(num(h*x), ox+xs/2, oy+xs+hs/2, fs*0.85, '#14603C');
+    }
+    if(hs>fs*2.4){
+      label(num(h*h), ox+xs+hs/2, oy+xs+hs/2, fs*0.8, '#7A5210');
+    }
+
+    // подписи сторон снизу
+    ctx.font='600 '+Math.max(10,fs*0.8)+'px ui-monospace, Menlo, monospace';
+    ctx.textAlign='center'; ctx.textBaseline='top';
+    ctx.fillStyle=C_X; ctx.fillText('x = '+num(x), ox+xs/2, oy+S+7);
+    ctx.fillStyle=C_C; ctx.fillText('b/2 = '+num(h), ox+xs+hs/2, oy+S+7);
+    ctx.fillStyle='#5A6478';
+    ctx.fillText('сторона большого квадрата: x + b/2 = '+num(side), ox+S/2, oy+S+7+fs*1.5);
+
+    // подпись слева
+    ctx.save();
+    ctx.translate(ox-13, oy+S/2); ctx.rotate(-Math.PI/2);
+    ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.fillStyle='#5A6478'; ctx.font='600 '+Math.max(9,fs*0.72)+'px ui-monospace, Menlo, monospace';
+    ctx.fillText('x + b/2', 0, 0);
+    ctx.restore();
+
+    leg.innerHTML=
+      '<div class="li"><span class="dot" style="background:rgba(59,79,208,.35)"></span>x² = '+num(x*x)+'</div>'+
+      '<div class="li"><span class="dot" style="background:rgba(30,142,90,.35)"></span>b·x = '+num(b)+'·'+num(x)+' = '+num(b*x)+' &nbsp;(два куска по '+num(h*x)+')</div>'+
+      '<div class="li"><span class="dot" style="background:rgba(185,121,26,.4)"></span>(b/2)² = '+num(h*h)+' — недостающий уголок</div>'+
+      '<div class="li tot">итого (x + b/2)² = ('+num(x)+' + '+num(h)+')² = '+num(side*side)+'</div>';
+  }
+  [sx,sb].forEach(function(s){ s.addEventListener('input',draw); });
+  window.addEventListener('resize',function(){ resize(); draw(); });
+  resize(); draw();
+})();
+</script>
+
+<style>
+  .trainer{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.2rem 1.1rem;margin-top:1rem}
+  .tr-type{font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);font-weight:800;margin-bottom:.6rem}
+  .tr-eq{font-family:ui-monospace,Menlo,monospace;font-weight:800;font-size:clamp(1.15rem,4.6vw,1.6rem);text-align:center;padding:1rem .6rem;background:var(--accent-soft);border-radius:10px;color:var(--ink);overflow-x:auto}
+  .tr-hint{font-size:.88rem;color:var(--muted);margin-top:.6rem}
+  .tr-ctl{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.9rem;align-items:center}
+  .tr-ctl button{font:inherit;font-weight:700;font-size:.9rem;cursor:pointer;border:none;border-radius:9px;padding:.55rem .95rem;color:#fff;background:var(--accent)}
+  .tr-ctl button.sec{background:var(--pos)}
+  .tr-ctl button.ghost{background:transparent;color:var(--accent);border:1px solid var(--accent)}
+  .tr-ctl input{flex:1;min-width:150px;font:inherit;padding:.5rem .7rem;border:1px solid var(--line);border-radius:9px;background:#fff;color:var(--ink)}
+  .tr-ctl button:focus-visible,.tr-ctl input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+  .tr-result{margin-top:.9rem;font-size:.96rem;min-height:1.2rem}
+  .tr-result .ok{color:var(--pos);font-weight:700}
+  .tr-result .bad{color:var(--neg);font-weight:700}
+  .tr-result .sol{margin-top:.7rem;padding:.85rem .9rem;background:#FCFBFE;border:1px solid var(--line);border-radius:10px;font-family:ui-monospace,Menlo,monospace;font-size:.88rem;line-height:1.85;overflow-x:auto}
+  .tr-result .sol b{color:var(--accent)}
+</style>
+
+<script>
+(function(){
+  var typeEl=document.getElementById('trType'), eqEl=document.getElementById('trEq'),
+      hintEl=document.getElementById('trHint'), ansEl=document.getElementById('trAns'),
+      resEl=document.getElementById('trResult');
+  if(!eqEl) return;
+
+  var cur={type:'complete', b:6, c:5};
+
+  function ri(min,max){ return Math.floor(Math.random()*(max-min+1))+min; }
+  function r3(v){ return Math.round(v*1000)/1000; }
+  function num(v){
+    var n=r3(v); if(n===0) n=0;
+    return (n<0?'−':'')+Math.abs(n).toString().replace('.',',');
+  }
+  function trinom(b,c){
+    var s='x²';
+    if(b!==0) s+=(b<0?' − ':' + ')+(Math.abs(b)===1?'':Math.abs(b))+'x';
+    if(c!==0) s+=(c<0?' − ':' + ')+Math.abs(c);
+    return s;
+  }
+  function sq(m){ // (x + m)² или (x − m)²
+    if(m===0) return 'x²';
+    return '(x '+(m<0?'− ':'+ ')+num(Math.abs(m))+')²';
+  }
+
+  // m = b/2, k = c − m²;  (x+m)² + k
+  function parts(q){ var m=q.b/2; return {m:r3(m), k:r3(q.c-m*m)}; }
+  function rootsOf(q){
+    var p=parts(q), n=r3(-p.k); // (x+m)² = −k
+    if(n<0) return {n:n, roots:[]};
+    if(n===0) return {n:0, roots:[r3(-p.m)]};
+    var s=Math.sqrt(n);
+    return {n:n, roots:[r3(-p.m-s), r3(-p.m+s)]};
+  }
+
+  function generate(){
+    var t=Math.random(), q;
+    if(t<0.34){ // выделить полный квадрат
+      var b; do{ b=ri(-12,12); } while(b===0);
+      q={type:'complete', b:b, c:ri(-14,14)};
+    } else if(t<0.74){ // решить уравнение
+      var r=Math.random();
+      if(r<0.62){ // два целых корня
+        var x1,x2; do{ x1=ri(-7,7); x2=ri(-7,7); } while(x1===x2);
+        q={type:'solve', b:-(x1+x2), c:x1*x2};
+      } else if(r<0.80){ // один корень
+        var m1=ri(-6,6);
+        q={type:'solve', b:2*m1, c:m1*m1};
+      } else { // корней нет
+        var m2=ri(-6,6), t2=ri(1,9);
+        q={type:'solve', b:2*m2, c:m2*m2+t2};
+      }
+    } else { // наименьшее значение
+      var b3; do{ b3=ri(-12,12); } while(b3===0);
+      q={type:'min', b:b3, c:ri(-12,12)};
+    }
+    cur=q; render(); resEl.innerHTML=''; ansEl.value='';
+  }
+
+  function render(){
+    if(cur.type==='complete'){
+      typeEl.textContent='Выдели полный квадрат';
+      eqEl.textContent=trinom(cur.b,cur.c);
+      hintEl.innerHTML='Запиши в виде <b>(x + m)² + k</b>. Ответ: два числа через «;» — сначала m (со знаком), потом k.';
+      ansEl.placeholder='напр.  3; −4';
+    } else if(cur.type==='solve'){
+      typeEl.textContent='Реши выделением полного квадрата';
+      eqEl.textContent=trinom(cur.b,cur.c)+' = 0';
+      hintEl.innerHTML='Ответ: корни через «;» (порядок любой). Если корней нет — напиши <b>нет</b>.';
+      ansEl.placeholder='напр.  1; −7   или   нет';
+    } else {
+      typeEl.textContent='Найди наименьшее значение выражения';
+      eqEl.textContent=trinom(cur.b,cur.c);
+      hintEl.innerHTML='Сверни в (x + m)² + k: квадрат минимален (равен нулю), значит наименьшее значение — это <b>k</b>. Ответ: одно число.';
+      ansEl.placeholder='напр.  −4';
+    }
+  }
+
+  function solutionHTML(){
+    var q=cur, p=parts(q), h='<div class="sol">';
+    h+='половина от '+num(q.b)+' это <b>'+num(p.m)+'</b>, в квадрате: '+num(p.m)+'² = <b>'+num(p.m*p.m)+'</b><br>';
+    if(q.type==='complete' || q.type==='min'){
+      h+='добавляем и вычитаем '+num(p.m*p.m)+':<br>';
+      h+=trinom(q.b,q.c)+' = '+sq(p.m)+' − '+num(p.m*p.m)+(q.c===0?'':(q.c<0?' − '+Math.abs(q.c):' + '+q.c))+'<br>';
+      h+='= <b>'+sq(p.m)+(p.k<0?' − '+num(Math.abs(p.k)):(p.k===0?'':' + '+num(p.k)))+'</b><br>';
+      if(q.type==='complete'){
+        h+='Ответ: m = <b>'+num(p.m)+'</b>, k = <b>'+num(p.k)+'</b>';
+      } else {
+        h+=sq(p.m)+' ≥ 0, наименьшее — когда скобка равна нулю, то есть при x = '+num(-p.m)+'<br>';
+        h+='Наименьшее значение: <b>'+num(p.k)+'</b>';
+      }
+    } else {
+      var s=rootsOf(q);
+      h+=trinom(q.b,q.c)+' = 0 &nbsp;→&nbsp; '+sq(p.m)+' = <b>'+num(s.n)+'</b><br>';
+      if(s.roots.length===2){
+        h+='корень справа: √'+num(s.n)+' = '+num(Math.sqrt(s.n))+', значит x '+(p.m<0?'− ':'+ ')+num(Math.abs(p.m))+' = ±'+num(Math.sqrt(s.n))+'<br>';
+        h+='x₁ = <b>'+num(s.roots[0])+'</b>,  x₂ = <b>'+num(s.roots[1])+'</b>';
+      } else if(s.roots.length===1){
+        h+='справа ноль → скобка равна нулю<br>x = <b>'+num(s.roots[0])+'</b> (один корень)';
+      } else {
+        h+='справа отрицательное число, а квадрат не бывает отрицательным<br><b>Корней нет.</b>';
+      }
+    }
+    return h+'</div>';
+  }
+
+  function nums(raw){
+    var norm=raw.replace(/(\d),(\d)/g,'$1.$2').replace(/[xхmkкм]\s*[₁₂12]?\s*=/g,'');
+    var ps=norm.split(/[;,\s]+/).filter(function(s){ return s!==''; });
+    var out=ps.map(function(s){ return parseFloat(s); });
+    if(!out.length || out.some(function(v){ return isNaN(v); })) return null;
+    return out.map(function(v){ return Math.round(v*100)/100; });
+  }
+
+  function check(){
+    var raw=ansEl.value.trim().toLowerCase().replace(/−/g,'-');
+    if(!raw){ resEl.innerHTML='<span class="bad">Введи ответ или нажми «Показать решение».</span>'; return; }
+    var p=parts(cur), bad='<span class="bad">✗ Пока не то.</span>', ok='<span class="ok">✓ Верно! Отлично.</span>';
+
+    if(cur.type==='solve'){
+      var s=rootsOf(cur);
+      if(s.roots.length===0){
+        if(/нет|net|∅|отсут/.test(raw)) resEl.innerHTML='<span class="ok">✓ Верно — справа отрицательное число, корней нет.</span>'+solutionHTML();
+        else resEl.innerHTML='<span class="bad">✗ Сверни в квадрат: справа получится отрицательное число, значит корней нет.</span>'+solutionHTML();
+        return;
+      }
+      if(/нет|net|∅|отсут/.test(raw)){ resEl.innerHTML='<span class="bad">✗ Корни здесь есть — доведи до вида (x + m)² = n.</span>'+solutionHTML(); return; }
+      var got=nums(raw);
+      if(!got){ resEl.innerHTML='<span class="bad">Не понял запись. Введи корни числами через точку с запятой, напр. «1; −7», или слово «нет».</span>'; return; }
+      got=got.filter(function(v,i){ return got.indexOf(v)===i; }).sort(function(a,b){ return a-b; });
+      var exp=s.roots.map(function(v){ return Math.round(v*100)/100; }).sort(function(a,b){ return a-b; });
+      var good = got.length===exp.length && exp.every(function(v,i){ return Math.abs(v-got[i])<0.02; });
+      if(good) resEl.innerHTML=ok+solutionHTML();
+      else{
+        var hint = (got.length<exp.length) ? ' Подсказка: не забудь про ± — корней два.' : '';
+        resEl.innerHTML='<span class="bad">✗ Пока не то.'+hint+'</span>'+solutionHTML();
+      }
+      return;
+    }
+
+    var g=nums(raw);
+    if(!g){ resEl.innerHTML='<span class="bad">Не понял запись. Введи '+(cur.type==='complete'?'два числа через точку с запятой, напр. «3; −4»':'одно число, напр. «−4»')+'.</span>'; return; }
+
+    if(cur.type==='min'){
+      if(g.length===1 && Math.abs(g[0]-p.k)<0.02) resEl.innerHTML=ok+solutionHTML();
+      else if(g.length>1) resEl.innerHTML='<span class="bad">✗ Здесь нужен один ответ — наименьшее значение k.</span>'+solutionHTML();
+      else resEl.innerHTML=bad+solutionHTML();
+      return;
+    }
+
+    // complete
+    if(g.length!==2){ resEl.innerHTML='<span class="bad">✗ Нужны два числа через «;»: сначала m, потом k.</span>'+solutionHTML(); return; }
+    if(Math.abs(g[0]-p.m)<0.02 && Math.abs(g[1]-p.k)<0.02) resEl.innerHTML=ok+solutionHTML();
+    else if(Math.abs(g[1]-p.m)<0.02 && Math.abs(g[0]-p.k)<0.02) resEl.innerHTML='<span class="bad">✗ Числа верные, но перепутаны местами: сначала m (внутри скобки), потом k.</span>'+solutionHTML();
+    else resEl.innerHTML=bad+solutionHTML();
+  }
+
+  document.getElementById('trNew').addEventListener('click',function(){ generate(); ansEl.focus(); });
+  document.getElementById('trCheck').addEventListener('click',check);
+  document.getElementById('trShow').addEventListener('click',function(){ resEl.innerHTML=solutionHTML(); });
+  ansEl.addEventListener('keydown',function(e){ if(e.key==='Enter') check(); });
+
+  render();
+  if(typeof window!=='undefined'){ window.__vpk={generate:generate, parts:parts, rootsOf:rootsOf, solutionHTML:solutionHTML, get:function(){return cur;}}; }
+})();
+</script>
+<!--LESSON-NAV-BOT--><nav class="lnav lnav-bot"><a class="prev" href="./alg8-nepolnye-kvadratnye-uravneniya.html"><span class="dir">← Предыдущая</span><span class="ttl">Неполные квадратные уравнения</span></a><a class="to-cat" href="./catalog.html">📚 <span>Все темы</span></a><a class="next" href="./alg8-diskriminant.html"><span class="dir">Следующая →</span><span class="ttl">Дискриминант квадратного уравнения</span></a></nav><!--/LESSON-NAV-BOT-->
