@@ -1,0 +1,926 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Уравнение прямой — урок, геометрия 9 класс</title>
+<style>
+  :root{
+    --paper:#F6F7F9;
+    --card:#FFFFFF;
+    --ink:#1B2333;
+    --muted:#5A6478;
+    --line:#E2E5EC;
+    --accent:#3B4FD0;
+    --accent-soft:#EAEDFB;
+    --pos:#1E8E5A;   /* наклонная */
+    --pos-bg:#E7F4EC;
+    --zero:#B9791A;  /* горизонтальная */
+    --zero-bg:#FBF1DC;
+    --neg:#C0455B;   /* вертикальная */
+    --neg-bg:#F9E9EC;
+  }
+  *{box-sizing:border-box}
+  body{margin:0}
+  .wrap{
+    max-width:760px;
+    margin:0 auto;
+    padding:clamp(1.4rem,4vw,3rem) clamp(1.1rem,4vw,2rem) 4rem;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    font-size:17px;
+    line-height:1.62;
+    -webkit-font-smoothing:antialiased;
+  }
+  .eyebrow{
+    font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--accent);font-weight:600;margin:0 0 .5rem;
+  }
+  h1{
+    font-family:Georgia,"Times New Roman",serif;
+    font-size:clamp(2.1rem,7vw,3rem);
+    line-height:1.05;margin:0;font-weight:700;letter-spacing:-.01em;
+    text-wrap:balance;
+  }
+  .lede{
+    font-size:1.08rem;color:var(--muted);margin:.7rem 0 0;max-width:60ch;
+    text-wrap:pretty;
+  }
+  h2{
+    font-family:Georgia,serif;font-size:1.32rem;font-weight:700;
+    margin:0 0 .1rem;letter-spacing:-.005em;
+  }
+  section{margin-top:2.6rem}
+  .kicker{
+    font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--muted);font-weight:600;margin:0 0 .8rem;
+    display:flex;align-items:center;gap:.6rem;
+  }
+  .kicker::before{
+    content:"";width:1.4rem;height:2px;background:var(--accent);border-radius:2px;
+  }
+  p{margin:.65rem 0}
+  strong{font-weight:650}
+  .math{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-weight:600}
+  sub{font-size:.72em}
+
+  /* Главная формула */
+  .hero-formula{
+    margin-top:2.2rem;
+    background:var(--ink);color:#fff;border-radius:14px;
+    padding:1.6rem 1.4rem;text-align:center;
+  }
+  .hero-formula .lbl{
+    font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;
+    color:#9aa6c9;margin:0 0 .7rem;
+  }
+  .hero-formula .eq{
+    font-family:ui-monospace,"SF Mono",Menlo,monospace;
+    font-size:clamp(1.6rem,6vw,2.3rem);font-weight:700;letter-spacing:.01em;
+  }
+  .hero-formula .eq b{color:#8ea0ff;font-weight:700}
+  .hero-formula .note{font-size:.86rem;color:#9aa6c9;margin:.8rem 0 0}
+
+  /* Пререквизит */
+  .recall{
+    background:var(--accent-soft);border-radius:12px;padding:1rem 1.15rem;
+    font-size:.96rem;
+  }
+  .recall p{margin:.3rem 0}
+
+  /* Три случая */
+  .cases{display:grid;gap:.85rem;margin-top:.4rem}
+  @media(min-width:620px){.cases{grid-template-columns:repeat(3,1fr)}}
+  .case{
+    border-radius:12px;padding:1.05rem 1.1rem;border:1px solid var(--line);
+    background:var(--card);display:flex;flex-direction:column;gap:.35rem;
+  }
+  .case .sign{font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.15rem}
+  .case .count{font-weight:650;font-size:1rem}
+  .case .desc{font-size:.9rem;color:var(--muted)}
+  .case.pos{border-top:4px solid var(--pos);background:var(--pos-bg)}
+  .case.pos .sign{color:var(--pos)}
+  .case.zero{border-top:4px solid var(--zero);background:var(--zero-bg)}
+  .case.zero .sign{color:var(--zero)}
+  .case.neg{border-top:4px solid var(--neg);background:var(--neg-bg)}
+  .case.neg .sign{color:var(--neg)}
+
+  /* Разбор */
+  .worked{
+    background:var(--card);border:1px solid var(--line);border-radius:12px;
+    padding:1.2rem 1.3rem;
+  }
+  .worked .task{
+    font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.02rem;
+    margin:0 0 1rem;padding-bottom:.8rem;border-bottom:1px solid var(--line);
+  }
+  ol.steps{margin:0;padding:0;list-style:none;counter-reset:s;display:flex;flex-direction:column;gap:.7rem}
+  ol.steps li{
+    position:relative;padding-left:2.1rem;counter-increment:s;
+  }
+  ol.steps li::before{
+    content:counter(s);position:absolute;left:0;top:.05rem;
+    width:1.5rem;height:1.5rem;border-radius:50%;
+    background:var(--accent-soft);color:var(--accent);
+    font-size:.82rem;font-weight:700;display:flex;align-items:center;justify-content:center;
+  }
+  ol.steps .m{font-family:ui-monospace,Menlo,monospace;font-weight:600;color:var(--ink)}
+  ol.steps .why{display:block;font-size:.9rem;color:var(--muted)}
+  .verdict{
+    margin-top:1rem;padding:.7rem 1rem;background:var(--pos-bg);
+    border-radius:9px;font-weight:600;color:var(--pos);font-size:.98rem;
+  }
+
+  /* Таблица значений */
+  .tblwrap{overflow-x:auto;margin-top:.6rem}
+  table.vals{border-collapse:collapse;font-family:ui-monospace,Menlo,monospace;font-size:.95rem;background:var(--card)}
+  table.vals th,table.vals td{border:1px solid var(--line);padding:.4rem .8rem;text-align:center}
+  table.vals th{background:var(--accent-soft);color:var(--accent);font-weight:700}
+
+  /* Практика */
+  .drill{display:flex;flex-direction:column;gap:.7rem}
+  details{
+    background:var(--card);border:1px solid var(--line);border-radius:10px;
+    padding:.85rem 1.05rem;
+  }
+  details[open]{border-color:var(--accent)}
+  summary{
+    cursor:pointer;font-weight:600;list-style:none;
+    display:flex;justify-content:space-between;align-items:center;gap:1rem;
+  }
+  summary::-webkit-details-marker{display:none}
+  summary:focus-visible{outline:3px solid var(--accent);outline-offset:3px;border-radius:6px}
+  summary .q{min-width:0}
+  summary .tag{
+    font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);
+    border:1px solid var(--line);border-radius:20px;padding:.1rem .55rem;white-space:nowrap;
+  }
+  summary::after{
+    content:"ответ";font-size:.78rem;color:var(--accent);font-weight:600;white-space:nowrap;
+  }
+  details[open] summary::after{content:"скрыть"}
+  .ans{margin-top:.7rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.96rem;color:var(--muted)}
+  .ans .m{font-family:ui-monospace,Menlo,monospace;color:var(--ink);font-weight:600}
+
+  /* Ошибки */
+  ul.pitfalls{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:.6rem}
+  ul.pitfalls li{
+    padding-left:1.5rem;position:relative;font-size:.98rem;
+  }
+  ul.pitfalls li::before{
+    content:"×";position:absolute;left:0;top:-.05rem;color:var(--neg);font-weight:700;font-size:1.1rem;
+  }
+  ul.pitfalls b{color:var(--ink)}
+
+  .next{
+    background:var(--accent);color:#fff;border-radius:12px;padding:1.2rem 1.3rem;
+  }
+  .next h2{color:#fff}
+  .next .eq{
+    font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.15rem;
+    margin:.6rem 0 .3rem;
+  }
+  .next p{color:#dfe4fb;font-size:.96rem;margin:.4rem 0 0}
+  .foot{margin-top:2.4rem;font-size:.82rem;color:var(--muted);text-align:center}
+
+  @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+<style>
+.oge-tip{display:flex;gap:.8rem;align-items:flex-start;background:#FFF8E7;border:1px solid #F0D98A;border-left:4px solid #E0A315;border-radius:10px;padding:.85rem 1.05rem;margin:1.5rem 0}
+.oge-tip .b{font-size:.72rem;font-weight:800;letter-spacing:.03em;color:#8A6A15;white-space:nowrap;text-transform:uppercase;padding-top:.15rem}
+.oge-tip .x{font-size:.95rem;line-height:1.5}
+</style>
+
+<!--LESSON-NAV-TOP--><style>.lnav{--lnav-accent:#3D5AF1}.lnav a{text-decoration:none;font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif}.lnav-top{max-width:820px;margin:0 auto;padding:.75rem clamp(1rem,4vw,1.5rem) .1rem}.lnav-top a{display:inline-flex;align-items:center;gap:.35rem;color:var(--lnav-accent);font-weight:600;font-size:.9rem}.lnav-top a:hover{text-decoration:underline}.lnav-bot{max-width:820px;margin:2.6rem auto 3rem;padding:1.1rem clamp(1rem,4vw,1.5rem) 0;border-top:1px solid #E4E8EF;display:flex;align-items:stretch;gap:.55rem}.lnav-bot a{min-width:0;display:flex;flex-direction:column;justify-content:center;gap:.15rem;border:1px solid #E4E8EF;border-radius:12px;padding:.65rem .85rem;color:#182233;background:#fff;transition:border-color .1s,transform .08s}.lnav-bot a:hover{border-color:var(--lnav-accent);transform:translateY(-1px)}.lnav-bot .prev,.lnav-bot .next{flex:1 1 0}.lnav-bot .next{text-align:right}.lnav-bot .dir{font-size:.72rem;color:#8A93A6;font-weight:600}.lnav-bot .ttl{font-size:.9rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.lnav-bot .to-cat{flex:0 0 auto;flex-direction:row;align-items:center;justify-content:center;color:var(--lnav-accent);font-weight:700;font-size:.85rem;white-space:nowrap}@media(max-width:420px){.lnav-bot .to-cat span{display:none}.lnav-bot .to-cat{padding:.65rem .7rem}}</style><nav class="lnav lnav-top"><a href="./catalog.html">← Все темы</a></nav><!--/LESSON-NAV-TOP-->
+<div class="wrap">
+
+  <header>
+    <p class="eyebrow">Геометрия · 9 класс · метод координат</p>
+    <h1>Уравнение прямой</h1>
+    <p class="lede">Бесконечная линия из точек — и одна короткая формула, которая описывает их все сразу. <em>Геометрия превращается в алгебру.</em></p>
+  </header>
+
+  <div class="hero-formula">
+    <p class="lbl">Общее уравнение прямой</p>
+    <div class="eq"><b>a</b>x + <b>b</b>y + <b>c</b> = 0</div>
+    <p class="note">a, b, c — числа, причём a и b одновременно не равны нулю</p>
+  </div>
+
+  <section>
+    <p class="kicker">Зачем это нужно</p>
+    <h2>Прямая, записанная числами</h2>
+    <p>Прямая — самая простая и самая частая линия на координатной плоскости. Если ты умеешь записать её уравнением, то геометрические задачи начинают решаться <strong>алгеброй</strong>: проверить, лежит ли точка на прямой; найти точку пересечения двух прямых (это уже система уравнений); задать границу области.</p>
+    <p>И главное заблуждение сразу на входе: <em>«уравнение прямой — это обязательно y = kx + b»</em>. Нет. Так нельзя записать вертикальную прямую (например <span class="math">x = 3</span>). Поэтому есть более общая форма <span class="math">ax + by + c = 0</span> — она описывает <strong>ЛЮБУЮ</strong> прямую без исключений.</p>
+    <p>Здесь прямая для нас — <strong>геометрический объект</strong>, линия на чертеже. Не «функция», а именно линия: у неё может не быть никакого <span class="math">k</span>, и она всё равно остаётся прямой.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Что вспомнить с прошлых шагов</p>
+    <div class="recall">
+      <p><strong>Координаты точки:</strong> в записи <span class="math">A(1; 2)</span> сначала идёт <span class="math">x</span>, потом <span class="math">y</span>. Порядок менять нельзя.</p>
+      <p><strong>Линейная функция</strong> <span class="math">y = kx + b</span> и её график — прямая. <span class="math">k</span> — наклон, <span class="math">b</span> — где график пересекает ось <span class="math">Oy</span>.</p>
+      <p><strong>Подстановка:</strong> подставить точку в уравнение — значит вместо <span class="math">x</span> написать её первую координату, вместо <span class="math">y</span> — вторую, и посчитать.</p>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Ядро темы</p>
+    <h2>Уравнение — это «фильтр» для точек</h2>
+    <p>Уравнение прямой — это равенство, связывающее <span class="math">x</span> и <span class="math">y</span>, которому удовлетворяют координаты <strong>ВСЕХ</strong> точек прямой и <strong>НИ ОДНОЙ</strong> точки вне её.</p>
+    <p>То есть уравнение работает как фильтр: подставил координаты точки — равенство верное, значит точка на прямой; не верное — точка вне прямой. Бесконечное множество точек упаковано в одну короткую формулу.</p>
+
+    <p style="margin-top:1.4rem"><strong>Две формы записи:</strong></p>
+    <div class="worked">
+      <p style="margin:0 0 .3rem"><span class="math" style="font-size:1.1rem">ax + by + c = 0</span> — <strong>общее уравнение</strong>. Годится для любой прямой.</p>
+      <p style="margin:.8rem 0 .3rem"><span class="math" style="font-size:1.1rem">y = kx + b</span> — <strong>уравнение с угловым коэффициентом</strong>. Только если прямая <em>не</em> вертикальна.</p>
+      <p style="margin:.2rem 0 0;font-size:.95rem;color:var(--muted)">Здесь <span class="math">k</span> — угловой коэффициент: показывает, на сколько меняется <span class="math">y</span> при увеличении <span class="math">x</span> на 1. А <span class="math">b</span> — ордината точки пересечения с осью <span class="math">Oy</span>, то есть значение <span class="math">y</span> при <span class="math">x = 0</span>.</p>
+    </div>
+    <p style="font-size:.95rem;color:var(--muted)">Чтобы из общего уравнения получить вид с угловым коэффициентом, выражают <span class="math">y</span>. Это возможно только когда <span class="math">b ≠ 0</span> (коэффициент при <span class="math">y</span>) — иначе прямая вертикальна и выразить <span class="math">y</span> просто не из чего.</p>
+
+    <h2 style="margin-top:2rem">Три вида прямых</h2>
+    <div class="cases">
+      <div class="case pos">
+        <div class="sign">y = kx + b</div>
+        <div class="count">Наклонная</div>
+        <div class="desc">k ≠ 0. Идёт «в горку» или «под горку».</div>
+      </div>
+      <div class="case zero">
+        <div class="sign">y = b</div>
+        <div class="count">Горизонтальная</div>
+        <div class="desc">k = 0, параллельна оси Ox.</div>
+      </div>
+      <div class="case neg">
+        <div class="sign">x = a</div>
+        <div class="count">Вертикальная</div>
+        <div class="desc">Параллельна оси Oy. Углового коэффициента НЕТ.</div>
+      </div>
+    </div>
+    <p style="font-size:.92rem;color:var(--muted);margin-top:.9rem">Запомни цвета: зелёная — обычная наклонная, янтарная — «лежит», гранатовая — вертикальная, та самая, которую через <span class="math">y = kx + b</span> записать <strong>невозможно</strong>.</p>
+
+    <div class="oge-tip"><div class="b">🎯 В ОГЭ</div><div class="x"><b>Задание 11 и метод координат.</b> Уравнение прямой связывает геометрию и алгебру: по двум точкам получается формула, по формуле — картинка.</div></div>
+  </section>
+
+  <section>
+    <p class="kicker">Покрути сам · интерактив</p>
+    <h2>Две точки — и прямая готова</h2>
+    <p>Двигай ползунки: точки <span class="math">A</span> и <span class="math">B</span> ездят по плоскости, а через них сама проводится прямая и собирается её уравнение. Проверь главное: поставь точкам <strong>одинаковый x</strong> — и посмотри, что произойдёт с записью <span class="math">y = kx + b</span>.</p>
+    <div class="sim">
+      <canvas id="lineCv" width="640" height="640" aria-label="Прямая через две точки на координатной плоскости"></canvas>
+      <div class="sim-out">
+        <div class="row"><span class="lab">Общее уравнение</span><span id="outGen" class="val">2x − y = 0</span></div>
+        <div class="row"><span class="lab">С угловым коэф.</span><span id="outSlope" class="val">y = 2x</span></div>
+        <div id="outNote" class="note-line ok">Точки A и B имеют разные x — прямая наклонная, обе записи работают.</div>
+      </div>
+      <div class="sliders">
+        <label>x<sub>A</sub> <span id="vx1" class="sval">1</span><input id="sx1" type="range" min="-8" max="8" step="1" value="1"></label>
+        <label>y<sub>A</sub> <span id="vy1" class="sval">2</span><input id="sy1" type="range" min="-8" max="8" step="1" value="2"></label>
+        <label>x<sub>B</sub> <span id="vx2" class="sval">3</span><input id="sx2" type="range" min="-8" max="8" step="1" value="3"></label>
+        <label>y<sub>B</sub> <span id="vy2" class="sval">6</span><input id="sy2" type="range" min="-8" max="8" step="1" value="6"></label>
+      </div>
+      <div class="sim-btns">
+        <button id="bVert" type="button">Сделать вертикальной</button>
+        <button id="bHor" type="button">Сделать горизонтальной</button>
+        <button id="bReset" type="button" class="ghost">Сброс</button>
+      </div>
+    </div>
+    <p style="font-size:.9rem;color:var(--muted)">Обрати внимание: общее уравнение <span class="math">ax + by + c = 0</span> живо <em>всегда</em>, а строка <span class="math">y = kx + b</span> в вертикальном случае просто исчезает. Это не «поломка» — так устроена математика: у вертикали нет наклона, который можно измерить числом.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Разбираем вместе · думаю вслух</p>
+    <h2>Эталонный пример</h2>
+    <div class="worked">
+      <p class="task">Записать уравнение прямой через A(1; 2) и B(3; 6). Лежит ли на ней C(4; 9)?</p>
+      <ol class="steps">
+        <li>Смотрю на <span class="m">x</span> у точек: 1 и 3, они <strong>разные</strong> → прямая не вертикальна, значит ищу вид <span class="m">y = kx + b</span>.</li>
+        <li>Ищу <span class="m">k</span>. Угловой коэффициент — это изменение <span class="m">y</span>, делённое на изменение <span class="m">x</span>:<br><span class="m">k = (6 − 2)/(3 − 1) = 4/2 = 2</span>.<span class="why">Почему: при сдвиге по x на 2 единицы y вырос на 4, значит на 1 единицу x приходится 2 единицы y.</span></li>
+        <li>Ищу <span class="m">b</span>. Подставляю координаты A(1; 2) в <span class="m">y = 2x + b</span>:<br><span class="m">2 = 2·1 + b</span>, отсюда <span class="m">b = 0</span>.<span class="why">Почему: точка A лежит на прямой, значит её координаты обязаны удовлетворять уравнению.</span></li>
+        <li>Уравнение: <span class="m">y = 2x</span>. Проверяю на второй точке B(3; 6): <span class="m">2·3 = 6</span> — верно, не ошибся.</li>
+        <li>Проверяю C(4; 9): подставляю <span class="m">x = 4</span> → <span class="m">2·4 = 8 ≠ 9</span>. Значит C на прямой НЕ лежит.</li>
+      </ol>
+      <div class="verdict">Ответ: y = 2x; точка C прямой не принадлежит.</div>
+    </div>
+    <p style="font-size:.95rem;color:var(--muted)">Шаг 4 — не формальность. Подстановка второй точки ловит почти любую арифметическую ошибку, сделай его привычкой.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Наглядность</p>
+    <h2>Одна прямая в трёх видах</h2>
+    <p>Уравнение, таблица значений и график — это три способа сказать одно и то же. Возьмём <span class="math">y = 2x − 1</span>:</p>
+    <div class="tblwrap">
+      <table class="vals">
+        <tr><th>x</th><td>0</td><td>1</td><td>2</td></tr>
+        <tr><th>y</th><td>−1</td><td>1</td><td>3</td></tr>
+      </table>
+    </div>
+    <p>Отметь эти точки на координатной плоскости и соедини — получится прямая. А смысл <span class="math">k</span> видно прямо на чертеже: <strong>«шаг вправо на 1 → подъём на k»</strong>. Для <span class="math">k = 2</span> это «вправо 1 — вверх 2».</p>
+    <p><strong>Предскажи и проверь:</strong> как пройдут прямые <span class="math">y = 2x</span> и <span class="math">y = 2x + 3</span>? Сначала скажи ответ вслух, потом построй обе в интерактиве выше и объясни, почему одинаковый <span class="math">k</span> даёт параллельность.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Теперь ты · нажми, чтобы проверить</p>
+    <h2>Мини-практика</h2>
+    <div class="drill">
+      <details>
+        <summary><span class="q">В уравнении <span class="math">y = −4x + 7</span> назови k и точку пересечения с осью Oy</span><span class="tag">понимание</span></summary>
+        <div class="ans"><span class="m">k = −4</span>; с осью <span class="m">Oy</span> прямая пересекается в точке <span class="m">(0; 7)</span> — это и есть b.</div>
+      </details>
+      <details>
+        <summary><span class="q">Лежит ли <span class="math">M(−2; 5)</span> на прямой <span class="math">3x + y − 1 = 0</span>?</span><span class="tag">применение</span></summary>
+        <div class="ans">Подставляем в левую часть: <span class="m">3·(−2) + 5 − 1 = −6 + 5 − 1 = −2</span>. Это не ноль → точка <strong>не лежит</strong> на прямой.</div>
+      </details>
+      <details>
+        <summary><span class="q">Запиши уравнение прямой через <span class="math">P(0; −3)</span> и <span class="math">Q(2; 1)</span></span><span class="tag">применение</span></summary>
+        <div class="ans"><span class="m">k = (1 − (−3))/(2 − 0) = 4/2 = 2</span>; <span class="m">b = −3</span> (это ордината при <span class="m">x = 0</span>, точка P как раз на оси Oy). Ответ: <span class="m">y = 2x − 3</span>.</div>
+      </details>
+      <details>
+        <summary><span class="q">Запиши уравнение прямой через <span class="math">D(−1; 4)</span> и <span class="math">E(2; −2)</span></span><span class="tag">применение</span></summary>
+        <div class="ans"><span class="m">k = (−2 − 4)/(2 − (−1)) = −6/3 = −2</span>. Подставим D: <span class="m">4 = −2·(−1) + b</span> → <span class="m">b = 2</span>. Ответ: <span class="m">y = −2x + 2</span>. Проверка на E: <span class="m">−2·2 + 2 = −2</span> ✓.</div>
+      </details>
+      <details>
+        <summary><span class="q">Что изменится, если в <span class="math">y = 2x + 1</span> увеличить b на 3?</span><span class="tag">анализ</span></summary>
+        <div class="ans">Получится <span class="m">y = 2x + 4</span>. Наклон тот же (<span class="m">k = 2</span>), значит прямая просто <strong>сдвинется вверх на 3</strong>. Две такие прямые параллельны.</div>
+      </details>
+      <details>
+        <summary><span class="q">Найди ошибку: ученик записал прямую <span class="math">x = 5</span> в виде <span class="math">y = 5</span></span><span class="tag">анализ</span></summary>
+        <div class="ans"><span class="m">x = 5</span> — вертикальная прямая, <span class="m">y = 5</span> — горизонтальная. Это <strong>разные</strong> прямые, они даже перпендикулярны. Вертикальную вообще нельзя записать через <span class="m">y = kx + b</span>: у неё нет углового коэффициента.</div>
+      </details>
+      <details>
+        <summary><span class="q">Прямая <span class="math">y = kx + b</span> проходит через <span class="math">(0; −1)</span> и <span class="math">(4; 7)</span>. Найди k и b</span><span class="tag">анализ</span></summary>
+        <div class="ans">Точка <span class="m">(0; −1)</span> лежит на оси Oy → сразу <span class="m">b = −1</span>. Дальше <span class="m">k = (7 − (−1))/(4 − 0) = 8/4 = 2</span>. Ответ: <span class="m">y = 2x − 1</span>.</div>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Тренажёр · бесконечная практика</p>
+    <h2>Четыре типа заданий по прямой</h2>
+    <p>Нажимай «Новое задание» — генератор каждый раз выдаёт свежую задачу одного из четырёх типов: уравнение по двум точкам, проверка точки, пересечение с осью, вид прямой. Ответ проверяется по смыслу: <span class="math">2x − y + 1 = 0</span>, <span class="math">4x − 2y + 2 = 0</span> и <span class="math">y = 2x + 1</span> — одна и та же прямая, все три засчитаются.</p>
+    <div class="trainer">
+      <div class="tr-type" id="trType">Уравнение по двум точкам</div>
+      <div class="tr-eq" id="trQ">Запиши уравнение прямой через A(1; 2) и B(3; 6).</div>
+      <div class="tr-ctl">
+        <button id="trNew" type="button">🎲 Новое задание</button>
+        <input id="trAns" type="text" inputmode="text" placeholder="твой ответ" aria-label="Ответ">
+        <button id="trCheck" type="button" class="sec">Проверить</button>
+        <button id="trShow" type="button" class="ghost">Показать решение</button>
+      </div>
+      <div id="trHint" class="tr-hint">Формат ответа: уравнение прямой, например <b>y = 2x − 1</b> или <b>2x − y − 1 = 0</b>, для вертикальной — <b>x = 3</b>.</div>
+      <div id="trResult" class="tr-result"></div>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Где чаще всего ошибаются</p>
+    <h2>Четыре ловушки</h2>
+    <ul class="pitfalls">
+      <li><b>Путают общее уравнение и уравнение с угловым коэффициентом.</b> В <span class="math">ax + by + c = 0</span> коэффициент при <span class="math">x</span> — это НЕ угловой коэффициент. <em>Как не ошибиться:</em> сначала вырази <span class="math">y</span>, приведи к виду <span class="math">y = kx + b</span>, и только потом называй <span class="math">k</span>.</li>
+      <li><b>Забывают про вертикальную прямую.</b> Пытаются записать <span class="math">x = 3</span> как <span class="math">y = kx + b</span> — невозможно. <em>Как не ошибиться:</em> если у двух точек одинаковый <span class="math">x</span>, прямая вертикальна, и её уравнение — просто <span class="math">x = (это значение)</span>.</li>
+      <li><b>Ошибаются при подстановке координат.</b> Путают, какое число <span class="math">x</span>, а какое <span class="math">y</span>, или теряют минус: <span class="math">3·(−2)</span> пишут как 6 вместо −6. <em>Как не ошибиться:</em> подставляй в скобках, сначала умножение, потом сложение.</li>
+      <li><b>Считают k «вверх ногами».</b> Берут <span class="math">(x₂ − x₁)/(y₂ − y₁)</span> вместо <span class="math">(y₂ − y₁)/(x₂ − x₁)</span>. <em>Как не ошибиться:</em> «изменение y делим на изменение x» — <span class="math">y</span> сверху.</li>
+    </ul>
+  </section>
+
+  <section>
+    <p class="kicker">Проверь, что понял</p>
+    <h2>Объясни своими словами</h2>
+    <div class="drill">
+      <details>
+        <summary><span class="q">Чему равны k и b у прямой <span class="math">y = −3x + 5</span>?</span><span class="tag">проверка</span></summary>
+        <div class="ans"><span class="m">k = −3</span>, <span class="m">b = 5</span>.</div>
+      </details>
+      <details>
+        <summary><span class="q">Точка <span class="math">(1; 2)</span> лежит на прямой <span class="math">2x + y − 4 = 0</span>?</span><span class="tag">проверка</span></summary>
+        <div class="ans"><span class="m">2·1 + 2 − 4 = 0</span> — равенство верное, значит <strong>да, лежит</strong>.</div>
+      </details>
+      <details>
+        <summary><span class="q">Можно ли вертикальную прямую записать в виде <span class="math">y = kx + b</span>?</span><span class="tag">проверка</span></summary>
+        <div class="ans">Нет: у неё нет углового коэффициента. Её уравнение — <span class="m">x = a</span>. А в общей форме <span class="m">ax + by + c = 0</span> она записывается спокойно (просто коэффициент при <span class="m">y</span> равен нулю).</div>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <div class="next">
+      <h2>Что дальше</h2>
+      <p>Дальше — взаимное расположение прямых и окружностей. Как только у обеих линий есть уравнения, вопрос «пересекаются ли они» превращается в систему:</p>
+      <div class="eq">ax + by + c = 0<br>+ уравнение окружности</div>
+      <p>Сколько решений у системы — столько и общих точек у линий. Без уравнения прямой там не обойтись.</p>
+    </div>
+  </section>
+
+  <p class="foot">Итог одним предложением: уравнение прямой — это равенство, которому удовлетворяют координаты всех её точек; в общем виде <span class="math">ax + by + c = 0</span>, а для невертикальной прямой удобен вид <span class="math">y = kx + b</span>, где k — наклон, b — точка пересечения с осью Oy.</p>
+
+</div>
+
+<style>
+  .sim{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.1rem 1.1rem 1rem;margin:1rem 0}
+  .sim canvas{width:100%;height:auto;display:block;border-radius:10px;background:#FCFDFF}
+  .sim-out{margin-top:.9rem}
+  .sim-out .row{display:flex;gap:.6rem;align-items:baseline;justify-content:space-between;flex-wrap:wrap;
+    padding:.45rem .7rem;border-radius:9px;background:var(--paper);margin-bottom:.4rem}
+  .sim-out .lab{font-size:.74rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:700}
+  .sim-out .val{font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.02rem}
+  .sim-out .val.none{color:var(--neg)}
+  .note-line{font-size:.9rem;padding:.55rem .75rem;border-radius:9px;margin-top:.5rem}
+  .note-line.ok{background:var(--pos-bg);color:var(--pos)}
+  .note-line.hor{background:var(--zero-bg);color:var(--zero)}
+  .note-line.vert{background:var(--neg-bg);color:var(--neg)}
+  .sliders{display:grid;gap:.55rem;margin-top:.9rem}
+  @media(min-width:520px){.sliders{grid-template-columns:repeat(2,1fr)}}
+  .sliders label{display:flex;align-items:center;gap:.5rem;font-weight:700;font-family:ui-monospace,Menlo,monospace;font-size:.95rem}
+  .sliders input[type=range]{flex:1;min-width:90px;accent-color:var(--accent)}
+  .sliders input[type=range]:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+  .sliders .sval{min-width:3ch;text-align:right;color:var(--accent);font-variant-numeric:tabular-nums}
+  .sim-btns{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.9rem}
+  .sim-btns button{font:inherit;font-weight:700;font-size:.85rem;cursor:pointer;border:none;border-radius:9px;padding:.5rem .85rem;color:#fff;background:var(--accent)}
+  .sim-btns button.ghost{background:transparent;color:var(--accent);border:1px solid var(--accent)}
+  .sim-btns button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+</style>
+
+<script>
+(function(){
+  var cv=document.getElementById('lineCv'); if(!cv) return;
+  var ctx=cv.getContext('2d');
+  var sx1=document.getElementById('sx1'), sy1=document.getElementById('sy1'),
+      sx2=document.getElementById('sx2'), sy2=document.getElementById('sy2');
+  var vx1=document.getElementById('vx1'), vy1=document.getElementById('vy1'),
+      vx2=document.getElementById('vx2'), vy2=document.getElementById('vy2');
+  var outGen=document.getElementById('outGen'), outSlope=document.getElementById('outSlope'), outNote=document.getElementById('outNote');
+  var W=640,H=640,dpr=1,R=9;
+
+  function css(v,f){ var s=getComputedStyle(document.documentElement).getPropertyValue(v).trim(); return s||f; }
+  function n(x){ return x<0 ? '−'+Math.abs(x) : ''+x; }
+  function gcd(a,b){ a=Math.abs(a); b=Math.abs(b); while(b){ var t=a%b; a=b; b=t; } return a; }
+  function frac(num,den){
+    if(den<0){ num=-num; den=-den; }
+    var g=gcd(num,den)||1; num=num/g; den=den/g;
+    if(den===1) return n(num);
+    return (num<0?'−':'')+Math.abs(num)+'/'+den;
+  }
+  function fmtGen(A,B,C){
+    var s='', first=true;
+    function term(co,v){
+      if(co===0) return;
+      var abs=Math.abs(co), body = v ? ((abs===1?'':abs)+v) : ''+abs;
+      if(first){ s += (co<0?'−':'')+body; first=false; }
+      else { s += (co<0?' − ':' + ')+body; }
+    }
+    term(A,'x'); term(B,'y'); term(C,'');
+    if(first) s='0';
+    return s+' = 0';
+  }
+
+  function resize(){
+    var cssW=cv.clientWidth||640; dpr=Math.min(window.devicePixelRatio||1,2);
+    W=cssW; H=cssW;
+    cv.width=W*dpr; cv.height=H*dpr; cv.style.height=H+'px';
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+  }
+  function X(x){ return W/2 + x*(W/(2*R)); }
+  function Y(y){ return H/2 - y*(H/(2*R)); }
+
+  function draw(){
+    var x1=parseInt(sx1.value,10), y1=parseInt(sy1.value,10),
+        x2=parseInt(sx2.value,10), y2=parseInt(sy2.value,10);
+    vx1.textContent=n(x1); vy1.textContent=n(y1); vx2.textContent=n(x2); vy2.textContent=n(y2);
+    ctx.clearRect(0,0,W,H);
+
+    ctx.strokeStyle='#EDEFF4'; ctx.lineWidth=1;
+    for(var g=-R;g<=R;g++){
+      ctx.beginPath(); ctx.moveTo(X(g),0); ctx.lineTo(X(g),H); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(0,Y(g)); ctx.lineTo(W,Y(g)); ctx.stroke();
+    }
+    ctx.strokeStyle='#9AA3B2'; ctx.lineWidth=1.5;
+    ctx.beginPath(); ctx.moveTo(0,Y(0)); ctx.lineTo(W,Y(0)); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(X(0),0); ctx.lineTo(X(0),H); ctx.stroke();
+    ctx.fillStyle='#8A93A6'; ctx.font='11px system-ui,sans-serif'; ctx.textAlign='center';
+    for(var t=-8;t<=8;t+=2){ if(t===0) continue;
+      ctx.fillText(''+t, X(t), Y(0)+14);
+      ctx.textAlign='right'; ctx.fillText(''+t, X(0)-6, Y(t)+4); ctx.textAlign='center';
+    }
+    ctx.fillStyle='#5A6478'; ctx.fillText('x', W-10, Y(0)-8); ctx.fillText('y', X(0)+12, 12);
+
+    var dx=x2-x1, dy=y2-y1;
+    var same=(dx===0 && dy===0);
+    var vertical=(dx===0 && !same), horizontal=(dy===0 && !same);
+    var col = same ? '#8A93A6' : (vertical ? css('--neg','#C0455B') : (horizontal ? css('--zero','#B9791A') : css('--pos','#1E8E5A')));
+
+    if(!same){
+      ctx.strokeStyle=col; ctx.lineWidth=3;
+      ctx.beginPath();
+      ctx.moveTo(X(x1-40*dx), Y(y1-40*dy));
+      ctx.lineTo(X(x1+40*dx), Y(y1+40*dy));
+      ctx.stroke();
+    }
+    function dot(px,py,label){
+      ctx.fillStyle=col; ctx.beginPath(); ctx.arc(X(px),Y(py),6.5,0,7); ctx.fill();
+      ctx.fillStyle='#fff'; ctx.beginPath(); ctx.arc(X(px),Y(py),2.6,0,7); ctx.fill();
+      ctx.fillStyle=col; ctx.font='bold 14px system-ui,sans-serif';
+      ctx.fillText(label, X(px)+14, Y(py)-11);
+      ctx.font='11px system-ui,sans-serif'; ctx.fillStyle='#5A6478';
+      ctx.fillText('('+n(px)+'; '+n(py)+')', X(px)+26, Y(py)+3);
+    }
+    dot(x1,y1,'A'); dot(x2,y2,'B');
+
+    if(same){
+      outGen.textContent='—'; outGen.className='val none';
+      outSlope.textContent='—'; outSlope.className='val none';
+      outNote.className='note-line vert';
+      outNote.textContent='Точки совпали. Через одну точку проходит бесконечно много прямых — уравнение не определено.';
+      return;
+    }
+
+    var A=y1-y2, B=x2-x1, C=x1*y2-x2*y1;
+    var g2=gcd(gcd(A,B),C)||1;
+    A/=g2; B/=g2; C/=g2;
+    if(A<0 || (A===0 && B<0)){ A=-A; B=-B; C=-C; }
+    outGen.textContent=fmtGen(A,B,C); outGen.className='val';
+
+    if(vertical){
+      outSlope.textContent='не существует'; outSlope.className='val none';
+      outNote.className='note-line vert';
+      outNote.textContent='У точек одинаковый x = '+n(x1)+' → прямая вертикальна. Её уравнение x = '+n(x1)+', а углового коэффициента у неё НЕТ: записать y = kx + b невозможно.';
+    } else {
+      var ks=frac(dy,dx), bs=frac(y1*x2-x1*y2, dx);
+      var s='y = ';
+      if(dy===0) s+= n(y1);
+      else {
+        s += (ks==='1' ? 'x' : (ks==='−1' ? '−x' : (ks.indexOf('/')>=0 ? '('+ks+')x' : ks+'x')));
+        if(bs!=='0') s += (bs.charAt(0)==='−' ? ' − '+bs.slice(1) : ' + '+bs);
+      }
+      outSlope.textContent=s; outSlope.className='val';
+      if(horizontal){
+        outNote.className='note-line hor';
+        outNote.textContent='У точек одинаковый y = '+n(y1)+' → прямая горизонтальна: k = 0, уравнение y = '+n(y1)+'.';
+      } else {
+        outNote.className='note-line ok';
+        outNote.textContent='Разные x → прямая наклонная. k = '+ks+' (шаг вправо на 1 даёт подъём на '+ks+'), b = '+bs+'.';
+      }
+    }
+  }
+
+  [sx1,sy1,sx2,sy2].forEach(function(s){ s.addEventListener('input',draw); });
+  document.getElementById('bVert').addEventListener('click',function(){
+    sx1.value=2; sy1.value=-3; sx2.value=2; sy2.value=5; draw();
+  });
+  document.getElementById('bHor').addEventListener('click',function(){
+    sx1.value=-4; sy1.value=3; sx2.value=5; sy2.value=3; draw();
+  });
+  document.getElementById('bReset').addEventListener('click',function(){
+    sx1.value=1; sy1.value=2; sx2.value=3; sy2.value=6; draw();
+  });
+  window.addEventListener('resize',function(){ resize(); draw(); });
+  resize(); draw();
+})();
+</script>
+
+<style>
+  .trainer{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.2rem 1.3rem;margin-top:1rem}
+  .tr-type{font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);font-weight:800;margin-bottom:.6rem}
+  .tr-eq{font-weight:700;font-size:clamp(1.02rem,4vw,1.2rem);text-align:center;padding:1rem;background:var(--accent-soft);border-radius:10px;color:var(--ink);line-height:1.5}
+  .tr-eq .m{font-family:ui-monospace,Menlo,monospace}
+  .tr-ctl{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.9rem;align-items:center}
+  .tr-ctl button{font:inherit;font-weight:700;font-size:.9rem;cursor:pointer;border:none;border-radius:9px;padding:.55rem .95rem;color:#fff;background:var(--accent)}
+  .tr-ctl button.sec{background:var(--pos)}
+  .tr-ctl button.ghost{background:transparent;color:var(--accent);border:1px solid var(--accent)}
+  .tr-ctl input{flex:1;min-width:150px;font:inherit;padding:.5rem .7rem;border:1px solid var(--line);border-radius:9px;background:#fff;color:var(--ink)}
+  .tr-ctl button:focus-visible,.tr-ctl input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+  .tr-hint{margin-top:.6rem;font-size:.85rem;color:var(--muted)}
+  .tr-hint b{font-family:ui-monospace,Menlo,monospace;color:var(--ink)}
+  .tr-result{margin-top:.9rem;font-size:.96rem;min-height:1.2rem}
+  .tr-result .ok{color:var(--pos);font-weight:700}
+  .tr-result .bad{color:var(--neg);font-weight:700}
+  .tr-result .sol{margin-top:.7rem;padding:.85rem 1rem;background:#FCFBFE;border:1px solid var(--line);border-radius:10px;font-size:.92rem;line-height:1.75}
+  .tr-result .sol .m{font-family:ui-monospace,Menlo,monospace}
+  .tr-result .sol b{color:var(--accent)}
+</style>
+
+<script>
+(function(){
+  var qEl=document.getElementById('trQ'), typeEl=document.getElementById('trType'),
+      ansEl=document.getElementById('trAns'), resEl=document.getElementById('trResult'),
+      hintEl=document.getElementById('trHint');
+  var HINTS={
+    eq:'Формат ответа: уравнение прямой, например <b>y = 2x − 1</b> или <b>2x − y − 1 = 0</b>, для вертикальной — <b>x = 3</b>.',
+    point:'Формат ответа: <b>да</b> или <b>нет</b>.',
+    axis:'Формат ответа: координаты точки — <b>(2;-3)</b> или <b>2;-3</b>, а если пересечения нет — слово <b>нет</b>.',
+    kind:'Формат ответа: <b>вертикальная</b>, <b>горизонтальная</b> или <b>наклонная</b>.'
+  };
+  var TITLES={eq:'Уравнение по двум точкам', point:'Лежит ли точка на прямой', axis:'Пересечение с осью координат', kind:'Какая это прямая'};
+
+  function ri(a,b){ return Math.floor(Math.random()*(b-a+1))+a; }
+  function nz(a,b){ var v=0; while(v===0) v=ri(a,b); return v; }
+  function n(x){ return x<0 ? '−'+Math.abs(x) : ''+x; }
+  function pt(x,y){ return '('+n(x)+'; '+n(y)+')'; }
+  function fmtGen(A,B,C){
+    var s='', first=true;
+    function term(co,v){
+      if(co===0) return;
+      var abs=Math.abs(co), body = v ? ((abs===1?'':abs)+v) : ''+abs;
+      if(first){ s += (co<0?'−':'')+body; first=false; }
+      else { s += (co<0?' − ':' + ')+body; }
+    }
+    term(A,'x'); term(B,'y'); term(C,'');
+    if(first) s='0';
+    return s+' = 0';
+  }
+  function fmtSlope(k,b){
+    if(k===0) return 'y = '+n(b);
+    var s='y = '+(k===1?'':(k===-1?'−':n(k)))+'x';
+    if(b!==0) s += (b<0?' − ':' + ')+Math.abs(b);
+    return s;
+  }
+
+  /* ---------- парсер уравнения прямой ---------- */
+  function coefOf(p){
+    p=p.replace(/[*·⋅]/g,'');
+    if(p==='') return 1;
+    if(!/^\d*\.?\d+$/.test(p)) return null;
+    return parseFloat(p);
+  }
+  function parseSide(s){
+    if(s==='') return null;
+    var terms=s.match(/[+-]?[^+-]+/g);
+    if(!terms) return null;
+    var a=0,b=0,c=0;
+    for(var i=0;i<terms.length;i++){
+      var t=terms[i], sign=1;
+      if(t.charAt(0)==='+'){ t=t.slice(1); }
+      else if(t.charAt(0)==='-'){ sign=-1; t=t.slice(1); }
+      if(t==='') return null;
+      var v;
+      if(t.charAt(t.length-1)==='x'){ v=coefOf(t.slice(0,-1)); if(v===null) return null; a+=sign*v; }
+      else if(t.charAt(t.length-1)==='y'){ v=coefOf(t.slice(0,-1)); if(v===null) return null; b+=sign*v; }
+      else { if(!/^\d*\.?\d+$/.test(t)) return null; c+=sign*parseFloat(t); }
+    }
+    return {a:a,b:b,c:c};
+  }
+  function parseLine(str){
+    var s=String(str).toLowerCase()
+      .replace(/−/g,'-').replace(/–/g,'-').replace(/—/g,'-')
+      .replace(/х/g,'x').replace(/у/g,'y')
+      .replace(/\s+/g,'').replace(/,/g,'.');
+    var sides=s.split('=');
+    if(sides.length!==2) return null;
+    var L=parseSide(sides[0]), Rr=parseSide(sides[1]);
+    if(!L||!Rr) return null;
+    var res={a:L.a-Rr.a, b:L.b-Rr.b, c:L.c-Rr.c};
+    if(!isFinite(res.a)||!isFinite(res.b)||!isFinite(res.c)) return null;
+    if(Math.abs(res.a)<1e-9 && Math.abs(res.b)<1e-9) return null;
+    return res;
+  }
+  function norm(l){
+    var m=Math.max(Math.abs(l.a),Math.abs(l.b),Math.abs(l.c));
+    if(!(m>0)) return null;
+    return {a:l.a/m, b:l.b/m, c:l.c/m};
+  }
+  function sameLine(got, A,B,C){
+    var g=norm(got), e=norm({a:A,b:B,c:C});
+    if(!g||!e) return false;
+    return Math.abs(g.a*e.b-e.a*g.b)<1e-6 && Math.abs(g.a*e.c-e.a*g.c)<1e-6 && Math.abs(g.b*e.c-e.b*g.c)<1e-6;
+  }
+  /* ---------- парсер точки ---------- */
+  function parsePoint(str){
+    var s=String(str).replace(/−/g,'-').replace(/–/g,'-')
+      .replace(/(\d),(\d)/g,'$1.$2')
+      .replace(/[()\[\]]/g,' ').trim();
+    var parts=s.split(/[;,\s]+/).filter(function(v){ return v!==''; });
+    if(parts.length!==2) return null;
+    var x=parseFloat(parts[0]), y=parseFloat(parts[1]);
+    if(isNaN(x)||isNaN(y)) return null;
+    return {x:x,y:y};
+  }
+
+  /* ---------- генераторы ---------- */
+  function genLineData(pVert){
+    if(Math.random()<pVert){
+      var a=ri(-6,6);
+      return {vertical:true, a:a, A:1, B:0, C:-a, k:null, b:null};
+    }
+    var k=ri(-3,3), b=ri(-5,5);
+    return {vertical:false, k:k, b:b, A:k, B:-1, C:b};
+  }
+  function genEq(){
+    var L=genLineData(0.22), x1,y1,x2,y2;
+    if(L.vertical){
+      x1=L.a; x2=L.a; y1=ri(-6,6);
+      do{ y2=ri(-6,6); } while(y2===y1);
+    } else {
+      x1=ri(-6,6);
+      do{ x2=ri(-6,6); } while(x2===x1);
+      y1=L.k*x1+L.b; y2=L.k*x2+L.b;
+    }
+    return {type:'eq', L:L, x1:x1,y1:y1,x2:x2,y2:y2,
+      q:'Запиши уравнение прямой, проходящей через точки A'+pt(x1,y1)+' и B'+pt(x2,y2)+'.'};
+  }
+  function genPoint(){
+    var L=genLineData(0.25), px,py, on=(Math.random()<0.5);
+    if(L.vertical){
+      py=ri(-6,6);
+      px = on ? L.a : L.a + nz(-3,3);
+    } else {
+      px=ri(-6,6);
+      py = L.k*px+L.b + (on?0:nz(-4,4));
+    }
+    var dA=L.A, dB=L.B, dC=L.C;
+    if(!L.vertical && (dA<0 || (dA===0 && dB<0))){ dA=-dA; dB=-dB; dC=-dC; }
+    var shown = L.vertical ? ('x = '+n(L.a)) : fmtGen(dA,dB,dC);
+    return {type:'point', L:L, px:px, py:py, on:on, dA:dA, dB:dB, dC:dC,
+      q:'Лежит ли точка M'+pt(px,py)+' на прямой '+shown+' ?', shown:shown};
+  }
+  function genAxis(){
+    var r=Math.random(), L, shown, ansPt=null, kind;
+    if(r<0.2){
+      var a=nz(-6,6);
+      L={vertical:true, a:a, A:1, B:0, C:-a}; kind='vert'; shown='x = '+n(a);
+    } else if(r<0.4){
+      var bb=nz(-6,6);
+      L={vertical:false, k:0, b:bb, A:0, B:-1, C:bb}; kind='hor'; shown='y = '+n(bb);
+    } else {
+      var k=nz(-3,3), m=ri(-4,4), b=-k*m;
+      L={vertical:false, k:k, b:b, A:k, B:-1, C:b, root:m}; kind='slope'; shown=fmtSlope(k,b);
+    }
+    var axis = Math.random()<0.5 ? 'Ox' : 'Oy';
+    if(axis==='Ox'){
+      if(kind==='vert') ansPt={x:L.a,y:0};
+      else if(kind==='hor') ansPt=null;
+      else ansPt={x:L.root,y:0};
+    } else {
+      if(kind==='vert') ansPt=null;
+      else ansPt={x:0,y:L.b};
+    }
+    return {type:'axis', L:L, kind:kind, axis:axis, ansPt:ansPt, shown:shown,
+      q:'Найди точку пересечения прямой '+shown+' с осью '+axis+'. Если такой точки нет — напиши «нет».'};
+  }
+  function genKind(){
+    var r=Math.random(), A,B,C,kind;
+    if(r<0.34){ A=nz(-5,5); B=0; C=ri(-9,9); kind='вертикальная'; }
+    else if(r<0.67){ A=0; B=nz(-5,5); C=ri(-9,9); kind='горизонтальная'; }
+    else { A=nz(-5,5); B=nz(-5,5); C=ri(-9,9); kind='наклонная'; }
+    return {type:'kind', A:A,B:B,C:C, kind:kind,
+      q:'Прямая задана уравнением '+fmtGen(A,B,C)+'. Она вертикальная, горизонтальная или наклонная?'};
+  }
+
+  var cur=genEq();
+
+  function generate(){
+    var r=Math.random();
+    cur = r<0.34 ? genEq() : (r<0.58 ? genPoint() : (r<0.8 ? genAxis() : genKind()));
+    render();
+    return cur;
+  }
+  function render(){
+    typeEl.textContent=TITLES[cur.type];
+    qEl.textContent=cur.q;
+    hintEl.innerHTML=HINTS[cur.type];
+    resEl.innerHTML=''; ansEl.value='';
+  }
+
+  /* ---------- решения ---------- */
+  function solEq(){
+    var q=cur, L=q.L, h='<div class="sol">';
+    h+='Точки: A'+pt(q.x1,q.y1)+', B'+pt(q.x2,q.y2)+'.<br>';
+    if(L.vertical){
+      h+='Сравниваем x у точек: '+n(q.x1)+' и '+n(q.x2)+' — они <b>одинаковые</b>.<br>';
+      h+='Значит прямая <b>вертикальная</b>, и её уравнение просто <b class="m">x = '+n(L.a)+'</b>.<br>';
+      h+='В виде y = kx + b такую прямую записать нельзя: углового коэффициента у неё нет.<br>';
+      h+='Общий вид: <b class="m">'+fmtGen(1,0,-L.a)+'</b>';
+    } else {
+      h+='x у точек разные ('+n(q.x1)+' и '+n(q.x2)+') → прямая не вертикальна, ищем y = kx + b.<br>';
+      h+='<span class="m">k = ('+n(q.y2)+' − ('+n(q.y1)+'))/('+n(q.x2)+' − ('+n(q.x1)+')) = '+n(q.y2-q.y1)+'/'+n(q.x2-q.x1)+' = <b>'+n(L.k)+'</b></span><br>';
+      h+='Подставляем A'+pt(q.x1,q.y1)+': <span class="m">'+n(q.y1)+' = '+n(L.k)+'·('+n(q.x1)+') + b</span> → <span class="m">b = <b>'+n(L.b)+'</b></span><br>';
+      h+='Уравнение: <b class="m">'+fmtSlope(L.k,L.b)+'</b>';
+      if(L.k===0) h+=' — прямая горизонтальная (k = 0).';
+      h+='<br>Проверка на B'+pt(q.x2,q.y2)+': <span class="m">'+n(L.k)+'·('+n(q.x2)+') + ('+n(L.b)+') = '+n(q.y2)+'</span> ✓<br>';
+      h+='Общий вид: <b class="m">'+fmtGen(L.k,-1,L.b)+'</b>';
+    }
+    return h+'</div>';
+  }
+  function solPoint(){
+    var q=cur, L=q.L, h='<div class="sol">';
+    if(L.vertical){
+      h+='Прямая <span class="m">x = '+n(L.a)+'</span> состоит из всех точек с абсциссой '+n(L.a)+'.<br>';
+      h+='У точки M абсцисса '+n(q.px)+'. ';
+      h+= q.on ? 'Совпадает → точка <b>лежит</b> на прямой.' : 'Не совпадает ('+n(q.px)+' ≠ '+n(L.a)+') → точка <b>не лежит</b> на прямой.';
+    } else {
+      var val=q.dA*q.px+q.dB*q.py+q.dC;
+      h+='Подставляем координаты M'+pt(q.px,q.py)+' в левую часть уравнения <span class="m">'+q.shown+'</span>:<br>';
+      h+='<span class="m">'+leftSub(q.dA,q.dB,q.dC,q.px,q.py)+' = '+n(val)+'</span><br>';
+      h+= (val===0) ? 'Получился ноль → равенство верное, точка <b>лежит</b> на прямой.'
+                    : 'Получился не ноль → равенство неверное, точка <b>не лежит</b> на прямой.';
+    }
+    return h+'</div>';
+  }
+  function leftSub(A,B,C,x,y){
+    var parts=[];
+    if(A!==0) parts.push(n(A)+'·('+n(x)+')');
+    if(B!==0) parts.push(n(B)+'·('+n(y)+')');
+    if(C!==0) parts.push(n(C));
+    if(!parts.length) return '0';
+    return parts.join(' + ').replace(/\+ −/g,'− ');
+  }
+  function solAxis(){
+    var q=cur, h='<div class="sol">';
+    h+='Ось '+q.axis+' — это все точки, у которых '+(q.axis==='Ox'?'y = 0':'x = 0')+'.<br>';
+    if(q.kind==='vert'){
+      if(q.axis==='Ox'){ h+='Подставляем y = 0 в <span class="m">x = '+n(q.L.a)+'</span>: x всегда равен '+n(q.L.a)+', значит точка <b class="m">'+pt(q.L.a,0)+'</b>.'; }
+      else { h+='На прямой <span class="m">x = '+n(q.L.a)+'</span> нет точек с x = 0 (ведь '+n(q.L.a)+' ≠ 0). Прямая параллельна оси Oy → пересечения <b>нет</b>.'; }
+    } else if(q.kind==='hor'){
+      if(q.axis==='Ox'){ h+='На прямой <span class="m">y = '+n(q.L.b)+'</span> все точки имеют y = '+n(q.L.b)+', а нужно y = 0. Прямая параллельна оси Ox → пересечения <b>нет</b>.'; }
+      else { h+='Подставляем x = 0: y всё равно '+n(q.L.b)+', значит точка <b class="m">'+pt(0,q.L.b)+'</b>.'; }
+    } else {
+      if(q.axis==='Ox'){
+        h+='Подставляем y = 0 в <span class="m">'+q.shown+'</span>: <span class="m">0 = '+n(q.L.k)+'x + ('+n(q.L.b)+')</span><br>';
+        h+='<span class="m">x = '+n(-q.L.b)+'/'+n(q.L.k)+' = '+n(q.L.root)+'</span> → точка <b class="m">'+pt(q.L.root,0)+'</b>.';
+      } else {
+        h+='Подставляем x = 0 в <span class="m">'+q.shown+'</span>: <span class="m">y = '+n(q.L.k)+'·0 + ('+n(q.L.b)+') = '+n(q.L.b)+'</span><br>';
+        h+='Точка <b class="m">'+pt(0,q.L.b)+'</b>. Это и есть смысл коэффициента b.';
+      }
+    }
+    return h+'</div>';
+  }
+  function solKind(){
+    var q=cur, h='<div class="sol">';
+    h+='Уравнение <span class="m">'+fmtGen(q.A,q.B,q.C)+'</span>.<br>';
+    if(q.B===0){
+      h+='Слагаемого с y нет (коэффициент при y равен нулю) → выразить y невозможно, зато x задан жёстко: <span class="m">x = '+fmtRatio(-q.C,q.A)+'</span>.<br>';
+      h+='Это <b>вертикальная</b> прямая. Углового коэффициента у неё нет.';
+    } else if(q.A===0){
+      h+='Слагаемого с x нет → y задан жёстко: <span class="m">y = '+fmtRatio(-q.C,q.B)+'</span>, а x любой.<br>';
+      h+='Это <b>горизонтальная</b> прямая, k = 0.';
+    } else {
+      h+='И x, и y присутствуют. Выражаем y: <span class="m">y = '+fmtRatio(-q.A,q.B)+'x + '+fmtRatio(-q.C,q.B)+'</span>, угловой коэффициент не равен нулю.<br>';
+      h+='Это <b>наклонная</b> прямая.';
+    }
+    return h+'</div>';
+  }
+  function fmtRatio(num,den){
+    if(den<0){ num=-num; den=-den; }
+    var g=gcd(num,den)||1; num=num/g; den=den/g;
+    if(den===1) return n(num);
+    return (num<0?'−':'')+Math.abs(num)+'/'+den;
+  }
+  function gcd(a,b){ a=Math.abs(a); b=Math.abs(b); while(b){ var t=a%b; a=b; b=t; } return a; }
+
+  function solutionHTML(){
+    if(cur.type==='eq') return solEq();
+    if(cur.type==='point') return solPoint();
+    if(cur.type==='axis') return solAxis();
+    return solKind();
+  }
+
+  /* ---------- проверка ---------- */
+  function check(){
+    var raw=ansEl.value.trim();
+    if(!raw){ resEl.innerHTML='<span class="bad">Введи ответ или нажми «Показать решение».</span>'; return; }
+    var low=raw.toLowerCase();
+    var ok=false, msg='';
+    if(cur.type==='eq'){
+      var A=cur.L.A, B=cur.L.B, C=cur.L.C;
+      var got=parseLine(raw);
+      if(!got){
+        resEl.innerHTML='<span class="bad">Не понял запись. Напиши уравнение со знаком «=», например «y = 2x − 1», «2x − y − 1 = 0» или «x = 3».</span>';
+        return;
+      }
+      ok=sameLine(got,A,B,C);
+      msg = ok ? '✓ Верно! Это та самая прямая.' : '✗ Пока не то. Проверь k и b — и подставь обе точки в своё уравнение.';
+    } else if(cur.type==='point'){
+      var w=low.replace(/\s+/g,'');
+      var yes=/^(да|лежит|принадлеж|верно)$|^(да|лежит|принадлеж)/.test(w) || w==='+';
+      var no=/^(нет|не|неверно)/.test(w) || w==='-' || w==='−';
+      if(!yes && !no){ resEl.innerHTML='<span class="bad">Ответь словом «да» или «нет».</span>'; return; }
+      ok = (yes && cur.on) || (no && !cur.on);
+      msg = ok ? '✓ Верно!' : '✗ Не угадал — смотри подстановку.';
+    } else if(cur.type==='axis'){
+      if(/нет|net|отсут|∅/.test(low)){
+        ok = (cur.ansPt===null);
+        msg = ok ? '✓ Верно — эта прямая параллельна оси и не пересекает её.' : '✗ Пересечение всё-таки есть.';
+      } else {
+        var p=parsePoint(raw);
+        if(!p){ resEl.innerHTML='<span class="bad">Не понял запись. Введи координаты точки: «(2;-3)» или «2;-3», либо слово «нет».</span>'; return; }
+        ok = (cur.ansPt!==null) && Math.abs(p.x-cur.ansPt.x)<1e-6 && Math.abs(p.y-cur.ansPt.y)<1e-6;
+        msg = ok ? '✓ Верно!' : (cur.ansPt===null ? '✗ Здесь пересечения нет вообще.' : '✗ Не та точка. На оси '+cur.axis+' одна из координат обязана быть нулём.');
+      }
+    } else {
+      var v=/вертик/.test(low), hh=/горизонт/.test(low), sl=/наклон/.test(low);
+      if(!v && !hh && !sl){ resEl.innerHTML='<span class="bad">Ответь словом: вертикальная, горизонтальная или наклонная.</span>'; return; }
+      var said = v?'вертикальная':(hh?'горизонтальная':'наклонная');
+      ok = (said===cur.kind);
+      msg = ok ? '✓ Верно!' : '✗ Не то. Смотри, какие переменные вообще есть в уравнении.';
+    }
+    resEl.innerHTML='<span class="'+(ok?'ok':'bad')+'">'+msg+'</span>'+solutionHTML();
+  }
+
+  document.getElementById('trNew').addEventListener('click',function(){ generate(); ansEl.focus(); });
+  document.getElementById('trCheck').addEventListener('click',check);
+  document.getElementById('trShow').addEventListener('click',function(){ resEl.innerHTML=solutionHTML(); });
+  ansEl.addEventListener('keydown',function(e){ if(e.key==='Enter') check(); });
+  render();
+
+  if(typeof window!=='undefined'){
+    window.__trainerTest={ gen:generate, get:function(){ return cur; }, sol:solutionHTML,
+      parseLine:parseLine, sameLine:sameLine, parsePoint:parsePoint };
+  }
+})();
+</script>
+<!--LESSON-NAV-BOT--><nav class="lnav lnav-bot"><a class="prev" href="./geo9-koord-uravnenie-okruzhnosti.html"><span class="dir">← Предыдущая</span><span class="ttl">Уравнение окружности</span></a><a class="to-cat" href="./catalog.html">📚 <span>Все темы</span></a><a class="next" href="./geo9-trig-osnovnoe-tozhdestvo.html"><span class="dir">Следующая →</span><span class="ttl">Основное тригонометрическое тождество и формулы приведения</span></a></nav><!--/LESSON-NAV-BOT-->

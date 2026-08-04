@@ -1,0 +1,740 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Сумма углов четырёхугольника — урок, геометрия 8 класс</title>
+<style>
+  :root{
+    --paper:#F6F7F9;
+    --card:#FFFFFF;
+    --ink:#1B2333;
+    --muted:#5A6478;
+    --line:#E2E5EC;
+    --accent:#3B4FD0;
+    --accent-soft:#EAEDFB;
+    --pos:#1E8E5A;
+    --pos-bg:#E7F4EC;
+    --zero:#B9791A;
+    --zero-bg:#FBF1DC;
+    --neg:#C0455B;
+    --neg-bg:#F9E9EC;
+  }
+  *{box-sizing:border-box}
+  body{margin:0}
+  .wrap{
+    max-width:760px;
+    margin:0 auto;
+    padding:clamp(1.4rem,4vw,3rem) clamp(1.1rem,4vw,2rem) 4rem;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    font-size:17px;
+    line-height:1.62;
+    -webkit-font-smoothing:antialiased;
+  }
+  .eyebrow{
+    font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--accent);font-weight:600;margin:0 0 .5rem;
+  }
+  h1{
+    font-family:Georgia,"Times New Roman",serif;
+    font-size:clamp(2rem,7vw,3rem);
+    line-height:1.05;margin:0;font-weight:700;letter-spacing:-.01em;
+    text-wrap:balance;
+  }
+  .lede{
+    font-size:1.08rem;color:var(--muted);margin:.7rem 0 0;max-width:60ch;
+    text-wrap:pretty;
+  }
+  h2{
+    font-family:Georgia,serif;font-size:1.32rem;font-weight:700;
+    margin:0 0 .1rem;letter-spacing:-.005em;
+  }
+  section{margin-top:2.6rem}
+  .kicker{
+    font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--muted);font-weight:600;margin:0 0 .8rem;
+    display:flex;align-items:center;gap:.6rem;
+  }
+  .kicker::before{
+    content:"";width:1.4rem;height:2px;background:var(--accent);border-radius:2px;
+  }
+  p{margin:.65rem 0}
+  strong{font-weight:650}
+  .math{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-weight:600}
+  sup{font-size:.72em}
+
+  /* Главная формула */
+  .hero-formula{
+    margin-top:2.2rem;
+    background:var(--ink);color:#fff;border-radius:14px;
+    padding:1.6rem 1.1rem;text-align:center;
+  }
+  .hero-formula .lbl{
+    font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;
+    color:#9aa6c9;margin:0 0 .7rem;
+  }
+  .hero-formula .eq{
+    font-family:ui-monospace,"SF Mono",Menlo,monospace;
+    font-size:clamp(1.15rem,5vw,2rem);font-weight:700;letter-spacing:.01em;
+  }
+  .hero-formula .eq b{color:#8ea0ff;font-weight:700}
+  .hero-formula .note{font-size:.86rem;color:#9aa6c9;margin:.8rem 0 0}
+
+  /* Пререквизит */
+  .recall{
+    background:var(--accent-soft);border-radius:12px;padding:1rem 1.15rem;
+    font-size:.96rem;
+  }
+  .recall p{margin:.3rem 0}
+
+  /* Два треугольника — карточки */
+  .cases{display:grid;gap:.85rem;margin-top:.4rem}
+  @media(min-width:620px){.cases{grid-template-columns:repeat(3,1fr)}}
+  .case{
+    border-radius:12px;padding:1.05rem 1.1rem;border:1px solid var(--line);
+    background:var(--card);display:flex;flex-direction:column;gap:.35rem;
+  }
+  .case .sign{font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.15rem}
+  .case .count{font-weight:650;font-size:1rem}
+  .case .desc{font-size:.9rem;color:var(--muted)}
+  .case.pos{border-top:4px solid var(--pos);background:var(--pos-bg)}
+  .case.pos .sign{color:var(--pos)}
+  .case.zero{border-top:4px solid var(--zero);background:var(--zero-bg)}
+  .case.zero .sign{color:var(--zero)}
+  .case.neg{border-top:4px solid var(--neg);background:var(--neg-bg)}
+  .case.neg .sign{color:var(--neg)}
+
+  /* Разбор */
+  .worked{
+    background:var(--card);border:1px solid var(--line);border-radius:12px;
+    padding:1.2rem 1.3rem;
+  }
+  .worked + .worked{margin-top:1rem}
+  .worked .task{
+    font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1rem;
+    margin:0 0 1rem;padding-bottom:.8rem;border-bottom:1px solid var(--line);
+  }
+  ol.steps{margin:0;padding:0;list-style:none;counter-reset:s;display:flex;flex-direction:column;gap:.7rem}
+  ol.steps li{
+    position:relative;padding-left:2.1rem;counter-increment:s;
+  }
+  ol.steps li::before{
+    content:counter(s);position:absolute;left:0;top:.05rem;
+    width:1.5rem;height:1.5rem;border-radius:50%;
+    background:var(--accent-soft);color:var(--accent);
+    font-size:.82rem;font-weight:700;display:flex;align-items:center;justify-content:center;
+  }
+  ol.steps .m{font-family:ui-monospace,Menlo,monospace;font-weight:600;color:var(--ink)}
+  ol.steps .why{color:var(--muted);font-size:.9rem;display:block}
+  .verdict{
+    margin-top:1rem;padding:.7rem 1rem;background:var(--pos-bg);
+    border-radius:9px;font-weight:600;color:var(--pos);font-size:.98rem;
+  }
+
+  /* Практика */
+  .drill{display:flex;flex-direction:column;gap:.7rem}
+  details{
+    background:var(--card);border:1px solid var(--line);border-radius:10px;
+    padding:.85rem 1.05rem;
+  }
+  details[open]{border-color:var(--accent)}
+  summary{
+    cursor:pointer;font-weight:600;list-style:none;
+    display:flex;justify-content:space-between;align-items:center;gap:.8rem;flex-wrap:wrap;
+  }
+  summary::-webkit-details-marker{display:none}
+  summary:focus-visible{outline:3px solid var(--accent);outline-offset:3px;border-radius:6px}
+  summary .q{flex:1;min-width:12ch}
+  summary .tag{
+    font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);
+    border:1px solid var(--line);border-radius:20px;padding:.1rem .55rem;white-space:nowrap;
+  }
+  summary::after{
+    content:"ответ";font-size:.78rem;color:var(--accent);font-weight:600;white-space:nowrap;
+  }
+  details[open] summary::after{content:"скрыть"}
+  .ans{margin-top:.7rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.96rem;color:var(--muted)}
+  .ans .m{font-family:ui-monospace,Menlo,monospace;color:var(--ink);font-weight:600}
+
+  /* Ошибки */
+  ul.pitfalls{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:.6rem}
+  ul.pitfalls li{
+    padding-left:1.5rem;position:relative;font-size:.98rem;
+  }
+  ul.pitfalls li::before{
+    content:"×";position:absolute;left:0;top:-.05rem;color:var(--neg);font-weight:700;font-size:1.1rem;
+  }
+  ul.pitfalls b{color:var(--ink)}
+
+  .next{
+    background:var(--accent);color:#fff;border-radius:12px;padding:1.2rem 1.3rem;
+  }
+  .next h2{color:#fff}
+  .next .eq{
+    font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.1rem;
+    margin:.6rem 0 .3rem;
+  }
+  .next p{color:#dfe4fb;font-size:.96rem;margin:.4rem 0 0}
+  .next a{color:#fff;font-weight:700}
+  .foot{margin-top:2.4rem;font-size:.82rem;color:var(--muted);text-align:center}
+
+  /* Таблица «допиши четвёртый угол» */
+  .tblbox{overflow-x:auto;margin-top:.6rem;border:1px solid var(--line);border-radius:12px;background:var(--card)}
+  table.ang{border-collapse:collapse;width:100%;min-width:340px;font-size:.95rem}
+  table.ang th,table.ang td{padding:.55rem .7rem;border-bottom:1px solid var(--line);text-align:center;font-family:ui-monospace,Menlo,monospace}
+  table.ang th{font-family:system-ui,sans-serif;font-size:.78rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:600}
+  table.ang tr:last-child td{border-bottom:none}
+  table.ang td.miss{color:var(--accent);font-weight:700;background:var(--accent-soft)}
+
+  @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+<style>
+.oge-tip{display:flex;gap:.8rem;align-items:flex-start;background:#FFF8E7;border:1px solid #F0D98A;border-left:4px solid #E0A315;border-radius:10px;padding:.85rem 1.05rem;margin:1.5rem 0}
+.oge-tip .b{font-size:.72rem;font-weight:800;letter-spacing:.03em;color:#8A6A15;white-space:nowrap;text-transform:uppercase;padding-top:.15rem}
+.oge-tip .x{font-size:.95rem;line-height:1.5}
+</style>
+
+<!--LESSON-NAV-TOP--><style>.lnav{--lnav-accent:#3D5AF1}.lnav a{text-decoration:none;font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif}.lnav-top{max-width:820px;margin:0 auto;padding:.75rem clamp(1rem,4vw,1.5rem) .1rem}.lnav-top a{display:inline-flex;align-items:center;gap:.35rem;color:var(--lnav-accent);font-weight:600;font-size:.9rem}.lnav-top a:hover{text-decoration:underline}.lnav-bot{max-width:820px;margin:2.6rem auto 3rem;padding:1.1rem clamp(1rem,4vw,1.5rem) 0;border-top:1px solid #E4E8EF;display:flex;align-items:stretch;gap:.55rem}.lnav-bot a{min-width:0;display:flex;flex-direction:column;justify-content:center;gap:.15rem;border:1px solid #E4E8EF;border-radius:12px;padding:.65rem .85rem;color:#182233;background:#fff;transition:border-color .1s,transform .08s}.lnav-bot a:hover{border-color:var(--lnav-accent);transform:translateY(-1px)}.lnav-bot .prev,.lnav-bot .next{flex:1 1 0}.lnav-bot .next{text-align:right}.lnav-bot .dir{font-size:.72rem;color:#8A93A6;font-weight:600}.lnav-bot .ttl{font-size:.9rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.lnav-bot .to-cat{flex:0 0 auto;flex-direction:row;align-items:center;justify-content:center;color:var(--lnav-accent);font-weight:700;font-size:.85rem;white-space:nowrap}@media(max-width:420px){.lnav-bot .to-cat span{display:none}.lnav-bot .to-cat{padding:.65rem .7rem}}</style><nav class="lnav lnav-top"><a href="./catalog.html">← Все темы</a></nav><!--/LESSON-NAV-TOP-->
+<div class="wrap">
+
+  <header>
+    <p class="eyebrow">Геометрия · 8 класс</p>
+    <h1>Сумма углов четырёхугольника</h1>
+    <p class="lede">Какой бы кривой ни была рамка, дверь или страница тетради — её четыре угла всегда дают в сумме <em>ровно 360°.</em> И это можно доказать одной линией.</p>
+  </header>
+
+  <div class="hero-formula">
+    <p class="lbl">Правило</p>
+    <div class="eq">∠<b>A</b> + ∠<b>B</b> + ∠<b>C</b> + ∠<b>D</b> = 360°</div>
+    <p class="note">A, B, C, D — вершины выпуклого четырёхугольника по порядку обхода</p>
+  </div>
+
+  <section>
+    <p class="kicker">Зачем это нужно</p>
+    <h2>Три угла знаешь — четвёртый уже не нужно мерить</h2>
+    <p>Четырёхугольники вокруг тебя повсюду: страница тетради, дверь, экран телефона, оконная рама, плитка на полу. Чтобы что-то спроектировать, разметить участок или проверить, «ровная» ли рамка, нужно уметь работать с её углами.</p>
+    <p>В самой геометрии это базовый факт: на нём держатся все свойства параллелограмма, прямоугольника, ромба, трапеции. Если известны три угла четырёхугольника, четвёртый находится мгновенно — <strong>без транспортира</strong>, одним вычитанием.</p>
+    <p>А теперь главное заблуждение, которое надо снести сразу: <em>«раз в треугольнике сумма углов 180°, то и в четырёхугольнике, наверное, тоже 180°»</em>. Это неверно. Проверь на самом простом четырёхугольнике — квадрате: четыре угла по 90° дают <span class="math">4 · 90° = 360°</span>, а вовсе не 180°.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Что вспомнить с прошлого шага</p>
+    <div class="recall">
+      <p><strong>Сумма углов треугольника = 180°</strong> — это нам понадобится буквально через абзац.</p>
+      <p><strong>Диагональ</strong> — отрезок, соединяющий две <em>несоседние</em> вершины. У четырёхугольника таких отрезка два: AC и BD.</p>
+      <p><strong>Выпуклый</strong> четырёхугольник — тот, у которого любая диагональ лежит внутри фигуры. В 8 классе работаем именно с выпуклыми.</p>
+      <p><strong>Внутренний угол</strong> — угол внутри фигуры при вершине. Именно их мы и складываем.</p>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Почему именно 360° · доказательство</p>
+    <h2>Один разрез — и всё становится очевидно</h2>
+    <p>Возьмём любой выпуклый четырёхугольник <span class="math">ABCD</span> и проведём в нём одну диагональ, например <span class="math">AC</span>. Эта диагональ разрезает четырёхугольник на <strong>два треугольника</strong>: <span class="math">ABC</span> и <span class="math">ACD</span>.</p>
+    <div class="cases">
+      <div class="case pos">
+        <div class="sign">△ ABC</div>
+        <div class="count">180°</div>
+        <div class="desc">Первый кусок. Сумма его углов — как у любого треугольника.</div>
+      </div>
+      <div class="case zero">
+        <div class="sign">△ ACD</div>
+        <div class="count">180°</div>
+        <div class="desc">Второй кусок. Тоже треугольник — тоже 180°.</div>
+      </div>
+      <div class="case neg">
+        <div class="sign">= ABCD</div>
+        <div class="count">360°</div>
+        <div class="desc">Вместе: 180° + 180°. Больше ничего нигде не потерялось.</div>
+      </div>
+    </div>
+    <p style="margin-top:1rem">Почему «ничего не потерялось»? Углы двух треугольников — это ровно те же четыре угла четырёхугольника, только углы при <span class="math">A</span> и при <span class="math">C</span> оказались разрезанными диагональю на две части. Сложи части обратно — получишь целые углы <span class="math">∠A</span> и <span class="math">∠C</span>, а углы <span class="math">∠B</span> и <span class="math">∠D</span> вообще остались целыми.</p>
+    <p><strong>Итог:</strong> четырёхугольник — это «два треугольника, склеенных по диагонали», поэтому сумма его углов вдвое больше: <span class="math">180° · 2 = 360°</span>. И эта сумма не зависит ни от формы, ни от размеров фигуры.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Покрути сам · интерактив</p>
+    <h2>Двигай вершины — сумма не сдвинется</h2>
+    <p>Каждый ползунок двигает свою вершину. Углы считаются честно по координатам — как будто ты каждый раз заново прикладываешь транспортир. Меняй форму как хочешь: сумма внизу всё равно 360°.</p>
+    <div class="quad">
+      <canvas id="quadCv" width="640" height="440" aria-label="Интерактивный четырёхугольник с подвижными вершинами"></canvas>
+      <div id="quadSum" class="quad-sum">∠A + ∠B + ∠C + ∠D = 360°</div>
+      <div class="quad-ctl">
+        <button id="quadDiag" type="button">📐 Провести диагональ AC</button>
+        <button id="quadReset" type="button" class="ghost">Сбросить</button>
+      </div>
+      <div class="sliders">
+        <label>A <span id="vA" class="sval">140</span><input id="sA" type="range" min="115" max="165" step="1" value="140" aria-label="Вершина A"></label>
+        <label>B <span id="vB" class="sval">45</span><input id="sB" type="range" min="20" max="70" step="1" value="45" aria-label="Вершина B"></label>
+        <label>C <span id="vC" class="sval">315</span><input id="sC" type="range" min="290" max="340" step="1" value="315" aria-label="Вершина C"></label>
+        <label>D <span id="vD" class="sval">220</span><input id="sD" type="range" min="195" max="245" step="1" value="220" aria-label="Вершина D"></label>
+      </div>
+    </div>
+    <p style="font-size:.9rem;color:var(--muted)">Нажми «Провести диагональ AC» — четырёхугольник распадётся на два треугольника, и станет видно, откуда берётся 360°: <span class="math">180° + 180°</span>. Обрати внимание, как диагональ разрезает углы при A и C на две части.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Разбираем вместе</p>
+    <h2>Эталонный пример «думаю вслух»</h2>
+    <div class="worked">
+      <p class="task">В четырёхугольнике ABCD: ∠A = 70°, ∠B = 100°, ∠C = 80°. Найди ∠D.</p>
+      <ol class="steps">
+        <li>Сумма всех четырёх углов равна <span class="m">360°</span>.<span class="why">Почему: диагональ делит четырёхугольник на два треугольника, 180° + 180° = 360°.</span></li>
+        <li>Значит <span class="m">∠D = 360° − (∠A + ∠B + ∠C)</span>.<span class="why">Почему: четвёртый угол — это то, что осталось от 360° после трёх известных.</span></li>
+        <li>Сначала складываю известные: <span class="m">70° + 100° + 80° = 250°</span>.<span class="why">Именно так: сложить всё, а потом один раз вычесть. Так меньше шансов ошибиться.</span></li>
+        <li>Вычитаю: <span class="m">∠D = 360° − 250° = 110°</span>.</li>
+      </ol>
+      <div class="verdict">Ответ: ∠D = 110°.</div>
+    </div>
+
+    <div class="worked">
+      <p class="task">Углы четырёхугольника относятся как 1 : 2 : 3 : 4. Найди эти углы.</p>
+      <ol class="steps">
+        <li>Пусть одна часть равна <span class="m">x</span>. Тогда углы: <span class="m">x, 2x, 3x, 4x</span>.</li>
+        <li>Их сумма равна 360°: <span class="m">x + 2x + 3x + 4x = 360°</span>.</li>
+        <li>Слева получается <span class="m">10x</span>, значит <span class="m">10x = 360°</span>.</li>
+        <li>Отсюда <span class="m">x = 360° : 10 = 36°</span>.</li>
+        <li>Возвращаюсь к углам: <span class="m">x = 36°, 2x = 72°, 3x = 108°, 4x = 144°</span>.</li>
+      </ol>
+      <div class="verdict">Ответ: 36°, 72°, 108°, 144°. Проверка: 36 + 72 + 108 + 144 = 360. ✓</div>
+    </div>
+  </section>
+
+  <div class="oge-tip"><div class="b">🎯 В ОГЭ</div><div class="x"><b>Задания 15–16.</b> 360° — точка опоры почти любой задачи про четырёхугольник: три угла известны, четвёртый находится вычитанием.</div></div>
+
+  <section>
+    <p class="kicker">Наглядность · заполни строку</p>
+    <h2>Три известных — четвёртый добираем до 360°</h2>
+    <p>В каждой строке три угла даны, а четвёртый пропущен. Считай в уме: сложи три, вычти из 360°. Синие клетки — ответы, сверься после того, как решил сам.</p>
+    <div class="tblbox">
+      <table class="ang">
+        <tr><th>∠A</th><th>∠B</th><th>∠C</th><th>∠D</th></tr>
+        <tr><td>70°</td><td>100°</td><td>80°</td><td class="miss">110°</td></tr>
+        <tr><td>90°</td><td>90°</td><td>65°</td><td class="miss">115°</td></tr>
+        <tr><td>120°</td><td>60°</td><td>95°</td><td class="miss">85°</td></tr>
+        <tr><td>85°</td><td>95°</td><td>100°</td><td class="miss">80°</td></tr>
+        <tr><td>90°</td><td>90°</td><td>90°</td><td class="miss">90°</td></tr>
+      </table>
+    </div>
+    <p style="font-size:.9rem;color:var(--muted)">Последняя строка — проверка «на здравый смысл»: если три угла прямые, то четвёртый обязан быть прямым. Никаким другим он быть не может.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Теперь ты · нажми, чтобы проверить</p>
+    <h2>Мини-практика</h2>
+    <div class="drill">
+      <details>
+        <summary><span class="q">Чему равна сумма углов любого выпуклого четырёхугольника? На сколько треугольников делит его одна диагональ?</span><span class="tag">понимание</span></summary>
+        <div class="ans">Сумма — <span class="m">360°</span>. Одна диагональ делит четырёхугольник на <span class="m">два</span> треугольника, отсюда <span class="m">180° · 2 = 360°</span>.</div>
+      </details>
+      <details>
+        <summary><span class="q">В четырёхугольнике KLMN: ∠K = 120°, ∠L = 60°, ∠M = 95°. Найди ∠N.</span><span class="tag">применение</span></summary>
+        <div class="ans"><span class="m">120 + 60 + 95 = 275</span>; &nbsp;<span class="m">∠N = 360° − 275° = 85°</span>.</div>
+      </details>
+      <details>
+        <summary><span class="q">Три угла четырёхугольника: 85°, 95°, 100°. Чему равен четвёртый?</span><span class="tag">применение</span></summary>
+        <div class="ans"><span class="m">85 + 95 + 100 = 280</span>; &nbsp;<span class="m">360° − 280° = 80°</span>.</div>
+      </details>
+      <details>
+        <summary><span class="q">Найди ошибку: ученик сказал, что сумма углов четырёхугольника равна 180°. Где ошибка и какой ответ верный?</span><span class="tag">анализ</span></summary>
+        <div class="ans">Он перенёс факт про треугольник на четырёхугольник. Но диагональ делит четырёхугольник на <strong>два</strong> треугольника, значит сумма <span class="m">180° · 2 = 360°</span>. Быстрая самопроверка — квадрат: <span class="m">4 · 90° = 360°</span>.</div>
+      </details>
+      <details>
+        <summary><span class="q">Может ли четырёхугольник иметь четыре угла по 100° каждый?</span><span class="tag">анализ</span></summary>
+        <div class="ans"><span class="m">4 · 100° = 400° ≠ 360°</span> → <strong>не может.</strong> Проверять существование надо именно суммой.</div>
+      </details>
+      <details>
+        <summary><span class="q">Может ли четырёхугольник иметь три прямых угла и один угол 80°?</span><span class="tag">анализ</span></summary>
+        <div class="ans"><span class="m">90 · 3 + 80 = 350° ≠ 360°</span> → <strong>нет.</strong> Если три угла прямые, четвёртый обязан быть <span class="m">90°</span>.</div>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Тренажёр · бесконечная практика</p>
+    <h2>Реши задачу на 360° сам</h2>
+    <p>Нажми «Новая задача», реши и введи ответ. Пиши только числа (знак «°» можно не писать). Если ответов несколько — через <b>точку с запятой</b>, в том порядке, о котором просит условие. Потом проверь себя или посмотри пошаговое решение.</p>
+    <div class="trainer">
+      <div class="tr-q" id="trQ">В четырёхугольнике ABCD: ∠A = 70°, ∠B = 100°, ∠C = 80°. Найди ∠D.</div>
+      <div class="tr-ctl">
+        <button id="trNew" type="button">🎲 Новая задача</button>
+        <input id="trAns" type="text" inputmode="text" placeholder="напр.  110   или   36; 72; 108; 144" aria-label="Ответ">
+        <button id="trCheck" type="button" class="sec">Проверить</button>
+        <button id="trShow" type="button" class="ghost">Показать решение</button>
+      </div>
+      <div id="trResult" class="tr-result"></div>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Где чаще всего ошибаются</p>
+    <h2>Лови эти ловушки</h2>
+    <ul class="pitfalls">
+      <li><b>Считают сумму равной 180°</b> — по аналогии с треугольником. Всегда вспоминай: диагональ режет четырёхугольник на <strong>два</strong> треугольника, поэтому <span class="math">180° · 2 = 360°</span>. Проверяй себя на квадрате: 4 угла по 90° дают именно 360°.</li>
+      <li><b>Неверно делят четырёхугольник на треугольники.</b> Диагональ проводится между <strong>несоседними</strong> вершинами, через внутреннюю область. Сторона фигуру не делит — делит именно диагональ.</li>
+      <li><b>Путаются в арифметике при вычитании из 360°.</b> Сначала аккуратно сложи все известные углы, и только потом один раз вычти сумму из 360° — а не вычитай углы по одному «в столбик наугад».</li>
+      <li><b>Применяют правило к невыпуклой фигуре наугад.</b> В 8 классе мы работаем с выпуклыми четырёхугольниками — для них сумма ровно 360°.</li>
+    </ul>
+  </section>
+
+  <section>
+    <p class="kicker">Проверь себя</p>
+    <h2>Объясни своими словами</h2>
+    <p>Закрой урок и ответь вслух — как будто объясняешь однокласснику:</p>
+    <ol>
+      <li>Сумма углов выпуклого четырёхугольника — это сколько градусов?</li>
+      <li>Почему получается именно столько? (Проведи диагональ и расскажи.)</li>
+      <li>Три угла четырёхугольника: 85°, 95°, 100°. Чему равен четвёртый?</li>
+    </ol>
+    <p>Если получилось сказать всё тремя фразами без подглядываний — тема твоя.</p>
+  </section>
+
+  <section>
+    <div class="next">
+      <h2>Что дальше</h2>
+      <p>Мы узнали общий факт: 360° у <em>любого</em> выпуклого четырёхугольника. Дальше начинаются четырёхугольники «с характером», у которых углы связаны между собой ещё жёстче:</p>
+      <div class="eq">→ <a href="./geo8-parallelogramm.html">Параллелограмм</a> &nbsp;·&nbsp; <a href="./geo8-trapeciya.html">Трапеция</a></div>
+      <p>Там ты увидишь, что 360° никуда не деваются — просто к ним добавляются свои правила: противоположные углы, углы при боковой стороне и так далее. Основание у всего этого одно — сумма, которую мы сегодня доказали.</p>
+    </div>
+  </section>
+
+  <p class="foot">Итог одним предложением: диагональ делит выпуклый четырёхугольник на два треугольника, поэтому сумма его углов равна 360°.</p>
+
+</div>
+
+<style>
+  .quad{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.1rem 1.1rem 1rem;margin:1rem 0}
+  .quad canvas{width:100%;height:auto;display:block;border-radius:10px;background:#FCFDFF}
+  .quad-sum{
+    text-align:center;font-weight:700;font-size:clamp(.85rem,3.4vw,1.05rem);margin:.8rem 0 0;padding:.55rem .4rem;
+    border-radius:9px;font-family:ui-monospace,Menlo,monospace;background:var(--pos-bg);color:var(--pos);
+  }
+  .quad-ctl{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.8rem}
+  .quad-ctl button{font:inherit;font-weight:700;font-size:.9rem;cursor:pointer;border:none;border-radius:9px;padding:.55rem .95rem;color:#fff;background:var(--accent)}
+  .quad-ctl button.ghost{background:transparent;color:var(--accent);border:1px solid var(--accent)}
+  .quad-ctl button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+  .sliders{display:grid;gap:.55rem;margin-top:.9rem}
+  @media(min-width:520px){.sliders{grid-template-columns:repeat(2,1fr)}}
+  .sliders label{display:flex;align-items:center;gap:.5rem;font-weight:700;font-family:ui-monospace,Menlo,monospace}
+  .sliders input[type=range]{flex:1;min-width:0;accent-color:var(--accent)}
+  .sliders input[type=range]:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+  .sliders .sval{min-width:3.4ch;text-align:right;color:var(--accent);font-variant-numeric:tabular-nums;font-size:.9rem}
+</style>
+
+<script>
+(function(){
+  var cv=document.getElementById('quadCv'); if(!cv) return;
+  var ctx=cv.getContext('2d');
+  var NAMES=['A','B','C','D'];
+  var START=[140,45,315,220];
+  var sl=['sA','sB','sC','sD'].map(function(i){return document.getElementById(i);});
+  var vl=['vA','vB','vC','vD'].map(function(i){return document.getElementById(i);});
+  var sumEl=document.getElementById('quadSum');
+  var diagBtn=document.getElementById('quadDiag'), resetBtn=document.getElementById('quadReset');
+  var RAD=[1.00,0.90,1.05,0.95];
+  var showDiag=false, W=640,H=440,dpr=1;
+
+  function crossOK(p){
+    var sgn=0;
+    for(var i=0;i<4;i++){
+      var a=p[i],b=p[(i+1)%4],c=p[(i+2)%4];
+      var cr=(b.x-a.x)*(c.y-b.y)-(b.y-a.y)*(c.x-b.x);
+      if(Math.abs(cr)<1e-6) return false;
+      var s=cr>0?1:-1;
+      if(sgn===0) sgn=s; else if(s!==sgn) return false;
+    }
+    return true;
+  }
+  function blend(p,t){
+    return p.map(function(v){
+      var r=Math.sqrt(v.x*v.x+v.y*v.y);
+      var k=((1-t)*r+t)/r;
+      return {x:v.x*k,y:v.y*k};
+    });
+  }
+  function points(){
+    var p=sl.map(function(s,i){
+      var t=parseFloat(s.value)*Math.PI/180;
+      return {x:Math.cos(t)*RAD[i], y:Math.sin(t)*RAD[i]};
+    });
+    if(crossOK(p)) return p;
+    for(var t=0.1;t<1.0005;t+=0.1){          // страховка: тянем вершины к окружности,
+      var q=blend(p,Math.min(t,1));           // на окружности четырёхугольник всегда выпуклый
+      if(crossOK(q)) return q;
+    }
+    return blend(p,1);
+  }
+  function angles(p){
+    var out=[];
+    for(var i=0;i<4;i++){
+      var c=p[i], a=p[(i+3)%4], b=p[(i+1)%4];
+      var ux=a.x-c.x, uy=a.y-c.y, vx=b.x-c.x, vy=b.y-c.y;
+      var lu=Math.sqrt(ux*ux+uy*uy), lv=Math.sqrt(vx*vx+vy*vy);
+      var d=(ux*vx+uy*vy)/(lu*lv);
+      if(d>1)d=1; if(d<-1)d=-1;
+      out.push(Math.acos(d)*180/Math.PI);
+    }
+    return out;
+  }
+  function round360(a){
+    var fl=a.map(function(v){return Math.floor(v);});
+    var rem=a.map(function(v,i){return v-fl[i];});
+    var s=0,i; for(i=0;i<4;i++) s+=fl[i];
+    var need=360-s;
+    var idx=[0,1,2,3].sort(function(x,y){return rem[y]-rem[x];});
+    var r=fl.slice();
+    for(i=0;i<need;i++) r[idx[i%4]]++;
+    return r;
+  }
+  function resize(){
+    var cssW=cv.clientWidth||640; dpr=Math.min(window.devicePixelRatio||1,2);
+    W=cssW; H=Math.round(cssW*0.70);
+    cv.width=Math.round(W*dpr); cv.height=Math.round(H*dpr); cv.style.height=H+'px';
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+  }
+  function triLabel(t1,t2,color,x,y,fs){
+    var w=Math.max(ctx.measureText(t1).width,ctx.measureText(t2).width)+10;
+    ctx.fillStyle='rgba(255,255,255,0.82)';
+    ctx.fillRect(x-w/2,y-fs*1.25,w,fs*2.5);
+    ctx.fillStyle=color;
+    ctx.fillText(t1,x,y-fs*0.6);
+    ctx.fillText(t2,x,y+fs*0.7);
+  }
+  function draw(){
+    var p=points(), ang=angles(p), sh=round360(ang);
+    var cx=W/2, cy=H/2, R=Math.min(W*0.30, H*0.36);
+    var S=p.map(function(v){return {x:cx+v.x*R, y:cy-v.y*R};});
+    var fs=Math.max(11,Math.round(W*0.030));
+    ctx.clearRect(0,0,W,H);
+
+    if(showDiag){
+      ctx.fillStyle='rgba(59,79,208,0.10)';
+      ctx.beginPath(); ctx.moveTo(S[0].x,S[0].y); ctx.lineTo(S[1].x,S[1].y); ctx.lineTo(S[2].x,S[2].y); ctx.closePath(); ctx.fill();
+      ctx.fillStyle='rgba(30,142,90,0.12)';
+      ctx.beginPath(); ctx.moveTo(S[0].x,S[0].y); ctx.lineTo(S[2].x,S[2].y); ctx.lineTo(S[3].x,S[3].y); ctx.closePath(); ctx.fill();
+    }
+
+    // сам четырёхугольник
+    ctx.strokeStyle='#3B4FD0'; ctx.lineWidth=3; ctx.lineJoin='round';
+    ctx.beginPath(); ctx.moveTo(S[0].x,S[0].y);
+    for(var i=1;i<4;i++) ctx.lineTo(S[i].x,S[i].y);
+    ctx.closePath(); ctx.stroke();
+
+    if(showDiag){
+      ctx.save(); ctx.setLineDash([7,5]); ctx.strokeStyle='#C0455B'; ctx.lineWidth=2.5;
+      ctx.beginPath(); ctx.moveTo(S[0].x,S[0].y); ctx.lineTo(S[2].x,S[2].y); ctx.stroke(); ctx.restore();
+      ctx.textAlign='center'; ctx.textBaseline='middle';
+      ctx.font='700 '+fs+'px ui-monospace,Menlo,monospace';
+      triLabel('△ABC','180°','#3B4FD0',(S[0].x+S[1].x+S[2].x)/3,(S[0].y+S[1].y+S[2].y)/3,fs);
+      triLabel('△ACD','180°','#1E8E5A',(S[0].x+S[2].x+S[3].x)/3,(S[0].y+S[2].y+S[3].y)/3,fs);
+    }
+
+    // дуги, значения углов и буквы вершин
+    ctx.lineWidth=2;
+    for(var k=0;k<4;k++){
+      var c=S[k], a=S[(k+3)%4], b=S[(k+1)%4];
+      var a1=Math.atan2(a.y-c.y,a.x-c.x), a2=Math.atan2(b.y-c.y,b.x-c.x);
+      var da=a2-a1;
+      while(da<-Math.PI) da+=2*Math.PI;
+      while(da>Math.PI) da-=2*Math.PI;
+      var rr=Math.max(16,R*0.20);
+      ctx.strokeStyle='#B9791A';
+      ctx.beginPath(); ctx.arc(c.x,c.y,rr,a1,a1+da,da<0); ctx.stroke();
+      // подпись значения — по биссектрисе, внутрь фигуры
+      var bis=a1+da/2;
+      var lx=c.x+Math.cos(bis)*(rr+fs*1.35), ly=c.y+Math.sin(bis)*(rr+fs*1.05);
+      ctx.textAlign='center'; ctx.textBaseline='middle';
+      ctx.font='700 '+fs+'px ui-monospace,Menlo,monospace';
+      ctx.fillStyle='#8A6A15';
+      ctx.fillText(sh[k]+'°',lx,ly);
+      // буква вершины — наружу от центра
+      var dx=c.x-cx, dy=c.y-cy, dl=Math.sqrt(dx*dx+dy*dy)||1;
+      ctx.font='700 '+(fs+2)+'px Georgia,serif';
+      ctx.fillStyle='#1B2333';
+      ctx.fillText(NAMES[k], c.x+dx/dl*(fs*1.25), c.y+dy/dl*(fs*1.25));
+      // точка-вершина
+      ctx.fillStyle='#3B4FD0';
+      ctx.beginPath(); ctx.arc(c.x,c.y,4,0,7); ctx.fill();
+    }
+
+    for(var j=0;j<4;j++) vl[j].textContent=sl[j].value;
+    sumEl.textContent=sh[0]+'° + '+sh[1]+'° + '+sh[2]+'° + '+sh[3]+'° = '+(sh[0]+sh[1]+sh[2]+sh[3])+'°';
+  }
+  diagBtn.addEventListener('click',function(){
+    showDiag=!showDiag;
+    diagBtn.textContent = showDiag ? '📐 Убрать диагональ' : '📐 Провести диагональ AC';
+    draw();
+  });
+  resetBtn.addEventListener('click',function(){
+    for(var i=0;i<4;i++) sl[i].value=START[i];
+    draw();
+  });
+  sl.forEach(function(s){ s.addEventListener('input',draw); });
+  window.addEventListener('resize',function(){ resize(); draw(); });
+  resize(); draw();
+})();
+</script>
+
+<style>
+  .trainer{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.2rem 1.3rem;margin-top:1rem}
+  .tr-q{font-weight:700;font-size:clamp(1rem,3.6vw,1.15rem);text-align:center;padding:1rem;background:var(--accent-soft);border-radius:10px;color:var(--ink);line-height:1.5}
+  .tr-ctl{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.9rem;align-items:center}
+  .tr-ctl button{font:inherit;font-weight:700;font-size:.9rem;cursor:pointer;border:none;border-radius:9px;padding:.55rem .95rem;color:#fff;background:var(--accent)}
+  .tr-ctl button.sec{background:var(--pos)}
+  .tr-ctl button.ghost{background:transparent;color:var(--accent);border:1px solid var(--accent)}
+  .tr-ctl input{flex:1;min-width:150px;font:inherit;padding:.5rem .7rem;border:1px solid var(--line);border-radius:9px;background:#fff;color:var(--ink)}
+  .tr-ctl button:focus-visible,.tr-ctl input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+  .tr-result{margin-top:.9rem;font-size:.96rem;min-height:1.2rem}
+  .tr-result .ok{color:var(--pos);font-weight:700}
+  .tr-result .bad{color:var(--neg);font-weight:700}
+  .tr-result .sol{margin-top:.7rem;padding:.85rem 1rem;background:#FCFBFE;border:1px solid var(--line);border-radius:10px;font-size:.92rem;line-height:1.8}
+  .tr-result .sol b{color:var(--accent)}
+  .tr-result .sol .m{font-family:ui-monospace,Menlo,monospace;font-weight:600}
+</style>
+
+<script>
+(function(){
+  var qEl=document.getElementById('trQ'), ansEl=document.getElementById('trAns'), resEl=document.getElementById('trResult');
+  if(!qEl) return;
+
+  function ri(rnd,min,max){ return min+Math.floor(rnd()*(max-min+1)); }
+
+  // четыре целых угла из [30..170] с заданной суммой T (120 <= T <= 680)
+  function fourAngles(rnd,T){
+    var a=ri(rnd,Math.max(30,T-3*170),Math.min(170,T-3*30));
+    var b=ri(rnd,Math.max(30,T-a-2*170),Math.min(170,T-a-2*30));
+    var c=ri(rnd,Math.max(30,T-a-b-170),Math.min(170,T-a-b-30));
+    return [a,b,c,T-a-b-c];
+  }
+
+  function makeTask(rnd){
+    var t=ri(rnd,1,4), i;
+    if(t===1){                                   // найти четвёртый угол
+      var a=ri(rnd,40,140), b=ri(rnd,40,140);
+      var lo=Math.max(40,190-a-b), hi=Math.min(140,335-a-b);
+      var c=ri(rnd,lo,hi), d=360-a-b-c;
+      return {type:1,a:a,b:b,c:c,d:d,ans:[d]};
+    }
+    if(t===2){                                   // углы по отношению
+      var parts,S,g=0,bad=true;
+      do{
+        parts=[ri(rnd,1,9),ri(rnd,1,9),ri(rnd,1,9),ri(rnd,1,9)];
+        S=parts[0]+parts[1]+parts[2]+parts[3];
+        var mx=Math.max(parts[0],parts[1],parts[2],parts[3]);
+        var allEq=(parts[0]===parts[1]&&parts[1]===parts[2]&&parts[2]===parts[3]);
+        bad = (360%S!==0) || allEq || (mx*(360/S)>=180);   // угол 180° и больше — не годится
+        g++;
+      } while(bad && g<600);
+      if(bad){ parts=[1,2,3,4]; S=10; }
+      var k=360/S, ang=parts.map(function(v){return v*k;});
+      return {type:2,parts:parts,S:S,k:k,ans:ang};
+    }
+    if(t===3){                                   // два угла равны
+      var p=ri(rnd,40,150), q=ri(rnd,20,75)*2;
+      if(p%2===1) q+=1;                          // одинаковая чётность → разность чётная
+      var rest=360-p-q, x=rest/2;
+      return {type:3,p:p,q:q,rest:rest,ans:[x]};
+    }
+    // t===4: существует ли такой четырёхугольник
+    var yes = rnd()<0.5;
+    var T = yes ? 360 : (360 + (rnd()<0.5?-1:1)*ri(rnd,10,60));
+    var arr=fourAngles(rnd,T);
+    return {type:4,arr:arr,sum:T,yes:yes,ans:[yes?1:0]};
+  }
+
+  var cur=null;
+
+  function qText(q){
+    if(q.type===1) return 'В четырёхугольнике ABCD: ∠A = '+q.a+'°, ∠B = '+q.b+'°, ∠C = '+q.c+'°. Найди ∠D.';
+    if(q.type===2) return 'Углы четырёхугольника относятся как '+q.parts.join(' : ')+'. Найди все углы (в том же порядке, через точку с запятой).';
+    if(q.type===3) return 'В четырёхугольнике два угла равны между собой, а два других равны '+q.p+'° и '+q.q+'°. Найди величину каждого из равных углов.';
+    return 'Существует ли четырёхугольник с углами '+q.arr[0]+'°, '+q.arr[1]+'°, '+q.arr[2]+'°, '+q.arr[3]+'°? Ответь «да» или «нет».';
+  }
+
+  function solutionHTML(){
+    var q=cur, h='<div class="sol">';
+    if(q.type===1){
+      h+='Сумма углов четырёхугольника: <span class="m">∠A + ∠B + ∠C + ∠D = 360°</span><br>';
+      h+='Складываю известные: <span class="m">'+q.a+' + '+q.b+' + '+q.c+' = '+(q.a+q.b+q.c)+'</span><br>';
+      h+='Вычитаю из 360°: <span class="m">∠D = 360 − '+(q.a+q.b+q.c)+' = <b>'+q.d+'°</b></span>';
+    } else if(q.type===2){
+      h+='Пусть одна часть равна <span class="m">x</span>. Тогда углы: <span class="m">'+q.parts.map(function(v){return (v===1?'':v)+'x';}).join(', ')+'</span><br>';
+      h+='Сумма: <span class="m">'+q.parts.map(function(v){return (v===1?'':v)+'x';}).join(' + ')+' = '+q.S+'x = 360°</span><br>';
+      h+='Отсюда <span class="m">x = 360 : '+q.S+' = '+q.k+'°</span><br>';
+      h+='Углы: <span class="m"><b>'+q.ans.join('°, ')+'°</b></span><br>';
+      h+='Проверка: <span class="m">'+q.ans.join(' + ')+' = 360</span> ✓';
+    } else if(q.type===3){
+      h+='Пусть каждый из равных углов равен <span class="m">x</span>. Тогда <span class="m">x + x + '+q.p+' + '+q.q+' = 360</span><br>';
+      h+='Известные: <span class="m">'+q.p+' + '+q.q+' = '+(q.p+q.q)+'</span><br>';
+      h+='Значит <span class="m">2x = 360 − '+(q.p+q.q)+' = '+q.rest+'</span><br>';
+      h+='<span class="m">x = '+q.rest+' : 2 = <b>'+q.ans[0]+'°</b></span>';
+    } else {
+      h+='Проверяю сумму: <span class="m">'+q.arr.join(' + ')+' = '+q.sum+'°</span><br>';
+      if(q.yes) h+='<span class="m">'+q.sum+'° = 360°</span> → такой четырёхугольник <b>существует</b> (ответ: да).';
+      else h+='<span class="m">'+q.sum+'° ≠ 360°</span> → такого четырёхугольника <b>не существует</b> (ответ: нет).';
+    }
+    return h+'</div>';
+  }
+
+  function norm(s){
+    return String(s)
+      .replace(/−/g,'-')
+      .replace(/(\d),(\d)/g,'$1.$2')
+      .trim()
+      .toLowerCase()
+      .replace(/градусов|градуса|градусы|градус|град\.?|°/g,' ')
+      .replace(/∠\s*[a-zа-я]\s*=/g,' ')
+      .replace(/[a-zа-я]\s*=/g,' ')
+      .trim();
+  }
+  function nums(s){
+    return norm(s).split(/[;,\s]+/).filter(function(t){return t!=='';}).map(function(t){return parseFloat(t);});
+  }
+
+  function generate(){
+    cur=makeTask(Math.random);
+    qEl.textContent=qText(cur);
+    resEl.innerHTML=''; ansEl.value='';
+  }
+
+  function check(){
+    var raw=ansEl.value;
+    if(!norm(raw)){ resEl.innerHTML='<span class="bad">Введи ответ или нажми «Показать решение».</span>'; return; }
+    if(cur.type===4){
+      var t=norm(raw);
+      var isYes=/^(да|д|yes|сущест|существует)/.test(t);
+      var isNo=/^(нет|н|no|не сущест|не существует)/.test(t);
+      if(!isYes && !isNo){ resEl.innerHTML='<span class="bad">Не понял ответ. Напиши «да» или «нет».</span>'; return; }
+      if((isYes && cur.yes) || (isNo && !cur.yes)) resEl.innerHTML='<span class="ok">✓ Верно!</span>'+solutionHTML();
+      else resEl.innerHTML='<span class="bad">✗ Пока не то — сложи все четыре угла и сравни с 360°.</span>'+solutionHTML();
+      return;
+    }
+    var got=nums(raw);
+    if(!got.length || got.some(function(x){return !isFinite(x);})){
+      resEl.innerHTML='<span class="bad">Не понял запись. Введи ответ числом'+(cur.ans.length>1?' (несколько чисел — через точку с запятой)':'')+'.</span>';
+      return;
+    }
+    if(got.length!==cur.ans.length){
+      resEl.innerHTML='<span class="bad">✗ Нужно '+(cur.ans.length===1?'одно число':cur.ans.length+' числа через точку с запятой')+', а получено '+got.length+'.</span>';
+      return;
+    }
+    var ok=cur.ans.every(function(v,i){return Math.abs(v-got[i])<0.01;});
+    if(ok) resEl.innerHTML='<span class="ok">✓ Верно! Отлично.</span>'+solutionHTML();
+    else{
+      var hint = cur.type===2 ? ' Подсказка: сложи все части, раздели 360 на эту сумму — получишь одну часть.' :
+                 (cur.type===3 ? ' Подсказка: два известных угла вычти из 360°, остаток раздели пополам.' :
+                                 ' Подсказка: сложи три известных угла и вычти сумму из 360°.');
+      resEl.innerHTML='<span class="bad">✗ Пока не то.'+hint+'</span>'+solutionHTML();
+    }
+  }
+
+  document.getElementById('trNew').addEventListener('click',function(){ generate(); ansEl.focus(); });
+  document.getElementById('trCheck').addEventListener('click',check);
+  document.getElementById('trShow').addEventListener('click',function(){ resEl.innerHTML=solutionHTML(); });
+  ansEl.addEventListener('keydown',function(e){ if(e.key==='Enter') check(); });
+
+  cur={type:1,a:70,b:100,c:80,d:110,ans:[110]};   // стартовая задача = та, что разобрана в уроке
+  qEl.textContent=qText(cur);
+})();
+</script>
+<!--LESSON-NAV-BOT--><nav class="lnav lnav-bot"><a class="prev" href="./geo8-mnogougolnik.html"><span class="dir">← Предыдущая</span><span class="ttl">Многоугольник и сумма углов</span></a><a class="to-cat" href="./catalog.html">📚 <span>Все темы</span></a><a class="next" href="./geo8-parallelogramm.html"><span class="dir">Следующая →</span><span class="ttl">Параллелограмм и его свойства</span></a></nav><!--/LESSON-NAV-BOT-->

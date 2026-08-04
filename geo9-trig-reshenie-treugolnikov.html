@@ -1,0 +1,742 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Решение треугольников — урок, геометрия 9 класс</title>
+<style>
+  :root{
+    --paper:#F6F7F9;
+    --card:#FFFFFF;
+    --ink:#1B2333;
+    --muted:#5A6478;
+    --line:#E2E5EC;
+    --accent:#3B4FD0;
+    --accent-soft:#EAEDFB;
+    --cos:#C0455B;      /* теорема косинусов */
+    --cos-bg:#F9E9EC;
+    --sin:#1E8E5A;      /* теорема синусов */
+    --sin-bg:#E7F4EC;
+    --sum:#B9791A;      /* сумма углов */
+    --sum-bg:#FBF1DC;
+  }
+  *{box-sizing:border-box}
+  body{margin:0}
+  .wrap{
+    max-width:760px;
+    margin:0 auto;
+    padding:clamp(1.4rem,4vw,3rem) clamp(1.1rem,4vw,2rem) 4rem;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    font-size:17px;
+    line-height:1.62;
+    -webkit-font-smoothing:antialiased;
+  }
+  .eyebrow{font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);font-weight:600;margin:0 0 .5rem}
+  h1{
+    font-family:Georgia,"Times New Roman",serif;
+    font-size:clamp(2rem,7vw,3rem);
+    line-height:1.06;margin:0;font-weight:700;letter-spacing:-.01em;text-wrap:balance;
+  }
+  .lede{font-size:1.08rem;color:var(--muted);margin:.7rem 0 0;max-width:60ch;text-wrap:pretty}
+  h2{font-family:Georgia,serif;font-size:1.32rem;font-weight:700;margin:0 0 .1rem;letter-spacing:-.005em}
+  section{margin-top:2.6rem}
+  .kicker{
+    font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:600;
+    margin:0 0 .8rem;display:flex;align-items:center;gap:.6rem;
+  }
+  .kicker::before{content:"";width:1.4rem;height:2px;background:var(--accent);border-radius:2px}
+  p{margin:.65rem 0}
+  strong{font-weight:650}
+  .math{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-weight:600}
+  sup{font-size:.72em}
+  a{color:var(--accent)}
+
+  /* Главный блок — две формулы */
+  .hero-formula{margin-top:2.2rem;background:var(--ink);color:#fff;border-radius:14px;padding:1.5rem 1.2rem;text-align:center}
+  .hero-formula .lbl{font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:#9aa6c9;margin:0 0 .7rem}
+  .hero-formula .eq{
+    font-family:ui-monospace,"SF Mono",Menlo,monospace;
+    font-size:clamp(1.05rem,4.4vw,1.5rem);font-weight:700;letter-spacing:.01em;
+    overflow-x:auto;padding-bottom:.15rem;
+  }
+  .hero-formula .eq + .eq{margin-top:.9rem}
+  .hero-formula .eq b.s{color:#7ee0ab}
+  .hero-formula .eq b.c{color:#ff9aa9}
+  .hero-formula .note{font-size:.86rem;color:#9aa6c9;margin:.9rem 0 0}
+
+  .recall{background:var(--accent-soft);border-radius:12px;padding:1rem 1.15rem;font-size:.96rem}
+  .recall p{margin:.3rem 0}
+
+  /* Классификатор случаев */
+  .cases{display:grid;gap:.85rem;margin-top:.4rem}
+  @media(min-width:640px){.cases{grid-template-columns:repeat(2,1fr)}}
+  .case{border-radius:12px;padding:1rem 1.1rem;border:1px solid var(--line);background:var(--card);display:flex;flex-direction:column;gap:.3rem}
+  .case .code{font-family:ui-monospace,Menlo,monospace;font-weight:800;font-size:1.05rem}
+  .case .what{font-weight:650;font-size:.98rem}
+  .case .desc{font-size:.9rem;color:var(--muted)}
+  .case.cos{border-top:4px solid var(--cos);background:var(--cos-bg)}
+  .case.cos .code{color:var(--cos)}
+  .case.sin{border-top:4px solid var(--sin);background:var(--sin-bg)}
+  .case.sin .code{color:var(--sin)}
+
+  .tblwrap{overflow-x:auto;margin-top:1rem;border:1px solid var(--line);border-radius:12px;background:var(--card)}
+  table{border-collapse:collapse;width:100%;font-size:.94rem}
+  th,td{padding:.6rem .8rem;text-align:left;border-bottom:1px solid var(--line)}
+  th{font-size:.74rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:700}
+  tr:last-child td{border-bottom:none}
+  td .tool{font-weight:700;white-space:nowrap}
+  td .tool.c{color:var(--cos)}
+  td .tool.s{color:var(--sin)}
+
+  /* Алгоритм */
+  ol.steps{margin:0;padding:0;list-style:none;counter-reset:s;display:flex;flex-direction:column;gap:.7rem}
+  ol.steps li{position:relative;padding-left:2.1rem;counter-increment:s}
+  ol.steps li::before{
+    content:counter(s);position:absolute;left:0;top:.05rem;width:1.5rem;height:1.5rem;border-radius:50%;
+    background:var(--accent-soft);color:var(--accent);font-size:.82rem;font-weight:700;
+    display:flex;align-items:center;justify-content:center;
+  }
+  ol.steps .m{font-family:ui-monospace,Menlo,monospace;font-weight:600;color:var(--ink)}
+
+  .worked{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:1.2rem 1.3rem}
+  .worked .task{
+    font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1rem;margin:0 0 1rem;
+    padding-bottom:.8rem;border-bottom:1px solid var(--line);
+  }
+  .verdict{margin-top:1rem;padding:.7rem 1rem;background:var(--sin-bg);border-radius:9px;font-weight:600;color:var(--sin);font-size:.98rem}
+
+  /* Практика */
+  .drill{display:flex;flex-direction:column;gap:.7rem}
+  details{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:.85rem 1.05rem}
+  details[open]{border-color:var(--accent)}
+  summary{cursor:pointer;font-weight:600;list-style:none;display:flex;justify-content:space-between;align-items:center;gap:1rem}
+  summary::-webkit-details-marker{display:none}
+  summary:focus-visible{outline:3px solid var(--accent);outline-offset:3px;border-radius:6px}
+  summary .q{font-family:ui-monospace,Menlo,monospace;min-width:0}
+  summary::after{content:"ответ";font-size:.78rem;color:var(--accent);font-weight:600;white-space:nowrap}
+  details[open] summary::after{content:"скрыть"}
+  .ans{margin-top:.7rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.96rem;color:var(--muted)}
+  .ans .m{font-family:ui-monospace,Menlo,monospace;color:var(--ink);font-weight:600}
+
+  ul.pitfalls{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:.6rem}
+  ul.pitfalls li{padding-left:1.5rem;position:relative;font-size:.98rem}
+  ul.pitfalls li::before{content:"×";position:absolute;left:0;top:-.05rem;color:var(--cos);font-weight:700;font-size:1.1rem}
+  ul.pitfalls b{color:var(--ink)}
+
+  .next{background:var(--accent);color:#fff;border-radius:12px;padding:1.2rem 1.3rem}
+  .next h2{color:#fff}
+  .next p{color:#dfe4fb;font-size:.96rem;margin:.4rem 0 0}
+  .next a{color:#fff;font-weight:700}
+  .foot{margin-top:2.4rem;font-size:.82rem;color:var(--muted);text-align:center}
+
+  @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+<style>
+.oge-tip{display:flex;gap:.8rem;align-items:flex-start;background:#FFF8E7;border:1px solid #F0D98A;border-left:4px solid #E0A315;border-radius:10px;padding:.85rem 1.05rem;margin:1.5rem 0}
+.oge-tip .b{font-size:.72rem;font-weight:800;letter-spacing:.03em;color:#8A6A15;white-space:nowrap;text-transform:uppercase;padding-top:.15rem}
+.oge-tip .x{font-size:.95rem;line-height:1.5}
+</style>
+<style>
+  /* Интерактив «выбери инструмент» */
+  .pick{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.1rem 1.1rem 1rem;margin:1rem 0}
+  .pick canvas{width:100%;height:auto;display:block;border-radius:10px;background:#FCFDFF}
+  .pick-given{font-size:.95rem;margin:.9rem 0 0;padding:.6rem .8rem;background:var(--accent-soft);border-radius:9px}
+  .pick-given b{font-family:ui-monospace,Menlo,monospace}
+  .pick-btns{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.9rem}
+  .pick-btns button{font:inherit;font-weight:700;font-size:.92rem;cursor:pointer;border:none;border-radius:9px;padding:.6rem 1rem;color:#fff;flex:1 1 auto;min-width:150px}
+  .pick-btns button.bsin{background:var(--sin)}
+  .pick-btns button.bcos{background:var(--cos)}
+  .pick-btns button.bnew{background:var(--accent);flex:1 1 100%}
+  .pick-btns button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+  .pick-res{margin-top:.9rem;font-size:.96rem;min-height:1rem}
+  .pick-res .ok{color:var(--sin);font-weight:700}
+  .pick-res .bad{color:var(--cos);font-weight:700}
+  .pick-res .sol{margin-top:.7rem;padding:.85rem 1rem;background:#FCFBFE;border:1px solid var(--line);border-radius:10px;font-size:.92rem;line-height:1.75}
+  .pick-res .sol b{color:var(--accent);font-family:ui-monospace,Menlo,monospace}
+  .pick-res .sol .m{font-family:ui-monospace,Menlo,monospace}
+
+  /* Тренажёр */
+  .trainer{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.2rem 1.3rem;margin-top:1rem}
+  .tr-eq{font-size:1.02rem;font-weight:600;text-align:left;padding:.95rem 1rem;background:var(--accent-soft);border-radius:10px;color:var(--ink)}
+  .tr-eq .m{font-family:ui-monospace,Menlo,monospace;font-weight:700}
+  .tr-eq .hint{display:block;font-size:.84rem;color:var(--muted);font-weight:500;margin-top:.4rem}
+  .tr-ctl{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.9rem;align-items:center}
+  .tr-ctl button{font:inherit;font-weight:700;font-size:.9rem;cursor:pointer;border:none;border-radius:9px;padding:.55rem .95rem;color:#fff;background:var(--accent)}
+  .tr-ctl button.sec{background:var(--sin)}
+  .tr-ctl button.ghost{background:transparent;color:var(--accent);border:1px solid var(--accent)}
+  .tr-ctl input{flex:1;min-width:150px;font:inherit;padding:.5rem .7rem;border:1px solid var(--line);border-radius:9px;background:#fff;color:var(--ink)}
+  .tr-ctl button:focus-visible,.tr-ctl input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+  .tr-result{margin-top:.9rem;font-size:.96rem;min-height:1.2rem}
+  .tr-result .ok{color:var(--sin);font-weight:700}
+  .tr-result .bad{color:var(--cos);font-weight:700}
+  .tr-result .sol{margin-top:.7rem;padding:.85rem 1rem;background:#FCFBFE;border:1px solid var(--line);border-radius:10px;font-family:ui-monospace,Menlo,monospace;font-size:.89rem;line-height:1.8}
+  .tr-result .sol b{color:var(--accent)}
+</style>
+
+<!--LESSON-NAV-TOP--><style>.lnav{--lnav-accent:#3D5AF1}.lnav a{text-decoration:none;font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif}.lnav-top{max-width:820px;margin:0 auto;padding:.75rem clamp(1rem,4vw,1.5rem) .1rem}.lnav-top a{display:inline-flex;align-items:center;gap:.35rem;color:var(--lnav-accent);font-weight:600;font-size:.9rem}.lnav-top a:hover{text-decoration:underline}.lnav-bot{max-width:820px;margin:2.6rem auto 3rem;padding:1.1rem clamp(1rem,4vw,1.5rem) 0;border-top:1px solid #E4E8EF;display:flex;align-items:stretch;gap:.55rem}.lnav-bot a{min-width:0;display:flex;flex-direction:column;justify-content:center;gap:.15rem;border:1px solid #E4E8EF;border-radius:12px;padding:.65rem .85rem;color:#182233;background:#fff;transition:border-color .1s,transform .08s}.lnav-bot a:hover{border-color:var(--lnav-accent);transform:translateY(-1px)}.lnav-bot .prev,.lnav-bot .next{flex:1 1 0}.lnav-bot .next{text-align:right}.lnav-bot .dir{font-size:.72rem;color:#8A93A6;font-weight:600}.lnav-bot .ttl{font-size:.9rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.lnav-bot .to-cat{flex:0 0 auto;flex-direction:row;align-items:center;justify-content:center;color:var(--lnav-accent);font-weight:700;font-size:.85rem;white-space:nowrap}@media(max-width:420px){.lnav-bot .to-cat span{display:none}.lnav-bot .to-cat{padding:.65rem .7rem}}</style><nav class="lnav lnav-top"><a href="./catalog.html">← Все темы</a></nav><!--/LESSON-NAV-TOP-->
+<div class="wrap">
+
+  <header>
+    <p class="eyebrow">Геометрия · 9 класс</p>
+    <h1>Решение треугольников</h1>
+    <p class="lede">У треугольника шесть элементов: три стороны и три угла. Тебе дают три из них — и надо найти остальные. Весь секрет в одном: <em>правильно выбрать инструмент.</em></p>
+  </header>
+
+  <div class="hero-formula">
+    <p class="lbl">Два инструмента и одна проверка</p>
+    <div class="eq"><b class="s">a / sin A = b / sin B = c / sin C</b></div>
+    <div class="eq"><b class="c">c<sup>2</sup> = a<sup>2</sup> + b<sup>2</sup> − 2ab·cos C</b></div>
+    <div class="eq" style="font-size:1rem;color:#c9d0ea">A + B + C = 180°</div>
+    <p class="note">Стороны a, b, c лежат против углов A, B, C</p>
+  </div>
+
+  <section>
+    <p class="kicker">Зачем это нужно</p>
+    <h2>Когда до объекта не дотянуться рулеткой</h2>
+    <p>«Решить треугольник» — значит найти <strong>все шесть элементов</strong> (3 стороны и 3 угла), зная только три из них. Так работают геодезия, навигация, строительство и астрономия: измеряют углы и одну-две доступные длины, а ширину реки, высоту горы или расстояние до корабля <strong>досчитывают</strong>.</p>
+    <p>Типичное заблуждение: «раз треугольник — хватит синуса и косинуса острого угла». Так можно только в прямоугольном. В произвольном треугольнике нет ни катетов, ни гипотенузы — там работают теорема синусов и теорема косинусов, и они годятся для <em>любого</em> треугольника.</p>
+    <p>Ещё важное: треугольник задаётся тремя элементами, среди которых <strong>есть хотя бы одна сторона</strong>. По трём углам размер не восстановишь — таких подобных треугольников бесконечно много.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Что уже должно быть в голове</p>
+    <div class="recall">
+      <p><strong>Теорема синусов</strong> — связывает стороны с <em>противолежащими</em> углами: <span class="math">a / sin A = b / sin B = c / sin C = 2R</span>. <a href="./geo9-trig-teorema-sinusov.html">Повторить →</a></p>
+      <p><strong>Теорема косинусов</strong> — связывает три стороны с одним углом: <span class="math">c² = a² + b² − 2ab·cos C</span>. <a href="./geo9-trig-teorema-kosinusov.html">Повторить →</a></p>
+      <p><strong>Сумма углов:</strong> <span class="math">A + B + C = 180°</span> — и инструмент поиска, и проверка в конце.</p>
+      <p>Углы в треугольнике: <span class="math">0° &lt; угол &lt; 180°</span>. Синус на этом промежутке <em>всегда положителен</em>, а косинус меняет знак: у тупого угла <span class="math">cos &lt; 0</span>.</p>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Ядро темы · вся суть на одном экране</p>
+    <h2>Данные сами говорят, какую теорему брать</h2>
+    <p>Не надо угадывать. Посмотри, <strong>что именно тебе дали</strong>, и опознай случай — дальше формула выбирается сама:</p>
+    <div class="cases">
+      <div class="case cos">
+        <div class="code">СУС · две стороны и угол между ними</div>
+        <div class="what">→ теорема косинусов</div>
+        <div class="desc">Только в неё входят сразу обе известные стороны и известный угол. Первым шагом получаешь третью сторону.</div>
+      </div>
+      <div class="case cos">
+        <div class="code">ССС · три стороны</div>
+        <div class="what">→ теорема косинусов «наизнанку»</div>
+        <div class="desc"><span class="math">cos C = (a² + b² − c²) / (2ab)</span>. Углов пока нет вообще, значит синусы применить не к чему.</div>
+      </div>
+      <div class="case sin">
+        <div class="code">УСУ / УУС · сторона и два угла</div>
+        <div class="what">→ сумма 180°, потом теорема синусов</div>
+        <div class="desc">Третий угол считаешь мгновенно, и у тебя появляется полная пара «сторона — противолежащий угол». Дальше синусы дают остальные стороны.</div>
+      </div>
+      <div class="case sin">
+        <div class="code">ССУ · две стороны и угол против одной из них</div>
+        <div class="what">→ теорема синусов</div>
+        <div class="desc">Есть готовая пара «сторона — её угол» — это и есть рабочее отношение теоремы синусов. Осторожно: синус даёт два возможных угла (см. ловушки).</div>
+      </div>
+    </div>
+
+    <div class="tblwrap">
+      <table>
+        <thead><tr><th>Что дано</th><th>Первый шаг</th><th>Что получишь</th></tr></thead>
+        <tbody>
+          <tr><td>2 стороны + угол <em>между</em> ними</td><td><span class="tool c">теорема косинусов</span></td><td>третью сторону</td></tr>
+          <tr><td>3 стороны</td><td><span class="tool c">теорема косинусов</span></td><td>угол</td></tr>
+          <tr><td>сторона + 2 угла</td><td><span class="tool s">сумма 180°, затем синусов</span></td><td>остальные стороны</td></tr>
+          <tr><td>2 стороны + угол против одной</td><td><span class="tool s">теорема синусов</span></td><td>второй угол</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p style="font-size:.92rem;color:var(--muted);margin-top:.9rem">Короткая подсказка: <strong>есть полная пара «сторона — противолежащий угол» → синусы. Нет пары → косинусы.</strong> Это правило закрывает все четыре случая сразу.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Порядок действий</p>
+    <h2>Три шага, всегда одинаковые</h2>
+    <ol class="steps">
+      <li><strong>Классифицируй данные.</strong> Подпиши на чертеже вершины A, B, C и стороны a, b, c <em>напротив</em> них. Определи случай: СУС, ССС, сторона с двумя углами или ССУ.</li>
+      <li><strong>Сделай первый шаг нужной теоремой</strong> и найди <em>один</em> новый элемент. После него данных станет больше — дальше пойдёт по цепочке.</li>
+      <li><strong>Добери остальное самым дешёвым способом.</strong> Последний угол считай через <span class="m">180°</span>, а не заново через синусы: короче и точнее. В конце сверь: сумма углов = 180°, против большей стороны — больший угол.</li>
+    </ol>
+    <div class="oge-tip"><div class="b">🎯 В ОГЭ</div><div class="x"><b>Задания 17 и 24–26.</b> «Решить треугольник» — найти все стороны и углы. Выбор между теоремой синусов и теоремой косинусов решает задачу за один шаг.</div></div>
+  </section>
+
+  <section>
+    <p class="kicker">Интерактив · выбери инструмент</p>
+    <h2>Посмотри на чертёж и реши, чем брать</h2>
+    <p>Синим подсвечено то, что <strong>дано</strong>; знаком <span class="math">?</span> — то, что надо найти. Определи случай и нажми на нужную теорему. Система скажет, верно ли, и почему — а потом покажет решение по шагам.</p>
+    <div class="pick">
+      <canvas id="pkCanvas" width="640" height="420" aria-label="Чертёж треугольника с данными"></canvas>
+      <p class="pick-given" id="pkGiven">Дано: …</p>
+      <div class="pick-btns">
+        <button type="button" class="bsin" id="pkSin">Теорема синусов</button>
+        <button type="button" class="bcos" id="pkCos">Теорема косинусов</button>
+        <button type="button" class="bnew" id="pkNew">🎲 Другой чертёж</button>
+      </div>
+      <div class="pick-res" id="pkRes"></div>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Разбираем вместе · думаю вслух</p>
+    <h2>Эталонный пример: случай СУС</h2>
+    <div class="worked">
+      <p class="task">Дано: a = 5, b = 8, угол C = 60°. Найти сторону c и углы A, B.</p>
+      <ol class="steps">
+        <li><strong>Классифицирую.</strong> Угол C лежит <em>между</em> сторонами a и b — это СУС. Значит, теорема косинусов: <em>почему она</em> — только в неё входят сразу обе известные стороны и известный угол.<br>
+          <span class="m">c² = a² + b² − 2ab·cos C = 25 + 64 − 2·5·8·cos 60°</span><br>
+          <span class="m">cos 60° = 1/2</span>, поэтому <span class="m">2·5·8·(1/2) = 40</span>, и <span class="m">c² = 89 − 40 = 49 ⇒ c = 7</span>.</li>
+        <li><strong>Ищу угол A.</strong> Теперь есть все три стороны и угол C — то есть <em>полная пара</em> «сторона c — угол C». Значит, теорема синусов:<br>
+          <span class="m">sin A = a·sin C / c = 5·sin 60° / 7 = 5·(√3/2) / 7 = 5√3/14 ≈ 0,6186</span> ⇒ <span class="m">A ≈ 38,2°</span>.<br>
+          Второе значение (тупое) отбрасываю: A лежит против <em>меньшей</em> стороны a = 5, значит A острый.</li>
+        <li><strong>Третий угол — через сумму.</strong> Так дешевле и точнее, чем снова синусы:<br>
+          <span class="m">B = 180° − 60° − 38,2° = 81,8°</span>.</li>
+      </ol>
+      <div class="verdict">Проверка: против большей стороны (b = 8) — больший угол (B ≈ 81,8°). Сходится. Ответ: c = 7, A ≈ 38,2°, B ≈ 81,8°.</div>
+    </div>
+    <p>Обрати внимание на главное: <strong>инструмент менялся по ходу решения</strong>. Начали косинусами (пары не было), а как только появилась пара «c — C», перешли на синусы — они считаются проще.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Ещё два случая · коротко</p>
+    <h2>ССС и «сторона с двумя углами»</h2>
+    <div class="worked" style="margin-bottom:.85rem">
+      <p class="task">ССС. Дано: a = 7, b = 8, c = 9. Найти угол C.</p>
+      <p>Три стороны, углов нет ни одного — пары «сторона—угол» взять негде, значит только косинусы, записанные через косинус:</p>
+      <p class="math">cos C = (a² + b² − c²) / (2ab) = (49 + 64 − 81) / (2·7·8) = 32 / 112 ≈ 0,2857 ⇒ C ≈ 73,4°.</p>
+    </div>
+    <div class="worked">
+      <p class="task">УСУ. Дано: угол A = 45°, угол B = 60°, сторона c = 10. Найти стороны a и b.</p>
+      <p>Сторона и два угла: сначала третий угол через сумму — <span class="math">C = 180° − 45° − 60° = 75°</span>. Теперь есть пара «c — C», работают синусы:</p>
+      <p class="math">a = 10·sin 45° / sin 75° ≈ 7,32; &nbsp; b = 10·sin 60° / sin 75° ≈ 8,97.</p>
+      <p style="font-size:.93rem;color:var(--muted)">Проверка: самый большой угол C = 75° — против самой большой стороны c = 10. Сходится.</p>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Тренажёр · бесконечная практика</p>
+    <h2>Реши задачу сам</h2>
+    <p>Нажми «Новая задача»: тебе дадут три элемента треугольника и спросят четвёртый. Сначала <strong>назови себе случай</strong> (СУС / ССС / сторона с двумя углами), потом считай. В условии написано, до чего округлять. Ответ можно писать и числом, и с корнем — например <span class="math">7√3</span>.</p>
+    <div class="trainer">
+      <div class="tr-eq" id="trTask">…</div>
+      <div class="tr-ctl">
+        <button id="trNew" type="button">🎲 Новая задача</button>
+        <input id="trAns" type="text" inputmode="text" placeholder="напр.  7   или   7√3   или   12.25" aria-label="Ответ">
+        <button id="trCheck" type="button" class="sec">Проверить</button>
+        <button id="trShow" type="button" class="ghost">Показать решение</button>
+      </div>
+      <div id="trResult" class="tr-result"></div>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Практика по уровням · нажми, чтобы раскрыть ответ</p>
+    <h2>От понимания к анализу</h2>
+    <div class="drill">
+      <details>
+        <summary><span class="q">Какие три элемента задают треугольник однозначно? Можно ли решить треугольник по трём углам?</span></summary>
+        <div class="ans">Нужны три элемента, среди которых <strong>хотя бы одна сторона</strong>. По трём углам — нельзя: подобных треугольников с такими углами бесконечно много, размер ничем не закреплён.</div>
+      </details>
+      <details>
+        <summary><span class="q">a = 6, c = 10, угол B = 120°. Найди сторону b.</span></summary>
+        <div class="ans">Угол B между сторонами a и c → СУС → косинусы: <span class="m">b² = 36 + 100 − 2·6·10·cos 120° = 136 − 120·(−1/2) = 136 + 60 = 196</span>, значит <strong>b = 14</strong>. Минус на минус дал плюс — сторона получилась длиннее, как и положено при тупом угле.</div>
+      </details>
+      <details>
+        <summary><span class="q">Что изменится, если в эталонном примере угол C сделать 120° вместо 60°?</span></summary>
+        <div class="ans">Сторона c станет <strong>больше</strong>. При C = 60° было <span class="m">cos C = +1/2</span> и мы <em>вычитали</em> 40. При C = 120° косинус отрицателен: <span class="m">cos 120° = −1/2</span>, и −2ab·cos C добавляет <span class="m">+40</span>: <span class="m">c² = 89 + 40 = 129</span>, <span class="m">c ≈ 11,36</span>. Чем больше угол между сторонами — тем дальше друг от друга их концы.</div>
+      </details>
+      <details>
+        <summary><span class="q">Найди ошибку: для a = 3, b = 4, c = 8 ученик считает cos C = (a² + b² − c²)/(2ab).</span></summary>
+        <div class="ans">Формула-то верная, а вот треугольника <strong>не существует</strong>: <span class="m">3 + 4 = 7 &lt; 8</span> — нарушено неравенство треугольника. Косинус вышел бы <span class="m">(9 + 16 − 64)/24 = −39/24 ≈ −1,63</span>, то есть меньше −1, чего у косинуса не бывает. Значит, ошибка не в вычислениях, а в самих данных.</div>
+      </details>
+      <details>
+        <summary><span class="q">Известны c = 7 и углы A = 38°, B = 82°. Восстанови сторону a.</span></summary>
+        <div class="ans">Сторона и два угла: <span class="m">C = 180° − 38° − 82° = 60°</span>. Появилась пара «c — C» → синусы: <span class="m">a = c·sin A / sin C = 7·sin 38° / sin 60° ≈ 7·0,6157/0,8660 ≈ 4,98</span>. Проверка: A — самый маленький угол, и сторона a вышла самой маленькой.</div>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Где чаще всего ошибаются</p>
+    <h2>Лови эти ловушки</h2>
+    <ul class="pitfalls">
+      <li><b>Берут неподходящую теорему.</b> При «две стороны и угол между ними» лезут в синусы — а там нет готовой пары «сторона — противолежащий угол», подставлять нечего. Сначала классифицируй данные (СУС / ССС / сторона с двумя углами), потом бери формулу.</li>
+      <li><b>Не проверяют сумму 180°.</b> Нашли два угла через синусы — и забыли, что третий обязан добить сумму до 180°. Погрешность так и остаётся незамеченной. Всегда считай третий угол через 180° и сверяй итог.</li>
+      <li><b>Теряют второе решение угла по синусу.</b> <span class="math">sin A = 0,7</span> даёт и <span class="math">A ≈ 44°</span>, и <span class="math">A ≈ 136°</span>: синус одинаков у угла и его дополнения до 180°. Лишний корень отбрасывай по правилу «против большей стороны — больший угол» и по сумме углов.</li>
+      <li><b>Теряют минус для тупого угла.</b> <span class="math">cos 120° = −1/2</span>, а пишут +1/2 — и сторона выходит короче вместо длиннее. У тупого угла косинус отрицателен, третья сторона должна получиться <em>больше</em>, чем при прямом угле.</li>
+      <li><b>Берут угол не против той стороны.</b> В <span class="math">c² = a² + b² − 2ab·cos C</span> угол C обязан стоять против стороны c. Проверяй: буква угла совпадает с буквой стороны слева.</li>
+    </ul>
+  </section>
+
+  <section>
+    <p class="kicker">Проверь, что понял</p>
+    <h2>Ответь себе вслух</h2>
+    <div class="drill">
+      <details>
+        <summary><span class="q">Известны две стороны и угол между ними. С какой теоремы начинаешь и почему?</span></summary>
+        <div class="ans">С теоремы косинусов: только в неё входят сразу обе известные стороны и угол между ними. Пары «сторона — противолежащий угол» здесь нет, поэтому синусы бесполезны — пока не найдена третья сторона.</div>
+      </details>
+      <details>
+        <summary><span class="q">Синус угла равен 0,5. Какие два значения угла возможны и как выбрать нужное?</span></summary>
+        <div class="ans"><span class="m">30°</span> и <span class="m">150°</span>. Выбираем по правилу «против большей стороны — больший угол» и по сумме углов: если 150° не влезает в 180° вместе с уже известными углами — остаётся 30°.</div>
+      </details>
+      <details>
+        <summary><span class="q">Зачем после нахождения всех углов проверять их сумму?</span></summary>
+        <div class="ans">Это бесплатная проверка всей работы: если сумма не 180°, где-то ошибка — не тот угол, не та теорема или потерянный знак. А ещё она ловит накопленную погрешность округлений.</div>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <div class="next">
+      <h2>Что дальше</h2>
+      <p>Когда все стороны и углы найдены, до площади остаётся один шаг: две стороны и угол между ними дают её сразу, без высоты — <span class="math">S = ½·a·b·sin C</span>.</p>
+      <p><a href="./geo9-trig-ploschad.html">Площадь треугольника через две стороны и угол →</a></p>
+    </div>
+  </section>
+
+  <p class="foot">Проверка на выходе: назови случай по данным «две стороны и угол между ними» · какой теоремой ищут угол по трём сторонам · чем считают последний угол.</p>
+
+</div>
+
+<script>
+(function(){
+  var cv=document.getElementById('pkCanvas'); if(!cv) return;
+  var ctx=cv.getContext('2d');
+  var givenEl=document.getElementById('pkGiven'), resEl=document.getElementById('pkRes');
+  var W=640,H=420,dpr=1;
+  var DEG=Math.PI/180;
+
+  function fmt(x){
+    var n=Math.round(x*100)/100;
+    var s=(Math.abs(n-Math.round(n))<1e-9)?String(Math.round(n)):String(n).replace('.',',');
+    return s.replace('-','−');
+  }
+
+  /* Сценарии. Треугольник всегда задан тремя реальными сторонами -> чертёж честный. */
+  var SC=[
+    {sides:[5,8,7], known:{a:1,b:1,C:1}, find:'c', tool:'cos', kind:'СУС · две стороны и угол между ними',
+     why:'Угол C лежит между известными сторонами a и b. Пары «сторона — противолежащий угол» нет, значит синусы применить не к чему.',
+     steps:['c² = a² + b² − 2ab·cos C = 25 + 64 − 2·5·8·cos 60°','cos 60° = 1/2, поэтому 2·5·8·(1/2) = 40','c² = 89 − 40 = 49 ⇒ <b>c = 7</b>']},
+    {sides:[3,5,7], known:{a:1,b:1,C:1}, find:'c', tool:'cos', kind:'СУС · угол между сторонами тупой',
+     why:'Снова две стороны и угол между ними — только косинусы. И следи за знаком: угол тупой, cos 120° = −1/2.',
+     steps:['c² = a² + b² − 2ab·cos C = 9 + 25 − 2·3·5·cos 120°','cos 120° = −1/2, значит −2·3·5·(−1/2) = +15','c² = 34 + 15 = 49 ⇒ <b>c = 7</b> (больше каждой из сторон — тупой угол «разводит» их концы)']},
+    {sides:[7,8,9], known:{a:1,b:1,c:1}, find:'C', tool:'cos', kind:'ССС · три стороны',
+     why:'Углов не дано ни одного, поэтому теорему синусов не с чем связать. Косинусы записываем «наизнанку» — через косинус.',
+     steps:['cos C = (a² + b² − c²) / (2ab) = (49 + 64 − 81) / (2·7·8)','= 32 / 112 ≈ 0,2857','<b>C ≈ 73,4°</b>']},
+    {sides:[6,8,10], known:{a:1,b:1,c:1}, find:'C', tool:'cos', kind:'ССС · три стороны',
+     why:'Три стороны — только косинусы. Косинус вышел ровно 0, а это значит прямой угол.',
+     steps:['cos C = (a² + b² − c²) / (2ab) = (36 + 64 − 100) / (2·6·8)','= 0 / 96 = 0','<b>C = 90°</b> — треугольник оказался прямоугольным']},
+    {sides:[7.3205081,8.9657547,10], known:{c:1,A:1,B:1}, find:'a', tool:'sin', kind:'УСУ · сторона и два угла',
+     why:'Два угла есть — третий получаем даром через 180°, и появляется полная пара «сторона c — угол C». Это ровно то отношение, с которым работает теорема синусов.',
+     steps:['C = 180° − 45° − 60° = 75°','Пара «c — C» готова: a / sin A = c / sin C','a = c·sin A / sin C = 10·sin 45° / sin 75° ≈ <b>7,32</b>']},
+    {sides:[5,8,7], known:{a:1,c:1,C:1}, find:'A', tool:'sin', kind:'ССУ · две стороны и угол против одной',
+     why:'Есть готовая пара «сторона c — угол C» — сразу подставляется в теорему синусов. Косинусы тут дали бы уравнение с неизвестной стороной b, лишняя работа.',
+     steps:['a / sin A = c / sin C ⇒ sin A = a·sin C / c','sin A = 5·sin 60° / 7 = 5√3/14 ≈ 0,6186','<b>A ≈ 38,2°</b> (A против меньшей стороны, значит острый — второе, тупое значение отбрасываем)']},
+    {sides:[6,8.4852814,11.5911099], known:{a:1,A:1,B:1}, find:'b', tool:'sin', kind:'УУС · сторона и два угла',
+     why:'Сторона a дана вместе со своим углом A — пара уже полная, теорема синусов работает без подготовки.',
+     steps:['C = 180° − 30° − 45° = 105°','a / sin A = b / sin B','b = a·sin B / sin A = 6·sin 45° / sin 30° ≈ <b>8,49</b>']}
+  ];
+  var cur=null, order=[], oi=0, answered=false;
+
+  function geom(s){
+    /* A=(0,0), B=(c,0), C по косинусу угла A */
+    var a=s[0], b=s[1], c=s[2];
+    var cosA=(b*b+c*c-a*a)/(2*b*c);
+    cosA=Math.max(-1,Math.min(1,cosA));
+    var A=Math.acos(cosA);
+    var cosB=(a*a+c*c-b*b)/(2*a*c); cosB=Math.max(-1,Math.min(1,cosB));
+    var cosC=(a*a+b*b-c*c)/(2*a*b); cosC=Math.max(-1,Math.min(1,cosC));
+    return {a:a,b:b,c:c,
+      A:A/DEG, B:Math.acos(cosB)/DEG, C:Math.acos(cosC)/DEG,
+      pA:{x:0,y:0}, pB:{x:c,y:0}, pC:{x:b*Math.cos(A), y:b*Math.sin(A)}};
+  }
+
+  function resize(){
+    var cssW=cv.clientWidth||640; dpr=Math.min(window.devicePixelRatio||1,2);
+    W=cssW; H=Math.round(cssW*0.66);
+    cv.width=W*dpr; cv.height=H*dpr; cv.style.height=H+'px';
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+  }
+
+  function draw(){
+    if(!cur) return;
+    var g=geom(cur.sides);
+    var pad=Math.max(48, W*0.115);
+    var xs=[g.pA.x,g.pB.x,g.pC.x], ys=[g.pA.y,g.pB.y,g.pC.y];
+    var minx=Math.min.apply(null,xs), maxx=Math.max.apply(null,xs);
+    var miny=Math.min.apply(null,ys), maxy=Math.max.apply(null,ys);
+    var k=Math.min((W-2*pad)/(maxx-minx), (H-2*pad)/(maxy-miny));
+    var ox=(W-(maxx-minx)*k)/2 - minx*k, oy=(H-(maxy-miny)*k)/2 + maxy*k;
+    function P(p){ return {x:ox+p.x*k, y:oy-p.y*k}; }
+    var A=P(g.pA), B=P(g.pB), C=P(g.pC);
+    var cx=(A.x+B.x+C.x)/3, cy=(A.y+B.y+C.y)/3;
+
+    ctx.clearRect(0,0,W,H);
+    /* заливка */
+    ctx.beginPath(); ctx.moveTo(A.x,A.y); ctx.lineTo(B.x,B.y); ctx.lineTo(C.x,C.y); ctx.closePath();
+    ctx.fillStyle='#F1F4FE'; ctx.fill();
+
+    var kn=cur.known;
+    var edges=[
+      {p:B,q:C,name:'a',val:g.a},   /* a = BC против A */
+      {p:A,q:C,name:'b',val:g.b},   /* b = AC против B */
+      {p:A,q:B,name:'c',val:g.c}    /* c = AB против C */
+    ];
+    /* стороны */
+    edges.forEach(function(e){
+      var isKnown=!!kn[e.name], isFind=(cur.find===e.name);
+      ctx.beginPath(); ctx.moveTo(e.p.x,e.p.y); ctx.lineTo(e.q.x,e.q.y);
+      ctx.lineWidth=isKnown?4:2.2;
+      ctx.strokeStyle=isKnown?'#3B4FD0':(isFind?'#C0455B':'#98A1B4');
+      if(!isKnown&&isFind){ ctx.setLineDash([7,5]); } else { ctx.setLineDash([]); }
+      ctx.stroke(); ctx.setLineDash([]);
+      var mx=(e.p.x+e.q.x)/2, my=(e.p.y+e.q.y)/2;
+      var dx=mx-cx, dy=my-cy, L=Math.sqrt(dx*dx+dy*dy)||1;
+      var tx=mx+dx/L*22, ty=my+dy/L*22;
+      ctx.font='700 '+Math.max(13,Math.round(W*0.032))+'px ui-monospace,Menlo,monospace';
+      ctx.textAlign='center'; ctx.textBaseline='middle';
+      ctx.fillStyle=isKnown?'#3B4FD0':(isFind?'#C0455B':'#98A1B4');
+      ctx.fillText(e.name+' = '+(isKnown?fmt(e.val):'?'), tx, ty);
+    });
+    /* углы */
+    var verts=[
+      {name:'A',P:A,U:B,V:C,val:g.A},
+      {name:'B',P:B,U:A,V:C,val:g.B},
+      {name:'C',P:C,U:A,V:B,val:g.C}
+    ];
+    verts.forEach(function(v){
+      var isKnown=!!kn[v.name], isFind=(cur.find===v.name);
+      var a1=Math.atan2(v.U.y-v.P.y, v.U.x-v.P.x), a2=Math.atan2(v.V.y-v.P.y, v.V.x-v.P.x);
+      var d=a2-a1; while(d<=-Math.PI)d+=2*Math.PI; while(d>Math.PI)d-=2*Math.PI;
+      var r=Math.max(20,W*0.048);
+      ctx.beginPath(); ctx.arc(v.P.x,v.P.y,r,a1,a1+d,d<0);
+      ctx.lineWidth=isKnown?3.5:2; ctx.strokeStyle=isKnown?'#3B4FD0':(isFind?'#C0455B':'#C7CDDA');
+      ctx.stroke();
+      /* подпись угла внутри */
+      var bis=a1+d/2;
+      var lx=v.P.x+Math.cos(bis)*(r+18), ly=v.P.y+Math.sin(bis)*(r+18);
+      ctx.font='700 '+Math.max(12,Math.round(W*0.029))+'px ui-monospace,Menlo,monospace';
+      ctx.textAlign='center'; ctx.textBaseline='middle';
+      if(isKnown){ ctx.fillStyle='#3B4FD0'; ctx.fillText(fmt(v.val)+'°', lx, ly); }
+      else if(isFind){ ctx.fillStyle='#C0455B'; ctx.fillText('?', lx, ly); }
+      /* имя вершины снаружи */
+      var vx=v.P.x-cx, vy=v.P.y-cy, L=Math.sqrt(vx*vx+vy*vy)||1;
+      ctx.font='700 '+Math.max(14,Math.round(W*0.034))+'px Georgia,serif';
+      ctx.fillStyle='#1B2333';
+      ctx.fillText(v.name, v.P.x+vx/L*20, v.P.y+vy/L*20);
+      ctx.beginPath(); ctx.arc(v.P.x,v.P.y,4,0,7); ctx.fillStyle='#1B2333'; ctx.fill();
+    });
+  }
+
+  function givenText(){
+    var g=geom(cur.sides), kn=cur.known, parts=[];
+    ['a','b','c'].forEach(function(n){ if(kn[n]) parts.push(n+' = '+fmt(g[n])); });
+    ['A','B','C'].forEach(function(n){ if(kn[n]) parts.push('∠'+n+' = '+fmt(g[n])+'°'); });
+    var f=cur.find;
+    var findTxt=(f==='a'||f==='b'||f==='c')?('сторону '+f):('угол '+f);
+    givenEl.innerHTML='<b>Дано:</b> '+parts.join(', ')+'. &nbsp;<b>Найти:</b> '+findTxt+'.';
+  }
+
+  function nextScenario(){
+    if(oi>=order.length){
+      order=SC.map(function(_,i){return i;});
+      for(var i=order.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)); var t=order[i]; order[i]=order[j]; order[j]=t; }
+      oi=0;
+    }
+    cur=SC[order[oi++]]; answered=false;
+    resEl.innerHTML='';
+    givenText(); resize(); draw();
+  }
+
+  function answer(tool){
+    if(!cur) return;
+    var ok=(tool===cur.tool);
+    var right=(cur.tool==='sin')?'теорема синусов':'теорема косинусов';
+    var h= ok
+      ? '<span class="ok">✓ Верно — '+right+'.</span> '
+      : '<span class="bad">✗ Не то.</span> Здесь работает <strong>'+right+'</strong>. ';
+    h+='Случай: <strong>'+cur.kind+'</strong>. '+cur.why;
+    h+='<div class="sol"><span class="m">'+cur.steps.join('</span><br><span class="m">')+'</span></div>';
+    resEl.innerHTML=h;
+    answered=true;
+  }
+
+  document.getElementById('pkSin').addEventListener('click',function(){ answer('sin'); });
+  document.getElementById('pkCos').addEventListener('click',function(){ answer('cos'); });
+  document.getElementById('pkNew').addEventListener('click',nextScenario);
+  window.addEventListener('resize',function(){ resize(); draw(); });
+  order=SC.map(function(_,i){return i;});
+  for(var i=order.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)); var t=order[i]; order[i]=order[j]; order[j]=t; }
+  oi=0; nextScenario();
+})();
+</script>
+
+<script>
+(function(){
+  var taskEl=document.getElementById('trTask'), ansEl=document.getElementById('trAns'), resEl=document.getElementById('trResult');
+  if(!taskEl) return;
+
+  var P60=[[3,8,7],[5,8,7],[5,21,19],[6,16,14],[7,15,13],[8,15,13],[9,24,21],[10,16,14],[15,24,21],[16,21,19]];
+  var P90=[[3,4,5],[5,12,13],[6,8,10],[7,24,25],[8,15,17],[9,12,15],[10,24,26],[12,16,20],[15,20,25],[18,24,30],[20,21,29]];
+  var P120=[[3,5,7],[5,16,19],[6,10,14],[7,8,13],[9,15,21],[11,24,31],[12,20,28],[14,16,26],[21,24,39]];
+  var ANG=[30,45,60,75,90,105,120,135,150];
+  var DEG=Math.PI/180;
+  var cur=null;
+
+  function ri(n){ return Math.floor(Math.random()*n); }
+  function pick(arr){ return arr[ri(arr.length)]; }
+  function mnus(s){ return String(s).replace(/-/g,'−'); }
+  function fmt(x){
+    var n=Math.round(x*100)/100;
+    var s=(Math.abs(n-Math.round(n))<1e-9)?String(Math.round(n)):String(n).replace('.',',');
+    return mnus(s);
+  }
+  function cosD(d){
+    if(d===90) return 0;
+    if(d===60) return 0.5;
+    if(d===120) return -0.5;
+    return Math.cos(d*DEG);
+  }
+  function sinD(d){ return Math.sin(d*DEG); }
+
+  function makeSUS(){
+    var ang=pick([60,90,120]);
+    var tr=pick(ang===60?P60:(ang===90?P90:P120)).slice();
+    var a=tr[0], b=tr[1], c=tr[2];
+    if(ri(2)){ var t=a; a=b; b=t; }
+    return {type:'sus', a:a, b:b, ang:ang, ans:c, tol:0.01,
+      task:'В треугольнике ABC стороны <span class="m">a = '+a+'</span> и <span class="m">b = '+b+'</span>, угол между ними <span class="m">C = '+ang+'°</span>. Найди сторону <span class="m">c</span>.',
+      hint:'Ответ — целое число.'};
+  }
+  function makeSSS(){
+    var ang=pick([60,90,120]);
+    var tr=pick(ang===60?P60:(ang===90?P90:P120)).slice();
+    var a=tr[0], b=tr[1], c=tr[2];
+    if(ri(2)){ var t=a; a=b; b=t; }
+    return {type:'sss', a:a, b:b, c:c, ans:ang, tol:0.5,
+      task:'В треугольнике ABC <span class="m">a = '+a+'</span>, <span class="m">b = '+b+'</span>, <span class="m">c = '+c+'</span>. Найди угол <span class="m">C</span> (он лежит против стороны c).',
+      hint:'Ответ — целое число градусов.'};
+  }
+  function makeUSU(){
+    var A,B,C,tries=0;
+    do{
+      A=pick(ANG); B=pick(ANG); C=180-A-B; tries++;
+    } while((C<15 || C>150) && tries<80);
+    if(C<15 || C>150){ A=45; B=60; C=75; }
+    var angs={A:A,B:B,C:C};
+    var names=['A','B','C'];
+    var ki=ri(3), mi=ri(3);
+    while(mi===ki){ mi=(mi+1)%3; }
+    var kn=names[ki], un=names[mi];
+    var s=2*(ri(9)+2);           /* 4..20, чётное — числа поприятнее */
+    var val=s*sinD(angs[un])/sinD(angs[kn]);
+    var sideName={A:'a',B:'b',C:'c'};
+    return {type:'usu', angs:angs, kn:kn, un:un, s:s, ans:val, tol:0.02,
+      task:'В треугольнике ABC угол <span class="m">A = '+A+'°</span>, угол <span class="m">B = '+B+'°</span>, сторона <span class="m">'+sideName[kn]+' = '+s+'</span> (она лежит против угла '+kn+'). Найди сторону <span class="m">'+sideName[un]+'</span>.',
+      hint:'Ответ округли до сотых (если получилось целое — так и пиши). Можно записать и точно, с корнем.'};
+  }
+  function makeSUM(){
+    var A,B,C,tries=0;
+    do{ A=pick(ANG); B=pick(ANG); C=180-A-B; tries++; } while((C<15||C>150) && tries<80);
+    if(C<15||C>150){ A=30; B=60; C=90; }
+    return {type:'sum', A:A, B:B, ans:C, tol:0.5,
+      task:'В треугольнике ABC угол <span class="m">A = '+A+'°</span>, угол <span class="m">B = '+B+'°</span>. Найди угол <span class="m">C</span>.',
+      hint:'Ответ — целое число градусов.'};
+  }
+
+  function generate(){
+    var r=Math.random();
+    cur = r<0.3 ? makeSUS() : (r<0.58 ? makeSSS() : (r<0.85 ? makeUSU() : makeSUM()));
+    taskEl.innerHTML=cur.task+'<span class="hint">'+cur.hint+'</span>';
+    resEl.innerHTML=''; ansEl.value='';
+  }
+
+  function parseAns(raw){
+    var s=String(raw).replace(/−/g,'-');
+    s=s.replace(/(\d),(\d)/g,'$1.$2');
+    s=s.trim().toLowerCase();
+    s=s.replace(/sqrt/g,'√').replace(/корень/g,'√').replace(/корня/g,'√');
+    s=s.replace(/[°º]/g,'');
+    s=s.replace(/[a-zа-яё]/g,'');      /* единицы, «градусов», «см» и т.п. */
+    s=s.replace(/[\s()]/g,'');
+    s=s.replace(/[*·×]/g,'');
+    if(!s) return NaN;
+    var m=s.match(/^([+-]?\d*(?:\.\d+)?)(?:√(\d+(?:\.\d+)?))?(?:\/(\d+(?:\.\d+)?))?$/);
+    if(!m) return NaN;
+    var head=m[1], num;
+    if(head===''||head==='+') num=1;
+    else if(head==='-') num=-1;
+    else num=parseFloat(head);
+    if(!isFinite(num)) return NaN;
+    if(m[2]!==undefined){
+      var r=parseFloat(m[2]);
+      if(!isFinite(r)||r<0) return NaN;
+      num*=Math.sqrt(r);
+    } else if(head===''||head==='+'||head==='-') return NaN;   /* просто знак без числа */
+    if(m[3]!==undefined){
+      var d=parseFloat(m[3]);
+      if(!isFinite(d)||d===0) return NaN;
+      num/=d;
+    }
+    return num;
+  }
+
+  function solutionHTML(){
+    var q=cur, h='<div class="sol">';
+    if(q.type==='sus'){
+      var cv=cosD(q.ang), prod=2*q.a*q.b*cv;
+      h+='Дано две стороны и угол между ними → <b>теорема косинусов</b>.<br>';
+      h+='c² = a² + b² − 2ab·cos C = '+(q.a*q.a)+' + '+(q.b*q.b)+' − 2·'+q.a+'·'+q.b+'·cos '+q.ang+'°<br>';
+      h+='cos '+q.ang+'° = '+fmt(cv)+', значит −2ab·cos C = '+mnus((prod<0?'+ ':'− ')+Math.abs(prod))+'<br>';
+      h+='c² = '+(q.a*q.a+q.b*q.b)+' '+(prod<0?'+ ':'− ')+Math.abs(prod)+' = '+(q.ans*q.ans)+'<br>';
+      h+='<b>c = '+q.ans+'</b>';
+    } else if(q.type==='sss'){
+      var num=q.a*q.a+q.b*q.b-q.c*q.c, den=2*q.a*q.b;
+      h+='Даны три стороны → <b>теорема косинусов</b> через косинус.<br>';
+      h+='cos C = (a² + b² − c²) / (2ab) = ('+(q.a*q.a)+' + '+(q.b*q.b)+' − '+(q.c*q.c)+') / '+den+'<br>';
+      h+='cos C = '+mnus(num)+' / '+den+' = '+fmt(num/den)+'<br>';
+      h+='<b>C = '+q.ans+'°</b>';
+    } else if(q.type==='usu'){
+      var sideName={A:'a',B:'b',C:'c'};
+      h+='Дана сторона и два угла → сначала <b>сумма 180°</b>, потом <b>теорема синусов</b>.<br>';
+      h+='C = 180° − '+q.angs.A+'° − '+q.angs.B+'° = '+q.angs.C+'°<br>';
+      h+='Пара «сторона '+sideName[q.kn]+' — угол '+q.kn+'» готова:<br>';
+      h+=sideName[q.un]+' / sin '+q.un+' = '+sideName[q.kn]+' / sin '+q.kn+'<br>';
+      h+=sideName[q.un]+' = '+q.s+'·sin '+q.angs[q.un]+'° / sin '+q.angs[q.kn]+'° = '+q.s+'·'+fmt(sinD(q.angs[q.un]))+' / '+fmt(sinD(q.angs[q.kn]))+'<br>';
+      h+='<b>'+sideName[q.un]+' ≈ '+fmt(q.ans)+'</b>';
+    } else {
+      h+='Сумма углов треугольника равна 180°.<br>';
+      h+='C = 180° − A − B = 180° − '+q.A+'° − '+q.B+'° = <b>'+q.ans+'°</b>';
+    }
+    return h+'</div>';
+  }
+
+  function check(){
+    if(!cur) return;
+    var raw=ansEl.value;
+    if(!String(raw).trim()){ resEl.innerHTML='<span class="bad">Введи ответ или нажми «Показать решение».</span>'; return; }
+    var got=parseAns(raw);
+    if(!isFinite(got)){
+      resEl.innerHTML='<span class="bad">Не понял запись. Напиши число (например 12,25) или значение с корнем (например 7√3).</span>';
+      return;
+    }
+    var ok=Math.abs(got-cur.ans)<=cur.tol+1e-9;
+    if(ok){ resEl.innerHTML='<span class="ok">✓ Верно!</span>'+solutionHTML(); }
+    else{
+      var hint='';
+      if(cur.type==='sus') hint=' Проверь знак: у тупого угла косинус отрицателен, и −2ab·cos C прибавляется.';
+      else if(cur.type==='sss') hint=' Угол C обязан стоять против стороны c — проверь, те ли буквы подставил.';
+      else if(cur.type==='usu') hint=' Сначала найди третий угол через 180°, потом составь пропорцию: сторона делится на синус своего угла.';
+      else hint=' Просто 180° минус два известных угла.';
+      resEl.innerHTML='<span class="bad">✗ Пока не то.'+hint+'</span>'+solutionHTML();
+    }
+  }
+
+  document.getElementById('trNew').addEventListener('click',function(){ generate(); ansEl.focus(); });
+  document.getElementById('trCheck').addEventListener('click',check);
+  document.getElementById('trShow').addEventListener('click',function(){ resEl.innerHTML=solutionHTML(); });
+  ansEl.addEventListener('keydown',function(e){ if(e.key==='Enter') check(); });
+  generate();
+})();
+</script>
+<!--LESSON-NAV-BOT--><nav class="lnav lnav-bot"><a class="prev" href="./geo9-trig-teorema-kosinusov.html"><span class="dir">← Предыдущая</span><span class="ttl">Теорема косинусов</span></a><a class="to-cat" href="./catalog.html">📚 <span>Все темы</span></a><a class="next" href="./geo9-trig-ploschad.html"><span class="dir">Следующая →</span><span class="ttl">Площадь треугольника через две стороны и угол</span></a></nav><!--/LESSON-NAV-BOT-->
