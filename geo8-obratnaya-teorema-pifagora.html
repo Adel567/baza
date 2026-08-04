@@ -1,0 +1,832 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Обратная теорема Пифагора — урок, геометрия 8 класс</title>
+<style>
+  :root{
+    --paper:#F6F7F9;
+    --card:#FFFFFF;
+    --ink:#1B2333;
+    --muted:#5A6478;
+    --line:#E2E5EC;
+    --accent:#3B4FD0;
+    --accent-soft:#EAEDFB;
+    --pos:#1E8E5A;   /* прямоугольный */
+    --pos-bg:#E7F4EC;
+    --zero:#B9791A;  /* остроугольный */
+    --zero-bg:#FBF1DC;
+    --neg:#C0455B;   /* тупоугольный */
+    --neg-bg:#F9E9EC;
+  }
+  *{box-sizing:border-box}
+  body{margin:0}
+  .wrap{
+    max-width:760px;
+    margin:0 auto;
+    padding:clamp(1.4rem,4vw,3rem) clamp(1.1rem,4vw,2rem) 4rem;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    font-size:17px;
+    line-height:1.62;
+    -webkit-font-smoothing:antialiased;
+  }
+  .eyebrow{
+    font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--accent);font-weight:600;margin:0 0 .5rem;
+  }
+  h1{
+    font-family:Georgia,"Times New Roman",serif;
+    font-size:clamp(2.1rem,7vw,3rem);
+    line-height:1.05;margin:0;font-weight:700;letter-spacing:-.01em;
+    text-wrap:balance;
+  }
+  .lede{
+    font-size:1.08rem;color:var(--muted);margin:.7rem 0 0;max-width:60ch;
+    text-wrap:pretty;
+  }
+  h2{
+    font-family:Georgia,serif;font-size:1.32rem;font-weight:700;
+    margin:0 0 .1rem;letter-spacing:-.005em;
+  }
+  section{margin-top:2.6rem}
+  .kicker{
+    font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--muted);font-weight:600;margin:0 0 .8rem;
+    display:flex;align-items:center;gap:.6rem;
+  }
+  .kicker::before{
+    content:"";width:1.4rem;height:2px;background:var(--accent);border-radius:2px;
+  }
+  p{margin:.65rem 0}
+  strong{font-weight:650}
+  .math{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-weight:600}
+  sup{font-size:.72em}
+  a{color:var(--accent)}
+
+  /* Главная формула */
+  .hero-formula{
+    margin-top:2.2rem;
+    background:var(--ink);color:#fff;border-radius:14px;
+    padding:1.6rem 1.4rem;text-align:center;
+  }
+  .hero-formula .lbl{
+    font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;
+    color:#9aa6c9;margin:0 0 .7rem;
+  }
+  .hero-formula .eq{
+    font-family:ui-monospace,"SF Mono",Menlo,monospace;
+    font-size:clamp(1.35rem,5vw,2rem);font-weight:700;letter-spacing:.01em;
+  }
+  .hero-formula .eq b{color:#8ea0ff;font-weight:700}
+  .hero-formula .note{font-size:.86rem;color:#9aa6c9;margin:.8rem 0 0}
+
+  /* Пререквизит */
+  .recall{
+    background:var(--accent-soft);border-radius:12px;padding:1rem 1.15rem;
+    font-size:.96rem;
+  }
+  .recall p{margin:.3rem 0}
+
+  /* Три случая */
+  .cases{display:grid;gap:.85rem;margin-top:.4rem}
+  @media(min-width:620px){.cases{grid-template-columns:repeat(3,1fr)}}
+  .case{
+    border-radius:12px;padding:1.05rem 1.1rem;border:1px solid var(--line);
+    background:var(--card);display:flex;flex-direction:column;gap:.35rem;
+  }
+  .case .sign{font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.05rem}
+  .case .count{font-weight:650;font-size:1rem}
+  .case .desc{font-size:.9rem;color:var(--muted)}
+  .case.pos{border-top:4px solid var(--pos);background:var(--pos-bg)}
+  .case.pos .sign{color:var(--pos)}
+  .case.zero{border-top:4px solid var(--zero);background:var(--zero-bg)}
+  .case.zero .sign{color:var(--zero)}
+  .case.neg{border-top:4px solid var(--neg);background:var(--neg-bg)}
+  .case.neg .sign{color:var(--neg)}
+
+  /* Разбор */
+  .worked{
+    background:var(--card);border:1px solid var(--line);border-radius:12px;
+    padding:1.2rem 1.3rem;
+  }
+  .worked .task{
+    font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.02rem;
+    margin:0 0 1rem;padding-bottom:.8rem;border-bottom:1px solid var(--line);
+  }
+  ol.steps{margin:0;padding:0;list-style:none;counter-reset:s;display:flex;flex-direction:column;gap:.7rem}
+  ol.steps li{position:relative;padding-left:2.1rem;counter-increment:s}
+  ol.steps li::before{
+    content:counter(s);position:absolute;left:0;top:.05rem;
+    width:1.5rem;height:1.5rem;border-radius:50%;
+    background:var(--accent-soft);color:var(--accent);
+    font-size:.82rem;font-weight:700;display:flex;align-items:center;justify-content:center;
+  }
+  ol.steps .m{font-family:ui-monospace,Menlo,monospace;font-weight:600;color:var(--ink)}
+  .verdict{
+    margin-top:1rem;padding:.7rem 1rem;background:var(--pos-bg);
+    border-radius:9px;font-weight:600;color:var(--pos);font-size:.98rem;
+  }
+
+  /* Таблица троек */
+  .tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;margin-top:.6rem}
+  table.triples{
+    border-collapse:collapse;width:100%;min-width:430px;background:var(--card);
+    border:1px solid var(--line);border-radius:12px;font-size:.94rem;
+  }
+  table.triples th,table.triples td{
+    padding:.55rem .7rem;text-align:left;border-bottom:1px solid var(--line);
+    font-family:ui-monospace,Menlo,monospace;
+  }
+  table.triples th{
+    font-family:system-ui,sans-serif;font-size:.74rem;letter-spacing:.08em;
+    text-transform:uppercase;color:var(--muted);font-weight:700;
+  }
+  table.triples tr:last-child td{border-bottom:none}
+  table.triples td.tri{font-weight:800;color:var(--accent)}
+  table.triples td.ok{color:var(--pos);font-weight:700}
+
+  /* Практика */
+  .drill{display:flex;flex-direction:column;gap:.7rem}
+  details{
+    background:var(--card);border:1px solid var(--line);border-radius:10px;
+    padding:.85rem 1.05rem;
+  }
+  details[open]{border-color:var(--accent)}
+  summary{
+    cursor:pointer;font-weight:600;list-style:none;
+    display:flex;justify-content:space-between;align-items:center;gap:1rem;
+  }
+  summary:focus-visible{outline:3px solid var(--accent);outline-offset:3px;border-radius:6px}
+  summary::-webkit-details-marker{display:none}
+  summary .q{font-family:ui-monospace,Menlo,monospace;min-width:0}
+  summary::after{
+    content:"ответ";font-size:.78rem;color:var(--accent);font-weight:600;white-space:nowrap;
+  }
+  details[open] summary::after{content:"скрыть"}
+  .tag{
+    font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);
+    border:1px solid var(--line);border-radius:20px;padding:.1rem .55rem;white-space:nowrap;
+  }
+  .ans{margin-top:.7rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.96rem;color:var(--muted)}
+  .ans .m{font-family:ui-monospace,Menlo,monospace;color:var(--ink);font-weight:600}
+
+  /* Ошибки */
+  ul.pitfalls{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:.6rem}
+  ul.pitfalls li{padding-left:1.5rem;position:relative;font-size:.98rem}
+  ul.pitfalls li::before{
+    content:"×";position:absolute;left:0;top:-.05rem;color:var(--neg);font-weight:700;font-size:1.1rem;
+  }
+  ul.pitfalls b{color:var(--ink)}
+
+  .next{background:var(--accent);color:#fff;border-radius:12px;padding:1.2rem 1.3rem}
+  .next h2{color:#fff}
+  .next .eq{font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.1rem;margin:.6rem 0 .3rem}
+  .next p{color:#dfe4fb;font-size:.96rem;margin:.4rem 0 0}
+  .next a{color:#fff;font-weight:700}
+  .foot{margin-top:2.4rem;font-size:.82rem;color:var(--muted);text-align:center}
+
+  @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+<style>
+.oge-tip{display:flex;gap:.8rem;align-items:flex-start;background:#FFF8E7;border:1px solid #F0D98A;border-left:4px solid #E0A315;border-radius:10px;padding:.85rem 1.05rem;margin:1.5rem 0}
+.oge-tip .b{font-size:.72rem;font-weight:800;letter-spacing:.03em;color:#8A6A15;white-space:nowrap;text-transform:uppercase;padding-top:.15rem}
+.oge-tip .x{font-size:.95rem;line-height:1.5}
+</style>
+
+<!--LESSON-NAV-TOP--><style>.lnav{--lnav-accent:#3D5AF1}.lnav a{text-decoration:none;font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif}.lnav-top{max-width:820px;margin:0 auto;padding:.75rem clamp(1rem,4vw,1.5rem) .1rem}.lnav-top a{display:inline-flex;align-items:center;gap:.35rem;color:var(--lnav-accent);font-weight:600;font-size:.9rem}.lnav-top a:hover{text-decoration:underline}.lnav-bot{max-width:820px;margin:2.6rem auto 3rem;padding:1.1rem clamp(1rem,4vw,1.5rem) 0;border-top:1px solid #E4E8EF;display:flex;align-items:stretch;gap:.55rem}.lnav-bot a{min-width:0;display:flex;flex-direction:column;justify-content:center;gap:.15rem;border:1px solid #E4E8EF;border-radius:12px;padding:.65rem .85rem;color:#182233;background:#fff;transition:border-color .1s,transform .08s}.lnav-bot a:hover{border-color:var(--lnav-accent);transform:translateY(-1px)}.lnav-bot .prev,.lnav-bot .next{flex:1 1 0}.lnav-bot .next{text-align:right}.lnav-bot .dir{font-size:.72rem;color:#8A93A6;font-weight:600}.lnav-bot .ttl{font-size:.9rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.lnav-bot .to-cat{flex:0 0 auto;flex-direction:row;align-items:center;justify-content:center;color:var(--lnav-accent);font-weight:700;font-size:.85rem;white-space:nowrap}@media(max-width:420px){.lnav-bot .to-cat span{display:none}.lnav-bot .to-cat{padding:.65rem .7rem}}</style><nav class="lnav lnav-top"><a href="./catalog.html">← Все темы</a></nav><!--/LESSON-NAV-TOP-->
+<div class="wrap">
+
+  <header>
+    <p class="eyebrow">Геометрия · 8 класс</p>
+    <h1>Обратная теорема Пифагора</h1>
+    <p class="lede">Даны три стороны — и больше ничего. Как узнать, есть ли в треугольнике прямой угол, <em>не измеряя углы вообще?</em></p>
+  </header>
+
+  <div class="hero-formula">
+    <p class="lbl">Признак прямого угла</p>
+    <div class="eq">если <b>c</b><sup>2</sup> = <b>a</b><sup>2</sup> + <b>b</b><sup>2</sup>, то угол против <b>c</b> — прямой</div>
+    <p class="note">c — обязательно наибольшая сторона треугольника</p>
+  </div>
+
+  <section>
+    <p class="kicker">Зачем это нужно</p>
+    <h2>Теорема Пифагора — билет в обе стороны</h2>
+    <p>Прямая теорема отвечает на вопрос: «треугольник прямоугольный — чему равна гипотенуза?». А как быть наоборот: даны три стороны, и нужно узнать, есть ли прямой угол, а транспортира нет? Именно это и решает обратная теорема.</p>
+    <p>Это не абстракция, а инструмент строителей и разметчиков. Чтобы получить точный прямой угол на местности — угол дома, грядки, фундамента, — берут верёвку, отмеряют стороны <span class="math">3</span>, <span class="math">4</span> и <span class="math">5</span> (или <span class="math">6</span>, <span class="math">8</span>, <span class="math">10</span>) и натягивают треугольник. Угол между сторонами 3 и 4 получается ровно прямым. Этот «египетский треугольник» работает именно по обратной теореме.</p>
+    <p><strong>Типичное заблуждение:</strong> «если в треугольнике есть сторона побольше, то угол напротив неё прямой». Нет. Прямой угол получается только при <strong>точном равенстве</strong> <span class="math">c² = a² + b²</span>, а не «на глаз».</p>
+  </section>
+
+  <section>
+    <p class="kicker">Что вспомнить с прошлого шага</p>
+    <div class="recall">
+      <p>Прямая <a href="./geo8-teorema-pifagora.html">теорема Пифагора</a>: если треугольник прямоугольный, то <span class="math">c² = a² + b²</span>, где c — гипотенуза, a и b — катеты.</p>
+      <p><strong>Гипотенуза всегда больше каждого катета</strong> — она лежит против самого большого угла, прямого.</p>
+      <p>Понадобятся квадраты чисел до 25 наизусть: <span class="math">12² = 144</span>, <span class="math">13² = 169</span>, <span class="math">17² = 289</span>, <span class="math">24² = 576</span>, <span class="math">25² = 625</span>.</p>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Ядро темы</p>
+    <h2>Формулировка и порядок проверки</h2>
+    <p><strong>Обратная теорема Пифагора.</strong> Если в треугольнике квадрат одной стороны равен сумме квадратов двух других сторон, то этот треугольник прямоугольный, и прямой угол лежит против наибольшей стороны.</p>
+    <p>Обрати внимание, что здесь поменялось местами: в прямой теореме нам <em>дан</em> прямой угол и мы получаем равенство, а в обратной нам <em>дано</em> равенство и мы получаем прямой угол. Числовой факт превращается в геометрический вывод о форме фигуры.</p>
+    <p>Порядок работы всегда один и тот же:</p>
+    <ol class="steps">
+      <li>Найди <strong>наибольшую</strong> сторону — это кандидат в гипотенузы, обозначь её <span class="m math">c</span>. Две другие — <span class="m math">a</span> и <span class="m math">b</span>.</li>
+      <li>Посчитай <span class="m math">c²</span>.</li>
+      <li>Посчитай <span class="m math">a² + b²</span>.</li>
+      <li>Сравни два числа и сделай вывод по таблице ниже.</li>
+    </ol>
+
+    <h2 style="margin-top:1.8rem">Один тест — три ответа</h2>
+    <p>Сравнение <span class="math">c²</span> и <span class="math">a² + b²</span> различает не два случая, а три. «Не сошлось» — это не ошибка, а тоже полноценный ответ:</p>
+    <div class="cases">
+      <div class="case pos">
+        <div class="sign">c² = a² + b²</div>
+        <div class="count">Прямоугольный</div>
+        <div class="desc">Угол против c равен ровно 90°. Сторона c — гипотенуза.</div>
+      </div>
+      <div class="case neg">
+        <div class="sign">c² &gt; a² + b²</div>
+        <div class="count">Тупоугольный</div>
+        <div class="desc">Наибольшая сторона «переросла» — угол против c тупой.</div>
+      </div>
+      <div class="case zero">
+        <div class="sign">c² &lt; a² + b²</div>
+        <div class="count">Остроугольный</div>
+        <div class="desc">Наибольшая сторона не дотянула — угол против c острый.</div>
+      </div>
+    </div>
+    <p style="font-size:.92rem;color:var(--muted);margin-top:.9rem">Условия применимости: единицы у всех трёх сторон одинаковые, и в роли <span class="math">c</span> — обязательно самая длинная сторона. Кстати, если равенство <span class="math">c² = a² + b²</span> выполнено при положительных длинах, такой треугольник заведомо существует — неравенство треугольника проверять отдельно не нужно.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Готовые наборы чисел</p>
+    <h2>Пифагоровы тройки</h2>
+    <p><strong>Пифагорова тройка</strong> — три натуральных числа a, b, c, для которых <span class="math">a² + b² = c²</span>. Если увидел в задаче такие числа, проверку можно сделать за секунду — просто по памяти.</p>
+    <div class="tbl-wrap">
+      <table class="triples">
+        <tr><th>Тройка</th><th>a² + b²</th><th>c²</th><th>Сходится?</th></tr>
+        <tr><td class="tri">3, 4, 5</td><td>9 + 16 = 25</td><td>5² = 25</td><td class="ok">да</td></tr>
+        <tr><td class="tri">5, 12, 13</td><td>25 + 144 = 169</td><td>13² = 169</td><td class="ok">да</td></tr>
+        <tr><td class="tri">8, 15, 17</td><td>64 + 225 = 289</td><td>17² = 289</td><td class="ok">да</td></tr>
+        <tr><td class="tri">7, 24, 25</td><td>49 + 576 = 625</td><td>25² = 625</td><td class="ok">да</td></tr>
+      </table>
+    </div>
+    <p style="margin-top:1rem">Все числа тройки можно умножить на одно и то же число — получится снова пифагорова тройка, потому что обе части равенства увеличиваются в одинаковое число раз. Из <span class="math">(3, 4, 5)</span> получаются:</p>
+    <div class="tbl-wrap">
+      <table class="triples">
+        <tr><th>Множитель</th><th>Тройка</th><th>Проверка</th></tr>
+        <tr><td>×2</td><td class="tri">6, 8, 10</td><td>36 + 64 = 100 = 10²</td></tr>
+        <tr><td>×3</td><td class="tri">9, 12, 15</td><td>81 + 144 = 225 = 15²</td></tr>
+        <tr><td>×4</td><td class="tri">12, 16, 20</td><td>144 + 256 = 400 = 20²</td></tr>
+      </table>
+    </div>
+    <p style="font-size:.92rem;color:var(--muted)">Так же и из других базовых троек: <span class="math">(10, 24, 26)</span> — это <span class="math">(5, 12, 13)</span> ×2, а <span class="math">(16, 30, 34)</span> — это <span class="math">(8, 15, 17)</span> ×2. Проверь сам: <span class="math">100 + 576 = 676 = 26²</span>.</p>
+
+    <div class="oge-tip"><div class="b">🎯 В ОГЭ</div><div class="x"><b>Задания 15–17 и 24.</b> Обратная теорема даёт то, чего в условии нет: доказал c²=a²+b² — и получил прямой угол, а с ним всю тригонометрию и площадь.</div></div>
+  </section>
+
+  <section>
+    <p class="kicker">Покрути сам · интерактив</p>
+    <h2>Три стороны — и форма треугольника</h2>
+    <p>Двигай ползунки — треугольник строится по-настоящему, по заданным длинам сторон. Смотри, как один и тот же тест <span class="math">c²</span> против <span class="math">a² + b²</span> ловит все три случая. Ползунки сами держатся в разумных границах: из любых трёх чисел треугольник не сложишь, сумма двух сторон должна быть больше третьей.</p>
+    <div class="tri-box">
+      <canvas id="triCanvas" width="640" height="400" aria-label="Треугольник по трём сторонам"></canvas>
+      <div id="triVerdict" class="tri-verdict">угол против наибольшей стороны: 90° · прямоугольный</div>
+      <div id="triCmp" class="tri-cmp"></div>
+      <div class="sliders">
+        <label>a <span id="vA" class="sval">3</span><input id="sA" type="range" min="1" max="15" step="0.5" value="3" aria-label="сторона a"></label>
+        <label>b <span id="vB" class="sval">4</span><input id="sB" type="range" min="1" max="15" step="0.5" value="4" aria-label="сторона b"></label>
+        <label>c <span id="vC" class="sval">5</span><input id="sC" type="range" min="1" max="15" step="0.5" value="5" aria-label="сторона c"></label>
+      </div>
+    </div>
+    <p style="font-size:.9rem;color:var(--muted)">Поймай момент, когда угол ровно 90° — это и есть граница между остроугольным и тупоугольным. Попробуй так: поставь 3, 4, 5, а потом чуть увеличь только наибольшую сторону. Катеты те же, а угол уже тупой — вот насколько точным должно быть равенство.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Разбираем вместе</p>
+    <h2>Эталонный пример</h2>
+    <div class="worked">
+      <p class="task">Стороны треугольника 9, 12 и 15 см. Прямоугольный ли он?</p>
+      <ol class="steps">
+        <li>Выбираем наибольшую сторону: <span class="m">c = 15</span>. Почему именно её: прямой угол, если он есть, лежит против самой длинной стороны. Тогда <span class="m">a = 9</span>, <span class="m">b = 12</span>.</li>
+        <li>Считаем квадрат наибольшей: <span class="m">c² = 15² = 225</span>.</li>
+        <li>Считаем сумму квадратов двух других: <span class="m">a² + b² = 9² + 12² = 81 + 144 = 225</span>.</li>
+        <li>Сравниваем: <span class="m">225 = 225</span> — равенство верно. Именно точное равенство, а не «примерно похоже», и есть признак прямого угла.</li>
+      </ol>
+      <div class="verdict">Треугольник прямоугольный, прямой угол лежит против стороны 15 см. Это тройка (3, 4, 5), увеличенная в 3 раза.</div>
+    </div>
+    <p style="font-size:.92rem;color:var(--muted)">Заметь: мы ни разу не измеряли углы и не смотрели на чертёж. Весь вывод — из арифметики.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Теперь ты · нажми, чтобы проверить</p>
+    <h2>Мини-практика</h2>
+    <div class="drill">
+      <details>
+        <summary><span class="q">Допиши шаг: стороны 6, 8, 11</span><span class="tag">понимание</span></summary>
+        <div class="ans">Наибольшая сторона <span class="m">c = 11</span>, значит <span class="m">c² = 121</span>. Сумма квадратов других: <span class="m">6² + 8² = 36 + 64 = 80</span>. Сравниваем: <span class="m">121 &gt; 80</span>, то есть <span class="m">c² &gt; a² + b²</span> → угол против стороны 11 <strong>тупой</strong>, треугольник тупоугольный, не прямоугольный.</div>
+      </details>
+      <details>
+        <summary><span class="q">5, 12, 13 — прямоугольный?</span><span class="tag">применение</span></summary>
+        <div class="ans"><span class="m">13² = 169; 5² + 12² = 25 + 144 = 169</span> → <strong>да, прямоугольный</strong>, прямой угол против стороны 13.</div>
+      </details>
+      <details>
+        <summary><span class="q">8, 15, 17 — прямоугольный?</span><span class="tag">применение</span></summary>
+        <div class="ans"><span class="m">17² = 289; 8² + 15² = 64 + 225 = 289</span> → <strong>да, прямоугольный</strong>, прямой угол против стороны 17.</div>
+      </details>
+      <details>
+        <summary><span class="q">4, 5, 6 — прямоугольный?</span><span class="tag">применение</span></summary>
+        <div class="ans"><span class="m">6² = 36, а 4² + 5² = 16 + 25 = 41</span>. Здесь <span class="m">36 &lt; 41</span>, то есть <span class="m">c² &lt; a² + b²</span> → угол против 6 <strong>острый</strong>, треугольник остроугольный. <strong>Нет</strong>, не прямоугольный.</div>
+      </details>
+      <details>
+        <summary><span class="q">10, 24, 26 — прямоугольный? Против какой стороны прямой угол?</span><span class="tag">применение</span></summary>
+        <div class="ans"><span class="m">26² = 676; 10² + 24² = 100 + 576 = 676</span> → <strong>да</strong>, прямой угол против стороны 26. Это тройка (5, 12, 13), увеличенная вдвое.</div>
+      </details>
+      <details>
+        <summary><span class="q">Предскажи, потом проверь: (3,4,5), (4,5,6), (5,5,8)</span><span class="tag">анализ</span></summary>
+        <div class="ans">Сначала угадай на глаз, какой прямоугольный, потом считай.<br>
+        <span class="m">(3,4,5): 25 = 9 + 16</span> → прямоугольный.<br>
+        <span class="m">(4,5,6): 36 &lt; 41</span> → остроугольный.<br>
+        <span class="m">(5,5,8): 64 &gt; 25 + 25 = 50</span> → тупоугольный.<br>
+        Совпала ли догадка? Это и разрушает иллюзию «сторона побольше — значит прямой угол».</div>
+      </details>
+      <details>
+        <summary><span class="q">Найди ошибку: стороны 8, 6, 10</span><span class="tag">анализ</span></summary>
+        <div class="ans">Ученик написал: «<span class="m">8² = 6² + 10²</span>, то есть <span class="m">64 = 36 + 100</span> — неверно, значит не прямоугольный».<br>
+        Промах в том, что он взял в роли <span class="m">c</span> не наибольшую сторону. Надо <span class="m">c = 10</span>: <span class="m">10² = 100 = 36 + 64 = 6² + 8²</span> → треугольник <strong>прямоугольный</strong>.</div>
+      </details>
+      <details>
+        <summary><span class="q">Что изменится, если у прямоугольного треугольника чуть увеличить гипотенузу?</span><span class="tag">анализ</span></summary>
+        <div class="ans">Катеты прежние, значит <span class="m">a² + b²</span> не изменилось, а <span class="m">c²</span> стало больше. Теперь <span class="m">c² &gt; a² + b²</span> → угол против c стал <strong>тупым</strong>, треугольник тупоугольный.</div>
+      </details>
+      <details>
+        <summary><span class="q">Один катет 7, гипотенуза 25. Найди второй катет</span><span class="tag">анализ</span></summary>
+        <div class="ans">Чтобы треугольник был прямоугольным, нужно <span class="m">7² + b² = 25²</span>, откуда <span class="m">b² = 625 − 49 = 576</span>, значит <span class="m">b = 24</span>. Получилась тройка (7, 24, 25).</div>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Тренажёр · бесконечная практика</p>
+    <h2>Определи вид треугольника сам</h2>
+    <p>Нажми «Новая задача». Задачи трёх типов: определить вид треугольника по трём сторонам, найти недостающую сторону так, чтобы треугольник стал прямоугольным, и выбрать пифагорову тройку. Где нужен числовой ответ — вводи число (дробное можно через запятую или точку), корень записывай как <span class="math">√13</span>.</p>
+    <div class="trainer">
+      <div class="tr-q" id="trQ">Прямоугольный ли треугольник со сторонами 9, 12, 15?</div>
+      <div id="trOpts" class="tr-opts"></div>
+      <div class="tr-ctl">
+        <button id="trNew" type="button">🎲 Новая задача</button>
+        <span id="trInWrap" class="tr-inwrap">
+          <input id="trAns" type="text" inputmode="text" placeholder="напр.  17   или   √13" aria-label="Ответ">
+          <button id="trCheck" type="button" class="sec">Проверить</button>
+        </span>
+        <button id="trShow" type="button" class="ghost">Показать решение</button>
+      </div>
+      <div id="trResult" class="tr-result"></div>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Где чаще всего ошибаются</p>
+    <h2>Лови эти ловушки</h2>
+    <ul class="pitfalls">
+      <li><b>Путают прямую и обратную теоремы.</b> Прямая: «прямоугольный ⇒ равенство сторон». Обратная: «равенство сторон ⇒ прямоугольный». Спроси себя, что дано, а что надо доказать: если даны три длины и нужен вывод о форме — это обратная.</li>
+      <li><b>Берут в роли c не наибольшую сторону.</b> Тогда равенство «не сходится» и делается ложный вывод «не прямоугольный». Всегда сначала найди самую длинную сторону и только её возводи в квадрат слева.</li>
+      <li><b>Делают вывод о прямом угле без проверки</b> — «на глаз», по виду чертежа. Прямой угол подтверждает только точное <span class="math">c² = a² + b²</span>, а не похожесть рисунка.</li>
+      <li><b>Считают, что <span class="math">c² &gt; a² + b²</span> — это «ошибка».</b> Нет, это рабочий случай: треугольник тупоугольный. А <span class="math">c² &lt; a² + b²</span> — остроугольный. Прямоугольный только при равенстве.</li>
+      <li><b>Складывают сами стороны, а не их квадраты</b> — проверяют <span class="math">c = a + b</span>. Сравнивать нужно именно квадраты.</li>
+    </ul>
+  </section>
+
+  <section>
+    <div class="next">
+      <h2>Что дальше</h2>
+      <p>Обратная теорема — это ключ, который открывает прямой угол там, где его не дали в условии. А как только прямой угол есть, работает вся <a href="./geo8-trigonometriya-ostrogo-ugla.html">тригонометрия острого угла</a>:</p>
+      <div class="eq">sin, cos, tg — через катеты и гипотенузу</div>
+      <p>Схема типовой задачи ОГЭ: три стороны → проверил c² = a² + b² → доказал прямой угол → нашёл синус, косинус или площадь.</p>
+    </div>
+  </section>
+
+  <p class="foot">Проверка на выходе: какое равенство доказывает прямой угол и какую сторону брать за c? · треугольник 7, 24, 25 — прямоугольный, против какой стороны прямой угол? · чем обратная теорема отличается от прямой?</p>
+
+</div>
+
+<style>
+  .tri-box{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.1rem 1.1rem 1rem;margin:1rem 0}
+  .tri-box canvas{width:100%;height:auto;display:block;border-radius:10px;background:#FCFDFF}
+  .tri-verdict{text-align:center;font-weight:700;font-size:1rem;margin:.8rem 0 0;padding:.55rem .6rem;border-radius:9px}
+  .tri-verdict.pos{background:var(--pos-bg);color:var(--pos)}
+  .tri-verdict.zero{background:var(--zero-bg);color:var(--zero)}
+  .tri-verdict.neg{background:var(--neg-bg);color:var(--neg)}
+  .tri-cmp{
+    text-align:center;font-family:ui-monospace,Menlo,monospace;font-size:.94rem;
+    margin:.6rem 0 0;color:var(--muted);line-height:1.9;overflow-x:auto;
+  }
+  .tri-cmp b{color:var(--ink)}
+  .sliders{display:grid;gap:.6rem;margin-top:.9rem}
+  @media(min-width:520px){.sliders{grid-template-columns:repeat(3,1fr)}}
+  .sliders label{display:flex;align-items:center;gap:.5rem;font-weight:700;font-family:ui-monospace,Menlo,monospace}
+  .sliders input[type=range]{flex:1;min-width:0;accent-color:var(--accent)}
+  .sliders input[type=range]:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+  .sliders .sval{min-width:3.4ch;text-align:right;color:var(--accent);font-variant-numeric:tabular-nums}
+</style>
+
+<script>
+(function(){
+  var cv=document.getElementById('triCanvas'); if(!cv) return;
+  var ctx=cv.getContext('2d');
+  var sA=document.getElementById('sA'), sB=document.getElementById('sB'), sC=document.getElementById('sC');
+  var vA=document.getElementById('vA'), vB=document.getElementById('vB'), vC=document.getElementById('vC');
+  var verd=document.getElementById('triVerdict'), cmp=document.getElementById('triCmp');
+  var W=640,H=400,dpr=1;
+  var STEP=0.5, MIN=1, MAX=15;
+
+  function nf(n){
+    n=Math.round(n*100)/100;
+    var s=String(n);
+    return s.replace('.',',').replace('-','−');
+  }
+  function css(v){ return getComputedStyle(document.documentElement).getPropertyValue(v).trim()||'#3B4FD0'; }
+
+  /* держим тройку в границах неравенства треугольника */
+  function clampOne(el,o1,o2){
+    var v=parseFloat(el.value), p=parseFloat(o1.value), q=parseFloat(o2.value);
+    if(!isFinite(v)||!isFinite(p)||!isFinite(q)) return;
+    var lo=Math.max(MIN, Math.abs(p-q)+STEP);
+    var hi=Math.min(MAX, p+q-STEP);
+    if(lo>hi){ var m=(lo+hi)/2; lo=m; hi=m; }
+    v=Math.round(v/STEP)*STEP;
+    if(v<lo) v=lo;
+    if(v>hi) v=hi;
+    el.value=String(v);
+  }
+
+  function resize(){
+    var cssW=cv.clientWidth||640;
+    dpr=Math.min(window.devicePixelRatio||1,2);
+    W=cssW; H=Math.round(cssW*0.66);
+    cv.width=Math.round(W*dpr); cv.height=Math.round(H*dpr);
+    cv.style.height=H+'px';
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+  }
+
+  function draw(){
+    var a=parseFloat(sA.value), b=parseFloat(sB.value), c=parseFloat(sC.value);
+    vA.textContent=nf(a); vB.textContent=nf(b); vC.textContent=nf(c);
+
+    var items=[{n:'a',L:a},{n:'b',L:b},{n:'c',L:c}].sort(function(x,y){return x.L-y.L;});
+    var L1=items[0].L, L2=items[1].L, L3=items[2].L;   /* L3 — наибольшая */
+    var s1=L1*L1, s2=L2*L2, s3=L3*L3;
+    var diff=s3-(s1+s2);
+    var kind = Math.abs(diff)<1e-9 ? 'pos' : (diff>0 ? 'neg' : 'zero');
+    var col = kind==='pos'?css('--pos'):(kind==='neg'?css('--neg'):css('--zero'));
+
+    /* честное построение: A(0,0), B(L3,0), C на пересечении окружностей */
+    var x=(s1 - s2 + s3)/(2*L3);
+    var y=Math.sqrt(Math.max(s1 - x*x, 0));
+    var A={x:0,y:0}, B={x:L3,y:0}, C={x:x,y:y};
+
+    /* угол против наибольшей стороны */
+    var cosv=(s1+s2-s3)/(2*L1*L2);
+    if(cosv>1) cosv=1; if(cosv<-1) cosv=-1;
+    var ang=Math.acos(cosv)*180/Math.PI;
+
+    ctx.clearRect(0,0,W,H);
+
+    var pad=40;
+    var minX=Math.min(A.x,B.x,C.x), maxX=Math.max(A.x,B.x,C.x);
+    var maxY=Math.max(A.y,B.y,C.y);
+    var wid=Math.max(maxX-minX,0.001), hei=Math.max(maxY,0.001);
+    var k=Math.min((W-2*pad)/wid,(H-2*pad)/hei);
+    var offX=(W-wid*k)/2 - minX*k;
+    var offY=H-(H-hei*k)/2;
+    function PX(p){ return {x:offX+p.x*k, y:offY-p.y*k}; }
+    var pA=PX(A), pB=PX(B), pC=PX(C);
+
+    /* треугольник */
+    ctx.beginPath();
+    ctx.moveTo(pA.x,pA.y); ctx.lineTo(pB.x,pB.y); ctx.lineTo(pC.x,pC.y); ctx.closePath();
+    ctx.fillStyle = kind==='pos'?'#E7F4EC':(kind==='neg'?'#F9E9EC':'#FBF1DC');
+    ctx.fill();
+    ctx.strokeStyle=col; ctx.lineWidth=3; ctx.lineJoin='round'; ctx.stroke();
+
+    /* пометка угла при вершине C */
+    var u1=Math.atan2(pA.y-pC.y,pA.x-pC.x), u2=Math.atan2(pB.y-pC.y,pB.x-pC.x);
+    var r=Math.max(14,Math.min(30,k*Math.min(L1,L2)*0.28));
+    if(kind==='pos'){
+      var e1x=Math.cos(u1), e1y=Math.sin(u1), e2x=Math.cos(u2), e2y=Math.sin(u2);
+      var q=Math.min(r,26);
+      ctx.beginPath();
+      ctx.moveTo(pC.x+e1x*q, pC.y+e1y*q);
+      ctx.lineTo(pC.x+(e1x+e2x)*q, pC.y+(e1y+e2y)*q);
+      ctx.lineTo(pC.x+e2x*q, pC.y+e2y*q);
+      ctx.strokeStyle=col; ctx.lineWidth=2.5; ctx.stroke();
+    } else {
+      ctx.beginPath();
+      ctx.arc(pC.x,pC.y,r,Math.min(u1,u2),Math.max(u1,u2));
+      ctx.strokeStyle=col; ctx.lineWidth=2.5; ctx.stroke();
+    }
+
+    /* подпись угла */
+    var bis=(u1+u2)/2;
+    ctx.fillStyle=col;
+    ctx.font='700 14px ui-monospace,Menlo,monospace';
+    ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.fillText(nf(Math.round(ang*10)/10)+'°', pC.x+Math.cos(bis)*(r+20), pC.y+Math.sin(bis)*(r+18));
+
+    /* подписи сторон */
+    ctx.font='700 14px ui-monospace,Menlo,monospace';
+    function label(p1,p2,txt,strongest){
+      var mx=(p1.x+p2.x)/2, my=(p1.y+p2.y)/2;
+      var cx=(pA.x+pB.x+pC.x)/3, cy=(pA.y+pB.y+pC.y)/3;
+      var dx=mx-cx, dy=my-cy, d=Math.sqrt(dx*dx+dy*dy)||1;
+      ctx.fillStyle = strongest? col : '#5A6478';
+      ctx.fillText(txt, mx+dx/d*20, my+dy/d*16);
+    }
+    label(pA,pB,items[2].n+' = '+nf(L3),true);
+    label(pA,pC,items[0].n+' = '+nf(L1),false);
+    label(pB,pC,items[1].n+' = '+nf(L2),false);
+
+    /* вершины */
+    [pA,pB,pC].forEach(function(p){
+      ctx.beginPath(); ctx.arc(p.x,p.y,4.5,0,7); ctx.fillStyle=col; ctx.fill();
+    });
+
+    /* текст сравнения */
+    var sign = kind==='pos' ? '=' : (kind==='neg' ? '>' : '<');
+    cmp.innerHTML =
+      items[2].n+'² = '+nf(L3)+'² = <b>'+nf(s3)+'</b><br>'+
+      items[0].n+'² + '+items[1].n+'² = '+nf(L1)+'² + '+nf(L2)+'² = <b>'+nf(s1+s2)+'</b><br>'+
+      nf(s3)+' '+sign+' '+nf(s1+s2);
+
+    verd.className='tri-verdict '+kind;
+    verd.textContent =
+      'угол против наибольшей стороны '+items[2].n+': '+nf(Math.round(ang*10)/10)+'° · '+
+      (kind==='pos'?'прямоугольный':(kind==='neg'?'тупоугольный':'остроугольный'));
+  }
+
+  sA.addEventListener('input',function(){ clampOne(sA,sB,sC); draw(); });
+  sB.addEventListener('input',function(){ clampOne(sB,sA,sC); draw(); });
+  sC.addEventListener('input',function(){ clampOne(sC,sA,sB); draw(); });
+  window.addEventListener('resize',function(){ resize(); draw(); });
+  resize(); draw();
+})();
+</script>
+
+<style>
+  .trainer{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.2rem 1.3rem;margin-top:1rem}
+  .tr-q{font-weight:700;font-size:clamp(1rem,3.6vw,1.15rem);text-align:center;padding:1rem;background:var(--accent-soft);border-radius:10px;color:var(--ink);line-height:1.5}
+  .tr-q .m{font-family:ui-monospace,Menlo,monospace;font-weight:800}
+  .tr-opts{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:.9rem}
+  .tr-opts button{
+    font:inherit;font-weight:700;font-size:.9rem;cursor:pointer;flex:1 1 auto;min-width:44%;
+    border:1px solid var(--accent);border-radius:9px;padding:.55rem .8rem;
+    color:var(--accent);background:#fff;
+  }
+  .tr-opts button.mono{font-family:ui-monospace,Menlo,monospace}
+  .tr-opts button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+  .tr-ctl{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.9rem;align-items:center}
+  .tr-ctl button{font:inherit;font-weight:700;font-size:.9rem;cursor:pointer;border:none;border-radius:9px;padding:.55rem .95rem;color:#fff;background:var(--accent)}
+  .tr-ctl button.sec{background:var(--pos)}
+  .tr-ctl button.ghost{background:transparent;color:var(--accent);border:1px solid var(--accent)}
+  .tr-inwrap{display:flex;gap:.5rem;flex:1 1 200px;min-width:0}
+  .tr-ctl input{flex:1;min-width:0;font:inherit;padding:.5rem .7rem;border:1px solid var(--line);border-radius:9px;background:#fff;color:var(--ink)}
+  .tr-ctl button:focus-visible,.tr-ctl input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+  .tr-result{margin-top:.9rem;font-size:.96rem;min-height:1.2rem}
+  .tr-result .ok{color:var(--pos);font-weight:700}
+  .tr-result .bad{color:var(--neg);font-weight:700}
+  .tr-result .sol{margin-top:.7rem;padding:.85rem 1rem;background:#FCFBFE;border:1px solid var(--line);border-radius:10px;font-family:ui-monospace,Menlo,monospace;font-size:.88rem;line-height:1.8;overflow-x:auto}
+  .tr-result .sol b{color:var(--accent)}
+</style>
+
+<script>
+(function(){
+  var qEl=document.getElementById('trQ'), optsEl=document.getElementById('trOpts');
+  var ansEl=document.getElementById('trAns'), resEl=document.getElementById('trResult');
+  var inWrap=document.getElementById('trInWrap');
+
+  var BASE=[[3,4,5],[5,12,13],[8,15,17],[7,24,25]];
+  var NAME={right:'прямоугольный',acute:'остроугольный',obtuse:'тупоугольный'};
+
+  function ri(a,b){ return a+Math.floor(Math.random()*(b-a+1)); }
+  function pick(arr){ return arr[ri(0,arr.length-1)]; }
+  function asc(s){ return s.slice().sort(function(x,y){return x-y;}); }
+  function shuffle(s){
+    var r=s.slice();
+    for(var i=r.length-1;i>0;i--){ var j=ri(0,i), t=r[i]; r[i]=r[j]; r[j]=t; }
+    return r;
+  }
+  function isTri(s){ var t=asc(s); return t[0]+t[1]>t[2] && t[0]>0; }
+  function kindOf(s){
+    var t=asc(s), d=t[2]*t[2]-(t[0]*t[0]+t[1]*t[1]);
+    return d===0?'right':(d>0?'obtuse':'acute');
+  }
+  function scaled(){ var b=pick(BASE), k=ri(1,4); return [b[0]*k,b[1]*k,b[2]*k]; }
+  function nearTriple(){
+    /* треугольник, который заведомо НЕ прямоугольный */
+    for(var i=0;i<300;i++){
+      var b=pick(BASE), k=ri(1,3);
+      var s=[b[0]*k,b[1]*k,b[2]*k];
+      var idx=ri(0,2), d=pick([-3,-2,-1,1,2,3]);
+      s[idx]=s[idx]+d;
+      if(s[idx]<1) continue;
+      if(!isTri(s)) continue;
+      if(kindOf(s)==='right') continue;
+      return s;
+    }
+    return [4,5,6];
+  }
+  function sqFree(n){
+    for(var k=2;k*k<=n;k++){ if(n%(k*k)===0) return false; }
+    return true;
+  }
+  function num(x){ return String(x).replace('.',',').replace('-','−'); }
+  function listOf(s){ return s.join(', '); }
+
+  /* ---------- генерация задач ---------- */
+  function taskClassify(){
+    var s = Math.random()<0.45 ? scaled() : nearTriple();
+    s = shuffle(s);
+    var t = asc(s);
+    return {type:'classify', sides:s, sorted:t, kind:kindOf(s)};
+  }
+  function taskFindSide(){
+    var r=Math.random();
+    if(r<0.22){
+      /* краевой случай: сторона иррациональна */
+      for(var i=0;i<400;i++){
+        var a=ri(2,9), b=ri(2,9), n=a*a+b*b;
+        if(!sqFree(n)) continue;
+        return {type:'find', mode:'irr', a:a, b:b, n:n, answer:Math.sqrt(n)};
+      }
+      return {type:'find', mode:'irr', a:2, b:3, n:13, answer:Math.sqrt(13)};
+    }
+    var b0=pick(BASE), k=ri(1,3);
+    var p=b0[0]*k, q=b0[1]*k, h=b0[2]*k;
+    if(r<0.62) return {type:'find', mode:'hyp', a:p, b:q, answer:h};
+    var known = Math.random()<0.5 ? p : q;
+    var other = known===p ? q : p;
+    return {type:'find', mode:'leg', a:known, c:h, answer:other};
+  }
+  function taskPick(){
+    var right=shuffle(scaled());
+    var opts=[right];
+    for(var i=0;i<400 && opts.length<3;i++){
+      var w=shuffle(nearTriple());
+      var key=asc(w).join(',');
+      var dup=false;
+      for(var j=0;j<opts.length;j++){ if(asc(opts[j]).join(',')===key) dup=true; }
+      if(!dup) opts.push(w);
+    }
+    while(opts.length<3) opts.push(shuffle([4,5,6+opts.length]));
+    opts=shuffle(opts);
+    var idx=0;
+    for(var m=0;m<opts.length;m++){ if(kindOf(opts[m])==='right') idx=m; }
+    return {type:'pick', opts:opts, answer:idx};
+  }
+  function makeTask(){
+    var r=Math.random();
+    if(r<0.42) return taskClassify();
+    if(r<0.78) return taskFindSide();
+    return taskPick();
+  }
+
+  /* ---------- текст задачи ---------- */
+  function questionText(t){
+    if(t.type==='classify') return 'Какой это треугольник, если его стороны равны '+listOf(t.sides)+'?';
+    if(t.type==='pick') return 'Какой набор — пифагорова тройка (то есть задаёт прямоугольный треугольник)?';
+    if(t.mode==='hyp') return 'Два катета прямоугольного треугольника равны '+t.a+' и '+t.b+'. Чему равна гипотенуза?';
+    if(t.mode==='leg') return 'Катет прямоугольного треугольника равен '+t.a+', гипотенуза равна '+t.c+'. Чему равен второй катет?';
+    return 'При каком значении третьей стороны треугольник со сторонами '+t.a+' и '+t.b+' станет прямоугольным (третья сторона — наибольшая)?';
+  }
+
+  /* ---------- разбор ---------- */
+  function solutionHTML(t){
+    var h='<div class="sol">';
+    if(t.type==='classify'){
+      var s=t.sorted, c=s[2], a=s[0], b=s[1];
+      var c2=c*c, ab=a*a+b*b;
+      h+='Наибольшая сторона: c = '+c+', тогда a = '+a+', b = '+b+'.<br>';
+      h+='c² = '+c+'² = <b>'+c2+'</b><br>';
+      h+='a² + b² = '+a+'² + '+b+'² = '+(a*a)+' + '+(b*b)+' = <b>'+ab+'</b><br>';
+      if(t.kind==='right') h+=c2+' = '+ab+' → равенство верно ⇒ треугольник <b>прямоугольный</b>, прямой угол против стороны '+c+'.';
+      else if(t.kind==='obtuse') h+=c2+' > '+ab+' → c² больше ⇒ угол против стороны '+c+' тупой, треугольник <b>тупоугольный</b>.';
+      else h+=c2+' < '+ab+' → c² меньше ⇒ угол против стороны '+c+' острый, треугольник <b>остроугольный</b>.';
+    } else if(t.type==='find'){
+      if(t.mode==='hyp'){
+        h+='Гипотенуза x — наибольшая сторона, значит x² = a² + b².<br>';
+        h+='x² = '+t.a+'² + '+t.b+'² = '+(t.a*t.a)+' + '+(t.b*t.b)+' = '+(t.a*t.a+t.b*t.b)+'<br>';
+        h+='x = √'+(t.a*t.a+t.b*t.b)+' = <b>'+t.answer+'</b>';
+      } else if(t.mode==='leg'){
+        h+='Гипотенуза — наибольшая сторона, она известна: c = '+t.c+'.<br>';
+        h+='Из c² = a² + x² получаем x² = c² − a².<br>';
+        h+='x² = '+t.c+'² − '+t.a+'² = '+(t.c*t.c)+' − '+(t.a*t.a)+' = '+(t.c*t.c-t.a*t.a)+'<br>';
+        h+='x = √'+(t.c*t.c-t.a*t.a)+' = <b>'+t.answer+'</b>';
+      } else {
+        h+='Третья сторона x — наибольшая, значит нужно x² = a² + b².<br>';
+        h+='x² = '+t.a+'² + '+t.b+'² = '+(t.a*t.a)+' + '+(t.b*t.b)+' = '+t.n+'<br>';
+        h+='Число '+t.n+' — не полный квадрат, поэтому x = <b>√'+t.n+'</b> ≈ '+num(Math.round(t.answer*100)/100);
+      }
+    } else {
+      for(var i=0;i<t.opts.length;i++){
+        var o=asc(t.opts[i]), oc=o[2]*o[2], os=o[0]*o[0]+o[1]*o[1];
+        var sign = oc===os ? '=' : (oc>os ? '>' : '<');
+        h+=listOf(t.opts[i])+': '+o[2]+'² = '+oc+', '+o[0]+'² + '+o[1]+'² = '+os+' → '+oc+' '+sign+' '+os;
+        h+= (oc===os ? ' — <b>пифагорова тройка</b>' : ' — не тройка')+'<br>';
+      }
+      h+='Ответ: <b>'+listOf(t.opts[t.answer])+'</b>';
+    }
+    return h+'</div>';
+  }
+
+  /* ---------- проверка ответа ---------- */
+  function normalize(raw){
+    return String(raw).replace(/−/g,'-').replace(/(\d),(\d)/g,'$1.$2').trim().toLowerCase();
+  }
+  function parseVal(raw){
+    var s=normalize(raw).replace(/\s+/g,' ');
+    var m=s.match(/^(?:v|√|sqrt|корень\s*из)\s*\(?\s*(\d+(?:\.\d+)?)\s*\)?$/);
+    if(m) return Math.sqrt(parseFloat(m[1]));
+    if(!/^-?\d+(?:\.\d+)?$/.test(s)) return NaN;
+    return parseFloat(s);
+  }
+  function checkFind(t,raw){
+    var v=parseVal(raw);
+    if(!isFinite(v)) return null;
+    var tol = t.mode==='irr' ? 0.06 : 0.005;
+    return Math.abs(v-t.answer)<tol;
+  }
+
+  /* ---------- рендер ---------- */
+  var cur=null;
+
+  function render(t,focus){
+    cur=t;
+    qEl.textContent=questionText(t);
+    resEl.innerHTML='';
+    optsEl.innerHTML='';
+    if(t.type==='classify'){
+      inWrap.style.display='none';
+      ['right','acute','obtuse'].forEach(function(k){
+        var btn=document.createElement('button');
+        btn.type='button'; btn.textContent=NAME[k];
+        btn.addEventListener('click',function(){ answerKind(k); });
+        optsEl.appendChild(btn);
+      });
+    } else if(t.type==='pick'){
+      inWrap.style.display='none';
+      t.opts.forEach(function(o,i){
+        var btn=document.createElement('button');
+        btn.type='button'; btn.className='mono'; btn.textContent=listOf(o);
+        btn.addEventListener('click',function(){ answerIdx(i); });
+        optsEl.appendChild(btn);
+      });
+    } else {
+      inWrap.style.display='flex';
+      ansEl.value='';
+      if(focus) ansEl.focus();
+    }
+  }
+
+  function verdictLine(ok,extra){
+    return ok ? '<span class="ok">✓ Верно!</span>' : '<span class="bad">✗ Пока не то.'+(extra||'')+'</span>';
+  }
+  function answerKind(k){
+    var ok = (k===cur.kind);
+    resEl.innerHTML=verdictLine(ok,' Сначала найди наибольшую сторону.')+solutionHTML(cur);
+  }
+  function answerIdx(i){
+    var ok = (i===cur.answer);
+    resEl.innerHTML=verdictLine(ok,' Проверь каждый набор по c² = a² + b².')+solutionHTML(cur);
+  }
+  function checkInput(){
+    var raw=ansEl.value;
+    if(!normalize(raw)){
+      resEl.innerHTML='<span class="bad">Введи ответ или нажми «Показать решение».</span>';
+      return;
+    }
+    var ok=checkFind(cur,raw);
+    if(ok===null){
+      resEl.innerHTML='<span class="bad">Не понял запись. Введи число (например 17 или 3,6) либо корень в виде √13.</span>';
+      return;
+    }
+    resEl.innerHTML=verdictLine(ok,' Проверь, какая сторона наибольшая.')+solutionHTML(cur);
+  }
+
+  if(qEl){
+    document.getElementById('trNew').addEventListener('click',function(){ render(makeTask(),true); });
+    document.getElementById('trCheck').addEventListener('click',checkInput);
+    document.getElementById('trShow').addEventListener('click',function(){ resEl.innerHTML=solutionHTML(cur); });
+    ansEl.addEventListener('keydown',function(e){ if(e.key==='Enter') checkInput(); });
+    /* стартовая задача — без focus() */
+    render({type:'classify', sides:[9,12,15], sorted:[9,12,15], kind:'right'}, false);
+  }
+
+  if(typeof window!=='undefined'){
+    window.__triTrainerTest={makeTask:makeTask,solutionHTML:solutionHTML,questionText:questionText,kindOf:kindOf,isTri:isTri,checkFind:checkFind,parseVal:parseVal,asc:asc};
+  }
+})();
+</script>
+<!--LESSON-NAV-BOT--><nav class="lnav lnav-bot"><a class="prev" href="./geo8-teorema-pifagora.html"><span class="dir">← Предыдущая</span><span class="ttl">Теорема Пифагора</span></a><a class="to-cat" href="./catalog.html">📚 <span>Все темы</span></a><a class="next" href="./geo8-podobnye-treugolniki.html"><span class="dir">Следующая →</span><span class="ttl">Подобные треугольники: определение</span></a></nav><!--/LESSON-NAV-BOT-->

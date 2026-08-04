@@ -1,0 +1,811 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Сумма первых n членов геометрической прогрессии — урок, алгебра 9 класс</title>
+<style>
+  :root{
+    --paper:#F6F7F9;
+    --card:#FFFFFF;
+    --ink:#1B2333;
+    --muted:#5A6478;
+    --line:#E2E5EC;
+    --accent:#3B4FD0;
+    --accent-soft:#EAEDFB;
+    --pos:#1E8E5A;   /* рост */
+    --pos-bg:#E7F4EC;
+    --zero:#B9791A;  /* особый случай q = 1 */
+    --zero-bg:#FBF1DC;
+    --neg:#C0455B;   /* ошибки, знакочередование */
+    --neg-bg:#F9E9EC;
+  }
+  *{box-sizing:border-box}
+  body{margin:0}
+  .wrap{
+    max-width:760px;
+    margin:0 auto;
+    padding:clamp(1.4rem,4vw,3rem) clamp(1.1rem,4vw,2rem) 4rem;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    font-size:17px;
+    line-height:1.62;
+    -webkit-font-smoothing:antialiased;
+  }
+  .eyebrow{
+    font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--accent);font-weight:600;margin:0 0 .5rem;
+  }
+  h1{
+    font-family:Georgia,"Times New Roman",serif;
+    font-size:clamp(1.9rem,6.4vw,2.7rem);
+    line-height:1.07;margin:0;font-weight:700;letter-spacing:-.01em;
+    text-wrap:balance;
+  }
+  .lede{
+    font-size:1.08rem;color:var(--muted);margin:.7rem 0 0;max-width:60ch;
+    text-wrap:pretty;
+  }
+  h2{
+    font-family:Georgia,serif;font-size:1.32rem;font-weight:700;
+    margin:0 0 .1rem;letter-spacing:-.005em;
+  }
+  section{margin-top:2.6rem}
+  .kicker{
+    font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--muted);font-weight:600;margin:0 0 .8rem;
+    display:flex;align-items:center;gap:.6rem;
+  }
+  .kicker::before{
+    content:"";width:1.4rem;height:2px;background:var(--accent);border-radius:2px;
+  }
+  p{margin:.65rem 0}
+  strong{font-weight:650}
+  a{color:var(--accent)}
+  .math{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-weight:600}
+  sup{font-size:.72em}
+  sub{font-size:.72em}
+
+  /* Главная формула */
+  .hero-formula{
+    margin-top:2.2rem;
+    background:var(--ink);color:#fff;border-radius:14px;
+    padding:1.6rem 1.2rem;text-align:center;
+  }
+  .hero-formula .lbl{
+    font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;
+    color:#9aa6c9;margin:0 0 .7rem;
+  }
+  .hero-formula .eq{
+    font-family:ui-monospace,"SF Mono",Menlo,monospace;
+    font-size:clamp(1.25rem,5.4vw,2.1rem);font-weight:700;letter-spacing:.01em;
+  }
+  .hero-formula .eq b{color:#8ea0ff;font-weight:700}
+  .hero-formula .note{font-size:.86rem;color:#9aa6c9;margin:.8rem 0 0}
+
+  /* Пререквизит */
+  .recall{
+    background:var(--accent-soft);border-radius:12px;padding:1rem 1.15rem;
+    font-size:.96rem;
+  }
+  .recall p{margin:.3rem 0}
+
+  /* Два случая: q ≠ 1 и q = 1 */
+  .cases{display:grid;gap:.85rem;margin-top:.4rem}
+  @media(min-width:620px){.cases{grid-template-columns:repeat(2,1fr)}}
+  .case{
+    border-radius:12px;padding:1.05rem 1.1rem;border:1px solid var(--line);
+    background:var(--card);display:flex;flex-direction:column;gap:.35rem;
+  }
+  .case .sign{font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.05rem;overflow-x:auto}
+  .case .count{font-weight:650;font-size:1rem}
+  .case .desc{font-size:.9rem;color:var(--muted)}
+  .case.pos{border-top:4px solid var(--pos);background:var(--pos-bg)}
+  .case.pos .sign{color:var(--pos)}
+  .case.zero{border-top:4px solid var(--zero);background:var(--zero-bg)}
+  .case.zero .sign{color:var(--zero)}
+  .case.neg{border-top:4px solid var(--neg);background:var(--neg-bg)}
+  .case.neg .sign{color:var(--neg)}
+
+  /* Разбор */
+  .worked{
+    background:var(--card);border:1px solid var(--line);border-radius:12px;
+    padding:1.2rem 1.3rem;
+  }
+  .worked + .worked{margin-top:1rem}
+  .worked .task{
+    font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.02rem;
+    margin:0 0 1rem;padding-bottom:.8rem;border-bottom:1px solid var(--line);
+  }
+  ol.steps{margin:0;padding:0;list-style:none;counter-reset:s;display:flex;flex-direction:column;gap:.7rem}
+  ol.steps li{
+    position:relative;padding-left:2.1rem;counter-increment:s;
+  }
+  ol.steps li::before{
+    content:counter(s);position:absolute;left:0;top:.05rem;
+    width:1.5rem;height:1.5rem;border-radius:50%;
+    background:var(--accent-soft);color:var(--accent);
+    font-size:.82rem;font-weight:700;display:flex;align-items:center;justify-content:center;
+  }
+  ol.steps .m{font-family:ui-monospace,Menlo,monospace;font-weight:600;color:var(--ink)}
+  .verdict{
+    margin-top:1rem;padding:.7rem 1rem;background:var(--pos-bg);
+    border-radius:9px;font-weight:600;color:var(--pos);font-size:.98rem;
+  }
+
+  /* Вывод формулы */
+  .derive{
+    background:var(--card);border:1px solid var(--line);border-radius:12px;
+    padding:1.1rem 1.2rem;font-family:ui-monospace,Menlo,monospace;
+    font-size:.94rem;line-height:1.9;overflow-x:auto;
+  }
+  .derive .hl{color:var(--accent);font-weight:700}
+  .derive .row{white-space:nowrap}
+
+  /* Таблица нарастания */
+  .tblwrap{overflow-x:auto;margin-top:.6rem}
+  table.grow{border-collapse:collapse;width:100%;min-width:420px;background:var(--card);
+    border:1px solid var(--line);border-radius:12px;font-family:ui-monospace,Menlo,monospace;font-size:.92rem}
+  table.grow th,table.grow td{padding:.5rem .6rem;text-align:center;border-bottom:1px solid var(--line)}
+  table.grow th{font-size:.76rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:700}
+  table.grow tr:last-child td{border-bottom:none}
+  table.grow td.s{color:var(--pos);font-weight:700}
+
+  /* Практика */
+  .drill{display:flex;flex-direction:column;gap:.7rem}
+  details{
+    background:var(--card);border:1px solid var(--line);border-radius:10px;
+    padding:.85rem 1.05rem;
+  }
+  details[open]{border-color:var(--accent)}
+  summary{
+    cursor:pointer;font-weight:600;list-style:none;
+    display:flex;justify-content:space-between;align-items:center;gap:1rem;
+  }
+  summary::-webkit-details-marker{display:none}
+  summary:focus-visible{outline:3px solid var(--accent);outline-offset:3px;border-radius:6px}
+  summary .q{font-family:ui-monospace,Menlo,monospace;min-width:0}
+  summary .tag{
+    font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);
+    border:1px solid var(--line);border-radius:20px;padding:.1rem .55rem;white-space:nowrap;
+  }
+  summary::after{
+    content:"ответ";font-size:.78rem;color:var(--accent);font-weight:600;white-space:nowrap;
+  }
+  details[open] summary::after{content:"скрыть"}
+  .ans{margin-top:.7rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.96rem;color:var(--muted)}
+  .ans .m{font-family:ui-monospace,Menlo,monospace;color:var(--ink);font-weight:600}
+
+  /* Ошибки */
+  ul.pitfalls{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:.6rem}
+  ul.pitfalls li{
+    padding-left:1.5rem;position:relative;font-size:.98rem;
+  }
+  ul.pitfalls li::before{
+    content:"×";position:absolute;left:0;top:-.05rem;color:var(--neg);font-weight:700;font-size:1.1rem;
+  }
+  ul.pitfalls b{color:var(--ink)}
+
+  .selfcheck{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:1.1rem 1.25rem}
+  .selfcheck ol{margin:.2rem 0 0;padding-left:1.2rem}
+  .selfcheck li{margin:.35rem 0}
+
+  .next{
+    background:var(--accent);color:#fff;border-radius:12px;padding:1.2rem 1.3rem;
+  }
+  .next h2{color:#fff}
+  .next .eq{
+    font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.1rem;
+    margin:.6rem 0 .3rem;
+  }
+  .next p{color:#dfe4fb;font-size:.96rem;margin:.4rem 0 0}
+  .next a{color:#fff;font-weight:700}
+  .foot{margin-top:2.4rem;font-size:.82rem;color:var(--muted);text-align:center}
+
+  @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+<style>
+.oge-tip{display:flex;gap:.8rem;align-items:flex-start;background:#FFF8E7;border:1px solid #F0D98A;border-left:4px solid #E0A315;border-radius:10px;padding:.85rem 1.05rem;margin:1.5rem 0}
+.oge-tip .b{font-size:.72rem;font-weight:800;letter-spacing:.03em;color:#8A6A15;white-space:nowrap;text-transform:uppercase;padding-top:.15rem}
+.oge-tip .x{font-size:.95rem;line-height:1.5}
+</style>
+
+<!--LESSON-NAV-TOP--><style>.lnav{--lnav-accent:#3D5AF1}.lnav a{text-decoration:none;font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif}.lnav-top{max-width:820px;margin:0 auto;padding:.75rem clamp(1rem,4vw,1.5rem) .1rem}.lnav-top a{display:inline-flex;align-items:center;gap:.35rem;color:var(--lnav-accent);font-weight:600;font-size:.9rem}.lnav-top a:hover{text-decoration:underline}.lnav-bot{max-width:820px;margin:2.6rem auto 3rem;padding:1.1rem clamp(1rem,4vw,1.5rem) 0;border-top:1px solid #E4E8EF;display:flex;align-items:stretch;gap:.55rem}.lnav-bot a{min-width:0;display:flex;flex-direction:column;justify-content:center;gap:.15rem;border:1px solid #E4E8EF;border-radius:12px;padding:.65rem .85rem;color:#182233;background:#fff;transition:border-color .1s,transform .08s}.lnav-bot a:hover{border-color:var(--lnav-accent);transform:translateY(-1px)}.lnav-bot .prev,.lnav-bot .next{flex:1 1 0}.lnav-bot .next{text-align:right}.lnav-bot .dir{font-size:.72rem;color:#8A93A6;font-weight:600}.lnav-bot .ttl{font-size:.9rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.lnav-bot .to-cat{flex:0 0 auto;flex-direction:row;align-items:center;justify-content:center;color:var(--lnav-accent);font-weight:700;font-size:.85rem;white-space:nowrap}@media(max-width:420px){.lnav-bot .to-cat span{display:none}.lnav-bot .to-cat{padding:.65rem .7rem}}</style><nav class="lnav lnav-top"><a href="./catalog.html">← Все темы</a></nav><!--/LESSON-NAV-TOP-->
+<div class="wrap">
+
+  <header>
+    <p class="eyebrow">Алгебра · 9 класс</p>
+    <h1>Сумма первых n членов геометрической прогрессии</h1>
+    <p class="lede">Складывать 1 + 2 + 4 + 8 + … по одному — долго и легко сбиться. Есть формула, которая даёт весь итог за один расчёт.</p>
+  </header>
+
+  <div class="hero-formula">
+    <p class="lbl">Сумма первых n членов · при q ≠ 1</p>
+    <div class="eq">S<sub>n</sub> = <b>b</b><sub>1</sub>(<b>q</b><sup>n</sup> − 1) / (<b>q</b> − 1)</div>
+    <p class="note">в показателе стоит <b>n</b> — столько же, сколько слагаемых</p>
+  </div>
+
+  <section>
+    <p class="kicker">Зачем это нужно</p>
+    <h2>Часто нужен итог, а не отдельный член</h2>
+    <p>Геометрическая прогрессия описывает всё, что растёт или убывает «в разы»: вклад под сложный процент, деление клеток, цепочка пересылок сообщения, отскоки мяча (каждый раз на меньшую высоту в одно и то же число раз).</p>
+    <p>И почти всегда спрашивают не «чему равен шестой член», а <strong>«сколько всего»</strong>: сколько денег накопится за год, какой суммарный путь пройдёт затухающий маятник. Складывать члены по одному долго и легко ошибиться — формула суммы даёт ответ за один расчёт.</p>
+    <p>Это продолжение того, что ты уже умеешь для <a href="./alg9-arifmeticheskaya-progressiya.html">арифметической прогрессии</a>, но формула тут другая — со степенью.</p>
+    <p><strong>Житейское заблуждение:</strong> «удваивается понемногу — значит, и итог небольшой». Ничего подобного. Классика про зёрна на шахматной доске: 1 + 2 + 4 + 8 + … на 64 клетках даёт 2<sup>64</sup> − 1 зерно — больше, чем собрало человечество за всю историю. Сумма быстро растущей прогрессии огромна.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Что вспомнить с прошлого шага</p>
+    <div class="recall">
+      <p>В <a href="./alg9-geometricheskaya-progressiya.html">геометрической прогрессии</a> каждый следующий член получается умножением предыдущего на одно и то же число <strong>q</strong> — знаменатель.</p>
+      <p>Член с номером n: <span class="math">b<sub>n</sub> = b<sub>1</sub> · q<sup>n−1</sup></span> — здесь степень <strong>n − 1</strong>.</p>
+      <p>Знаменатель <span class="math">q ≠ 0</span>, иначе прогрессии не получится.</p>
+      <p>Степень <span class="math">q<sup>n</sup></span> — это n множителей q, а <em>не</em> q·n. Это ещё пригодится.</p>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Ядро темы · формула</p>
+    <h2>Вместо n слагаемых — три числа</h2>
+    <p>Сумма первых n членов — это просто их сложение:</p>
+    <div class="derive">
+      <div class="row">S<sub>n</sub> = b<sub>1</sub> + b<sub>2</sub> + … + b<sub>n</sub> = b<sub>1</sub> + b<sub>1</sub>q + b<sub>1</sub>q<sup>2</sup> + … + b<sub>1</sub>q<sup>n−1</sup></div>
+    </div>
+    <p>А формула позволяет получить этот итог, зная только <strong>b<sub>1</sub></strong>, <strong>q</strong> и <strong>n</strong>. Но у неё есть условие применимости — и это главное, за чем надо следить:</p>
+
+    <div class="cases">
+      <div class="case pos">
+        <div class="sign">q ≠ 1</div>
+        <div class="count">S<sub>n</sub> = b<sub>1</sub>(q<sup>n</sup> − 1) / (q − 1)</div>
+        <div class="desc">Основная формула. Равносильная форма, удобная при q &lt; 1 (чтобы и числитель, и знаменатель были положительными): S<sub>n</sub> = b<sub>1</sub>(1 − q<sup>n</sup>) / (1 − q).</div>
+      </div>
+      <div class="case zero">
+        <div class="sign">q = 1</div>
+        <div class="count">S<sub>n</sub> = b<sub>1</sub> · n</div>
+        <div class="desc">Формулу со степенью применять НЕЛЬЗЯ: знаменатель q − 1 = 0, а на ноль делить нельзя. Но и считать нечего: все члены равны b<sub>1</sub>, значит их сумма — просто b<sub>1</sub>, взятое n раз.</div>
+      </div>
+    </div>
+
+    <p style="margin-top:1rem"><strong>Обозначения:</strong> <span class="math">b<sub>1</sub></span> — первый член; <span class="math">q</span> — знаменатель (q ≠ 0); <span class="math">n</span> — сколько членов складываем (натуральное число); <span class="math">q<sup>n</sup></span> — q в степени n; <span class="math">S<sub>n</sub></span> — искомая сумма.</p>
+    <p style="font-size:.92rem;color:var(--muted)">Если известны <span class="math">b<sub>1</sub></span> и последний член <span class="math">b<sub>n</sub></span>, сумму можно записать ещё и так: <span class="math">S<sub>n</sub> = (b<sub>n</sub>·q − b<sub>1</sub>)/(q − 1)</span>. Но базовая школьная форма — через <span class="math">q<sup>n</sup></span>, её и держи в голове.</p>
+
+    <div class="oge-tip"><div class="b">🎯 В ОГЭ</div><div class="x"><b>Задание 14.</b> Геометрическая прогрессия в №14 встречается реже арифметической, но формула суммы там решает задачу в одну строчку.</div></div>
+  </section>
+
+  <section>
+    <p class="kicker">Откуда она берётся</p>
+    <h2>Хитрость в одну строку: умножить и вычесть</h2>
+    <p>Формулу не надо принимать на веру — её можно получить за три шага. Умножим всю сумму на <span class="math">q</span> и вычтем из результата исходную сумму: почти все слагаемые сократятся.</p>
+    <div class="derive">
+      <div class="row">S<sub>n</sub> &nbsp;&nbsp;= b<sub>1</sub> + b<sub>1</sub>q + b<sub>1</sub>q<sup>2</sup> + … + b<sub>1</sub>q<sup>n−1</sup></div>
+      <div class="row">q·S<sub>n</sub> = &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; b<sub>1</sub>q + b<sub>1</sub>q<sup>2</sup> + … + b<sub>1</sub>q<sup>n−1</sup> + b<sub>1</sub>q<sup>n</sup></div>
+      <div class="row">q·S<sub>n</sub> − S<sub>n</sub> = <span class="hl">b<sub>1</sub>q<sup>n</sup> − b<sub>1</sub></span></div>
+      <div class="row">S<sub>n</sub>(q − 1) = b<sub>1</sub>(q<sup>n</sup> − 1)</div>
+      <div class="row">S<sub>n</sub> = <span class="hl">b<sub>1</sub>(q<sup>n</sup> − 1) / (q − 1)</span></div>
+    </div>
+    <p style="font-size:.94rem;color:var(--muted)">Обрати внимание на последний шаг: мы разделили обе части на <span class="math">(q − 1)</span>. Именно поэтому формула требует <span class="math">q ≠ 1</span> — при q = 1 мы делили бы на ноль. Вот откуда взялось условие, а не «просто так запомнить».</p>
+  </section>
+
+  <section>
+    <p class="kicker">Разбираем вместе · думаю вслух</p>
+    <h2>Эталонный пример</h2>
+    <div class="worked">
+      <p class="task">b₁ = 3, q = 2, n = 5. Найти S₅.</p>
+      <ol class="steps">
+        <li>Проверяю условие: <span class="m">q = 2 ≠ 1</span> — значит, формула со степенью применима. <em>Почему проверяю первым делом:</em> при q = 1 в знаменателе окажется ноль.</li>
+        <li>Считаю степень отдельно: <span class="m">q<sup>n</sup> = 2<sup>5</sup> = 32</span>. Именно 5-я степень, потому что n = 5 (не 4 — это в формуле члена степень на единицу меньше).</li>
+        <li>Подставляю в <span class="m">S<sub>n</sub> = b<sub>1</sub>(q<sup>n</sup> − 1)/(q − 1)</span>: &nbsp;<span class="m">S₅ = 3·(32 − 1)/(2 − 1)</span>.</li>
+        <li>Довожу до числа: <span class="m">3 · 31 / 1 = 93</span>.</li>
+      </ol>
+      <div class="verdict">Проверка сложением: 3 + 6 + 12 + 24 + 48 = 93. Совпало. Ответ: S₅ = 93.</div>
+    </div>
+
+    <div class="worked">
+      <p class="task">b₁ = 16, q = 1/2, n = 4. Найти S₄.</p>
+      <ol class="steps">
+        <li><span class="m">q = 1/2 ≠ 1</span> — формула применима. Раз <span class="m">q &lt; 1</span>, беру удобную форму <span class="m">S<sub>n</sub> = b<sub>1</sub>(1 − q<sup>n</sup>)/(1 − q)</span>: так и сверху, и снизу будут положительные числа.</li>
+        <li><span class="m">q<sup>n</sup> = (1/2)<sup>4</sup> = 1/16</span>.</li>
+        <li>Числитель: <span class="m">1 − 1/16 = 15/16</span>. Знаменатель: <span class="m">1 − 1/2 = 1/2</span>.</li>
+        <li><span class="m">S₄ = 16 · (15/16) : (1/2) = 15 : (1/2) = 30</span>.</li>
+      </ol>
+      <div class="verdict">Проверка: 16 + 8 + 4 + 2 = 30. Ответ: S₄ = 30.</div>
+    </div>
+
+    <div class="worked">
+      <p class="task">b₁ = 5, q = 3, n = 4. Найти S₄. (Попробуй сам, потом сверься.)</p>
+      <ol class="steps">
+        <li><span class="m">q = 3 ≠ 1</span> — работаем по основной формуле.</li>
+        <li><span class="m">3<sup>4</sup> = 81</span> (а не 3·4 = 12 — это самая частая ловушка темы).</li>
+        <li><span class="m">S₄ = 5·(81 − 1)/(3 − 1) = 5·80/2</span>.</li>
+        <li><span class="m">= 400/2 = 200</span>.</li>
+      </ol>
+      <div class="verdict">Ответ: S₄ = 200. Проверка: 5 + 15 + 45 + 135 = 200.</div>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Наглядность · член за членом</p>
+    <h2>Итог обгоняет последний член</h2>
+    <p>Возьмём <span class="math">b<sub>1</sub> = 3, q = 2</span> и выпишем члены, а рядом — нарастающую сумму:</p>
+    <div class="tblwrap">
+      <table class="grow">
+        <tr><th>n</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th></tr>
+        <tr><th>член b<sub>n</sub></th><td>3</td><td>6</td><td>12</td><td>24</td><td>48</td></tr>
+        <tr><th>сумма S<sub>n</sub></th><td class="s">3</td><td class="s">9</td><td class="s">21</td><td class="s">45</td><td class="s">93</td></tr>
+      </table>
+    </div>
+    <p>Каждый следующий вклад <strong>в 2 раза больше</strong> предыдущего — поэтому сумма разгоняется всё быстрее. Заметь ещё одну вещь: <span class="math">S₅ = 93</span>, а последний член всего 48. Итог почти вдвое больше самого крупного слагаемого — потому что все предыдущие вместе почти догоняют последнее.</p>
+    <p><strong>Предскажи до расчёта:</strong> для <span class="math">b<sub>1</sub> = 1, q = 2</span> сумма <span class="math">S₁₀</span> — это около 100, около 1000 или больше? Прикинь, а потом посчитай (ответ будет ниже, в практике). Интуиция почти всегда занижает результат — как раз про это история с зёрнами.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Покрути сам · интерактив</p>
+    <h2>Как сумма разгоняется при разных q</h2>
+    <p>Светлые столбики — сами члены <span class="math">b<sub>k</sub></span>, тёмные — накопленная сумма <span class="math">S<sub>k</sub></span> после k-го шага. Двигай ползунки и смотри, что происходит с итогом.</p>
+    <div class="sim">
+      <canvas id="gpCanvas" width="640" height="380" aria-label="Рост суммы геометрической прогрессии по членам"></canvas>
+      <div id="gpVerdict" class="sim-verdict">S₆ = 3·(2⁶ − 1)/(2 − 1) = 189</div>
+      <div class="sliders">
+        <label>b₁ <span id="vb1" class="sval">3</span><input id="sb1" type="range" min="1" max="10" step="1" value="3" aria-label="первый член b1"></label>
+        <label>q <span id="vq" class="sval">2</span><input id="sq" type="range" min="-3" max="3" step="0.25" value="2" aria-label="знаменатель q"></label>
+        <label>n <span id="vn" class="sval">6</span><input id="sn" type="range" min="1" max="8" step="1" value="6" aria-label="количество членов n"></label>
+      </div>
+      <p class="sim-note" id="gpNote">Знаменатель по модулю больше 1 — члены растут, сумма взлетает.</p>
+    </div>
+    <p style="font-size:.92rem;color:var(--muted)">Что стоит поймать: при <span class="math">|q| &gt; 1</span> столбики суммы взлетают почти вертикально; при <span class="math">|q| &lt; 1</span> прибавки быстро тают и сумма почти замирает на месте; при <span class="math">q &lt; 0</span> члены прыгают через знак, и сумма то подскакивает, то откатывается. А поставь ровно <span class="math">q = 1</span> — увидишь, что формула со степенью там просто не определена, работает <span class="math">S<sub>n</sub> = b<sub>1</sub>·n</span>.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Теперь ты · нажми, чтобы проверить</p>
+    <h2>Мини-практика</h2>
+    <div class="drill">
+      <details>
+        <summary><span class="q">Назови формулу S<sub>n</sub> и что значит каждая буква</span><span class="tag">понимание</span></summary>
+        <div class="ans"><span class="m">S<sub>n</sub> = b<sub>1</sub>(q<sup>n</sup> − 1)/(q − 1)</span> при q ≠ 1. Здесь <span class="m">b<sub>1</sub></span> — первый член, <span class="m">q</span> — знаменатель, <span class="m">n</span> — количество складываемых членов, <span class="m">S<sub>n</sub></span> — их сумма.</div>
+      </details>
+      <details>
+        <summary><span class="q">При каком q формулу применять нельзя?</span><span class="tag">понимание</span></summary>
+        <div class="ans">При <span class="m">q = 1</span>: знаменатель <span class="m">q − 1 = 0</span>. Тогда все члены одинаковы и <span class="m">S<sub>n</sub> = b<sub>1</sub>·n</span>.</div>
+      </details>
+      <details>
+        <summary><span class="q">b₁ = 2, q = 3, n = 5 → S₅ = ?</span><span class="tag">применение</span></summary>
+        <div class="ans"><span class="m">3<sup>5</sup> = 243; S₅ = 2·(243 − 1)/(3 − 1) = 2·242/2 = 242.</span></div>
+      </details>
+      <details>
+        <summary><span class="q">b₁ = 1, q = 2, n = 10 → S₁₀ = ?</span><span class="tag">применение</span></summary>
+        <div class="ans"><span class="m">2<sup>10</sup> = 1024; S₁₀ = 1·(1024 − 1)/(2 − 1) = 1023.</span> Вот и ответ на «предскажи»: больше тысячи, а не «около сотни».</div>
+      </details>
+      <details>
+        <summary><span class="q">Что изменится: b₁ = 4, n = 3, было q = 2 (S₃ = 28), стало q = 3</span><span class="tag">анализ</span></summary>
+        <div class="ans"><span class="m">S₃ = 4·(27 − 1)/(3 − 1) = 4·26/2 = 52.</span> Сумма выросла почти вдвое. Почему: члены теперь растут в 3 раза за шаг (4, 12, 36), а не в 2 (4, 8, 16) — каждый следующий вклад крупнее, поэтому и итог больше.</div>
+      </details>
+      <details>
+        <summary><span class="q">Найди ошибку: b₁ = 2, q = 3, n = 4 → «S₄ = 2·(3·4 − 1)/(3 − 1) = 2·11/2 = 11»</span><span class="tag">анализ</span></summary>
+        <div class="ans">Ученик взял <span class="m">3·4 = 12</span> вместо <span class="m">3<sup>4</sup> = 81</span> — перепутал степень с умножением. Верно: <span class="m">S₄ = 2·(81 − 1)/(3 − 1) = 2·80/2 = 80.</span></div>
+      </details>
+      <details>
+        <summary><span class="q">Обратная задача: S₃ = 21, b₁ = 3, q &gt; 0. Найди q</span><span class="tag">анализ</span></summary>
+        <div class="ans">Распишем сумму трёх членов: <span class="m">3 + 3q + 3q² = 21</span>, то есть <span class="m">3(q² + q + 1) = 21 → q² + q + 1 = 7 → q² + q − 6 = 0</span>. Корни −3 и 2, по условию <span class="m">q &gt; 0</span>, значит <strong>q = 2</strong>. Проверка: 3 + 6 + 12 = 21.</div>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Тренажёр · бесконечная практика</p>
+    <h2>Реши задачу сам</h2>
+    <p>Нажимай «Новая задача» — здесь и прямой счёт суммы, и обратные задачи (найти q или b₁), и сюжеты как в №14. Дробный ответ можно писать и десятичной дробью (<span class="math">0.5</span> или <span class="math">0,5</span>), и обыкновенной (<span class="math">1/2</span>). Знак минуса — обычный дефис.</p>
+    <div class="trainer">
+      <div class="tr-eq" id="trEq">b₁ = 3, q = 2, n = 5. Найди S₅.</div>
+      <div class="tr-ctl">
+        <button id="trNew" type="button">🎲 Новая задача</button>
+        <input id="trAns" type="text" inputmode="text" placeholder="напр.  93   или   1/2" aria-label="Ответ">
+        <button id="trCheck" type="button" class="sec">Проверить</button>
+        <button id="trShow" type="button" class="ghost">Показать решение</button>
+      </div>
+      <div id="trResult" class="tr-result"></div>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Где чаще всего ошибаются</p>
+    <h2>Лови эти четыре ловушки</h2>
+    <ul class="pitfalls">
+      <li><b>Применяют формулу при q = 1.</b> Тогда <span class="math">q − 1 = 0</span> — деление на ноль, ответа не будет. Первым шагом всегда смотри на q: если q = 1, считай <span class="math">S<sub>n</sub> = b<sub>1</sub>·n</span>.</li>
+      <li><b>Путают q<sup>n</sup> и q·n.</b> Пишут <span class="math">(q·n − 1)</span> вместо <span class="math">(q<sup>n</sup> − 1)</span>. Проговаривай вслух «q в степени n» и для маленьких n вычисляй степень отдельно (3<sup>4</sup> = 81), а уже потом подставляй.</li>
+      <li><b>Теряют знак при отрицательном q или при q &lt; 1.</b> При отрицательном q степень <span class="math">q<sup>n</sup></span> меняет знак в зависимости от чётности n. При <span class="math">q &lt; 1</span> числитель <span class="math">(q<sup>n</sup> − 1)</span> отрицателен, но и знаменатель <span class="math">(q − 1)</span> тоже — итог получается положительным. Лечение: при q &lt; 1 бери форму <span class="math">(1 − q<sup>n</sup>)/(1 − q)</span>, а при q &lt; 0 внимательно следи за чётностью степени.</li>
+      <li><b>Путают n и n − 1 в показателе.</b> В сумме стоит <span class="math">q<sup>n</sup></span> — степень равна количеству слагаемых. А в формуле члена <span class="math">b<sub>n</sub> = b<sub>1</sub>·q<sup>n−1</sup></span> — на единицу меньше. Запомни так: у суммы показатель = сколько складываем.</li>
+    </ul>
+  </section>
+
+  <section>
+    <p class="kicker">Проверка понимания</p>
+    <h2>Объясни своими словами</h2>
+    <div class="selfcheck">
+      <ol>
+        <li>Назови формулу <span class="math">S<sub>n</sub></span> для геометрической прогрессии при <span class="math">q ≠ 1</span>.</li>
+        <li>Чему равна сумма, если <span class="math">q = 1</span>? Почему основная формула там не работает?</li>
+        <li>Для <span class="math">b<sub>1</sub> = 1, q = 2, n = 6</span>: <span class="math">q<sup>n</sup></span> — это 2·6 или 2<sup>6</sup>? Посчитай <span class="math">S₆</span>. <em>(Ответ: 2<sup>6</sup> = 64, значит S₆ = (64 − 1)/1 = 63.)</em></li>
+      </ol>
+    </div>
+    <p style="margin-top:1rem"><strong>Итог одним предложением:</strong> сумму первых n членов геометрической прогрессии при q ≠ 1 находят по формуле <span class="math">S<sub>n</sub> = b<sub>1</sub>(q<sup>n</sup> − 1)/(q − 1)</span>, не забывая, что в показателе стоит n, а случай q = 1 считается отдельно как <span class="math">b<sub>1</sub>·n</span>.</p>
+  </section>
+
+  <section>
+    <div class="next">
+      <h2>Что дальше</h2>
+      <p>Теперь у тебя есть все четыре формулы прогрессий — член и сумма для арифметической и для геометрической. Дальше начинается самое интересное: <a href="./alg9-zadachi-progressii.html">задачи на прогрессии</a>, где по условию сначала надо понять, <em>какая</em> это прогрессия и <em>что</em> в ней известно.</p>
+      <div class="eq">дано условие → выбрать формулу → подставить</div>
+      <p>Именно так устроено №14 в ОГЭ: половина работы — правильно опознать прогрессию и её параметры.</p>
+    </div>
+  </section>
+
+  <p class="foot">Проверка на выходе: запиши формулу S<sub>n</sub> по памяти · чему равна сумма при q = 1 · какая степень стоит у q в формуле суммы и какая — в формуле члена.</p>
+
+</div>
+
+<style>
+  .sim{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.1rem 1.1rem 1rem;margin:1rem 0}
+  .sim canvas{width:100%;height:auto;display:block;border-radius:10px;background:#FCFDFF}
+  .sim-verdict{text-align:center;font-weight:700;font-size:clamp(.9rem,3.6vw,1.05rem);margin:.8rem 0 0;padding:.55rem .5rem;border-radius:9px;
+    font-family:ui-monospace,Menlo,monospace;background:var(--pos-bg);color:var(--pos);overflow-x:auto}
+  .sim-verdict.grow{background:var(--pos-bg);color:var(--pos)}
+  .sim-verdict.fade{background:var(--accent-soft);color:var(--accent)}
+  .sim-verdict.alt{background:var(--neg-bg);color:var(--neg)}
+  .sim-verdict.one{background:var(--zero-bg);color:var(--zero)}
+  .sliders{display:grid;gap:.6rem;margin-top:.9rem}
+  @media(min-width:520px){.sliders{grid-template-columns:repeat(3,1fr)}}
+  .sliders label{display:flex;align-items:center;gap:.5rem;font-weight:700;font-family:ui-monospace,Menlo,monospace}
+  .sliders input[type=range]{flex:1;min-width:0;accent-color:var(--accent)}
+  .sliders input[type=range]:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+  .sliders .sval{min-width:4ch;text-align:right;color:var(--accent);font-variant-numeric:tabular-nums}
+  .sim-note{font-size:.9rem;color:var(--muted);margin:.8rem 0 0;text-align:center}
+</style>
+
+<script>
+(function(){
+  var canvas=document.getElementById('gpCanvas'); if(!canvas) return;
+  var ctx=canvas.getContext('2d');
+  var sb1=document.getElementById('sb1'), sq=document.getElementById('sq'), sn=document.getElementById('sn');
+  var vb1=document.getElementById('vb1'), vq=document.getElementById('vq'), vn=document.getElementById('vn');
+  var verdict=document.getElementById('gpVerdict'), note=document.getElementById('gpNote');
+  var W=640,H=380,dpr=1;
+
+  function mn(s){ return String(s).replace(/-/g,'−'); }
+  function num(x){
+    var r=Math.round(x*100)/100;
+    if(Math.abs(r)>=100000) return mn(r.toExponential(2));
+    if(Object.is(r,-0)) r=0;
+    return mn(String(r));
+  }
+  function sup(n){
+    var map={'0':'⁰','1':'¹','2':'²','3':'³','4':'⁴','5':'⁵','6':'⁶','7':'⁷','8':'⁸','9':'⁹'};
+    return String(n).split('').map(function(c){return map[c]||c;}).join('');
+  }
+  function sub(n){
+    var map={'0':'₀','1':'₁','2':'₂','3':'₃','4':'₄','5':'₅','6':'₆','7':'₇','8':'₈','9':'₉'};
+    return String(n).split('').map(function(c){return map[c]||c;}).join('');
+  }
+
+  function resize(){
+    var cssW=canvas.clientWidth||640; dpr=Math.min(window.devicePixelRatio||1,2);
+    W=cssW; H=Math.max(230,Math.round(cssW*0.58));
+    canvas.width=W*dpr; canvas.height=H*dpr; canvas.style.height=H+'px';
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+  }
+
+  function css(v,f){ return getComputedStyle(document.documentElement).getPropertyValue(v).trim()||f; }
+
+  function draw(){
+    var b1=parseFloat(sb1.value), q=parseFloat(sq.value), n=parseInt(sn.value,10);
+    vb1.textContent=mn(b1); vq.textContent=mn(q); vn.textContent=n;
+
+    var mem=[], sum=[], s=0, cur=b1, i;
+    for(i=0;i<n;i++){ mem.push(cur); s+=cur; sum.push(s); cur=cur*q; }
+
+    // масштаб
+    var vmax=0, vmin=0;
+    for(i=0;i<n;i++){
+      vmax=Math.max(vmax,mem[i],sum[i]);
+      vmin=Math.min(vmin,mem[i],sum[i]);
+    }
+    if(vmax===vmin){ vmax=vmax+1; vmin=vmin-1; }
+    var padTop=18, padBot=30, padL=6, padR=6;
+    var plotH=H-padTop-padBot;
+    var span=vmax-vmin; if(span<=0) span=1;
+    function Y(v){ return padTop + (vmax-v)/span*plotH; }
+    var y0=Y(0);
+
+    ctx.clearRect(0,0,W,H);
+
+    // сетка (горизонтали)
+    ctx.strokeStyle='#EDEFF4'; ctx.lineWidth=1;
+    for(i=0;i<=4;i++){
+      var gy=padTop+plotH*i/4;
+      ctx.beginPath(); ctx.moveTo(0,gy); ctx.lineTo(W,gy); ctx.stroke();
+    }
+
+    var plotW=W-padL-padR;
+    var slot=plotW/n;
+    var wideW=Math.max(6,slot*0.62), narrowW=Math.max(3,slot*0.28);
+    var colGrow=css('--pos','#1E8E5A'), colAcc=css('--accent','#3B4FD0'), colNeg=css('--neg','#C0455B');
+    var sumCol = (q<0) ? colNeg : ((Math.abs(q)>1.001) ? colGrow : colAcc);
+
+    for(i=0;i<n;i++){
+      var cx=padL+slot*(i+0.5);
+      // накопленная сумма — широкий тёмный столбик
+      var ys=Y(sum[i]);
+      ctx.fillStyle=sumCol; ctx.globalAlpha=.85;
+      ctx.fillRect(cx-wideW/2, Math.min(ys,y0), wideW, Math.max(1.5,Math.abs(ys-y0)));
+      // член — узкий светлый поверх
+      var ym=Y(mem[i]);
+      ctx.globalAlpha=.95; ctx.fillStyle='#B9C2E8';
+      ctx.fillRect(cx-narrowW/2, Math.min(ym,y0), narrowW, Math.max(1.5,Math.abs(ym-y0)));
+      ctx.globalAlpha=1;
+      // подпись номера
+      ctx.fillStyle='#5A6478'; ctx.font='11px ui-monospace,Menlo,monospace'; ctx.textAlign='center';
+      ctx.fillText(String(i+1), cx, H-11);
+    }
+
+    // ось нуля
+    ctx.strokeStyle='#9AA3B2'; ctx.lineWidth=1.5;
+    ctx.beginPath(); ctx.moveTo(0,y0); ctx.lineTo(W,y0); ctx.stroke();
+
+    // итог сверху последнего столбика
+    var lastX=padL+slot*(n-0.5), lastY=Y(sum[n-1]);
+    ctx.fillStyle=sumCol; ctx.font='bold 12px ui-monospace,Menlo,monospace'; ctx.textAlign='center';
+    var ty = (sum[n-1]>=0) ? Math.max(12,lastY-6) : Math.min(H-padBot-2,lastY+15);
+    ctx.fillText('S'+sub(n)+' = '+num(sum[n-1]), Math.min(W-38,Math.max(38,lastX)), ty);
+
+    // вердикт и подпись
+    verdict.className='sim-verdict';
+    var Sn=sum[n-1];
+    if(Math.abs(q-1)<0.001){
+      verdict.classList.add('one');
+      verdict.textContent='q = 1 → S'+sub(n)+' = b₁·n = '+num(b1)+'·'+n+' = '+num(b1*n);
+      note.textContent='Все члены одинаковы. Формулу со степенью применять нельзя: в знаменателе был бы ноль.';
+    } else if(Math.abs(q)<0.001){
+      verdict.classList.add('fade');
+      verdict.textContent='q = 0 → после первого члена одни нули, S'+sub(n)+' = '+num(Sn);
+      note.textContent='Так прогрессию не задают: по определению q ≠ 0.';
+    } else {
+      var qn=Math.pow(q,n);
+      verdict.textContent='S'+sub(n)+' = '+num(b1)+'·('+num(qn)+' − 1)/('+num(q)+' − 1) = '+num(Sn);
+      if(q<0){ verdict.classList.add('alt'); note.textContent='Знаменатель отрицательный — члены прыгают через знак, сумма то растёт, то откатывается.'; }
+      else if(Math.abs(q)>1.001){ verdict.classList.add('grow'); note.textContent='Знаменатель по модулю больше 1 — члены растут, сумма взлетает.'; }
+      else { verdict.classList.add('fade'); note.textContent='Знаменатель по модулю меньше 1 — прибавки тают, сумма почти замирает на месте.'; }
+    }
+  }
+
+  [sb1,sq,sn].forEach(function(el){ el.addEventListener('input',draw); });
+  window.addEventListener('resize',function(){ resize(); draw(); });
+  resize(); draw();
+})();
+</script>
+
+<style>
+  .trainer{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.2rem 1.2rem;margin-top:1rem}
+  .tr-eq{font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:clamp(.98rem,3.6vw,1.15rem);line-height:1.6;
+    text-align:center;padding:1rem;background:var(--accent-soft);border-radius:10px;color:var(--ink)}
+  .tr-ctl{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.9rem;align-items:center}
+  .tr-ctl button{font:inherit;font-weight:700;font-size:.9rem;cursor:pointer;border:none;border-radius:9px;padding:.55rem .95rem;color:#fff;background:var(--accent)}
+  .tr-ctl button.sec{background:var(--pos)}
+  .tr-ctl button.ghost{background:transparent;color:var(--accent);border:1px solid var(--accent)}
+  .tr-ctl input{flex:1;min-width:140px;font:inherit;padding:.5rem .7rem;border:1px solid var(--line);border-radius:9px;background:#fff;color:var(--ink)}
+  .tr-ctl button:focus-visible,.tr-ctl input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+  .tr-result{margin-top:.9rem;font-size:.96rem;min-height:1.2rem}
+  .tr-result .ok{color:var(--pos);font-weight:700}
+  .tr-result .bad{color:var(--neg);font-weight:700}
+  .tr-result .sol{margin-top:.7rem;padding:.85rem 1rem;background:#FCFBFE;border:1px solid var(--line);border-radius:10px;
+    font-family:ui-monospace,Menlo,monospace;font-size:.88rem;line-height:1.85;overflow-x:auto}
+  .tr-result .sol b{color:var(--accent)}
+</style>
+
+<script>
+(function(){
+  var eqEl=document.getElementById('trEq'), ansEl=document.getElementById('trAns'), resEl=document.getElementById('trResult');
+  if(!eqEl) return;
+
+  /* ---------- хелперы ---------- */
+  var MINUS='−';
+  function mn(s){ return String(s).replace(/-/g,MINUS); }
+  function ri(a,b){ return a+Math.floor(Math.random()*(b-a+1)); }
+  function pick(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+  function gcd(a,b){ a=Math.abs(a); b=Math.abs(b); while(b){ var t=a%b; a=b; b=t; } return a||1; }
+  function frac(p,r){                     // строка обыкновенной дроби p/r
+    if(r<0){ p=-p; r=-r; }
+    var g=gcd(p,r); p/=g; r/=g;
+    return (r===1)? mn(p) : mn(p)+'/'+r;
+  }
+  function supStr(n){
+    var map={'0':'⁰','1':'¹','2':'²','3':'³','4':'⁴','5':'⁵','6':'⁶','7':'⁷','8':'⁸','9':'⁹'};
+    return String(n).split('').map(function(c){return map[c]||c;}).join('');
+  }
+  function subStr(n){
+    var map={'0':'₀','1':'₁','2':'₂','3':'₃','4':'₄','5':'₅','6':'₆','7':'₇','8':'₈','9':'₉'};
+    return String(n).split('').map(function(c){return map[c]||c;}).join('');
+  }
+
+  /* задача: {type, b1, a, b, n}  — знаменатель q = a/b, всегда a!==b (q!==1) и a!==0 */
+  function qStr(t){ return frac(t.a,t.b); }
+  function qVal(t){ return t.a/t.b; }
+  function member(t,k){ return Math.round(t.b1*Math.pow(t.a,k-1)/Math.pow(t.b,k-1)); }
+  function members(t){ var out=[],k; for(k=1;k<=t.n;k++) out.push(member(t,k)); return out; }
+  function calcS(t){
+    var pa=Math.pow(t.a,t.n), pb=Math.pow(t.b,t.n);
+    return Math.round(t.b1*(pa-pb)/(Math.pow(t.b,t.n-1)*(t.a-t.b)));
+  }
+  function sumStr(t){                      // "3 + 6 + 12 − 24"
+    var m=members(t), s=mn(m[0]), i;
+    for(i=1;i<m.length;i++) s += (m[i]<0? ' '+MINUS+' '+Math.abs(m[i]) : ' + '+m[i]);
+    return s;
+  }
+
+  /* ---------- пулы знаменателей ---------- */
+  var INT_Q=[{a:2,b:1,nmax:8},{a:3,b:1,nmax:6},{a:4,b:1,nmax:5},{a:-2,b:1,nmax:7},{a:-3,b:1,nmax:5}];
+  var FRAC_Q=[{a:1,b:2},{a:-1,b:2},{a:1,b:3},{a:2,b:3},{a:3,b:2},{a:-1,b:3},{a:-3,b:2}];
+
+  function baseTask(allowFrac){
+    var t;
+    if(allowFrac && Math.random()<0.4){
+      var f=pick(FRAC_Q), n=ri(3,4);
+      t={a:f.a,b:f.b,n:n,b1:ri(1,3)*Math.pow(f.b,n-1)};
+    } else {
+      var g=pick(INT_Q);
+      t={a:g.a,b:1,n:ri(3,g.nmax),b1:ri(1,6)};
+    }
+    return t;
+  }
+
+  /* ---------- генерация ---------- */
+  function plural(n,f){                    // f = [1, 2, 5]
+    var a=Math.abs(n)%100, b=a%10;
+    if(a>10&&a<20) return f[2];
+    if(b>1&&b<5) return f[1];
+    if(b===1) return f[0];
+    return f[2];
+  }
+  var STORIES=[
+    {q:[{a:2,b:1},{a:3,b:1}], n:[3,5], mult:100, txt:function(t){
+      return 'В первый месяц на вклад начислили '+t.b1+' руб., и каждый следующий месяц начисление растёт в '+qStr(t)+' раза. Сколько всего рублей начислено за '+t.n+' '+plural(t.n,['месяц','месяца','месяцев'])+'?'; }},
+    {q:[{a:2,b:1},{a:3,b:1}], n:[3,5], mult:1, minK:2, txt:function(t){
+      return 'В первый час разделилось '+t.b1+' '+plural(t.b1,['клетка','клетки','клеток'])+', и каждый следующий час делится в '+qStr(t)+' раза больше клеток, чем в предыдущий. Сколько клеток разделилось всего за '+t.n+' '+plural(t.n,['час','часа','часов'])+'?'; }},
+    {q:[{a:2,b:1},{a:3,b:1}], n:[3,5], mult:1, txt:function(t){
+      return 'Первый участник разослал '+t.b1+' '+plural(t.b1,['сообщение','сообщения','сообщений'])+', на каждом следующем круге рассылают в '+qStr(t)+' раза больше сообщений, чем на предыдущем. Сколько сообщений отправлено за '+t.n+' '+plural(t.n,['круг','круга','кругов'])+'?'; }},
+    {q:[{a:1,b:2}], n:[3,4], mult:10, txt:function(t){
+      return 'Мяч в первый раз подпрыгнул на '+t.b1+' см, и каждый следующий подъём в 2 раза ниже предыдущего. Какой суммарный путь вверх мяч проделал за '+t.n+' '+plural(t.n,['подъём','подъёма','подъёмов'])+'?'; }},
+    {q:[{a:2,b:1}], n:[4,6], mult:1, txt:function(t){
+      return 'На первую клетку доски положили '+t.b1+' '+plural(t.b1,['зерно','зерна','зёрен'])+', на каждую следующую — вдвое больше, чем на предыдущую. Сколько зёрен лежит на первых '+t.n+' клетках?'; }}
+  ];
+
+  function makeTask(){
+    var type=pick(['S','S','S','q','b1','story','story']);
+    var t;
+    if(type==='q'){
+      if(Math.random()<0.5){                       // n = 3, q — натуральное, условие q > 0
+        var qi=pick([2,3,4]);
+        t={type:'q',a:qi,b:1,n:3,b1:ri(1,5)};
+      } else {                                     // n = 2, q любое из пула (в т.ч. дробное/отрицательное)
+        var f=pick(FRAC_Q.concat([{a:2,b:1},{a:3,b:1},{a:-2,b:1}]));
+        t={type:'q',a:f.a,b:f.b,n:2,b1:ri(1,4)*f.b};
+      }
+    } else if(type==='b1'){
+      t=baseTask(true); t.type='b1';
+      if(t.n>5) t.n=5;
+    } else if(type==='story'){
+      var st=pick(STORIES), sq=pick(st.q), sn=ri(st.n[0],st.n[1]);
+      var k=ri(st.minK||1,sq.b===1?5:4);
+      t={type:'story',a:sq.a,b:sq.b,n:sn,b1:k*Math.pow(sq.b,sn-1)*st.mult,story:st};
+    } else {
+      t=baseTask(true); t.type='S';
+    }
+    t.S=calcS(t);
+    return t;
+  }
+
+  var cur=makeTask();
+
+  function questionText(t){
+    if(t.type==='S')  return 'b₁ = '+t.b1+', q = '+qStr(t)+', n = '+t.n+'. Найди S'+subStr(t.n)+'.';
+    if(t.type==='b1') return 'q = '+qStr(t)+', n = '+t.n+', S'+subStr(t.n)+' = '+mn(t.S)+'. Найди b₁.';
+    if(t.type==='q'){
+      var extra = (t.n===3) ? ' Известно, что q > 0.' : '';
+      return 'b₁ = '+t.b1+', S'+subStr(t.n)+' = '+mn(t.S)+' (сумма первых '+(t.n===2?'двух':'трёх')+' членов). Найди q.'+extra;
+    }
+    return t.story.txt(t);
+  }
+
+  function expected(t){
+    if(t.type==='q') return t.a/t.b;
+    if(t.type==='b1') return t.b1;
+    return t.S;
+  }
+
+  /* ---------- пошаговое решение ---------- */
+  function solutionHTML(){
+    var t=cur, h='<div class="sol">';
+    var pa=Math.pow(t.a,t.n), pb=Math.pow(t.b,t.n);
+
+    if(t.type==='q'){
+      if(t.n===2){
+        h+='S₂ = b₁ + b₁q = b₁(1 + q)<br>';
+        h+='1 + q = S₂ : b₁ = '+mn(t.S)+' : '+t.b1+' = '+frac(t.S,t.b1)+'<br>';
+        h+='q = '+frac(t.S,t.b1)+' − 1 = <b>'+qStr(t)+'</b><br>';
+      } else {
+        var R=t.S/t.b1;
+        h+='S₃ = b₁ + b₁q + b₁q² = b₁(1 + q + q²)<br>';
+        h+='1 + q + q² = S₃ : b₁ = '+mn(t.S)+' : '+t.b1+' = '+R+'<br>';
+        h+='q² + q + 1 − '+R+' = 0 → q² + q − '+(R-1)+' = 0<br>';
+        h+='D = 1 + 4·'+(R-1)+' = '+(1+4*(R-1))+', √D = '+Math.round(Math.sqrt(1+4*(R-1)))+'<br>';
+        h+='q = ('+MINUS+'1 + '+Math.round(Math.sqrt(1+4*(R-1)))+') : 2 = <b>'+qStr(t)+'</b> (второй корень отрицательный, а по условию q > 0)<br>';
+      }
+      h+='Проверка: '+sumStr(t)+' = '+mn(t.S);
+      return h+'</div>';
+    }
+
+    // общий каркас для S / b1 / story
+    h+='q = '+qStr(t)+' ≠ 1 — формула со степенью работает.<br>';
+    h+='q'+supStr(t.n)+' = ('+qStr(t)+')'+supStr(t.n)+' = '+frac(pa,pb)+'<br>';
+    h+='q'+supStr(t.n)+' − 1 = '+frac(pa-pb,pb)+', &nbsp; q − 1 = '+frac(t.a-t.b,t.b)+'<br>';
+
+    if(t.type==='b1'){
+      h+='b₁ = S'+subStr(t.n)+'·(q − 1) : (q'+supStr(t.n)+' − 1) = '+mn(t.S)+'·('+frac(t.a-t.b,t.b)+') : ('+frac(pa-pb,pb)+') = <b>'+t.b1+'</b><br>';
+      h+='Проверка: '+sumStr(t)+' = '+mn(t.S);
+    } else {
+      h+='S'+subStr(t.n)+' = b₁·(q'+supStr(t.n)+' − 1) : (q − 1) = '+t.b1+'·('+frac(pa-pb,pb)+') : ('+frac(t.a-t.b,t.b)+') = <b>'+mn(t.S)+'</b><br>';
+      h+='Проверка сложением: '+sumStr(t)+' = '+mn(t.S);
+    }
+    return h+'</div>';
+  }
+
+  /* ---------- разбор ответа ---------- */
+  function parseAnswer(raw){
+    var s=String(raw).replace(/−/g,'-');
+    s=s.replace(/(\d),(\d)/g,'$1.$2');
+    s=s.trim().toLowerCase();
+    s=s.replace(/\s+/g,'');
+    if(s.indexOf('=')>=0) s=s.slice(s.lastIndexOf('=')+1);   // убираем «S=», «q=», «b1=»
+    s=s.replace(/(руб|см|шт|зерн|сообщ|клет)[а-я]*\.?$/,'');
+    if(s==='') return NaN;
+    if(/^[+-]?\d+(\.\d+)?$/.test(s)) return parseFloat(s);
+    var m=s.match(/^([+-]?\d+(?:\.\d+)?)\/(\d+(?:\.\d+)?)$/);
+    if(m){ var d=parseFloat(m[2]); if(d===0) return NaN; return parseFloat(m[1])/d; }
+    return NaN;
+  }
+
+  function render(){
+    eqEl.textContent=questionText(cur);
+    ansEl.value=''; resEl.innerHTML='';
+  }
+  function generate(){ cur=makeTask(); render(); ansEl.focus(); }
+
+  function check(){
+    var got=parseAnswer(ansEl.value);
+    if(isNaN(got)){
+      resEl.innerHTML='<span class="bad">Не понял запись. Введи одно число: целое (например 93), десятичной дробью (0.5) или обыкновенной (1/2).</span>';
+      return;
+    }
+    var exp=expected(cur);
+    if(Math.abs(got-exp)<0.005){          // 1/3 можно записать и как 0.33
+      resEl.innerHTML='<span class="ok">✓ Верно!</span>'+solutionHTML();
+    } else {
+      var hint='';
+      if(cur.type!=='q' && cur.type!=='b1' && Math.abs(got-cur.b1*qVal(cur)*cur.n)<1e-6) hint=' Похоже, ты перемножил q и n вместо степени.';
+      if(Math.abs(got-cur.b1*cur.n)<1e-6) hint=' Формула b₁·n годится только при q = 1, а тут q другое.';
+      resEl.innerHTML='<span class="bad">✗ Пока не то.'+hint+'</span>'+solutionHTML();
+    }
+  }
+
+  document.getElementById('trNew').addEventListener('click',generate);
+  document.getElementById('trCheck').addEventListener('click',check);
+  document.getElementById('trShow').addEventListener('click',function(){ resEl.innerHTML=solutionHTML(); });
+  ansEl.addEventListener('keydown',function(e){ if(e.key==='Enter') check(); });
+
+  render();   // первичный рендер без focus()
+
+  if(typeof window!=='undefined'){
+    window.__gpSumTrainer={makeTask:makeTask,questionText:questionText,expected:expected,
+      solutionHTML:function(t){ var old=cur; cur=t; var h=solutionHTML(); cur=old; return h; },
+      members:members,calcS:calcS,parseAnswer:parseAnswer};
+  }
+})();
+</script>
+<!--LESSON-NAV-BOT--><nav class="lnav lnav-bot"><a class="prev" href="./alg9-geometricheskaya-progressiya.html"><span class="dir">← Предыдущая</span><span class="ttl">Геометрическая прогрессия и её n-й член</span></a><a class="to-cat" href="./catalog.html">📚 <span>Все темы</span></a><a class="next" href="./alg9-zadachi-progressii.html"><span class="dir">Следующая →</span><span class="ttl">Прикладные задачи на прогрессии</span></a></nav><!--/LESSON-NAV-BOT-->

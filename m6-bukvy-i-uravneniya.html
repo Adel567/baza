@@ -1,0 +1,819 @@
+<title>Буквенные выражения и линейные уравнения — математика 6 класс</title>
+
+<style>
+  :root{
+    --paper:#F6F5FA; --card:#FFFFFF; --ink:#20242E; --muted:#5E6675; --line:#E6E3EF;
+    --expr:#2F6DB4; --expr-soft:#E3EDF8; --expr-brd:#C3D6EC;   /* выражение: буква = любое число */
+    --eq:#6A45C8;   --eq-soft:#ECE6F9;   --eq-brd:#D2C4F0;     /* уравнение: буква = неизвестное */
+    --warn:#E08A1E; --warn-soft:#FBEEDB; --warn-brd:#F0D8B0;   /* коэффициенты, подобные */
+    --ok:#1E8E5A; --no:#C23B3B;
+    --fbox:#20242E; --fbox-ink:#FFFFFF; --fbox-cap:#AEB6C6;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --paper:#15171D; --card:#1D2029; --ink:#E9E8EE; --muted:#9BA3B4; --line:#2E3340;
+      --expr:#7FB0E8; --expr-soft:#1B2634; --expr-brd:#2E4258;
+      --eq:#B49CEB; --eq-soft:#221E33; --eq-brd:#3D3358;
+      --warn:#EFB25E; --warn-soft:#2A2318; --warn-brd:#4A3A20;
+      --ok:#63C795; --no:#E8807A;
+      --fbox:#101319; --fbox-ink:#F2F2F6; --fbox-cap:#8D96A8;
+    }
+  }
+  :root[data-theme="dark"]{
+    --paper:#15171D; --card:#1D2029; --ink:#E9E8EE; --muted:#9BA3B4; --line:#2E3340;
+    --expr:#7FB0E8; --expr-soft:#1B2634; --expr-brd:#2E4258;
+    --eq:#B49CEB; --eq-soft:#221E33; --eq-brd:#3D3358;
+    --warn:#EFB25E; --warn-soft:#2A2318; --warn-brd:#4A3A20;
+    --ok:#63C795; --no:#E8807A;
+    --fbox:#101319; --fbox-ink:#F2F2F6; --fbox-cap:#8D96A8;
+  }
+  :root[data-theme="light"]{
+    --paper:#F6F5FA; --card:#FFFFFF; --ink:#20242E; --muted:#5E6675; --line:#E6E3EF;
+    --expr:#2F6DB4; --expr-soft:#E3EDF8; --expr-brd:#C3D6EC;
+    --eq:#6A45C8; --eq-soft:#ECE6F9; --eq-brd:#D2C4F0;
+    --warn:#E08A1E; --warn-soft:#FBEEDB; --warn-brd:#F0D8B0;
+    --ok:#1E8E5A; --no:#C23B3B;
+    --fbox:#20242E; --fbox-ink:#FFFFFF; --fbox-cap:#AEB6C6;
+  }
+
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper);overflow-x:hidden}
+  .page{
+    max-width:720px;margin:0 auto;
+    padding:clamp(1.4rem,4vw,3rem) clamp(1.1rem,4vw,2rem) 4.5rem;
+    color:var(--ink);
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    font-size:17.5px;line-height:1.68;-webkit-font-smoothing:antialiased;
+  }
+  .mono{
+    font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+    font-variant-numeric:tabular-nums;font-weight:600;white-space:nowrap;
+  }
+  .ex{color:var(--expr);font-weight:750}
+  .uq{color:var(--eq);font-weight:750}
+  .kf{color:var(--warn);font-weight:750}
+
+  /* --- шапка --- */
+  .hero{border-bottom:3px solid var(--eq);padding-bottom:1.4rem;margin-bottom:.6rem}
+  .eyebrow{font-size:.74rem;letter-spacing:.15em;text-transform:uppercase;color:var(--eq);font-weight:700;margin:0 0 .55rem}
+  h1{font-size:clamp(1.8rem,5.6vw,2.6rem);line-height:1.07;margin:0;font-weight:800;letter-spacing:-.02em;text-wrap:balance}
+  .tagline{font-size:1.1rem;color:var(--muted);margin:.85rem 0 0;text-wrap:pretty}
+
+  section{margin-top:2.6rem}
+  h2{font-size:1.45rem;margin:0 0 .5rem;font-weight:780;letter-spacing:-.015em;text-wrap:balance}
+  h2 .num{color:var(--muted);font-weight:700;font-variant-numeric:tabular-nums}
+  h3{font-size:1.06rem;margin:1.6rem 0 .4rem;font-weight:750}
+  p{margin:.7rem 0}
+  ul,ol{margin:.7rem 0;padding-left:1.35rem}
+  li{margin:.35rem 0}
+  strong{font-weight:680}
+  .hint{color:var(--muted);font-size:.92rem}
+
+  /* --- две роли буквы: контрастная пара --- */
+  .roles{display:grid;gap:.75rem;margin:1.1rem 0}
+  @media(min-width:600px){.roles{grid-template-columns:1fr 1fr}}
+  .role{border-radius:15px;padding:1rem 1.15rem;border:2px solid}
+  .role.e{background:var(--expr-soft);border-color:var(--expr-brd)}
+  .role.q{background:var(--eq-soft);border-color:var(--eq-brd)}
+  .role .lab{font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;font-weight:800;margin:0 0 .35rem}
+  .role.e .lab{color:var(--expr)} .role.q .lab{color:var(--eq)}
+  .role .rec{font-family:ui-monospace,Menlo,monospace;font-size:1.22rem;font-weight:750;margin:0 0 .4rem}
+  .role p{margin:.3rem 0;font-size:.97rem}
+
+  /* --- формула-бокс --- */
+  .fbox{
+    background:var(--fbox);color:var(--fbox-ink);border-radius:14px;
+    padding:1.05rem 1.25rem;margin:1.1rem 0;display:flex;flex-wrap:wrap;
+    align-items:center;gap:.9rem;
+  }
+  .fbox .tag{
+    font-size:.71rem;letter-spacing:.08em;text-transform:uppercase;font-weight:800;
+    padding:.28rem .55rem;border-radius:7px;white-space:nowrap;
+    background:rgba(180,156,235,.25);color:#C6B4F2;
+  }
+  .fbox.e .tag{background:rgba(127,176,232,.22);color:#9FC4EE}
+  .fbox.k .tag{background:rgba(224,138,30,.22);color:#F3B65E}
+  .fbox .eq{font-family:ui-monospace,Menlo,monospace;font-size:clamp(1.05rem,4.4vw,1.35rem);font-weight:750}
+  .fbox .cap{flex-basis:100%;margin:0;font-size:.86rem;color:var(--fbox-cap)}
+
+  .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:1.15rem 1.3rem;margin:1.1rem 0}
+  .card > :first-child{margin-top:0}
+  .card > :last-child{margin-bottom:0}
+  .card .q{font-weight:700;margin:0 0 .9rem;padding-bottom:.7rem;border-bottom:1px solid var(--line)}
+
+  .note{border-left:4px solid var(--warn);background:var(--warn-soft);border-radius:0 10px 10px 0;padding:.8rem 1.1rem;margin:1.1rem 0;font-size:.98rem}
+  .note b{color:var(--warn)}
+  .err{border-left:4px solid var(--no);background:var(--card);border-radius:0 10px 10px 0;padding:.75rem 1.1rem;margin:.7rem 0;font-size:.98rem}
+  .err p{margin:.3rem 0}
+  .err b{color:var(--no)}
+
+  /* --- пошаговый разбор --- */
+  .steps{list-style:none;padding:0;margin:.9rem 0;counter-reset:st}
+  .steps li{position:relative;padding-left:2.3rem;margin:.85rem 0;counter-increment:st}
+  .steps li::before{
+    content:counter(st);position:absolute;left:0;top:.15rem;
+    width:1.6rem;height:1.6rem;border-radius:50%;
+    background:var(--eq-soft);color:var(--eq);border:1px solid var(--eq-brd);
+    font-size:.82rem;font-weight:800;
+    display:flex;align-items:center;justify-content:center;font-variant-numeric:tabular-nums;
+  }
+  .steps.e li::before{background:var(--expr-soft);color:var(--expr);border-color:var(--expr-brd)}
+  .why{color:var(--muted);font-size:.92em;font-style:italic}
+
+  /* --- интерактив --- */
+  .out{
+    margin:.85rem 0;padding:.75rem .95rem;background:var(--paper);border-radius:10px;
+    font-family:ui-monospace,Menlo,monospace;font-variant-numeric:tabular-nums;
+    font-size:1.02rem;font-weight:650;overflow-x:auto;white-space:nowrap;
+  }
+  .out.center{text-align:center;font-size:1.15rem}
+  canvas{width:100%;height:auto;display:block;border-radius:8px}
+  .btn-row{display:flex;flex-wrap:wrap;gap:.45rem;margin:.9rem 0 .2rem}
+  button{
+    font:inherit;font-weight:700;font-size:.85rem;cursor:pointer;
+    border:1px solid var(--line);background:var(--paper);color:var(--muted);
+    border-radius:20px;padding:.4rem .9rem;
+  }
+  button:hover:not(:disabled){border-color:var(--eq);color:var(--eq)}
+  button.on{background:var(--eq);color:#fff;border-color:var(--eq)}
+  button:disabled{opacity:.4;cursor:default}
+  input[type=text]{
+    font:inherit;font-family:ui-monospace,Menlo,monospace;font-weight:650;
+    padding:.4rem .8rem;width:8.5rem;border:1px solid var(--line);
+    border-radius:20px;background:var(--card);color:var(--ink);
+  }
+  input[type=range]{width:100%;max-width:22rem;accent-color:var(--expr)}
+  :focus-visible{outline:2px solid var(--eq);outline-offset:2px;border-radius:6px}
+  .cap{text-align:center;font-size:.88rem;color:var(--muted);margin:.6rem 0 0}
+
+  table{border-collapse:collapse;width:100%;font-size:.95rem;font-variant-numeric:tabular-nums}
+  th,td{border:1px solid var(--line);padding:.35rem .6rem;text-align:center}
+  th{background:var(--paper);font-weight:700}
+  .scroll-x{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:.9rem 0}
+
+  .verdict{margin-top:.7rem;font-weight:700;min-height:1.6em;font-size:.98rem}
+  .verdict.ok{color:var(--ok)} .verdict.no{color:var(--no)}
+
+  /* --- задачи --- */
+  .tasks{display:flex;flex-direction:column;gap:.5rem;margin-top:.9rem}
+  details{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:.7rem 1rem}
+  details[open]{border-color:var(--eq-brd)}
+  summary{cursor:pointer;font-weight:600;list-style:none;display:flex;gap:.55rem;align-items:baseline}
+  summary::-webkit-details-marker{display:none}
+  summary::before{content:"+";color:var(--eq);font-weight:800;font-size:1.05rem;line-height:1.4}
+  details[open] summary::before{content:"−"}
+  .no-{font-family:ui-monospace,Menlo,monospace;font-weight:750;color:var(--muted);font-variant-numeric:tabular-nums}
+  .sol{margin-top:.7rem;padding-top:.7rem;border-top:1px dashed var(--line)}
+  .sol p{margin:.45rem 0}
+  .lvl{font-size:.74rem;letter-spacing:.12em;text-transform:uppercase;font-weight:800;color:var(--muted);margin:1.8rem 0 .2rem}
+</style>
+
+<div class="page">
+
+<div class="hero">
+  <p class="eyebrow">Математика · 6 класс</p>
+  <h1>Буквенные выражения и линейные уравнения</h1>
+  <p class="tagline">Одна буква — две разные работы. В выражении она заменяет любое число, в уравнении прячет одно конкретное. Разберёмся с обеими.</p>
+</div>
+
+<section>
+<h2><span class="num">1.</span> Зачем это нужно</h2>
+
+<p>Ты едешь на такси. Тариф: <strong>50 рублей за посадку плюс 12 рублей за каждый километр</strong>. Сколько стоит поездка на 3 км? А на 5? А на 40?</p>
+
+<p>Считать каждый раз заново — скучно. Умнее записать правило один раз:</p>
+
+<div class="fbox e">
+  <span class="tag">правило</span>
+  <span class="eq">стоимость = 50 + 12 · k</span>
+  <p class="cap">k — число километров. Подставил 3 — узнал цену поездки на 3 км, подставил 40 — на 40 км. Одна запись работает для всех случаев сразу.</p>
+</div>
+
+<p>А теперь вопрос наоборот: <em>«я заплатил 194 рубля — сколько километров проехал?»</em> Здесь буква уже не «любое число», а конкретное неизвестное, которое надо найти:</p>
+
+<div class="fbox">
+  <span class="tag">уравнение</span>
+  <span class="eq">50 + 12 · k = 194</span>
+  <p class="cap">Появился знак «=» и известный результат. Теперь k — не свободный выбор, а единственное число, которое сюда подходит.</p>
+</div>
+
+<p>Вот эта пара и есть весь урок:</p>
+
+<div class="roles">
+  <div class="role e">
+    <p class="lab">Буквенное выражение</p>
+    <p class="rec">50 + 12k</p>
+    <p>Правило, как считать. Находить нечего: подставляешь значение буквы и вычисляешь.</p>
+  </div>
+  <div class="role q">
+    <p class="lab">Уравнение</p>
+    <p class="rec">50 + 12k = 194</p>
+    <p>Равенство с неизвестным. Есть что искать: то значение k, при котором равенство верное.</p>
+  </div>
+</div>
+
+<h3>Что понадобится из прошлых тем</h3>
+<ul>
+  <li>Действия с отрицательными числами: <span class="mono">4 · (−2) = −8</span>, <span class="mono">−8 − 3 = −11</span>.</li>
+  <li>Порядок действий: сначала скобки, потом умножение и деление, потом сложение и вычитание.</li>
+  <li>На ноль делить нельзя.</li>
+</ul>
+</section>
+
+<section>
+<h2><span class="num">2.</span> Буквенное выражение и его значение</h2>
+
+<p><span class="ex">Буквенное выражение</span> — запись из чисел, букв и знаков действий: <span class="mono">2a + 7</span>, <span class="mono">5x</span>, <span class="mono">a + b − 4</span>.</p>
+
+<p>Буква обозначает число, которое может меняться, — поэтому её называют <strong>переменной</strong>. Пока букве не дали значение, выражение просто <em>хранит правило</em>. Как только мы говорим «пусть <span class="mono">a = 5</span>», правило срабатывает: <span class="mono">2 · 5 + 7 = 17</span>. Число 17 — это <strong>значение выражения</strong> при <span class="mono">a = 5</span>.</p>
+
+<div class="card">
+  <h3 style="margin-top:0">Как читается запись</h3>
+  <ul>
+    <li>Знак умножения между числом и буквой не пишут: <span class="mono">5 · x</span> → <span class="mono">5x</span>, <span class="mono">a · b</span> → <span class="mono">ab</span>.</li>
+    <li>Число перед буквой — <span class="kf">коэффициент</span>. В записи <span class="mono">5x</span> коэффициент равен 5, переменная — <span class="mono">x</span>.</li>
+    <li>Нет числа перед буквой — коэффициент 1: <span class="mono">x = 1 · x</span>. Стоит только минус — коэффициент −1: <span class="mono">−x = −1 · x</span>.</li>
+  </ul>
+  <p class="hint">Осторожно: <span class="mono">2a</span> при <span class="mono">a = 3</span> — это <strong>не</strong> «двадцать три». Это <span class="mono">2 · 3 = 6</span>.</p>
+</div>
+
+<h3>Эталонный разбор: думаю вслух</h3>
+
+<div class="card">
+  <p class="q">Найти значение выражения <span class="mono">4a − 3</span> при <span class="mono">a = −2</span>.</p>
+  <ol class="steps e">
+    <li><span class="mono">4a</span> означает <span class="mono">4 · a</span>. <span class="why">Коэффициент умножается на переменную, просто знак умножения не пишут.</span></li>
+    <li>Подставляю значение, отрицательное число беру <strong>в скобки</strong>: <span class="mono">4 · (−2) − 3</span>. <span class="why">Скобки нужны, чтобы не потерять минус.</span></li>
+    <li>Умножаю: <span class="mono">4 · (−2) = −8</span>. Осталось <span class="mono">−8 − 3</span>. <span class="why">Плюс на минус даёт минус.</span></li>
+    <li>Вычитаю: <span class="mono">−8 − 3 = −11</span>. <span class="why">Идём по числовой прямой ещё на 3 влево.</span></li>
+  </ol>
+  <p><strong>Ответ: при <span class="mono">a = −2</span> значение равно −11.</strong></p>
+</div>
+
+<h3>Посмотри сам: одно выражение — много чисел</h3>
+<p>Подвигай ползунок. Буква меняется — меняется значение, а само правило остаётся тем же.</p>
+
+<div class="card">
+  <label for="subX" style="font-weight:700">Значение переменной <span class="mono ex">x = <span id="subXVal">2</span></span></label>
+  <input type="range" id="subX" min="-5" max="5" step="1" value="2" style="display:block;margin:.7rem 0 .2rem">
+  <div class="out" id="subOut"></div>
+  <div class="scroll-x">
+    <table>
+      <thead><tr><th>x</th><th>−3</th><th>−2</th><th>−1</th><th>0</th><th>1</th><th>2</th><th>3</th></tr></thead>
+      <tbody><tr><th>2x + 1</th><td>−5</td><td>−3</td><td>−1</td><td>1</td><td>3</td><td>5</td><td>7</td></tr></tbody>
+    </table>
+  </div>
+  <p class="cap">Когда <span class="mono">x</span> растёт на 1, значение растёт на 2 — ровно на коэффициент.</p>
+</div>
+</section>
+
+<section>
+<h2><span class="num">3.</span> Подобные слагаемые — чтобы выражение стало короче</h2>
+
+<p>Складывать можно только «одинаковое». Представь коробки: одна с подписью <span class="mono">x</span>, другая с подписью <span class="mono">y</span>. Тогда <span class="mono">3x + 2x</span> — это 3 коробки <span class="mono">x</span> и ещё 2 такие же, всего 5 коробок: <span class="mono">5x</span>. А коробки <span class="mono">x</span> и <span class="mono">y</span> в одну кучу не сольёшь.</p>
+
+<p><span class="kf">Подобные слагаемые</span> — слагаемые с одинаковой буквенной частью. При их приведении складывают <strong>только коэффициенты</strong>, буквенная часть не меняется:</p>
+
+<div class="fbox k">
+  <span class="tag">приведение</span>
+  <span class="eq">a · x + b · x = (a + b) · x</span>
+  <p class="cap">Буква показывает, что мы считаем, коэффициент — сколько раз это взяли.</p>
+</div>
+
+<div class="card">
+  <p class="q">Упростить: <span class="mono">8a − 3a + a</span>.</p>
+  <ol class="steps e">
+    <li>Все слагаемые содержат <span class="mono">a</span> — значит, подобны.</li>
+    <li>Выписываю коэффициенты <strong>вместе со знаками</strong>: <span class="mono">+8</span>, <span class="mono">−3</span>, <span class="mono">+1</span>. <span class="why">Помним: a = 1 · a.</span></li>
+    <li>Складываю: <span class="mono">8 − 3 + 1 = 6</span>.</li>
+    <li>Буквенную часть оставляю без изменений. <strong>Ответ: <span class="mono">6a</span>.</strong></li>
+  </ol>
+</div>
+
+<div class="note">
+  <p><b>Частая ловушка.</b> <span class="mono">3x + 2x = 5x²</span> — неверно, степень не берётся из ниоткуда. Правильно <span class="mono">5x</span>.</p>
+  <p>Проверь подстановкой <span class="mono">x = 2</span>: <span class="mono">4 + 6 = 10</span> и <span class="mono">5 · 2 = 10</span> — сходится. А <span class="mono">5 · 2² = 20</span> — нет.</p>
+</div>
+</section>
+
+<section>
+<h2><span class="num">4.</span> Уравнение: буква становится неизвестной</h2>
+
+<p><span class="uq">Уравнение</span> — равенство, в котором есть неизвестное число. <strong>Решить уравнение</strong> — значит найти все значения буквы, при которых равенство верное. Такое значение называют <strong>корнем</strong>.</p>
+
+<p><strong>Линейное уравнение</strong> — то, которое приводится к виду <span class="mono">ax + b = 0</span>: буква в первой степени, не в квадрате, не под корнем, не в знаменателе.</p>
+
+<h3>Главная идея — весы</h3>
+<p>Знак «=» — это весы в равновесии. Если с обеими чашами сделать <strong>одно и то же</strong>, равновесие сохранится. Отсюда два правила:</p>
+
+<div class="fbox">
+  <span class="tag">правило 1</span>
+  <span class="eq">перенос через «=» меняет знак</span>
+  <p class="cap">Слагаемое можно перенести из одной части в другую, изменив знак на противоположный. Это то же самое, что убрать одинаковое с обеих чаш.</p>
+</div>
+
+<div class="fbox">
+  <span class="tag">правило 2</span>
+  <span class="eq">делим обе части на коэффициент</span>
+  <p class="cap">Обе части можно разделить на одно и то же число, не равное нулю. Так слева остаётся один x.</p>
+</div>
+
+<h3>Весы вживую</h3>
+<p>Мешочек <span class="mono">x</span> — неизвестный вес, кубик — единица. Делай с обеими чашами одинаковые действия и следи: весы всё время в равновесии, а уравнение становится проще.</p>
+
+<div class="card">
+  <canvas id="scale" width="720" height="300" aria-label="Модель весов для уравнения 5x + 3 = 2x + 12"></canvas>
+  <div class="out center" id="scaleEq"></div>
+  <div class="btn-row">
+    <button id="sb1">Убрать 2x с обеих чаш</button>
+    <button id="sb2">Убрать 3 кубика с обеих</button>
+    <button id="sb3">Разделить обе части на 3</button>
+    <button id="sbReset">Сброс</button>
+  </div>
+  <p class="cap" id="scaleMsg"></p>
+</div>
+
+<h3>Эталонный разбор: думаю вслух</h3>
+
+<div class="card">
+  <p class="q">Решить уравнение <span class="mono">5x − 8 = 2x + 7</span>.</p>
+  <ol class="steps">
+    <li>Переношу <span class="mono">2x</span> влево, меняя знак: <span class="mono">5x − 2x − 8 = 7</span>. <span class="why">Собираю всё с буквой в одной части.</span></li>
+    <li>Переношу <span class="mono">−8</span> вправо, меняя знак на <span class="mono">+8</span>: <span class="mono">5x − 2x = 7 + 8</span>. <span class="why">Числа без буквы — в другую часть.</span></li>
+    <li>Привожу подобные: <span class="mono">3x = 15</span>. <span class="why">5x − 2x = 3x, а 7 + 8 = 15.</span></li>
+    <li>Делю обе части на коэффициент 3: <span class="mono">x = 15 : 3 = 5</span>. <span class="why">Чтобы слева остался один x.</span></li>
+    <li><strong>Проверка:</strong> <span class="mono">5 · 5 − 8 = 17</span> и <span class="mono">2 · 5 + 7 = 17</span> — равно.</li>
+  </ol>
+  <p><strong>Ответ: x = 5.</strong></p>
+  <p class="hint">Проверка подстановкой занимает 20 секунд и ловит почти любую арифметическую ошибку. Делай её всегда.</p>
+</div>
+</section>
+
+<section>
+<h2><span class="num">5.</span> Тренажёр</h2>
+<p>Бесконечные задания двух видов. Реши сам, введи ответ, нажми «Проверить» — потом можно раскрыть пошаговое решение.</p>
+
+<div class="card">
+  <div class="btn-row">
+    <button id="modeExpr" class="on">Значение выражения</button>
+    <button id="modeEq">Решить уравнение</button>
+  </div>
+  <p class="q" id="quizQ" style="border:0;padding:0;font-size:1.08rem"></p>
+  <div class="btn-row">
+    <input type="text" id="quizIn" placeholder="ответ" inputmode="text" autocomplete="off" aria-label="Твой ответ">
+    <button id="quizCheck" class="on">Проверить</button>
+    <button id="quizNew">Новое задание</button>
+  </div>
+  <div class="verdict" id="quizVerdict"></div>
+  <details id="quizSolBox" style="margin-top:.6rem">
+    <summary>Пошаговое решение</summary>
+    <div class="sol" id="quizSol"></div>
+  </details>
+</div>
+</section>
+
+<section>
+<h2><span class="num">6.</span> Задачи</h2>
+
+<p class="lvl">Уровень 1 · понимание</p>
+<div class="tasks">
+
+<details><summary><span class="no-">1</span> В выражении <span class="mono">7n</span> назови коэффициент и переменную.</summary>
+<div class="sol"><p>Коэффициент — <strong>7</strong>, переменная — <strong>n</strong>. Запись <span class="mono">7n</span> означает <span class="mono">7 · n</span>.</p></div></details>
+
+<details><summary><span class="no-">2</span> Прочитай словами <span class="mono">a + 9</span> и запиши выражением: «произведение числа m и числа 6».</summary>
+<div class="sol"><p>«К числу <span class="mono">a</span> прибавить 9» (или «сумма числа <span class="mono">a</span> и девяти»).</p>
+<p>Произведение: <strong><span class="mono">6m</span></strong> (можно и <span class="mono">m · 6</span>).</p></div></details>
+
+<details><summary><span class="no-">3</span> Является ли <span class="mono">x = 7</span> корнем уравнения <span class="mono">x + 2 = 9</span>?</summary>
+<div class="sol"><p>Подставляем: <span class="mono">7 + 2 = 9</span> — равенство верное. <strong>Да, это корень.</strong></p>
+<p class="hint">Чтобы проверить, корень ли данное число, решать уравнение не нужно — достаточно подстановки.</p></div></details>
+
+<details><summary><span class="no-">4</span> В уравнении <span class="mono">9x − 4 = 0</span> назови коэффициент при <span class="mono">x</span> и свободный член.</summary>
+<div class="sol"><p>Коэффициент при <span class="mono">x</span> — <strong>9</strong>. Свободный член — <strong>−4</strong>: минус берём вместе с числом.</p></div></details>
+
+</div>
+
+<p class="lvl">Уровень 2 · применение</p>
+<div class="tasks">
+
+<details><summary><span class="no-">5</span> Найди значение <span class="mono">5x</span> при <span class="mono">x = 6</span>.</summary>
+<div class="sol"><p><span class="mono">5 · 6 = 30</span>. <strong>Ответ: 30.</strong></p></div></details>
+
+<details><summary><span class="no-">6</span> Найди значение <span class="mono">10 − 3b</span> при <span class="mono">b = 4</span>.</summary>
+<div class="sol"><p>Сначала умножение, потом вычитание: <span class="mono">10 − 3 · 4 = 10 − 12 = −2</span>. <strong>Ответ: −2.</strong></p></div></details>
+
+<details><summary><span class="no-">7</span> Найди значение <span class="mono">a + b − 4</span> при <span class="mono">a = 10</span>, <span class="mono">b = −3</span>.</summary>
+<div class="sol"><p><span class="mono">10 + (−3) − 4 = 7 − 4 = 3</span>. <strong>Ответ: 3.</strong></p></div></details>
+
+<details><summary><span class="no-">8</span> Найди значение <span class="mono">2x + 5y</span> при <span class="mono">x = 3</span>, <span class="mono">y = −1</span>.</summary>
+<div class="sol"><p><span class="mono">2 · 3 + 5 · (−1) = 6 + (−5) = 1</span>. <strong>Ответ: 1.</strong></p></div></details>
+
+<details><summary><span class="no-">9</span> Запиши выражением периметр квадрата со стороной <span class="mono">a</span> и найди его при <span class="mono">a = 7</span>.</summary>
+<div class="sol"><p>Периметр — сумма четырёх одинаковых сторон: <strong><span class="mono">4a</span></strong>. При <span class="mono">a = 7</span>: <span class="mono">4 · 7 = 28</span>.</p></div></details>
+
+<details><summary><span class="no-">10</span> Упрости: а) <span class="mono">4x + 6x</span>; б) <span class="mono">12c − 5c</span>; в) <span class="mono">b + 8b − 3b</span>; г) <span class="mono">10m − 4m − m + 2m</span>.</summary>
+<div class="sol"><p>а) <span class="mono">10x</span></p><p>б) <span class="mono">7c</span></p>
+<p>в) коэффициенты <span class="mono">1 + 8 − 3 = 6</span>, значит <span class="mono">6b</span></p>
+<p>г) <span class="mono">10 − 4 − 1 + 2 = 7</span>, значит <span class="mono">7m</span></p></div></details>
+
+<details><summary><span class="no-">11</span> Реши: а) <span class="mono">x + 11 = 4</span>; б) <span class="mono">7x = 42</span>; в) <span class="mono">−2x = 6</span>.</summary>
+<div class="sol"><p>а) переносим 11 вправо со сменой знака: <span class="mono">x = 4 − 11 = −7</span>.</p>
+<p>б) делим обе части на 7: <span class="mono">x = 42 : 7 = 6</span>.</p>
+<p>в) делим на −2 вместе со знаком: <span class="mono">x = 6 : (−2) = −3</span>.</p></div></details>
+
+<details><summary><span class="no-">12</span> Реши: <span class="mono">2x + 5 = x + 12</span>.</summary>
+<div class="sol"><p><span class="mono">2x − x = 12 − 5</span> → <span class="mono">x = 7</span>.</p>
+<p>Проверка: <span class="mono">2 · 7 + 5 = 19</span> и <span class="mono">7 + 12 = 19</span>.</p></div></details>
+
+<details><summary><span class="no-">13</span> Реши: <span class="mono">4x + 3 = x + 18</span>.</summary>
+<div class="sol"><p><span class="mono">4x − x = 18 − 3</span> → <span class="mono">3x = 15</span> → <span class="mono">x = 5</span>.</p>
+<p>Проверка: <span class="mono">4 · 5 + 3 = 23</span> и <span class="mono">5 + 18 = 23</span>.</p></div></details>
+
+<details><summary><span class="no-">14</span> Реши: <span class="mono">6x − 5 = 3x + 13</span>.</summary>
+<div class="sol"><p><span class="mono">6x − 3x = 13 + 5</span> → <span class="mono">3x = 18</span> → <span class="mono">x = 6</span>.</p>
+<p>Проверка: <span class="mono">6 · 6 − 5 = 31</span> и <span class="mono">3 · 6 + 13 = 31</span>.</p></div></details>
+
+<details><summary><span class="no-">15</span> Такси: 50 руб. за посадку и 12 руб. за километр. а) Сколько стоит поездка на 8 км? б) Пассажир заплатил 194 руб. Сколько километров он проехал?</summary>
+<div class="sol"><p>а) Работа с <span class="ex">выражением</span>: <span class="mono">50 + 12 · 8 = 50 + 96 = 146</span> руб.</p>
+<p>б) Это уже <span class="uq">уравнение</span>: <span class="mono">50 + 12k = 194</span>. Переносим 50: <span class="mono">12k = 144</span>, делим на 12: <span class="mono">k = 12</span> км.</p>
+<p>Проверка: <span class="mono">50 + 12 · 12 = 194</span>.</p></div></details>
+
+</div>
+
+<p class="lvl">Уровень 3 · анализ</p>
+<div class="tasks">
+
+<details><summary><span class="no-">16</span> Значение выражения <span class="mono">2x + 1</span> равно 9. Каким было <span class="mono">x</span>?</summary>
+<div class="sol"><p>Обратная задача — она превращается в уравнение <span class="mono">2x + 1 = 9</span>.</p>
+<p><span class="mono">2x = 9 − 1 = 8</span>, значит <span class="mono">x = 4</span>.</p>
+<p class="hint">Вот и вся связь двух половин урока: как только у выражения задано значение, появляется уравнение.</p></div></details>
+
+<details><summary><span class="no-">17</span> <b>Найди ошибку.</b> При <span class="mono">m = −5</span> ученик написал: <span class="mono">3m = 3 · −5 = 15</span>.</summary>
+<div class="sol"><p>Две беды. Первая: отрицательное число подставляют <strong>в скобках</strong> — <span class="mono">3 · (−5)</span>. Вторая: плюс на минус даёт минус, результат отрицательный.</p>
+<p>Правильно: <span class="mono">3 · (−5) = −15</span>.</p></div></details>
+
+<details><summary><span class="no-">18</span> <b>Найди ошибку.</b> Ученик написал: <span class="mono">3x + 2x = 5x²</span>.</summary>
+<div class="sol"><p>Складываются только коэффициенты, буквенная часть не меняется. Правильно: <span class="mono">5x</span>.</p></div></details>
+
+<details><summary><span class="no-">19</span> <b>Найди ошибку.</b> В уравнении <span class="mono">8x = 24</span> ученик получил <span class="mono">x = 192</span>.</summary>
+<div class="sol"><p>Он умножил вместо деления. Между 8 и <span class="mono">x</span> стоит умножение — значит, обратное действие деление.</p>
+<p>Правильно: <span class="mono">x = 24 : 8 = 3</span>. Проверка: <span class="mono">8 · 3 = 24</span>.</p></div></details>
+
+<details><summary><span class="no-">20</span> <b>Что изменится, если…</b> Корень уравнения <span class="mono">3x = 12</span> равен 4. Каким станет корень, если правую часть увеличить в 2 раза?</summary>
+<div class="sol"><p>Уравнение <span class="mono">3x = 24</span>, корень <span class="mono">x = 8</span> — тоже вдвое больше.</p>
+<p>Почему: правую часть делят на тот же коэффициент 3, поэтому во сколько раз выросла правая часть, во столько же вырос и корень.</p></div></details>
+
+<details><summary><span class="no-">21</span> Сравни <span class="mono">a − b</span> и <span class="mono">b − a</span> при <span class="mono">a = 8</span>, <span class="mono">b = 2</span>. Что заметил?</summary>
+<div class="sol"><p><span class="mono">a − b = 8 − 2 = 6</span>, а <span class="mono">b − a = 2 − 8 = −6</span>.</p>
+<p>Числа противоположные. Значит, в вычитании буквы менять местами <strong>нельзя</strong> — в отличие от сложения, где <span class="mono">a + b = b + a</span>.</p></div></details>
+
+<details><summary><span class="no-">22</span> <b>Обратная задача.</b> Придумай линейное уравнение, корень которого равен −3.</summary>
+<div class="sol"><p>Иди от ответа. Возьми <span class="mono">x = −3</span>, придумай левую часть, например <span class="mono">2x + 7</span>, и посчитай её значение: <span class="mono">2 · (−3) + 7 = 1</span>.</p>
+<p>Значит, подойдёт <span class="mono">2x + 7 = 1</span>. Таких уравнений бесконечно много: <span class="mono">x + 3 = 0</span>, <span class="mono">5x = −15</span> и другие.</p></div></details>
+
+<details><summary><span class="no-">23</span> Подбери слагаемые с буквой <span class="mono">p</span>, чтобы после приведения получился 0.</summary>
+<div class="sol"><p>Нужно, чтобы сумма коэффициентов была нулём: <span class="mono">5p − 5p = 0</span> или <span class="mono">7p − 3p − 4p = 0</span>.</p></div></details>
+
+</div>
+</section>
+
+<section>
+<h2><span class="num">7.</span> Частые ошибки — пробегись по списку</h2>
+
+<div class="err">
+  <p><b>Теряют знак при подстановке.</b> Пишут <span class="mono">3x</span> при <span class="mono">x = −4</span> как <span class="mono">3 · 4 = 12</span>.</p>
+  <p>Подставляй отрицательное число в скобках: <span class="mono">3 · (−4) = −12</span>.</p>
+</div>
+
+<div class="err">
+  <p><b>Путают коэффициент и переменную.</b> Думают, что в <span class="mono">5x</span> «икс равен пяти».</p>
+  <p>5 — это множитель, <span class="mono">x</span> — переменная, её значение задают отдельно.</p>
+</div>
+
+<div class="err">
+  <p><b>Не меняют знак при переносе через «=».</b> Из <span class="mono">5x − 8 = 7</span> пишут <span class="mono">5x = 7 − 8</span>.</p>
+  <p>Проговаривай вслух: «переношу — меняю знак». Верно: <span class="mono">5x = 7 + 8</span>.</p>
+</div>
+
+<div class="err">
+  <p><b>Вместо деления вычитают коэффициент.</b> Из <span class="mono">3x = 15</span> пишут <span class="mono">x = 15 − 3</span>.</p>
+  <p>Между коэффициентом и <span class="mono">x</span> умножение, значит обратное действие — деление: <span class="mono">x = 15 : 3 = 5</span>.</p>
+</div>
+
+<div class="err">
+  <p><b>Забывают минус у отрицательного коэффициента.</b> Из <span class="mono">−2x = 6</span> получают <span class="mono">x = 3</span>.</p>
+  <p>Делим на −2 вместе со знаком: <span class="mono">6 : (−2) = −3</span>.</p>
+</div>
+
+<div class="err">
+  <p><b>Не проверяют ответ.</b> А подстановка корня в исходное уравнение ловит почти все арифметические ошибки.</p>
+</div>
+</section>
+
+<section>
+<h2><span class="num">8.</span> Проверь понимание</h2>
+
+<div class="note">
+  <p>Ответь своими словами — вслух или письменно:</p>
+  <ol>
+    <li>Чем буквенное выражение отличается от уравнения? Где надо что-то находить, а где нет?</li>
+    <li>Что такое значение буквенного выражения и как его найти?</li>
+    <li>Сформулируй правило переноса слагаемого через знак «=».</li>
+    <li>Из <span class="mono">4x = 20</span> — каким одним действием находим <span class="mono">x</span>?</li>
+    <li>Найди значение <span class="mono">4 − 2a</span> при <span class="mono">a = −3</span>. <span class="hint">(Должно получиться 10.)</span></li>
+  </ol>
+</div>
+
+<div class="card">
+  <h3 style="margin-top:0">Итог одной строкой</h3>
+  <p><span class="ex">Буквенное выражение</span> — записанное буквами правило вычисления; его значение получают, подставив числа вместо букв. <span class="uq">Линейное уравнение</span> решают, собирая слагаемые с <span class="mono">x</span> в одной части (с переменой знака при переносе) и деля обе части на коэффициент при <span class="mono">x</span>.</p>
+</div>
+
+<h3>Что дальше</h3>
+<p>В 7 классе из этого вырастет вся алгебра: раскрытие скобок и преобразование выражений, уравнения посложнее — со скобками и дробями, — а затем текстовые задачи, которые решают, составляя уравнение по условию. Фундамент — ровно то, что ты прошёл сейчас: буква как число, подобные слагаемые и два правила равносильных преобразований.</p>
+</section>
+
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  if (!document.querySelector('meta[name="viewport"]')) {
+    var mv = document.createElement("meta");
+    mv.name = "viewport";
+    mv.content = "width=device-width, initial-scale=1";
+    document.head.appendChild(mv);
+  }
+
+  // настоящий минус U+2212 вместо ASCII-дефиса
+  function fmt(n) { return String(n).replace(/-/g, "−"); }
+  function signed(n) { return (n < 0 ? "− " : "+ ") + Math.abs(n); }
+  function term(coef, letter) {
+    if (coef === 1) return letter;
+    if (coef === -1) return "−" + letter;
+    return fmt(coef) + letter;
+  }
+  function randInt(a, b) { return a + Math.floor(Math.random() * (b - a + 1)); }
+  function randNonZero(a, b) {          // «+ 0» в условии выглядит нелепо
+    var v = 0;
+    while (v === 0) v = randInt(a, b);
+    return v;
+  }
+  function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+  function css(name) {
+    return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+  }
+
+  /* ---------- подстановка с ползунком ---------- */
+  var subX = document.getElementById("subX");
+  var subXVal = document.getElementById("subXVal");
+  var subOut = document.getElementById("subOut");
+
+  function renderSub() {
+    var x = parseInt(subX.value, 10);
+    var shown = x < 0 ? "(" + fmt(x) + ")" : String(x);
+    subXVal.textContent = fmt(x);
+    subOut.textContent = "2x + 1 = 2 · " + shown + " + 1 = " + fmt(2 * x) + " + 1 = " + fmt(2 * x + 1);
+  }
+  subX.addEventListener("input", renderSub);
+  renderSub();
+
+  /* ---------- весы ---------- */
+  var cv = document.getElementById("scale");
+  var ctx = cv.getContext("2d");
+  var eqOut = document.getElementById("scaleEq");
+  var msg = document.getElementById("scaleMsg");
+  var b1 = document.getElementById("sb1");
+  var b2 = document.getElementById("sb2");
+  var b3 = document.getElementById("sb3");
+  var bR = document.getElementById("sbReset");
+  var st;
+
+  function resetScale() {
+    st = { lx: 5, ln: 3, rx: 2, rn: 12 };
+    b1.disabled = false; b2.disabled = true; b3.disabled = true;
+    msg.textContent = "Слева 5 мешочков и 3 кубика, справа 2 мешочка и 12 кубиков. Весы уравновешены — это и есть уравнение.";
+    draw();
+  }
+
+  function eqText() {
+    var L = st.lx === 0 ? "" : term(st.lx, "x");
+    var R = st.rx === 0 ? "" : term(st.rx, "x");
+    if (st.ln !== 0) L += (L ? " " + signed(st.ln) : fmt(st.ln));
+    if (st.rn !== 0) R += (R ? " " + signed(st.rn) : fmt(st.rn));
+    return (L || "0") + " = " + (R || "0");
+  }
+
+  function roundRect(x, y, w, h, r) {
+    ctx.beginPath();
+    ctx.moveTo(x + r, y);
+    ctx.arcTo(x + w, y, x + w, y + h, r);
+    ctx.arcTo(x + w, y + h, x, y + h, r);
+    ctx.arcTo(x, y + h, x, y, r);
+    ctx.arcTo(x, y, x + w, y, r);
+    ctx.closePath();
+  }
+
+  function drawPan(cx, cy, nx, nn, colX, colN, lineCol) {
+    ctx.strokeStyle = lineCol;
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(cx - 95, cy);
+    ctx.lineTo(cx + 95, cy);
+    ctx.stroke();
+
+    var bagW = 30, bagH = 34, gap = 6, cube = 18, i, x, y;
+
+    for (i = 0; i < nx; i++) {
+      x = cx - 92 + i * (bagW + gap);
+      y = cy - bagH - 2;
+      ctx.fillStyle = colX;
+      roundRect(x, y, bagW, bagH, 7);
+      ctx.fill();
+      ctx.fillStyle = "#fff";
+      ctx.font = "bold 17px ui-monospace, Menlo, monospace";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillText("x", x + bagW / 2, y + bagH / 2 + 1);
+    }
+
+    var perRow = 6;
+    for (i = 0; i < nn; i++) {
+      x = cx - 92 + (i % perRow) * (cube + 4);
+      y = cy - bagH - 14 - (Math.floor(i / perRow) + 1) * (cube + 4);
+      ctx.fillStyle = colN;
+      roundRect(x, y, cube, cube, 4);
+      ctx.fill();
+    }
+  }
+
+  function draw() {
+    var W = cv.width, H = cv.height;
+    ctx.clearRect(0, 0, W, H);
+
+    var colX = css("--eq");
+    var colN = css("--warn");
+    var lineCol = css("--muted");
+    var beamY = 215, cxL = W / 2 - 165, cxR = W / 2 + 165;
+
+    ctx.strokeStyle = lineCol;
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.moveTo(W / 2, beamY);
+    ctx.lineTo(W / 2, H - 22);
+    ctx.moveTo(W / 2 - 45, H - 22);
+    ctx.lineTo(W / 2 + 45, H - 22);
+    ctx.stroke();
+
+    ctx.beginPath();                       // коромысло всегда горизонтально: равновесие сохраняется
+    ctx.moveTo(cxL, beamY);
+    ctx.lineTo(cxR, beamY);
+    ctx.moveTo(cxL, beamY); ctx.lineTo(cxL, beamY + 14);
+    ctx.moveTo(cxR, beamY); ctx.lineTo(cxR, beamY + 14);
+    ctx.stroke();
+
+    drawPan(cxL, beamY, st.lx, st.ln, colX, colN, lineCol);
+    drawPan(cxR, beamY, st.rx, st.rn, colX, colN, lineCol);
+
+    ctx.fillStyle = css("--ink");
+    ctx.font = "bold 26px ui-monospace, Menlo, monospace";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText("=", W / 2, beamY - 34);
+
+    eqOut.textContent = eqText();
+  }
+
+  b1.addEventListener("click", function () {
+    st.lx -= 2; st.rx -= 2;
+    msg.textContent = "Убрали по 2 мешочка с каждой чаши — равновесие сохранилось. В записи это перенос 2x через знак «=».";
+    b1.disabled = true; b2.disabled = false;
+    draw();
+  });
+  b2.addEventListener("click", function () {
+    st.ln -= 3; st.rn -= 3;
+    msg.textContent = "Убрали по 3 кубика с каждой чаши. Осталось 3x = 9.";
+    b2.disabled = true; b3.disabled = false;
+    draw();
+  });
+  b3.addEventListener("click", function () {
+    st.lx /= 3; st.ln /= 3; st.rx /= 3; st.rn /= 3;
+    msg.textContent = "Оставили по трети от каждой чаши — это деление обеих частей на 3. Один мешочек весит 3: x = 3.";
+    b3.disabled = true;
+    draw();
+  });
+  bR.addEventListener("click", resetScale);
+  resetScale();
+
+  if (window.matchMedia) {                 // перерисовать при смене темы
+    var mq = window.matchMedia("(prefers-color-scheme: dark)");
+    if (mq.addEventListener) mq.addEventListener("change", draw);
+  }
+  new MutationObserver(draw).observe(document.documentElement, {
+    attributes: true, attributeFilter: ["data-theme"]
+  });
+
+  /* ---------- тренажёр ---------- */
+  var qEl = document.getElementById("quizQ");
+  var inEl = document.getElementById("quizIn");
+  var vEl = document.getElementById("quizVerdict");
+  var solEl = document.getElementById("quizSol");
+  var solBox = document.getElementById("quizSolBox");
+  var bExpr = document.getElementById("modeExpr");
+  var bEq = document.getElementById("modeEq");
+  var mode = "expr";
+  var current = null;
+
+  function genExpr() {
+    var a = pick([2, 3, 4, 5, 6, 7, -2, -3, -4]);
+    var b = randNonZero(-9, 9);
+    var x = randInt(-6, 6);
+    var letter = pick(["x", "a", "m", "y"]);
+    var shown = x < 0 ? "(" + fmt(x) + ")" : String(x);
+    return {
+      q: "Найди значение выражения " + term(a, letter) + " " + signed(b) +
+         " при " + letter + " = " + fmt(x) + ".",
+      ans: a * x + b,
+      sol: "<p>Подставляю значение буквы" + (x < 0 ? " — отрицательное число в скобках" : "") + ":</p>" +
+           "<p class='out'>" + fmt(a) + " · " + shown + " " + signed(b) + "</p>" +
+           "<p>Сначала умножение: <span class='mono'>" + fmt(a) + " · " + shown + " = " + fmt(a * x) + "</span>.</p>" +
+           "<p>Потом сложение: <span class='mono'>" + fmt(a * x) + " " + signed(b) + " = " + fmt(a * x + b) + "</span>.</p>" +
+           "<p><strong>Ответ: " + fmt(a * x + b) + ".</strong></p>"
+    };
+  }
+
+  function genEq() {
+    var x = randInt(-8, 9);
+    var a = randInt(2, 8);
+    var c = randInt(1, 6);
+    if (a === c) a = c + randInt(1, 3);
+    var b = randNonZero(-9, 9);
+    var d = (a - c) * x + b;
+    if (d === 0) d = b;                    // корень станет нулём, зато без «+ 0» в условии
+    x = (d - b) / (a - c);
+    var k = a - c, r = d - b;
+    return {
+      q: "Реши уравнение: " + term(a, "x") + " " + signed(b) + " = " + term(c, "x") + " " + signed(d) + ".",
+      ans: x,
+      sol: "<p>Переношу <span class='mono'>" + term(c, "x") + "</span> влево, а <span class='mono'>" + fmt(b) +
+             "</span> вправо — оба раза меняю знак:</p>" +
+           "<p class='out'>" + term(a, "x") + " − " + term(c, "x") + " = " + fmt(d) + " " + signed(-b) + "</p>" +
+           "<p>Привожу подобные: <span class='mono'>" + term(k, "x") + " = " + fmt(r) + "</span>.</p>" +
+           "<p>Делю обе части на коэффициент <span class='mono'>" + fmt(k) + "</span>: <strong>x = " +
+             fmt(r) + " : " + fmt(k) + " = " + fmt(x) + "</strong>.</p>" +
+           "<p class='hint'>Проверка: <span class='mono'>" + fmt(a * x + b) + " = " + fmt(c * x + d) + "</span> — верно.</p>"
+    };
+  }
+
+  function newTask(focus) {
+    current = (mode === "expr") ? genExpr() : genEq();
+    qEl.textContent = current.q;
+    inEl.value = "";
+    vEl.textContent = "";
+    vEl.className = "verdict";
+    solEl.innerHTML = current.sol;
+    solBox.open = false;
+    if (focus) inEl.focus();
+  }
+
+  function check() {
+    if (!current) return;
+    var raw = inEl.value.trim().replace(/−/g, "-").replace(",", ".").replace(/\s+/g, "");
+    if (raw === "") {
+      vEl.textContent = "Введи ответ числом.";
+      vEl.className = "verdict";
+      return;
+    }
+    var val = Number(raw);
+    if (!isFinite(val)) {
+      vEl.textContent = "Это не число. Введи, например, " + fmt(-7) + " или 12.";
+      vEl.className = "verdict no";
+      return;
+    }
+    if (val === current.ans) {
+      vEl.textContent = "Верно! " + (mode === "eq" ? "x = " : "Значение равно ") + fmt(current.ans);
+      vEl.className = "verdict ok";
+    } else {
+      vEl.textContent = "Пока нет. Попробуй ещё раз или раскрой пошаговое решение.";
+      vEl.className = "verdict no";
+    }
+  }
+
+  document.getElementById("quizCheck").addEventListener("click", check);
+  document.getElementById("quizNew").addEventListener("click", function () { newTask(true); });
+  inEl.addEventListener("keydown", function (e) { if (e.key === "Enter") check(); });
+
+  function setMode(m) {
+    mode = m;
+    bExpr.className = (m === "expr") ? "on" : "";
+    bEq.className = (m === "eq") ? "on" : "";
+    newTask(false);
+  }
+  bExpr.addEventListener("click", function () { setMode("expr"); });
+  bEq.addEventListener("click", function () { setMode("eq"); });
+
+  newTask(false);                          // первичный рендер — без фокуса, чтобы не было автоскролла
+})();
+</script>

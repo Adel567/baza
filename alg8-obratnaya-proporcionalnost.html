@@ -1,0 +1,858 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Обратная пропорциональность y = k/x — урок, алгебра 8 класс</title>
+<style>
+  :root{
+    --paper:#F6F7F9;
+    --card:#FFFFFF;
+    --ink:#1B2333;
+    --muted:#5A6478;
+    --line:#E2E5EC;
+    --accent:#3B4FD0;
+    --accent-soft:#EAEDFB;
+    --pos:#1E8E5A;   /* k > 0 */
+    --pos-bg:#E7F4EC;
+    --zero:#B9791A;  /* k = 0 — запрещено */
+    --zero-bg:#FBF1DC;
+    --neg:#C0455B;   /* k < 0 */
+    --neg-bg:#F9E9EC;
+  }
+  *{box-sizing:border-box}
+  body{margin:0}
+  .wrap{
+    max-width:760px;
+    margin:0 auto;
+    padding:clamp(1.4rem,4vw,3rem) clamp(1.1rem,4vw,2rem) 4rem;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    font-size:17px;
+    line-height:1.62;
+    -webkit-font-smoothing:antialiased;
+  }
+  .eyebrow{
+    font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--accent);font-weight:600;margin:0 0 .5rem;
+  }
+  h1{
+    font-family:Georgia,"Times New Roman",serif;
+    font-size:clamp(2rem,6.6vw,2.9rem);
+    line-height:1.06;margin:0;font-weight:700;letter-spacing:-.01em;
+    text-wrap:balance;
+  }
+  .lede{
+    font-size:1.08rem;color:var(--muted);margin:.7rem 0 0;max-width:60ch;
+    text-wrap:pretty;
+  }
+  h2{
+    font-family:Georgia,serif;font-size:1.32rem;font-weight:700;
+    margin:0 0 .1rem;letter-spacing:-.005em;text-wrap:balance;
+  }
+  section{margin-top:2.6rem}
+  .kicker{
+    font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--muted);font-weight:600;margin:0 0 .8rem;
+    display:flex;align-items:center;gap:.6rem;
+  }
+  .kicker::before{
+    content:"";width:1.4rem;height:2px;background:var(--accent);border-radius:2px;
+  }
+  p{margin:.65rem 0}
+  strong{font-weight:650}
+  a{color:var(--accent)}
+  .math{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-weight:600}
+  sup{font-size:.72em}
+
+  /* Главная формула */
+  .hero-formula{
+    margin-top:2.2rem;
+    background:var(--ink);color:#fff;border-radius:14px;
+    padding:1.6rem 1.4rem;text-align:center;
+  }
+  .hero-formula .lbl{
+    font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;
+    color:#9aa6c9;margin:0 0 .7rem;
+  }
+  .hero-formula .eq{
+    font-family:ui-monospace,"SF Mono",Menlo,monospace;
+    font-size:clamp(1.7rem,6vw,2.4rem);font-weight:700;letter-spacing:.01em;
+  }
+  .hero-formula .eq b{color:#8ea0ff;font-weight:700}
+  .hero-formula .note{font-size:.86rem;color:#9aa6c9;margin:.8rem 0 0}
+
+  /* Пререквизит */
+  .recall{
+    background:var(--accent-soft);border-radius:12px;padding:1rem 1.15rem;
+    font-size:.96rem;
+  }
+  .recall p{margin:.3rem 0}
+
+  /* Две колонки: прямая / обратная */
+  .cases{display:grid;gap:.85rem;margin-top:.4rem}
+  @media(min-width:620px){.cases{grid-template-columns:repeat(2,1fr)}}
+  .case{
+    border-radius:12px;padding:1.05rem 1.1rem;border:1px solid var(--line);
+    background:var(--card);display:flex;flex-direction:column;gap:.35rem;
+  }
+  .case .sign{font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.15rem}
+  .case .count{font-weight:650;font-size:1rem}
+  .case .desc{font-size:.9rem;color:var(--muted)}
+  .case.pos{border-top:4px solid var(--pos);background:var(--pos-bg)}
+  .case.pos .sign{color:var(--pos)}
+  .case.neg{border-top:4px solid var(--neg);background:var(--neg-bg)}
+  .case.neg .sign{color:var(--neg)}
+
+  /* Разбор */
+  .worked{
+    background:var(--card);border:1px solid var(--line);border-radius:12px;
+    padding:1.2rem 1.3rem;
+  }
+  .worked .task{
+    font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.02rem;
+    margin:0 0 1rem;padding-bottom:.8rem;border-bottom:1px solid var(--line);
+  }
+  ol.steps{margin:0;padding:0;list-style:none;counter-reset:s;display:flex;flex-direction:column;gap:.7rem}
+  ol.steps li{position:relative;padding-left:2.1rem;counter-increment:s}
+  ol.steps li::before{
+    content:counter(s);position:absolute;left:0;top:.05rem;
+    width:1.5rem;height:1.5rem;border-radius:50%;
+    background:var(--accent-soft);color:var(--accent);
+    font-size:.82rem;font-weight:700;display:flex;align-items:center;justify-content:center;
+  }
+  ol.steps .m{font-family:ui-monospace,Menlo,monospace;font-weight:600;color:var(--ink)}
+  .verdict{
+    margin-top:1rem;padding:.7rem 1rem;background:var(--pos-bg);
+    border-radius:9px;font-weight:600;color:var(--pos);font-size:.98rem;
+  }
+
+  /* Таблица значений */
+  .tbl-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:.6rem 0}
+  table.vals{border-collapse:collapse;width:100%;min-width:420px;background:var(--card);
+    font-family:ui-monospace,Menlo,monospace;font-size:.92rem}
+  table.vals th,table.vals td{border:1px solid var(--line);padding:.45rem .6rem;text-align:center}
+  table.vals th{background:var(--accent-soft);color:var(--accent);font-weight:700;white-space:nowrap}
+  table.vals tr.prod td{background:var(--pos-bg);color:var(--pos);font-weight:700}
+  table.vals tr.prod th{background:var(--pos-bg);color:var(--pos)}
+
+  /* Практика */
+  .drill{display:flex;flex-direction:column;gap:.7rem}
+  details{
+    background:var(--card);border:1px solid var(--line);border-radius:10px;
+    padding:.85rem 1.05rem;
+  }
+  details[open]{border-color:var(--accent)}
+  summary{
+    cursor:pointer;font-weight:600;list-style:none;
+    display:flex;justify-content:space-between;align-items:center;gap:1rem;
+  }
+  summary::-webkit-details-marker{display:none}
+  summary:focus-visible{outline:3px solid var(--accent);outline-offset:3px;border-radius:6px}
+  summary .q{font-family:ui-monospace,Menlo,monospace;min-width:0}
+  summary .tag{
+    font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);
+    border:1px solid var(--line);border-radius:20px;padding:.1rem .55rem;white-space:nowrap;
+  }
+  summary::after{
+    content:"показать";font-size:.78rem;color:var(--accent);font-weight:600;white-space:nowrap;
+  }
+  details[open] summary::after{content:"скрыть"}
+  .ans{margin-top:.7rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.96rem;color:var(--muted)}
+  .ans .m{font-family:ui-monospace,Menlo,monospace;color:var(--ink);font-weight:600}
+
+  /* Ошибки */
+  ul.pitfalls{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:.6rem}
+  ul.pitfalls li{padding-left:1.5rem;position:relative;font-size:.98rem}
+  ul.pitfalls li::before{
+    content:"×";position:absolute;left:0;top:-.05rem;color:var(--neg);font-weight:700;font-size:1.1rem;
+  }
+  ul.pitfalls b{color:var(--ink)}
+
+  .next{background:var(--accent);color:#fff;border-radius:12px;padding:1.2rem 1.3rem}
+  .next h2{color:#fff}
+  .next .eq{
+    font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.25rem;
+    margin:.6rem 0 .3rem;
+  }
+  .next p{color:#dfe4fb;font-size:.96rem;margin:.4rem 0 0}
+  .next a{color:#fff;font-weight:700}
+  .foot{margin-top:2.4rem;font-size:.82rem;color:var(--muted);text-align:center}
+
+  /* Сюжеты «чем больше — тем меньше» */
+  .stories{display:grid;gap:.85rem;margin-top:.5rem}
+  @media(min-width:640px){.stories{grid-template-columns:repeat(3,1fr)}}
+  .story{border:1px solid var(--line);border-radius:12px;background:var(--card);
+    display:flex;flex-direction:column;overflow:hidden}
+  .story > header{font-weight:700;font-size:.9rem;padding:.6rem .9rem;color:#fff;background:var(--accent)}
+  .story .body{padding:.75rem .9rem;font-size:.92rem;color:var(--muted)}
+  .story .body b{color:var(--ink)}
+  .story .kf{font-family:ui-monospace,Menlo,monospace;font-weight:700;color:var(--pos);
+    padding:.6rem .9rem;border-top:1px solid var(--line);font-size:.92rem}
+
+  /* POE-блок */
+  .poe{background:var(--zero-bg);border:1px solid #F0D98A;border-radius:12px;padding:1rem 1.15rem;font-size:.96rem}
+  .poe b{color:#8A6A15}
+
+  @media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+<style>
+.oge-tip{display:flex;gap:.8rem;align-items:flex-start;background:#FFF8E7;border:1px solid #F0D98A;border-left:4px solid #E0A315;border-radius:10px;padding:.85rem 1.05rem;margin:1.5rem 0}
+.oge-tip .b{font-size:.72rem;font-weight:800;letter-spacing:.03em;color:#8A6A15;white-space:nowrap;text-transform:uppercase;padding-top:.15rem}
+.oge-tip .x{font-size:.95rem;line-height:1.5}
+</style>
+
+<!--LESSON-NAV-TOP--><style>.lnav{--lnav-accent:#3D5AF1}.lnav a{text-decoration:none;font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif}.lnav-top{max-width:820px;margin:0 auto;padding:.75rem clamp(1rem,4vw,1.5rem) .1rem}.lnav-top a{display:inline-flex;align-items:center;gap:.35rem;color:var(--lnav-accent);font-weight:600;font-size:.9rem}.lnav-top a:hover{text-decoration:underline}.lnav-bot{max-width:820px;margin:2.6rem auto 3rem;padding:1.1rem clamp(1rem,4vw,1.5rem) 0;border-top:1px solid #E4E8EF;display:flex;align-items:stretch;gap:.55rem}.lnav-bot a{min-width:0;display:flex;flex-direction:column;justify-content:center;gap:.15rem;border:1px solid #E4E8EF;border-radius:12px;padding:.65rem .85rem;color:#182233;background:#fff;transition:border-color .1s,transform .08s}.lnav-bot a:hover{border-color:var(--lnav-accent);transform:translateY(-1px)}.lnav-bot .prev,.lnav-bot .next{flex:1 1 0}.lnav-bot .next{text-align:right}.lnav-bot .dir{font-size:.72rem;color:#8A93A6;font-weight:600}.lnav-bot .ttl{font-size:.9rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.lnav-bot .to-cat{flex:0 0 auto;flex-direction:row;align-items:center;justify-content:center;color:var(--lnav-accent);font-weight:700;font-size:.85rem;white-space:nowrap}@media(max-width:420px){.lnav-bot .to-cat span{display:none}.lnav-bot .to-cat{padding:.65rem .7rem}}</style><nav class="lnav lnav-top"><a href="./catalog.html">← Все темы</a></nav><!--/LESSON-NAV-TOP-->
+<div class="wrap">
+
+  <header>
+    <p class="eyebrow">Алгебра · 8 класс</p>
+    <h1>Обратная пропорциональность y = k/x</h1>
+    <p class="lede">Одна величина растёт — другая во столько же раз убывает, а их <em>произведение всё время одно и то же.</em></p>
+  </header>
+
+  <div class="hero-formula">
+    <p class="lbl">Обратная пропорциональность</p>
+    <div class="eq">y = <b>k</b> / x</div>
+    <p class="note">k ≠ 0 · x ≠ 0 · и всегда x · y = k</p>
+  </div>
+
+  <section>
+    <p class="kicker">Зачем это нужно</p>
+    <h2>«Чем больше — тем меньше»</h2>
+    <p>Представь, что нужно проехать путь <span class="math">120 км</span>. Поедешь со скоростью <span class="math">60 км/ч</span> — потратишь 2 часа. Со скоростью <span class="math">40 км/ч</span> — 3 часа. А со скоростью <span class="math">120 км/ч</span> — всего 1 час. Чем быстрее едешь, тем меньше времени уходит.</p>
+    <p>Записать это можно одной формулой: <span class="math">t = 120 / v</span>. Вот она, обратная пропорциональность.</p>
+    <p>Такая связь встречается повсюду:</p>
+    <div class="stories">
+      <div class="story">
+        <header>Скорость и время</header>
+        <div class="body">Путь один и тот же. Быстрее едешь — <b>меньше</b> времени в дороге.</div>
+        <div class="kf">v · t = путь</div>
+      </div>
+      <div class="story">
+        <header>Рабочие и дни</header>
+        <div class="body">Бригада из <b>большего</b> числа рабочих делает ту же работу за <b>меньшее</b> время.</div>
+        <div class="kf">рабочие · дни = работа</div>
+      </div>
+      <div class="story">
+        <header>Стороны прямоугольника</header>
+        <div class="body">Площадь постоянна: чем <b>длиннее</b> одна сторона, тем <b>короче</b> другая.</div>
+        <div class="kf">a · b = S</div>
+      </div>
+    </div>
+    <p style="margin-top:1rem">Есть ещё пример из физики: давление газа и его объём при постоянной температуре связаны так же.</p>
+    <p><strong>Главное заблуждение, которое надо выкинуть сразу:</strong> «раз одна величина растёт, то и другая как-то растёт». Нет! При обратной пропорциональности одна величина растёт — другая <strong>УБЫВАЕТ</strong>, причём во столько же раз. Удвоил скорость — время стало вдвое <strong>меньше</strong>, а не вдвое больше.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Что вспомнить с прошлого шага</p>
+    <div class="recall">
+      <p><strong>Прямая пропорциональность</strong> <span class="math">y = kx</span> — это когда растёт x и растёт y. Там постоянно <strong>частное</strong> <span class="math">y/x = k</span>.</p>
+      <p><strong>Пропорция</strong> — равенство двух отношений; помни, что «во сколько раз» — это про деление и умножение, а не про «на сколько больше».</p>
+      <p><strong>Делить на ноль нельзя.</strong> Это пригодится буквально через абзац.</p>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Суть и смысл</p>
+    <h2>Постоянно произведение</h2>
+    <p>Словами: две величины <strong>обратно пропорциональны</strong>, если при увеличении одной в несколько раз другая во столько же раз уменьшается, а их <strong>произведение остаётся постоянным</strong>.</p>
+    <p>Постоянство произведения — главная мысль всей темы. Если <span class="math">v · t = 120</span> всегда, то отсюда сразу <span class="math">t = 120 / v</span>. Произведение «не зависит» от того, как мы делим: оно равно <span class="math">k</span>.</p>
+    <p>Символьная запись этой зависимости — функция <span class="math">y = k/x</span>, где k — постоянное число (<span class="math">k ≠ 0</span>).</p>
+    <p><strong>Смысл коэффициента k:</strong> это то самое неизменное произведение <span class="math">x · y = k</span>. Значит, зная всего одну пару значений (x; y), ты найдёшь k — а с ним и всю зависимость целиком.</p>
+
+    <div class="cases">
+      <div class="case pos">
+        <div class="sign">y = k · x</div>
+        <div class="count">Прямая пропорциональность</div>
+        <div class="desc">Растёт x — растёт y. Постоянно <b>частное</b> y/x = k.</div>
+      </div>
+      <div class="case neg">
+        <div class="sign">y = k / x</div>
+        <div class="count">Обратная пропорциональность</div>
+        <div class="desc">Растёт x — убывает y. Постоянно <b>произведение</b> x·y = k.</div>
+      </div>
+    </div>
+    <p style="font-size:.92rem;color:var(--muted);margin-top:.9rem">Чтобы не путать эти две, задавай себе один вопрос: <strong>что тут постоянно — частное или произведение?</strong></p>
+  </section>
+
+  <section>
+    <p class="kicker">Ядро — определение</p>
+    <h2>Формула и ограничения</h2>
+    <p><strong>Определение.</strong> Обратной пропорциональностью называют функцию вида <span class="math">y = k/x</span>, где x — независимая переменная (аргумент), y — зависимая переменная (значение функции), а k — заданное число, не равное нулю (коэффициент обратной пропорциональности).</p>
+    <p>Что есть что:</p>
+    <ul>
+      <li><span class="math">x</span> — то, что мы задаём (например, скорость или число рабочих);</li>
+      <li><span class="math">y</span> — то, что получаем (время, работа на одного);</li>
+      <li><span class="math">k</span> — постоянная, причём <span class="math">k = x · y</span> для любой пары значений.</li>
+    </ul>
+    <p>Ограничения, про которые спрашивают:</p>
+    <ul>
+      <li><span class="math">x ≠ 0</span> — на ноль делить нельзя, поэтому область определения — все числа, кроме нуля;</li>
+      <li><span class="math">y</span> тоже никогда не равен нулю: дробь <span class="math">k/x</span> при <span class="math">k ≠ 0</span> нулём не бывает;</li>
+      <li><span class="math">k ≠ 0</span> — иначе y всегда равен 0 и никакой зависимости просто нет;</li>
+      <li>знаки: если <span class="math">k &gt; 0</span>, то x и y <strong>одного</strong> знака; если <span class="math">k &lt; 0</span> — <strong>разных</strong>.</li>
+    </ul>
+    <p>Если задача прикладная — следи за единицами. Например, <span class="math">k = v · t</span> измеряется в километрах (это путь), и тогда <span class="math">t = k/v</span> даёт часы при v в км/ч.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Разбираем вместе · думаю вслух</p>
+    <h2>Эталонный пример</h2>
+    <div class="worked">
+      <p class="task">y обратно пропорциональна x, и при x = 4 значение y = 3.<br>Найти k и значение y при x = 6.</p>
+      <ol class="steps">
+        <li>Записываю вид зависимости: <span class="m">y = k/x</span>. Почему именно так — потому что в условии сказано «обратно пропорциональна».</li>
+        <li>Ищу k. Произведение постоянно, то есть <span class="m">k = x · y</span>. Подставляю известную пару: <span class="m">k = 4 · 3 = 12</span>. Почему умножаю, а не делю: коэффициент — это именно произведение x и y.</li>
+        <li>Записываю конкретную функцию: <span class="m">y = 12/x</span>. Теперь я знаю зависимость целиком.</li>
+        <li>Считаю y при x = 6: <span class="m">y = 12/6 = 2</span>.</li>
+      </ol>
+      <div class="verdict">Ответ: k = 12, при x = 6 значение y = 2.</div>
+      <p style="font-size:.93rem;color:var(--muted);margin-top:.8rem"><strong>Проверка смысла.</strong> x вырос с 4 до 6, а y убыл с 3 до 2 — всё логично: растёт x, убывает y.</p>
+    </div>
+
+    <div class="worked" style="margin-top:1rem">
+      <p class="task">Допиши сам: y обратно пропорциональна x, при x = 5 значение y = 8. Найти y при x = 10.</p>
+      <ol class="steps">
+        <li>Вид: <span class="m">y = k/x</span>.</li>
+        <li>Коэффициент: <span class="m">k = 5 · 8 = 40</span>, значит <span class="m">y = 40/x</span>.</li>
+        <li>Подставляю x = 10: <span class="m">y = 40/10 = ____</span></li>
+      </ol>
+      <details style="margin-top:.9rem">
+        <summary><span class="q">Проверить себя</span><span class="tag">подсказка</span></summary>
+        <div class="ans">x вырос вдвое (с 5 до 10) — значит y должен стать вдвое меньше восьми: <span class="m">y = 4</span>.</div>
+      </details>
+    </div>
+
+    <div class="worked" style="margin-top:1rem">
+      <p class="task">Реши сам: площадь прямоугольника постоянна и равна 36 см². Длину обозначь a, ширину b. Вырази b через a и найди b при a = 9 см.</p>
+      <details>
+        <summary><span class="q">Показать ответ</span><span class="tag">решение</span></summary>
+        <div class="ans">Площадь — это произведение сторон, оно постоянно, значит <span class="m">k = 36</span> и <span class="m">b = 36/a</span>. При a = 9 получаем <span class="m">b = 36/9 = 4 см</span>.</div>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Наглядность · три представления одной зависимости</p>
+    <h2>Таблица, которая всё объясняет</h2>
+    <p>Возьмём <span class="math">y = 12/x</span> и посчитаем несколько значений:</p>
+    <div class="tbl-scroll">
+      <table class="vals">
+        <tr><th>x</th><td>1</td><td>2</td><td>3</td><td>4</td><td>6</td><td>12</td></tr>
+        <tr><th>y</th><td>12</td><td>6</td><td>4</td><td>3</td><td>2</td><td>1</td></tr>
+        <tr class="prod"><th>x · y</th><td>12</td><td>12</td><td>12</td><td>12</td><td>12</td><td>12</td></tr>
+      </table>
+    </div>
+    <p>Посмотри на нижнюю строку. Перемножь x и y в любом столбце — всегда получается <strong>12</strong>. Вот так «постоянство k» можно буквально увидеть глазами.</p>
+
+    <div class="poe">
+      <p style="margin:.2rem 0"><b>Сначала предскажи, потом посчитай.</b> Если x станет очень большим — например, x = 100, — каким будет y: больше единицы или меньше?</p>
+      <details style="margin-top:.6rem;background:#fff">
+        <summary><span class="q">Проверить предсказание</span><span class="tag">POE</span></summary>
+        <div class="ans"><span class="m">y = 12/100 = 0,12</span> — меньше единицы. Чем больше x, тем меньше y, но нулём он никогда не станет: дробь с ненулевым числителем не бывает нулём.</div>
+      </details>
+    </div>
+
+    <p style="margin-top:1.2rem">Третье представление — координатная плоскость. Отметь точки из таблицы: (1; 12), (2; 6), (3; 4), (4; 3), (6; 2), (12; 1). Они складываются в плавную кривую, которая всё время снижается и нигде не касается осей. Эта кривая называется <strong>ветвью гиперболы</strong>.</p>
+
+    <div class="oge-tip"><div class="b">🎯 В ОГЭ</div><div class="x"><b>Задание 11.</b> Соответствие «график ↔ формула»: гиперболу узнают по двум ветвям, а знак k — по четвертям, в которых они лежат.</div></div>
+  </section>
+
+  <section>
+    <p class="kicker">Покрути сам · интерактив</p>
+    <h2>Произведение не меняется</h2>
+    <p>Двигай ползунок <span class="math">k</span> и нажми «Пустить точку». Точка бежит по ветви: её x растёт — y уменьшается, но <strong>прямоугольник под точкой не меняет площадь</strong>. Эта площадь и есть <span class="math">|k|</span> — то самое постоянное произведение <span class="math">x · y</span>.</p>
+    <div class="sim">
+      <canvas id="hypCanvas" width="640" height="400" aria-label="Интерактив: точка на ветви и постоянное произведение x·y"></canvas>
+      <div id="simVerdict" class="sim-verdict">k = 12 &gt; 0 · x и y одного знака</div>
+      <div class="sim-ctl">
+        <label>k <span id="vk" class="sval">12</span><input id="sk" type="range" min="-12" max="12" step="1" value="12" aria-label="Коэффициент k"></label>
+        <button id="simRun" type="button">▶ Пустить точку</button>
+      </div>
+      <div class="readout" id="simRead">x = 2 · y = 6 · x · y = 12</div>
+      <div class="tbl-scroll">
+        <table class="vals" id="simTable"></table>
+      </div>
+    </div>
+    <p style="font-size:.9rem;color:var(--muted)">Поставь <span class="math">k = 0</span> — и зависимость исчезает: y всюду равен нулю, никакой обратной пропорциональности больше нет. Потому в определении и требуют <span class="math">k ≠ 0</span>. А смени знак k на минус — и точка вместе с ветвью перескочит в другие четверти: теперь x и y разных знаков, ведь их произведение отрицательное.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Тренажёр · бесконечная практика</p>
+    <h2>Реши сам — три типа заданий</h2>
+    <p>Жми «Новое» — тренажёр придумает задачу одного из трёх типов: <strong>найти k по точке</strong>, <strong>найти y по новому x</strong> или <strong>сюжетную задачу «чем больше — тем меньше»</strong>. Впиши ответ и проверь себя или посмотри пошаговое решение.</p>
+    <div class="trainer">
+      <div class="tr-type" id="trType">задание</div>
+      <div class="tr-eq" id="trEq">Загрузка…</div>
+      <div class="tr-ctl">
+        <input id="trAns" type="text" inputmode="text" autocomplete="off" placeholder="ответ — число" aria-label="Ответ">
+        <button id="trCheck" type="button" class="sec">Проверить</button>
+        <button id="trNew" type="button">🎲 Новое</button>
+        <button id="trShow" type="button" class="ghost">Показать решение</button>
+      </div>
+      <div id="trResult" class="tr-result"></div>
+      <p class="tr-hint">Минус пиши как <b>-</b> или <b>−</b>. Дробный ответ подойдёт и десятичной дробью (<b>1,5</b> или <b>1.5</b>), и обыкновенной (<b>3/2</b>). Единицы (ч, км, дни) писать не обязательно.</p>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Проверь себя · от простого к анализу</p>
+    <h2>Практика с ответами</h2>
+    <div class="drill">
+      <details>
+        <summary><span class="q">Какая формула задаёт обратную пропорциональность: y = 5x, y = x + 5, y = 5/x, y = x/5?</span><span class="tag">понимание</span></summary>
+        <div class="ans">Это <span class="m">y = 5/x</span> — переменная стоит в знаменателе. Здесь <span class="m">k = 5</span>. (y = 5x — прямая пропорциональность, y = x + 5 — вообще не пропорциональность, y = x/5 — это тоже y = (1/5)·x, прямая.)</div>
+      </details>
+      <details>
+        <summary><span class="q">y обратно пропорциональна x, при x = 3 значение y = 12. Запиши формулу и найди y при x = 4.</span><span class="tag">применение</span></summary>
+        <div class="ans"><span class="m">k = 3 · 12 = 36</span>, формула <span class="m">y = 36/x</span>. Тогда <span class="m">y = 36/4 = 9</span>.</div>
+      </details>
+      <details>
+        <summary><span class="q">В формуле y = 12/x аргумент x увеличили в 3 раза. Во сколько раз и как изменится y?</span><span class="tag">анализ</span></summary>
+        <div class="ans">y <strong>уменьшится в 3 раза</strong>. Произведение x·y обязано остаться равным 12: если один множитель вырос втрое, второй должен во столько же раз убыть.</div>
+      </details>
+      <details>
+        <summary><span class="q">Найди ошибку: при x = 2, y = 6 ученик написал k = 6 : 2 = 3.</span><span class="tag">анализ</span></summary>
+        <div class="ans">Он посчитал <strong>частное</strong> вместо <strong>произведения</strong>. Для <span class="m">y = k/x</span> коэффициент <span class="m">k = x · y = 2 · 6 = 12</span>, а не 3. Частное постоянно у <em>прямой</em> пропорциональности.</div>
+      </details>
+      <details>
+        <summary><span class="q">Обратная задача: известно, что y = 20/x. При каком x значение y равно 5?</span><span class="tag">анализ</span></summary>
+        <div class="ans">Произведение постоянно: <span class="m">x · y = 20</span>, значит <span class="m">x = 20 : 5 = 4</span>.</div>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Где чаще всего ошибаются</p>
+    <h2>Лови эти ловушки</h2>
+    <ul class="pitfalls">
+      <li><b>Считают зависимость линейной.</b> «x вырос на 2 — значит и y вырастет на 2». Но связь здесь не через сложение, а через деление: важно, <em>во сколько раз</em> изменилась величина, и меняется она в обратную сторону. Как проверить: посчитай <span class="math">x · y</span> — произведение обязано остаться прежним.</li>
+      <li><b>Допускают x = 0.</b> Подставляют ноль и «получают» какое-то y. Делить на ноль нельзя: при <span class="math">x = 0</span> функция не определена. Помни про ОДЗ: <span class="math">x ≠ 0</span>.</li>
+      <li><b>Путают прямую и обратную пропорциональность.</b> При прямой <span class="math">y = kx</span> растёт x — растёт y, и постоянно <strong>частное</strong> y/x. При обратной <span class="math">y = k/x</span> растёт x — убывает y, и постоянно <strong>произведение</strong> x·y.</li>
+      <li><b>Находят k как частное.</b> Пишут <span class="math">k = y/x</span>. Запомни намертво: для <span class="math">y = k/x</span> коэффициент <span class="math">k = x · y</span>.</li>
+    </ul>
+  </section>
+
+  <section>
+    <p class="kicker">Проверка понимания</p>
+    <h2>Объясни своими словами</h2>
+    <div class="drill">
+      <details>
+        <summary><span class="q">Что остаётся постоянным при обратной пропорциональности — частное или произведение?</span><span class="tag">вопрос</span></summary>
+        <div class="ans">Произведение: <span class="m">x · y = k</span>.</div>
+      </details>
+      <details>
+        <summary><span class="q">Почему x не может быть равен нулю?</span><span class="tag">вопрос</span></summary>
+        <div class="ans">Потому что деление на ноль не определено — выражение <span class="m">k/0</span> не имеет смысла.</div>
+      </details>
+      <details>
+        <summary><span class="q">y обратно пропорциональна x, при x = 2 значение y = 9. Чему равно k и чему равно y при x = 6?</span><span class="tag">вопрос</span></summary>
+        <div class="ans"><span class="m">k = 2 · 9 = 18</span>, значит <span class="m">y = 18/x</span> и при x = 6 получаем <span class="m">y = 18/6 = 3</span>.</div>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <div class="next">
+      <h2>Что дальше</h2>
+      <p>Итог одним предложением: обратная пропорциональность <span class="math">y = k/x</span> — это зависимость, в которой произведение <span class="math">x · y</span> постоянно и равно k, поэтому при увеличении x значение y во столько же раз уменьшается.</p>
+      <div class="eq">y = k / x → гипербола</div>
+      <p>Дальше эту зависимость рисуют целиком — и получается кривая из двух ветвей: <a href="./alg8-grafik-giperboly.html">График гиперболы y = k/x</a>. Там разбирают, как строить обе ветви, почему они не соединяются и в каких четвертях лежат при разном знаке k.</p>
+    </div>
+  </section>
+
+  <p class="foot">Проверка на выходе: что постоянно — произведение или частное · почему x ≠ 0 · чему равно k, если при x = 2 значение y = 9?</p>
+
+</div>
+
+<style>
+  .sim{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.1rem 1.1rem 1rem;margin:1rem 0}
+  .sim canvas{width:100%;height:auto;display:block;border-radius:10px;background:#FCFDFF}
+  .sim-verdict{text-align:center;font-weight:700;font-size:1rem;margin:.8rem 0 0;padding:.5rem;
+    border-radius:9px;font-family:ui-monospace,Menlo,monospace}
+  .sim-verdict.pos{background:var(--pos-bg);color:var(--pos)}
+  .sim-verdict.neg{background:var(--neg-bg);color:var(--neg)}
+  .sim-verdict.zero{background:var(--zero-bg);color:var(--zero)}
+  .sim-ctl{display:flex;gap:.7rem;align-items:center;flex-wrap:wrap;margin-top:.9rem}
+  .sim-ctl label{display:flex;align-items:center;gap:.5rem;font-weight:700;flex:1;min-width:180px;
+    font-family:ui-monospace,Menlo,monospace}
+  .sim-ctl input[type=range]{flex:1;min-width:110px;accent-color:var(--accent)}
+  .sim-ctl input[type=range]:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+  .sim-ctl .sval{min-width:3.4ch;text-align:right;color:var(--accent);font-variant-numeric:tabular-nums}
+  .sim-ctl button{font:inherit;font-weight:700;font-size:.88rem;cursor:pointer;border:none;
+    border-radius:9px;padding:.5rem .9rem;color:#fff;background:var(--accent)}
+  .sim-ctl button:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
+  .readout{margin-top:.8rem;text-align:center;font-family:ui-monospace,Menlo,monospace;
+    font-weight:700;font-size:.95rem;color:var(--ink)}
+</style>
+
+<script>
+(function(){
+  var canvas=document.getElementById('hypCanvas'); if(!canvas) return;
+  var ctx=canvas.getContext('2d');
+  var sk=document.getElementById('sk'), vk=document.getElementById('vk');
+  var verdict=document.getElementById('simVerdict'), readout=document.getElementById('simRead');
+  var tbl=document.getElementById('simTable'), runBtn=document.getElementById('simRun');
+  var W=640,H=400,dpr=1,RANGE=10;
+  var px=2, dir=1, running=false, last=0, raf=0;
+  var XS=[1,2,3,4,6,12];
+
+  function fmt(n){
+    var r=Math.round(n*100)/100;
+    if(Object.is(r,-0)) r=0;
+    var s=Math.abs(r).toString().replace('.',',');
+    return (r<0?'−':'')+s;
+  }
+
+  function resize(){
+    var cssW=canvas.clientWidth||640;
+    dpr=Math.min(window.devicePixelRatio||1,2);
+    W=cssW; H=Math.round(cssW*0.66);
+    canvas.width=Math.round(W*dpr); canvas.height=Math.round(H*dpr);
+    canvas.style.height=H+'px';
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+  }
+  function sx(){ return W/(2*RANGE); }
+  function X(x){ return W/2 + x*sx(); }
+  function Y(y){ return H/2 - y*sx(); }
+
+  function drawBranch(k,sign){
+    ctx.beginPath();
+    var started=false, step=0.02;
+    for(var x=sign*0.02; sign>0 ? x<=RANGE : x>=-RANGE; x+=sign*step){
+      var y=k/x, pyv=Y(y);
+      if(pyv<-2000||pyv>2000){ started=false; continue; }
+      if(!started){ ctx.moveTo(X(x),pyv); started=true; } else ctx.lineTo(X(x),pyv);
+    }
+    ctx.stroke();
+  }
+
+  function draw(){
+    var k=parseFloat(sk.value);
+    vk.textContent=fmt(k);
+    ctx.clearRect(0,0,W,H);
+
+    // сетка
+    ctx.strokeStyle='#EDEFF4'; ctx.lineWidth=1;
+    for(var gx=-RANGE;gx<=RANGE;gx++){ ctx.beginPath(); ctx.moveTo(X(gx),0); ctx.lineTo(X(gx),H); ctx.stroke(); }
+    var yr=Math.ceil((H/2)/sx());
+    for(var gy=-yr;gy<=yr;gy++){ ctx.beginPath(); ctx.moveTo(0,Y(gy)); ctx.lineTo(W,Y(gy)); ctx.stroke(); }
+    // оси
+    ctx.strokeStyle='#9AA3B2'; ctx.lineWidth=1.5;
+    ctx.beginPath(); ctx.moveTo(0,Y(0)); ctx.lineTo(W,Y(0)); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(X(0),0); ctx.lineTo(X(0),H); ctx.stroke();
+    ctx.fillStyle='#9AA3B2'; ctx.font='12px ui-monospace,Menlo,monospace';
+    ctx.fillText('x',W-14,Y(0)-7); ctx.fillText('y',X(0)+7,13);
+
+    verdict.className='sim-verdict';
+    if(k===0){
+      verdict.classList.add('zero');
+      verdict.textContent='k = 0 · зависимости нет';
+      readout.textContent='при k = 0 значение y всюду равно 0';
+      fillTable(0);
+      return;
+    }
+    var col=k>0?'#1E8E5A':'#C0455B';
+    verdict.classList.add(k>0?'pos':'neg');
+    verdict.textContent='k = '+fmt(k)+(k>0?' > 0 · x и y одного знака':' < 0 · x и y разных знаков');
+
+    // прямоугольник x·y под точкой
+    var py=k/px;
+    ctx.fillStyle=k>0?'rgba(30,142,90,0.14)':'rgba(192,69,91,0.14)';
+    ctx.fillRect(X(0),Y(0),X(px)-X(0),Y(py)-Y(0));
+
+    // ветви
+    ctx.strokeStyle=col; ctx.lineWidth=3;
+    drawBranch(k,1); drawBranch(k,-1);
+
+    // пунктиры к осям
+    ctx.save();
+    ctx.setLineDash([5,4]); ctx.strokeStyle=col; ctx.lineWidth=1.4;
+    ctx.beginPath(); ctx.moveTo(X(px),Y(py)); ctx.lineTo(X(px),Y(0)); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(X(px),Y(py)); ctx.lineTo(X(0),Y(py)); ctx.stroke();
+    ctx.restore();
+
+    // точка
+    ctx.fillStyle=col; ctx.beginPath(); ctx.arc(X(px),Y(py),7,0,7); ctx.fill();
+    ctx.fillStyle='#fff'; ctx.beginPath(); ctx.arc(X(px),Y(py),2.8,0,7); ctx.fill();
+
+    // подпись площади
+    ctx.fillStyle=col; ctx.font='bold 13px ui-monospace,Menlo,monospace';
+    ctx.fillText('площадь = |k| = '+fmt(Math.abs(k)), 10, 18);
+
+    readout.textContent='x = '+fmt(px)+'  ·  y = '+fmt(py)+'  ·  x · y = '+fmt(px*py);
+    fillTable(k);
+  }
+
+  function fillTable(k){
+    var r1='<tr><th>x</th>', r2='<tr><th>y = k/x</th>', r3='<tr class="prod"><th>x · y</th>';
+    for(var i=0;i<XS.length;i++){
+      var x=XS[i];
+      r1+='<td>'+x+'</td>';
+      if(k===0){ r2+='<td>0</td>'; r3+='<td>0</td>'; }
+      else { r2+='<td>'+fmt(k/x)+'</td>'; r3+='<td>'+fmt(k)+'</td>'; }
+    }
+    tbl.innerHTML=r1+'</tr>'+r2+'</tr>'+r3+'</tr>';
+  }
+
+  function tick(ts){
+    if(!running) return;
+    if(!last) last=ts;
+    var dt=Math.min((ts-last)/1000,0.05); last=ts;
+    px+=dir*dt*2.2;
+    if(px>8){ px=8; dir=-1; }
+    if(px<0.7){ px=0.7; dir=1; }
+    px=Math.round(px*100)/100;
+    draw();
+    raf=requestAnimationFrame(tick);
+  }
+  function toggleRun(){
+    running=!running;
+    runBtn.textContent = running ? '⏸ Стоп' : '▶ Пустить точку';
+    if(running){ last=0; raf=requestAnimationFrame(tick); }
+    else if(raf){ cancelAnimationFrame(raf); raf=0; }
+  }
+
+  sk.addEventListener('input',draw);
+  runBtn.addEventListener('click',toggleRun);
+  window.addEventListener('resize',function(){ resize(); draw(); });
+  resize(); draw();
+})();
+</script>
+
+<style>
+  .trainer{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.2rem 1.3rem;margin-top:1rem}
+  .tr-type{font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:.5rem}
+  .tr-eq{font-weight:700;font-size:clamp(1rem,3.6vw,1.15rem);padding:1rem;background:var(--accent-soft);
+    border-radius:10px;color:var(--ink);line-height:1.5}
+  .tr-eq b{font-family:ui-monospace,Menlo,monospace}
+  .tr-ctl{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.9rem;align-items:center}
+  .tr-ctl button{font:inherit;font-weight:700;font-size:.9rem;cursor:pointer;border:none;border-radius:9px;
+    padding:.55rem .95rem;color:#fff;background:var(--accent)}
+  .tr-ctl button.sec{background:var(--pos)}
+  .tr-ctl button.ghost{background:transparent;color:var(--accent);border:1px solid var(--accent)}
+  .tr-ctl input{flex:1;min-width:150px;font:inherit;padding:.5rem .7rem;border:1px solid var(--line);
+    border-radius:9px;background:#fff;color:var(--ink)}
+  .tr-ctl button:focus-visible,.tr-ctl input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+  .tr-result{margin-top:.9rem;font-size:.96rem;min-height:1.2rem}
+  .tr-result .ok{color:var(--pos);font-weight:700}
+  .tr-result .bad{color:var(--neg);font-weight:700}
+  .tr-result .sol{margin-top:.7rem;padding:.85rem 1rem;background:#FCFBFE;border:1px solid var(--line);
+    border-radius:10px;font-family:ui-monospace,Menlo,monospace;font-size:.9rem;line-height:1.8}
+  .tr-result .sol b{color:var(--accent)}
+  .tr-hint{font-size:.83rem;color:var(--muted);margin:.8rem 0 0}
+  .tr-hint b{color:var(--ink);font-family:ui-monospace,Menlo,monospace}
+</style>
+
+<script>
+(function(){
+/*==TRAINER-CORE-START==*/
+  function ri(min,max){ return Math.floor(Math.random()*(max-min+1))+min; }
+  function pick(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+  function gcd(a,b){ a=Math.abs(a); b=Math.abs(b); while(b){ var t=a%b; a=b; b=t; } return a; }
+  function sgn(){ return Math.random()<0.35 ? -1 : 1; }
+
+  /* число с настоящим минусом, дробная часть через запятую */
+  function num(v){
+    var r=Math.round(v*10000)/10000;
+    if(Object.is(r,-0)) r=0;
+    return (r<0?'−':'')+String(Math.abs(r)).replace('.',',');
+  }
+  /* точное значение дроби p/q: «3/2 = 1,5» либо просто «3/2» */
+  function exact(p,q){
+    var g=gcd(p,q)||1, n=p/g, d=q/g;
+    if(d<0){ n=-n; d=-d; }
+    if(d===1) return num(n);
+    var s=num(n)+'/'+d;
+    var dd=d;
+    while(dd%2===0) dd/=2;
+    while(dd%5===0) dd/=5;
+    if(dd===1) s+=' = '+num(n/d);
+    return s;
+  }
+  function divisors(n){
+    n=Math.abs(n); var out=[];
+    for(var i=1;i<=n;i++){ if(n%i===0) out.push(i); }
+    return out;
+  }
+
+  /* ---- три генератора ---- */
+  function genK(){
+    var x=ri(1,9)*(Math.random()<0.3?-1:1);
+    var y=ri(1,9)*(Math.random()<0.3?-1:1);
+    return {type:'k', x:x, y:y, k:x*y};
+  }
+
+  function genY(){
+    var k,a,c;
+    if(Math.random()<0.72){
+      /* целый ответ: a и c — делители |k| */
+      var base=pick([12,16,18,20,24,30,36,40,48,60]);
+      k=base*sgn();
+      var ds=divisors(base).filter(function(d){ return d<=20; });
+      a=pick(ds); c=pick(ds);
+      var guard=0;
+      while(c===a && guard<40){ c=pick(ds); guard++; }
+      if(c===a){ c = (a===1) ? base : 1; }
+    } else {
+      /* нецелый ответ: y = p/q, q ∈ {2,4,5} */
+      var q=pick([2,4,5]);
+      var t=ri(1,5);
+      var p=pick(q===5?[1,2,3,4,6,7,8,9]:[1,3,5,7,9]);
+      c=q*t;
+      k=p*t*sgn();
+      var ds2=divisors(p*t);
+      a=pick(ds2);
+      if(a===c){ a = (c===1) ? p*t : 1; }
+    }
+    if(a===0) a=1;
+    if(c===0) c=1;
+    return {type:'y', k:k, a:a, b:k/a, c:c};
+  }
+
+  function genStory(){
+    var v=ri(0,2);
+    if(v===0){
+      var speeds=[20,30,40,50,60,80,90,100,120];
+      var v1=pick(speeds), v2=pick(speeds), g=0;
+      while(v2===v1 && g<30){ v2=pick(speeds); g++; }
+      if(v2===v1) v2 = (v1===60?80:60);
+      var L=v1*v2/gcd(v1,v2);
+      var m=1; while(L*(m+1)<=900 && Math.random()<0.5) m++;
+      var S=L*m;
+      return {type:'story', sub:'road', k:S, a:v1, b:S/v1, c:v2, ans:S/v2};
+    }
+    if(v===1){
+      var n1=ri(2,12), n2=ri(2,12), g2=0;
+      while(n2===n1 && g2<30){ n2=ri(2,12); g2++; }
+      if(n2===n1) n2 = n1===2 ? 3 : 2;
+      var mm=ri(1,5);
+      var K=n1*n2*mm;
+      return {type:'story', sub:'work', k:K, a:n1, b:n2*mm, c:n2, ans:n1*mm};
+    }
+    var a1=ri(2,12), a2=ri(2,12), g3=0;
+    while(a2===a1 && g3<30){ a2=ri(2,12); g3++; }
+    if(a2===a1) a2 = a1===2 ? 3 : 2;
+    var m3=ri(1,6);
+    var Sq=a1*a2*m3;
+    return {type:'story', sub:'rect', k:Sq, a:a1, b:a2*m3, c:a2, ans:a1*m3};
+  }
+
+  function generate(){
+    var r=Math.random();
+    if(r<0.34) return genK();
+    if(r<0.67) return genY();
+    return genStory();
+  }
+
+  /* ---- правильный ответ ---- */
+  function answerOf(q){
+    if(q.type==='k') return q.k;
+    if(q.type==='y') return q.k/q.c;
+    return q.ans;
+  }
+
+  /* ---- текст задания ---- */
+  function taskText(q){
+    if(q.type==='k'){
+      return 'y обратно пропорциональна x. При <b>x = '+num(q.x)+'</b> значение <b>y = '+num(q.y)+'</b>.<br>Найди коэффициент <b>k</b>.';
+    }
+    if(q.type==='y'){
+      return 'y обратно пропорциональна x. При <b>x = '+num(q.a)+'</b> значение <b>y = '+num(q.b)+'</b>.<br>Найди <b>y при x = '+num(q.c)+'</b>.';
+    }
+    if(q.sub==='road'){
+      return 'Автомобиль проезжает один и тот же путь. При скорости <b>'+q.a+' км/ч</b> он тратит <b>'+q.b+' ч</b>.<br>Сколько часов уйдёт при скорости <b>'+q.c+' км/ч</b>?';
+    }
+    if(q.sub==='work'){
+      return 'Бригада из <b>'+q.a+'</b> рабочих выполняет работу за <b>'+q.b+'</b> дней.<br>За сколько дней ту же работу сделают <b>'+q.c+'</b> рабочих?';
+    }
+    return 'У прямоугольника постоянная площадь. При длине <b>'+q.a+' см</b> ширина равна <b>'+q.b+' см</b>.<br>Найди ширину при длине <b>'+q.c+' см</b>.';
+  }
+  function typeLabel(q){
+    if(q.type==='k') return 'найди коэффициент k';
+    if(q.type==='y') return 'найди значение y';
+    return 'сюжетная задача · чем больше — тем меньше';
+  }
+
+  /* ---- пошаговый разбор ---- */
+  function solutionHTML(q){
+    var h='<div class="sol">';
+    if(q.type==='k'){
+      h+='Зависимость: y = k/x, значит <b>k = x · y</b>.<br>';
+      h+='k = ('+num(q.x)+') · ('+num(q.y)+') = <b>'+num(q.k)+'</b><br>';
+      h+='Проверка: y = '+num(q.k)+' / '+num(q.x)+' = '+num(q.y)+' ✓';
+    } else if(q.type==='y'){
+      h+='1) k = x · y = ('+num(q.a)+') · ('+num(q.b)+') = <b>'+num(q.k)+'</b><br>';
+      h+='2) Функция: y = '+num(q.k)+'/x<br>';
+      h+='3) При x = '+num(q.c)+': y = '+num(q.k)+' / '+num(q.c)+' = <b>'+exact(q.k,q.c)+'</b>';
+    } else {
+      var what = q.sub==='road' ? 'путь' : (q.sub==='work' ? 'объём работы' : 'площадь');
+      var unit = q.sub==='road' ? ' ч' : (q.sub==='work' ? ' дн.' : ' см');
+      h+='Постоянное произведение — это '+what+':<br>';
+      h+='k = '+q.a+' · '+q.b+' = <b>'+q.k+'</b><br>';
+      h+='Тогда искомое = '+q.k+' : '+q.c+' = <b>'+num(q.ans)+unit+'</b><br>';
+      h+='Проверка: '+q.c+' · '+num(q.ans)+' = '+q.k+' ✓';
+    }
+    return h+'</div>';
+  }
+
+  /* ---- разбор ответа ученика ---- */
+  function parseVal(raw){
+    if(raw===null||raw===undefined) return NaN;
+    var t=String(raw).toLowerCase();
+    t=t.replace(/−/g,'-');
+    t=t.replace(/(\d),(\d)/g,'$1.$2');
+    t=t.replace(/^[a-zа-яё]{1,4}\s*=\s*/,'');
+    t=t.replace(/\s+/g,'');
+    t=t.replace(/[^0-9.\/-]/g,'');
+    if(t==='') return NaN;
+    if(t.indexOf('/')>-1){
+      var parts=t.split('/');
+      if(parts.length!==2) return NaN;
+      var p=parseFloat(parts[0]), d=parseFloat(parts[1]);
+      if(!isFinite(p)||!isFinite(d)||d===0) return NaN;
+      return p/d;
+    }
+    var v=parseFloat(t);
+    return isFinite(v)?v:NaN;
+  }
+/*==TRAINER-CORE-END==*/
+
+  var typeEl=document.getElementById('trType'), eqEl=document.getElementById('trEq');
+  var ansEl=document.getElementById('trAns'), resEl=document.getElementById('trResult');
+  if(!eqEl) return;
+  var cur=generate();
+
+  function render(focus){
+    typeEl.textContent=typeLabel(cur);
+    eqEl.innerHTML=taskText(cur);
+    resEl.innerHTML=''; ansEl.value='';
+    if(focus) ansEl.focus();
+  }
+  function newTask(){ cur=generate(); render(true); }
+
+  function check(){
+    var exp=answerOf(cur);
+    var got=parseVal(ansEl.value);
+    if(isNaN(got)){
+      resEl.innerHTML='<span class="bad">Не понял запись. Введи число: например 12, −6, 1,5 или 3/2.</span>';
+      return;
+    }
+    if(Math.abs(got-exp)<0.001){
+      resEl.innerHTML='<span class="ok">✓ Верно!</span>'+solutionHTML(cur);
+    } else {
+      var hint='';
+      if(cur.type==='k' && Math.abs(got-(cur.y/cur.x))<0.001) hint=' Похоже, ты поделил y на x. Коэффициент — это произведение: k = x · y.';
+      else if(Math.abs(got+exp)<0.001) hint=' Верно по модулю — проверь знак.';
+      resEl.innerHTML='<span class="bad">✗ Пока не то.'+hint+'</span>'+solutionHTML(cur);
+    }
+  }
+
+  document.getElementById('trNew').addEventListener('click',newTask);
+  document.getElementById('trCheck').addEventListener('click',check);
+  document.getElementById('trShow').addEventListener('click',function(){ resEl.innerHTML=solutionHTML(cur); });
+  ansEl.addEventListener('keydown',function(e){ if(e.key==='Enter') check(); });
+  render(false);
+})();
+</script>
+<!--LESSON-NAV-BOT--><nav class="lnav lnav-bot"><a class="prev" href="./alg8-umnozhenie-delenie-drobej.html"><span class="dir">← Предыдущая</span><span class="ttl">Умножение, деление и возведение дроби в степень</span></a><a class="to-cat" href="./catalog.html">📚 <span>Все темы</span></a><a class="next" href="./alg8-grafik-giperboly.html"><span class="dir">Следующая →</span><span class="ttl">График функции y=k/x (гипербола)</span></a></nav><!--/LESSON-NAV-BOT-->
