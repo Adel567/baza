@@ -1,0 +1,681 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Правильный многоугольник: сторона, апофема, площадь — урок, геометрия 9 класс</title>
+<style>
+  :root{
+    --paper:#F6F7F9;
+    --card:#FFFFFF;
+    --ink:#1B2333;
+    --muted:#5A6478;
+    --line:#E2E5EC;
+    --accent:#3B4FD0;
+    --accent-soft:#EAEDFB;
+    --pos:#1E8E5A;   /* r — апофема, вписанная */
+    --pos-bg:#E7F4EC;
+    --zero:#B9791A;  /* сторона aₙ */
+    --zero-bg:#FBF1DC;
+    --neg:#C0455B;   /* ошибки */
+    --neg-bg:#F9E9EC;
+  }
+  *{box-sizing:border-box}
+  body{margin:0}
+  .wrap{
+    max-width:760px;
+    margin:0 auto;
+    padding:clamp(1.4rem,4vw,3rem) clamp(1.1rem,4vw,2rem) 4rem;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    font-size:17px;
+    line-height:1.62;
+    -webkit-font-smoothing:antialiased;
+  }
+  .eyebrow{
+    font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--accent);font-weight:600;margin:0 0 .5rem;
+  }
+  h1{
+    font-family:Georgia,"Times New Roman",serif;
+    font-size:clamp(1.9rem,6.4vw,2.7rem);
+    line-height:1.06;margin:0;font-weight:700;letter-spacing:-.01em;
+    text-wrap:balance;
+  }
+  .lede{
+    font-size:1.08rem;color:var(--muted);margin:.7rem 0 0;max-width:60ch;
+    text-wrap:pretty;
+  }
+  h2{
+    font-family:Georgia,serif;font-size:1.32rem;font-weight:700;
+    margin:0 0 .1rem;letter-spacing:-.005em;
+  }
+  section{margin-top:2.6rem}
+  .kicker{
+    font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--muted);font-weight:600;margin:0 0 .8rem;
+    display:flex;align-items:center;gap:.6rem;
+  }
+  .kicker::before{
+    content:"";width:1.4rem;height:2px;background:var(--accent);border-radius:2px;
+  }
+  p{margin:.65rem 0}
+  strong{font-weight:650}
+  .math{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-weight:600}
+  sup{font-size:.72em}
+
+  /* Главная формула */
+  .hero-formula{
+    margin-top:2.2rem;
+    background:var(--ink);color:#fff;border-radius:14px;
+    padding:1.6rem 1.4rem;text-align:center;
+  }
+  .hero-formula .lbl{
+    font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;
+    color:#9aa6c9;margin:0 0 .7rem;
+  }
+  .hero-formula .eq{
+    font-family:ui-monospace,"SF Mono",Menlo,monospace;
+    font-size:clamp(1.4rem,5.2vw,2.1rem);font-weight:700;letter-spacing:.01em;
+  }
+  .hero-formula .eq b{color:#8ea0ff;font-weight:700}
+  .hero-formula .note{font-size:.86rem;color:#9aa6c9;margin:.8rem 0 0}
+
+  /* Пререквизит */
+  .recall{
+    background:var(--accent-soft);border-radius:12px;padding:1rem 1.15rem;
+    font-size:.96rem;
+  }
+  .recall p{margin:.3rem 0}
+
+  /* Карточки-обозначения */
+  .cases{display:grid;gap:.85rem;margin-top:.4rem}
+  @media(min-width:620px){.cases{grid-template-columns:repeat(3,1fr)}}
+  .case{
+    border-radius:12px;padding:1.05rem 1.1rem;border:1px solid var(--line);
+    background:var(--card);display:flex;flex-direction:column;gap:.35rem;
+  }
+  .case .sign{font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.15rem}
+  .case .count{font-weight:650;font-size:1rem}
+  .case .desc{font-size:.9rem;color:var(--muted)}
+  .case.pos{border-top:4px solid var(--pos);background:var(--pos-bg)}
+  .case.pos .sign{color:var(--pos)}
+  .case.zero{border-top:4px solid var(--zero);background:var(--zero-bg)}
+  .case.zero .sign{color:var(--zero)}
+  .case.acc{border-top:4px solid var(--accent);background:var(--accent-soft)}
+  .case.acc .sign{color:var(--accent)}
+
+  /* Список формул */
+  .flist{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:.4rem 1.1rem;margin-top:1rem}
+  .frm{display:flex;gap:.9rem;align-items:baseline;flex-wrap:wrap;padding:.75rem 0;border-top:1px dashed var(--line)}
+  .frm:first-child{border-top:none}
+  .frm .fe{font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.02rem;min-width:15ch}
+  .frm .fd{font-size:.9rem;color:var(--muted);flex:1;min-width:12ch}
+
+  /* Разбор */
+  .worked{
+    background:var(--card);border:1px solid var(--line);border-radius:12px;
+    padding:1.2rem 1.3rem;
+  }
+  .worked .task{
+    font-weight:700;font-size:1.02rem;
+    margin:0 0 1rem;padding-bottom:.8rem;border-bottom:1px solid var(--line);
+  }
+  ol.steps{margin:0;padding:0;list-style:none;counter-reset:s;display:flex;flex-direction:column;gap:.7rem}
+  ol.steps li{
+    position:relative;padding-left:2.1rem;counter-increment:s;
+  }
+  ol.steps li::before{
+    content:counter(s);position:absolute;left:0;top:.05rem;
+    width:1.5rem;height:1.5rem;border-radius:50%;
+    background:var(--accent-soft);color:var(--accent);
+    font-size:.82rem;font-weight:700;display:flex;align-items:center;justify-content:center;
+  }
+  ol.steps .m{font-family:ui-monospace,Menlo,monospace;font-weight:600;color:var(--ink)}
+  ol.steps .why{display:block;font-size:.88rem;color:var(--muted)}
+  .verdict{
+    margin-top:1rem;padding:.7rem 1rem;background:var(--pos-bg);
+    border-radius:9px;font-weight:600;color:var(--pos);font-size:.98rem;
+  }
+
+  /* Таблица */
+  .tw{overflow-x:auto;margin-top:1rem;border:1px solid var(--line);border-radius:12px;background:var(--card)}
+  table{border-collapse:collapse;width:100%;min-width:360px;font-size:.95rem}
+  th,td{padding:.6rem .8rem;text-align:left;border-bottom:1px solid var(--line)}
+  th{font-size:.76rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:700}
+  tr:last-child td{border-bottom:none}
+  td.m{font-family:ui-monospace,Menlo,monospace;font-weight:600}
+
+  /* Практика */
+  .drill{display:flex;flex-direction:column;gap:.7rem}
+  details{
+    background:var(--card);border:1px solid var(--line);border-radius:10px;
+    padding:.85rem 1.05rem;
+  }
+  details[open]{border-color:var(--accent)}
+  summary{
+    cursor:pointer;font-weight:600;list-style:none;
+    display:flex;justify-content:space-between;align-items:center;gap:1rem;
+  }
+  summary::-webkit-details-marker{display:none}
+  summary:focus-visible{outline:3px solid var(--accent);outline-offset:3px;border-radius:6px}
+  summary .q{flex:1;min-width:0}
+  summary .tag{
+    font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);
+    border:1px solid var(--line);border-radius:20px;padding:.1rem .55rem;white-space:nowrap;
+  }
+  summary::after{
+    content:"ответ";font-size:.78rem;color:var(--accent);font-weight:600;white-space:nowrap;
+  }
+  details[open] summary::after{content:"скрыть"}
+  .ans{margin-top:.7rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.96rem;color:var(--muted)}
+  .ans .m{font-family:ui-monospace,Menlo,monospace;color:var(--ink);font-weight:600}
+
+  /* Ошибки */
+  ul.pitfalls{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:.6rem}
+  ul.pitfalls li{
+    padding-left:1.5rem;position:relative;font-size:.98rem;
+  }
+  ul.pitfalls li::before{
+    content:"×";position:absolute;left:0;top:-.05rem;color:var(--neg);font-weight:700;font-size:1.1rem;
+  }
+  ul.pitfalls b{color:var(--ink)}
+
+  .next{
+    background:var(--accent);color:#fff;border-radius:12px;padding:1.2rem 1.3rem;
+  }
+  .next h2{color:#fff}
+  .next .eq{
+    font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.15rem;
+    margin:.6rem 0 .3rem;
+  }
+  .next p{color:#dfe4fb;font-size:.96rem;margin:.4rem 0 0}
+  .foot{margin-top:2.4rem;font-size:.82rem;color:var(--muted);text-align:center}
+
+  .oge-tip{display:flex;gap:.8rem;align-items:flex-start;background:#FFF8E7;border:1px solid #F0D98A;border-left:4px solid #E0A315;border-radius:10px;padding:.85rem 1.05rem;margin:1.5rem 0}
+  .oge-tip .b{font-size:.72rem;font-weight:800;letter-spacing:.03em;color:#8A6A15;white-space:nowrap;text-transform:uppercase;padding-top:.15rem}
+  .oge-tip .x{font-size:.95rem;line-height:1.5}
+
+  /* Canvas-симуляция */
+  .sim{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.1rem 1.1rem 1rem;margin:1rem 0}
+  .sim canvas{width:100%;height:auto;display:block;border-radius:10px;background:#FCFDFF}
+  .sim .legend{display:flex;gap:1rem;flex-wrap:wrap;justify-content:center;margin-top:.7rem;font-size:.85rem;font-weight:600}
+  .sim .legend i{display:inline-block;width:.8rem;height:.8rem;border-radius:3px;margin-right:.35rem;vertical-align:-1px}
+  .sliders{display:grid;gap:.6rem;margin-top:.9rem}
+  .sliders label{display:flex;align-items:center;gap:.6rem;font-weight:700;font-family:ui-monospace,Menlo,monospace}
+  .sliders input[type=range]{flex:1;accent-color:var(--accent)}
+  .sliders input[type=range]:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+  .sliders .sval{min-width:3ch;text-align:right;color:var(--accent);font-variant-numeric:tabular-nums}
+  .simout{text-align:center;font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:clamp(.86rem,3.4vw,1rem);margin:.9rem 0 0;line-height:1.9}
+  .simout .g{color:var(--pos)}
+  .simout .o{color:var(--zero)}
+
+  /* Тренажёр */
+  .trainer{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.2rem 1.3rem;margin-top:1rem}
+  .tr-eq{font-weight:700;font-size:clamp(1rem,4vw,1.15rem);text-align:center;padding:1rem;background:var(--accent-soft);border-radius:10px;color:var(--ink);line-height:1.5}
+  .tr-ctl{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.9rem;align-items:center}
+  .tr-ctl button{font:inherit;font-weight:700;font-size:.9rem;cursor:pointer;border:none;border-radius:9px;padding:.55rem .95rem;color:#fff;background:var(--accent)}
+  .tr-ctl button.sec{background:var(--pos)}
+  .tr-ctl button.ghost{background:transparent;color:var(--accent);border:1px solid var(--accent)}
+  .tr-ctl input{flex:1;min-width:150px;font:inherit;padding:.5rem .7rem;border:1px solid var(--line);border-radius:9px;background:#fff;color:var(--ink)}
+  .tr-ctl button:focus-visible,.tr-ctl input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+  .tr-result{margin-top:.9rem;font-size:.96rem;min-height:1.2rem}
+  .tr-result .ok{color:var(--pos);font-weight:700}
+  .tr-result .bad{color:var(--neg);font-weight:700}
+  .tr-result .sol{margin-top:.7rem;padding:.85rem 1rem;background:#FCFBFE;border:1px solid var(--line);border-radius:10px;font-family:ui-monospace,Menlo,monospace;font-size:.9rem;line-height:1.85;overflow-x:auto}
+  .tr-result .sol b{color:var(--accent)}
+
+  @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<!--LESSON-NAV-TOP--><style>.lnav{--lnav-accent:#3D5AF1}.lnav a{text-decoration:none;font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif}.lnav-top{max-width:820px;margin:0 auto;padding:.75rem clamp(1rem,4vw,1.5rem) .1rem}.lnav-top a{display:inline-flex;align-items:center;gap:.35rem;color:var(--lnav-accent);font-weight:600;font-size:.9rem}.lnav-top a:hover{text-decoration:underline}.lnav-bot{max-width:820px;margin:2.6rem auto 3rem;padding:1.1rem clamp(1rem,4vw,1.5rem) 0;border-top:1px solid #E4E8EF;display:flex;align-items:stretch;gap:.55rem}.lnav-bot a{min-width:0;display:flex;flex-direction:column;justify-content:center;gap:.15rem;border:1px solid #E4E8EF;border-radius:12px;padding:.65rem .85rem;color:#182233;background:#fff;transition:border-color .1s,transform .08s}.lnav-bot a:hover{border-color:var(--lnav-accent);transform:translateY(-1px)}.lnav-bot .prev,.lnav-bot .next{flex:1 1 0}.lnav-bot .next{text-align:right}.lnav-bot .dir{font-size:.72rem;color:#8A93A6;font-weight:600}.lnav-bot .ttl{font-size:.9rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.lnav-bot .to-cat{flex:0 0 auto;flex-direction:row;align-items:center;justify-content:center;color:var(--lnav-accent);font-weight:700;font-size:.85rem;white-space:nowrap}@media(max-width:420px){.lnav-bot .to-cat span{display:none}.lnav-bot .to-cat{padding:.65rem .7rem}}</style><nav class="lnav lnav-top"><a href="./catalog.html">← Все темы</a></nav><!--/LESSON-NAV-TOP-->
+<div class="wrap">
+
+  <header>
+    <p class="eyebrow">Геометрия · 9 класс</p>
+    <h1>Правильный многоугольник: сторона, апофема, площадь</h1>
+    <p class="lede">Два числа — количество сторон <em>n</em> и радиус <em>R</em> — и вся фигура посчитана: сторона, периметр, апофема, площадь.</p>
+  </header>
+
+  <div class="hero-formula">
+    <p class="lbl">Главная формула темы</p>
+    <div class="eq">a<sub>n</sub> = 2<b>R</b> · sin(180°/<b>n</b>)</div>
+    <p class="note">сторона правильного n-угольника через радиус описанной окружности</p>
+  </div>
+
+  <section>
+    <p class="kicker">Зачем это нужно</p>
+    <h2>Идеальные фигуры вокруг тебя</h2>
+    <p>Правильный многоугольник — тот, у которого <strong>все стороны равны и все углы равны</strong>. Ты видишь такие каждый день: гайка под ключ — правильный шестиугольник, пчелиные соты — тоже шестиугольники, плитка-«сота» на полу, дорожный знак «уступи дорогу» — правильный треугольник, знак «стоп» — правильный восьмиугольник, грани кристаллов.</p>
+    <p>Как только надо что-то посчитать — длину стороны, периметр (это ограждение, бордюр) или площадь (это материал, краска, плитка), — фигуру удобно <strong>вписать в окружность</strong> или <strong>описать вокруг окружности</strong>. Тогда вся фигура задаётся всего двумя числами: <span class="math">n</span> и <span class="math">R</span>. Всё остальное вытекает из них по формулам.</p>
+    <p><strong>Главное заблуждение:</strong> «у правильного многоугольника достаточно знать одну сторону». Стороны-то действительно все равны, но для площади одной стороны мало — нужна ещё высота-апофема, а она зависит от <span class="math">n</span>. У шестиугольника и у треугольника со стороной 4 площади получатся разные.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Что вспомнить перед стартом</p>
+    <div class="recall">
+      <p><strong>Описанная окружность</strong> проходит через все вершины многоугольника, её радиус — <span class="math">R</span> (от центра до вершины).</p>
+      <p><strong>Вписанная окружность</strong> касается всех сторон в их серединах, её радиус — <span class="math">r</span> (от центра до середины стороны). Всегда <span class="math">r &lt; R</span>.</p>
+      <p>И понадобится таблица значений синуса и косинуса — держи её перед глазами:</p>
+    </div>
+    <div class="tw">
+      <table>
+        <tr><th>угол</th><th>30°</th><th>45°</th><th>60°</th><th>90°</th><th>120°</th></tr>
+        <tr><td>sin</td><td class="m">1/2</td><td class="m">√2/2</td><td class="m">√3/2</td><td class="m">1</td><td class="m">√3/2</td></tr>
+        <tr><td>cos</td><td class="m">√3/2</td><td class="m">√2/2</td><td class="m">1/2</td><td class="m">0</td><td class="m">−1/2</td></tr>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Суть темы — один треугольник</p>
+    <h2>Режем «пирог» на n кусков</h2>
+    <p>Возьми правильный n-угольник и соедини его центр <span class="math">O</span> со всеми вершинами. Фигура распадётся на <strong>n одинаковых равнобедренных треугольников</strong> — как пирог на равные куски.</p>
+    <p>У каждого такого треугольника боковые стороны — это радиусы <span class="math">R</span>, основание — сторона многоугольника <span class="math">a<sub>n</sub></span>, а угол при центре равен <span class="math">360°/n</span> (полный оборот 360° поделили на n кусков). Высота этого треугольника, опущенная из центра на сторону, — это и есть <strong>апофема</strong>, она же радиус вписанной окружности <span class="math">r</span>.</p>
+    <p>Вот и весь секрет: <strong>вся «правильность» фигуры собирается в один центральный треугольник</strong>. Решаем его обычной тригонометрией — и получаем сторону, апофему и площадь всего многоугольника.</p>
+    <div class="cases">
+      <div class="case acc">
+        <div class="sign">R</div>
+        <div class="count">До вершины</div>
+        <div class="desc">Радиус описанной окружности. Длинный отрезок — в угол.</div>
+      </div>
+      <div class="case pos">
+        <div class="sign">r = a</div>
+        <div class="count">До середины стороны</div>
+        <div class="desc">Радиус вписанной окружности, он же апофема. Короткий отрезок — перпендикуляр к стороне.</div>
+      </div>
+      <div class="case zero">
+        <div class="sign">a<sub>n</sub></div>
+        <div class="count">Сторона</div>
+        <div class="desc">Основание центрального треугольника. Их всего n штук.</div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Ядро · формулы</p>
+    <h2>Пять формул, которые всё закрывают</h2>
+    <p>Обозначения: <span class="math">n</span> — число сторон (n ≥ 3), <span class="math">R</span> — радиус описанной окружности, <span class="math">r</span> — радиус вписанной (апофема <span class="math">a</span>), <span class="math">a<sub>n</sub></span> — сторона, <span class="math">P</span> — периметр, <span class="math">S</span> — площадь.</p>
+    <p>Центральный угол одного куска: <span class="math">α = 360°/n</span>, его половина: <span class="math">α/2 = 180°/n</span>.</p>
+    <div class="flist">
+      <div class="frm"><span class="fe">a<sub>n</sub> = 2R · sin(180°/n)</span><span class="fd">сторона через радиус описанной окружности</span></div>
+      <div class="frm"><span class="fe">a = r = R · cos(180°/n)</span><span class="fd">апофема (она же радиус вписанной)</span></div>
+      <div class="frm"><span class="fe">P = n · a<sub>n</sub></span><span class="fd">периметр — сумма n равных сторон</span></div>
+      <div class="frm"><span class="fe">S = ½ · P · a</span><span class="fd">площадь через периметр и апофему</span></div>
+      <div class="frm"><span class="fe">S = ½ · n · R² · sin(360°/n)</span><span class="fd">площадь сразу через R</span></div>
+    </div>
+    <p style="margin-top:1.1rem"><strong>Три случая стоит помнить наизусть</strong> — они встречаются чаще всего:</p>
+    <div class="tw">
+      <table>
+        <tr><th>фигура</th><th>n</th><th>сторона</th><th>почему</th></tr>
+        <tr><td>правильный треугольник</td><td class="m">3</td><td class="m">a₃ = R·√3</td><td>2R·sin60° = 2R·(√3/2)</td></tr>
+        <tr><td>квадрат</td><td class="m">4</td><td class="m">a₄ = R·√2</td><td>2R·sin45° = 2R·(√2/2)</td></tr>
+        <tr><td>шестиугольник</td><td class="m">6</td><td class="m">a₆ = R</td><td>2R·sin30° = 2R·(1/2)</td></tr>
+      </table>
+    </div>
+    <p style="font-size:.92rem;color:var(--muted);margin-top:.9rem">Условия применимости: формулы работают <strong>только для правильного</strong> многоугольника; углы в sin и cos берём <strong>в градусах</strong>; <span class="math">R</span> — до вершины, <span class="math">r</span> — до середины стороны, путать нельзя. Единицы: если <span class="math">R</span> в см, то <span class="math">a<sub>n</sub></span> и <span class="math">P</span> в см, а <span class="math">S</span> — в см².</p>
+
+    <div class="oge-tip"><div class="b">🎯 В ОГЭ</div><div class="x"><b>Задания 16 и 17.</b> В первой части геометрии №16 — про окружность (вписанная/описанная), №17 — про площади фигур. Правильный многоугольник с окружностью встречается и там, и там: обычно дают n и R (или сторону) и просят сторону, периметр либо площадь.</div></div>
+  </section>
+
+  <section>
+    <p class="kicker">Покрути сам · интерактив</p>
+    <h2>Чем больше сторон, тем ближе к окружности</h2>
+    <p>Двигай ползунок <span class="math">n</span>. Синяя окружность — описанная (проходит через вершины, радиус <span class="math">R</span>), зелёная — вписанная (касается сторон, радиус <span class="math">r</span>). Смотри, как при росте <span class="math">n</span> обе окружности сближаются, а ломаная превращается в круг.</p>
+    <div class="sim">
+      <canvas id="ngon" width="640" height="440" aria-label="Правильный n-угольник с вписанной и описанной окружностями"></canvas>
+      <div class="legend">
+        <span style="color:var(--accent)"><i style="background:var(--accent)"></i>описанная, R</span>
+        <span style="color:var(--pos)"><i style="background:var(--pos)"></i>вписанная, r</span>
+        <span style="color:var(--zero)"><i style="background:var(--zero)"></i>сторона aₙ</span>
+      </div>
+      <div class="sliders">
+        <label>n <span id="vn" class="sval">6</span><input id="sn" type="range" min="3" max="30" step="1" value="6" aria-label="Число сторон"></label>
+      </div>
+      <p class="simout" id="simOut"></p>
+    </div>
+    <p style="font-size:.9rem;color:var(--muted)">Останови на <span class="math">n = 6</span>: сторона ровно равна радиусу. А на <span class="math">n = 30</span> сторона уже совсем короткая, и вписанная окружность почти прижалась к описанной — многоугольник практически стал кругом.</p>
+    <p><strong>Предскажи и проверь:</strong> как думаешь, у правильного шестиугольника сторона больше радиуса, меньше или равна? Сначала ответь, потом посчитай <span class="math">a₆ = 2R·sin30° = R</span> — ровно равна. Почему? Потому что шестиугольник режется на 6 <em>равносторонних</em> треугольников: угол при центре 360°/6 = 60°, а треугольник с углом 60° при вершине и равными боковыми — равносторонний.</p>
+    <p>Та же мысль в числах — таблица для <span class="math">R = 1</span>:</p>
+    <div class="tw">
+      <table>
+        <tr><th>n</th><th>угол 180°/n</th><th>сторона a<sub>n</sub></th></tr>
+        <tr><td class="m">3</td><td class="m">60°</td><td class="m">√3 ≈ 1,73</td></tr>
+        <tr><td class="m">4</td><td class="m">45°</td><td class="m">√2 ≈ 1,41</td></tr>
+        <tr><td class="m">6</td><td class="m">30°</td><td class="m">1</td></tr>
+        <tr><td class="m">12</td><td class="m">15°</td><td class="m">≈ 0,52</td></tr>
+      </table>
+    </div>
+    <p style="font-size:.92rem;color:var(--muted)">Видно: чем больше сторон, тем короче каждая сторона — и тем ближе ломаная к окружности.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Разбираем вместе · думаю вслух</p>
+    <h2>Эталонный пример</h2>
+    <div class="worked">
+      <p class="task">Правильный шестиугольник вписан в окружность радиуса R = 4 см. Найти сторону, периметр, апофему и площадь.</p>
+      <ol class="steps">
+        <li>Смотрю на n: <span class="m">n = 6</span>, значит <span class="m">180°/n = 180°/6 = 30°</span>.
+          <span class="why">Этот угол — половина центрального, он живёт во всех формулах стороны и апофемы.</span></li>
+        <li>Сторона: <span class="m">a₆ = 2R·sin30° = 2·4·(1/2) = 4 см</span>.
+          <span class="why">Почему так: беру формулу стороны, sin30° = 1/2. Проверка: у шестиугольника сторона должна быть равна R — сошлось, R = 4.</span></li>
+        <li>Периметр: <span class="m">P = n·a = 6·4 = 24 см</span>.
+          <span class="why">Почему так: периметр — это просто сумма n равных сторон.</span></li>
+        <li>Апофема: <span class="m">a = R·cos30° = 4·(√3/2) = 2√3 ≈ 3,46 см</span>.
+          <span class="why">Почему так: апофема — высота центрального треугольника, идёт через косинус; cos30° = √3/2. Проверяю себя: 3,46 меньше 4, то есть r &lt; R — как и должно быть.</span></li>
+        <li>Площадь: <span class="m">S = ½·P·a = ½·24·2√3 = 24√3 ≈ 41,6 см²</span>.
+          <span class="why">Почему так: площадь — половина произведения периметра на апофему. Перепроверю второй формулой: S = ½·6·4²·sin60° = ½·6·16·(√3/2) = 24√3. Совпало.</span></li>
+      </ol>
+      <div class="verdict">Ответ: a = 4 см, P = 24 см, апофема 2√3 ≈ 3,46 см, S = 24√3 ≈ 41,6 см².</div>
+    </div>
+
+    <p style="margin-top:1.4rem"><strong>Теперь с пропущенным шагом — допиши сам.</strong> Правильный треугольник вписан в окружность R = 6 см.</p>
+    <div class="drill">
+      <details>
+        <summary><span class="q">180°/n = 180°/3 = 60°; a₃ = 2R·sin60° = 2·6·(√3/2) = ___</span><span class="tag">достройка</span></summary>
+        <div class="ans">Двойка сокращается с двойкой в знаменателе: <span class="m">2·6·(√3/2) = 6√3 ≈ 10,4 см</span>.</div>
+      </details>
+      <details>
+        <summary><span class="q">Реши сам: квадрат вписан в окружность R = 5 см. Найди сторону и площадь.</span><span class="tag">применение</span></summary>
+        <div class="ans"><span class="m">a₄ = 2·5·sin45° = 10·(√2/2) = 5√2 ≈ 7,07 см</span>. Площадь через R: <span class="m">S = ½·4·5²·sin90° = ½·4·25·1 = 50 см²</span>. Сверка: у квадрата <span class="m">S = a² = (5√2)² = 50 см²</span> — совпало.</div>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Теперь ты · нажми, чтобы проверить</p>
+    <h2>Практика по нарастанию</h2>
+    <div class="drill">
+      <details>
+        <summary><span class="q">Что такое апофема? Радиусом какой окружности она является?</span><span class="tag">понимание</span></summary>
+        <div class="ans">Апофема — перпендикуляр, опущенный из центра многоугольника на сторону (то есть до середины стороны). Это <strong>радиус вписанной окружности</strong>: <span class="m">a = r</span>.</div>
+      </details>
+      <details>
+        <summary><span class="q">Чему равна сторона правильного шестиугольника, вписанного в окружность радиуса R?</span><span class="tag">понимание</span></summary>
+        <div class="ans"><span class="m">a₆ = R</span> — сторона равна радиусу, потому что <span class="m">2R·sin30° = 2R·(1/2) = R</span>.</div>
+      </details>
+      <details>
+        <summary><span class="q">Правильный шестиугольник вписан в окружность R = 10 см. Найди сторону, периметр и площадь.</span><span class="tag">применение</span></summary>
+        <div class="ans"><span class="m">a = 10 см</span> (сторона = радиус), <span class="m">P = 6·10 = 60 см</span>, <span class="m">S = ½·6·10²·sin60° = ½·6·100·(√3/2) = 150√3 ≈ 259,8 см²</span>.</div>
+      </details>
+      <details>
+        <summary><span class="q">Найди апофему правильного треугольника со стороной 6 см.</span><span class="tag">применение</span></summary>
+        <div class="ans">Сначала радиус: из <span class="m">a₃ = R√3</span> получаем <span class="m">R = 6/√3 = 2√3</span>. Тогда апофема <span class="m">a = R·cos60° = 2√3·(1/2) = √3 ≈ 1,73 см</span>.</div>
+      </details>
+      <details>
+        <summary><span class="q">Что изменится с периметром и площадью, если радиус описанной окружности увеличить в 2 раза (n тот же)?</span><span class="tag">анализ</span></summary>
+        <div class="ans">Периметр вырастет <strong>в 2 раза</strong>: сторона <span class="m">2R·sin(180°/n)</span> линейно зависит от R. Площадь вырастет <strong>в 4 раза</strong>, потому что <span class="m">S = ½·n·R²·sin(360°/n)</span> — здесь R в квадрате: <span class="m">S ~ R²</span>.</div>
+      </details>
+      <details>
+        <summary><span class="q">Найди ошибку: «Площадь правильного шестиугольника со стороной 4 равна ½·24·4 = 48».</span><span class="tag">анализ</span></summary>
+        <div class="ans">Периметр посчитан верно (<span class="m">P = 6·4 = 24</span>), но во втором множителе вместо <strong>апофемы</strong> подставили сторону 4. У шестиугольника со стороной 4 радиус <span class="m">R = 4</span>, апофема <span class="m">a = 4·cos30° = 2√3 ≈ 3,46</span>. Верно: <span class="m">S = ½·24·2√3 = 24√3 ≈ 41,6</span>. Формула звучит как «половина периметра на апофему», а не «на сторону».</div>
+      </details>
+      <details>
+        <summary><span class="q">Обратная задача: периметр правильного шестиугольника равен 30 см. Найди радиус описанной окружности.</span><span class="tag">анализ</span></summary>
+        <div class="ans">Сторона: <span class="m">30 / 6 = 5 см</span>. У шестиугольника сторона равна радиусу, значит <span class="m">R = 5 см</span>.</div>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Тренажёр · бесконечная практика</p>
+    <h2>Считай сам, пока не станет автоматом</h2>
+    <p>Нажимай «Новая задача» и решай. Ответ — <strong>число</strong>, округли до сотых (можно с запятой или с точкой, единицы писать не обязательно). Если получилось с корнем — посчитай на калькуляторе приближённо. Потом проверь себя или посмотри пошаговое решение.</p>
+    <div class="trainer">
+      <div class="tr-eq" id="trEq"></div>
+      <div class="tr-ctl">
+        <button id="trNew" type="button">🎲 Новая задача</button>
+        <input id="trAns" type="text" inputmode="text" placeholder="напр.  10,39" aria-label="Ответ">
+        <button id="trCheck" type="button" class="sec">Проверить</button>
+        <button id="trShow" type="button" class="ghost">Показать решение</button>
+      </div>
+      <div id="trResult" class="tr-result"></div>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Где чаще всего ошибаются</p>
+    <h2>Пять ловушек</h2>
+    <ul class="pitfalls">
+      <li><b>Путают R и r.</b> В формулу стороны идёт <span class="math">R</span> (до вершины), а апофема <span class="math">a = r</span> — это до середины стороны. Как не попасться: всегда рисуй центральный треугольник и подписывай, что куда. <span class="math">R</span> — длинный отрезок (в угол), <span class="math">r</span> — короткий (к стороне), всегда <span class="math">r &lt; R</span>.</li>
+      <li><b>Берут не тот угол.</b> В формуле стороны угол <span class="math">180°/n</span> (половина центрального), а в формуле площади через R — полный <span class="math">360°/n</span>. Запомни: у стороны делим <strong>180</strong> на n, у площади через R — <strong>360</strong> на n.</li>
+      <li><b>Используют одну формулу для всех n.</b> Сторона зависит от n: <span class="math">a₃ = R√3</span>, <span class="math">a₄ = R√2</span>, <span class="math">a₆ = R</span> — они разные! Не заучивай частный случай как общий, при сомнении считай через <span class="math">2R·sin(180°/n)</span>.</li>
+      <li><b>В площадь подставляют сторону вместо апофемы.</b> В <span class="math">S = ½·P·a</span> буква <span class="math">a</span> — это апофема, а не сторона. Проговаривай вслух: «половина периметра на апофему».</li>
+      <li><b>Путаются в значениях sin и cos.</b> Классика: перепутать <span class="math">sin30° = 1/2</span> и <span class="math">sin60° = √3/2</span>. Держи таблицу под рукой, пока не запомнишь.</li>
+    </ul>
+  </section>
+
+  <section>
+    <p class="kicker">Проверка понимания</p>
+    <h2>Объясни своими словами</h2>
+    <div class="drill">
+      <details>
+        <summary><span class="q">1. Какой отрезок называется апофемой и радиусом какой окружности он является?</span><span class="tag">вопрос</span></summary>
+        <div class="ans">Перпендикуляр из центра к стороне; это радиус вписанной окружности.</div>
+      </details>
+      <details>
+        <summary><span class="q">2. Напиши формулу стороны правильного n-угольника через радиус описанной окружности.</span><span class="tag">вопрос</span></summary>
+        <div class="ans"><span class="m">aₙ = 2R·sin(180°/n)</span>.</div>
+      </details>
+      <details>
+        <summary><span class="q">3. По какой формуле находят площадь, если известны периметр и апофема?</span><span class="tag">вопрос</span></summary>
+        <div class="ans"><span class="m">S = ½·P·a</span>.</div>
+      </details>
+    </div>
+    <p style="margin-top:1rem">Итог одним предложением: <strong>разбив правильный n-угольник на n равных треугольников, через радиус и угол 180°/n находим сторону, периметр, апофему и площадь.</strong></p>
+  </section>
+
+  <section>
+    <div class="next">
+      <h2>Что дальше</h2>
+      <p>Ты уже видел в интерактиве: когда n растёт, правильный n-угольник почти неотличим от круга, а его периметр всё ближе к длине окружности.</p>
+      <div class="eq">n → большое ⟹ P(n-угольника) → длина окружности</div>
+      <p>Именно на этом мостике строится следующая тема — <strong>длина окружности и площадь круга</strong>. Формулы этого урока — её фундамент.</p>
+    </div>
+  </section>
+
+  <p class="foot">Проверка на выходе: напиши формулу стороны по памяти · чему равна сторона шестиугольника при R = 7? · что больше, R или r?</p>
+
+</div>
+
+<script>
+(function(){
+  var canvas=document.getElementById('ngon'); if(!canvas) return;
+  var ctx=canvas.getContext('2d');
+  var sn=document.getElementById('sn'), vn=document.getElementById('vn'), out=document.getElementById('simOut');
+  var W=640,H=440,dpr=1;
+
+  function css(v,f){ var s=getComputedStyle(document.documentElement).getPropertyValue(v).trim(); return s||f; }
+  function num2(x){ return (Math.round(x*100)/100).toFixed(2).replace('.',','); }
+
+  function resize(){
+    var cssW=canvas.clientWidth||640;
+    dpr=Math.min(window.devicePixelRatio||1,2);
+    W=cssW; H=Math.round(cssW*0.78);
+    canvas.width=Math.round(W*dpr); canvas.height=Math.round(H*dpr);
+    canvas.style.height=H+'px';
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+  }
+
+  function draw(){
+    var n=parseInt(sn.value,10); if(!(n>=3)) n=3;
+    vn.textContent=n;
+    var cx=W/2, cy=H/2, R=Math.min(W,H)*0.36;
+    var r=R*Math.cos(Math.PI/n);
+    var accent=css('--accent','#3B4FD0'), pos=css('--pos','#1E8E5A'), zero=css('--zero','#B9791A'), muted=css('--muted','#5A6478');
+
+    ctx.clearRect(0,0,W,H);
+
+    /* описанная окружность */
+    ctx.strokeStyle=accent; ctx.lineWidth=2;
+    ctx.beginPath(); ctx.arc(cx,cy,R,0,Math.PI*2); ctx.stroke();
+    /* вписанная окружность */
+    ctx.strokeStyle=pos; ctx.lineWidth=2; ctx.setLineDash([5,4]);
+    ctx.beginPath(); ctx.arc(cx,cy,r,0,Math.PI*2); ctx.stroke();
+    ctx.setLineDash([]);
+
+    /* многоугольник */
+    var start=-Math.PI/2 - Math.PI/n; /* чтобы верхняя сторона была горизонтальной */
+    function vx(i){ return cx+R*Math.cos(start+2*Math.PI*i/n); }
+    function vy(i){ return cy+R*Math.sin(start+2*Math.PI*i/n); }
+    ctx.strokeStyle=zero; ctx.lineWidth=3; ctx.beginPath();
+    ctx.moveTo(vx(0),vy(0));
+    for(var i=1;i<n;i++) ctx.lineTo(vx(i),vy(i));
+    ctx.closePath(); ctx.stroke();
+
+    /* один центральный треугольник: два радиуса + апофема */
+    ctx.strokeStyle=accent; ctx.lineWidth=2;
+    ctx.beginPath(); ctx.moveTo(cx,cy); ctx.lineTo(vx(0),vy(0)); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(cx,cy); ctx.lineTo(vx(1),vy(1)); ctx.stroke();
+    var mx=(vx(0)+vx(1))/2, my=(vy(0)+vy(1))/2;
+    ctx.strokeStyle=pos; ctx.lineWidth=2.5;
+    ctx.beginPath(); ctx.moveTo(cx,cy); ctx.lineTo(mx,my); ctx.stroke();
+
+    /* центр */
+    ctx.fillStyle=muted; ctx.beginPath(); ctx.arc(cx,cy,3.5,0,Math.PI*2); ctx.fill();
+
+    /* подписи */
+    var fs=Math.max(11,Math.round(W*0.028));
+    ctx.font='700 '+fs+'px ui-monospace, Menlo, monospace';
+    ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.fillStyle=accent;
+    ctx.fillText('R',(cx+vx(0))/2+fs*0.9,(cy+vy(0))/2);
+    ctx.fillStyle=pos;
+    ctx.fillText('r',(cx+mx)/2-fs*0.9,(cy+my)/2);
+    ctx.fillStyle=muted;
+    ctx.fillText('O',cx,cy+fs*1.2);
+    ctx.fillStyle=zero;
+    ctx.fillText('a',(vx(0)+vx(1))/2,(vy(0)+vy(1))/2-fs);
+  }
+
+  function info(){
+    var n=parseInt(sn.value,10); if(!(n>=3)) n=3;
+    var side=2*Math.sin(Math.PI/n), r=Math.cos(Math.PI/n);
+    out.innerHTML='при R = 1: &nbsp;<span class="o">a<sub>n</sub> = '+num2(side)+'</span> &nbsp;·&nbsp; <span class="g">r = '+num2(r)+'</span>';
+  }
+
+  function all(){ draw(); info(); }
+  sn.addEventListener('input',all);
+  window.addEventListener('resize',function(){ resize(); all(); });
+  resize(); all();
+})();
+</script>
+
+<script>
+(function(){
+  var eqEl=document.getElementById('trEq'), ansEl=document.getElementById('trAns'), resEl=document.getElementById('trResult');
+  if(!eqEl) return;
+
+  var MINUS='−';
+  var NAMES={3:'правильный треугольник',4:'квадрат',6:'правильный шестиугольник'};
+  var SIN_HALF={3:'√3/2',4:'√2/2',6:'1/2'};
+  var COS_HALF={3:'1/2',4:'√2/2',6:'√3/2'};
+  var SIN_FULL={3:'√3/2',4:'1',6:'√3/2'};
+  var HALF_ANG={3:'60°',4:'45°',6:'30°'};
+  var FULL_ANG={3:'120°',4:'90°',6:'60°'};
+  var SIDE_EX={3:'R·√3',4:'R·√2',6:'R'};
+
+  function ri(min,max){ return Math.floor(Math.random()*(max-min+1))+min; }
+  function pick(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+  function nm(x){
+    var n=Math.round(x*100)/100;
+    if(Object.is(n,-0)) n=0;
+    var s=Math.abs(n).toFixed(2).replace(/\.?0+$/,'');
+    if(s==='') s='0';
+    return (n<0?MINUS:'')+s.replace('.',',');
+  }
+
+  var cur=null;
+
+  function make(n,R,kind){
+    var side=2*R*Math.sin(Math.PI/n);
+    var apo=R*Math.cos(Math.PI/n);
+    var per=n*side;
+    var area=0.5*n*R*R*Math.sin(2*Math.PI/n);
+    var q={n:n,R:R,kind:kind,side:side,apo:apo,per:per,area:area};
+    if(kind==='side'){ q.text=NAMES[n].charAt(0).toUpperCase()+NAMES[n].slice(1)+' вписан в окружность радиуса R = '+R+' см. Найди сторону (см).'; q.ans=side; q.unit='см'; }
+    else if(kind==='apo'){ q.text=NAMES[n].charAt(0).toUpperCase()+NAMES[n].slice(1)+' вписан в окружность радиуса R = '+R+' см. Найди апофему (см).'; q.ans=apo; q.unit='см'; }
+    else if(kind==='per'){ q.text=NAMES[n].charAt(0).toUpperCase()+NAMES[n].slice(1)+' вписан в окружность радиуса R = '+R+' см. Найди периметр (см).'; q.ans=per; q.unit='см'; }
+    else if(kind==='area'){ q.text=NAMES[n].charAt(0).toUpperCase()+NAMES[n].slice(1)+' вписан в окружность радиуса R = '+R+' см. Найди площадь (см²).'; q.ans=area; q.unit='см²'; }
+    else { q.text='Периметр правильного шестиугольника равен '+(6*R)+' см. Найди радиус описанной окружности (см).'; q.ans=R; q.unit='см'; }
+    return q;
+  }
+
+  function generate(){
+    var kind=pick(['side','side','apo','per','area','inv']);
+    var n = (kind==='inv') ? 6 : pick([3,4,6]);
+    var R = ri(2,12);
+    cur=make(n,R,kind);
+    eqEl.textContent=cur.text;
+    resEl.innerHTML=''; ansEl.value='';
+  }
+
+  function solutionHTML(){
+    var q=cur, n=q.n, R=q.R, h='<div class="sol">';
+    if(q.kind==='inv'){
+      h+='Периметр = 6 · сторона, значит сторона = '+(6*R)+' : 6 = <b>'+R+'</b> см.<br>';
+      h+='У правильного шестиугольника a₆ = 2R·sin30° = R, то есть сторона = радиусу.<br>';
+      h+='Ответ: R = <b>'+R+'</b> см.';
+      return h+'</div>';
+    }
+    h+='n = '+n+', R = '+R+' см; половина центрального угла 180°/'+n+' = '+HALF_ANG[n]+'.<br>';
+    if(q.kind==='side'){
+      h+='a<sub>n</sub> = 2R·sin'+HALF_ANG[n]+' = 2·'+R+'·('+SIN_HALF[n]+') = <b>'+nm(q.side)+'</b> см.<br>';
+      h+='Короткая проверка: для n = '+n+' сторона = '+SIDE_EX[n]+'.';
+    } else if(q.kind==='apo'){
+      h+='a = r = R·cos'+HALF_ANG[n]+' = '+R+'·('+COS_HALF[n]+') = <b>'+nm(q.apo)+'</b> см.<br>';
+      h+='Проверка: апофема меньше радиуса — '+nm(q.apo)+' &lt; '+R+'. ✓';
+    } else if(q.kind==='per'){
+      h+='Сторона: a<sub>n</sub> = 2R·sin'+HALF_ANG[n]+' = 2·'+R+'·('+SIN_HALF[n]+') = '+nm(q.side)+' см.<br>';
+      h+='Периметр: P = n·a<sub>n</sub> = '+n+'·'+nm(q.side)+' = <b>'+nm(q.per)+'</b> см.';
+    } else {
+      h+='Полный центральный угол 360°/'+n+' = '+FULL_ANG[n]+'.<br>';
+      h+='S = ½·n·R²·sin'+FULL_ANG[n]+' = ½·'+n+'·'+(R*R)+'·('+SIN_FULL[n]+') = <b>'+nm(q.area)+'</b> см².<br>';
+      h+='Сверка вторым способом: P = '+nm(q.per)+', апофема = '+nm(q.apo)+', ½·P·a = '+nm(0.5*q.per*q.apo)+'. ✓';
+    }
+    return h+'</div>';
+  }
+
+  function parseAns(raw){
+    var s=String(raw).toLowerCase();
+    s=s.replace(/−/g,'-').replace(/[–—]/g,'-');
+    s=s.replace(/см2|см²|см|cm/g,'');
+    s=s.replace(/\s+/g,'');
+    s=s.replace(/,/g,'.');
+    if(!/^-?\d*\.?\d+$/.test(s)) return null;
+    var v=parseFloat(s);
+    return isFinite(v)?v:null;
+  }
+
+  function check(){
+    if(!cur) return;
+    var raw=ansEl.value.trim();
+    if(!raw){ resEl.innerHTML='<span class="bad">Введи число или нажми «Показать решение».</span>'; return; }
+    var got=parseAns(raw);
+    if(got===null){
+      resEl.innerHTML='<span class="bad">Не понял запись. Нужно число, например 10,39 или 10.39.</span>';
+      return;
+    }
+    var exp=cur.ans;
+    var tol=Math.max(0.06, Math.abs(exp)*0.006);
+    if(Math.abs(got-exp)<=tol){
+      resEl.innerHTML='<span class="ok">✓ Верно! Ответ ≈ '+nm(exp)+' '+cur.unit+'.</span>'+solutionHTML();
+    } else {
+      var hint='';
+      if(Math.abs(got-cur.side)<=tol && cur.kind!=='side') hint=' Похоже, ты нашёл сторону, а спрашивают другое.';
+      else if(Math.abs(got-cur.apo)<=tol && cur.kind!=='apo') hint=' Похоже, ты посчитал апофему вместо нужной величины.';
+      else if(Math.abs(got-cur.R)<=tol && cur.kind!=='inv') hint=' Это радиус, а не то, что просят.';
+      resEl.innerHTML='<span class="bad">✗ Пока не то.'+hint+'</span>'+solutionHTML();
+    }
+  }
+
+  document.getElementById('trNew').addEventListener('click',function(){ generate(); ansEl.focus(); });
+  document.getElementById('trCheck').addEventListener('click',check);
+  document.getElementById('trShow').addEventListener('click',function(){ if(cur) resEl.innerHTML=solutionHTML(); });
+  ansEl.addEventListener('keydown',function(e){ if(e.key==='Enter') check(); });
+
+  /* стартовое состояние — валидная задача, без focus() */
+  cur=make(6,4,'side');
+  eqEl.textContent=cur.text;
+})();
+</script>
+<!--LESSON-NAV-BOT--><nav class="lnav lnav-bot"><a class="prev" href="./geo9-okruzhnosti-vpisannaya-opisannaya.html"><span class="dir">← Предыдущая</span><span class="ttl">Окружность, вписанная в правильный многоугольник и описанная около него</span></a><a class="to-cat" href="./catalog.html">📚 <span>Все темы</span></a><a class="next" href="./geo9-dlina-okruzhnosti.html"><span class="dir">Следующая →</span><span class="ttl">Длина окружности</span></a></nav><!--/LESSON-NAV-BOT-->

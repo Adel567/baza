@@ -1,0 +1,689 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Вписанная и описанная окружности правильного многоугольника — урок, геометрия 9 класс</title>
+<style>
+  :root{
+    --paper:#F6F7F9;
+    --card:#FFFFFF;
+    --ink:#1B2333;
+    --muted:#5A6478;
+    --line:#E2E5EC;
+    --accent:#3B4FD0;
+    --accent-soft:#EAEDFB;
+    --pos:#1E8E5A;   /* r — вписанная, апофема */
+    --pos-bg:#E7F4EC;
+    --zero:#B9791A;  /* центр */
+    --zero-bg:#FBF1DC;
+    --neg:#C0455B;   /* ошибка */
+    --neg-bg:#F9E9EC;
+  }
+  *{box-sizing:border-box}
+  body{margin:0}
+  .wrap{
+    max-width:760px;
+    margin:0 auto;
+    padding:clamp(1.4rem,4vw,3rem) clamp(1.1rem,4vw,2rem) 4rem;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    font-size:17px;
+    line-height:1.62;
+    -webkit-font-smoothing:antialiased;
+  }
+  .eyebrow{
+    font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--accent);font-weight:600;margin:0 0 .5rem;
+  }
+  h1{
+    font-family:Georgia,"Times New Roman",serif;
+    font-size:clamp(1.9rem,6.4vw,2.7rem);
+    line-height:1.07;margin:0;font-weight:700;letter-spacing:-.01em;
+    text-wrap:balance;
+  }
+  .lede{
+    font-size:1.08rem;color:var(--muted);margin:.7rem 0 0;max-width:60ch;
+    text-wrap:pretty;
+  }
+  h2{
+    font-family:Georgia,serif;font-size:1.32rem;font-weight:700;
+    margin:0 0 .1rem;letter-spacing:-.005em;
+  }
+  section{margin-top:2.6rem}
+  .kicker{
+    font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--muted);font-weight:600;margin:0 0 .8rem;
+    display:flex;align-items:center;gap:.6rem;
+  }
+  .kicker::before{
+    content:"";width:1.4rem;height:2px;background:var(--accent);border-radius:2px;
+  }
+  p{margin:.65rem 0}
+  strong{font-weight:650}
+  .math{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-weight:600}
+  sup{font-size:.72em}
+
+  /* Главная формула */
+  .hero-formula{
+    margin-top:2.2rem;
+    background:var(--ink);color:#fff;border-radius:14px;
+    padding:1.6rem 1.4rem;text-align:center;
+  }
+  .hero-formula .lbl{
+    font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;
+    color:#9aa6c9;margin:0 0 .7rem;
+  }
+  .hero-formula .eq{
+    font-family:ui-monospace,"SF Mono",Menlo,monospace;
+    font-size:clamp(1.4rem,5.2vw,2.1rem);font-weight:700;letter-spacing:.01em;
+  }
+  .hero-formula .eq b{color:#8ea0ff;font-weight:700}
+  .hero-formula .note{font-size:.86rem;color:#9aa6c9;margin:.8rem 0 0}
+
+  /* Пререквизит */
+  .recall{
+    background:var(--accent-soft);border-radius:12px;padding:1rem 1.15rem;
+    font-size:.96rem;
+  }
+  .recall p{margin:.3rem 0}
+
+  /* Две карточки: R и r */
+  .cases{display:grid;gap:.85rem;margin-top:.4rem}
+  @media(min-width:620px){.cases{grid-template-columns:repeat(2,1fr)}}
+  .case{
+    border-radius:12px;padding:1.05rem 1.1rem;border:1px solid var(--line);
+    background:var(--card);display:flex;flex-direction:column;gap:.35rem;
+  }
+  .case .sign{font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.15rem}
+  .case .count{font-weight:650;font-size:1rem}
+  .case .desc{font-size:.9rem;color:var(--muted)}
+  .case.big{border-top:4px solid var(--accent);background:var(--accent-soft)}
+  .case.big .sign{color:var(--accent)}
+  .case.small{border-top:4px solid var(--pos);background:var(--pos-bg)}
+  .case.small .sign{color:var(--pos)}
+
+  /* Разбор */
+  .worked{
+    background:var(--card);border:1px solid var(--line);border-radius:12px;
+    padding:1.2rem 1.3rem;
+  }
+  .worked .task{
+    font-weight:700;font-size:1.02rem;
+    margin:0 0 1rem;padding-bottom:.8rem;border-bottom:1px solid var(--line);
+  }
+  ol.steps{margin:0;padding:0;list-style:none;counter-reset:s;display:flex;flex-direction:column;gap:.7rem}
+  ol.steps li{
+    position:relative;padding-left:2.1rem;counter-increment:s;
+  }
+  ol.steps li::before{
+    content:counter(s);position:absolute;left:0;top:.05rem;
+    width:1.5rem;height:1.5rem;border-radius:50%;
+    background:var(--accent-soft);color:var(--accent);
+    font-size:.82rem;font-weight:700;display:flex;align-items:center;justify-content:center;
+  }
+  ol.steps .m{font-family:ui-monospace,Menlo,monospace;font-weight:600;color:var(--ink)}
+  ol.steps .why{display:block;font-size:.87rem;color:var(--muted)}
+  .verdict{
+    margin-top:1rem;padding:.7rem 1rem;background:var(--pos-bg);
+    border-radius:9px;font-weight:600;color:var(--pos);font-size:.98rem;
+  }
+
+  /* Практика */
+  .drill{display:flex;flex-direction:column;gap:.7rem}
+  details{
+    background:var(--card);border:1px solid var(--line);border-radius:10px;
+    padding:.85rem 1.05rem;
+  }
+  details[open]{border-color:var(--accent)}
+  summary{
+    cursor:pointer;font-weight:600;list-style:none;
+    display:flex;justify-content:space-between;align-items:flex-start;gap:1rem;
+  }
+  summary::-webkit-details-marker{display:none}
+  summary:focus-visible{outline:3px solid var(--accent);outline-offset:3px;border-radius:6px}
+  summary .q{min-width:0}
+  summary .tag{
+    font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);
+    border:1px solid var(--line);border-radius:20px;padding:.1rem .55rem;white-space:nowrap;
+  }
+  .ans{margin-top:.7rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.96rem;color:var(--muted)}
+  .ans .m{font-family:ui-monospace,Menlo,monospace;color:var(--ink);font-weight:600}
+
+  /* Ошибки */
+  ul.pitfalls{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:.6rem}
+  ul.pitfalls li{
+    padding-left:1.5rem;position:relative;font-size:.98rem;
+  }
+  ul.pitfalls li::before{
+    content:"×";position:absolute;left:0;top:-.05rem;color:var(--neg);font-weight:700;font-size:1.1rem;
+  }
+  ul.pitfalls b{color:var(--ink)}
+
+  .next{
+    background:var(--accent);color:#fff;border-radius:12px;padding:1.2rem 1.3rem;
+  }
+  .next h2{color:#fff}
+  .next .eq{
+    font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.15rem;
+    margin:.6rem 0 .3rem;
+  }
+  .next p{color:#dfe4fb;font-size:.96rem;margin:.4rem 0 0}
+  .foot{margin-top:2.4rem;font-size:.82rem;color:var(--muted);text-align:center}
+
+  /* Таблица «шестиугольник vs квадрат» */
+  .tablewrap{overflow-x:auto;margin-top:.9rem;border:1px solid var(--line);border-radius:12px;background:var(--card)}
+  table{border-collapse:collapse;width:100%;font-size:.94rem}
+  th,td{padding:.6rem .8rem;text-align:left;border-bottom:1px solid var(--line);white-space:nowrap}
+  th{font-size:.76rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:700}
+  tr:last-child td{border-bottom:none}
+  td .m{font-family:ui-monospace,Menlo,monospace;font-weight:600}
+
+  @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+<style>
+.oge-tip{display:flex;gap:.8rem;align-items:flex-start;background:#FFF8E7;border:1px solid #F0D98A;border-left:4px solid #E0A315;border-radius:10px;padding:.85rem 1.05rem;margin:1.5rem 0}
+.oge-tip .b{font-size:.72rem;font-weight:800;letter-spacing:.03em;color:#8A6A15;white-space:nowrap;text-transform:uppercase;padding-top:.15rem}
+.oge-tip .x{font-size:.95rem;line-height:1.5}
+</style>
+<style>
+  .fig{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.1rem 1.1rem 1rem;margin:1rem 0}
+  .fig canvas{width:100%;height:auto;display:block;border-radius:10px;background:#FCFDFF}
+  .fig-verdict{text-align:center;font-weight:700;font-size:1rem;margin:.8rem 0 0;padding:.5rem;border-radius:9px;font-family:ui-monospace,Menlo,monospace;background:var(--accent-soft);color:var(--accent)}
+  .sliders{display:grid;gap:.6rem;margin-top:.9rem}
+  @media(min-width:520px){.sliders{grid-template-columns:repeat(2,1fr)}}
+  .sliders label{display:flex;align-items:center;gap:.5rem;font-weight:700;font-family:ui-monospace,Menlo,monospace;font-size:.92rem}
+  .sliders input[type=range]{flex:1;min-width:90px;accent-color:var(--accent)}
+  .sliders input[type=range]:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+  .sliders .sval{min-width:3.4ch;text-align:right;color:var(--accent);font-variant-numeric:tabular-nums}
+  .legend{display:flex;flex-wrap:wrap;gap:.5rem 1.1rem;margin:.8rem 0 0;font-size:.88rem;color:var(--muted)}
+  .legend span{display:flex;align-items:center;gap:.4rem}
+  .legend i{width:14px;height:3px;border-radius:2px;display:inline-block}
+
+  .trainer{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.2rem 1.3rem;margin-top:1rem}
+  .tr-eq{font-weight:700;font-size:clamp(1rem,3.6vw,1.15rem);padding:1rem;background:var(--accent-soft);border-radius:10px;color:var(--ink);line-height:1.5}
+  .tr-ctl{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.9rem;align-items:center}
+  .tr-ctl button{font:inherit;font-weight:700;font-size:.9rem;cursor:pointer;border:none;border-radius:9px;padding:.55rem .95rem;color:#fff;background:var(--accent)}
+  .tr-ctl button.sec{background:var(--pos)}
+  .tr-ctl button.ghost{background:transparent;color:var(--accent);border:1px solid var(--accent)}
+  .tr-ctl input{flex:1;min-width:150px;font:inherit;padding:.5rem .7rem;border:1px solid var(--line);border-radius:9px;background:#fff;color:var(--ink)}
+  .tr-ctl button:focus-visible,.tr-ctl input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+  .tr-result{margin-top:.9rem;font-size:.96rem;min-height:1.2rem}
+  .tr-result .ok{color:var(--pos);font-weight:700}
+  .tr-result .bad{color:var(--neg);font-weight:700}
+  .tr-result .sol{margin-top:.7rem;padding:.85rem 1rem;background:#FCFBFE;border:1px solid var(--line);border-radius:10px;font-size:.92rem;line-height:1.75}
+  .tr-result .sol b{color:var(--accent)}
+</style>
+
+<!--LESSON-NAV-TOP--><style>.lnav{--lnav-accent:#3D5AF1}.lnav a{text-decoration:none;font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif}.lnav-top{max-width:820px;margin:0 auto;padding:.75rem clamp(1rem,4vw,1.5rem) .1rem}.lnav-top a{display:inline-flex;align-items:center;gap:.35rem;color:var(--lnav-accent);font-weight:600;font-size:.9rem}.lnav-top a:hover{text-decoration:underline}.lnav-bot{max-width:820px;margin:2.6rem auto 3rem;padding:1.1rem clamp(1rem,4vw,1.5rem) 0;border-top:1px solid #E4E8EF;display:flex;align-items:stretch;gap:.55rem}.lnav-bot a{min-width:0;display:flex;flex-direction:column;justify-content:center;gap:.15rem;border:1px solid #E4E8EF;border-radius:12px;padding:.65rem .85rem;color:#182233;background:#fff;transition:border-color .1s,transform .08s}.lnav-bot a:hover{border-color:var(--lnav-accent);transform:translateY(-1px)}.lnav-bot .prev,.lnav-bot .next{flex:1 1 0}.lnav-bot .next{text-align:right}.lnav-bot .dir{font-size:.72rem;color:#8A93A6;font-weight:600}.lnav-bot .ttl{font-size:.9rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.lnav-bot .to-cat{flex:0 0 auto;flex-direction:row;align-items:center;justify-content:center;color:var(--lnav-accent);font-weight:700;font-size:.85rem;white-space:nowrap}@media(max-width:420px){.lnav-bot .to-cat span{display:none}.lnav-bot .to-cat{padding:.65rem .7rem}}</style><nav class="lnav lnav-top"><a href="./catalog.html">← Все темы</a></nav><!--/LESSON-NAV-TOP-->
+<div class="wrap">
+
+  <header>
+    <p class="eyebrow">Геометрия · 9 класс</p>
+    <h1>Вписанная и описанная окружности правильного многоугольника</h1>
+    <p class="lede">У правильного многоугольника есть <em>сразу две</em> окружности — и обе выходят из одной и той же точки.</p>
+  </header>
+
+  <div class="hero-formula">
+    <p class="lbl">Один центр — два радиуса</p>
+    <div class="eq"><b>R</b> — в вершину &nbsp;·&nbsp; <b>r</b> — в середину стороны</div>
+    <p class="note">r = R · cos(180°/n), и всегда r &lt; R</p>
+  </div>
+
+  <section>
+    <p class="kicker">Зачем это нужно</p>
+    <h2>Фигура, зажатая между двумя окружностями</h2>
+    <p>Возьми любой правильный многоугольник. Одну окружность можно провести <strong>через все его вершины</strong> — это описанная окружность. Другую — так, чтобы она <strong>изнутри касалась всех сторон</strong>. Это вписанная окружность.</p>
+    <p>И это не свойство какой-то одной удачной фигуры. Так работает <strong>для каждого</strong> правильного многоугольника: треугольника, квадрата, шестиугольника и дальше.</p>
+    <p>Где встречается: гайки и болты — правильный шестиугольник, и ключ «захватывает» его как раз по описанной окружности; мозаика и плитка; детали, где отверстия расположены равномерно по кругу. А в ближайшей теме отсюда вырастут формулы стороны, апофемы и площади правильного многоугольника.</p>
+    <p><strong>Главный миф, который надо сломать:</strong> «у фигуры бывает либо вписанная окружность, либо описанная». Нет. У правильного многоугольника есть <strong>обе сразу</strong>, и у них <strong>общий центр</strong>.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Что вспомнить перед стартом</p>
+    <div class="recall">
+      <p><strong>Правильный многоугольник</strong> — тот, у которого все стороны равны <em>и</em> все углы равны. Обе части важны.</p>
+      <p><span class="math">n</span> — число сторон (оно же число вершин): у треугольника n = 3, у квадрата n = 4, у шестиугольника n = 6.</p>
+      <p>Перпендикуляр, опущенный из центра окружности на хорду, <strong>делит её пополам</strong> — это нам сейчас пригодится.</p>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Ядро темы</p>
+    <h2>Теорема и два радиуса</h2>
+    <p><strong>Теорема.</strong> Около любого правильного многоугольника можно описать окружность и в него можно вписать окружность, причём <strong>центры этих окружностей совпадают</strong>.</p>
+    <p>Почему так выходит. У правильного многоугольника все стороны равны и все углы равны — фигура полностью симметрична. Из-за этой симметрии находится единственная точка, которая одновременно <strong>одинаково удалена от всех вершин</strong> (отсюда описанная окружность) и <strong>одинаково удалена от всех сторон</strong> (отсюда вписанная). То, что эти две точки — одна и та же, и есть содержание теоремы.</p>
+    <p>Эту точку называют <strong>центром правильного многоугольника</strong> и обозначают <span class="math">O</span>.</p>
+    <div class="cases">
+      <div class="case big">
+        <div class="sign">R</div>
+        <div class="count">Радиус описанной</div>
+        <div class="desc">Расстояние от O до <b>вершины</b>. Окружность проходит через все вершины.</div>
+      </div>
+      <div class="case small">
+        <div class="sign">r — апофема</div>
+        <div class="count">Радиус вписанной</div>
+        <div class="desc">Расстояние от O до <b>стороны</b>: перпендикуляр из O на сторону. Окружность касается всех сторон.</div>
+      </div>
+    </div>
+    <p style="margin-top:1rem">Всегда <span class="math">r &lt; R</span> — просто потому, что вершина дальше от центра, чем середина стороны.</p>
+    <p><strong>Чем пользуемся в задачах:</strong></p>
+    <ul>
+      <li>Апофема <span class="math">r</span> попадает точно в <strong>середину</strong> стороны и <strong>перпендикулярна</strong> ей (перпендикуляр из центра делит хорду пополам).</li>
+      <li>Два радиуса <span class="math">R</span>, проведённые в соседние вершины, вместе со стороной дают <strong>равнобедренный треугольник</strong>; апофема в нём — сразу и высота, и медиана, и биссектриса.</li>
+      <li>Центральный угол, опирающийся на одну сторону, равен <span class="math">360°/n</span>. Апофема делит его пополам — на два угла по <span class="math">180°/n</span>.</li>
+      <li>Связь радиусов: <span class="math">r = R · cos(180°/n)</span>.</li>
+    </ul>
+    <p style="font-size:.92rem;color:var(--muted)">Условие применимости: всё это верно <strong>только для правильного</strong> многоугольника — где равны и стороны, и углы. У произвольного многоугольника общего центра в общем случае нет. Единицы у R и r обычные (см, м) и совпадают с единицами стороны.</p>
+    <div class="oge-tip"><div class="b">🎯 В ОГЭ</div><div class="x"><b>Задания 16 и 19.</b> В №16 (окружность и её элементы) встречаются задачи на правильный многоугольник с вписанной и описанной окружностями, а в №19 — утверждения вида «около любого правильного многоугольника можно описать окружность»: зная теорему этой темы, ты сразу видишь, верно оно или нет.</div></div>
+  </section>
+
+  <section>
+    <p class="kicker">Покрути сам · интерактив</p>
+    <h2>Один центр, две окружности</h2>
+    <p>Двигай ползунки: <span class="math">n</span> — число сторон, <span class="math">R</span> — радиус описанной окружности. Смотри, как обе окружности выходят из одной точки <span class="math">O</span>, и как апофема <span class="math">r</span> подбирается к <span class="math">R</span>, когда сторон становится больше.</p>
+    <div class="fig">
+      <canvas id="fig" width="640" height="460" aria-label="Правильный многоугольник с вписанной и описанной окружностями"></canvas>
+      <div id="figVerdict" class="fig-verdict">n = 6 · R = 6 · r = 6 · cos30° ≈ 5,20</div>
+      <div class="sliders">
+        <label>n <span id="vn" class="sval">6</span><input id="sn" type="range" min="3" max="12" step="1" value="6"></label>
+        <label>R <span id="vr" class="sval">6</span><input id="sr" type="range" min="2" max="10" step="1" value="6"></label>
+      </div>
+      <div class="legend">
+        <span><i style="background:#3B4FD0"></i> описанная окружность и R (в вершину)</span>
+        <span><i style="background:#1E8E5A"></i> вписанная окружность и r (в середину стороны)</span>
+      </div>
+    </div>
+    <p style="font-size:.9rem;color:var(--muted)">Поймай главное: центр <strong>не переезжает</strong>, он один на обе окружности. И чем больше n, тем ближе апофема к радиусу описанной — многоугольник всё больше похож на саму окружность.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Разбираем вместе · думаю вслух</p>
+    <h2>Эталонный пример</h2>
+    <div class="worked">
+      <p class="task">Сторона правильного шестиугольника равна 6 см. Найди радиус описанной окружности R и апофему r.</p>
+      <ol class="steps">
+        <li>У шестиугольника <span class="m">n = 6</span>. Соединяю центр с двумя соседними вершинами: получаю треугольник, у которого угол при центре равен <span class="m">360° / 6 = 60°</span>.
+          <span class="why">почему: центральный угол, опирающийся на одну сторону, равен 360°/n</span></li>
+        <li>Этот треугольник равнобедренный — две его стороны это радиусы <span class="m">R</span>. А угол между ними 60°, значит треугольник равносторонний.
+          <span class="why">почему: равнобедренный треугольник с углом 60° при вершине — равносторонний</span></li>
+        <li>Раз он равносторонний, сторона шестиугольника равна радиусу: <span class="m">R = 6 см</span>.
+          <span class="why">почему: в равностороннем треугольнике все стороны равны</span></li>
+        <li>Апофема <span class="m">r</span> — это высота того же равностороннего треугольника со стороной 6: <span class="m">r = (6·√3)/2 = 3√3 ≈ 5,2 см</span>.
+          <span class="why">почему: высота равностороннего треугольника со стороной a равна a√3/2; апофема перпендикулярна стороне и идёт в её середину</span></li>
+      </ol>
+      <div class="verdict">Ответ: R = 6 см, r = 3√3 ≈ 5,2 см. Проверка смысла: r &lt; R (5,2 &lt; 6) — сходится, вписанная окружность меньше описанной.</div>
+    </div>
+
+    <p style="margin-top:1.4rem"><strong>Теперь допиши сам.</strong> Около квадрата со стороной 4 см описана окружность. Найди R.</p>
+    <div class="drill">
+      <details>
+        <summary><span class="q">Диагональ квадрата — это диаметр описанной окружности (она идёт через две противоположные вершины и через центр). Диагональ квадрата со стороной 4 равна 4√2 см. Тогда R = ____</span><span class="tag">подсказка</span></summary>
+        <div class="ans">R — половина диаметра, то есть половина диагонали: <span class="m">R = 4√2 / 2 = 2√2 ≈ 2,83 см</span>.</div>
+      </details>
+      <details>
+        <summary><span class="q">Реши сам: радиус окружности, описанной около правильного треугольника, равен 6 см. Найди апофему r.</span><span class="tag">сам</span></summary>
+        <div class="ans">Берём <span class="m">r = R·cos(180°/n)</span> при n = 3: <span class="m">r = 6 · cos60° = 6 · 1/2 = 3 см</span>. Проверка: 3 &lt; 6 — верно.</div>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Наглядность · предскажи и проверь</p>
+    <h2>У кого описанная окружность больше?</h2>
+    <p>Возьмём квадрат и правильный шестиугольник с <strong>одинаковой стороной a</strong>. Сначала <strong>предскажи</strong>: у кого радиус описанной окружности будет больше? А теперь проверь вычислением:</p>
+    <div class="tablewrap">
+      <table>
+        <thead>
+          <tr><th>Фигура</th><th>n</th><th>Радиус описанной R</th><th>Сравнение</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Квадрат</td><td class="m">4</td><td><span class="m">R = a√2/2 ≈ 0,71·a</span></td><td>меньше стороны</td></tr>
+          <tr><td>Правильный шестиугольник</td><td class="m">6</td><td><span class="m">R = a</span></td><td>равен стороне</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>Теперь <strong>объясни словами</strong>, почему так: у шестиугольника при одной стороне вершин больше и фигура «шире», поэтому её вершины отходят от центра дальше. А заодно посмотри на апофемы: у шестиугольника со стороной a апофема <span class="math">r = a√3/2 ≈ 0,87·a</span> — и она, как положено, меньше R = a.</p>
+    <p>И ещё один вопрос, который стоит проговорить вслух у доски: «покажи апофему — почему она попала именно в середину стороны?» Ответ: потому что перпендикуляр из центра делит хорду (а сторона многоугольника и есть хорда описанной окружности) пополам.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Теперь ты · нажми, чтобы проверить</p>
+    <h2>Мини-практика</h2>
+    <div class="drill">
+      <details>
+        <summary><span class="q">Нарисуй правильный пятиугольник. Где центр O? Какой отрезок — R, какой — r? Который длиннее?</span><span class="tag">понимание</span></summary>
+        <div class="ans">O — общий центр обеих окружностей. <span class="m">R</span> — отрезок из O в любую <b>вершину</b>. <span class="m">r</span> (апофема) — перпендикуляр из O в <b>середину стороны</b>. Длиннее <span class="m">R</span>: вершина дальше от центра, чем середина стороны.</div>
+      </details>
+      <details>
+        <summary><span class="q">Сторона правильного шестиугольника равна 10 см. Найди радиус описанной окружности и апофему.</span><span class="tag">применение</span></summary>
+        <div class="ans">У шестиугольника сторона равна радиусу описанной: <span class="m">R = 10 см</span>. Апофема — высота равностороннего треугольника со стороной 10: <span class="m">r = 10·√3/2 = 5√3 ≈ 8,7 см</span>. Проверка: 8,7 &lt; 10 ✓</div>
+      </details>
+      <details>
+        <summary><span class="q">Что изменится, если у правильного многоугольника увеличивать число сторон n, а радиус описанной окружности R держать прежним? Апофема растёт, убывает или стоит на месте?</span><span class="tag">анализ · что изменится</span></summary>
+        <div class="ans">Апофема <b>растёт</b> и приближается к R. Смотри на формулу <span class="m">r = R·cos(180°/n)</span>: с ростом n угол <span class="m">180°/n</span> уменьшается, а косинус уменьшающегося угла растёт к 1. Значит r подбирается к R снизу.</div>
+      </details>
+      <details>
+        <summary><span class="q">Найди ошибку. Ученик написал: «апофема правильного шестиугольника со стороной a равна a, потому что она равна радиусу».</span><span class="tag">анализ · найди ошибку</span></summary>
+        <div class="ans">Он перепутал радиусы. Стороне шестиугольника равен <b>радиус описанной</b> окружности: <span class="m">R = a</span>. А апофема — это радиус <b>вписанной</b> окружности, и она меньше: <span class="m">r = a√3/2</span>.</div>
+      </details>
+      <details>
+        <summary><span class="q">Обратная задача: апофема правильного шестиугольника равна 3√3 см. Найди его сторону.</span><span class="tag">анализ</span></summary>
+        <div class="ans">Для шестиугольника <span class="m">r = a√3/2</span>. Значит <span class="m">a = 2r/√3 = 2·3√3/√3 = 6 см</span>. Проверка обратной подстановкой: <span class="m">6·√3/2 = 3√3</span> ✓</div>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Тренажёр · бесконечная практика</p>
+    <h2>Реши сам</h2>
+    <p>Нажми «Новое задание» и реши. Ответ — числом (единицы и знак градуса писать не обязательно, дробную часть можно через запятую или точку). Потом проверь себя или посмотри пошаговое решение.</p>
+    <div class="trainer">
+      <div class="tr-eq" id="trEq">Сторона правильного шестиугольника равна 6 см. Найди радиус описанной окружности R (в см).</div>
+      <div class="tr-ctl">
+        <button id="trNew" type="button">🎲 Новое задание</button>
+        <input id="trAns" type="text" inputmode="text" placeholder="напр.  6   или   5,2" aria-label="Ответ">
+        <button id="trCheck" type="button" class="sec">Проверить</button>
+        <button id="trShow" type="button" class="ghost">Показать решение</button>
+      </div>
+      <div id="trResult" class="tr-result"></div>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Где чаще всего ошибаются</p>
+    <h2>Четыре ловушки</h2>
+    <ul class="pitfalls">
+      <li><b>Путают апофему и радиус описанной.</b> Запомни так: <span class="math">R</span> идёт в <b>вершину</b> (в угол), <span class="math">r</span> (апофема) — в <b>середину стороны</b> и перпендикулярно ей. R всегда больше r. Перед тем как записать ответ, проверь: r &lt; R.</li>
+      <li><b>Думают, что центры вписанной и описанной окружностей разные.</b> У правильного многоугольника центр <b>один</b> — это и есть теорема темы. Разные центры бывают у произвольных многоугольников, но не у правильных.</li>
+      <li><b>Неверно проводят апофему</b> — ведут отрезок не в середину стороны или не под прямым углом. Апофема — это перпендикуляр из центра на сторону, и он всегда попадает ровно в середину стороны.</li>
+      <li><b>Путают сторону шестиугольника с апофемой.</b> У правильного шестиугольника стороне равен <span class="math">R</span>, а апофема меньше: <span class="math">r = R√3/2</span>. Это два разных отрезка.</li>
+    </ul>
+  </section>
+
+  <section>
+    <p class="kicker">Проверка понимания</p>
+    <h2>Ответь своими словами</h2>
+    <div class="drill">
+      <details>
+        <summary><span class="q">Сколько центров у вписанной и описанной окружностей правильного многоугольника и как они расположены?</span><span class="tag">вопрос 1</span></summary>
+        <div class="ans">Центр <b>один общий</b> — это центр правильного многоугольника.</div>
+      </details>
+      <details>
+        <summary><span class="q">Что такое апофема и радиусом какой окружности она является?</span><span class="tag">вопрос 2</span></summary>
+        <div class="ans">Апофема — перпендикуляр, опущенный из центра на сторону. Это радиус <b>вписанной</b> окружности <span class="m">r</span>.</div>
+      </details>
+      <details>
+        <summary><span class="q">Что больше — R или r, и почему?</span><span class="tag">вопрос 3</span></summary>
+        <div class="ans"><b>R больше</b>, потому что вершина дальше от центра, чем середина стороны.</div>
+      </details>
+    </div>
+    <p style="margin-top:1rem"><strong>Итог одной фразой:</strong> у правильного многоугольника вписанная и описанная окружности имеют общий центр; радиус описанной R идёт в вершину, апофема r (радиус вписанной) — в середину стороны, и всегда r &lt; R.</p>
+  </section>
+
+  <section>
+    <div class="next">
+      <h2>Что дальше</h2>
+      <p>Ты уже умеешь различать R и r и знаешь, что центр у них один. Следующий шаг — <strong>формулы, связывающие сторону правильного многоугольника с радиусом</strong>: как по n и R сразу посчитать сторону, апофему и площадь, не собирая каждый раз треугольник вручную.</p>
+      <div class="eq">r = R · cos(180°/n)</div>
+      <p>Эта связь — первый кирпич будущих формул. Дальше рядом с ней встанет выражение стороны через R.</p>
+    </div>
+  </section>
+
+  <p class="foot">Проверка на выходе: где стоит центр? · куда идёт R, а куда r? · что больше и почему? · чему равна сторона правильного шестиугольника через R?</p>
+
+</div>
+
+<script>
+(function(){
+  var canvas=document.getElementById('fig'); if(!canvas) return;
+  var ctx=canvas.getContext('2d');
+  var sn=document.getElementById('sn'), sr=document.getElementById('sr');
+  var vn=document.getElementById('vn'), vr=document.getElementById('vr');
+  var verdict=document.getElementById('figVerdict');
+  var W=640,H=460,dpr=1;
+
+  function num(x,d){
+    var p=Math.pow(10,d), n=Math.round(x*p)/p;
+    var s=Math.abs(n).toFixed(d).replace('.',',');
+    return (n<0?'−':'')+s;
+  }
+  function ang(x){
+    var v=Math.round(x*10)/10;
+    return (v%1===0? String(v) : String(v).replace('.',','));
+  }
+
+  function resize(){
+    var cssW=canvas.clientWidth||640;
+    dpr=Math.min(window.devicePixelRatio||1,2);
+    W=cssW; H=Math.round(cssW*0.72);
+    canvas.width=Math.round(W*dpr); canvas.height=Math.round(H*dpr);
+    canvas.style.height=H+'px';
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+  }
+
+  function draw(){
+    var n=parseInt(sn.value,10), R=parseInt(sr.value,10);
+    if(!(n>=3)) n=3; if(!(R>=2)) R=2;
+    vn.textContent=n; vr.textContent=R;
+
+    ctx.clearRect(0,0,W,H);
+    var cx=W/2, cy=H/2;
+    var Rpx=Math.min(W,H)*0.34;
+    var k=Math.cos(Math.PI/n);
+    var rpx=Rpx*k;
+
+    // описанная окружность
+    ctx.strokeStyle='#3B4FD0'; ctx.lineWidth=2;
+    ctx.beginPath(); ctx.arc(cx,cy,Rpx,0,Math.PI*2); ctx.stroke();
+    // вписанная окружность
+    ctx.strokeStyle='#1E8E5A'; ctx.lineWidth=2;
+    ctx.beginPath(); ctx.arc(cx,cy,rpx,0,Math.PI*2); ctx.stroke();
+
+    // многоугольник
+    var pts=[], i, ang;
+    for(i=0;i<n;i++){
+      ang=-Math.PI/2 + i*2*Math.PI/n;
+      pts.push([cx+Rpx*Math.cos(ang), cy+Rpx*Math.sin(ang)]);
+    }
+    ctx.strokeStyle='#1B2333'; ctx.lineWidth=2.5;
+    ctx.beginPath(); ctx.moveTo(pts[0][0],pts[0][1]);
+    for(i=1;i<n;i++) ctx.lineTo(pts[i][0],pts[i][1]);
+    ctx.closePath(); ctx.stroke();
+
+    // радиус R в вершину 0
+    ctx.strokeStyle='#3B4FD0'; ctx.lineWidth=3;
+    ctx.beginPath(); ctx.moveTo(cx,cy); ctx.lineTo(pts[0][0],pts[0][1]); ctx.stroke();
+    // апофема r в середину стороны 0-1
+    var mx=(pts[0][0]+pts[1][0])/2, my=(pts[0][1]+pts[1][1])/2;
+    ctx.strokeStyle='#1E8E5A'; ctx.lineWidth=3;
+    ctx.beginPath(); ctx.moveTo(cx,cy); ctx.lineTo(mx,my); ctx.stroke();
+
+    // прямой угол у апофемы
+    var ux=(mx-cx)/rpx, uy=(my-cy)/rpx;
+    var vx=-uy, vy=ux, s=Math.min(11,rpx*0.28);
+    ctx.strokeStyle='#1E8E5A'; ctx.lineWidth=1.6;
+    ctx.beginPath();
+    ctx.moveTo(mx-ux*s+vx*s, my-uy*s+vy*s);
+    ctx.lineTo(mx+vx*s, my+vy*s);
+    ctx.lineTo(mx, my);
+    ctx.stroke();
+
+    // точки: центр, вершина, середина стороны
+    function dot(x,y,c){
+      ctx.fillStyle=c; ctx.beginPath(); ctx.arc(x,y,4.5,0,Math.PI*2); ctx.fill();
+      ctx.fillStyle='#fff'; ctx.beginPath(); ctx.arc(x,y,1.8,0,Math.PI*2); ctx.fill();
+    }
+    dot(cx,cy,'#B9791A');
+    dot(pts[0][0],pts[0][1],'#3B4FD0');
+    dot(mx,my,'#1E8E5A');
+
+    // подписи
+    var fs=Math.max(12,Math.min(16,W*0.028));
+    ctx.font='700 '+fs+'px ui-monospace,Menlo,monospace';
+    ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.fillStyle='#B9791A';
+    ctx.fillText('O', cx-14, cy+13);
+    ctx.fillStyle='#3B4FD0';
+    ctx.fillText('R = '+R, (cx+pts[0][0])/2 + fs*2.2, (cy+pts[0][1])/2);
+    ctx.fillStyle='#1E8E5A';
+    ctx.fillText('r = '+num(R*k,2), (cx+mx)/2 - fs*2.4, (cy+my)/2 + fs*0.9);
+
+    ctx.textAlign='left'; ctx.textBaseline='top';
+    ctx.fillStyle='#5A6478';
+    ctx.font='600 '+Math.max(11,fs-2)+'px system-ui,-apple-system,sans-serif';
+    ctx.fillText('правильный '+n+'-угольник', 10, 10);
+
+    verdict.textContent='n = '+n+' · R = '+R+' · r = '+R+' · cos'+ang(180/n)+'° ≈ '+num(R*k,2);
+  }
+
+  [sn,sr].forEach(function(s){ s.addEventListener('input',draw); });
+  window.addEventListener('resize',function(){ resize(); draw(); });
+  resize(); draw();
+})();
+</script>
+
+<script>
+(function(){
+  var eqEl=document.getElementById('trEq'), ansEl=document.getElementById('trAns'), resEl=document.getElementById('trResult');
+  if(!eqEl) return;
+
+  function ri(min,max){ return Math.floor(Math.random()*(max-min+1))+min; }
+  function num(x,d){
+    var p=Math.pow(10,d), n=Math.round(x*p)/p;
+    var s=Math.abs(n).toFixed(d).replace('.',',');
+    return (n<0?'−':'')+s;
+  }
+  function nice(x){
+    var n=Math.round(x*1000)/1000;
+    var s=(Math.abs(n)%1===0)? String(Math.abs(n)) : String(Math.abs(n)).replace('.',',');
+    return (n<0?'−':'')+s;
+  }
+
+  // --- банк типов заданий ---
+  function makeTask(){
+    var t=ri(0,6), a, R, r, n, d, half;
+    if(t===0){
+      a=ri(2,12);
+      return {q:'Сторона правильного шестиугольника равна '+a+' см. Найди радиус описанной окружности R (в см).',
+        ans:a, tol:0.0001,
+        steps:['n = 6, центральный угол на одну сторону: 360° / 6 = <b>60°</b>',
+               'Два радиуса R и сторона дают равнобедренный треугольник с углом 60° при центре — значит он равносторонний.',
+               'В равностороннем треугольнике все стороны равны, поэтому R равен стороне: <b>R = '+a+' см</b>',
+               'Проверка смысла: апофема r = '+num(a*Math.sqrt(3)/2,2)+' см меньше R — всё сходится.']};
+    }
+    if(t===1){
+      R=ri(2,12);
+      return {q:'Радиус окружности, описанной около правильного шестиугольника, равен '+R+' см. Найди сторону шестиугольника (в см).',
+        ans:R, tol:0.0001,
+        steps:['n = 6, центральный угол: 360° / 6 = <b>60°</b>',
+               'Треугольник из двух радиусов и стороны равнобедренный, угол при центре 60° → он равносторонний.',
+               'Значит сторона равна радиусу описанной окружности: <b>a = '+R+' см</b>']};
+    }
+    if(t===2){
+      R=2*ri(1,10);
+      return {q:'Радиус окружности, описанной около правильного треугольника, равен '+R+' см. Найди апофему r (в см).',
+        ans:R/2, tol:0.0001,
+        steps:['Работает связь радиусов: r = R · cos(180°/n)',
+               'Для правильного треугольника n = 3, значит 180° / 3 = <b>60°</b>, а cos60° = 1/2',
+               'r = '+R+' · 1/2 = <b>'+nice(R/2)+' см</b>',
+               'Проверка: r &lt; R ('+nice(R/2)+' &lt; '+R+') ✓']};
+    }
+    if(t===3){
+      r=ri(2,12);
+      return {q:'Апофема правильного треугольника равна '+r+' см. Найди радиус описанной окружности R (в см).',
+        ans:2*r, tol:0.0001,
+        steps:['Связь радиусов: r = R · cos(180°/n), для треугольника n = 3 и cos60° = 1/2',
+               'Значит r = R/2, откуда R = 2r',
+               'R = 2 · '+r+' = <b>'+nice(2*r)+' см</b>',
+               'Проверка: r &lt; R ('+r+' &lt; '+nice(2*r)+') ✓']};
+    }
+    if(t===4){
+      var ns=[3,4,5,6,8,9,10,12,15,18,20,24,30,36];
+      n=ns[ri(0,ns.length-1)];
+      return {q:'Правильный '+n+'-угольник вписан в окружность. Чему равен центральный угол, опирающийся на одну сторону (в градусах)?',
+        ans:360/n, tol:0.0001,
+        steps:['Все n центральных углов одинаковы и вместе дают полный оборот 360°.',
+               'Значит один такой угол равен 360° / n',
+               '360° / '+n+' = <b>'+nice(360/n)+'°</b>',
+               'Апофема делит этот угол пополам — на два по '+nice(180/n)+'°']};
+    }
+    if(t===5){
+      var ms=[4,5,6,9,10,12,15,18,20,30,36];
+      n=ms[ri(0,ms.length-1)];
+      return {q:'В правильном '+n+'-угольнике из центра проведена апофема к стороне. На какие два равных угла она делит центральный угол, опирающийся на эту сторону (ответ в градусах)?',
+        ans:180/n, tol:0.0001,
+        steps:['Центральный угол на одну сторону: 360° / '+n+' = <b>'+nice(360/n)+'°</b>',
+               'Апофема в равнобедренном треугольнике из двух радиусов — ещё и биссектриса, поэтому делит этот угол пополам.',
+               nice(360/n)+'° : 2 = <b>'+nice(180/n)+'°</b> (это и есть 180°/n)']};
+    }
+    d=2*ri(2,12);
+    return {q:'Около квадрата описана окружность. Диагональ квадрата равна '+d+' см. Найди радиус описанной окружности R (в см).',
+      ans:d/2, tol:0.0001,
+      steps:['Диагональ квадрата проходит через две противоположные вершины и через центр — значит она является диаметром описанной окружности.',
+             'Радиус — половина диаметра: R = '+d+' : 2',
+             'R = <b>'+nice(d/2)+' см</b>']};
+  }
+
+  var cur={q:'Сторона правильного шестиугольника равна 6 см. Найди радиус описанной окружности R (в см).',
+    ans:6, tol:0.0001,
+    steps:['n = 6, центральный угол на одну сторону: 360° / 6 = <b>60°</b>',
+           'Два радиуса R и сторона дают равнобедренный треугольник с углом 60° при центре — значит он равносторонний.',
+           'В равностороннем треугольнике все стороны равны, поэтому R равен стороне: <b>R = 6 см</b>',
+           'Проверка смысла: апофема r = '+num(6*Math.sqrt(3)/2,2)+' см меньше R — всё сходится.']};
+
+  function parseNum(raw){
+    if(typeof raw!=='string') return NaN;
+    var s=raw.toLowerCase();
+    s=s.replace(/[−–—]/g,'-');
+    s=s.replace(/[°]/g,'');
+    s=s.replace(/градус\w*/g,'').replace(/\bсм\b/g,'').replace(/\bм\b/g,'').replace(/\bмм\b/g,'');
+    s=s.replace(/[a-zа-я]/g,'');
+    s=s.replace(/\s+/g,'').replace(/,/g,'.');
+    s=s.replace(/^=+/,'');
+    if(s==='') return NaN;
+    if(!/^[+-]?\d+(\.\d+)?$/.test(s)) return NaN;
+    var v=parseFloat(s);
+    return isFinite(v)?v:NaN;
+  }
+
+  function solutionHTML(q){
+    var h='<div class="sol">';
+    for(var i=0;i<q.steps.length;i++){ h+=(i+1)+') '+q.steps[i]+'<br>'; }
+    h+='<b>Ответ: '+nice(q.ans)+'</b></div>';
+    return h;
+  }
+
+  function verify(q,raw){
+    var v=parseNum(raw);
+    if(isNaN(v)) return null;
+    return Math.abs(v-q.ans)<=q.tol;
+  }
+
+  function render(){
+    eqEl.innerHTML=cur.q;
+    resEl.innerHTML='';
+    ansEl.value='';
+  }
+  function generate(){
+    cur=makeTask();
+    render();
+    ansEl.focus();
+  }
+  function check(){
+    var raw=ansEl.value.trim();
+    if(!raw){ resEl.innerHTML='<span class="bad">Введи ответ числом или нажми «Показать решение».</span>'; return; }
+    var res=verify(cur,raw);
+    if(res===null){ resEl.innerHTML='<span class="bad">Не понял запись. Введи только число, напр. «6» или «5,2».</span>'; return; }
+    if(res){ resEl.innerHTML='<span class="ok">✓ Верно! Отлично.</span>'+solutionHTML(cur); }
+    else{ resEl.innerHTML='<span class="bad">✗ Пока не то. Проверь, что ты ищешь: R идёт в вершину, r (апофема) — в середину стороны.</span>'+solutionHTML(cur); }
+  }
+
+  document.getElementById('trNew').addEventListener('click',generate);
+  document.getElementById('trCheck').addEventListener('click',check);
+  document.getElementById('trShow').addEventListener('click',function(){ resEl.innerHTML=solutionHTML(cur); });
+  ansEl.addEventListener('keydown',function(e){ if(e.key==='Enter') check(); });
+
+  if(typeof window!=='undefined'){ window.__trainer={makeTask:makeTask,parseNum:parseNum,verify:verify,solutionHTML:solutionHTML,nice:nice}; }
+})();
+</script>
+<!--LESSON-NAV-BOT--><nav class="lnav lnav-bot"><a class="prev" href="./geo9-pravilnyj-mnogougolnik.html"><span class="dir">← Предыдущая</span><span class="ttl">Правильный многоугольник и его элементы</span></a><a class="to-cat" href="./catalog.html">📚 <span>Все темы</span></a><a class="next" href="./geo9-pravilnyj-storona-radius.html"><span class="dir">Следующая →</span><span class="ttl">Формулы стороны, площади и апофемы правильного многоугольника</span></a></nav><!--/LESSON-NAV-BOT-->

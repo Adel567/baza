@@ -1,0 +1,742 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Скалярное произведение векторов — урок, геометрия 9 класс</title>
+<style>
+  :root{
+    --paper:#F6F7F9;
+    --card:#FFFFFF;
+    --ink:#1B2333;
+    --muted:#5A6478;
+    --line:#E2E5EC;
+    --accent:#3B4FD0;
+    --accent-soft:#EAEDFB;
+    --pos:#1E8E5A;   /* острый угол, произведение > 0 */
+    --pos-bg:#E7F4EC;
+    --zero:#B9791A;  /* прямой угол, произведение = 0 */
+    --zero-bg:#FBF1DC;
+    --neg:#C0455B;   /* тупой угол, произведение < 0 */
+    --neg-bg:#F9E9EC;
+  }
+  *{box-sizing:border-box}
+  body{margin:0}
+  .wrap{
+    max-width:760px;
+    margin:0 auto;
+    padding:clamp(1.4rem,4vw,3rem) clamp(1.1rem,4vw,2rem) 4rem;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    font-size:17px;
+    line-height:1.62;
+    -webkit-font-smoothing:antialiased;
+  }
+  .eyebrow{
+    font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--accent);font-weight:600;margin:0 0 .5rem;
+  }
+  h1{
+    font-family:Georgia,"Times New Roman",serif;
+    font-size:clamp(1.9rem,6.4vw,2.8rem);
+    line-height:1.06;margin:0;font-weight:700;letter-spacing:-.01em;
+    text-wrap:balance;
+  }
+  .lede{
+    font-size:1.08rem;color:var(--muted);margin:.7rem 0 0;max-width:60ch;
+    text-wrap:pretty;
+  }
+  h2{
+    font-family:Georgia,serif;font-size:1.32rem;font-weight:700;
+    margin:0 0 .1rem;letter-spacing:-.005em;
+  }
+  section{margin-top:2.6rem}
+  .kicker{
+    font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--muted);font-weight:600;margin:0 0 .8rem;
+    display:flex;align-items:center;gap:.6rem;
+  }
+  .kicker::before{
+    content:"";width:1.4rem;height:2px;background:var(--accent);border-radius:2px;
+  }
+  p{margin:.65rem 0}
+  strong{font-weight:650}
+  .math{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-weight:600}
+  sup{font-size:.72em}
+
+  /* Главная формула */
+  .hero-formula{
+    margin-top:2.2rem;
+    background:var(--ink);color:#fff;border-radius:14px;
+    padding:1.6rem 1.4rem;text-align:center;
+  }
+  .hero-formula .lbl{
+    font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;
+    color:#9aa6c9;margin:0 0 .7rem;
+  }
+  .hero-formula .eq{
+    font-family:ui-monospace,"SF Mono",Menlo,monospace;
+    font-size:clamp(1.35rem,5.2vw,2.1rem);font-weight:700;letter-spacing:.01em;
+  }
+  .hero-formula .eq b{color:#8ea0ff;font-weight:700}
+  .hero-formula .eq2{
+    font-family:ui-monospace,"SF Mono",Menlo,monospace;
+    font-size:clamp(1.05rem,4.2vw,1.5rem);font-weight:700;margin-top:.9rem;color:#dfe4fb;
+  }
+  .hero-formula .note{font-size:.86rem;color:#9aa6c9;margin:.9rem 0 0}
+
+  /* Пререквизит */
+  .recall{
+    background:var(--accent-soft);border-radius:12px;padding:1rem 1.15rem;
+    font-size:.96rem;
+  }
+  .recall p{margin:.3rem 0}
+
+  /* Три случая */
+  .cases{display:grid;gap:.85rem;margin-top:.4rem}
+  @media(min-width:620px){.cases{grid-template-columns:repeat(3,1fr)}}
+  .case{
+    border-radius:12px;padding:1.05rem 1.1rem;border:1px solid var(--line);
+    background:var(--card);display:flex;flex-direction:column;gap:.35rem;
+  }
+  .case .sign{font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.1rem}
+  .case .count{font-weight:650;font-size:1rem}
+  .case .desc{font-size:.9rem;color:var(--muted)}
+  .case.pos{border-top:4px solid var(--pos);background:var(--pos-bg)}
+  .case.pos .sign{color:var(--pos)}
+  .case.zero{border-top:4px solid var(--zero);background:var(--zero-bg)}
+  .case.zero .sign{color:var(--zero)}
+  .case.neg{border-top:4px solid var(--neg);background:var(--neg-bg)}
+  .case.neg .sign{color:var(--neg)}
+
+  /* Разбор */
+  .worked{
+    background:var(--card);border:1px solid var(--line);border-radius:12px;
+    padding:1.2rem 1.3rem;
+  }
+  .worked + .worked{margin-top:1rem}
+  .worked .task{
+    font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1rem;
+    margin:0 0 1rem;padding-bottom:.8rem;border-bottom:1px solid var(--line);
+  }
+  ol.steps{margin:0;padding:0;list-style:none;counter-reset:s;display:flex;flex-direction:column;gap:.7rem}
+  ol.steps li{
+    position:relative;padding-left:2.1rem;counter-increment:s;
+  }
+  ol.steps li::before{
+    content:counter(s);position:absolute;left:0;top:.05rem;
+    width:1.5rem;height:1.5rem;border-radius:50%;
+    background:var(--accent-soft);color:var(--accent);
+    font-size:.82rem;font-weight:700;display:flex;align-items:center;justify-content:center;
+  }
+  ol.steps .m{font-family:ui-monospace,Menlo,monospace;font-weight:600;color:var(--ink)}
+  ol.steps .why{color:var(--muted);font-size:.92rem}
+  .verdict{
+    margin-top:1rem;padding:.7rem 1rem;background:var(--pos-bg);
+    border-radius:9px;font-weight:600;color:var(--pos);font-size:.98rem;
+  }
+  .verdict.zero{background:var(--zero-bg);color:var(--zero)}
+  .verdict.neg{background:var(--neg-bg);color:var(--neg)}
+
+  /* Практика */
+  .drill{display:flex;flex-direction:column;gap:.7rem}
+  details{
+    background:var(--card);border:1px solid var(--line);border-radius:10px;
+    padding:.85rem 1.05rem;
+  }
+  details[open]{border-color:var(--accent)}
+  summary{
+    cursor:pointer;font-weight:600;list-style:none;
+    display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap;
+  }
+  summary::-webkit-details-marker{display:none}
+  summary:focus-visible{outline:3px solid var(--accent);outline-offset:3px;border-radius:6px}
+  summary .q{font-family:ui-monospace,Menlo,monospace;min-width:0}
+  summary .tag{
+    font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);
+    border:1px solid var(--line);border-radius:20px;padding:.1rem .55rem;white-space:nowrap;
+  }
+  summary::after{
+    content:"показать ответ";font-size:.78rem;color:var(--accent);font-weight:600;white-space:nowrap;
+  }
+  details[open] summary::after{content:"скрыть"}
+  .ans{margin-top:.7rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.96rem;color:var(--muted)}
+  .ans .m{font-family:ui-monospace,Menlo,monospace;color:var(--ink);font-weight:600}
+
+  /* Ошибки */
+  ul.pitfalls{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:.6rem}
+  ul.pitfalls li{
+    padding-left:1.5rem;position:relative;font-size:.98rem;
+  }
+  ul.pitfalls li::before{
+    content:"×";position:absolute;left:0;top:-.05rem;color:var(--neg);font-weight:700;font-size:1.1rem;
+  }
+  ul.pitfalls b{color:var(--ink)}
+
+  ol.checkup{margin:0;padding-left:1.3rem;display:flex;flex-direction:column;gap:.5rem}
+  ol.checkup li{padding-left:.2rem}
+
+  .next{
+    background:var(--accent);color:#fff;border-radius:12px;padding:1.2rem 1.3rem;
+  }
+  .next h2{color:#fff}
+  .next .eq{
+    font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.15rem;
+    margin:.6rem 0 .3rem;
+  }
+  .next p{color:#dfe4fb;font-size:.96rem;margin:.4rem 0 0}
+  .foot{margin-top:2.4rem;font-size:.82rem;color:var(--muted);text-align:center}
+
+  /* Две записи одного понятия */
+  .twoview{display:grid;gap:.85rem;margin-top:.6rem}
+  @media(min-width:640px){.twoview{grid-template-columns:1fr 1fr}}
+  .view{border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--card);display:flex;flex-direction:column}
+  .view > header{
+    font-weight:700;font-size:.9rem;padding:.7rem .9rem;color:#fff;background:var(--accent);
+  }
+  .view .body{padding:.85rem .9rem}
+  .view .eq{font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1rem}
+  .view .calc{font-family:ui-monospace,Menlo,monospace;font-size:.86rem;color:var(--muted);margin-top:.35rem}
+  .view .calc b{color:var(--ink)}
+
+  /* Таблица знаков */
+  .tablewrap{overflow-x:auto;margin-top:.8rem;border:1px solid var(--line);border-radius:12px;background:var(--card)}
+  table.signs{border-collapse:collapse;width:100%;min-width:430px;font-size:.94rem}
+  table.signs th,table.signs td{padding:.6rem .8rem;text-align:left;border-bottom:1px solid var(--line)}
+  table.signs th{font-size:.74rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:700}
+  table.signs tr:last-child td{border-bottom:none}
+  table.signs td.m{font-family:ui-monospace,Menlo,monospace;font-weight:700}
+  table.signs td.p{color:var(--pos)}
+  table.signs td.z{color:var(--zero)}
+  table.signs td.n{color:var(--neg)}
+
+  @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+<style>
+.oge-tip{display:flex;gap:.8rem;align-items:flex-start;background:#FFF8E7;border:1px solid #F0D98A;border-left:4px solid #E0A315;border-radius:10px;padding:.85rem 1.05rem;margin:1.5rem 0}
+.oge-tip .b{font-size:.72rem;font-weight:800;letter-spacing:.03em;color:#8A6A15;white-space:nowrap;text-transform:uppercase;padding-top:.15rem}
+.oge-tip .x{font-size:.95rem;line-height:1.5}
+</style>
+
+<!--LESSON-NAV-TOP--><style>.lnav{--lnav-accent:#3D5AF1}.lnav a{text-decoration:none;font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif}.lnav-top{max-width:820px;margin:0 auto;padding:.75rem clamp(1rem,4vw,1.5rem) .1rem}.lnav-top a{display:inline-flex;align-items:center;gap:.35rem;color:var(--lnav-accent);font-weight:600;font-size:.9rem}.lnav-top a:hover{text-decoration:underline}.lnav-bot{max-width:820px;margin:2.6rem auto 3rem;padding:1.1rem clamp(1rem,4vw,1.5rem) 0;border-top:1px solid #E4E8EF;display:flex;align-items:stretch;gap:.55rem}.lnav-bot a{min-width:0;display:flex;flex-direction:column;justify-content:center;gap:.15rem;border:1px solid #E4E8EF;border-radius:12px;padding:.65rem .85rem;color:#182233;background:#fff;transition:border-color .1s,transform .08s}.lnav-bot a:hover{border-color:var(--lnav-accent);transform:translateY(-1px)}.lnav-bot .prev,.lnav-bot .next{flex:1 1 0}.lnav-bot .next{text-align:right}.lnav-bot .dir{font-size:.72rem;color:#8A93A6;font-weight:600}.lnav-bot .ttl{font-size:.9rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.lnav-bot .to-cat{flex:0 0 auto;flex-direction:row;align-items:center;justify-content:center;color:var(--lnav-accent);font-weight:700;font-size:.85rem;white-space:nowrap}@media(max-width:420px){.lnav-bot .to-cat span{display:none}.lnav-bot .to-cat{padding:.65rem .7rem}}</style><nav class="lnav lnav-top"><a href="./catalog.html">← Все темы</a></nav><!--/LESSON-NAV-TOP-->
+<div class="wrap">
+
+  <header>
+    <p class="eyebrow">Геометрия · 9 класс</p>
+    <h1>Скалярное произведение векторов</h1>
+    <p class="lede">Два вектора перемножили — и получили <em>число</em>. По этому числу сразу видно, какой между векторами угол и не перпендикулярны ли они.</p>
+  </header>
+
+  <div class="hero-formula">
+    <p class="lbl">Через длины и угол</p>
+    <div class="eq"><b>a</b> · <b>b</b> = |a| · |b| · cos α</div>
+    <p class="lbl" style="margin-top:1.3rem">Через координаты</p>
+    <div class="eq2">a · b = x₁·x₂ + y₁·y₂</div>
+    <p class="note">a = {x₁; y₁}, b = {x₂; y₂}, α — угол между векторами (0° ≤ α ≤ 180°)</p>
+  </div>
+
+  <section>
+    <p class="kicker">Зачем это нужно</p>
+    <h2>Одна формула вместо построений</h2>
+    <p>Скалярное произведение связывает векторы с углами. С его помощью одной короткой формулой отвечают на вопросы, которые иначе требуют чертежей и теорем:</p>
+    <p>— <strong>перпендикулярны ли два вектора</strong> (а значит, перпендикулярны ли прямые, стороны, диагонали);<br>
+       — <strong>какой угол</strong> между двумя направлениями (между сторонами треугольника, между лучами).</p>
+    <p>В физике это же произведение — работа силы: если сила <span class="math">F</span> действует под углом <span class="math">α</span> к перемещению <span class="math">s</span>, то работа <span class="math">A = F·s·cos α</span>. Это и есть скалярное произведение силы и перемещения. А в старших классах и в вузе скалярное произведение — основа всей аналитической геометрии.</p>
+    <p><strong>Главное заблуждение сразу разрушим.</strong> «Раз произведение векторов — значит, и в ответе вектор». Нет. Скалярное произведение двух векторов — это <strong>число</strong> (скаляр), отсюда и название. Никакой стрелки у ответа нет.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Что вспомнить с прошлых тем</p>
+    <div class="recall">
+      <p><strong>Координаты вектора.</strong> Вектор записывают парой чисел: <span class="math">a = {x₁; y₁}</span>. Первое число — по оси x, второе — по оси y, и оба берутся <strong>со своим знаком</strong>.</p>
+      <p><strong>Длина вектора.</strong> <span class="math">|a| = √(x₁² + y₁²)</span>.</p>
+      <p><strong>Косинус любого угла от 0° до 180°.</strong> Для острого угла <span class="math">cos α &gt; 0</span>, <span class="math">cos 90° = 0</span>, для тупого <span class="math">cos α &lt; 0</span>. Табличные значения: <span class="math">cos 0° = 1</span>, <span class="math">cos 60° = 1/2</span>, <span class="math">cos 90° = 0</span>, <span class="math">cos 120° = −1/2</span>, <span class="math">cos 180° = −1</span>.</p>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Ядро темы</p>
+    <h2>Определение и две формулы</h2>
+    <p><strong>Определение.</strong> Скалярным произведением векторов <span class="math">a</span> и <span class="math">b</span> называется число <span class="math">a · b = |a| · |b| · cos α</span>, где <span class="math">|a|</span> и <span class="math">|b|</span> — длины векторов, а <span class="math">α</span> — угол между ними (угол берётся между векторами, отложенными <strong>от одной точки</strong>).</p>
+    <p><strong>В координатах.</strong> Если <span class="math">a = {x₁; y₁}</span> и <span class="math">b = {x₂; y₂}</span>, то <span class="math">a · b = x₁·x₂ + y₁·y₂</span>. Проговаривай вслух: <strong>«икс на икс плюс игрек на игрек»</strong> — умножаем одноимённые координаты и складываем.</p>
+    <p><strong>Следствие — угол между векторами:</strong></p>
+    <p class="math" style="background:var(--card);border:1px solid var(--line);border-radius:10px;padding:.8rem 1rem;overflow-x:auto">cos α = (x₁·x₂ + y₁·y₂) / (√(x₁² + y₁²) · √(x₂² + y₂²))</p>
+    <p><strong>Признак перпендикулярности.</strong> Ненулевые векторы <span class="math">a</span> и <span class="math">b</span> перпендикулярны <strong>тогда и только тогда</strong>, когда <span class="math">a · b = 0</span> — потому что <span class="math">cos 90° = 0</span>. В координатах: <span class="math">x₁·x₂ + y₁·y₂ = 0</span>.</p>
+    <p>Что ещё важно держать в голове:</p>
+    <ul>
+      <li>Точка «·» между векторами — знак именно <strong>скалярного</strong> произведения, не путай его с обычным умножением чисел.</li>
+      <li>Результат — <strong>число</strong>, не вектор.</li>
+      <li>Скалярный квадрат: <span class="math">a · a = |a|²</span> (угол вектора с самим собой равен 0°, а <span class="math">cos 0° = 1</span>).</li>
+    </ul>
+  </section>
+
+  <section>
+    <p class="kicker">Смысл · знак говорит об угле</p>
+    <h2>Косинус показывает, «смотрят ли векторы в одну сторону»</h2>
+    <p>Длины <span class="math">|a|</span> и <span class="math">|b|</span> всегда положительны, поэтому знак всего произведения определяет только <span class="math">cos α</span>. Отсюда — три случая:</p>
+    <div class="cases">
+      <div class="case pos">
+        <div class="sign">a · b &gt; 0</div>
+        <div class="count">Угол острый</div>
+        <div class="desc">Векторы смотрят примерно в одну сторону, cos α &gt; 0.</div>
+      </div>
+      <div class="case zero">
+        <div class="sign">a · b = 0</div>
+        <div class="count">Угол прямой</div>
+        <div class="desc">Векторы перпендикулярны, cos 90° = 0.</div>
+      </div>
+      <div class="case neg">
+        <div class="sign">a · b &lt; 0</div>
+        <div class="count">Угол тупой</div>
+        <div class="desc">Векторы смотрят примерно навстречу, cos α &lt; 0.</div>
+      </div>
+    </div>
+    <p style="font-size:.92rem;color:var(--muted);margin-top:.9rem">Считалочка: <strong>плюс — острый, ноль — прямой, минус — тупой.</strong> И осторожно: чем <em>больше</em> угол, тем <em>меньше</em> произведение — косинус с ростом угла убывает.</p>
+
+    <div class="tablewrap">
+      <table class="signs">
+        <tr><th>Угол α</th><th>cos α</th><th>Знак a · b</th><th>Вывод</th></tr>
+        <tr><td class="m">30°</td><td class="m p">&gt; 0</td><td class="m p">+</td><td>острый угол</td></tr>
+        <tr><td class="m">90°</td><td class="m z">0</td><td class="m z">0</td><td>перпендикулярны</td></tr>
+        <tr><td class="m">120°</td><td class="m n">&lt; 0</td><td class="m n">−</td><td>тупой угол</td></tr>
+      </table>
+    </div>
+
+    <div class="oge-tip"><div class="b">🎯 В ОГЭ</div><div class="x"><b>Задания 15–19.</b> Отдельного номера «на скалярное произведение» в ОГЭ нет, но в геометрии первой части (№15–19) постоянно нужно проверить перпендикулярность или найти угол. Если фигура задана координатами, признак <span class="math">a · b = 0</span> решает это в одну строку — без построений.</div></div>
+  </section>
+
+  <section>
+    <p class="kicker">Разбираем вместе · думаю вслух</p>
+    <h2>Эталонный пример</h2>
+    <div class="worked">
+      <p class="task">Даны |a| = 4, |b| = 5, угол между векторами 60°. Найти a · b.</p>
+      <ol class="steps">
+        <li>Записываю формулу: <span class="m">a · b = |a|·|b|·cos α</span>. <span class="why">Почему именно её: мне даны длины и угол — это прямой случай определения, координаты тут не нужны.</span></li>
+        <li>Подставляю числа: <span class="m">a · b = 4 · 5 · cos 60°</span>. <span class="why">Почему: просто заменяю буквы данными, ничего не преобразую.</span></li>
+        <li>Вспоминаю табличное значение: <span class="m">cos 60° = 1/2</span>, значит <span class="m">a · b = 4 · 5 · 1/2 = 10</span>. <span class="why">Почему 10: 4 · 5 = 20, половина от 20 — это 10.</span></li>
+      </ol>
+      <div class="verdict">Ответ: a · b = 10. Число положительное — и правда, 60° это острый угол.</div>
+    </div>
+
+    <div class="worked">
+      <p class="task">Даны a = {3; −2} и b = {1; 4}. Найти a · b в координатах.</p>
+      <ol class="steps">
+        <li>Формула: <span class="m">a · b = x₁·x₂ + y₁·y₂</span>. <span class="why">Почему эта: даны координаты, а не длины с углом.</span></li>
+        <li>Подставляю координаты <strong>со знаками</strong>: <span class="m">a · b = 3·1 + (−2)·4</span>. <span class="why">Почему в скобках: у второй координаты вектора a стоит минус, и он должен уехать в вычисление вместе с двойкой.</span></li>
+        <li>Считаю каждое слагаемое и складываю: <span class="m">3·1 = 3</span>, <span class="m">(−2)·4 = −8</span>, значит <span class="m">a · b = 3 + (−8) = −5</span>. <span class="why">Почему минус: складываю число 3 с отрицательным −8, получается −5.</span></li>
+      </ol>
+      <div class="verdict neg">Ответ: a · b = −5. Число отрицательное — значит, угол между векторами тупой.</div>
+    </div>
+
+    <div class="worked">
+      <p class="task">Даны a = {2; 6} и b = {−3; 1}. Перпендикулярны ли векторы?</p>
+      <ol class="steps">
+        <li>Никакой «специальной формулы» для перпендикулярности искать не надо — считаю обычное скалярное произведение и сравниваю с нулём.</li>
+        <li><span class="m">a · b = 2·(−3) + 6·1 = −6 + 6 = 0</span>.</li>
+        <li>Произведение равно нулю, оба вектора ненулевые → угол между ними 90°.</li>
+      </ol>
+      <div class="verdict zero">Ответ: да, векторы перпендикулярны.</div>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Одно понятие — две записи</p>
+    <h2>Обе формулы дают одно и то же число</h2>
+    <p>Полезно держать рядом обе формы — «через длины и угол» и «через координаты». Возьмём перпендикулярную пару <span class="math">a = {3; 0}</span> и <span class="math">b = {0; 5}</span> (это вектор вдоль оси x и вектор вдоль оси y):</p>
+    <div class="twoview">
+      <div class="view">
+        <header>Через длины и угол</header>
+        <div class="body">
+          <div class="eq">|a| = 3, |b| = 5, α = 90°</div>
+          <div class="calc">a · b = 3 · 5 · cos 90° = 3 · 5 · 0 = <b>0</b></div>
+        </div>
+      </div>
+      <div class="view">
+        <header>Через координаты</header>
+        <div class="body">
+          <div class="eq">a = {3; 0}, b = {0; 5}</div>
+          <div class="calc">a · b = 3·0 + 0·5 = <b>0</b></div>
+        </div>
+      </div>
+    </div>
+    <p style="font-size:.94rem;color:var(--muted);margin-top:.9rem">Приём «предскажи → проверь → объясни»: сначала <strong>предскажи</strong>, каким будет произведение у этой пары; потом <strong>проверь</strong> счётом; потом <strong>объясни</strong>, почему ноль. Ответ на «почему»: векторы перпендикулярны, а <span class="math">cos 90° = 0</span>.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Покрути сам · интерактив</p>
+    <h2>Двигай векторы — следи за знаком</h2>
+    <p>Ползунки задают координаты векторов <span class="math">a</span> и <span class="math">b</span>. Оба отложены из одной точки — из начала координат. Смотри, как меняются произведение, угол и его вид.</p>
+    <div class="vis">
+      <canvas id="vecCanvas" width="640" height="420" aria-label="Два вектора на координатной плоскости и угол между ними"></canvas>
+      <div id="visVerdict" class="vis-verdict">a · b = 0 · угол 90° · прямой</div>
+      <div id="visCalc" class="vis-calc">a · b = 3·0 + 0·5 = 0</div>
+      <div class="sliders">
+        <label>x₁ <span id="vx1" class="sval">3</span><input id="sx1" type="range" min="-8" max="8" step="1" value="3"></label>
+        <label>y₁ <span id="vy1" class="sval">0</span><input id="sy1" type="range" min="-8" max="8" step="1" value="0"></label>
+        <label>x₂ <span id="vx2" class="sval">0</span><input id="sx2" type="range" min="-8" max="8" step="1" value="0"></label>
+        <label>y₂ <span id="vy2" class="sval">5</span><input id="sy2" type="range" min="-8" max="8" step="1" value="5"></label>
+      </div>
+    </div>
+    <p style="font-size:.9rem;color:var(--muted)">Поймай момент, когда произведение проходит через ноль — именно там угол становится прямым. Слева от нуля (минус) угол тупой, справа (плюс) — острый. Если один из векторов нулевой, угол между ними не определён — потому в признаке перпендикулярности и написано «ненулевые».</p>
+  </section>
+
+  <section>
+    <p class="kicker">Теперь ты · нажми, чтобы проверить</p>
+    <h2>Практика по нарастанию</h2>
+    <div class="drill">
+      <details>
+        <summary><span class="q">Каким будет произведение при угле 30°, 90°, 120°: плюс, минус или ноль?</span><span class="tag">понимание</span></summary>
+        <div class="ans">а) 30° — <strong>положительным</strong> (cos 30° &gt; 0); б) 90° — <strong>нулём</strong> (cos 90° = 0); в) 120° — <strong>отрицательным</strong> (cos 120° &lt; 0).</div>
+      </details>
+      <details>
+        <summary><span class="q">|a| = 6, |b| = 3, угол 45°. Найди a · b</span><span class="tag">применение</span></summary>
+        <div class="ans"><span class="m">a · b = 6 · 3 · cos 45° = 6 · 3 · (√2/2) = 18 · √2/2 = 9√2</span>.</div>
+      </details>
+      <details>
+        <summary><span class="q">a = {3; −2}, b = {1; 4}. Найди a · b</span><span class="tag">применение</span></summary>
+        <div class="ans"><span class="m">a · b = 3·1 + (−2)·4 = 3 − 8 = −5</span> → число отрицательное, угол тупой.</div>
+      </details>
+      <details>
+        <summary><span class="q">a = {2; 6}, b = {−3; 1}. Перпендикулярны ли векторы?</span><span class="tag">применение</span></summary>
+        <div class="ans"><span class="m">a · b = 2·(−3) + 6·1 = −6 + 6 = 0</span> → <strong>да, перпендикулярны.</strong></div>
+      </details>
+      <details>
+        <summary><span class="q">Что изменится, если у перпендикулярных векторов удвоить длины?</span><span class="tag">анализ</span></summary>
+        <div class="ans">У векторов <span class="m">a · b = 0</span>, длины увеличили в 2 раза, направления не меняли. Перпендикулярность <strong>не изменится</strong>: <span class="m">|a|</span> и <span class="m">|b|</span> выросли, но угол остался 90°, а <span class="m">cos 90° = 0</span> — значит, произведение по-прежнему <span class="m">0</span>. Ноль умножить на что угодно — снова ноль.</div>
+      </details>
+      <details>
+        <summary><span class="q">Найди ошибку: для a = {5; −1}, b = {2; 3} ученик написал a · b = 5·2 − 1·3</span><span class="tag">анализ</span></summary>
+        <div class="ans">Ошибка в <strong>записи рассуждения</strong>: минус у второй координаты вектора a уже «сидит» в самом числе −1, нельзя выносить его ещё раз как знак операции. Формула всегда со <strong>сложением</strong>: <span class="m">a · b = x₁x₂ + y₁y₂ = 5·2 + (−1)·3 = 10 + (−3) = 7</span>. Здесь ответ случайно совпал, но на другой паре такой «двойной минус» даст неверный результат.</div>
+      </details>
+      <details>
+        <summary><span class="q">Обратная задача: a = {4; m}, b = {2; −3} перпендикулярны. Найди m</span><span class="tag">анализ</span></summary>
+        <div class="ans">Условие перпендикулярности — произведение равно нулю: <span class="m">4·2 + m·(−3) = 0</span> → <span class="m">8 − 3m = 0</span> → <span class="m">m = 8/3</span>. Проверка: <span class="m">8 − 3·(8/3) = 8 − 8 = 0</span> ✓</div>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Тренажёр · бесконечная практика</p>
+    <h2>Считай сам, пока не станет автоматом</h2>
+    <p>Нажимай «Новое задание» и решай. Ответ вводи числом (минус — обычным знаком, дробное можно с точкой или запятой), а там, где спрашивают про угол, напиши слово: <b>острый</b>, <b>прямой</b> или <b>тупой</b>.</p>
+    <div class="trainer">
+      <div class="tr-eq" id="trEq">a = {3; −2}, b = {1; 4} · найди a · b</div>
+      <div class="tr-ctl">
+        <button id="trNew" type="button">🎲 Новое задание</button>
+        <input id="trAns" type="text" inputmode="text" autocomplete="off" placeholder="напр.  −5   или   острый" aria-label="Ответ">
+        <button id="trCheck" type="button" class="sec">Проверить</button>
+        <button id="trShow" type="button" class="ghost">Показать решение</button>
+      </div>
+      <div id="trResult" class="tr-result"></div>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Где чаще всего ошибаются</p>
+    <h2>Пять ловушек</h2>
+    <ul class="pitfalls">
+      <li><b>Считают, что ответ — вектор.</b> Скалярное произведение — это число. Проговаривай «получаю число»: у ответа не должно быть ни стрелки, ни координат.</li>
+      <li><b>Забывают, что при перпендикулярности произведение равно нулю.</b> Ищут «специальную формулу», хотя достаточно показать <span class="math">a · b = 0</span>. Запомни цепочку: <span class="math">90° → cos 90° = 0 → a · b = 0</span>.</li>
+      <li><b>Путают координатную формулу.</b> Пишут <span class="math">x₁x₂ − y₁y₂</span> или <span class="math">x₁y₂ + x₂y₁</span> вместо <span class="math">x₁x₂ + y₁y₂</span>. Держись формулировки «икс на икс плюс игрек на игрек»: перемножаются <em>одноимённые</em> координаты, и они <em>складываются</em>.</li>
+      <li><b>Теряют минус у отрицательной координаты.</b> Координату −2 подставляют как 2. Всегда бери координату со своим знаком и в скобках: <span class="math">(−2)·4 = −8</span>.</li>
+      <li><b>Думают, что чем больше угол, тем больше произведение.</b> Наоборот: с ростом угла косинус убывает, и произведение уменьшается — вплоть до отрицательных значений.</li>
+    </ul>
+  </section>
+
+  <section>
+    <p class="kicker">Проверка понимания</p>
+    <h2>Ответь своими словами</h2>
+    <div class="drill">
+      <details>
+        <summary><span class="q">Чем является результат скалярного произведения — числом или вектором?</span><span class="tag">проверка</span></summary>
+        <div class="ans"><strong>Числом.</strong> Потому и «скалярное»: скаляр — это просто число.</div>
+      </details>
+      <details>
+        <summary><span class="q">Запиши формулу в координатах для a = {x₁; y₁}, b = {x₂; y₂}</span><span class="tag">проверка</span></summary>
+        <div class="ans"><span class="m">a · b = x₁x₂ + y₁y₂</span>.</div>
+      </details>
+      <details>
+        <summary><span class="q">Чему равно скалярное произведение перпендикулярных векторов и почему?</span><span class="tag">проверка</span></summary>
+        <div class="ans"><strong>Нулю</strong>, так как угол между ними 90°, а <span class="m">cos 90° = 0</span>, и всё произведение <span class="m">|a|·|b|·0</span> обнуляется.</div>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <div class="next">
+      <h2>Что дальше</h2>
+      <p>Эта тема замыкает блок про векторы: дальше отдельной новой темы за ней в курсе 9 класса нет — зато она сразу начинает работать в других местах.</p>
+      <div class="eq">A = F · s · cos α</div>
+      <p>В физике то же самое произведение — это работа силы. А в старших классах и в вузе скалярное произведение становится основой аналитической геометрии: через него считают углы и проверяют перпендикулярность уже не только на плоскости.</p>
+      <p>Ближайшее, что стоит закрепить рядом, — <strong>координаты вектора и его длина</strong> и <strong>косинус любого угла от 0° до 180°</strong>: без них формулы этой темы не считаются.</p>
+    </div>
+  </section>
+
+  <p class="foot">Итог одним предложением: скалярное произведение двух векторов — это число <span class="math">|a|·|b|·cos α</span> (в координатах <span class="math">x₁x₂ + y₁y₂</span>), по которому находят угол между векторами и проверяют их перпендикулярность.</p>
+
+</div>
+
+<style>
+  .vis{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.1rem 1.1rem 1rem;margin:1rem 0}
+  .vis canvas{width:100%;height:auto;display:block;border-radius:10px;background:#FCFDFF}
+  .vis-verdict{text-align:center;font-weight:700;font-size:1.02rem;margin:.8rem 0 0;padding:.5rem;border-radius:9px;font-family:ui-monospace,Menlo,monospace}
+  .vis-verdict.pos{background:var(--pos-bg);color:var(--pos)}
+  .vis-verdict.zero{background:var(--zero-bg);color:var(--zero)}
+  .vis-verdict.neg{background:var(--neg-bg);color:var(--neg)}
+  .vis-verdict.none{background:var(--accent-soft);color:var(--accent)}
+  .vis-calc{text-align:center;font-family:ui-monospace,Menlo,monospace;font-size:.9rem;color:var(--muted);margin:.55rem 0 0;overflow-x:auto}
+  .sliders{display:grid;gap:.6rem;margin-top:.9rem}
+  @media(min-width:520px){.sliders{grid-template-columns:repeat(2,1fr)}}
+  .sliders label{display:flex;align-items:center;gap:.5rem;font-weight:700;font-family:ui-monospace,Menlo,monospace}
+  .sliders input[type=range]{flex:1;min-width:0;accent-color:var(--accent)}
+  .sliders input[type=range]:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+  .sliders .sval{min-width:3ch;text-align:right;color:var(--accent);font-variant-numeric:tabular-nums}
+</style>
+
+<script>
+(function(){
+  var canvas=document.getElementById('vecCanvas'); if(!canvas) return;
+  var ctx=canvas.getContext('2d');
+  var sx1=document.getElementById('sx1'), sy1=document.getElementById('sy1'),
+      sx2=document.getElementById('sx2'), sy2=document.getElementById('sy2');
+  var vx1=document.getElementById('vx1'), vy1=document.getElementById('vy1'),
+      vx2=document.getElementById('vx2'), vy2=document.getElementById('vy2');
+  var verdict=document.getElementById('visVerdict'), calcEl=document.getElementById('visCalc');
+  var W=640,H=420,dpr=1,RANGE=9;
+
+  function mnum(n){ return (n<0?'−':'')+Math.abs(n); }
+  function par(n){ return n<0 ? '('+mnum(n)+')' : ''+n; }
+  function getCSS(v){ return getComputedStyle(document.documentElement).getPropertyValue(v).trim()||'#3B4FD0'; }
+
+  function resize(){
+    var cssW=canvas.clientWidth||640; dpr=Math.min(window.devicePixelRatio||1,2);
+    W=cssW; H=Math.round(cssW*0.78);
+    canvas.width=Math.round(W*dpr); canvas.height=Math.round(H*dpr); canvas.style.height=H+'px';
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+  }
+  function unit(){ return Math.min(W,H)/(2*RANGE+1.2); }
+  function X(x){ return W/2 + x*unit(); }
+  function Y(y){ return H/2 - y*unit(); }
+
+  function arrow(x,y,color,label){
+    var x0=X(0), y0=Y(0), x1=X(x), y1=Y(y);
+    ctx.strokeStyle=color; ctx.fillStyle=color; ctx.lineWidth=3;
+    ctx.beginPath(); ctx.moveTo(x0,y0); ctx.lineTo(x1,y1); ctx.stroke();
+    var len=Math.sqrt((x1-x0)*(x1-x0)+(y1-y0)*(y1-y0));
+    if(len>6){
+      var ux=(x1-x0)/len, uy=(y1-y0)/len, h=11, w=6;
+      ctx.beginPath();
+      ctx.moveTo(x1,y1);
+      ctx.lineTo(x1-h*ux+w*uy, y1-h*uy-w*ux);
+      ctx.lineTo(x1-h*ux-w*uy, y1-h*uy+w*ux);
+      ctx.closePath(); ctx.fill();
+      var lx=x1+ux*16, ly=y1+uy*16;
+      lx=Math.max(12,Math.min(W-12,lx)); ly=Math.max(14,Math.min(H-8,ly));
+      ctx.font='bold 15px ui-monospace,Menlo,monospace';
+      ctx.textAlign='center'; ctx.textBaseline='middle';
+      ctx.fillText(label,lx,ly);
+    }
+  }
+
+  function draw(){
+    var x1=parseInt(sx1.value,10), y1=parseInt(sy1.value,10),
+        x2=parseInt(sx2.value,10), y2=parseInt(sy2.value,10);
+    vx1.textContent=mnum(x1); vy1.textContent=mnum(y1);
+    vx2.textContent=mnum(x2); vy2.textContent=mnum(y2);
+
+    ctx.clearRect(0,0,W,H);
+    ctx.strokeStyle='#EDEFF4'; ctx.lineWidth=1;
+    var u=unit(), gx, gy;
+    var nx=Math.ceil((W/2)/u), ny=Math.ceil((H/2)/u);
+    for(gx=-nx;gx<=nx;gx++){ ctx.beginPath(); ctx.moveTo(X(gx),0); ctx.lineTo(X(gx),H); ctx.stroke(); }
+    for(gy=-ny;gy<=ny;gy++){ ctx.beginPath(); ctx.moveTo(0,Y(gy)); ctx.lineTo(W,Y(gy)); ctx.stroke(); }
+    ctx.strokeStyle='#9AA3B2'; ctx.lineWidth=1.5;
+    ctx.beginPath(); ctx.moveTo(0,Y(0)); ctx.lineTo(W,Y(0)); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(X(0),0); ctx.lineTo(X(0),H); ctx.stroke();
+
+    var dot=x1*x2+y1*y2;
+    var la=Math.sqrt(x1*x1+y1*y1), lb=Math.sqrt(x2*x2+y2*y2);
+    var zero=(la===0||lb===0);
+    var col = zero ? getCSS('--accent') : (dot>0?getCSS('--pos'):(dot<0?getCSS('--neg'):getCSS('--zero')));
+
+    /* дуга угла */
+    if(!zero){
+      var a1=Math.atan2(y1,x1), a2=Math.atan2(y2,x2);
+      var d=a2-a1; while(d>Math.PI) d-=2*Math.PI; while(d<-Math.PI) d+=2*Math.PI;
+      ctx.strokeStyle=col; ctx.lineWidth=2; ctx.globalAlpha=.55;
+      ctx.beginPath();
+      ctx.arc(X(0),Y(0),Math.min(38,u*1.6),-a1,-(a1+d),d>0);
+      ctx.stroke(); ctx.globalAlpha=1;
+    }
+
+    arrow(x1,y1,getCSS('--accent'),'a');
+    arrow(x2,y2,'#7A4FD0','b');
+
+    calcEl.textContent='a · b = '+par(x1)+'·'+par(x2)+' + '+par(y1)+'·'+par(y2)+' = '+mnum(dot);
+    verdict.className='vis-verdict';
+    if(zero){
+      verdict.classList.add('none');
+      verdict.textContent='Один из векторов нулевой · угол не определён';
+    } else {
+      var cosA=dot/(la*lb);
+      if(cosA>1) cosA=1; if(cosA<-1) cosA=-1;
+      var ang=Math.round(Math.acos(cosA)*180/Math.PI*10)/10;
+      var kind = dot>0 ? 'острый' : (dot<0 ? 'тупой' : 'прямой');
+      verdict.classList.add(dot>0?'pos':(dot<0?'neg':'zero'));
+      verdict.textContent='a · b = '+mnum(dot)+' · угол '+String(ang).replace('.',',')+'° · '+kind;
+    }
+  }
+
+  [sx1,sy1,sx2,sy2].forEach(function(s){ s.addEventListener('input',draw); });
+  window.addEventListener('resize',function(){ resize(); draw(); });
+  resize(); draw();
+})();
+</script>
+
+<style>
+  .trainer{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.2rem 1.3rem;margin-top:1rem}
+  .tr-eq{font-family:ui-monospace,Menlo,monospace;font-weight:800;font-size:clamp(1rem,4vw,1.3rem);text-align:center;padding:1rem;background:var(--accent-soft);border-radius:10px;color:var(--ink);overflow-x:auto}
+  .tr-ctl{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.9rem;align-items:center}
+  .tr-ctl button{font:inherit;font-weight:700;font-size:.9rem;cursor:pointer;border:none;border-radius:9px;padding:.55rem .95rem;color:#fff;background:var(--accent)}
+  .tr-ctl button.sec{background:var(--pos)}
+  .tr-ctl button.ghost{background:transparent;color:var(--accent);border:1px solid var(--accent)}
+  .tr-ctl input{flex:1;min-width:150px;font:inherit;padding:.5rem .7rem;border:1px solid var(--line);border-radius:9px;background:#fff;color:var(--ink)}
+  .tr-ctl button:focus-visible,.tr-ctl input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+  .tr-result{margin-top:.9rem;font-size:.96rem;min-height:1.2rem}
+  .tr-result .ok{color:var(--pos);font-weight:700}
+  .tr-result .bad{color:var(--neg);font-weight:700}
+  .tr-result .sol{margin-top:.7rem;padding:.85rem 1rem;background:#FCFBFE;border:1px solid var(--line);border-radius:10px;font-family:ui-monospace,Menlo,monospace;font-size:.9rem;line-height:1.8;overflow-x:auto}
+  .tr-result .sol b{color:var(--accent)}
+</style>
+
+<script>
+(function(){
+  var MINUS='−';
+  function mn(n){ var v=Math.round(n*1000)/1000; return (v<0?MINUS:'')+Math.abs(v); }
+  function par(n){ return n<0 ? '('+mn(n)+')' : mn(n); }
+  function ri(min,max){ return Math.floor(Math.random()*(max-min+1))+min; }
+  function rnz(max){ var v=0; while(v===0){ v=ri(-max,max); } return v; }
+
+  var COS=[{deg:0,val:1},{deg:60,val:0.5},{deg:90,val:0},{deg:120,val:-0.5},{deg:180,val:-1}];
+  function cosText(c){
+    if(c.val===1) return '1';
+    if(c.val===0) return '0';
+    if(c.val===0.5) return '1/2';
+    if(c.val===-0.5) return MINUS+'1/2';
+    return MINUS+'1';
+  }
+
+  /* ---------- чистая логика (без DOM) ---------- */
+  function makeTask(){
+    var t=ri(1,4);
+    if(t===1){ /* координаты → произведение */
+      var a={x:rnz(6),y:rnz(6)}, b={x:rnz(6),y:rnz(6)};
+      return {kind:'dot', a:a, b:b, ans:a.x*b.x+a.y*b.y};
+    }
+    if(t===2){ /* длины и угол → произведение */
+      var c=COS[ri(0,COS.length-1)];
+      var la=2*ri(1,6), lb=ri(2,9);
+      return {kind:'len', la:la, lb:lb, cos:c, ans:la*lb*c.val};
+    }
+    if(t===3){ /* найди m из перпендикулярности */
+      var x1=rnz(6), tt=rnz(3), y2=rnz(4);
+      var x2=tt*y2;
+      /* x1*x2 + m*y2 = 0  →  m = −x1*t  (целое) */
+      return {kind:'perp', x1:x1, b:{x:x2,y:y2}, ans:-x1*tt};
+    }
+    /* вид угла по координатам */
+    var a2={x:rnz(6),y:rnz(6)}, b2={x:rnz(6),y:rnz(6)};
+    var d=a2.x*b2.x+a2.y*b2.y;
+    return {kind:'type', a:a2, b:b2, dot:d, ans:(d>0?'острый':(d<0?'тупой':'прямой'))};
+  }
+
+  function taskText(q){
+    if(q.kind==='dot') return 'a = {'+mn(q.a.x)+'; '+mn(q.a.y)+'}, b = {'+mn(q.b.x)+'; '+mn(q.b.y)+'} · найди a · b';
+    if(q.kind==='len') return '|a| = '+q.la+', |b| = '+q.lb+', угол '+q.cos.deg+'° · найди a · b';
+    if(q.kind==='perp') return 'a = {'+mn(q.x1)+'; m} и b = {'+mn(q.b.x)+'; '+mn(q.b.y)+'} перпендикулярны · найди m';
+    return 'a = {'+mn(q.a.x)+'; '+mn(q.a.y)+'}, b = {'+mn(q.b.x)+'; '+mn(q.b.y)+'} · какой угол: острый, прямой или тупой?';
+  }
+
+  function solutionText(q){
+    var L=[];
+    if(q.kind==='dot'){
+      L.push('a · b = x₁x₂ + y₁y₂');
+      L.push('a · b = '+par(q.a.x)+'·'+par(q.b.x)+' + '+par(q.a.y)+'·'+par(q.b.y));
+      L.push('a · b = '+mn(q.a.x*q.b.x)+' + '+par(q.a.y*q.b.y)+' = <b>'+mn(q.ans)+'</b>');
+      L.push(q.ans>0?'Число положительное → угол острый.':(q.ans<0?'Число отрицательное → угол тупой.':'Ноль → векторы перпендикулярны.'));
+    } else if(q.kind==='len'){
+      L.push('a · b = |a| · |b| · cos α');
+      L.push('a · b = '+q.la+' · '+q.lb+' · cos '+q.cos.deg+'°');
+      L.push('cos '+q.cos.deg+'° = '+cosText(q.cos)+', значит a · b = '+mn(q.la*q.lb)+' · '+cosText(q.cos)+' = <b>'+mn(q.ans)+'</b>');
+    } else if(q.kind==='perp'){
+      var A=q.x1*q.b.x, y2=q.b.y;
+      var term=(y2<0? ' '+MINUS+' ' : ' + ')+(Math.abs(y2)===1?'':Math.abs(y2))+'m';
+      L.push('Перпендикулярны → скалярное произведение равно нулю:');
+      L.push(par(q.x1)+'·'+par(q.b.x)+' + m·'+par(y2)+' = 0');
+      L.push(mn(A)+term+' = 0');
+      L.push('m = '+mn(-A)+' / '+par(y2)+' = <b>'+mn(q.ans)+'</b>');
+      L.push('Проверка: '+mn(A)+' + '+par(q.ans)+'·'+par(y2)+' = '+mn(A+q.ans*y2)+' ✓');
+    } else {
+      L.push('a · b = '+par(q.a.x)+'·'+par(q.b.x)+' + '+par(q.a.y)+'·'+par(q.b.y)+' = <b>'+mn(q.dot)+'</b>');
+      L.push('Знак произведения → вид угла: плюс — острый, ноль — прямой, минус — тупой.');
+      L.push('Ответ: угол <b>'+q.ans+'</b>.');
+    }
+    return L.join('<br>');
+  }
+
+  function parseNum(raw){
+    var s=String(raw).replace(/−|–|—/g,'-').replace(/\s+/g,'');
+    if(s.indexOf('=')>=0) s=s.slice(s.lastIndexOf('=')+1);
+    s=s.replace(/,/g,'.');
+    if(!s) return null;
+    var mfr=/^([+-]?\d+(?:\.\d+)?)\/([+-]?\d+(?:\.\d+)?)$/.exec(s);
+    if(mfr){ var den=parseFloat(mfr[2]); if(den===0) return null; return parseFloat(mfr[1])/den; }
+    if(!/^[+-]?\d+(?:\.\d+)?$/.test(s)) return null;
+    return parseFloat(s);
+  }
+  function parseWord(raw){
+    var s=String(raw).toLowerCase().replace(/ё/g,'е').replace(/[\s.!]/g,'');
+    if(/^остр/.test(s)||s==='+') return 'острый';
+    if(/^пря/.test(s)||/^перп/.test(s)||s==='0') return 'прямой';
+    if(/^туп/.test(s)||s==='-'||s==='−') return 'тупой';
+    return null;
+  }
+  function verify(q,raw){
+    if(q.kind==='type'){ var w=parseWord(raw); return w!==null && w===q.ans; }
+    var v=parseNum(raw);
+    return v!==null && isFinite(v) && Math.abs(v-q.ans)<1e-6;
+  }
+  function canonical(q){ return q.kind==='type' ? q.ans : mn(q.ans); }
+
+  if(typeof window!=='undefined'){
+    window.__SP_TRAINER__={makeTask:makeTask,taskText:taskText,solutionText:solutionText,verify:verify,canonical:canonical,parseNum:parseNum,parseWord:parseWord};
+  }
+
+  /* ---------- DOM ---------- */
+  var eqEl=document.getElementById('trEq'), ansEl=document.getElementById('trAns'), resEl=document.getElementById('trResult');
+  if(!eqEl) return;
+  /* стартовая задача совпадает с тем, что показывает решение */
+  var cur={kind:'dot', a:{x:3,y:-2}, b:{x:1,y:4}, ans:-5};
+
+  function solHTML(){ return '<div class="sol">'+solutionText(cur)+'</div>'; }
+  function newTask(){
+    cur=makeTask();
+    eqEl.textContent=taskText(cur);
+    resEl.innerHTML=''; ansEl.value=''; ansEl.focus();
+  }
+  function check(){
+    var raw=ansEl.value.trim();
+    if(!raw){ resEl.innerHTML='<span class="bad">Введи ответ или нажми «Показать решение».</span>'; return; }
+    if(verify(cur,raw)){
+      resEl.innerHTML='<span class="ok">✓ Верно!</span>'+solHTML();
+    } else {
+      var hint = cur.kind==='type' ? ' Посчитай a · b и посмотри на знак.' : ' Проверь знаки координат: каждая идёт в формулу вместе со своим минусом.';
+      resEl.innerHTML='<span class="bad">✗ Пока не то.'+hint+'</span>'+solHTML();
+    }
+  }
+  document.getElementById('trNew').addEventListener('click',newTask);
+  document.getElementById('trCheck').addEventListener('click',check);
+  document.getElementById('trShow').addEventListener('click',function(){ resEl.innerHTML=solHTML(); });
+  ansEl.addEventListener('keydown',function(e){ if(e.key==='Enter') check(); });
+})();
+</script>
+<!--LESSON-NAV-BOT--><nav class="lnav lnav-bot"><a class="prev" href="./geo9-trig-ploschad.html"><span class="dir">← Предыдущая</span><span class="ttl">Площадь треугольника через две стороны и угол</span></a><a class="to-cat" href="./catalog.html">📚 <span>Все темы</span></a><a class="next" href="./geo9-pravilnyj-mnogougolnik.html"><span class="dir">Следующая →</span><span class="ttl">Правильный многоугольник и его элементы</span></a></nav><!--/LESSON-NAV-BOT-->

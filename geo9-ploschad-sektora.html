@@ -1,0 +1,694 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Площадь кругового сектора — урок, геометрия 9 класс</title>
+<style>
+  :root{
+    --paper:#F6F7F9;
+    --card:#FFFFFF;
+    --ink:#1B2333;
+    --muted:#5A6478;
+    --line:#E2E5EC;
+    --accent:#3B4FD0;
+    --accent-soft:#EAEDFB;
+    --pos:#1E8E5A;
+    --pos-bg:#E7F4EC;
+    --zero:#B9791A;
+    --zero-bg:#FBF1DC;
+    --neg:#C0455B;
+    --neg-bg:#F9E9EC;
+  }
+  *{box-sizing:border-box}
+  body{margin:0}
+  .wrap{
+    max-width:760px;
+    margin:0 auto;
+    padding:clamp(1.4rem,4vw,3rem) clamp(1.1rem,4vw,2rem) 4rem;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    font-size:17px;
+    line-height:1.62;
+    -webkit-font-smoothing:antialiased;
+  }
+  .eyebrow{
+    font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--accent);font-weight:600;margin:0 0 .5rem;
+  }
+  h1{
+    font-family:Georgia,"Times New Roman",serif;
+    font-size:clamp(2.1rem,7vw,3rem);
+    line-height:1.05;margin:0;font-weight:700;letter-spacing:-.01em;
+    text-wrap:balance;
+  }
+  .lede{
+    font-size:1.08rem;color:var(--muted);margin:.7rem 0 0;max-width:60ch;
+    text-wrap:pretty;
+  }
+  h2{
+    font-family:Georgia,serif;font-size:1.32rem;font-weight:700;
+    margin:0 0 .1rem;letter-spacing:-.005em;
+  }
+  section{margin-top:2.6rem}
+  .kicker{
+    font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--muted);font-weight:600;margin:0 0 .8rem;
+    display:flex;align-items:center;gap:.6rem;
+  }
+  .kicker::before{
+    content:"";width:1.4rem;height:2px;background:var(--accent);border-radius:2px;
+  }
+  p{margin:.65rem 0}
+  strong{font-weight:650}
+  .math{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-weight:600}
+  sup{font-size:.72em}
+
+  /* Главная формула */
+  .hero-formula{
+    margin-top:2.2rem;
+    background:var(--ink);color:#fff;border-radius:14px;
+    padding:1.6rem 1.4rem;text-align:center;
+  }
+  .hero-formula .lbl{
+    font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;
+    color:#9aa6c9;margin:0 0 .7rem;
+  }
+  .hero-formula .eq{
+    font-family:ui-monospace,"SF Mono",Menlo,monospace;
+    font-size:clamp(1.4rem,5.4vw,2.1rem);font-weight:700;letter-spacing:.01em;
+  }
+  .hero-formula .eq b{color:#8ea0ff;font-weight:700}
+  .hero-formula .note{font-size:.86rem;color:#9aa6c9;margin:.8rem 0 0}
+
+  /* Пререквизит */
+  .recall{
+    background:var(--accent-soft);border-radius:12px;padding:1rem 1.15rem;
+    font-size:.96rem;
+  }
+  .recall p{margin:.3rem 0}
+
+  /* Сектор vs сегмент */
+  .cases{display:grid;gap:.85rem;margin-top:.4rem}
+  @media(min-width:620px){.cases{grid-template-columns:repeat(2,1fr)}}
+  .case{
+    border-radius:12px;padding:1.05rem 1.1rem;border:1px solid var(--line);
+    background:var(--card);display:flex;flex-direction:column;gap:.35rem;
+  }
+  .case .sign{font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.05rem}
+  .case .count{font-weight:650;font-size:1rem}
+  .case .desc{font-size:.9rem;color:var(--muted)}
+  .case.pos{border-top:4px solid var(--pos);background:var(--pos-bg)}
+  .case.pos .sign{color:var(--pos)}
+  .case.zero{border-top:4px solid var(--zero);background:var(--zero-bg)}
+  .case.zero .sign{color:var(--zero)}
+  .case.neg{border-top:4px solid var(--neg);background:var(--neg-bg)}
+  .case.neg .sign{color:var(--neg)}
+
+  /* Разбор */
+  .worked{
+    background:var(--card);border:1px solid var(--line);border-radius:12px;
+    padding:1.2rem 1.3rem;
+  }
+  .worked .task{
+    font-weight:700;font-size:1.02rem;
+    margin:0 0 1rem;padding-bottom:.8rem;border-bottom:1px solid var(--line);
+  }
+  ol.steps{margin:0;padding:0;list-style:none;counter-reset:s;display:flex;flex-direction:column;gap:.7rem}
+  ol.steps li{
+    position:relative;padding-left:2.1rem;counter-increment:s;
+  }
+  ol.steps li::before{
+    content:counter(s);position:absolute;left:0;top:.05rem;
+    width:1.5rem;height:1.5rem;border-radius:50%;
+    background:var(--accent-soft);color:var(--accent);
+    font-size:.82rem;font-weight:700;display:flex;align-items:center;justify-content:center;
+  }
+  ol.steps .m{font-family:ui-monospace,Menlo,monospace;font-weight:600;color:var(--ink)}
+  ol.steps .why{display:block;font-size:.88rem;color:var(--muted);font-style:italic}
+  .verdict{
+    margin-top:1rem;padding:.7rem 1rem;background:var(--pos-bg);
+    border-radius:9px;font-weight:600;color:var(--pos);font-size:.98rem;
+  }
+
+  /* Практика */
+  .drill{display:flex;flex-direction:column;gap:.7rem}
+  details{
+    background:var(--card);border:1px solid var(--line);border-radius:10px;
+    padding:.85rem 1.05rem;
+  }
+  details[open]{border-color:var(--accent)}
+  summary{
+    cursor:pointer;font-weight:600;list-style:none;
+    display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap;
+  }
+  summary::-webkit-details-marker{display:none}
+  summary:focus-visible{outline:3px solid var(--accent);outline-offset:3px;border-radius:6px}
+  summary .q{min-width:0;flex:1 1 14ch}
+  summary .tag{
+    font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);
+    border:1px solid var(--line);border-radius:20px;padding:.1rem .55rem;white-space:nowrap;
+  }
+  summary::after{
+    content:"показать ответ";font-size:.78rem;color:var(--accent);font-weight:600;white-space:nowrap;
+  }
+  details[open] summary::after{content:"скрыть"}
+  .ans{margin-top:.7rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.96rem;color:var(--muted)}
+  .ans .m{font-family:ui-monospace,Menlo,monospace;color:var(--ink);font-weight:600}
+
+  /* Ошибки */
+  ul.pitfalls{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:.6rem}
+  ul.pitfalls li{
+    padding-left:1.5rem;position:relative;font-size:.98rem;
+  }
+  ul.pitfalls li::before{
+    content:"×";position:absolute;left:0;top:-.05rem;color:var(--neg);font-weight:700;font-size:1.1rem;
+  }
+  ul.pitfalls b{color:var(--ink)}
+
+  .next{
+    background:var(--accent);color:#fff;border-radius:12px;padding:1.2rem 1.3rem;
+  }
+  .next h2{color:#fff}
+  .next .eq{
+    font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.05rem;
+    margin:.6rem 0 .3rem;
+  }
+  .next p{color:#dfe4fb;font-size:.96rem;margin:.4rem 0 0}
+  .foot{margin-top:2.4rem;font-size:.82rem;color:var(--muted);text-align:center}
+
+  /* Таблица долей */
+  .tblwrap{overflow-x:auto;margin-top:.8rem;border:1px solid var(--line);border-radius:12px;background:var(--card)}
+  table.shares{border-collapse:collapse;width:100%;min-width:420px;font-size:.94rem}
+  table.shares th,table.shares td{padding:.55rem .8rem;text-align:left;border-bottom:1px solid var(--line)}
+  table.shares th{font-size:.76rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:700}
+  table.shares tr:last-child td{border-bottom:none}
+  table.shares td.m{font-family:ui-monospace,Menlo,monospace;font-weight:600}
+
+  @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+<style>
+.oge-tip{display:flex;gap:.8rem;align-items:flex-start;background:#FFF8E7;border:1px solid #F0D98A;border-left:4px solid #E0A315;border-radius:10px;padding:.85rem 1.05rem;margin:1.5rem 0}
+.oge-tip .b{font-size:.72rem;font-weight:800;letter-spacing:.03em;color:#8A6A15;white-space:nowrap;text-transform:uppercase;padding-top:.15rem}
+.oge-tip .x{font-size:.95rem;line-height:1.5}
+</style>
+
+<!--LESSON-NAV-TOP--><style>.lnav{--lnav-accent:#3D5AF1}.lnav a{text-decoration:none;font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif}.lnav-top{max-width:820px;margin:0 auto;padding:.75rem clamp(1rem,4vw,1.5rem) .1rem}.lnav-top a{display:inline-flex;align-items:center;gap:.35rem;color:var(--lnav-accent);font-weight:600;font-size:.9rem}.lnav-top a:hover{text-decoration:underline}.lnav-bot{max-width:820px;margin:2.6rem auto 3rem;padding:1.1rem clamp(1rem,4vw,1.5rem) 0;border-top:1px solid #E4E8EF;display:flex;align-items:stretch;gap:.55rem}.lnav-bot a{min-width:0;display:flex;flex-direction:column;justify-content:center;gap:.15rem;border:1px solid #E4E8EF;border-radius:12px;padding:.65rem .85rem;color:#182233;background:#fff;transition:border-color .1s,transform .08s}.lnav-bot a:hover{border-color:var(--lnav-accent);transform:translateY(-1px)}.lnav-bot .prev,.lnav-bot .next{flex:1 1 0}.lnav-bot .next{text-align:right}.lnav-bot .dir{font-size:.72rem;color:#8A93A6;font-weight:600}.lnav-bot .ttl{font-size:.9rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.lnav-bot .to-cat{flex:0 0 auto;flex-direction:row;align-items:center;justify-content:center;color:var(--lnav-accent);font-weight:700;font-size:.85rem;white-space:nowrap}@media(max-width:420px){.lnav-bot .to-cat span{display:none}.lnav-bot .to-cat{padding:.65rem .7rem}}</style><nav class="lnav lnav-top"><a href="./catalog.html">← Все темы</a></nav><!--/LESSON-NAV-TOP-->
+<div class="wrap">
+
+  <header>
+    <p class="eyebrow">Геометрия · 9 класс</p>
+    <h1>Площадь сектора</h1>
+    <p class="lede">Кусок пиццы, долька циферблата, ломтик торта — это всё <em>сектор</em>. И его площадь считается до смешного просто: это доля круга по углу.</p>
+  </header>
+
+  <div class="hero-formula">
+    <p class="lbl">Площадь кругового сектора</p>
+    <div class="eq">S = <b>π</b>r<sup>2</sup> · <b>n</b>/360</div>
+    <p class="note">r — радиус круга, n — центральный угол сектора в градусах</p>
+  </div>
+
+  <section>
+    <p class="kicker">Зачем это нужно</p>
+    <h2>Куски круга встречаются везде</h2>
+    <p>Кусок пиццы, ломтик торта, «долька» циферблата часов, сектор круговой диаграммы, площадь под аркой моста, кусок поля, который поливает вращающаяся дождевальная установка — всё это куски круга. Чтобы посчитать, сколько краски уйдёт на закрашивание дольки или сколько ткани нужно на веер, надо уметь находить площадь сектора.</p>
+    <p><strong>Типичное заблуждение:</strong> «раз угол в два раза больше, то и площадь в два раза больше — значит, можно прикинуть на глаз». На самом деле площадь сектора действительно пропорциональна углу (при одном и том же радиусе), но считать это надо честно — через долю круга, а не на глазок. А вот с радиусом всё уже не так безобидно: увеличишь радиус вдвое — площадь вырастет вчетверо.</p>
+    <p>Второе заблуждение: что <strong>сектор</strong> и <strong>сегмент</strong> — это одно и то же. Нет, это разные фигуры, и ниже ты увидишь, чем именно они отличаются.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Что вспомнить с прошлого шага</p>
+    <div class="recall">
+      <p><strong>Площадь круга</strong> радиуса r: <span class="math">S = πr²</span>. Это наша опора — сектор мы будем считать как её долю.</p>
+      <p><strong>Длина дуги</strong> в n градусов: <span class="math">l = πr·n/180</span>. Пригодится, чтобы не путать две похожие формулы.</p>
+      <p><strong>Площадь треугольника через синус</strong>: <span class="math">S = ½·a·b·sin α</span> — площадь по двум сторонам и углу между ними.</p>
+      <p>И самое главное: во всей окружности <strong>360°</strong>.</p>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Вся суть темы</p>
+    <h2>Сектор — это просто доля круга</h2>
+    <p><strong>Круговой сектор</strong> — часть круга, ограниченная двумя радиусами и дугой между ними. Фигура — «кусок пиццы».</p>
+    <p>Если центральный угол сектора равен n градусов, то сектор занимает долю <span class="math">n/360</span> от полного круга — ведь во всём круге 360°. Значит, и площади он забирает ровно такую же долю:</p>
+    <p style="text-align:center"><span class="math" style="font-size:1.1rem">S(сектора) = (n/360) · S(круга) = πr²·n/360</span></p>
+    <p>Вот и весь фокус. Сначала считаешь площадь целого круга, потом берёшь от неё нужную долю. Никакой новой сложной формулы — только знакомая <span class="math">πr²</span> и дробь.</p>
+
+    <div class="cases">
+      <div class="case pos">
+        <div class="sign">Сектор</div>
+        <div class="count">Два радиуса + дуга</div>
+        <div class="desc">«Кусок пиццы» — с уголком в самом центре круга. <span class="math">S = πr²·n/360</span></div>
+      </div>
+      <div class="case zero">
+        <div class="sign">Сегмент</div>
+        <div class="count">Хорда + дуга</div>
+        <div class="desc">«Горбушка» — то, что отрезала хорда. <span class="math">S = сектор − треугольник</span></div>
+      </div>
+    </div>
+    <p style="font-size:.92rem;color:var(--muted);margin-top:.9rem">Проговаривай себе: <strong>сектор — как кусок пиццы (с уголком в центре), сегмент — как горбушка (срезана хордой).</strong> Сектор больше сегмента ровно на треугольник.</p>
+
+    <div class="oge-tip"><div class="b">🎯 В ОГЭ</div><div class="x"><b>Задание 17.</b> В первой части геометрии есть задачи на площади фигур — в том числе на круг и его части: «найдите площадь сектора круга радиуса R с центральным углом n°». Формула <span class="math">S = πr²n/360</span> закрывает такие задачи в одну строчку. Родственные задачи про окружность и её элементы встречаются и в задании 16.</div></div>
+  </section>
+
+  <section>
+    <p class="kicker">Формулы одним блоком</p>
+    <h2>Что нужно держать в голове</h2>
+    <div class="worked">
+      <ol class="steps">
+        <li><b>Площадь сектора:</b> <span class="m">S = πr²·n/360</span><span class="why">делим на 360, потому что во всём круге 360°</span></li>
+        <li><b>Та же площадь через дугу:</b> <span class="m">S = ½·l·r</span><span class="why">удобно, если длина дуги l уже известна</span></li>
+        <li><b>Площадь сегмента</b> (при n &lt; 180°): <span class="m">S = πr²·n/360 − ½·r²·sin n</span><span class="why">от сектора отрезали треугольник с двумя сторонами r и углом n между ними</span></li>
+        <li><b>Длина дуги</b> (не перепутай!): <span class="m">l = πr·n/180</span><span class="why">здесь 180 — это другая формула, про длину, а не про площадь</span></li>
+      </ol>
+    </div>
+    <p style="font-size:.94rem;color:var(--muted)">Обозначения: <span class="math">r</span> — радиус, <span class="math">n</span> — градусная мера центрального угла, <span class="math">π ≈ 3,14</span>, <span class="math">l</span> — длина дуги. Работает при <span class="math">r &gt; 0</span> и <span class="math">0° &lt; n &lt; 360°</span>. Ответ — в квадратных единицах: см², м².</p>
+    <p style="font-size:.94rem;color:var(--muted)">Про сегмент отдельно: при <span class="math">n &lt; 180°</span> площадь треугольника <strong>вычитаем</strong>, а при <span class="math">n &gt; 180°</span> (большой сегмент) — наоборот, <strong>прибавляем</strong> к площади сектора.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Разбираем вместе · думаю вслух</p>
+    <h2>Эталонный пример</h2>
+    <div class="worked">
+      <p class="task">Найти площадь сектора круга радиуса r = 6 см с центральным углом 60°.</p>
+      <ol class="steps">
+        <li>Сектор — это доля круга. Угол 60° из 360°, значит доля равна <span class="m">60/360 = 1/6</span>.<span class="why">Почему: во всём круге 360°, а наш кусок занимает 60° — то есть шестую часть.</span></li>
+        <li>Считаю площадь всего круга: <span class="m">S(круга) = πr² = π·6² = 36π см²</span>.<span class="why">Почему: это знакомая формула площади круга, радиус обязательно в квадрате.</span></li>
+        <li>Беру от неё долю: <span class="m">S(сектора) = (1/6)·36π = 6π см²</span>.<span class="why">Почему: сектор — это ровно 1/6 круга, значит и площади у него 1/6.</span></li>
+        <li>Перевожу в десятичные, если нужно: <span class="m">6π ≈ 6·3,14 = 18,84 см²</span>.<span class="why">Почему: в ответе часто просят число, а не «через π» — смотри на условие.</span></li>
+      </ol>
+      <div class="verdict">Ответ: 6π ≈ 18,84 см².</div>
+    </div>
+    <p style="font-size:.94rem;color:var(--muted);margin-top:1rem">Заметь: я ни разу не подставлял всё сразу в длинную формулу. Два коротких шага — «доля» и «площадь круга» — и ответ готов. Если подставлять в <span class="math">S = πr²n/360</span> напрямую, получится то же самое: <span class="math">π·36·60/360 = 6π</span>.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Ещё два примера</p>
+    <h2>Один — с пропуском, один — на сегмент</h2>
+
+    <div class="drill">
+      <details>
+        <summary><span class="q">Допиши шаг: сектор радиуса 10 см с углом 90°</span><span class="tag">применение</span></summary>
+        <div class="ans">
+          Шаг 1. Доля сектора: <span class="m">90/360 = 1/4</span>.<br>
+          Шаг 2. Площадь круга: <span class="m">S = π·10² = 100π см²</span>.<br>
+          Шаг 3. Возьми 1/4 от площади круга: <span class="m">S(сектора) = (1/4)·100π = 25π ≈ 78,5 см²</span>.
+        </div>
+      </details>
+      <details>
+        <summary><span class="q">Сегмент: r = 4 см, центральный угол 90°</span><span class="tag">применение</span></summary>
+        <div class="ans">
+          Подсказка была: сначала сектор, потом треугольник, потом вычесть.<br>
+          <span class="m">S(сектора) = (1/4)·π·16 = 4π ≈ 12,56 см²</span><br>
+          Треугольник тут прямоугольный с катетами r и r: <span class="m">S(треуг.) = ½·4·4 = 8 см²</span><br>
+          <span class="m">S(сегмента) = 4π − 8 ≈ 4,56 см²</span>
+        </div>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Покрути сам · интерактив</p>
+    <h2>Угол → доля → площадь</h2>
+    <p>Радиус здесь всё время один и тот же: <span class="math">r = 6</span>. Двигай ползунок угла и смотри сразу на три вещи: как растёт закрашенный кусок, какую долю круга он занимает и чему равна площадь.</p>
+    <div class="sec-sim">
+      <canvas id="secCanvas" width="640" height="420" aria-label="Круг с закрашенным сектором"></canvas>
+      <div id="secVerdict" class="sec-verdict">S = 6π ≈ 18,84</div>
+      <div class="sliders">
+        <label for="secAngle">Угол n <span id="secVal" class="sval">60°</span>
+          <input id="secAngle" type="range" min="5" max="355" step="5" value="60">
+        </label>
+      </div>
+      <label class="chk"><input id="secChord" type="checkbox"> показать хорду и сегмент</label>
+      <p id="secLine" class="sec-eq">S = π·6²·60/360 = 6π</p>
+    </div>
+    <p style="font-size:.9rem;color:var(--muted)">Поймай угол 180° — сектор станет ровно половиной круга, а площадь — половиной от <span class="math">36π</span>, то есть <span class="math">18π</span>. Включи галочку и увидишь главное: <strong>сектор больше сегмента ровно на треугольник</strong>, который лежит между хордой и двумя радиусами.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Несколько представлений одного и того же</p>
+    <h2>Угол, дробь и картинка — это одно</h2>
+    <p>Полезно уметь переводить угол в дробь мгновенно, не считая в столбик:</p>
+    <div class="tblwrap">
+      <table class="shares">
+        <thead><tr><th>Угол n</th><th>Доля n/360</th><th>Это на картинке</th><th>Площадь при r = 6</th></tr></thead>
+        <tbody>
+          <tr><td class="m">36°</td><td class="m">1/10</td><td>тонкая долька</td><td class="m">3,6π</td></tr>
+          <tr><td class="m">60°</td><td class="m">1/6</td><td>шестая часть круга</td><td class="m">6π</td></tr>
+          <tr><td class="m">90°</td><td class="m">1/4</td><td>четверть круга</td><td class="m">9π</td></tr>
+          <tr><td class="m">120°</td><td class="m">1/3</td><td>треть круга</td><td class="m">12π</td></tr>
+          <tr><td class="m">180°</td><td class="m">1/2</td><td>полкруга</td><td class="m">18π</td></tr>
+          <tr><td class="m">360°</td><td class="m">1</td><td>весь круг</td><td class="m">36π</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p style="font-size:.94rem;color:var(--muted)">Проверь себя по последней строке: при 360° формула даёт <span class="math">πr²·360/360 = πr²</span> — просто площадь круга. Формула сама себя не подводит.</p>
+    <p><strong>Предскажи → проверь → объясни.</strong> У двух секторов один и тот же угол 60°, но у одного радиус 3, а у другого 6. Во сколько раз отличаются площади? Сначала скажи ответ вслух, и только потом раскрывай.</p>
+    <div class="drill">
+      <details>
+        <summary><span class="q">Проверь свой ответ</span><span class="tag">анализ</span></summary>
+        <div class="ans">Многие говорят «в 2 раза» — и ошибаются. Считаем: <span class="m">(1/6)·π·3² = 1,5π</span> и <span class="m">(1/6)·π·6² = 6π</span>. Отличаются <strong>в 4 раза</strong>, потому что радиус входит в формулу <strong>в квадрате</strong>.</div>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Теперь ты · нажми, чтобы проверить</p>
+    <h2>Практика по нарастанию</h2>
+    <div class="drill">
+      <details>
+        <summary><span class="q">Какую долю круга составляет сектор с углом 120°?</span><span class="tag">понимание</span></summary>
+        <div class="ans"><span class="m">120/360 = 1/3</span> — треть круга.</div>
+      </details>
+      <details>
+        <summary><span class="q">Покажи на чертеже, где сектор, а где сегмент</span><span class="tag">понимание</span></summary>
+        <div class="ans">Сектор ограничен <strong>двумя радиусами и дугой</strong> — у него есть уголок в центре круга. Сегмент ограничен <strong>хордой и дугой</strong> — центра круга он не касается. Между ними — треугольник на тех же двух радиусах.</div>
+      </details>
+      <details>
+        <summary><span class="q">Найди площадь сектора радиуса 9 см с углом 40°</span><span class="tag">применение</span></summary>
+        <div class="ans">Доля: <span class="m">40/360 = 1/9</span>. Круг: <span class="m">π·81 = 81π</span>. Сектор: <span class="m">(1/9)·81π = 9π ≈ 28,26 см²</span>.</div>
+      </details>
+      <details>
+        <summary><span class="q">Что изменится с площадью сектора, если радиус увеличить в 2 раза, а угол оставить тем же?</span><span class="tag">анализ</span></summary>
+        <div class="ans">Площадь вырастет <strong>в 4 раза</strong>: радиус стоит в квадрате, а <span class="m">(2r)² = 4r²</span>. Угол на это никак не влияет — доля <span class="m">n/360</span> осталась прежней.</div>
+      </details>
+      <details>
+        <summary><span class="q">Найди ошибку: ученик написал S(сектора) = πr²·n/180</span><span class="tag">анализ</span></summary>
+        <div class="ans">Делить надо <strong>на 360, а не на 180</strong>. На 180 делят в формуле длины дуги <span class="m">l = πr·n/180</span> — ученик склеил две разные формулы. Проверка на здравый смысл: при <span class="m">n = 360°</span> его формула даёт <span class="m">2πr²</span> — два круга вместо одного, чего быть не может.</div>
+      </details>
+      <details>
+        <summary><span class="q">Обратная задача: площадь сектора 3π см², радиус 6 см. Найди угол</span><span class="tag">анализ</span></summary>
+        <div class="ans">Подставляем в формулу: <span class="m">3π = π·36·n/360</span>. Справа <span class="m">π·36/360 = π/10</span>, значит <span class="m">3π = π·n/10</span>, отсюда <span class="m">n = 30°</span>.</div>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Тренажёр · бесконечная практика</p>
+    <h2>Реши сам</h2>
+    <p>Нажми «Новая задача». Ответ на площадь можно писать <b>и через π</b> («6π» или просто «6»), <b>и десятичным числом</b> («18,84»). Угол пиши числом градусов. Потом проверь себя или посмотри пошаговое решение.</p>
+    <div class="trainer">
+      <div class="tr-eq" id="trEq">Радиус r = 6 см, центральный угол 60°. Найди площадь сектора.</div>
+      <div class="tr-ctl">
+        <button id="trNew" type="button">🎲 Новая задача</button>
+        <input id="trAns" type="text" inputmode="text" placeholder="напр.  6π   или   18,84" aria-label="Ответ">
+        <button id="trCheck" type="button" class="sec">Проверить</button>
+        <button id="trShow" type="button" class="ghost">Показать решение</button>
+      </div>
+      <div id="trResult" class="tr-result"></div>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Где чаще всего ошибаются</p>
+    <h2>Пять ловушек</h2>
+    <ul class="pitfalls">
+      <li><b>Делят на 180 вместо 360.</b> Путают длину дуги <span class="math">l = πrn/180</span> и площадь сектора <span class="math">S = πr²n/360</span>. Как не допустить: помни — площадь «про круг», а в круге 360°, поэтому делим на 360. У дуги 180 — потому что там длина окружности <span class="math">2πr</span>.</li>
+      <li><b>При вычислении сегмента не вычитают площадь треугольника.</b> Считают только сектор и записывают его как ответ. Как не допустить: всегда рисуй хорду и держи в голове — <strong>сегмент = сектор − треугольник</strong> (при n &lt; 180°).</li>
+      <li><b>Путают сектор и сегмент.</b> Сектор ограничен двумя радиусами и дугой, сегмент — хордой и дугой. Как не допустить: проговаривай «сектор — кусок пиццы, сегмент — горбушка».</li>
+      <li><b>Забывают возвести радиус в квадрат.</b> В формуле именно <span class="math">πr²</span>, а не <span class="math">πr</span>. Как не допустить: это площадь — значит r обязательно в квадрате.</li>
+      <li><b>Подставляют диаметр вместо радиуса.</b> Как не допустить: перечитай условие и проверь, что в формулу идёт именно r — половина диаметра.</li>
+    </ul>
+  </section>
+
+  <section>
+    <p class="kicker">Проверка понимания</p>
+    <h2>Ответь своими словами</h2>
+    <div class="drill">
+      <details>
+        <summary><span class="q">На что делят при вычислении площади сектора — на 180 или на 360?</span><span class="tag">проверка</span></summary>
+        <div class="ans">На <strong>360</strong>. Потому что сектор — доля круга, а в целом круге 360°.</div>
+      </details>
+      <details>
+        <summary><span class="q">Чем сегмент отличается от сектора и как найти его площадь?</span><span class="tag">проверка</span></summary>
+        <div class="ans">Сегмент отсечён <strong>хордой</strong>, а сектор — двумя радиусами. <span class="m">S(сегмента) = S(сектора) − S(треугольника)</span> при угле меньше 180°.</div>
+      </details>
+      <details>
+        <summary><span class="q">Сектор занимает 1/3 круга. Какой у него центральный угол?</span><span class="tag">проверка</span></summary>
+        <div class="ans"><span class="m">360 : 3 = 120°</span>.</div>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <div class="next">
+      <h2>Что дальше</h2>
+      <p>Дальше эта тема не разветвляется — она собирает в себе всё, что ты уже знаешь про круг. Держи связку в голове:</p>
+      <div class="eq">площадь круга → сектор (доля по углу) → сегмент (сектор − треугольник)</div>
+      <p>Опоры у тебя уже есть: <strong>площадь круга</strong>, <strong>длина дуги</strong> и <strong>площадь треугольника через синус</strong>. Дальше это только тренируется на задачах: сначала чистый сектор, потом комбинированные фигуры, где надо сложить или вычесть несколько кусков круга.</p>
+    </div>
+  </section>
+
+  <p class="foot">Итог одним предложением: площадь сектора — это доля круга по углу <span class="math">S = πr²n/360</span>, а площадь сегмента — площадь сектора за вычетом площади треугольника на тех же радиусах.</p>
+
+</div>
+
+<style>
+  .sec-sim{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.1rem 1.1rem 1rem;margin:1rem 0}
+  .sec-sim canvas{width:100%;height:auto;display:block;border-radius:10px;background:#FCFDFF}
+  .sec-verdict{text-align:center;font-weight:700;font-size:1.05rem;margin:.8rem 0 0;padding:.5rem;border-radius:9px;font-family:ui-monospace,Menlo,monospace;background:var(--pos-bg);color:var(--pos)}
+  .sec-sim .sliders{display:grid;gap:.6rem;margin-top:.9rem}
+  .sec-sim .sliders label{display:flex;align-items:center;gap:.5rem;font-weight:700;font-family:ui-monospace,Menlo,monospace;font-size:.95rem}
+  .sec-sim .sliders input[type=range]{flex:1;accent-color:var(--accent);min-width:120px}
+  .sec-sim .sliders input[type=range]:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+  .sec-sim .sval{min-width:4.5ch;text-align:right;color:var(--accent);font-variant-numeric:tabular-nums}
+  .sec-sim .chk{display:flex;align-items:center;gap:.5rem;margin-top:.8rem;font-size:.92rem;color:var(--muted);cursor:pointer}
+  .sec-sim .chk input{accent-color:var(--zero);width:1.05rem;height:1.05rem}
+  .sec-sim .chk input:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+  .sec-eq{text-align:center;font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:clamp(.85rem,3.4vw,1.05rem);margin:.9rem 0 0;color:var(--ink);word-break:break-word;white-space:pre-line}
+</style>
+
+<script>
+(function(){
+  var canvas=document.getElementById('secCanvas'); if(!canvas) return;
+  var ctx=canvas.getContext('2d');
+  var slider=document.getElementById('secAngle');
+  var val=document.getElementById('secVal');
+  var verdict=document.getElementById('secVerdict');
+  var line=document.getElementById('secLine');
+  var chord=document.getElementById('secChord');
+  var W=640,H=420,dpr=1;
+  var R_MATH=6;
+
+  function dec(x){ return (Math.round(x*100)/100).toString().replace('.',','); }
+  function piStr(k){
+    k=Math.round(k*1000)/1000;
+    if(k===1) return 'π';
+    return dec(k)+'π';
+  }
+  function gcd(a,b){ while(b){ var t=a%b; a=b; b=t; } return a; }
+
+  function resize(){
+    var cssW=canvas.clientWidth||640;
+    dpr=Math.min(window.devicePixelRatio||1,2);
+    W=cssW; H=Math.round(cssW*0.66);
+    canvas.width=Math.round(W*dpr); canvas.height=Math.round(H*dpr);
+    canvas.style.height=H+'px';
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+  }
+
+  function draw(){
+    var n=parseInt(slider.value,10);
+    if(!isFinite(n)) n=60;
+    val.textContent=n+'°';
+
+    var cx=W/2, cy=H/2+6;
+    var rad=Math.min(W,H)/2-38;
+    if(rad<20) rad=20;
+    var a0=-Math.PI/2;                 // старт сверху
+    var a1=a0+n*Math.PI/180;
+
+    ctx.clearRect(0,0,W,H);
+
+    // круг целиком
+    ctx.beginPath(); ctx.arc(cx,cy,rad,0,Math.PI*2);
+    ctx.fillStyle='#F2F4F8'; ctx.fill();
+    ctx.strokeStyle='#9AA3B2'; ctx.lineWidth=1.5; ctx.stroke();
+
+    // сектор
+    ctx.beginPath(); ctx.moveTo(cx,cy);
+    ctx.arc(cx,cy,rad,a0,a1);
+    ctx.closePath();
+    ctx.fillStyle='rgba(30,142,90,.28)'; ctx.fill();
+    ctx.strokeStyle='#1E8E5A'; ctx.lineWidth=2.5; ctx.stroke();
+
+    if(chord.checked){
+      // сегмент = сектор минус треугольник: закрашиваем сегмент отдельно
+      ctx.beginPath();
+      ctx.arc(cx,cy,rad,a0,a1);
+      ctx.closePath();
+      ctx.fillStyle='rgba(185,121,26,.45)'; ctx.fill();
+      ctx.strokeStyle='#B9791A'; ctx.lineWidth=2.5;
+      ctx.beginPath();
+      ctx.moveTo(cx+rad*Math.cos(a0),cy+rad*Math.sin(a0));
+      ctx.lineTo(cx+rad*Math.cos(a1),cy+rad*Math.sin(a1));
+      ctx.stroke();
+    }
+
+    // радиусы
+    ctx.strokeStyle='#1B2333'; ctx.lineWidth=2;
+    ctx.beginPath(); ctx.moveTo(cx,cy); ctx.lineTo(cx+rad*Math.cos(a0),cy+rad*Math.sin(a0)); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(cx,cy); ctx.lineTo(cx+rad*Math.cos(a1),cy+rad*Math.sin(a1)); ctx.stroke();
+
+    // центр
+    ctx.fillStyle='#1B2333'; ctx.beginPath(); ctx.arc(cx,cy,3.5,0,Math.PI*2); ctx.fill();
+
+    // подпись радиуса
+    ctx.fillStyle='#5A6478';
+    ctx.font='600 13px ui-monospace,Menlo,monospace';
+    ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.fillText('r = 6', cx, cy+16);
+
+    // подпись угла
+    ctx.textAlign='center'; ctx.textBaseline='top';
+    ctx.fillStyle='#1E8E5A';
+    ctx.font='700 14px ui-monospace,Menlo,monospace';
+    ctx.fillText(n+'°  ·  '+n+'/360 круга', cx, 8);
+
+    // числа
+    var k=R_MATH*R_MATH*n/360;         // коэффициент при π
+    var area=k*Math.PI;
+    verdict.textContent='S = '+piStr(k)+' ≈ '+dec(area);
+
+    var g=gcd(n,360);
+    var frac=(n/g)+'/'+(360/g);
+    var txt='S = π·6²·'+n+'/360 = '+piStr(k)+'   (доля '+frac+')';
+    if(chord.checked){
+      var tri=0.5*R_MATH*R_MATH*Math.sin(n*Math.PI/180);
+      var seg=area-tri;
+      txt+='\nсегмент = '+dec(area)+' − '+dec(tri)+' = '+dec(seg);
+    }
+    line.textContent=txt;
+  }
+
+  slider.addEventListener('input',draw);
+  chord.addEventListener('change',draw);
+  window.addEventListener('resize',function(){ resize(); draw(); });
+  resize(); draw();
+})();
+</script>
+
+<style>
+  .trainer{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.2rem 1.3rem;margin-top:1rem}
+  .tr-eq{font-weight:700;font-size:clamp(1rem,4vw,1.2rem);text-align:center;padding:1rem;background:var(--accent-soft);border-radius:10px;color:var(--ink);line-height:1.5}
+  .tr-ctl{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.9rem;align-items:center}
+  .tr-ctl button{font:inherit;font-weight:700;font-size:.9rem;cursor:pointer;border:none;border-radius:9px;padding:.55rem .95rem;color:#fff;background:var(--accent)}
+  .tr-ctl button.sec{background:var(--pos)}
+  .tr-ctl button.ghost{background:transparent;color:var(--accent);border:1px solid var(--accent)}
+  .tr-ctl input{flex:1;min-width:150px;font:inherit;padding:.5rem .7rem;border:1px solid var(--line);border-radius:9px;background:#fff;color:var(--ink)}
+  .tr-ctl button:focus-visible,.tr-ctl input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+  .tr-result{margin-top:.9rem;font-size:.96rem;min-height:1.2rem}
+  .tr-result .ok{color:var(--pos);font-weight:700}
+  .tr-result .bad{color:var(--neg);font-weight:700}
+  .tr-result .sol{margin-top:.7rem;padding:.85rem 1rem;background:#FCFBFE;border:1px solid var(--line);border-radius:10px;font-family:ui-monospace,Menlo,monospace;font-size:.9rem;line-height:1.8;overflow-x:auto}
+  .tr-result .sol b{color:var(--accent)}
+</style>
+
+<script>
+(function(){
+  var eqEl=document.getElementById('trEq'), ansEl=document.getElementById('trAns'), resEl=document.getElementById('trResult');
+  if(!eqEl) return;
+
+  var RS=[3,4,6,8,9,10,12];
+  var NS=[30,36,40,45,60,72,90,120,135,150,180,225,240,270,300,315];
+
+  // стартовая задача совпадает с тем, что показано в .tr-eq
+  var cur={type:'area', r:6, n:60, k:6};
+
+  function ri(min,max){ return Math.floor(Math.random()*(max-min+1))+min; }
+  function gcd(a,b){ while(b){ var t=a%b; a=b; b=t; } return a; }
+  function dec(x){
+    var n=Math.round(x*100)/100;
+    if(n===0) n=0;
+    return (n<0?'−':'')+String(Math.abs(n)).replace('.',',');
+  }
+  function piStr(k){ return (k===1?'':k)+'π'; }
+
+  function pick(){
+    var r,n,k,tries=0;
+    do{
+      r=RS[ri(0,RS.length-1)];
+      n=NS[ri(0,NS.length-1)];
+      k=r*r*n/360;
+      tries++;
+    } while((Math.abs(k-Math.round(k))>1e-9 || k>90) && tries<400);
+    if(Math.abs(k-Math.round(k))>1e-9 || k>90){ r=6; n=60; k=6; }
+    return {r:r, n:n, k:Math.round(k)};
+  }
+
+  function questionText(q){
+    if(q.type==='angle'){
+      return 'Радиус r = '+q.r+' см, площадь сектора '+piStr(q.k)+' см². Найди центральный угол.';
+    }
+    return 'Радиус r = '+q.r+' см, центральный угол '+q.n+'°. Найди площадь сектора.';
+  }
+
+  function generate(){
+    var p=pick();
+    var t=(Math.random()<0.6)?'area':'angle';
+    cur={type:t, r:p.r, n:p.n, k:p.k};
+    eqEl.textContent=questionText(cur);
+    resEl.innerHTML='';
+    ansEl.value='';
+    ansEl.focus();
+  }
+
+  function solutionHTML(){
+    var q=cur, h='<div class="sol">';
+    var g=gcd(q.n,360), num=q.n/g, den=360/g;
+    if(q.type==='area'){
+      h+='Доля круга: '+q.n+'/360 = <b>'+num+'/'+den+'</b><br>';
+      h+='Площадь круга: πr² = π·'+q.r+'² = '+(q.r*q.r)+'π см²<br>';
+      h+='Сектор: S = πr²·n/360 = π·'+(q.r*q.r)+'·'+q.n+'/360 = <b>'+piStr(q.k)+'</b> см²<br>';
+      h+='В десятичных: '+piStr(q.k)+' ≈ <b>'+dec(q.k*Math.PI)+'</b> см²';
+    }else{
+      h+='Формула: S = πr²·n/360, отсюда n = 360·S / (πr²)<br>';
+      h+='Площадь круга: πr² = π·'+q.r+'² = '+(q.r*q.r)+'π см²<br>';
+      h+='Доля круга: S / πr² = '+piStr(q.k)+' / '+(q.r*q.r)+'π = <b>'+num+'/'+den+'</b><br>';
+      h+='Угол: n = 360 · '+num+'/'+den+' = <b>'+q.n+'°</b>';
+    }
+    return h+'</div>';
+  }
+
+  function parseNum(s){
+    s=s.replace(/,/g,'.');
+    var m=s.match(/-?\d+(\.\d+)?/);
+    return m?parseFloat(m[0]):NaN;
+  }
+
+  function check(){
+    var raw=ansEl.value.trim().toLowerCase().replace(/−/g,'-').replace(/\s+/g,'');
+    if(!raw){ resEl.innerHTML='<span class="bad">Введи ответ или нажми «Показать решение».</span>'; return; }
+
+    var ok=false;
+    if(cur.type==='angle'){
+      var got=parseNum(raw);
+      if(isNaN(got)){ resEl.innerHTML='<span class="bad">Не понял запись. Введи число градусов, напр. «60».</span>'; return; }
+      ok=Math.abs(got-cur.n)<0.5;
+    }else{
+      var hasPi=/π|pi|п/.test(raw);
+      var body=raw.replace(/π|pi|п/g,'');
+      var v;
+      if(body===''||body==='+') v=1;
+      else v=parseNum(body);
+      if(isNaN(v)){ resEl.innerHTML='<span class="bad">Не понял запись. Введи ответ через π (напр. «6π») или числом (напр. «18,84»).</span>'; return; }
+      var exact=cur.k, approx=cur.k*Math.PI;
+      var tol1=Math.max(0.01, Math.abs(exact)*0.005);
+      var tol2=Math.max(0.02, Math.abs(approx)*0.005);
+      if(hasPi) ok=Math.abs(v-exact)<tol1;
+      else ok=(Math.abs(v-exact)<tol1)||(Math.abs(v-approx)<tol2);
+    }
+
+    if(ok){ resEl.innerHTML='<span class="ok">✓ Верно! Отлично.</span>'+solutionHTML(); }
+    else{
+      var hint=(cur.type==='area')?' Подсказка: сначала доля n/360, потом умножь её на πr².':' Подсказка: раздели площадь сектора на площадь круга — получишь долю n/360.';
+      resEl.innerHTML='<span class="bad">✗ Пока не то.'+hint+'</span>'+solutionHTML();
+    }
+  }
+
+  document.getElementById('trNew').addEventListener('click',generate);
+  document.getElementById('trCheck').addEventListener('click',check);
+  document.getElementById('trShow').addEventListener('click',function(){ resEl.innerHTML=solutionHTML(); });
+  ansEl.addEventListener('keydown',function(e){ if(e.key==='Enter') check(); });
+})();
+</script>
+<!--LESSON-NAV-BOT--><nav class="lnav lnav-bot"><a class="prev" href="./geo9-ploschad-kruga.html"><span class="dir">← Предыдущая</span><span class="ttl">Площадь круга</span></a><a class="to-cat" href="./catalog.html">📚 <span>Все темы</span></a><span class="next"></span></nav><!--/LESSON-NAV-BOT-->

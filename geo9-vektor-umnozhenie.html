@@ -1,0 +1,721 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Умножение вектора на число — урок, геометрия 9 класс</title>
+<style>
+  @font-face{font-family:PllFix;src:local("STIXGeneral"),local("Cambria Math"),local("Segoe UI Symbol"),local("Arial Unicode MS"),local("DejaVu Sans");unicode-range:U+2225}
+  :root{
+    --paper:#F6F7F9;
+    --card:#FFFFFF;
+    --ink:#1B2333;
+    --muted:#5A6478;
+    --line:#E2E5EC;
+    --accent:#3B4FD0;
+    --accent-soft:#EAEDFB;
+    --pos:#1E8E5A;   /* k > 0 — сонаправлен */
+    --pos-bg:#E7F4EC;
+    --zero:#B9791A;  /* k = 0 — нулевой вектор */
+    --zero-bg:#FBF1DC;
+    --neg:#C0455B;   /* k < 0 — разворот */
+    --neg-bg:#F9E9EC;
+  }
+  *{box-sizing:border-box}
+  body{margin:0}
+  .wrap{
+    max-width:760px;
+    margin:0 auto;
+    padding:clamp(1.4rem,4vw,3rem) clamp(1.1rem,4vw,2rem) 4rem;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:PllFix,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    font-size:17px;
+    line-height:1.62;
+    -webkit-font-smoothing:antialiased;
+  }
+  .eyebrow{
+    font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--accent);font-weight:600;margin:0 0 .5rem;
+  }
+  h1{
+    font-family:PllFix,Georgia,"Times New Roman",serif;
+    font-size:clamp(2rem,6.6vw,2.9rem);
+    line-height:1.06;margin:0;font-weight:700;letter-spacing:-.01em;
+    text-wrap:balance;
+  }
+  .lede{
+    font-size:1.08rem;color:var(--muted);margin:.7rem 0 0;max-width:60ch;
+    text-wrap:pretty;
+  }
+  h2{
+    font-family:PllFix,Georgia,serif;font-size:1.32rem;font-weight:700;
+    margin:0 0 .1rem;letter-spacing:-.005em;
+  }
+  section{margin-top:2.6rem}
+  .kicker{
+    font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--muted);font-weight:600;margin:0 0 .8rem;
+    display:flex;align-items:center;gap:.6rem;
+  }
+  .kicker::before{
+    content:"";width:1.4rem;height:2px;background:var(--accent);border-radius:2px;
+  }
+  p{margin:.65rem 0}
+  strong{font-weight:650}
+  .math{font-family:PllFix,ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-weight:600}
+  sup{font-size:.72em}
+
+  /* Главная формула */
+  .hero-formula{
+    margin-top:2.2rem;
+    background:var(--ink);color:#fff;border-radius:14px;
+    padding:1.6rem 1.4rem;text-align:center;
+  }
+  .hero-formula .lbl{
+    font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;
+    color:#9aa6c9;margin:0 0 .7rem;
+  }
+  .hero-formula .eq{
+    font-family:PllFix,ui-monospace,"SF Mono",Menlo,monospace;
+    font-size:clamp(1.4rem,5.2vw,2.1rem);font-weight:700;letter-spacing:.01em;
+  }
+  .hero-formula .eq b{color:#8ea0ff;font-weight:700}
+  .hero-formula .note{font-size:.86rem;color:#9aa6c9;margin:.8rem 0 0}
+
+  /* Пререквизит */
+  .recall{
+    background:var(--accent-soft);border-radius:12px;padding:1rem 1.15rem;
+    font-size:.96rem;
+  }
+  .recall p{margin:.3rem 0}
+
+  /* Три случая */
+  .cases{display:grid;gap:.85rem;margin-top:.4rem}
+  @media(min-width:620px){.cases{grid-template-columns:repeat(3,1fr)}}
+  .case{
+    border-radius:12px;padding:1.05rem 1.1rem;border:1px solid var(--line);
+    background:var(--card);display:flex;flex-direction:column;gap:.35rem;
+  }
+  .case .sign{font-family:PllFix,ui-monospace,Menlo,monospace;font-weight:700;font-size:1.15rem}
+  .case .count{font-weight:650;font-size:1rem}
+  .case .desc{font-size:.9rem;color:var(--muted)}
+  .case.pos{border-top:4px solid var(--pos);background:var(--pos-bg)}
+  .case.pos .sign{color:var(--pos)}
+  .case.zero{border-top:4px solid var(--zero);background:var(--zero-bg)}
+  .case.zero .sign{color:var(--zero)}
+  .case.neg{border-top:4px solid var(--neg);background:var(--neg-bg)}
+  .case.neg .sign{color:var(--neg)}
+
+  /* Разбор */
+  .worked{
+    background:var(--card);border:1px solid var(--line);border-radius:12px;
+    padding:1.2rem 1.3rem;
+  }
+  .worked .task{
+    font-family:PllFix,ui-monospace,Menlo,monospace;font-weight:700;font-size:1.02rem;
+    margin:0 0 1rem;padding-bottom:.8rem;border-bottom:1px solid var(--line);
+  }
+  ol.steps{margin:0;padding:0;list-style:none;counter-reset:s;display:flex;flex-direction:column;gap:.7rem}
+  ol.steps li{position:relative;padding-left:2.1rem;counter-increment:s}
+  ol.steps li::before{
+    content:counter(s);position:absolute;left:0;top:.05rem;
+    width:1.5rem;height:1.5rem;border-radius:50%;
+    background:var(--accent-soft);color:var(--accent);
+    font-size:.82rem;font-weight:700;display:flex;align-items:center;justify-content:center;
+  }
+  ol.steps .m{font-family:PllFix,ui-monospace,Menlo,monospace;font-weight:600;color:var(--ink)}
+  ol.steps .why{display:block;font-size:.88rem;color:var(--muted);margin-top:.15rem}
+  .verdict{
+    margin-top:1rem;padding:.7rem 1rem;background:var(--pos-bg);
+    border-radius:9px;font-weight:600;color:var(--pos);font-size:.98rem;
+  }
+
+  /* Свойства */
+  .props{display:flex;flex-direction:column;gap:.55rem;margin-top:.6rem}
+  .prop{
+    background:var(--card);border:1px solid var(--line);border-radius:10px;
+    padding:.7rem .95rem;display:flex;gap:.8rem;align-items:baseline;flex-wrap:wrap;
+  }
+  .prop .pe{font-family:PllFix,ui-monospace,Menlo,monospace;font-weight:700;font-size:1rem}
+  .prop .pn{font-size:.88rem;color:var(--muted)}
+
+  /* Таблица */
+  .tbl-wrap{overflow-x:auto;margin-top:.8rem;border:1px solid var(--line);border-radius:12px;background:var(--card)}
+  table{border-collapse:collapse;width:100%;min-width:420px;font-size:.94rem}
+  th,td{padding:.6rem .8rem;text-align:left;border-bottom:1px solid var(--line)}
+  th{font-size:.74rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:700}
+  tr:last-child td{border-bottom:none}
+  td.m{font-family:PllFix,ui-monospace,Menlo,monospace;font-weight:700}
+
+  /* Практика */
+  .drill{display:flex;flex-direction:column;gap:.7rem}
+  details{
+    background:var(--card);border:1px solid var(--line);border-radius:10px;
+    padding:.85rem 1.05rem;
+  }
+  details[open]{border-color:var(--accent)}
+  summary{
+    cursor:pointer;font-weight:600;list-style:none;
+    display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap;
+  }
+  summary:focus-visible{outline:3px solid var(--accent);outline-offset:3px;border-radius:6px}
+  summary::-webkit-details-marker{display:none}
+  summary .q{font-family:PllFix,ui-monospace,Menlo,monospace;min-width:0}
+  summary .tag{
+    font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);
+    border:1px solid var(--line);border-radius:20px;padding:.1rem .55rem;white-space:nowrap;
+  }
+  summary::after{
+    content:"показать ответ";font-size:.78rem;color:var(--accent);font-weight:600;white-space:nowrap;
+  }
+  details[open] summary::after{content:"скрыть"}
+  .ans{margin-top:.7rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.96rem;color:var(--muted)}
+  .ans .m{font-family:PllFix,ui-monospace,Menlo,monospace;color:var(--ink);font-weight:600}
+
+  /* Ошибки */
+  ul.pitfalls{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:.6rem}
+  ul.pitfalls li{padding-left:1.5rem;position:relative;font-size:.98rem}
+  ul.pitfalls li::before{
+    content:"×";position:absolute;left:0;top:-.05rem;color:var(--neg);font-weight:700;font-size:1.1rem;
+  }
+  ul.pitfalls b{color:var(--ink)}
+
+  /* Проверка понимания */
+  ol.check{margin:.4rem 0 0;padding-left:1.3rem}
+  ol.check li{margin:.45rem 0}
+
+  .next{background:var(--accent);color:#fff;border-radius:12px;padding:1.2rem 1.3rem}
+  .next h2{color:#fff}
+  .next .eq{
+    font-family:PllFix,ui-monospace,Menlo,monospace;font-weight:700;font-size:1.1rem;
+    margin:.6rem 0 .3rem;
+  }
+  .next p{color:#dfe4fb;font-size:.96rem;margin:.4rem 0 0}
+  .next b{color:#fff}
+  .foot{margin-top:2.4rem;font-size:.82rem;color:var(--muted);text-align:center}
+
+  @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+<style>
+.oge-tip{display:flex;gap:.8rem;align-items:flex-start;background:#FFF8E7;border:1px solid #F0D98A;border-left:4px solid #E0A315;border-radius:10px;padding:.85rem 1.05rem;margin:1.5rem 0}
+.oge-tip .b{font-size:.72rem;font-weight:800;letter-spacing:.03em;color:#8A6A15;white-space:nowrap;text-transform:uppercase;padding-top:.15rem}
+.oge-tip .x{font-size:.95rem;line-height:1.5}
+</style>
+
+<!--LESSON-NAV-TOP--><style>.lnav{--lnav-accent:#3D5AF1}.lnav a{text-decoration:none;font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif}.lnav-top{max-width:820px;margin:0 auto;padding:.75rem clamp(1rem,4vw,1.5rem) .1rem}.lnav-top a{display:inline-flex;align-items:center;gap:.35rem;color:var(--lnav-accent);font-weight:600;font-size:.9rem}.lnav-top a:hover{text-decoration:underline}.lnav-bot{max-width:820px;margin:2.6rem auto 3rem;padding:1.1rem clamp(1rem,4vw,1.5rem) 0;border-top:1px solid #E4E8EF;display:flex;align-items:stretch;gap:.55rem}.lnav-bot a{min-width:0;display:flex;flex-direction:column;justify-content:center;gap:.15rem;border:1px solid #E4E8EF;border-radius:12px;padding:.65rem .85rem;color:#182233;background:#fff;transition:border-color .1s,transform .08s}.lnav-bot a:hover{border-color:var(--lnav-accent);transform:translateY(-1px)}.lnav-bot .prev,.lnav-bot .next{flex:1 1 0}.lnav-bot .next{text-align:right}.lnav-bot .dir{font-size:.72rem;color:#8A93A6;font-weight:600}.lnav-bot .ttl{font-size:.9rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.lnav-bot .to-cat{flex:0 0 auto;flex-direction:row;align-items:center;justify-content:center;color:var(--lnav-accent);font-weight:700;font-size:.85rem;white-space:nowrap}@media(max-width:420px){.lnav-bot .to-cat span{display:none}.lnav-bot .to-cat{padding:.65rem .7rem}}</style><nav class="lnav lnav-top"><a href="./catalog.html">← Все темы</a></nav><!--/LESSON-NAV-TOP-->
+<div class="wrap">
+
+  <header>
+    <p class="eyebrow">Геометрия · 9 класс</p>
+    <h1>Умножение вектора на число</h1>
+    <p class="lede">Одно действие, которое умеет растянуть, сжать и развернуть вектор — <em>но никогда не уводит его с прямой.</em></p>
+  </header>
+
+  <div class="hero-formula">
+    <p class="lbl">Длина после умножения</p>
+    <div class="eq">|<b>k</b>·a| = |<b>k</b>| · |a|</div>
+    <p class="note">модуль числа k управляет длиной, а знак k — направлением</p>
+  </div>
+
+  <section>
+    <p class="kicker">Зачем это нужно</p>
+    <h2>Вопрос «а если сильнее и в другую сторону?»</h2>
+    <p>Сложение векторов отвечает на вопрос «куда я попаду, если выполню два перемещения подряд». Умножение вектора на число отвечает на совсем другой вопрос: <strong>как изменить одно перемещение</strong> — растянуть его, сжать или развернуть в обратную сторону, оставаясь на той же прямой.</p>
+    <p>Где это работает:</p>
+    <ul>
+      <li><strong>В физике:</strong> скорость 2v — это «вдвое быстрее в том же направлении», а −v — «с той же быстротой назад».</li>
+      <li><strong>В геометрии</strong> умножение на число — это инструмент доказательства. Через него формулируется признак коллинеарности: лежат ли точки и отрезки на одной прямой или на параллельных. На нём держится теорема о <strong>средней линии</strong> и весь <strong>координатный метод</strong>.</li>
+    </ul>
+    <p>И сразу разрушим главный миф. Житейски «умножить вектор на число» путают с «удлинить отрезок». Длина правда меняется — но при отрицательном множителе <strong>ещё и переворачивается направление</strong>. Вот про это забывают чаще всего.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Что вспомнить перед стартом</p>
+    <div class="recall">
+      <p>Ты уже умеешь <strong>складывать</strong> и <strong>вычитать</strong> векторы. Оттуда нам нужны три вещи:</p>
+      <p>· у вектора всегда <strong>две</strong> характеристики: длина (модуль) и направление;</p>
+      <p>· <span class="math">|a|</span> — это длина вектора a, и она <strong>никогда не бывает отрицательной</strong>: <span class="math">|a| ≥ 0</span>;</p>
+      <p>· <strong>нулевой вектор 0</strong> — вектор нулевой длины, у него направление не определено.</p>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Ядро темы</p>
+    <h2>Определение</h2>
+    <p>Произведением <strong>ненулевого</strong> вектора a на число k называется вектор <span class="math">b = k·a</span>, такой что:</p>
+    <ol class="steps">
+      <li>его длина равна <span class="m">|b| = |k| · |a|</span>;</li>
+      <li>при <span class="m">k &gt; 0</span> вектор b <strong>сонаправлен</strong> с a (пишут <span class="m">b ↑↑ a</span>);</li>
+      <li>при <span class="m">k &lt; 0</span> вектор b <strong>противоположно направлен</strong> с a (пишут <span class="m">b ↑↓ a</span>).</li>
+    </ol>
+    <p style="margin-top:1rem">Отдельный случай: если <span class="math">k = 0</span> или сам <span class="math">a = 0</span>, то <span class="math">k·a = 0</span> — получается нулевой вектор, и направление у него не определено.</p>
+
+    <h2 style="margin-top:1.6rem">Кто чем управляет</h2>
+    <p>Вот вся суть темы в двух строчках. Число k «работает двумя руками»:</p>
+    <div class="cases">
+      <div class="case pos">
+        <div class="sign">k &gt; 0</div>
+        <div class="count">Направление то же</div>
+        <div class="desc">b ↑↑ a — стрелка смотрит туда же.</div>
+      </div>
+      <div class="case zero">
+        <div class="sign">k = 0</div>
+        <div class="count">Нулевой вектор</div>
+        <div class="desc">0·a = 0, направления нет.</div>
+      </div>
+      <div class="case neg">
+        <div class="sign">k &lt; 0</div>
+        <div class="count">Разворот</div>
+        <div class="desc">b ↑↓ a — стрелка в обратную сторону.</div>
+      </div>
+    </div>
+    <p style="font-size:.92rem;color:var(--muted);margin-top:.9rem">Запомни как считалочку: <strong>знак решает, куда; модуль решает, насколько.</strong></p>
+
+    <div class="tbl-wrap">
+      <table>
+        <tr><th>Множитель k</th><th>Что с длиной</th><th>Что с направлением</th></tr>
+        <tr><td class="m">k = 3</td><td>в 3 раза длиннее</td><td style="color:var(--pos)">то же</td></tr>
+        <tr><td class="m">k = 0,5</td><td>вдвое короче</td><td style="color:var(--pos)">то же</td></tr>
+        <tr><td class="m">k = 1</td><td>не меняется</td><td style="color:var(--pos)">то же</td></tr>
+        <tr><td class="m">k = 0</td><td>становится 0</td><td style="color:var(--zero)">не определено</td></tr>
+        <tr><td class="m">k = −1</td><td>не меняется</td><td style="color:var(--neg)">обратное</td></tr>
+        <tr><td class="m">k = −2,5</td><td>в 2,5 раза длиннее</td><td style="color:var(--neg)">обратное</td></tr>
+      </table>
+    </div>
+
+    <h2 style="margin-top:1.8rem">Свойства</h2>
+    <p>Для любых чисел k, m и любых векторов a, b верно:</p>
+    <div class="props">
+      <div class="prop"><span class="pe">k·(m·a) = (k·m)·a</span><span class="pn">сочетательное — два растяжения подряд заменяются одним</span></div>
+      <div class="prop"><span class="pe">(k + m)·a = k·a + m·a</span><span class="pn">распределительное относительно чисел</span></div>
+      <div class="prop"><span class="pe">k·(a + b) = k·a + k·b</span><span class="pn">распределительное относительно векторов</span></div>
+    </div>
+
+    <h2 style="margin-top:1.8rem">Признак коллинеарности</h2>
+    <p>Ради этого всё и затевалось. Векторы a и b (где <span class="math">a ≠ 0</span>) <strong>коллинеарны тогда и только тогда, когда существует число k такое, что b = k·a</strong>.</p>
+    <p>То есть новый вектор всегда лежит на той же прямой или на прямой, ей параллельной. Именно поэтому умножение на число — главный «детектор параллельности» в геометрии.</p>
+    <p style="font-size:.92rem;color:var(--muted)">Условия применимости: правило про направление работает только для ненулевого вектора и ненулевого множителя. А <span class="math">|k|</span> — это модуль, поэтому длина никогда не бывает отрицательной, даже когда <span class="math">k &lt; 0</span>.</p>
+
+    <div class="oge-tip"><div class="b">🎯 В ОГЭ</div><div class="x"><b>Задания 15–19.</b> Отдельного номера «на векторы» в ОГЭ нет — векторы работают как инструмент внутри геометрического блока (15–19). Признак коллинеарности помогает быстро увидеть параллельность отрезков и отношение их длин, а это ровно то, что спрашивают в задачах на треугольники и четырёхугольники.</div></div>
+  </section>
+
+  <section>
+    <p class="kicker">Покрути сам · интерактив</p>
+    <h2>Все результаты лежат на одной прямой</h2>
+    <p>Тяни ползунок k и смотри, что происходит с вектором. Синяя стрелка — исходный вектор a, она не меняется. Цветная стрелка снизу — это <span class="math">k·a</span>.</p>
+    <div class="viz">
+      <canvas id="vecCanvas" width="640" height="300" aria-label="Вектор a и вектор k·a на одной прямой"></canvas>
+      <div id="vizVerdict" class="viz-verdict pos">k = 2 &gt; 0 · сонаправлен · длина × 2</div>
+      <div class="sliders">
+        <label>k <span id="vk" class="sval">2</span><input id="sk" type="range" min="-3" max="3" step="0.25" value="2" aria-label="Множитель k"></label>
+      </div>
+      <p class="viz-eq"><span id="vizFormula">|2·a| = 2 · |a|</span></p>
+    </div>
+    <p style="font-size:.9rem;color:var(--muted)">Проверь на себе приём «предскажи → проверь → объясни»: сначала <strong>скажи вслух</strong>, каким будет вектор <span class="math">−1,5·a</span> (длиннее или короче? куда смотрит?), только потом поставь ползунок на −1,5 и посмотри. Совпало — значит правило ты понял, а не запомнил.</p>
+    <p>Отдельно задержись на трёх положениях ползунка:</p>
+    <ul>
+      <li><span class="math">k = 2</span> — вдвое длиннее, та же сторона;</li>
+      <li><span class="math">k = 0,5</span> — вдвое короче, та же сторона;</li>
+      <li><span class="math">k = −1</span> — та же длина, стрелка в обратную сторону;</li>
+      <li><span class="math">k = −2</span> — вдвое длиннее, обратная сторона.</li>
+    </ul>
+    <p>Все четыре стрелки лежат на <strong>одной прямой</strong> — это и есть наглядный смысл коллинеарности.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Разбираем вместе</p>
+    <h2>Эталонный пример</h2>
+    <div class="worked">
+      <p class="task">|a| = 6, &nbsp;b = −3·a. &nbsp;Найти длину и направление b.</p>
+      <ol class="steps">
+        <li>Смотрю на задачу и вижу два отдельных вопроса: <span class="m">длина</span> и <span class="m">направление</span>. Считаю их по очереди, не смешивая.
+          <span class="why">Так ошибиться почти невозможно: у каждой характеристики свой «начальник».</span></li>
+        <li>Длина: <span class="m">|b| = |−3| · |a| = 3 · 6 = 18</span>.
+          <span class="why">Почему: длина умножается на <em>модуль</em> множителя, а |−3| = 3. Минус на длину не влияет вообще.</span></li>
+        <li>Направление: <span class="m">k = −3 &lt; 0</span>, значит <span class="m">b ↑↓ a</span>.
+          <span class="why">Почему: отрицательный знак множителя разворачивает вектор в противоположную сторону.</span></li>
+        <li>Собираю ответ вместе: <span class="m">|b| = 18</span>, вектор b противоположно направлен с a.
+          <span class="why">И заодно замечаю: b коллинеарен a, ведь он получен умножением a на число.</span></li>
+      </ol>
+      <div class="verdict">Ответ: |b| = 18, вектор b противоположно направлен с a.</div>
+    </div>
+
+    <h2 style="margin-top:1.8rem">Теперь допиши шаг сам</h2>
+    <div class="worked">
+      <p class="task">|c| = 10, &nbsp;d = 0,5·c. &nbsp;Найти длину и направление d.</p>
+      <ol class="steps">
+        <li>Длина: <span class="m">|d| = |0,5| · |c| = 0,5 · 10 = ______</span></li>
+        <li>Направление: <span class="m">k = 0,5 &gt; 0</span>, значит <span class="m">d ↑↑ c</span> (сонаправлен).</li>
+      </ol>
+      <details style="margin-top:1rem">
+        <summary><span class="q">Подставь число и сделай вывод: вектор стал короче или длиннее?</span><span class="tag">проверь себя</span></summary>
+        <div class="ans"><span class="m">|d| = 0,5 · 10 = 5</span>. Было 10, стало 5 — вектор стал <strong>вдвое короче</strong>, направление то же. Так и должно быть: множитель по модулю меньше единицы, значит вектор сжимается.</div>
+      </details>
+    </div>
+
+    <h2 style="margin-top:1.8rem">А это реши полностью сам</h2>
+    <div class="worked">
+      <p class="task">|m| = 4, &nbsp;n = −2,5·m. &nbsp;Найди длину n и направление относительно m.</p>
+      <details style="margin-top:.6rem">
+        <summary><span class="q">Показать решение</span><span class="tag">эталон</span></summary>
+        <div class="ans"><span class="m">|n| = |−2,5| · |m| = 2,5 · 4 = 10</span>. Знак множителя отрицательный, значит вектор n <strong>противоположно направлен</strong> с m.</div>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Теперь ты · нажми, чтобы проверить</p>
+    <h2>Практика по нарастанию</h2>
+    <div class="drill">
+      <details>
+        <summary><span class="q">Прочитай запись p = 4·q. Что длиннее и во сколько раз? Сонаправлены?</span><span class="tag">понимание</span></summary>
+        <div class="ans">Длиннее <strong>p</strong>, ровно в <span class="m">4</span> раза: <span class="m">|p| = 4·|q|</span>. Множитель положительный, значит векторы <strong>сонаправлены</strong>: <span class="m">p ↑↑ q</span>.</div>
+      </details>
+      <details>
+        <summary><span class="q">Чему равен вектор 0·a?</span><span class="tag">понимание</span></summary>
+        <div class="ans">Это <strong>нулевой вектор</strong>: <span class="m">0·a = 0</span>. Его длина равна нулю, а направление не определено — говорить «сонаправлен» или «противоположно направлен» здесь нельзя.</div>
+      </details>
+      <details>
+        <summary><span class="q">|a| = 7. Найди длины векторов 3·a и −3·a, сравни их.</span><span class="tag">применение</span></summary>
+        <div class="ans"><span class="m">|3·a| = 3 · 7 = 21</span> и <span class="m">|−3·a| = |−3| · 7 = 3 · 7 = 21</span>. Длины <strong>одинаковые</strong>, потому что модули множителей одинаковы. Различаются только направления: первый сонаправлен с a, второй противоположно направлен.</div>
+      </details>
+      <details>
+        <summary><span class="q">b = k·a, при этом |a| = 5, |b| = 15 и b ↑↓ a. Найди k.</span><span class="tag">применение</span></summary>
+        <div class="ans">Из длин: <span class="m">|k| = |b| : |a| = 15 : 5 = 3</span>. Из направления: векторы противоположно направлены, значит <span class="m">k &lt; 0</span>. Ответ: <span class="m">k = −3</span>.</div>
+      </details>
+      <details>
+        <summary><span class="q">Что изменится, если: вектор a умножили на 2, а результат — на (−1)?</span><span class="tag">анализ</span></summary>
+        <div class="ans">По сочетательному свойству <span class="m">(−1)·(2·a) = ((−1)·2)·a = −2·a</span>. Итог одной фразой: получился вектор <strong>вдвое длиннее a и противоположно направленный ему</strong>. Умножение на (−1) длину не тронуло (|−1| = 1), оно только развернуло стрелку.</div>
+      </details>
+      <details>
+        <summary><span class="q">Найди ошибку: «b = −4·a, значит |b| = −4·|a|, длина отрицательная».</span><span class="tag">анализ</span></summary>
+        <div class="ans">Ошибка в том, что множитель взяли <strong>вместе со знаком</strong>, а в формулу длины идёт <strong>модуль</strong> множителя. Правильно: <span class="m">|b| = |−4| · |a| = 4·|a|</span>. Длина не может быть отрицательной ни при каком k. Минус же никуда не пропал — он ушёл в направление: <span class="m">b ↑↓ a</span>.</div>
+      </details>
+      <details>
+        <summary><span class="q">Обратная задача: b сонаправлен с a, а его длина втрое меньше. Запиши b в виде k·a.</span><span class="tag">анализ</span></summary>
+        <div class="ans">Длина втрое меньше, значит <span class="m">|k| = 1/3</span>. Векторы сонаправлены, значит <span class="m">k &gt; 0</span>, минус не нужен. Ответ: <span class="m">b = (1/3)·a</span>.</div>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Тренажёр · бесконечная практика</p>
+    <h2>Реши сам — заданий не кончится</h2>
+    <p>Нажимай «Новое задание» и решай. Ответ — <strong>одно число</strong>: длина или множитель k. Минус пиши как обычно, дробь можно записать и как <span class="math">0,5</span>, и как <span class="math">1/2</span>. Потом проверь себя или посмотри пошаговое решение.</p>
+    <div class="trainer">
+      <div class="tr-eq" id="trEq">|a| = 6, &nbsp;b = −3·a</div>
+      <div class="tr-q" id="trQ">Найди длину |b|.</div>
+      <div class="tr-ctl">
+        <button id="trNew" type="button">🎲 Новое задание</button>
+        <input id="trAns" type="text" inputmode="text" placeholder="напр.  18   или   −0,5" aria-label="Ответ">
+        <button id="trCheck" type="button" class="sec">Проверить</button>
+        <button id="trShow" type="button" class="ghost">Показать решение</button>
+      </div>
+      <div id="trResult" class="tr-result"></div>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Где чаще всего ошибаются</p>
+    <h2>Лови эти четыре ловушки</h2>
+    <ul class="pitfalls">
+      <li><b>При умножении на отрицательное число не меняют направление.</b> Считают, что <span class="math">−2·a</span> «просто вдвое длиннее». <em>Как не допустить:</em> сначала смотри на знак — он решает направление, потом на модуль — он решает длину. Минус всегда означает разворот.</li>
+      <li><b>Путают изменение длины с изменением направления.</b> Думают, что большой множитель «сильнее разворачивает». <em>Как не допустить:</em> помни — за длину отвечает <span class="math">|k|</span>, за направление отвечает <strong>только знак</strong>. Числа 100 и 2 одинаково сохраняют направление, потому что оба положительны.</li>
+      <li><b>Считают, что коллинеарность зависит от знака множителя.</b> «При <span class="math">k &lt; 0</span> векторы уже не коллинеарны». <em>Как не допустить:</em> коллинеарность — это «лежат на одной или на параллельных прямых». И <span class="math">2·a</span>, и <span class="math">−2·a</span> лежат на той же прямой, что и a, значит оба коллинеарны a. Знак меняет только сторону, а не прямую.</li>
+      <li><b>Получают отрицательную длину.</b> Пишут <span class="math">|−3·a| = −3·|a|</span>. <em>Как не допустить:</em> длина считается через модуль множителя <span class="math">|k|</span>, она не может быть отрицательной.</li>
+    </ul>
+  </section>
+
+  <section>
+    <p class="kicker">Проверь себя без подглядывания</p>
+    <h2>Объясни своими словами</h2>
+    <p>Закрой урок и ответь вслух — как будто объясняешь другу:</p>
+    <div class="drill">
+      <details>
+        <summary><span class="q">1. Чем управляет знак множителя, а чем — его модуль?</span><span class="tag">формулировка</span></summary>
+        <div class="ans"><strong>Знак</strong> управляет направлением: плюс — сохраняет, минус — разворачивает. <strong>Модуль</strong> управляет длиной: длина умножается на <span class="m">|k|</span>.</div>
+      </details>
+      <details>
+        <summary><span class="q">2. Длина вектора a равна 8. Чему равна длина вектора −0,25·a?</span><span class="tag">счёт</span></summary>
+        <div class="ans"><span class="m">|−0,25·a| = 0,25 · 8 = 2</span>. Ответ: <strong>2</strong>. Минус на длину не влияет — он отвечает только за разворот.</div>
+      </details>
+      <details>
+        <summary><span class="q">3. Останутся ли векторы a и −5·a коллинеарными? Почему?</span><span class="tag">рассуждение</span></summary>
+        <div class="ans"><strong>Да.</strong> Они лежат на одной прямой, знак меняет только сторону, а не саму прямую. К тому же вектор −5·a получен из a умножением на число — а это и есть признак коллинеарности.</div>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <div class="next">
+      <h2>Что дальше</h2>
+      <p>Ты научился главному инструменту «детектора параллельности». Дальше он работает на две стороны:</p>
+      <div class="eq">MN = ½ · AC</div>
+      <p><b>Средняя линия треугольника.</b> Одна такая векторная запись сразу даёт и параллельность средней линии основанию, и то, что она вдвое короче — доказательство теоремы умещается в строчку.</p>
+      <div class="eq">k·a = (k·x; k·y)</div>
+      <p><b>Координаты вектора.</b> Когда векторы получат координаты, умножение на число станет совсем простым: каждая координата умножается на k. И признак коллинеарности превратится в проверку пропорции координат.</p>
+    </div>
+  </section>
+
+  <p class="foot">Итог темы: умножение вектора на число k растягивает или сжимает его в |k| раз, сохраняет направление при k &gt; 0 либо разворачивает при k &lt; 0 — и всегда оставляет результат коллинеарным исходному вектору.</p>
+
+</div>
+
+<style>
+  .viz{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.1rem 1.1rem 1rem;margin:1rem 0}
+  .viz canvas{width:100%;height:auto;display:block;border-radius:10px;background:#FCFDFF}
+  .viz-verdict{text-align:center;font-weight:700;font-size:.98rem;margin:.8rem 0 0;padding:.5rem .6rem;border-radius:9px;font-family:PllFix,ui-monospace,Menlo,monospace}
+  .viz-verdict.pos{background:var(--pos-bg);color:var(--pos)}
+  .viz-verdict.zero{background:var(--zero-bg);color:var(--zero)}
+  .viz-verdict.neg{background:var(--neg-bg);color:var(--neg)}
+  .sliders{display:grid;gap:.6rem;margin-top:.9rem}
+  .sliders label{display:flex;align-items:center;gap:.6rem;font-weight:700;font-family:PllFix,ui-monospace,Menlo,monospace}
+  .sliders input[type=range]{flex:1;accent-color:var(--accent)}
+  .sliders input[type=range]:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+  .sliders .sval{min-width:4.5ch;text-align:right;color:var(--accent);font-variant-numeric:tabular-nums}
+  .viz-eq{text-align:center;font-family:PllFix,ui-monospace,Menlo,monospace;font-weight:700;font-size:1.02rem;margin:.9rem 0 0;color:var(--ink)}
+</style>
+
+<script>
+(function(){
+  var canvas=document.getElementById('vecCanvas'); if(!canvas) return;
+  var ctx=canvas.getContext('2d');
+  var sk=document.getElementById('sk'), vk=document.getElementById('vk');
+  var verdict=document.getElementById('vizVerdict'), formula=document.getElementById('vizFormula');
+  var W=640,H=300,dpr=1;
+  var MINUS='−';
+
+  function num(n){
+    n=Math.round(n*100)/100;
+    var s=Math.abs(n).toString().replace('.',',');
+    return (n<0?MINUS:'')+s;
+  }
+  function css(v,fb){
+    var c=getComputedStyle(document.documentElement).getPropertyValue(v);
+    return (c&&c.trim())||fb;
+  }
+  function resize(){
+    var cssW=canvas.clientWidth||640;
+    dpr=Math.min(window.devicePixelRatio||1,2);
+    W=cssW; H=Math.max(230,Math.round(cssW*0.47));
+    canvas.width=Math.round(W*dpr); canvas.height=Math.round(H*dpr);
+    canvas.style.height=H+'px';
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+  }
+  function arrow(x0,y,len,color,label,lw){
+    ctx.strokeStyle=color; ctx.fillStyle=color; ctx.lineWidth=lw;
+    // точка приложения
+    ctx.beginPath(); ctx.arc(x0,y,3.5,0,7); ctx.fill();
+    if(Math.abs(len)<1.2){
+      ctx.font='600 13px ui-monospace,Menlo,monospace';
+      ctx.textAlign='left'; ctx.textBaseline='middle';
+      ctx.fillText(label,x0+10,y);
+      return;
+    }
+    var x1=x0+len, head=Math.min(12,Math.abs(len)*0.4), dir=len>0?1:-1;
+    ctx.beginPath(); ctx.moveTo(x0,y); ctx.lineTo(x1-dir*head*0.6,y); ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(x1,y);
+    ctx.lineTo(x1-dir*head,y-head*0.52);
+    ctx.lineTo(x1-dir*head,y+head*0.52);
+    ctx.closePath(); ctx.fill();
+    ctx.font='700 14px ui-monospace,Menlo,monospace';
+    ctx.textAlign='center'; ctx.textBaseline='bottom';
+    ctx.fillText(label,x0+len/2,y-9);
+  }
+  function draw(){
+    var k=parseFloat(sk.value); if(isNaN(k)) k=1;
+    vk.textContent=num(k);
+    ctx.clearRect(0,0,W,H);
+
+    var pad=Math.max(20,W*0.07);
+    var unit=Math.min(72,(W/2-pad)/3.05); // длина вектора a в пикселях
+    var x0=W/2;
+    var yA=H*0.32, yB=H*0.68;
+
+    // общая прямая
+    ctx.strokeStyle='#DCE1EA'; ctx.lineWidth=1.5;
+    ctx.setLineDash([5,5]);
+    ctx.beginPath(); ctx.moveTo(pad*0.5,yA); ctx.lineTo(W-pad*0.5,yA); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(pad*0.5,yB); ctx.lineTo(W-pad*0.5,yB); ctx.stroke();
+    ctx.setLineDash([]);
+    // вертикаль точки приложения
+    ctx.strokeStyle='#EDEFF4'; ctx.lineWidth=1;
+    ctx.beginPath(); ctx.moveTo(x0,yA-34); ctx.lineTo(x0,yB+26); ctx.stroke();
+
+    var accent=css('--accent','#3B4FD0');
+    var colK = k>0.001 ? css('--pos','#1E8E5A') : (k<-0.001 ? css('--neg','#C0455B') : css('--zero','#B9791A'));
+
+    arrow(x0,yA,unit,accent,'a',3);
+    arrow(x0,yB,k*unit,colK,'k·a',3.5);
+
+    // подписи слева
+    ctx.font='600 12px system-ui,-apple-system,sans-serif';
+    ctx.textAlign='left'; ctx.textBaseline='alphabetic';
+    ctx.fillStyle='#8A93A6';
+    ctx.fillText('исходный', pad*0.5, yA+18);
+    ctx.fillText('результат', pad*0.5, yB+20);
+
+    // вердикт и формула
+    verdict.className='viz-verdict';
+    if(k>0.001){
+      verdict.classList.add('pos');
+      verdict.textContent='k = '+num(k)+' > 0 · сонаправлен · длина × '+num(Math.abs(k));
+    } else if(k<-0.001){
+      verdict.classList.add('neg');
+      verdict.textContent='k = '+num(k)+' < 0 · противоположно направлен · длина × '+num(Math.abs(k));
+    } else {
+      verdict.classList.add('zero');
+      verdict.textContent='k = 0 · получился нулевой вектор · направления нет';
+    }
+    formula.textContent='|'+num(k)+'·a| = '+num(Math.abs(k))+' · |a|';
+  }
+  sk.addEventListener('input',draw);
+  window.addEventListener('resize',function(){ resize(); draw(); });
+  resize(); draw();
+})();
+</script>
+
+<style>
+  .trainer{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.2rem 1.3rem;margin-top:1rem}
+  .tr-eq{font-family:PllFix,ui-monospace,Menlo,monospace;font-weight:800;font-size:clamp(1.1rem,4.4vw,1.5rem);text-align:center;padding:1rem .7rem;background:var(--accent-soft);border-radius:10px;color:var(--ink)}
+  .tr-q{text-align:center;font-weight:650;font-size:1rem;margin-top:.7rem}
+  .tr-ctl{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.9rem;align-items:center}
+  .tr-ctl button{font:inherit;font-weight:700;font-size:.9rem;cursor:pointer;border:none;border-radius:9px;padding:.55rem .95rem;color:#fff;background:var(--accent)}
+  .tr-ctl button.sec{background:var(--pos)}
+  .tr-ctl button.ghost{background:transparent;color:var(--accent);border:1px solid var(--accent)}
+  .tr-ctl input{flex:1;min-width:150px;font:inherit;padding:.5rem .7rem;border:1px solid var(--line);border-radius:9px;background:#fff;color:var(--ink)}
+  .tr-ctl button:focus-visible,.tr-ctl input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+  .tr-result{margin-top:.9rem;font-size:.96rem;min-height:1.2rem}
+  .tr-result .ok{color:var(--pos);font-weight:700}
+  .tr-result .bad{color:var(--neg);font-weight:700}
+  .tr-result .sol{margin-top:.7rem;padding:.85rem 1rem;background:#FCFBFE;border:1px solid var(--line);border-radius:10px;font-family:PllFix,ui-monospace,Menlo,monospace;font-size:.9rem;line-height:1.8}
+  .tr-result .sol b{color:var(--accent)}
+</style>
+
+<script>
+(function(){
+  var eqEl=document.getElementById('trEq'), qEl=document.getElementById('trQ');
+  var ansEl=document.getElementById('trAns'), resEl=document.getElementById('trResult');
+  if(!eqEl) return;
+  var MINUS='−', DOT='·';
+
+  function ri(min,max){ return Math.floor(Math.random()*(max-min+1))+min; }
+  function pick(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+  function num(x){
+    var n=Math.round(x*10000)/10000;
+    if(n===0) n=0;
+    var s=Math.abs(n).toString().replace('.',',');
+    return (n<0?MINUS:'')+s;
+  }
+
+  // задача: {type, A, B, k, kmag, sign}
+  // type 'len'  — даны |a| и k, найти |b|
+  // type 'coef' — даны |a|, |b| и направление, найти k
+  function generate(){
+    var t=Math.random();
+    if(t<0.10){
+      // краевой случай: k = 0
+      return {type:'len', A:ri(2,12), k:0, kmag:0, sign:1, B:0};
+    }
+    var den=pick([1,1,2,4]);
+    var numr=ri(1,6);
+    var kmag=numr/den;
+    var m=ri(2,9);
+    var A=den*m;        // |a|
+    var B=numr*m;       // |b| = kmag * A — всегда целое
+    var sign=Math.random()<0.5?1:-1;
+    if(t<0.55) return {type:'len', A:A, B:B, kmag:kmag, sign:sign, k:sign*kmag};
+    return {type:'coef', A:A, B:B, kmag:kmag, sign:sign, k:sign*kmag};
+  }
+
+  var cur={type:'len', A:6, B:18, kmag:3, sign:-1, k:-3};
+
+  function taskText(q){
+    if(q.type==='len') return '|a| = '+q.A+',  b = '+num(q.k)+DOT+'a';
+    return '|a| = '+q.A+',  |b| = '+q.B+',  b '+(q.sign>0?'↑↑':'↑↓')+' a';
+  }
+  function questionText(q){
+    if(q.type==='len') return 'Найди длину |b|.';
+    return 'Известно, что b = k'+DOT+'a. Найди число k.';
+  }
+  function answerOf(q){ return q.type==='len' ? q.kmag*q.A : q.k; }
+
+  function render(q){
+    cur=q;
+    eqEl.textContent=taskText(q);
+    qEl.textContent=questionText(q);
+    resEl.innerHTML='';
+    ansEl.value='';
+  }
+
+  function solutionHTML(){
+    var q=cur, h='<div class="sol">';
+    if(q.type==='len'){
+      if(q.k===0){
+        h+='k = 0 → при умножении на ноль получается нулевой вектор.<br>';
+        h+='|b| = |0| '+DOT+' '+q.A+' = <b>0</b><br>';
+        h+='Направление у нулевого вектора не определено.';
+      } else {
+        h+='1) Модуль множителя: |'+num(q.k)+'| = '+num(q.kmag)+'<br>';
+        h+='2) Длина: |b| = |k| '+DOT+' |a| = '+num(q.kmag)+' '+DOT+' '+q.A+' = <b>'+num(q.kmag*q.A)+'</b><br>';
+        h+='3) Знак k '+(q.sign>0?'положительный → b ↑↑ a (сонаправлен)':'отрицательный → b ↑↓ a (противоположно направлен)')+'.';
+      }
+    } else {
+      h+='1) Модуль: |k| = |b| : |a| = '+q.B+' : '+q.A+' = '+num(q.kmag)+'<br>';
+      h+='2) Направление '+(q.sign>0?'↑↑ → k > 0, минус не нужен':'↑↓ → k < 0, ставим минус')+'.<br>';
+      h+='3) Ответ: k = <b>'+num(q.k)+'</b>';
+    }
+    return h+'</div>';
+  }
+
+  // структурный разбор ответа: число, дробь p/q, запятая, любой минус
+  function parseAnswer(raw){
+    if(typeof raw!=='string') return null;
+    var s=raw.trim().toLowerCase();
+    if(!s) return null;
+    s=s.replace(/[−–—‐‑]/g,'-');
+    s=s.replace(/[kк]\s*=/g,'').replace(/\|?\s*b\s*\|?\s*=/g,'');
+    s=s.replace(/,/g,'.');
+    s=s.replace(/\s+/g,'');
+    if(!s) return null;
+    var mf=s.match(/^([+-]?\d+(?:\.\d+)?)\/([+-]?\d+(?:\.\d+)?)$/);
+    if(mf){
+      var a=parseFloat(mf[1]), b=parseFloat(mf[2]);
+      if(!isFinite(a)||!isFinite(b)||b===0) return null;
+      return a/b;
+    }
+    if(!/^[+-]?\d+(?:\.\d+)?$/.test(s)) return null;
+    var v=parseFloat(s);
+    return isFinite(v)?v:null;
+  }
+
+  function check(){
+    var got=parseAnswer(ansEl.value);
+    var exp=answerOf(cur);
+    if(got===null){
+      resEl.innerHTML='<span class="bad">Не понял запись. Введи одно число, например 18, '+MINUS+'0,5 или 1/2.</span>';
+      return;
+    }
+    if(Math.abs(got-exp)<1e-6){
+      resEl.innerHTML='<span class="ok">✓ Верно! Ответ: '+num(exp)+'</span>'+solutionHTML();
+    } else {
+      var hint='';
+      if(cur.type==='len' && got<0) hint=' Подсказка: длина не бывает отрицательной — в формулу идёт модуль множителя.';
+      else if(cur.type==='coef' && Math.abs(Math.abs(got)-Math.abs(exp))<1e-6) hint=' Модуль ты нашёл верно — перепроверь знак по направлению.';
+      resEl.innerHTML='<span class="bad">✗ Пока не то.'+hint+'</span>'+solutionHTML();
+    }
+  }
+
+  document.getElementById('trNew').addEventListener('click',function(){
+    render(generate());
+    ansEl.focus();
+  });
+  document.getElementById('trCheck').addEventListener('click',check);
+  document.getElementById('trShow').addEventListener('click',function(){ resEl.innerHTML=solutionHTML(); });
+  ansEl.addEventListener('keydown',function(e){ if(e.key==='Enter') check(); });
+
+  // стартовое состояние = ровно то, что показывает пошаговое решение (без focus)
+  render(cur);
+})();
+</script>
+<!--LESSON-NAV-BOT--><nav class="lnav lnav-bot"><a class="prev" href="./geo9-vektor-vychitanie.html"><span class="dir">← Предыдущая</span><span class="ttl">Вычитание векторов</span></a><a class="to-cat" href="./catalog.html">📚 <span>Все темы</span></a><a class="next" href="./geo9-vektor-koordinaty.html"><span class="dir">Следующая →</span><span class="ttl">Координаты вектора</span></a></nav><!--/LESSON-NAV-BOT-->

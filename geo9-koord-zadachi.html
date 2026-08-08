@@ -1,0 +1,759 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Решение задач методом координат — урок, геометрия 9 класс</title>
+<style>
+  :root{
+    --paper:#F6F7F9;
+    --card:#FFFFFF;
+    --ink:#1B2333;
+    --muted:#5A6478;
+    --line:#E2E5EC;
+    --accent:#3B4FD0;
+    --accent-soft:#EAEDFB;
+    --pos:#1E8E5A;
+    --pos-bg:#E7F4EC;
+    --zero:#B9791A;
+    --zero-bg:#FBF1DC;
+    --neg:#C0455B;
+    --neg-bg:#F9E9EC;
+  }
+  *{box-sizing:border-box}
+  body{margin:0}
+  .wrap{
+    max-width:760px;
+    margin:0 auto;
+    padding:clamp(1.4rem,4vw,3rem) clamp(1.1rem,4vw,2rem) 4rem;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    font-size:17px;
+    line-height:1.62;
+    -webkit-font-smoothing:antialiased;
+  }
+  .eyebrow{
+    font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--accent);font-weight:600;margin:0 0 .5rem;
+  }
+  h1{
+    font-family:Georgia,"Times New Roman",serif;
+    font-size:clamp(1.9rem,6.4vw,2.8rem);
+    line-height:1.06;margin:0;font-weight:700;letter-spacing:-.01em;
+    text-wrap:balance;
+  }
+  .lede{
+    font-size:1.08rem;color:var(--muted);margin:.7rem 0 0;max-width:60ch;
+    text-wrap:pretty;
+  }
+  h2{
+    font-family:Georgia,serif;font-size:1.32rem;font-weight:700;
+    margin:0 0 .1rem;letter-spacing:-.005em;
+  }
+  h3{font-size:1rem;margin:1.4rem 0 .2rem;font-weight:700}
+  section{margin-top:2.6rem}
+  .kicker{
+    font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--muted);font-weight:600;margin:0 0 .8rem;
+    display:flex;align-items:center;gap:.6rem;
+  }
+  .kicker::before{
+    content:"";width:1.4rem;height:2px;background:var(--accent);border-radius:2px;
+  }
+  p{margin:.65rem 0}
+  strong{font-weight:650}
+  .math{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-weight:600}
+  sup{font-size:.72em}
+
+  /* Главная формула */
+  .hero-formula{
+    margin-top:2.2rem;
+    background:var(--ink);color:#fff;border-radius:14px;
+    padding:1.5rem 1.2rem;text-align:center;
+  }
+  .hero-formula .lbl{
+    font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;
+    color:#9aa6c9;margin:0 0 .7rem;
+  }
+  .hero-formula .eq{
+    font-family:ui-monospace,"SF Mono",Menlo,monospace;
+    font-size:clamp(1.25rem,5vw,1.9rem);font-weight:700;letter-spacing:.01em;
+  }
+  .hero-formula .eq b{color:#8ea0ff;font-weight:700}
+  .hero-formula .eq2{
+    font-family:ui-monospace,"SF Mono",Menlo,monospace;
+    font-size:clamp(.86rem,3.4vw,1.05rem);font-weight:600;
+    margin-top:.9rem;line-height:1.9;color:#e7eaf7;
+  }
+  .hero-formula .note{font-size:.86rem;color:#9aa6c9;margin:.9rem 0 0}
+
+  /* Пререквизит */
+  .recall{
+    background:var(--accent-soft);border-radius:12px;padding:1rem 1.15rem;
+    font-size:.96rem;
+  }
+  .recall p{margin:.3rem 0}
+
+  /* Карточки-шаги алгоритма */
+  .cases{display:grid;gap:.85rem;margin-top:.4rem}
+  @media(min-width:620px){.cases{grid-template-columns:repeat(2,1fr)}}
+  .case{
+    border-radius:12px;padding:1.05rem 1.1rem;border:1px solid var(--line);
+    background:var(--card);display:flex;flex-direction:column;gap:.35rem;
+  }
+  .case .sign{font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.05rem}
+  .case .count{font-weight:650;font-size:1rem}
+  .case .desc{font-size:.9rem;color:var(--muted)}
+  .case.pos{border-top:4px solid var(--pos);background:var(--pos-bg)}
+  .case.pos .sign{color:var(--pos)}
+  .case.zero{border-top:4px solid var(--zero);background:var(--zero-bg)}
+  .case.zero .sign{color:var(--zero)}
+  .case.neg{border-top:4px solid var(--neg);background:var(--neg-bg)}
+  .case.neg .sign{color:var(--neg)}
+  .case.acc{border-top:4px solid var(--accent);background:var(--accent-soft)}
+  .case.acc .sign{color:var(--accent)}
+
+  /* Разбор */
+  .worked{
+    background:var(--card);border:1px solid var(--line);border-radius:12px;
+    padding:1.2rem 1.3rem;
+  }
+  .worked .task{
+    font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1rem;
+    margin:0 0 1rem;padding-bottom:.8rem;border-bottom:1px solid var(--line);
+    line-height:1.5;
+  }
+  ol.steps{margin:0;padding:0;list-style:none;counter-reset:s;display:flex;flex-direction:column;gap:.7rem}
+  ol.steps li{
+    position:relative;padding-left:2.1rem;counter-increment:s;
+  }
+  ol.steps li::before{
+    content:counter(s);position:absolute;left:0;top:.05rem;
+    width:1.5rem;height:1.5rem;border-radius:50%;
+    background:var(--accent-soft);color:var(--accent);
+    font-size:.82rem;font-weight:700;display:flex;align-items:center;justify-content:center;
+  }
+  ol.steps .m{font-family:ui-monospace,Menlo,monospace;font-weight:600;color:var(--ink)}
+  .think{font-size:.9rem;color:var(--muted);display:block;margin-top:.15rem}
+  .verdict{
+    margin-top:1rem;padding:.7rem 1rem;background:var(--pos-bg);
+    border-radius:9px;font-weight:600;color:var(--pos);font-size:.98rem;
+  }
+
+  /* Таблица «геометрия → алгебра» */
+  .tblwrap{overflow-x:auto;-webkit-overflow-scrolling:touch;margin-top:.6rem;
+    border:1px solid var(--line);border-radius:12px;background:var(--card)}
+  table{border-collapse:collapse;width:100%;min-width:430px;font-size:.94rem}
+  th,td{text-align:left;padding:.6rem .85rem;border-bottom:1px solid var(--line)}
+  tr:last-child td{border-bottom:none}
+  th{font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:700}
+  td.f{font-family:ui-monospace,Menlo,monospace;font-weight:600;white-space:nowrap}
+
+  /* Практика */
+  .drill{display:flex;flex-direction:column;gap:.7rem}
+  details{
+    background:var(--card);border:1px solid var(--line);border-radius:10px;
+    padding:.85rem 1.05rem;
+  }
+  details[open]{border-color:var(--accent)}
+  summary{
+    cursor:pointer;font-weight:600;list-style:none;
+    display:flex;justify-content:space-between;align-items:flex-start;gap:1rem;
+  }
+  summary:focus-visible{outline:3px solid var(--accent);outline-offset:3px;border-radius:6px}
+  summary::-webkit-details-marker{display:none}
+  summary .q{font-size:.98rem}
+  summary .q .m{font-family:ui-monospace,Menlo,monospace;font-weight:700}
+  summary .tag{
+    font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);
+    border:1px solid var(--line);border-radius:20px;padding:.1rem .55rem;white-space:nowrap;
+  }
+  summary::after{
+    content:"ответ";font-size:.78rem;color:var(--accent);font-weight:600;white-space:nowrap;
+  }
+  details[open] summary::after{content:"скрыть"}
+  .ans{margin-top:.7rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.96rem;color:var(--muted)}
+  .ans .m{font-family:ui-monospace,Menlo,monospace;color:var(--ink);font-weight:600}
+
+  /* Ошибки */
+  ul.pitfalls{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:.6rem}
+  ul.pitfalls li{
+    padding-left:1.5rem;position:relative;font-size:.98rem;
+  }
+  ul.pitfalls li::before{
+    content:"×";position:absolute;left:0;top:-.05rem;color:var(--neg);font-weight:700;font-size:1.1rem;
+  }
+  ul.pitfalls b{color:var(--ink)}
+
+  ol.checkq{margin:0;padding-left:1.3rem}
+  ol.checkq li{margin:.4rem 0}
+
+  .next{
+    background:var(--accent);color:#fff;border-radius:12px;padding:1.2rem 1.3rem;
+  }
+  .next h2{color:#fff}
+  .next .eq{
+    font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.05rem;
+    margin:.6rem 0 .3rem;
+  }
+  .next p{color:#dfe4fb;font-size:.96rem;margin:.4rem 0 0}
+  .foot{margin-top:2.4rem;font-size:.82rem;color:var(--muted);text-align:center}
+
+  @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+<style>
+.oge-tip{display:flex;gap:.8rem;align-items:flex-start;background:#FFF8E7;border:1px solid #F0D98A;border-left:4px solid #E0A315;border-radius:10px;padding:.85rem 1.05rem;margin:1.5rem 0}
+.oge-tip .b{font-size:.72rem;font-weight:800;letter-spacing:.03em;color:#8A6A15;white-space:nowrap;text-transform:uppercase;padding-top:.15rem}
+.oge-tip .x{font-size:.95rem;line-height:1.5}
+</style>
+<style>
+  .geo{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.1rem 1.1rem 1rem;margin:1rem 0}
+  .geo canvas{width:100%;height:auto;display:block;border-radius:10px;background:#FCFDFF}
+  .geo-read{margin:.9rem 0 0;display:grid;gap:.45rem}
+  @media(min-width:560px){.geo-read{grid-template-columns:repeat(2,1fr)}}
+  .geo-read div{font-family:ui-monospace,Menlo,monospace;font-size:.92rem;background:var(--paper);border-radius:8px;padding:.45rem .7rem}
+  .geo-read b{color:var(--accent)}
+  .geo-note{text-align:center;font-weight:700;font-size:.96rem;margin:.8rem 0 0;padding:.5rem;border-radius:9px;background:var(--accent-soft);color:var(--accent)}
+  .geo-note.right{background:var(--pos-bg);color:var(--pos)}
+  .sliders{display:grid;gap:.6rem;margin-top:.9rem}
+  @media(min-width:520px){.sliders{grid-template-columns:repeat(3,1fr)}}
+  .sliders label{display:flex;align-items:center;gap:.5rem;font-weight:700;font-family:ui-monospace,Menlo,monospace;font-size:.92rem}
+  .sliders input[type=range]{flex:1;min-width:60px;accent-color:var(--accent)}
+  .sliders input[type=range]:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+  .sliders .sval{min-width:3ch;text-align:right;color:var(--accent);font-variant-numeric:tabular-nums}
+
+  .trainer{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.2rem 1.3rem;margin-top:1rem}
+  .tr-eq{font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:clamp(.95rem,3.6vw,1.08rem);line-height:1.65;text-align:left;padding:1rem;background:var(--accent-soft);border-radius:10px;color:var(--ink)}
+  .tr-eq .ask{display:block;margin-top:.5rem;color:var(--accent);font-weight:800}
+  .tr-ctl{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.9rem;align-items:center}
+  .tr-ctl button{font:inherit;font-weight:700;font-size:.9rem;cursor:pointer;border:none;border-radius:9px;padding:.55rem .95rem;color:#fff;background:var(--accent)}
+  .tr-ctl button.sec{background:var(--pos)}
+  .tr-ctl button.ghost{background:transparent;color:var(--accent);border:1px solid var(--accent)}
+  .tr-ctl input{flex:1;min-width:150px;font:inherit;padding:.5rem .7rem;border:1px solid var(--line);border-radius:9px;background:#fff;color:var(--ink)}
+  .tr-ctl button:focus-visible,.tr-ctl input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+  .tr-result{margin-top:.9rem;font-size:.96rem;min-height:1.2rem}
+  .tr-result .ok{color:var(--pos);font-weight:700}
+  .tr-result .bad{color:var(--neg);font-weight:700}
+  .tr-result .sol{margin-top:.7rem;padding:.85rem 1rem;background:#FCFBFE;border:1px solid var(--line);border-radius:10px;font-family:ui-monospace,Menlo,monospace;font-size:.88rem;line-height:1.85}
+  .tr-result .sol b{color:var(--accent)}
+</style>
+
+<!--LESSON-NAV-TOP--><style>.lnav{--lnav-accent:#3D5AF1}.lnav a{text-decoration:none;font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif}.lnav-top{max-width:820px;margin:0 auto;padding:.75rem clamp(1rem,4vw,1.5rem) .1rem}.lnav-top a{display:inline-flex;align-items:center;gap:.35rem;color:var(--lnav-accent);font-weight:600;font-size:.9rem}.lnav-top a:hover{text-decoration:underline}.lnav-bot{max-width:820px;margin:2.6rem auto 3rem;padding:1.1rem clamp(1rem,4vw,1.5rem) 0;border-top:1px solid #E4E8EF;display:flex;align-items:stretch;gap:.55rem}.lnav-bot a{min-width:0;display:flex;flex-direction:column;justify-content:center;gap:.15rem;border:1px solid #E4E8EF;border-radius:12px;padding:.65rem .85rem;color:#182233;background:#fff;transition:border-color .1s,transform .08s}.lnav-bot a:hover{border-color:var(--lnav-accent);transform:translateY(-1px)}.lnav-bot .prev,.lnav-bot .next{flex:1 1 0}.lnav-bot .next{text-align:right}.lnav-bot .dir{font-size:.72rem;color:#8A93A6;font-weight:600}.lnav-bot .ttl{font-size:.9rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.lnav-bot .to-cat{flex:0 0 auto;flex-direction:row;align-items:center;justify-content:center;color:var(--lnav-accent);font-weight:700;font-size:.85rem;white-space:nowrap}@media(max-width:420px){.lnav-bot .to-cat span{display:none}.lnav-bot .to-cat{padding:.65rem .7rem}}</style><nav class="lnav lnav-top"><a href="./catalog.html">← Все темы</a></nav><!--/LESSON-NAV-TOP-->
+<div class="wrap">
+
+  <header>
+    <p class="eyebrow">Геометрия · 9 класс</p>
+    <h1>Решение задач методом координат</h1>
+    <p class="lede">Кладём фигуру на оси, выписываем координаты вершин — и геометрия превращается в обычную алгебру. <em>Без озарений, по чёткому алгоритму.</em></p>
+  </header>
+
+  <div class="hero-formula">
+    <p class="lbl">Идея метода</p>
+    <div class="eq">геометрия <b>→</b> числа</div>
+    <div class="eq2">
+      AB = √((x₂ − x₁)² + (y₂ − y₁)²)<br>
+      x<sub>M</sub> = (x₁ + x₂) / 2,&nbsp; y<sub>M</sub> = (y₁ + y₂) / 2
+    </div>
+    <p class="note">Две опорные формулы — расстояние и середина. Больше почти ничего и не нужно.</p>
+  </div>
+
+  <section>
+    <p class="kicker">Зачем это нужно</p>
+    <h2>Запасной путь, который работает всегда</h2>
+    <p>Геометрическую задачу можно решать двумя путями. Первый — <strong>классический</strong>: чертёж, теоремы, признаки равенства и подобия, дополнительные построения. Второй — <strong>метод координат</strong>: помещаем фигуру в систему координат <span class="math">Oxy</span>, выписываем координаты вершин, и дальше всё доказательство и все вычисления превращаются в алгебру.</p>
+    <p>Зачем тебе этот навык:</p>
+    <ul>
+      <li>Классическое доказательство часто требует «озарения» — <em>где провести вспомогательную линию?</em> Координатный метод работает по чёткому алгоритму, и он выручает, когда красивая идея не приходит в голову.</li>
+      <li>Это фундамент аналитической геометрии в старших классах и в вузе.</li>
+      <li>Так устроены навигация, компьютерная графика, робототехника: точка задаётся числами, а расстояние и взаимное положение считаются формулами.</li>
+    </ul>
+    <p><strong>Главное заблуждение:</strong> «метод координат — это всегда длиннее и сложнее». Неправда. При <strong>удачном выборе осей</strong> вычисления часто короче, чем поиск подобных треугольников.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Что вспомнить перед стартом</p>
+    <div class="recall">
+      <p><strong>Расстояние между точками.</strong> <span class="math">A(x₁; y₁)</span>, <span class="math">B(x₂; y₂)</span> → <span class="math">AB = √((x₂ − x₁)² + (y₂ − y₁)²)</span>. Проговори вслух: «корень из суммы квадратов разностей».</p>
+      <p><strong>Координаты середины.</strong> Середина <span class="math">M</span> отрезка <span class="math">AB</span>: обе координаты — среднее арифметическое координат концов.</p>
+      <p><strong>Действия с векторами в координатах</strong> — оттуда же привычка складывать и вычитать координаты по отдельности: <span class="math">x</span> с <span class="math">x</span>, <span class="math">y</span> с <span class="math">y</span>.</p>
+      <p>Эти три вещи ты уже знаешь. Новое здесь — <em>не формулы, а стратегия</em>: как поставить оси, чтобы считать было легко.</p>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Ядро темы</p>
+    <h2>Алгоритм из четырёх шагов</h2>
+    <p>Что бы ни было в условии — доказать равенство отрезков, найти длину медианы, проверить перпендикулярность — порядок действий один и тот же:</p>
+    <div class="cases">
+      <div class="case acc">
+        <div class="sign">Шаг 1</div>
+        <div class="count">Выбрать систему координат</div>
+        <div class="desc">Поставить начало <span class="math">O</span> и направить оси <span class="math">Ox</span>, <span class="math">Oy</span> так, чтобы координаты вершин были как можно проще.</div>
+      </div>
+      <div class="case acc">
+        <div class="sign">Шаг 2</div>
+        <div class="count">Записать координаты точек</div>
+        <div class="desc">Всех, которые участвуют в задаче: вершин, середин, концов отрезков.</div>
+      </div>
+      <div class="case acc">
+        <div class="sign">Шаг 3</div>
+        <div class="count">Перевести требование в формулы</div>
+        <div class="desc">«Длина» → формула расстояния. «Середина» → полусумма координат. «Равны» → равенство выражений.</div>
+      </div>
+      <div class="case acc">
+        <div class="sign">Шаг 4</div>
+        <div class="count">Досчитать алгебру</div>
+        <div class="desc">Раскрыть скобки, привести подобные — и получить ответ или нужное равенство.</div>
+      </div>
+    </div>
+
+    <h3>Как выбирать систему координат — это половина успеха</h3>
+    <ul>
+      <li><strong>Начало координат</strong> — в вершину прямого угла или в центр симметрии фигуры. Тогда у точки сразу появляются нули, а нули не надо считать.</li>
+      <li><strong>Одну сторону фигуры</strong> направь вдоль оси <span class="math">Ox</span>. У всех её точек тогда <span class="math">y = 0</span>.</li>
+      <li>Если размеры в задаче <strong>не даны</strong> — обозначай их <strong>буквами</strong> <span class="math">a</span>, <span class="math">b</span>, а не конкретными числами. Иначе доказательство потеряет общность: ты проверишь один случай вместо всех.</li>
+    </ul>
+
+    <p><strong>Обозначения:</strong> <span class="math">x₁, y₁</span> — координаты первой точки, индексы просто различают точки; <span class="math">a, b</span> — произвольные положительные длины сторон.</p>
+    <p><strong>Ограничения:</strong> метод работает на плоскости в декартовой (прямоугольной) системе. Под корнем в формуле расстояния всегда стоит неотрицательное число, поэтому <span class="math">AB ≥ 0</span> — длина отрицательной не бывает.</p>
+
+    <div class="oge-tip"><div class="b">🎯 В ОГЭ</div><div class="x"><b>Задание 24.</b> Геометрическая задача на доказательство из второй части. Если классическое доказательство не складывается, метод координат даёт запасной путь: вводишь оси, выписываешь координаты и доказываешь равенство алгеброй. Тот же приём помогает и в вычислительном задании 25.</div></div>
+  </section>
+
+  <section>
+    <p class="kicker">Наглядность · геометрия и алгебра рядом</p>
+    <h2>Один факт — два языка</h2>
+    <p>Смысл метода: каждое геометрическое слово имеет точный алгебраический перевод. Вот словарик:</p>
+    <div class="tblwrap">
+      <table>
+        <thead><tr><th>Геометрия говорит</th><th>Алгебра пишет</th></tr></thead>
+        <tbody>
+          <tr><td>Длина отрезка <span class="math">AB</span></td><td class="f">√((x₂−x₁)² + (y₂−y₁)²)</td></tr>
+          <tr><td>Середина <span class="math">M</span> отрезка <span class="math">AB</span></td><td class="f">((x₁+x₂)/2 ; (y₁+y₂)/2)</td></tr>
+          <tr><td>Отрезки <span class="math">AC</span> и <span class="math">BD</span> равны</td><td class="f">AC² = BD²</td></tr>
+          <tr><td>Точка лежит на оси <span class="math">Ox</span></td><td class="f">y = 0</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p style="font-size:.92rem;color:var(--muted);margin-top:.9rem">Дальше в этом уроке ты увидишь, как геометрическое «диагонали равны» превращается в скучное, но железное <span class="math">√(a²+b²) = √(a²+b²)</span>. Именно поэтому метод и надёжен: правила алгебры не дают ошибиться «на глаз».</p>
+  </section>
+
+  <section>
+    <p class="kicker">Разбираем вместе · думаю вслух</p>
+    <h2>Эталон: диагонали прямоугольника равны</h2>
+    <div class="worked">
+      <p class="task">Докажи, что диагонали прямоугольника равны.</p>
+      <ol class="steps">
+        <li><strong>Выбираю оси.</strong> Поставлю прямоугольник так, чтобы одна вершина попала в начало координат, а две стороны легли на оси.
+          <span class="think">Почему именно так? Потому что тогда у трёх вершин из четырёх появятся нули — а с нулями считать почти нечего. Это и есть «удачный выбор».</span>
+        </li>
+        <li><strong>Выписываю координаты.</strong> <span class="m">A(0; 0)</span>, <span class="m">B(a; 0)</span>, <span class="m">C(a; b)</span>, <span class="m">D(0; b)</span>, где <span class="m">a</span> и <span class="m">b</span> — длины сторон.
+          <span class="think">Буквы, а не числа — размеры в условии не даны, и я не имею права их придумывать.</span>
+        </li>
+        <li><strong>Нахожу, что считать.</strong> Диагонали — это отрезки <span class="m">AC</span> и <span class="m">BD</span>. Значит, нужны две длины, и надо показать, что они совпали.</li>
+        <li><strong>Считаю AC.</strong> Концы <span class="m">A(0; 0)</span> и <span class="m">C(a; b)</span>:<br>
+          <span class="m">AC = √((a − 0)² + (b − 0)²) = √(a² + b²)</span>.</li>
+        <li><strong>Считаю BD.</strong> Концы <span class="m">B(a; 0)</span> и <span class="m">D(0; b)</span>:<br>
+          <span class="m">BD = √((0 − a)² + (b − 0)²) = √(a² + b²)</span>.
+          <span class="think">Здесь легко потерять минус. Но <span class="m">(0 − a)² = (−a)² = a²</span> — квадрат минуса даёт плюс, поэтому под корнем то же самое.</span>
+        </li>
+        <li><strong>Сравниваю.</strong> Оба выражения — <span class="m">√(a² + b²)</span>. Значит, <span class="m">AC = BD</span>.</li>
+      </ol>
+      <div class="verdict">AC = BD. Что и требовалось доказать.</div>
+      <p style="font-size:.93rem;color:var(--muted);margin-top:.9rem"><strong>Почему это доказательство, а не пример?</strong> Потому что <span class="math">a</span> и <span class="math">b</span> были <strong>произвольными</strong>. Мы ни разу не воспользовались тем, что они какие-то конкретные, — значит, вывод верен для любого прямоугольника сразу.</p>
+    </div>
+
+    <h3>Ещё два примера — уже короче</h3>
+    <div class="drill">
+      <details>
+        <summary><span class="q">Точки <span class="m">A(1; 2)</span> и <span class="m">B(7; 10)</span>. Найди длину <span class="m">AB</span> и координаты середины <span class="m">M</span>.</span><span class="tag">пример</span></summary>
+        <div class="ans">
+          <span class="m">AB = √((7 − 1)² + (10 − 2)²) = √(6² + 8²) = √(36 + 64) = √100 = 10</span>.<br>
+          <span class="m">x<sub>M</sub> = (1 + 7)/2 = 4</span>, &nbsp;<span class="m">y<sub>M</sub> = (2 + 10)/2 = 6</span> → <strong><span class="m">M(4; 6)</span></strong>.
+        </div>
+      </details>
+      <details>
+        <summary><span class="q">Треугольник <span class="m">A(0; 0)</span>, <span class="m">B(6; 0)</span>, <span class="m">C(0; 8)</span>. Докажи, что он прямоугольный, и найди медиану из <span class="m">A</span> к стороне <span class="m">BC</span>.</span><span class="tag">пример</span></summary>
+        <div class="ans">
+          Сторона <span class="m">AB</span> лежит на оси <span class="m">Ox</span>, сторона <span class="m">AC</span> — на оси <span class="m">Oy</span>. Оси перпендикулярны, значит угол <span class="m">A</span> прямой.<br>
+          Середина <span class="m">BC</span>: <span class="m">x = (6 + 0)/2 = 3</span>, <span class="m">y = (0 + 8)/2 = 4</span> → <span class="m">M(3; 4)</span>.<br>
+          Медиана: <span class="m">AM = √(3² + 4²) = √(9 + 16) = √25 = 5</span>.
+        </div>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Покрути сам · интерактив</p>
+    <h2>Треугольник на осях</h2>
+    <p>Двигай ползунки и следи, как вместе с чертежом меняются числа. Вершина <span class="math">A</span> закреплена в начале координат — это как раз «удачный выбор» из шага 1. Пунктиром показана медиана <span class="math">AM</span> к стороне <span class="math">BC</span>.</p>
+    <div class="geo">
+      <canvas id="geoCanvas" width="640" height="462" aria-label="Интерактивный треугольник на координатной плоскости"></canvas>
+      <div class="sliders">
+        <label>B<sub>x</sub> <span id="vbx" class="sval">6</span><input id="sbx" type="range" min="1" max="9" step="1" value="6" aria-label="Абсцисса точки B"></label>
+        <label>C<sub>x</sub> <span id="vcx" class="sval">0</span><input id="scx" type="range" min="-6" max="8" step="1" value="0" aria-label="Абсцисса точки C"></label>
+        <label>C<sub>y</sub> <span id="vcy" class="sval">8</span><input id="scy" type="range" min="1" max="9" step="1" value="8" aria-label="Ордината точки C"></label>
+      </div>
+      <div class="geo-read">
+        <div id="rM">M(3; 4)</div>
+        <div id="rAM">AM = <b>5</b></div>
+        <div id="rAB">AB = <b>6</b></div>
+        <div id="rAC">AC = <b>8</b></div>
+      </div>
+      <div id="geoNote" class="geo-note right">C<sub>x</sub> = 0 · сторона AC лежит на оси Oy, угол A прямой</div>
+    </div>
+    <p style="font-size:.9rem;color:var(--muted)">Поставь <span class="math">C<sub>x</sub> = 0</span> — и получишь ровно тот треугольник из примера выше: <span class="math">M(3; 4)</span>, <span class="math">AM = 5</span>. А теперь сдвинь <span class="math">C</span> вбок: угол перестал быть прямым, но формулы работают точно так же. В этом и сила метода — ему всё равно, какая у тебя фигура.</p>
+
+    <div class="drill" style="margin-top:1.1rem">
+      <details>
+        <summary><span class="q">Предскажи → проверь → объясни: равны ли диагонали ромба?</span><span class="tag">подумай</span></summary>
+        <div class="ans">
+          Сначала <strong>предскажи</strong> ответ, не считая. Потом <strong>проверь</strong> координатами: центр ромба удобно взять за начало, тогда вершины — <span class="m">A(−a; 0)</span>, <span class="m">B(0; b)</span>, <span class="m">C(a; 0)</span>, <span class="m">D(0; −b)</span>.<br>
+          <span class="m">AC = √((a − (−a))² + 0²) = √((2a)²) = 2a</span>, &nbsp;<span class="m">BD = √(0² + (−b − b)²) = √((2b)²) = 2b</span>.<br>
+          <strong>Объясни:</strong> <span class="m">2a = 2b</span> только если <span class="m">a = b</span>, то есть лишь у частного ромба — квадрата. У обычного ромба диагонали <strong>не равны</strong>. Прямоугольник и ромб выглядят похоже, а ведут себя по-разному — координаты это показывают за две строчки.
+        </div>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Теперь ты · от простого к сложному</p>
+    <h2>Практика</h2>
+    <div class="drill">
+      <details>
+        <summary><span class="q">Запиши формулу расстояния между <span class="m">A(x₁; y₁)</span> и <span class="m">B(x₂; y₂)</span>.</span><span class="tag">понимание</span></summary>
+        <div class="ans"><span class="m">AB = √((x₂ − x₁)² + (y₂ − y₁)²)</span> — корень из <strong>суммы</strong> квадратов разностей. Порядок вычитания не важен: разность возводится в квадрат, и минус исчезает.</div>
+      </details>
+      <details>
+        <summary><span class="q">Объясни словами, почему начало координат выгодно ставить в вершину прямого угла.</span><span class="tag">понимание</span></summary>
+        <div class="ans">Потому что стороны прямого угла тогда лягут на оси. У точек на оси <span class="m">Ox</span> ордината равна нулю, у точек на <span class="m">Oy</span> — абсцисса. Нули в формулах ничего не добавляют, и вычисления резко сокращаются: вместо <span class="m">(x₂ − x₁)²</span> остаётся просто <span class="m">x₂²</span>.</div>
+      </details>
+      <details>
+        <summary><span class="q">Квадрат <span class="m">ABCD</span> со стороной 4. Введи систему координат с началом в вершине <span class="m">A</span>, выпиши координаты всех вершин и найди диагональ <span class="m">AC</span>.</span><span class="tag">применение</span></summary>
+        <div class="ans">
+          Оси — вдоль сторон: <span class="m">A(0; 0)</span>, <span class="m">B(4; 0)</span>, <span class="m">C(4; 4)</span>, <span class="m">D(0; 4)</span>.<br>
+          <span class="m">AC = √((4 − 0)² + (4 − 0)²) = √(16 + 16) = √32 = 4√2 ≈ 5,66</span>.
+        </div>
+      </details>
+      <details>
+        <summary><span class="q">Что изменится, если в эталоне вместо прямоугольника взять произвольный параллелограмм <span class="m">A(0;0)</span>, <span class="m">B(a;0)</span>, <span class="m">C(a+c; b)</span>, <span class="m">D(c; b)</span> — останутся ли диагонали равными?</span><span class="tag">анализ</span></summary>
+        <div class="ans">
+          Считаем обе: <span class="m">AC = √((a + c)² + b²)</span>, &nbsp;<span class="m">BD = √((c − a)² + b²)</span>.<br>
+          Под корнями <span class="m">(a + c)²</span> и <span class="m">(c − a)²</span> — это разные числа, если только <span class="m">a</span> и <span class="m">c</span> не подобраны специально. При <span class="m">c = 0</span> параллелограмм как раз становится прямоугольником, и оба выражения превращаются в <span class="m">√(a² + b²)</span> — равенство возвращается.<br>
+          <strong>Вывод:</strong> у произвольного параллелограмма диагонали <strong>не равны</strong>. Равенство — особое свойство именно прямоугольника, и координаты показывают, откуда оно берётся.
+        </div>
+      </details>
+      <details>
+        <summary><span class="q">Найди ошибку. Ученик написал: <span class="m">AB = √((x₂ − x₁)² − (y₂ − y₁)²)</span>.</span><span class="tag">анализ</span></summary>
+        <div class="ans">
+          Он поставил <strong>минус</strong> вместо плюса между квадратами. В формуле расстояния — <strong>сумма</strong> квадратов разностей.<br>
+          К чему это приведёт: длина получится заниженной, а если <span class="m">|y₂ − y₁| &gt; |x₂ − x₁|</span> — под корнем окажется отрицательное число, и корень вообще не извлечётся. Проверь на <span class="m">A(1; 2)</span>, <span class="m">B(7; 10)</span>: правильно <span class="m">√(36 + 64) = 10</span>, а по ошибочной формуле <span class="m">√(36 − 64) = √(−28)</span> — бессмыслица.
+        </div>
+      </details>
+      <details>
+        <summary><span class="q">Обратная задача. Середина отрезка <span class="m">AB</span> — точка <span class="m">M(5; 3)</span>, а <span class="m">A(2; 1)</span>. Найди координаты <span class="m">B</span>.</span><span class="tag">анализ</span></summary>
+        <div class="ans">
+          Формула середины: <span class="m">(2 + x<sub>B</sub>)/2 = 5</span> → <span class="m">2 + x<sub>B</sub> = 10</span> → <span class="m">x<sub>B</sub> = 8</span>.<br>
+          Так же по <span class="m">y</span>: <span class="m">(1 + y<sub>B</sub>)/2 = 3</span> → <span class="m">1 + y<sub>B</sub> = 6</span> → <span class="m">y<sub>B</sub> = 5</span>.<br>
+          Ответ: <strong><span class="m">B(8; 5)</span></strong>. Проверка: середина <span class="m">((2+8)/2; (1+5)/2) = (5; 3)</span> — сошлось.
+        </div>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Тренажёр · бесконечная практика</p>
+    <h2>Реши задачу методом координат</h2>
+    <p>Нажми «Новая задача», сделай чертёж на черновике и посчитай. Ответ вводи числом; если просят координаты — <strong>два числа через точку с запятой</strong> (например <span class="math">3; −4</span>). Минус можно писать обычным дефисом.</p>
+    <div class="trainer">
+      <div class="tr-eq" id="trTask">Задача загружается…</div>
+      <div class="tr-ctl">
+        <button id="trNew" type="button">🎲 Новая задача</button>
+        <input id="trAns" type="text" inputmode="text" autocomplete="off" placeholder="напр.  10   или   3; −4" aria-label="Ответ">
+        <button id="trCheck" type="button" class="sec">Проверить</button>
+        <button id="trShow" type="button" class="ghost">Показать решение</button>
+      </div>
+      <div id="trResult" class="tr-result"></div>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Где чаще всего ошибаются</p>
+    <h2>Четыре типичные ловушки</h2>
+    <ul class="pitfalls">
+      <li><b>Неудачный выбор системы координат.</b> Оси ставят «как попало», получают громоздкие координаты и тонут в вычислениях. <em>Как не допустить:</em> начало — в прямой угол или центр симметрии, одну сторону — вдоль оси. Потрать полминуты на выбор осей <strong>до</strong> того, как начнёшь считать.</li>
+      <li><b>Потеря общности: вместо букв подставляют числа.</b> Чтобы доказать факт «для любого прямоугольника», берут стороны 3 и 5 — это проверка одного случая, а не доказательство. <em>Как не допустить:</em> если размеры в условии не заданы, обозначай их буквами <span class="math">a</span>, <span class="math">b</span>.</li>
+      <li><b>Путаница в знаках формул.</b> В расстоянии — <strong>сумма</strong> квадратов (с плюсом), в середине — <strong>сумма</strong> координат, делённая на 2. Часто пишут разность под корнем или забывают разделить пополам. <em>Как не допустить:</em> проговаривай формулу вслух — «корень из суммы квадратов разностей».</li>
+      <li><b>Алгебраические ошибки в преобразованиях.</b> Теряют минус при раскрытии <span class="math">(0 − a)²</span> или считают, что <span class="math">(−a)² = −a²</span>. <em>Как не допустить:</em> помни: <span class="math">(−a)² = a²</span>. Раскрывай скобки по шагам, не в уме.</li>
+    </ul>
+  </section>
+
+  <section>
+    <p class="kicker">Проверь себя</p>
+    <h2>Объясни своими словами</h2>
+    <p>Закрой урок и ответь вслух — как будто объясняешь другу:</p>
+    <ol class="checkq">
+      <li>По какой формуле находят длину отрезка по координатам его концов?</li>
+      <li>Куда выгоднее всего поместить начало координат в фигуре с прямым углом и почему?</li>
+      <li>Почему при доказательстве общего факта стороны фигуры обозначают буквами, а не числами?</li>
+    </ol>
+    <p style="font-size:.93rem;color:var(--muted)">Если на каком-то вопросе запнулся — вернись к соответствующему разделу, это нормально. Понимание проверяется не тем, помнишь ли ты, а тем, можешь ли объяснить.</p>
+  </section>
+
+  <section>
+    <div class="next">
+      <h2>Что дальше</h2>
+      <p>Метод координат — финальный приём в теме координат на плоскости: расстояние, середина и действия с векторами теперь собраны в один рабочий инструмент.</p>
+      <div class="eq">геометрия → координаты → алгебра → ответ</div>
+      <p>Дальше этот же метод разворачивается в аналитическую геометрию старших классов и вуза: уравнения линий, координаты в пространстве. Меняются формулы — идея остаётся ровно та же: перевести фигуру на язык чисел. А пока тренируй главное — <strong>удачный выбор осей</strong>: именно он отличает решение на пять строк от решения на страницу.</p>
+    </div>
+  </section>
+
+  <p class="foot">Итог одним предложением: метод координат превращает геометрическую задачу в алгебраическую — удачно вводим систему координат, выписываем координаты точек и доказываем нужное равенство формулами расстояния и середины.</p>
+
+</div>
+
+<script>
+(function(){
+  var cv=document.getElementById('geoCanvas'); if(!cv) return;
+  var ctx=cv.getContext('2d');
+  var sbx=document.getElementById('sbx'), scx=document.getElementById('scx'), scy=document.getElementById('scy');
+  var vbx=document.getElementById('vbx'), vcx=document.getElementById('vcx'), vcy=document.getElementById('vcy');
+  var rM=document.getElementById('rM'), rAM=document.getElementById('rAM'),
+      rAB=document.getElementById('rAB'), rAC=document.getElementById('rAC'), note=document.getElementById('geoNote');
+  var XMIN=-7.5, XMAX=10.5, YMIN=-2.5, YMAX=10.5;
+  var W=640, H=462, dpr=1;
+
+  function mi(s){ return String(s).replace(/-/g,'−'); }
+  function num(n){ var r=Math.round(n*100)/100; if(Object.is(r,-0)) r=0; var s=(''+r).replace('.',','); return mi(s); }
+
+  function resize(){
+    var cssW=cv.clientWidth||640;
+    dpr=Math.min(window.devicePixelRatio||1,2);
+    W=cssW; H=Math.round(cssW*(YMAX-YMIN)/(XMAX-XMIN));
+    cv.width=Math.round(W*dpr); cv.height=Math.round(H*dpr);
+    cv.style.height=H+'px';
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+  }
+  function X(x){ return (x-XMIN)/(XMAX-XMIN)*W; }
+  function Y(y){ return H-(y-YMIN)/(YMAX-YMIN)*H; }
+
+  function dot(x,y,color,label,lx,ly){
+    ctx.fillStyle=color; ctx.beginPath(); ctx.arc(X(x),Y(y),5,0,Math.PI*2); ctx.fill();
+    ctx.fillStyle='#fff'; ctx.beginPath(); ctx.arc(X(x),Y(y),2,0,Math.PI*2); ctx.fill();
+    if(label){
+      ctx.fillStyle=color;
+      ctx.font='bold 13px ui-monospace,Menlo,monospace';
+      ctx.textAlign='left'; ctx.textBaseline='alphabetic';
+      ctx.fillText(label, X(x)+(lx||0), Y(y)+(ly||0));
+    }
+  }
+
+  function draw(){
+    var bx=parseFloat(sbx.value), cx=parseFloat(scx.value), cy=parseFloat(scy.value);
+    vbx.textContent=mi(bx); vcx.textContent=mi(cx); vcy.textContent=mi(cy);
+
+    if(!W||!H) return;
+    ctx.clearRect(0,0,W,H);
+
+    /* сетка */
+    ctx.strokeStyle='#EDEFF4'; ctx.lineWidth=1;
+    for(var gx=Math.ceil(XMIN);gx<=XMAX;gx++){ ctx.beginPath(); ctx.moveTo(X(gx),0); ctx.lineTo(X(gx),H); ctx.stroke(); }
+    for(var gy=Math.ceil(YMIN);gy<=YMAX;gy++){ ctx.beginPath(); ctx.moveTo(0,Y(gy)); ctx.lineTo(W,Y(gy)); ctx.stroke(); }
+
+    /* оси */
+    ctx.strokeStyle='#9AA3B2'; ctx.lineWidth=1.5;
+    ctx.beginPath(); ctx.moveTo(0,Y(0)); ctx.lineTo(W,Y(0)); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(X(0),0); ctx.lineTo(X(0),H); ctx.stroke();
+
+    /* подписи осей */
+    ctx.fillStyle='#8A93A6'; ctx.font='11px system-ui,sans-serif';
+    ctx.textAlign='center'; ctx.textBaseline='top';
+    for(var tx=Math.ceil(XMIN);tx<=XMAX;tx+=2){ if(tx===0) continue; ctx.fillText(mi(tx), X(tx), Y(0)+4); }
+    ctx.textAlign='right'; ctx.textBaseline='middle';
+    for(var ty=Math.ceil(YMIN);ty<=YMAX;ty+=2){ if(ty===0) continue; ctx.fillText(mi(ty), X(0)-5, Y(ty)); }
+    ctx.textAlign='left'; ctx.textBaseline='top';
+    ctx.fillText('x', W-12, Y(0)+4);
+    ctx.textBaseline='top';
+    ctx.fillText('y', X(0)+6, 4);
+
+    /* треугольник */
+    ctx.strokeStyle='#3B4FD0'; ctx.lineWidth=2.5; ctx.lineJoin='round';
+    ctx.beginPath();
+    ctx.moveTo(X(0),Y(0)); ctx.lineTo(X(bx),Y(0)); ctx.lineTo(X(cx),Y(cy)); ctx.closePath();
+    ctx.stroke();
+    ctx.fillStyle='rgba(59,79,208,0.08)'; ctx.fill();
+
+    /* медиана AM пунктиром */
+    var mx=(bx+cx)/2, my=cy/2;
+    ctx.save();
+    ctx.setLineDash([6,5]); ctx.strokeStyle='#1E8E5A'; ctx.lineWidth=2;
+    ctx.beginPath(); ctx.moveTo(X(0),Y(0)); ctx.lineTo(X(mx),Y(my)); ctx.stroke();
+    ctx.restore();
+
+    /* точки */
+    dot(0,0,'#1B2333','A(0; 0)',-46,18);
+    dot(bx,0,'#1B2333','B('+mi(bx)+'; 0)',-18,20);
+    dot(cx,cy,'#1B2333','C('+mi(cx)+'; '+mi(cy)+')',8,-8);
+    dot(mx,my,'#1E8E5A','M',8,16);
+
+    /* показания */
+    var AM=Math.sqrt(mx*mx+my*my);
+    var AB=Math.abs(bx);
+    var AC=Math.sqrt(cx*cx+cy*cy);
+    rM.textContent='M('+num(mx)+'; '+num(my)+')';
+    rAM.innerHTML='AM = <b>'+num(AM)+'</b>';
+    rAB.innerHTML='AB = <b>'+num(AB)+'</b>';
+    rAC.innerHTML='AC = <b>'+num(AC)+'</b>';
+
+    if(cx===0){
+      note.className='geo-note right';
+      note.innerHTML='C<sub>x</sub> = 0 · сторона AC лежит на оси Oy, угол A прямой';
+    } else {
+      note.className='geo-note';
+      note.innerHTML='Угол A уже не прямой — но формулы расстояния и середины работают так же';
+    }
+  }
+
+  [sbx,scx,scy].forEach(function(s){ s.addEventListener('input',draw); });
+  window.addEventListener('resize',function(){ resize(); draw(); });
+  resize(); draw();
+})();
+</script>
+
+<script>
+(function(){
+  var taskEl=document.getElementById('trTask'), ansEl=document.getElementById('trAns'), resEl=document.getElementById('trResult');
+  if(!taskEl) return;
+
+  var TRIPLES=[[3,4,5],[4,3,5],[6,8,10],[8,6,10],[5,12,13],[12,5,13],[8,15,17],[15,8,17],[7,24,25],[9,12,15],[12,9,15],[20,15,25]];
+  function ri(min,max){ return Math.floor(Math.random()*(max-min+1))+min; }
+  function pick(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+  function mi(s){ return String(s).replace(/-/g,'−'); }
+  function n(v){ return mi(''+v); }
+  function P(name,x,y){ return name+'('+n(x)+'; '+n(y)+')'; }
+
+  var cur=null;
+
+  function makeTask(){
+    var t=ri(1,4), x0=ri(-4,4), y0=ri(-4,4), tr=pick(TRIPLES);
+    if(t===1){
+      /* медиана из вершины прямого угла */
+      var m=tr[0], k=tr[1], r=tr[2];
+      var A=[x0,y0], B=[x0+2*m, y0], C=[x0, y0+2*k];
+      return {type:1, A:A, B:B, C:C, m:m, k:k,
+        M:[x0+m, y0+k], ans:[r]};
+    }
+    if(t===2){
+      /* диагональ прямоугольника */
+      var a=tr[0], b=tr[1], d=tr[2];
+      var A2=[x0,y0], B2=[x0+a,y0], C2=[x0+a,y0+b], D2=[x0,y0+b];
+      return {type:2, A:A2, B:B2, C:C2, D:D2, a:a, b:b, ans:[d]};
+    }
+    if(t===3){
+      /* середина стороны BC треугольника */
+      var m3=tr[0], k3=tr[1];
+      var A3=[x0,y0], B3=[x0+2*m3, y0], C3=[x0, y0+2*k3];
+      return {type:3, A:A3, B:B3, C:C3, ans:[x0+m3, y0+k3]};
+    }
+    /* t===4: обратная задача на середину */
+    var ax=ri(-7,7), ay=ri(-7,7), mx=ri(-7,7), my=ri(-7,7);
+    if(mx===ax && my===ay){ mx=ax+ri(1,3); }
+    return {type:4, A:[ax,ay], M:[mx,my], ans:[2*mx-ax, 2*my-ay]};
+  }
+
+  function taskHTML(q){
+    if(q.type===1){
+      return 'Треугольник ABC: '+P('A',q.A[0],q.A[1])+', '+P('B',q.B[0],q.B[1])+', '+P('C',q.C[0],q.C[1])+'.'+
+             '<span class="ask">Найди длину медианы AM, проведённой из вершины A к стороне BC.</span>';
+    }
+    if(q.type===2){
+      return 'Прямоугольник ABCD: '+P('A',q.A[0],q.A[1])+', '+P('B',q.B[0],q.B[1])+', '+P('C',q.C[0],q.C[1])+', '+P('D',q.D[0],q.D[1])+'.'+
+             '<span class="ask">Докажи, что диагонали равны, и найди их длину.</span>';
+    }
+    if(q.type===3){
+      return 'Треугольник ABC: '+P('A',q.A[0],q.A[1])+', '+P('B',q.B[0],q.B[1])+', '+P('C',q.C[0],q.C[1])+'.'+
+             '<span class="ask">Найди координаты середины M стороны BC. Ответ: два числа через «;».</span>';
+    }
+    return 'Точка '+P('M',q.M[0],q.M[1])+' — середина отрезка AB, причём '+P('A',q.A[0],q.A[1])+'.'+
+           '<span class="ask">Найди координаты точки B. Ответ: два числа через «;».</span>';
+  }
+
+  function solHTML(q){
+    var h='<div class="sol">';
+    if(q.type===1){
+      h+='1) Середина BC: x = ('+n(q.B[0])+' + '+n(q.C[0])+') / 2 = '+n(q.M[0])+'<br>';
+      h+='&nbsp;&nbsp;&nbsp;y = ('+n(q.B[1])+' + '+n(q.C[1])+') / 2 = '+n(q.M[1])+' → M('+n(q.M[0])+'; '+n(q.M[1])+')<br>';
+      h+='2) AM = √(('+n(q.M[0])+' − '+n(q.A[0])+')² + ('+n(q.M[1])+' − '+n(q.A[1])+')²)<br>';
+      h+='&nbsp;&nbsp;&nbsp;= √('+n(q.m)+'² + '+n(q.k)+'²) = √'+n(q.m*q.m+q.k*q.k)+' = <b>'+n(q.ans[0])+'</b>';
+    } else if(q.type===2){
+      h+='1) Диагональ AC: √(('+n(q.C[0])+' − '+n(q.A[0])+')² + ('+n(q.C[1])+' − '+n(q.A[1])+')²) = √('+n(q.a)+'² + '+n(q.b)+'²)<br>';
+      h+='2) Диагональ BD: √(('+n(q.D[0])+' − '+n(q.B[0])+')² + ('+n(q.D[1])+' − '+n(q.B[1])+')²) = √((−'+n(q.a)+')² + '+n(q.b)+'²)<br>';
+      h+='3) Под корнем одно и то же: '+n(q.a*q.a)+' + '+n(q.b*q.b)+' = '+n(q.a*q.a+q.b*q.b)+' → AC = BD<br>';
+      h+='4) Длина: √'+n(q.a*q.a+q.b*q.b)+' = <b>'+n(q.ans[0])+'</b>';
+    } else if(q.type===3){
+      h+='x = ('+n(q.B[0])+' + '+n(q.C[0])+') / 2 = '+n(q.B[0]+q.C[0])+' / 2 = <b>'+n(q.ans[0])+'</b><br>';
+      h+='y = ('+n(q.B[1])+' + '+n(q.C[1])+') / 2 = '+n(q.B[1]+q.C[1])+' / 2 = <b>'+n(q.ans[1])+'</b><br>';
+      h+='M('+n(q.ans[0])+'; '+n(q.ans[1])+')';
+    } else {
+      h+='('+n(q.A[0])+' + x<sub>B</sub>) / 2 = '+n(q.M[0])+' → x<sub>B</sub> = 2·'+n(q.M[0])+' − '+n(q.A[0])+' = <b>'+n(q.ans[0])+'</b><br>';
+      h+='('+n(q.A[1])+' + y<sub>B</sub>) / 2 = '+n(q.M[1])+' → y<sub>B</sub> = 2·'+n(q.M[1])+' − '+n(q.A[1])+' = <b>'+n(q.ans[1])+'</b><br>';
+      h+='B('+n(q.ans[0])+'; '+n(q.ans[1])+')';
+    }
+    return h+'</div>';
+  }
+
+  function parseAns(raw, need){
+    var s=raw.replace(/[−–—‒]/g,'-').replace(/\s+/g,' ').trim();
+    s=s.replace(/[xyXYхуХУ]\s*[₁₂BВbв]?\s*=/g,' ');
+    s=s.replace(/[()]/g,' ');
+    if(need===2){ s=s.replace(/,/g,';'); }
+    else { s=s.replace(/(\d),(\d)/g,'$1.$2'); }
+    var parts=s.split(/[;\s]+/).filter(function(p){ return p!==''; });
+    var out=[];
+    for(var i=0;i<parts.length;i++){
+      if(!/^[-+]?\d+(\.\d+)?$/.test(parts[i])) return null;
+      out.push(parseFloat(parts[i]));
+    }
+    return out.length?out:null;
+  }
+
+  function render(focus){
+    cur=makeTask();
+    taskEl.innerHTML=taskHTML(cur);
+    resEl.innerHTML='';
+    ansEl.value='';
+    if(focus) ansEl.focus();
+  }
+
+  function check(){
+    if(!cur) return;
+    var need=cur.ans.length;
+    var raw=ansEl.value;
+    if(!raw || !raw.trim()){
+      resEl.innerHTML='<span class="bad">Введи ответ или нажми «Показать решение».</span>';
+      return;
+    }
+    var got=parseAns(raw, need);
+    if(!got){
+      resEl.innerHTML='<span class="bad">Не понял запись. Введи '+(need===2?'два числа через точку с запятой, напр. «3; −4»':'одно число, напр. «10»')+'.</span>';
+      return;
+    }
+    if(got.length!==need){
+      resEl.innerHTML='<span class="bad">Нужно '+(need===2?'два числа':'одно число')+', а получено '+got.length+'.</span>'+solHTML(cur);
+      return;
+    }
+    var ok=true;
+    for(var i=0;i<need;i++){ if(Math.abs(got[i]-cur.ans[i])>0.01) ok=false; }
+    if(ok){ resEl.innerHTML='<span class="ok">✓ Верно! Так и есть.</span>'+solHTML(cur); }
+    else{ resEl.innerHTML='<span class="bad">✗ Пока не то. Проверь знаки при вычитании координат.</span>'+solHTML(cur); }
+  }
+
+  document.getElementById('trNew').addEventListener('click',function(){ render(true); });
+  document.getElementById('trCheck').addEventListener('click',check);
+  document.getElementById('trShow').addEventListener('click',function(){ if(cur) resEl.innerHTML=solHTML(cur); });
+  ansEl.addEventListener('keydown',function(e){ if(e.key==='Enter') check(); });
+
+  render(false);
+})();
+</script>
+<!--LESSON-NAV-BOT--><nav class="lnav lnav-bot"><a class="prev" href="./geo9-koord-uravnenie-pryamoj.html"><span class="dir">← Предыдущая</span><span class="ttl">Уравнение прямой</span></a><a class="to-cat" href="./catalog.html">📚 <span>Все темы</span></a><a class="next" href="./geo9-trig-lyuboj-ugol.html"><span class="dir">Следующая →</span><span class="ttl">Синус, косинус, тангенс для углов от 0° до 180°</span></a></nav><!--/LESSON-NAV-BOT-->

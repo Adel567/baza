@@ -1,0 +1,807 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Дискриминант и число точек пересечения с осью Ox — урок, алгебра 9 класс</title>
+<style>
+  :root{
+    --paper:#F6F7F9;
+    --card:#FFFFFF;
+    --ink:#1B2333;
+    --muted:#5A6478;
+    --line:#E2E5EC;
+    --accent:#3B4FD0;
+    --accent-soft:#EAEDFB;
+    --pos:#1E8E5A;   /* D>0 — две точки */
+    --pos-bg:#E7F4EC;
+    --zero:#B9791A;  /* D=0 — одна точка */
+    --zero-bg:#FBF1DC;
+    --neg:#C0455B;   /* D<0 — ни одной */
+    --neg-bg:#F9E9EC;
+  }
+  *{box-sizing:border-box}
+  body{margin:0}
+  .wrap{
+    max-width:760px;
+    margin:0 auto;
+    padding:clamp(1.4rem,4vw,3rem) clamp(1.1rem,4vw,2rem) 4rem;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    font-size:17px;
+    line-height:1.62;
+    -webkit-font-smoothing:antialiased;
+  }
+  .eyebrow{
+    font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--accent);font-weight:600;margin:0 0 .5rem;
+  }
+  h1{
+    font-family:Georgia,"Times New Roman",serif;
+    font-size:clamp(1.9rem,6vw,2.7rem);
+    line-height:1.06;margin:0;font-weight:700;letter-spacing:-.01em;
+    text-wrap:balance;
+  }
+  .lede{
+    font-size:1.08rem;color:var(--muted);margin:.7rem 0 0;max-width:60ch;
+    text-wrap:pretty;
+  }
+  h2{
+    font-family:Georgia,serif;font-size:1.32rem;font-weight:700;
+    margin:0 0 .1rem;letter-spacing:-.005em;
+  }
+  section{margin-top:2.6rem}
+  .kicker{
+    font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--muted);font-weight:600;margin:0 0 .8rem;
+    display:flex;align-items:center;gap:.6rem;
+  }
+  .kicker::before{
+    content:"";width:1.4rem;height:2px;background:var(--accent);border-radius:2px;
+  }
+  p{margin:.65rem 0}
+  strong{font-weight:650}
+  .math{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-weight:600}
+  sup{font-size:.72em}
+
+  /* Главная формула */
+  .hero-formula{
+    margin-top:2.2rem;
+    background:var(--ink);color:#fff;border-radius:14px;
+    padding:1.6rem 1.4rem;text-align:center;
+  }
+  .hero-formula .lbl{
+    font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;
+    color:#9aa6c9;margin:0 0 .7rem;
+  }
+  .hero-formula .eq{
+    font-family:ui-monospace,"SF Mono",Menlo,monospace;
+    font-size:clamp(1.5rem,5.4vw,2.2rem);font-weight:700;letter-spacing:.01em;
+  }
+  .hero-formula .eq b{color:#8ea0ff;font-weight:700}
+  .hero-formula .note{font-size:.86rem;color:#9aa6c9;margin:.8rem 0 0}
+
+  /* Пререквизит */
+  .recall{
+    background:var(--accent-soft);border-radius:12px;padding:1rem 1.15rem;
+    font-size:.96rem;
+  }
+  .recall p{margin:.3rem 0}
+
+  /* Три случая */
+  .cases{display:grid;gap:.85rem;margin-top:.4rem}
+  @media(min-width:620px){.cases{grid-template-columns:repeat(3,1fr)}}
+  .case{
+    border-radius:12px;padding:1.05rem 1.1rem;border:1px solid var(--line);
+    background:var(--card);display:flex;flex-direction:column;gap:.35rem;
+  }
+  .case .sign{font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.15rem}
+  .case .count{font-weight:650;font-size:1rem}
+  .case .desc{font-size:.9rem;color:var(--muted)}
+  .case.pos{border-top:4px solid var(--pos);background:var(--pos-bg)}
+  .case.pos .sign{color:var(--pos)}
+  .case.zero{border-top:4px solid var(--zero);background:var(--zero-bg)}
+  .case.zero .sign{color:var(--zero)}
+  .case.neg{border-top:4px solid var(--neg);background:var(--neg-bg)}
+  .case.neg .sign{color:var(--neg)}
+  .case .mini{margin-top:.35rem}
+  .case .mini svg{display:block;width:100%;height:auto}
+
+  /* Таблица-правило */
+  .tbl-scroll{overflow-x:auto;margin-top:.8rem;border:1px solid var(--line);border-radius:12px;background:var(--card)}
+  table{border-collapse:collapse;width:100%;min-width:430px;font-size:.95rem}
+  th,td{padding:.6rem .85rem;text-align:left;border-bottom:1px solid var(--line)}
+  th{font-size:.74rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:700}
+  tr:last-child td{border-bottom:none}
+  td.s{font-family:ui-monospace,Menlo,monospace;font-weight:700}
+  td.s.pos{color:var(--pos)} td.s.zero{color:var(--zero)} td.s.neg{color:var(--neg)}
+
+  /* Разбор */
+  .worked{
+    background:var(--card);border:1px solid var(--line);border-radius:12px;
+    padding:1.2rem 1.3rem;
+  }
+  .worked .task{
+    font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.02rem;
+    margin:0 0 1rem;padding-bottom:.8rem;border-bottom:1px solid var(--line);
+  }
+  ol.steps{margin:0;padding:0;list-style:none;counter-reset:s;display:flex;flex-direction:column;gap:.7rem}
+  ol.steps li{position:relative;padding-left:2.1rem;counter-increment:s}
+  ol.steps li::before{
+    content:counter(s);position:absolute;left:0;top:.05rem;
+    width:1.5rem;height:1.5rem;border-radius:50%;
+    background:var(--accent-soft);color:var(--accent);
+    font-size:.82rem;font-weight:700;display:flex;align-items:center;justify-content:center;
+  }
+  ol.steps .m{font-family:ui-monospace,Menlo,monospace;font-weight:600;color:var(--ink)}
+  ol.steps .why{display:block;font-size:.86rem;color:var(--muted)}
+  .verdict{
+    margin-top:1rem;padding:.7rem 1rem;background:var(--pos-bg);
+    border-radius:9px;font-weight:600;color:var(--pos);font-size:.98rem;
+  }
+  .verdict.neg{background:var(--neg-bg);color:var(--neg)}
+
+  /* Заполни пропуск */
+  .gap{background:var(--card);border:1px dashed var(--accent);border-radius:12px;padding:1.1rem 1.2rem;margin-top:1rem}
+  .gap .task{font-family:ui-monospace,Menlo,monospace;font-weight:700;margin:0 0 .6rem}
+  .gap ol{margin:.2rem 0 0;padding-left:1.3rem}
+  .gap li{margin:.25rem 0;font-family:ui-monospace,Menlo,monospace;font-size:.95rem}
+  .blank{display:inline-block;min-width:3.2ch;border-bottom:2px solid var(--accent);text-align:center}
+
+  /* Практика */
+  .drill{display:flex;flex-direction:column;gap:.7rem}
+  details{
+    background:var(--card);border:1px solid var(--line);border-radius:10px;
+    padding:.85rem 1.05rem;
+  }
+  details[open]{border-color:var(--accent)}
+  summary{
+    cursor:pointer;font-weight:600;list-style:none;
+    display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap;
+  }
+  summary::-webkit-details-marker{display:none}
+  summary:focus-visible{outline:3px solid var(--accent);outline-offset:3px;border-radius:6px}
+  summary .q{font-family:ui-monospace,Menlo,monospace;flex:1;min-width:12ch}
+  summary .tag{
+    font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);
+    border:1px solid var(--line);border-radius:20px;padding:.1rem .55rem;white-space:nowrap;
+  }
+  summary::after{
+    content:"показать ответ";font-size:.78rem;color:var(--accent);font-weight:600;white-space:nowrap;
+  }
+  details[open] summary::after{content:"скрыть"}
+  .ans{margin-top:.7rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.96rem;color:var(--muted)}
+  .ans .m{font-family:ui-monospace,Menlo,monospace;color:var(--ink);font-weight:600}
+
+  /* Ошибки */
+  ul.pitfalls{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:.6rem}
+  ul.pitfalls li{padding-left:1.5rem;position:relative;font-size:.98rem}
+  ul.pitfalls li::before{
+    content:"×";position:absolute;left:0;top:-.05rem;color:var(--neg);font-weight:700;font-size:1.1rem;
+  }
+  ul.pitfalls b{color:var(--ink)}
+
+  /* Проверка понимания */
+  ol.selfcheck{margin:0;padding-left:1.3rem}
+  ol.selfcheck li{margin:.4rem 0}
+
+  .next{background:var(--accent);color:#fff;border-radius:12px;padding:1.2rem 1.3rem}
+  .next h2{color:#fff}
+  .next .eq{
+    font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.15rem;
+    margin:.6rem 0 .3rem;
+  }
+  .next p{color:#dfe4fb;font-size:.96rem;margin:.4rem 0 0}
+  .foot{margin-top:2.4rem;font-size:.82rem;color:var(--muted);text-align:center}
+
+  /* Семейство: поднимаем параболу */
+  .family{
+    margin-top:1.1rem;background:var(--card);border:1px solid var(--line);
+    border-radius:12px;padding:1.1rem 1.2rem;
+  }
+  .family .cap{font-size:.94rem;color:var(--muted);margin:0 0 .85rem}
+  .family .cap b{color:var(--ink)}
+  .frow{
+    display:flex;align-items:center;gap:.7rem;flex-wrap:wrap;
+    padding:.55rem 0;border-top:1px dashed var(--line);
+    font-family:ui-monospace,Menlo,monospace;
+  }
+  .frow:first-of-type{border-top:none}
+  .frow .fe{font-weight:700;font-size:1rem;min-width:11ch}
+  .frow .fe u{text-decoration:none;padding:0 .12em;border-radius:4px;font-weight:800}
+  .frow .fd{font-size:.86rem;color:var(--muted);flex:1;min-width:9ch}
+  .frow .fd b{color:var(--ink)}
+  .pill{
+    font-size:.72rem;font-weight:700;letter-spacing:.03em;text-transform:uppercase;
+    padding:.18rem .55rem;border-radius:20px;white-space:nowrap;
+  }
+  .pill.pos{background:var(--pos-bg);color:var(--pos)}
+  .pill.zero{background:var(--zero-bg);color:var(--zero)}
+  .pill.neg{background:var(--neg-bg);color:var(--neg)}
+
+  .oge-tip{display:flex;gap:.8rem;align-items:flex-start;background:#FFF8E7;border:1px solid #F0D98A;border-left:4px solid #E0A315;border-radius:10px;padding:.85rem 1.05rem;margin:1.5rem 0}
+  .oge-tip .b{font-size:.72rem;font-weight:800;letter-spacing:.03em;color:#8A6A15;white-space:nowrap;text-transform:uppercase;padding-top:.15rem}
+  .oge-tip .x{font-size:.95rem;line-height:1.5}
+
+  /* Интерактив: парабола */
+  .para{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.1rem 1.1rem 1rem;margin:1rem 0}
+  .para canvas{width:100%;height:auto;display:block;border-radius:10px;background:#FCFDFF}
+  .counter{display:flex;align-items:center;gap:.8rem;flex-wrap:wrap;margin:.9rem 0 0;padding:.6rem .85rem;border-radius:10px;font-family:ui-monospace,Menlo,monospace;font-weight:700}
+  .counter .big{font-size:1.5rem;line-height:1}
+  .counter .txt{font-size:.95rem;font-weight:700}
+  .counter .dsign{font-size:.9rem;font-weight:700;opacity:.85}
+  .counter.pos{background:var(--pos-bg);color:var(--pos)}
+  .counter.zero{background:var(--zero-bg);color:var(--zero)}
+  .counter.neg{background:var(--neg-bg);color:var(--neg)}
+  .counter.lin{background:var(--accent-soft);color:var(--accent)}
+  .sliders{display:grid;gap:.6rem;margin-top:.9rem}
+  @media(min-width:520px){.sliders{grid-template-columns:repeat(3,1fr)}}
+  .sliders label{display:flex;align-items:center;gap:.5rem;font-weight:700;font-family:ui-monospace,Menlo,monospace}
+  .sliders input[type=range]{flex:1;min-width:0;accent-color:var(--accent)}
+  .sliders input[type=range]:focus-visible{outline:3px solid var(--accent);outline-offset:3px;border-radius:6px}
+  .sliders .sval{min-width:3.4ch;text-align:right;color:var(--accent);font-variant-numeric:tabular-nums}
+  .para-eq{text-align:center;font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.05rem;margin:.9rem 0 0;color:var(--ink)}
+
+  /* Тренажёр */
+  .trainer{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.2rem 1.3rem;margin-top:1rem}
+  .tr-eq{font-family:ui-monospace,Menlo,monospace;font-weight:800;font-size:clamp(1.15rem,4.6vw,1.55rem);text-align:center;padding:1rem;background:var(--accent-soft);border-radius:10px;color:var(--ink)}
+  .tr-q{text-align:center;font-size:.95rem;color:var(--muted);margin:.7rem 0 0}
+  .tr-ctl{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.9rem;align-items:center}
+  .tr-ctl button{font:inherit;font-weight:700;font-size:.9rem;cursor:pointer;border:none;border-radius:9px;padding:.55rem .95rem;color:#fff;background:var(--accent)}
+  .tr-ctl button.sec{background:var(--pos)}
+  .tr-ctl button.ghost{background:transparent;color:var(--accent);border:1px solid var(--accent)}
+  .tr-ctl input{flex:1;min-width:150px;font:inherit;padding:.5rem .7rem;border:1px solid var(--line);border-radius:9px;background:#fff;color:var(--ink)}
+  .tr-ctl button:focus-visible,.tr-ctl input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+  .tr-result{margin-top:.9rem;font-size:.96rem;min-height:1.2rem}
+  .tr-result .ok{color:var(--pos);font-weight:700}
+  .tr-result .bad{color:var(--neg);font-weight:700}
+  .tr-result .sol{margin-top:.7rem;padding:.85rem 1rem;background:#FCFBFE;border:1px solid var(--line);border-radius:10px;font-family:ui-monospace,Menlo,monospace;font-size:.9rem;line-height:1.8;overflow-x:auto}
+  .tr-result .sol b{color:var(--accent)}
+
+  @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<!--LESSON-NAV-TOP--><style>.lnav{--lnav-accent:#3D5AF1}.lnav a{text-decoration:none;font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif}.lnav-top{max-width:820px;margin:0 auto;padding:.75rem clamp(1rem,4vw,1.5rem) .1rem}.lnav-top a{display:inline-flex;align-items:center;gap:.35rem;color:var(--lnav-accent);font-weight:600;font-size:.9rem}.lnav-top a:hover{text-decoration:underline}.lnav-bot{max-width:820px;margin:2.6rem auto 3rem;padding:1.1rem clamp(1rem,4vw,1.5rem) 0;border-top:1px solid #E4E8EF;display:flex;align-items:stretch;gap:.55rem}.lnav-bot a{min-width:0;display:flex;flex-direction:column;justify-content:center;gap:.15rem;border:1px solid #E4E8EF;border-radius:12px;padding:.65rem .85rem;color:#182233;background:#fff;transition:border-color .1s,transform .08s}.lnav-bot a:hover{border-color:var(--lnav-accent);transform:translateY(-1px)}.lnav-bot .prev,.lnav-bot .next{flex:1 1 0}.lnav-bot .next{text-align:right}.lnav-bot .dir{font-size:.72rem;color:#8A93A6;font-weight:600}.lnav-bot .ttl{font-size:.9rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.lnav-bot .to-cat{flex:0 0 auto;flex-direction:row;align-items:center;justify-content:center;color:var(--lnav-accent);font-weight:700;font-size:.85rem;white-space:nowrap}@media(max-width:420px){.lnav-bot .to-cat span{display:none}.lnav-bot .to-cat{padding:.65rem .7rem}}</style><nav class="lnav lnav-top"><a href="./catalog.html">← Все темы</a></nav><!--/LESSON-NAV-TOP-->
+<div class="wrap">
+
+  <header>
+    <p class="eyebrow">Алгебра · 9 класс</p>
+    <h1>Дискриминант и число точек пересечения с осью Ox</h1>
+    <p class="lede">Один знак — плюс, ноль или минус — и ты уже знаешь, как парабола ведёт себя рядом с осью: протыкает её, касается или пролетает мимо.</p>
+  </header>
+
+  <div class="hero-formula">
+    <p class="lbl">Ключ ко всей теме</p>
+    <div class="eq">D = <b>b</b><sup>2</sup> − 4<b>a</b><b>c</b></div>
+    <p class="note">знак D → число корней → столько же точек пересечения параболы y = ax² + bx + c с осью Ox</p>
+  </div>
+
+  <section>
+    <p class="kicker">Зачем это нужно</p>
+    <h2>Парабола вовсе не обязана пересекать ось</h2>
+    <p>Парабола — это график квадратичной функции <span class="math">y = ax² + bx + c</span>. Очень часто нужно быстро понять: <strong>пересекает ли она ось Ox, и если да — в скольких точках</strong>.</p>
+    <p>Точки пересечения с осью Ox — это те <span class="math">x</span>, при которых <span class="math">y = 0</span>. То есть это <strong>корни</strong> уравнения <span class="math">ax² + bx + c = 0</span>. Значит, вопрос «сколько точек пересечения» и вопрос «сколько корней» — это один и тот же вопрос.</p>
+    <p>Где это пригодится:</p>
+    <ul>
+      <li>при решении <strong>квадратных неравенств</strong> (<span class="math">ax² + bx + c &gt; 0</span> и подобных) сначала смотрят, где парабола пересекает ось Ox — без этого не нарисовать эскиз;</li>
+      <li>в физике: высота брошенного тела <span class="math">h(t) = h₀ + v₀t − 5t²</span> — момент падения (<span class="math">h = 0</span>) существует только если парабола вообще достаёт до оси;</li>
+      <li>чтобы не считать корни «вслепую»: знак дискриминанта сразу говорит, есть они или нет.</li>
+    </ul>
+    <p>И вот главное заблуждение, которое надо снести прямо сейчас: «парабола — это же кривая, она обязательно где-то пересечёт ось». <strong>Нет.</strong> Парабола может целиком лежать выше оси Ox или целиком ниже — и не касаться её вовсе.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Что вспомнить с прошлого шага</p>
+    <h2>Три вещи, без которых дальше никак</h2>
+    <div class="recall">
+      <p><strong>1.</strong> Квадратичная функция — это <span class="math">y = ax² + bx + c</span>, где <span class="math">a ≠ 0</span>. Её график — парабола. Если <span class="math">a = 0</span>, квадрат пропадает и остаётся прямая — тема уже не про нас.</p>
+      <p><strong>2.</strong> Коэффициенты берём <strong>вместе со знаком</strong>: в <span class="math">y = x² − 6x + 5</span> это <span class="math">a = 1, b = −6, c = 5</span>.</p>
+      <p><strong>3.</strong> Из 8 класса: число корней уравнения <span class="math">ax² + bx + c = 0</span> определяется знаком дискриминанта <span class="math">D = b² − 4ac</span>. Здесь мы этот же факт переводим на язык графика.</p>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Ядро темы</p>
+    <h2>Знак D → число точек на оси Ox</h2>
+    <p><strong>Дискриминант</strong> квадратного трёхчлена <span class="math">ax² + bx + c</span> (при <span class="math">a ≠ 0</span>) — это число <span class="math">D = b² − 4ac</span>, где <span class="math">a</span> — старший коэффициент, <span class="math">b</span> — коэффициент при <span class="math">x</span>, <span class="math">c</span> — свободный член.</p>
+    <p>А теперь само правило — три случая, три цвета:</p>
+    <div class="cases">
+      <div class="case pos">
+        <div class="sign">D &gt; 0</div>
+        <div class="count">2 точки</div>
+        <div class="desc">Два разных корня. Парабола <strong>пересекает</strong> ось Ox в двух точках.</div>
+        <div class="mini">
+          <svg viewBox="0 0 120 62" role="img" aria-label="Парабола пересекает ось в двух точках">
+            <line x1="4" y1="42" x2="116" y2="42" stroke="#9AA3B2" stroke-width="1.5"/>
+            <path d="M18 8 Q60 82 102 8" fill="none" stroke="#1E8E5A" stroke-width="3"/>
+            <circle cx="35" cy="42" r="4" fill="#1E8E5A"/>
+            <circle cx="85" cy="42" r="4" fill="#1E8E5A"/>
+          </svg>
+        </div>
+      </div>
+      <div class="case zero">
+        <div class="sign">D = 0</div>
+        <div class="count">1 точка</div>
+        <div class="desc">Один корень (два совпавших). Парабола <strong>касается</strong> оси Ox вершиной.</div>
+        <div class="mini">
+          <svg viewBox="0 0 120 62" role="img" aria-label="Парабола касается оси в одной точке">
+            <line x1="4" y1="42" x2="116" y2="42" stroke="#9AA3B2" stroke-width="1.5"/>
+            <path d="M22 6 Q60 78 98 6" fill="none" stroke="#B9791A" stroke-width="3"/>
+            <circle cx="60" cy="42" r="4" fill="#B9791A"/>
+          </svg>
+        </div>
+      </div>
+      <div class="case neg">
+        <div class="sign">D &lt; 0</div>
+        <div class="count">0 точек</div>
+        <div class="desc">Корней нет. Парабола <strong>не достаёт</strong> до оси: целиком выше её (при <span class="math">a &gt; 0</span>) или целиком ниже (при <span class="math">a &lt; 0</span>).</div>
+        <div class="mini">
+          <svg viewBox="0 0 120 62" role="img" aria-label="Парабола не пересекает ось">
+            <line x1="4" y1="52" x2="116" y2="52" stroke="#9AA3B2" stroke-width="1.5"/>
+            <path d="M22 4 Q60 62 98 4" fill="none" stroke="#C0455B" stroke-width="3"/>
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <div class="tbl-scroll">
+      <table>
+        <thead><tr><th>Знак D</th><th>Число корней</th><th>Точки пересечения с осью Ox</th></tr></thead>
+        <tbody>
+          <tr><td class="s pos">D &gt; 0</td><td>2 разных</td><td>2 точки — парабола пересекает ось</td></tr>
+          <tr><td class="s zero">D = 0</td><td>1 (двойной)</td><td>1 точка — парабола касается оси</td></tr>
+          <tr><td class="s neg">D &lt; 0</td><td>нет</td><td>0 точек — парабола не достаёт до оси</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p style="margin-top:1rem">Условия применимости простые: <span class="math">a ≠ 0</span>, а коэффициенты <span class="math">a, b, c</span> — обычные (действительные) числа.</p>
+    <p>Отдельно про случай <span class="math">D = 0</span>: единственный корень равен <span class="math">x = −b/(2a)</span> — а это ровно абсцисса вершины параболы. Поэтому «одна точка» означает, что <strong>вершина лежит прямо на оси Ox</strong>.</p>
+    <p style="font-size:.92rem;color:var(--muted)">Главная идея темы: чтобы ответить на вопрос «сколько точек пересечения», <strong>сами корни считать не нужно</strong>. Хватает одного знака.</p>
+
+    <div class="oge-tip"><div class="b">🎯 В ОГЭ</div><div class="x"><b>Задание 11.</b> «Установите соответствие между графиками функций и формулами». Быстрый отсев: посчитал <span class="math">D</span> — и сразу видно, сколько раз график обязан задеть ось Ox. Формулы, у которых число точек не совпадает с картинкой, отбрасываются без всяких вычислений корней.</div></div>
+  </section>
+
+  <section>
+    <p class="kicker">Разбираем вместе · думаю вслух</p>
+    <h2>Эталонный пример</h2>
+    <div class="worked">
+      <p class="task">Сколько точек пересечения с осью Ox у параболы y = x² − 6x + 5?</p>
+      <ol class="steps">
+        <li>Выписываю коэффициенты: <span class="m">a = 1, b = −6, c = 5</span>.
+          <span class="why">Почему: сравниваю запись с общим видом <span class="math">ax² + bx + c</span> и беру числа со знаками.</span></li>
+        <li>Считаю дискриминант: <span class="m">D = b² − 4ac = (−6)² − 4·1·5 = 36 − 20 = 16</span>.
+          <span class="why">Почему: именно D отвечает за число корней. Обрати внимание: <span class="math">(−6)² = +36</span>, минус в скобках исчезает при возведении в квадрат.</span></li>
+        <li>Смотрю на знак: <span class="m">D = 16 &gt; 0</span>.
+          <span class="why">Почему: мне важен только знак, а не само число 16. Даже если бы вышло 1000 или 0,3 — вывод был бы тем же.</span></li>
+        <li>Делаю вывод: два разных корня → <span class="m">две точки пересечения</span> с осью Ox.
+          <span class="why">Почему: каждый корень — это одна точка на оси, где y обращается в ноль.</span></li>
+      </ol>
+      <div class="verdict">Ответ: 2 точки.</div>
+      <p style="font-size:.9rem;color:var(--muted);margin-top:.8rem">Для проверки: корни здесь <span class="math">x = 1</span> и <span class="math">x = 5</span> (подставь: <span class="math">1 − 6 + 5 = 0</span> и <span class="math">25 − 30 + 5 = 0</span>). Но для ответа искать их было не обязательно — в этом и весь фокус.</p>
+    </div>
+
+    <div class="gap">
+      <p class="task">Теперь допиши сам: y = x² − 4x + 4</p>
+      <ol>
+        <li>a = 1, b = −4, c = 4.</li>
+        <li>D = (−4)² − 4·1·4 = 16 − 16 = <span class="blank">?</span></li>
+        <li>D <span class="blank">?</span> 0, значит число точек пересечения = <span class="blank">?</span></li>
+      </ol>
+      <p style="font-size:.9rem;color:var(--muted);margin:.6rem 0 0">Подсказка: тут будет касание в вершине.</p>
+      <details style="margin-top:.7rem">
+        <summary><span class="q">Сверить пропуски</span><span class="tag">разбор</span></summary>
+        <div class="ans"><span class="m">D = 0</span>; <span class="m">D = 0</span> (равен нулю) → <strong>1 точка</strong>: парабола касается оси Ox в вершине <span class="math">x = −(−4)/(2·1) = 2</span>.</div>
+      </details>
+    </div>
+
+    <div class="worked" style="margin-top:1rem">
+      <p class="task">И один для самостоятельного решения: y = 2x² + 3x + 5</p>
+      <details>
+        <summary><span class="q">Сколько точек пересечения с осью Ox?</span><span class="tag">применение</span></summary>
+        <div class="ans"><span class="m">a = 2, b = 3, c = 5; D = 3² − 4·2·5 = 9 − 40 = −31 &lt; 0</span> → <strong>0 точек</strong>, парабола не пересекает ось Ox.</div>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Наглядность · три картинки рядом</p>
+    <h2>Поднимаем параболу — и точки исчезают</h2>
+    <p>Возьмём одно семейство: <span class="math">a = 1</span> и <span class="math">b = −6</span> держим неизменными, меняем <strong>только свободный член c</strong>. Это значит, что мы просто <strong>поднимаем параболу вверх</strong>. Смотри, что происходит с точками на оси:</p>
+    <div class="family">
+      <div class="frow">
+        <span class="fe">y = x² − 6x + <u style="background:var(--pos-bg);color:var(--pos)">5</u></span>
+        <span class="fd">D = 36 − 20 = <b>16</b></span>
+        <span class="pill pos">2 точки</span>
+      </div>
+      <div class="frow">
+        <span class="fe">y = x² − 6x + <u style="background:var(--zero-bg);color:var(--zero)">9</u></span>
+        <span class="fd">D = 36 − 36 = <b>0</b></span>
+        <span class="pill zero">1 точка</span>
+      </div>
+      <div class="frow">
+        <span class="fe">y = x² − 6x + <u style="background:var(--neg-bg);color:var(--neg)">13</u></span>
+        <span class="fd">D = 36 − 52 = <b>−16</b></span>
+        <span class="pill neg">0 точек</span>
+      </div>
+      <p class="cap" style="margin:.85rem 0 0">Парабола ползёт вверх, и в какой-то момент вершина ровно ложится на ось — это и есть <b>D = 0</b>, граница между «две точки» и «ни одной». Ещё чуть выше — и общих точек с осью уже нет.</p>
+    </div>
+
+    <p style="margin-top:1.2rem"><strong>Предскажи → проверь → объясни.</strong> Возьми функцию <span class="math">y = x² − 2x + 5</span>. Сначала <strong>предскажи</strong> на глаз: как думаешь, сколько будет точек пересечения? Потом посчитай.</p>
+    <div class="drill">
+      <details>
+        <summary><span class="q">y = x² − 2x + 5 — проверка и объяснение</span><span class="tag">понимание</span></summary>
+        <div class="ans"><span class="m">D = (−2)² − 4·1·5 = 4 − 20 = −16 &lt; 0</span> → <strong>0 точек</strong>. Почему график не достаёт до оси: ветви направлены вверх (<span class="math">a = 1 &gt; 0</span>), а вершина лежит выше оси Ox — значит, вся парабола висит над осью.</div>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Покрути сам · интерактив</p>
+    <h2>Считаем точки живьём</h2>
+    <p>Двигай ползунки <span class="math">a</span>, <span class="math">b</span>, <span class="math">c</span>. Счётчик слева сверху показывает, сколько точек пересечения с осью Ox сейчас у параболы, а рядом — знак дискриминанта. Лови момент перехода <strong>2 → 1 → 0</strong>.</p>
+    <div class="para">
+      <canvas id="paraCanvas" width="640" height="380" aria-label="Интерактивная парабола: число точек пересечения с осью Ox"></canvas>
+      <div id="paraCounter" class="counter pos">
+        <span class="big" id="cntBig">2</span>
+        <span class="txt" id="cntTxt">точки пересечения с осью Ox</span>
+        <span class="dsign" id="cntD">D = 16 &gt; 0</span>
+      </div>
+      <div class="sliders">
+        <label>a <span id="va" class="sval">1</span><input id="sa" type="range" min="-3" max="3" step="0.1" value="1" aria-label="коэффициент a"></label>
+        <label>b <span id="vb" class="sval">−6</span><input id="sb" type="range" min="-10" max="10" step="0.5" value="-6" aria-label="коэффициент b"></label>
+        <label>c <span id="vc" class="sval">5</span><input id="sc" type="range" min="-12" max="12" step="0.5" value="5" aria-label="свободный член c"></label>
+      </div>
+      <p class="para-eq" id="paraFormula">y = x² − 6x + 5</p>
+    </div>
+    <p style="font-size:.9rem;color:var(--muted)">Подними параболу ползунком <span class="math">c</span> и следи за счётчиком: 2 → 1 → 0. Момент «1» очень узкий — это ровно <span class="math">D = 0</span>. А при <span class="math">a = 0</span> квадрат исчезает и это уже не парабола, а прямая — потому в правиле и стоит <span class="math">a ≠ 0</span>.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Тренажёр · бесконечная практика</p>
+    <h2>Сколько точек? Проверь себя</h2>
+    <p>Нажми «Новая парабола» и ответь на вопрос под формулой. Число точек пиши цифрой (<b>0</b>, <b>1</b> или <b>2</b>) или словом («две», «одна», «ни одной»). Если спрашивают про расположение — пиши «выше» или «ниже». Потом смотри пошаговое решение.</p>
+    <div class="trainer">
+      <div class="tr-eq" id="trEq">y = x² + 2x − 8</div>
+      <p class="tr-q" id="trQ">Сколько точек пересечения с осью Ox?</p>
+      <div class="tr-ctl">
+        <button id="trNew" type="button">🎲 Новая парабола</button>
+        <input id="trAns" type="text" inputmode="text" placeholder="напр.  2   или   ниже" aria-label="Ответ">
+        <button id="trCheck" type="button" class="sec">Проверить</button>
+        <button id="trShow" type="button" class="ghost">Показать решение</button>
+      </div>
+      <div id="trResult" class="tr-result"></div>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Практика по нарастанию</p>
+    <h2>От понимания до анализа</h2>
+    <div class="drill">
+      <details>
+        <summary><span class="q">У параболы D = 0. Сколько раз она встречается с осью Ox и как называется эта точка?</span><span class="tag">понимание</span></summary>
+        <div class="ans"><strong>Один раз</strong> — и это не пересечение, а <strong>касание</strong>. Точка касания — <strong>вершина</strong> параболы, её абсцисса <span class="m">x = −b/(2a)</span>.</div>
+      </details>
+      <details>
+        <summary><span class="q">y = x² + x − 12 — число точек пересечения с осью Ox (корни не искать)</span><span class="tag">применение</span></summary>
+        <div class="ans"><span class="m">a = 1, b = 1, c = −12; D = 1² − 4·1·(−12) = 1 + 48 = 49 &gt; 0</span> → <strong>2 точки</strong>. Осторожно со знаком: <span class="m">−4·1·(−12) = +48</span>.</div>
+      </details>
+      <details>
+        <summary><span class="q">y = x² − 2x + 7 — число точек пересечения с осью Ox</span><span class="tag">применение</span></summary>
+        <div class="ans"><span class="m">D = (−2)² − 4·1·7 = 4 − 28 = −24 &lt; 0</span> → <strong>0 точек</strong>.</div>
+      </details>
+      <details>
+        <summary><span class="q">y = 9x² − 6x + 1 — число точек пересечения с осью Ox</span><span class="tag">применение</span></summary>
+        <div class="ans"><span class="m">D = (−6)² − 4·9·1 = 36 − 36 = 0</span> → <strong>1 точка</strong> (касание в вершине).</div>
+      </details>
+      <details>
+        <summary><span class="q">Что изменится, если… У параболы y = x² + bx + 9 ровно одна общая точка с осью Ox. Найди все b.</span><span class="tag">анализ</span></summary>
+        <div class="ans">«Ровно одна общая точка» = касание = <span class="m">D = 0</span>. Считаем: <span class="m">D = b² − 4·1·9 = b² − 36</span>. Приравниваем к нулю: <span class="m">b² − 36 = 0 → b² = 36 → b = 6 или b = −6</span>.<br>Проверка: при <span class="m">b = 6</span> получаем <span class="m">y = x² + 6x + 9</span>, D = 36 − 36 = 0 ✓; при <span class="m">b = −6</span> — <span class="m">y = x² − 6x + 9</span>, D = 36 − 36 = 0 ✓.<br><strong>Ответ: b = 6 и b = −6.</strong></div>
+      </details>
+      <details>
+        <summary><span class="q">Найди ошибку. Ученик пишет: «D = b² − 4ac = 3² − 4·2·5 = 9 − 40 = −31 &gt; 0, значит две точки».</span><span class="tag">анализ</span></summary>
+        <div class="ans">Арифметика верна: <span class="m">9 − 40 = −31</span>. Ошибка в <strong>сравнении со знаком</strong>: число <span class="m">−31</span> <strong>меньше</strong> нуля, а не больше. Правильно: <span class="m">D = −31 &lt; 0</span> → <strong>0 точек</strong>, парабола не пересекает ось Ox.<br>Мораль: отрицательное число всегда меньше нуля, каким бы большим ни казался его модуль.</div>
+      </details>
+      <details>
+        <summary><span class="q">Обратная задача. Парабола не пересекает ось Ox. Что можно сказать о знаке её дискриминанта?</span><span class="tag">анализ</span></summary>
+        <div class="ans">Раз общих точек с осью нет, то и корней нет — а корней нет только при <span class="m">D &lt; 0</span>. Значит, <strong>дискриминант отрицателен</strong>. Дополнительно: если при этом ветви вверх (<span class="math">a &gt; 0</span>), парабола лежит целиком выше оси; если вниз (<span class="math">a &lt; 0</span>) — целиком ниже.</div>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Где чаще всего ошибаются</p>
+    <h2>Пять ловушек этой темы</h2>
+    <ul class="pitfalls">
+      <li><b>Посчитали D — и остановились.</b> Дискриминант сам по себе не ответ. Держи в голове цепочку: <strong>знак D → число корней → столько же точек на оси Ox</strong>. Вопрос был про точки — про них и отвечай.</li>
+      <li><b>«Парабола всегда пересекает ось Ox».</b> Неверно. При <span class="math">D &lt; 0</span> она целиком над осью (если <span class="math">a &gt; 0</span>) или целиком под осью (если <span class="math">a &lt; 0</span>), и общих точек с Ox нет вообще.</li>
+      <li><b>Путаются при D = 0.</b> Говорят «точек нет» или «две точки». На самом деле ровно <strong>одна</strong> — касание в вершине. Это отдельный, третий случай, а не вариант первых двух.</li>
+      <li><b>Теряют знак при подсчёте D.</b> Особенно при отрицательном <span class="math">b</span>: <span class="math">(−6)² = +36</span>, а не −36. И <span class="math">−4ac</span> при <span class="math">c &lt; 0</span> даёт плюс. Подставляй коэффициенты <strong>в скобках</strong> — тогда знак не потеряется.</li>
+      <li><b>Путают «число корней» и «значения корней».</b> Для этого вопроса сами корни считать не надо: достаточно знака D. Лишние вычисления — лишние шансы ошибиться.</li>
+    </ul>
+  </section>
+
+  <section>
+    <p class="kicker">Проверка понимания</p>
+    <h2>Ответь себе вслух, не подглядывая</h2>
+    <ol class="selfcheck">
+      <li>Чему равен дискриминант трёхчлена <span class="math">ax² + bx + c</span>?</li>
+      <li>Парабола касается оси Ox в одной точке. Какой знак у её дискриминанта?</li>
+      <li>У квадратичной функции <span class="math">D = −5</span>. Сколько точек пересечения её графика с осью Ox?</li>
+      <li>Объясни своими словами, почему парабола может вообще не встретиться с осью Ox.</li>
+    </ol>
+    <div class="drill" style="margin-top:.9rem">
+      <details>
+        <summary><span class="q">Сверить ответы</span><span class="tag">самопроверка</span></summary>
+        <div class="ans">1) <span class="m">D = b² − 4ac</span>. &nbsp; 2) <span class="m">D = 0</span>. &nbsp; 3) Ноль точек. &nbsp; 4) Потому что она может целиком лежать выше оси (ветви вверх, вершина над осью) или целиком ниже (ветви вниз, вершина под осью) — и тогда значение <span class="math">y = 0</span> не достигается ни при каком x.</div>
+      </details>
+    </div>
+    <p style="margin-top:1rem"><strong>Итог одним предложением:</strong> знак дискриминанта <span class="math">D = b² − 4ac</span> сразу даёт число точек пересечения параболы с осью Ox — две при <span class="math">D &gt; 0</span>, одну при <span class="math">D = 0</span> и ни одной при <span class="math">D &lt; 0</span>.</p>
+  </section>
+
+  <section>
+    <div class="next">
+      <h2>Что дальше</h2>
+      <p>Следующий шаг — <strong>квадратные неравенства</strong>. Там ты будешь решать задачи вида <span class="math">ax² + bx + c &gt; 0</span>, и первым делом придётся выяснять ровно то, что мы сегодня учились определять:</p>
+      <div class="eq">сколько точек у параболы на оси Ox и куда смотрят ветви</div>
+      <p>Из этих двух фактов рисуется эскиз, а по эскизу сразу видно, на каких промежутках парабола выше нуля, а на каких ниже. Так что сегодняшний навык там будет работать в каждой задаче.</p>
+    </div>
+  </section>
+
+  <p class="foot">Проверка на выходе: напиши формулу D по памяти · сколько точек при D = 0? · где лежит парабола, если D &lt; 0 и a &gt; 0?</p>
+
+</div>
+
+<script>
+(function(){
+  var canvas=document.getElementById('paraCanvas'); if(!canvas) return;
+  var ctx=canvas.getContext('2d');
+  var sa=document.getElementById('sa'), sb=document.getElementById('sb'), sc=document.getElementById('sc');
+  var va=document.getElementById('va'), vb=document.getElementById('vb'), vc=document.getElementById('vc');
+  var counter=document.getElementById('paraCounter');
+  var cntBig=document.getElementById('cntBig'), cntTxt=document.getElementById('cntTxt'), cntD=document.getElementById('cntD');
+  var formula=document.getElementById('paraFormula');
+  var W=640,H=380,dpr=1;
+  var RANGE=10, PAD=26; /* PAD — поле снизу/сверху под подписи, чтобы ось не обрезалась */
+
+  function minus(s){ return String(s).replace(/-/g,'−'); }
+  function num(n){ n=Math.round(n*100)/100; if(n===0) n=0; return minus(String(n)); }
+
+  function resize(){
+    var cssW=canvas.clientWidth||640;
+    dpr=Math.min(window.devicePixelRatio||1,2);
+    W=cssW; H=Math.round(Math.max(cssW*0.60,240));
+    canvas.width=Math.round(W*dpr); canvas.height=Math.round(H*dpr);
+    canvas.style.height=H+'px';
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+  }
+
+  function sx(){ return W/(2*RANGE); }
+  function sy(){ return (H-2*PAD)/(2*(RANGE*(H-2*PAD)/W)); }
+  function X(x){ return W/2 + x*sx(); }
+  function yRange(){ return RANGE*(H-2*PAD)/W; }
+  function Y(y){ return H/2 - y*((H-2*PAD)/(2*yRange())); }
+
+  function draw(){
+    var a=Math.round(parseFloat(sa.value)*10)/10;
+    var b=Math.round(parseFloat(sb.value)*10)/10;
+    var c=Math.round(parseFloat(sc.value)*10)/10;
+    va.textContent=num(a); vb.textContent=num(b); vc.textContent=num(c);
+
+    ctx.clearRect(0,0,W,H);
+    /* сетка */
+    ctx.strokeStyle='#EDEFF4'; ctx.lineWidth=1;
+    var gx;
+    for(gx=-RANGE;gx<=RANGE;gx++){ ctx.beginPath(); ctx.moveTo(X(gx),0); ctx.lineTo(X(gx),H); ctx.stroke(); }
+    var yr=Math.floor(yRange());
+    for(var gy=-yr;gy<=yr;gy++){ ctx.beginPath(); ctx.moveTo(0,Y(gy)); ctx.lineTo(W,Y(gy)); ctx.stroke(); }
+
+    var D=b*b-4*a*c, isLin=Math.abs(a)<0.05;
+    var col = isLin ? '#3B4FD0' : (D>0.0001?'#1E8E5A':(D<-0.0001?'#C0455B':'#B9791A'));
+
+    /* ось Ox — жирная, это герой картинки */
+    ctx.strokeStyle=isLin?'#9AA3B2':col; ctx.lineWidth=3;
+    ctx.beginPath(); ctx.moveTo(0,Y(0)); ctx.lineTo(W,Y(0)); ctx.stroke();
+    ctx.strokeStyle='#9AA3B2'; ctx.lineWidth=1.5;
+    ctx.beginPath(); ctx.moveTo(X(0),PAD*0.3); ctx.lineTo(X(0),H-PAD*0.3); ctx.stroke();
+    ctx.fillStyle='#7A8296'; ctx.font='12px ui-monospace,Menlo,monospace';
+    ctx.textAlign='right'; ctx.fillText('Ox', W-6, Y(0)-8);
+
+    /* кривая */
+    ctx.save();
+    ctx.beginPath(); ctx.rect(0,0,W,H); ctx.clip();
+    ctx.strokeStyle=col; ctx.lineWidth=3; ctx.beginPath();
+    var first=true, px, x, y;
+    for(px=0;px<=W;px+=2){
+      x=(px-W/2)/sx();
+      y=a*x*x+b*x+c;
+      if(first){ ctx.moveTo(px,Y(y)); first=false; } else ctx.lineTo(px,Y(y));
+    }
+    ctx.stroke();
+    ctx.restore();
+
+    var n=0, roots=[];
+    if(!isLin){
+      if(D>0.0001){ var s=Math.sqrt(D); roots=[(-b-s)/(2*a),(-b+s)/(2*a)]; n=2; }
+      else if(D>=-0.0001){ roots=[-b/(2*a)]; n=1; }
+    }
+
+    /* вершина — пунктиром до оси */
+    if(!isLin){
+      var xv=-b/(2*a), yv=a*xv*xv+b*xv+c;
+      ctx.save();
+      ctx.setLineDash([4,4]); ctx.strokeStyle=col; ctx.lineWidth=1.5; ctx.globalAlpha=.7;
+      ctx.beginPath(); ctx.moveTo(X(xv),Y(yv)); ctx.lineTo(X(xv),Y(0)); ctx.stroke();
+      ctx.restore();
+      ctx.fillStyle=col; ctx.globalAlpha=.9;
+      ctx.beginPath(); ctx.arc(X(xv),Y(yv),4,0,Math.PI*2); ctx.fill();
+      ctx.globalAlpha=1;
+    }
+
+    /* точки пересечения — крупные маркеры с подписями */
+    ctx.textAlign='center'; ctx.font='bold 12px ui-monospace,Menlo,monospace';
+    for(var i=0;i<roots.length;i++){
+      var r=roots[i];
+      ctx.fillStyle=col; ctx.beginPath(); ctx.arc(X(r),Y(0),7,0,Math.PI*2); ctx.fill();
+      ctx.fillStyle='#fff'; ctx.beginPath(); ctx.arc(X(r),Y(0),3,0,Math.PI*2); ctx.fill();
+      ctx.fillStyle=col;
+      ctx.fillText('x = '+num(r), Math.min(Math.max(X(r),40),W-40), Y(0)+ (a>0? 20 : -12));
+    }
+
+    /* формула */
+    var f='y = ';
+    if(isLin){ f += (Math.abs(b)<0.05? '' : (b===1?'x':(b===-1?'−x':num(b)+'x'))); if(Math.abs(b)<0.05 && Math.abs(c)<0.05) f+='0'; }
+    else { f += (a===1?'':(a===-1?'−':num(a)))+'x²'; }
+    if(!isLin && Math.abs(b)>=0.05){ f += (b<0?' − ':' + ')+(Math.abs(b)===1?'':String(Math.abs(Math.round(b*100)/100)))+'x'; }
+    if(Math.abs(c)>=0.05){ f += (c<0?' − ':' + ')+String(Math.abs(Math.round(c*100)/100)); }
+    formula.textContent=f;
+
+    /* счётчик */
+    counter.className='counter';
+    if(isLin){
+      counter.classList.add('lin');
+      cntBig.textContent='—'; cntTxt.textContent='a = 0: это прямая, а не парабола';
+      cntD.textContent='дискриминант тут не работает';
+    } else {
+      var words = n===2?'точки пересечения с осью Ox':(n===1?'точка: парабола касается оси Ox':'точек: парабола не достаёт до оси');
+      if(n===0) words = 'точек пересечения — парабола целиком '+(a>0?'выше':'ниже')+' оси Ox';
+      cntBig.textContent=String(n);
+      cntTxt.textContent=words;
+      if(n===2){ counter.classList.add('pos'); cntD.textContent='D = '+num(D)+' > 0'; }
+      else if(n===1){ counter.classList.add('zero'); cntD.textContent='D = 0'; }
+      else { counter.classList.add('neg'); cntD.textContent='D = '+num(D)+' < 0'; }
+    }
+  }
+
+  var slider=[sa,sb,sc];
+  for(var k=0;k<slider.length;k++){ slider[k].addEventListener('input',draw); }
+  window.addEventListener('resize',function(){ resize(); draw(); });
+  resize(); draw();
+})();
+</script>
+
+<script>
+(function(){
+  var eqEl=document.getElementById('trEq'), qEl=document.getElementById('trQ');
+  var ansEl=document.getElementById('trAns'), resEl=document.getElementById('trResult');
+  if(!eqEl) return;
+
+  function minus(s){ return String(s).replace(/-/g,'−'); }
+  function ri(min,max){ return Math.floor(Math.random()*(max-min+1))+min; }
+  function nz(min,max){ var v=0; while(v===0){ v=ri(min,max); } return v; }
+
+  /* Стартовая задача = та, что показывает решение при первом клике */
+  var cur={a:1,b:2,c:-8,mode:'count'};
+
+  function D(q){ return q.b*q.b-4*q.a*q.c; }
+  function count(q){ var d=D(q); return d>0?2:(d===0?1:0); }
+
+  function fmtEq(q){
+    var s='y = '+(q.a===1?'':(q.a===-1?'−':String(q.a)))+'x²';
+    if(q.b!==0) s += (q.b<0?' − ':' + ')+(Math.abs(q.b)===1?'':String(Math.abs(q.b)))+'x';
+    if(q.c!==0) s += (q.c<0?' − ':' + ')+String(Math.abs(q.c));
+    return s;
+  }
+
+  function makeTwo(){
+    var a=nz(-3,3), x1=ri(-6,6), x2=ri(-6,6);
+    while(x2===x1){ x2=ri(-6,6); }
+    return {a:a, b:-a*(x1+x2), c:a*x1*x2, mode:'count'};
+  }
+  function makeOne(){
+    var a=nz(-3,3), r=ri(-5,5);
+    return {a:a, b:-2*a*r, c:a*r*r, mode:'count'};
+  }
+  function makeNone(mode){
+    var a=nz(-3,3), b=ri(-8,8), c;
+    var edge=b*b/(4*a);            /* D=0 при c = b²/(4a) */
+    if(a>0){ c=Math.floor(edge)+ri(1,4); }   /* нужно c > edge */
+    else   { c=Math.ceil(edge)-ri(1,4); }    /* нужно c < edge */
+    var q={a:a,b:b,c:c,mode:mode||'count'};
+    if(D(q)>=0){ q.c += (a>0? 1 : -1)*(Math.ceil(Math.abs(D(q))/(4*Math.abs(a)))+1); }
+    return q;
+  }
+
+  function generate(){
+    var r=Math.random(), q;
+    if(r<0.40) q=makeTwo();
+    else if(r<0.62) q=makeOne();
+    else if(r<0.82) q=makeNone('count');
+    else q=makeNone('side');
+    /* страховка: задача обязана быть валидной */
+    if(!q || !q.a || !isFinite(q.a) || !isFinite(q.b) || !isFinite(q.c)) q={a:1,b:2,c:-8,mode:'count'};
+    if(q.mode==='side' && D(q)>=0) q.mode='count';
+    cur=q;
+    render();
+    return q;
+  }
+
+  function render(){
+    eqEl.textContent=fmtEq(cur);
+    qEl.textContent = cur.mode==='side'
+      ? 'Эта парабола лежит целиком выше или ниже оси Ox?'
+      : 'Сколько точек пересечения с осью Ox?';
+    ansEl.value=''; resEl.innerHTML='';
+  }
+
+  function solutionHTML(q){
+    var d=D(q), n=count(q), h='<div class="sol">';
+    h+='a = '+minus(q.a)+', b = '+minus(q.b)+', c = '+minus(q.c)+'<br>';
+    h+='D = b² − 4ac = ('+minus(q.b)+')² − 4·('+minus(q.a)+')·('+minus(q.c)+') = '+minus(q.b*q.b)+' − '+minus(4*q.a*q.c)+' = <b>'+minus(d)+'</b><br>';
+    if(n===2){
+      var s=Math.sqrt(d);
+      h+='D &gt; 0 → два разных корня → <b>2 точки пересечения</b>.<br>';
+      h+='(для проверки: x₁ = '+minus(Math.round(((-q.b-s)/(2*q.a))*100)/100)+', x₂ = '+minus(Math.round(((-q.b+s)/(2*q.a))*100)/100)+' — но для ответа их искать не нужно)';
+    } else if(n===1){
+      h+='D = 0 → один (двойной) корень → <b>1 точка</b>: парабола касается оси Ox.<br>';
+      h+='Точка касания — вершина: x = −b/(2a) = '+minus(Math.round((-q.b/(2*q.a))*100)/100);
+    } else {
+      h+='D &lt; 0 → корней нет → <b>0 точек пересечения</b>.<br>';
+      h+='a = '+minus(q.a)+' '+(q.a>0?'&gt; 0 → ветви вверх → парабола лежит целиком <b>выше</b> оси Ox':'&lt; 0 → ветви вниз → парабола лежит целиком <b>ниже</b> оси Ox');
+    }
+    return h+'</div>';
+  }
+
+  function parseCount(raw){
+    if(/^\s*2\s*$/.test(raw) || /(две|два|двe)/.test(raw)) return 2;
+    if(/^\s*1\s*$/.test(raw) || /(одна|один|одну)/.test(raw)) return 1;
+    if(/^\s*0\s*$/.test(raw) || /(ноль|нол|ни одной|нет|не пересек|нисколько)/.test(raw)) return 0;
+    return null;
+  }
+  function parseSide(raw){
+    if(/(выше|над|сверху|вверх)/.test(raw)) return 'up';
+    if(/(ниже|под|снизу|вниз)/.test(raw)) return 'down';
+    return null;
+  }
+
+  function check(){
+    var raw=ansEl.value.toLowerCase().replace(/−/g,'-').replace(/–|—/g,'-').replace(/,/g,'.').trim();
+    if(!raw){ resEl.innerHTML='<span class="bad">Введи ответ или нажми «Показать решение».</span>'; return; }
+    if(cur.mode==='side'){
+      var got=parseSide(raw), exp=(cur.a>0?'up':'down');
+      if(got===null){ resEl.innerHTML='<span class="bad">Не понял ответ. Напиши «выше» или «ниже».</span>'; return; }
+      if(got===exp) resEl.innerHTML='<span class="ok">✓ Верно! D &lt; 0, и знак a решает, с какой стороны от оси висит парабола.</span>'+solutionHTML(cur);
+      else resEl.innerHTML='<span class="bad">✗ Не то. Посмотри на знак старшего коэффициента a — он задаёт направление ветвей.</span>'+solutionHTML(cur);
+      return;
+    }
+    var g=parseCount(raw);
+    if(g===null){ resEl.innerHTML='<span class="bad">Не понял ответ. Напиши число точек: 0, 1 или 2 (можно словом).</span>'; return; }
+    var e=count(cur);
+    if(g===e) resEl.innerHTML='<span class="ok">✓ Верно!</span>'+solutionHTML(cur);
+    else {
+      var hint = e===1 ? ' Подсказка: D здесь ровно ноль — это касание.' : (e===0 ? ' Подсказка: у отрицательного D корней нет вовсе.' : ' Подсказка: D положителен — значит корней два.');
+      resEl.innerHTML='<span class="bad">✗ Пока не то.'+hint+'</span>'+solutionHTML(cur);
+    }
+  }
+
+  document.getElementById('trNew').addEventListener('click',function(){ generate(); ansEl.focus(); });
+  document.getElementById('trCheck').addEventListener('click',check);
+  document.getElementById('trShow').addEventListener('click',function(){ resEl.innerHTML=solutionHTML(cur); });
+  ansEl.addEventListener('keydown',function(e){ if(e.key==='Enter') check(); });
+
+  /* первичный рендер — без focus() */
+  render();
+
+  window.__trainerAPI={generate:generate,solutionHTML:solutionHTML,count:count,D:D,fmtEq:fmtEq,get cur(){return cur;}};
+})();
+</script>
+<!--LESSON-NAV-BOT--><nav class="lnav lnav-bot"><a class="prev" href="./alg9-kvadratichnaya-svojstva.html"><span class="dir">← Предыдущая</span><span class="ttl">Свойства квадратичной функции</span></a><a class="to-cat" href="./catalog.html">📚 <span>Все темы</span></a><a class="next" href="./alg9-stepennaya-funkciya.html"><span class="dir">Следующая →</span><span class="ttl">Степенная функция с натуральным показателем</span></a></nav><!--/LESSON-NAV-BOT-->

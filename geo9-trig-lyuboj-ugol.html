@@ -1,0 +1,855 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Синус, косинус, тангенс углов от 0° до 180° — урок, геометрия 9 класс</title>
+<style>
+  :root{
+    --paper:#F6F7F9;
+    --card:#FFFFFF;
+    --ink:#1B2333;
+    --muted:#5A6478;
+    --line:#E2E5EC;
+    --accent:#3B4FD0;
+    --accent-soft:#EAEDFB;
+    --pos:#1E8E5A;   /* плюс / острый угол */
+    --pos-bg:#E7F4EC;
+    --zero:#B9791A;  /* ноль / прямой угол */
+    --zero-bg:#FBF1DC;
+    --neg:#C0455B;   /* минус / тупой угол */
+    --neg-bg:#F9E9EC;
+  }
+  *{box-sizing:border-box}
+  body{margin:0}
+  .wrap{
+    max-width:760px;
+    margin:0 auto;
+    padding:clamp(1.4rem,4vw,3rem) clamp(1.1rem,4vw,2rem) 4rem;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    font-size:17px;
+    line-height:1.62;
+    -webkit-font-smoothing:antialiased;
+  }
+  .eyebrow{
+    font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--accent);font-weight:600;margin:0 0 .5rem;
+  }
+  h1{
+    font-family:Georgia,"Times New Roman",serif;
+    font-size:clamp(1.9rem,6.4vw,2.7rem);
+    line-height:1.07;margin:0;font-weight:700;letter-spacing:-.01em;
+    text-wrap:balance;
+  }
+  .lede{
+    font-size:1.08rem;color:var(--muted);margin:.7rem 0 0;max-width:60ch;
+    text-wrap:pretty;
+  }
+  h2{
+    font-family:Georgia,serif;font-size:1.32rem;font-weight:700;
+    margin:0 0 .1rem;letter-spacing:-.005em;
+  }
+  section{margin-top:2.6rem}
+  .kicker{
+    font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--muted);font-weight:600;margin:0 0 .8rem;
+    display:flex;align-items:center;gap:.6rem;
+  }
+  .kicker::before{
+    content:"";width:1.4rem;height:2px;background:var(--accent);border-radius:2px;
+  }
+  p{margin:.65rem 0}
+  strong{font-weight:650}
+  .math{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-weight:600}
+  sup{font-size:.72em}
+
+  /* Главная формула */
+  .hero-formula{
+    margin-top:2.2rem;
+    background:var(--ink);color:#fff;border-radius:14px;
+    padding:1.6rem 1.4rem;text-align:center;
+  }
+  .hero-formula .lbl{
+    font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;
+    color:#9aa6c9;margin:0 0 .7rem;
+  }
+  .hero-formula .eq{
+    font-family:ui-monospace,"SF Mono",Menlo,monospace;
+    font-size:clamp(1.35rem,5.2vw,2rem);font-weight:700;letter-spacing:.01em;
+  }
+  .hero-formula .eq b{color:#8ea0ff;font-weight:700}
+  .hero-formula .note{font-size:.86rem;color:#9aa6c9;margin:.8rem 0 0}
+
+  /* Пререквизит */
+  .recall{
+    background:var(--accent-soft);border-radius:12px;padding:1rem 1.15rem;
+    font-size:.96rem;
+  }
+  .recall p{margin:.3rem 0}
+
+  /* Три случая — знаки */
+  .cases{display:grid;gap:.85rem;margin-top:.4rem}
+  @media(min-width:620px){.cases{grid-template-columns:repeat(3,1fr)}}
+  .case{
+    border-radius:12px;padding:1.05rem 1.1rem;border:1px solid var(--line);
+    background:var(--card);display:flex;flex-direction:column;gap:.35rem;
+  }
+  .case .sign{font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.05rem}
+  .case .count{font-weight:650;font-size:1rem}
+  .case .desc{font-size:.9rem;color:var(--muted)}
+  .case.pos{border-top:4px solid var(--pos);background:var(--pos-bg)}
+  .case.pos .sign{color:var(--pos)}
+  .case.zero{border-top:4px solid var(--zero);background:var(--zero-bg)}
+  .case.zero .sign{color:var(--zero)}
+  .case.neg{border-top:4px solid var(--neg);background:var(--neg-bg)}
+  .case.neg .sign{color:var(--neg)}
+
+  /* Разбор */
+  .worked{
+    background:var(--card);border:1px solid var(--line);border-radius:12px;
+    padding:1.2rem 1.3rem;
+  }
+  .worked .task{
+    font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.05rem;
+    margin:0 0 1rem;padding-bottom:.8rem;border-bottom:1px solid var(--line);
+  }
+  ol.steps{margin:0;padding:0;list-style:none;counter-reset:s;display:flex;flex-direction:column;gap:.7rem}
+  ol.steps li{position:relative;padding-left:2.1rem;counter-increment:s}
+  ol.steps li::before{
+    content:counter(s);position:absolute;left:0;top:.05rem;
+    width:1.5rem;height:1.5rem;border-radius:50%;
+    background:var(--accent-soft);color:var(--accent);
+    font-size:.82rem;font-weight:700;display:flex;align-items:center;justify-content:center;
+  }
+  ol.steps .m{font-family:ui-monospace,Menlo,monospace;font-weight:600;color:var(--ink)}
+  ol.steps .why{color:var(--muted);font-size:.92rem;display:block}
+  .verdict{
+    margin-top:1rem;padding:.7rem 1rem;background:var(--pos-bg);
+    border-radius:9px;font-weight:600;color:var(--pos);font-size:.98rem;
+    font-family:ui-monospace,Menlo,monospace;
+  }
+
+  /* Таблица значений */
+  .tbl-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;margin-top:.6rem;
+    border:1px solid var(--line);border-radius:12px;background:var(--card)}
+  table.vals{border-collapse:collapse;width:100%;min-width:430px;font-family:ui-monospace,Menlo,monospace;font-size:.92rem}
+  table.vals th,table.vals td{padding:.55rem .6rem;text-align:center;border-bottom:1px solid var(--line)}
+  table.vals thead th{background:var(--accent-soft);color:var(--accent);font-weight:700}
+  table.vals tbody th{text-align:left;font-weight:700;background:#FAFBFD}
+  table.vals tr:last-child td,table.vals tr:last-child th{border-bottom:none}
+  table.vals td.mn{color:var(--neg);font-weight:700}
+  table.vals td.nd{color:var(--muted)}
+
+  /* Практика */
+  .drill{display:flex;flex-direction:column;gap:.7rem}
+  details{
+    background:var(--card);border:1px solid var(--line);border-radius:10px;
+    padding:.85rem 1.05rem;
+  }
+  details[open]{border-color:var(--accent)}
+  summary{
+    cursor:pointer;font-weight:600;list-style:none;
+    display:flex;justify-content:space-between;align-items:center;gap:1rem;
+  }
+  summary::-webkit-details-marker{display:none}
+  summary:focus-visible{outline:3px solid var(--accent);outline-offset:3px;border-radius:6px}
+  summary .q{font-family:ui-monospace,Menlo,monospace;min-width:0}
+  summary .tag{
+    font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);
+    border:1px solid var(--line);border-radius:20px;padding:.1rem .55rem;white-space:nowrap;
+  }
+  summary::after{
+    content:"показать ответ";font-size:.78rem;color:var(--accent);font-weight:600;white-space:nowrap;
+  }
+  details[open] summary::after{content:"скрыть"}
+  .ans{margin-top:.7rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.96rem;color:var(--muted)}
+  .ans .m{font-family:ui-monospace,Menlo,monospace;color:var(--ink);font-weight:600}
+
+  /* Ошибки */
+  ul.pitfalls{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:.6rem}
+  ul.pitfalls li{padding-left:1.5rem;position:relative;font-size:.98rem}
+  ul.pitfalls li::before{
+    content:"×";position:absolute;left:0;top:-.05rem;color:var(--neg);font-weight:700;font-size:1.1rem;
+  }
+  ul.pitfalls b{color:var(--ink)}
+
+  /* Проверка понимания */
+  ol.selfcheck{margin:.4rem 0 0;padding-left:1.3rem;display:flex;flex-direction:column;gap:.45rem}
+  ol.selfcheck li{padding-left:.2rem}
+
+  .next{background:var(--accent);color:#fff;border-radius:12px;padding:1.2rem 1.3rem}
+  .next h2{color:#fff}
+  .next .eq{
+    font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.05rem;
+    margin:.6rem 0 .3rem;
+  }
+  .next p{color:#dfe4fb;font-size:.96rem;margin:.4rem 0 0}
+  .next b{color:#fff}
+  .foot{margin-top:2.4rem;font-size:.82rem;color:var(--muted);text-align:center}
+
+  @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+<style>
+.oge-tip{display:flex;gap:.8rem;align-items:flex-start;background:#FFF8E7;border:1px solid #F0D98A;border-left:4px solid #E0A315;border-radius:10px;padding:.85rem 1.05rem;margin:1.5rem 0}
+.oge-tip .b{font-size:.72rem;font-weight:800;letter-spacing:.03em;color:#8A6A15;white-space:nowrap;text-transform:uppercase;padding-top:.15rem}
+.oge-tip .x{font-size:.95rem;line-height:1.5}
+</style>
+<style>
+  /* Полуокружность — интерактив */
+  .circ{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.1rem 1.1rem 1rem;margin:1rem 0}
+  .circ canvas{width:100%;height:auto;display:block;border-radius:10px;background:#FCFDFF;touch-action:none}
+  .circ-read{display:grid;gap:.5rem;margin-top:.9rem}
+  @media(min-width:520px){.circ-read{grid-template-columns:repeat(3,1fr)}}
+  .rd{border-radius:10px;padding:.55rem .7rem;text-align:center;font-family:ui-monospace,Menlo,monospace;font-weight:700;background:var(--accent-soft);color:var(--accent)}
+  .rd small{display:block;font-size:.7rem;letter-spacing:.06em;text-transform:uppercase;font-weight:700;opacity:.75}
+  .rd.pos{background:var(--pos-bg);color:var(--pos)}
+  .rd.zero{background:var(--zero-bg);color:var(--zero)}
+  .rd.neg{background:var(--neg-bg);color:var(--neg)}
+  .circ-ctl{display:flex;align-items:center;gap:.7rem;margin-top:.9rem;flex-wrap:wrap}
+  .circ-ctl label{font-family:ui-monospace,Menlo,monospace;font-weight:700;display:flex;align-items:center;gap:.5rem;flex:1;min-width:200px}
+  .circ-ctl input[type=range]{flex:1;accent-color:var(--accent);min-width:120px}
+  .circ-ctl input[type=range]:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+  .circ-ctl .chip{font:inherit;font-size:.82rem;font-weight:700;cursor:pointer;border:1px solid var(--line);background:#fff;color:var(--ink);border-radius:20px;padding:.25rem .6rem}
+  .circ-ctl .chip:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+  .circ-hint{font-size:.88rem;color:var(--muted);margin:.7rem 0 0}
+</style>
+<style>
+  .trainer{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.2rem 1.3rem;margin-top:1rem}
+  .tr-eq{font-family:ui-monospace,Menlo,monospace;font-weight:800;font-size:clamp(1.05rem,4.2vw,1.45rem);text-align:center;padding:1rem;background:var(--accent-soft);border-radius:10px;color:var(--ink);line-height:1.4}
+  .tr-ctl{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.9rem;align-items:center}
+  .tr-ctl button{font:inherit;font-weight:700;font-size:.9rem;cursor:pointer;border:none;border-radius:9px;padding:.55rem .95rem;color:#fff;background:var(--accent)}
+  .tr-ctl button.sec{background:var(--pos)}
+  .tr-ctl button.ghost{background:transparent;color:var(--accent);border:1px solid var(--accent)}
+  .tr-ctl input{flex:1;min-width:150px;font:inherit;padding:.5rem .7rem;border:1px solid var(--line);border-radius:9px;background:#fff;color:var(--ink)}
+  .tr-ctl button:focus-visible,.tr-ctl input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+  .tr-result{margin-top:.9rem;font-size:.96rem;min-height:1.2rem}
+  .tr-result .ok{color:var(--pos);font-weight:700}
+  .tr-result .bad{color:var(--neg);font-weight:700}
+  .tr-result .sol{margin-top:.7rem;padding:.85rem 1rem;background:#FCFBFE;border:1px solid var(--line);border-radius:10px;font-family:ui-monospace,Menlo,monospace;font-size:.9rem;line-height:1.8;overflow-x:auto}
+  .tr-result .sol b{color:var(--accent)}
+  .tr-note{font-size:.86rem;color:var(--muted);margin:.7rem 0 0}
+</style>
+
+<!--LESSON-NAV-TOP--><style>.lnav{--lnav-accent:#3D5AF1}.lnav a{text-decoration:none;font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif}.lnav-top{max-width:820px;margin:0 auto;padding:.75rem clamp(1rem,4vw,1.5rem) .1rem}.lnav-top a{display:inline-flex;align-items:center;gap:.35rem;color:var(--lnav-accent);font-weight:600;font-size:.9rem}.lnav-top a:hover{text-decoration:underline}.lnav-bot{max-width:820px;margin:2.6rem auto 3rem;padding:1.1rem clamp(1rem,4vw,1.5rem) 0;border-top:1px solid #E4E8EF;display:flex;align-items:stretch;gap:.55rem}.lnav-bot a{min-width:0;display:flex;flex-direction:column;justify-content:center;gap:.15rem;border:1px solid #E4E8EF;border-radius:12px;padding:.65rem .85rem;color:#182233;background:#fff;transition:border-color .1s,transform .08s}.lnav-bot a:hover{border-color:var(--lnav-accent);transform:translateY(-1px)}.lnav-bot .prev,.lnav-bot .next{flex:1 1 0}.lnav-bot .next{text-align:right}.lnav-bot .dir{font-size:.72rem;color:#8A93A6;font-weight:600}.lnav-bot .ttl{font-size:.9rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.lnav-bot .to-cat{flex:0 0 auto;flex-direction:row;align-items:center;justify-content:center;color:var(--lnav-accent);font-weight:700;font-size:.85rem;white-space:nowrap}@media(max-width:420px){.lnav-bot .to-cat span{display:none}.lnav-bot .to-cat{padding:.65rem .7rem}}</style><nav class="lnav lnav-top"><a href="./catalog.html">← Все темы</a></nav><!--/LESSON-NAV-TOP-->
+<div class="wrap">
+
+  <header>
+    <p class="eyebrow">Геометрия · 9 класс</p>
+    <h1>Синус, косинус и тангенс углов от 0° до 180°</h1>
+    <p class="lede">В 8 классе синус жил только внутри прямоугольного треугольника. Сейчас мы его оттуда выпустим — и научимся брать синус и косинус даже у тупого угла.</p>
+  </header>
+
+  <div class="hero-formula">
+    <p class="lbl">Определение через полуокружность</p>
+    <div class="eq">cos α = <b>x</b> &nbsp;·&nbsp; sin α = <b>y</b></div>
+    <p class="note">(x; y) — координаты точки на единичной полуокружности, отвечающей углу α</p>
+  </div>
+
+  <section>
+    <p class="kicker">Зачем это нужно</p>
+    <h2>Потому что тупые углы никуда не делись</h2>
+    <p>В 8 классе синус, косинус и тангенс определяли только для <strong>острого угла прямоугольного треугольника</strong> — как отношения сторон. Работало отлично. Но посмотри на обычный треугольник: в нём вполне может быть угол в 120°. А у тупого угла никакого «прямоугольного треугольника с гипотенузой» нет — отношение сторон брать не у чего.</p>
+    <p>А трогать тупые углы придётся постоянно: теорема синусов, теорема косинусов, формула площади <span class="math">S = ½·a·b·sin C</span> — все они работают с любым треугольником, значит и с тупыми углами тоже. Без синуса и косинуса тупого угла эти формулы просто не запустятся.</p>
+    <p>Главное заблуждение, которое надо сломать прямо сейчас: <strong>«синус и косинус — это всегда про прямоугольный треугольник»</strong>. Нет. Определение через стороны — лишь частный случай. Общее определение даётся через <strong>координаты точки на полуокружности</strong> и работает для всех углов от 0° до 180°.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Что вспомнить перед стартом</p>
+    <div class="recall">
+      <p><strong>Координатная плоскость.</strong> У каждой точки есть пара чисел (x; y): x — вправо-влево, y — вверх-вниз. Слева от оси Oy координата <span class="math">x</span> <strong>отрицательна</strong> — это ключ ко всей теме.</p>
+      <p><strong>Подобие и отношения сторон.</strong> Из 8 класса: в прямоугольном треугольнике <span class="math">sin α</span> = противолежащий катет / гипотенуза, <span class="math">cos α</span> = прилежащий катет / гипотенуза. Эти отношения не зависят от размера треугольника — потому что все такие треугольники подобны. Значит, можно взять «удобный» треугольник — с гипотенузой ровно 1.</p>
+      <p><strong>Табличные значения острых углов</strong> (30°, 45°, 60°) — их надо помнить, они сейчас пригодятся.</p>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Суть темы</p>
+    <h2>Одна полуокружность вместо всех треугольников</h2>
+    <p>Берём окружность радиуса 1 с центром в начале координат и оставляем её <strong>верхнюю половину</strong> — полуокружность над осью Ox. От положительного направления оси Ox откладываем угол α против часовой стрелки. Луч пересекает полуокружность ровно в одной точке. У этой точки есть координаты (x; y).</p>
+    <p>И вот вся суть темы одной строкой: <strong>косинус угла — это координата x этой точки, синус — координата y</strong>. Тангенс — отношение синуса к косинусу. Так как радиус равен 1, координаты <em>сразу</em> дают значения синуса и косинуса, ничего делить не надо.</p>
+    <p>Почему это удобно и честно:</p>
+    <ul>
+      <li>Для острого угла новое определение даёт <strong>ровно те же значения</strong>, что и отношения сторон из 8 класса. Старое правило не отменяется — оно расширяется.</li>
+      <li>Для тупого угла точка уходит <strong>влево от оси Oy</strong>, её координата x становится отрицательной — и косинус автоматически получается отрицательным. Знак не надо заучивать: он <em>возникает сам собой</em> из геометрии.</li>
+    </ul>
+  </section>
+
+  <section>
+    <p class="kicker">Ядро темы</p>
+    <h2>Определение и знаки</h2>
+    <p>Пусть на единичной полуокружности (радиус <span class="math">R = 1</span>, верхняя половина) углу α, отсчитанному от положительной полуоси Ox, соответствует точка с координатами (x; y). Тогда:</p>
+    <div class="worked">
+      <ol class="steps">
+        <li><span class="m">cos α = x</span> — абсцисса точки (горизонтальная координата).</li>
+        <li><span class="m">sin α = y</span> — ордината точки (вертикальная координата).</li>
+        <li><span class="m">tg α = sin α / cos α = y / x</span> — при <span class="m">cos α ≠ 0</span>.</li>
+      </ol>
+      <div class="verdict" style="background:var(--accent-soft);color:var(--accent)">Работает для всех углов 0° ≤ α ≤ 180°</div>
+    </div>
+
+    <p style="margin-top:1.4rem">Теперь про знаки. Их всего три случая, и каждый виден на чертеже:</p>
+    <div class="cases">
+      <div class="case pos">
+        <div class="sign">0° ≤ α &lt; 90°</div>
+        <div class="count">cos α &gt; 0</div>
+        <div class="desc">Острый угол: точка справа от оси Oy, значит x &gt; 0.</div>
+      </div>
+      <div class="case zero">
+        <div class="sign">α = 90°</div>
+        <div class="count">cos α = 0</div>
+        <div class="desc">Точка на самой оси Oy: x = 0. Поэтому tg 90° не существует.</div>
+      </div>
+      <div class="case neg">
+        <div class="sign">90° &lt; α ≤ 180°</div>
+        <div class="count">cos α &lt; 0</div>
+        <div class="desc">Тупой угол: точка слева от оси Oy, значит x &lt; 0.</div>
+      </div>
+    </div>
+    <p style="font-size:.95rem;margin-top:.9rem">А синус на всём этом промежутке ведёт себя мирно: <strong>sin α ≥ 0 всегда</strong> — точка ведь лежит в верхней половине, у неё y ≥ 0. Запомни как считалочку: <strong>синус минуса не знает, минус — это про косинус.</strong></p>
+
+    <p style="margin-top:1.4rem">И главный рабочий инструмент — <strong>формулы приведения</strong>. Они следуют из симметрии полуокружности относительно оси Oy: угол α и угол 180° − α дают точки, зеркальные друг другу, у них одинаковый y и противоположный x.</p>
+    <div class="hero-formula" style="margin-top:.9rem">
+      <p class="lbl">Сводим тупой угол к острому</p>
+      <div class="eq">sin(180° − α) = <b>sin α</b></div>
+      <div class="eq" style="margin-top:.5rem">cos(180° − α) = <b>−cos α</b></div>
+      <p class="note">Синус не меняется, косинус меняет знак на противоположный</p>
+    </div>
+
+    <h2 style="margin-top:2rem">Таблица опорных значений</h2>
+    <p>Её надо знать наизусть — она закрывает почти все школьные задачи.</p>
+    <div class="tbl-scroll">
+      <table class="vals">
+        <thead>
+          <tr><th>α</th><th>0°</th><th>30°</th><th>45°</th><th>60°</th><th>90°</th><th>180°</th></tr>
+        </thead>
+        <tbody>
+          <tr><th>sin α</th><td>0</td><td>1/2</td><td>√2/2</td><td>√3/2</td><td>1</td><td>0</td></tr>
+          <tr><th>cos α</th><td>1</td><td>√3/2</td><td>√2/2</td><td>1/2</td><td>0</td><td class="mn">−1</td></tr>
+          <tr><th>tg α</th><td>0</td><td>√3/3</td><td>1</td><td>√3</td><td class="nd">не сущ.</td><td>0</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="oge-tip"><div class="b">🎯 В ОГЭ</div><div class="x"><b>Задания 15–19.</b> Это блок геометрии первой части: треугольники, углы, площади. Как только в задаче появляется тупой угол — например, надо найти площадь через <span class="math">S = ½·a·b·sin C</span> или применить теорему косинусов — без знака косинуса тупого угла ответ не сойдётся. Тот же навык нужен и в геометрии второй части (задания 24–26).</div></div>
+  </section>
+
+  <section>
+    <p class="kicker">Покрути сам · интерактив</p>
+    <h2>Смотри, откуда берётся минус</h2>
+    <p>Двигай ползунок (или тяни точку прямо по чертежу) и следи за двумя числами: <span class="math">x</span> — это косинус, <span class="math">y</span> — это синус. Поймай момент, когда точка переходит через ось Oy.</p>
+    <div class="circ">
+      <canvas id="uc" width="640" height="380" aria-label="Единичная полуокружность с подвижной точкой: показывает синус и косинус угла"></canvas>
+      <div class="circ-read">
+        <div class="rd" id="rdA"><small>угол α</small><span>60°</span></div>
+        <div class="rd" id="rdC"><small>cos α = x</small><span>0,50</span></div>
+        <div class="rd" id="rdS"><small>sin α = y</small><span>0,87</span></div>
+      </div>
+      <div class="circ-ctl">
+        <label>α <input id="ucRange" type="range" min="0" max="180" step="1" value="60" aria-label="Угол альфа в градусах"></label>
+        <button class="chip" type="button" data-a="30">30°</button>
+        <button class="chip" type="button" data-a="90">90°</button>
+        <button class="chip" type="button" data-a="120">120°</button>
+        <button class="chip" type="button" data-a="150">150°</button>
+      </div>
+      <p class="circ-hint">Предскажи заранее: что случится с координатой x, когда угол станет больше 90°? Проверь — и объясни словами, почему так.</p>
+    </div>
+    <p style="font-size:.92rem;color:var(--muted)">Обрати внимание: высота точки (это синус) при 60° и при 120° <strong>одинаковая</strong> — вот тебе формула <span class="math">sin(180° − α) = sin α</span> прямо на картинке. А горизонтальная координата у них равна по длине, но смотрит в разные стороны — вот и <span class="math">cos(180° − α) = −cos α</span>.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Разбираем вместе · думаю вслух</p>
+    <h2>Эталонный пример</h2>
+    <div class="worked">
+      <p class="task">Найти sin 120°, cos 120° и tg 120°</p>
+      <ol class="steps">
+        <li>120° — тупой угол. Представим его как <span class="m">180° − 60°</span>.<span class="why">Почему именно так: 60° — табличный острый угол, его значения я знаю наизусть. Смысл шага — свести незнакомое к знакомому.</span></li>
+        <li><span class="m">sin 120° = sin(180° − 60°) = sin 60° = √3/2</span>.<span class="why">Почему без минуса: синусы углов, дополняющих друг друга до 180°, равны, а в верхней полуокружности синус всегда неотрицателен. Точка стоит на той же высоте, что и при 60°.</span></li>
+        <li><span class="m">cos 120° = cos(180° − 60°) = −cos 60° = −1/2</span>.<span class="why">Почему с минусом: угол тупой, точка ушла влево от оси Oy, её x отрицателен. Формула приведения ровно это и говорит — берём косинус острого угла и ставим минус.</span></li>
+        <li><span class="m">tg 120° = sin 120° / cos 120° = (√3/2) / (−1/2) = −√3</span>.<span class="why">Почему так: тангенс — это просто отношение. Плюс делим на минус — получается минус, а сами дроби сокращаются: (√3/2)·(−2/1) = −√3.</span></li>
+      </ol>
+      <div class="verdict">Ответ: sin 120° = √3/2 · cos 120° = −1/2 · tg 120° = −√3</div>
+    </div>
+
+    <p style="margin-top:1.4rem"><strong>Теперь допиши сам.</strong> Найти <span class="math">cos 135°</span>:</p>
+    <div class="drill">
+      <details>
+        <summary><span class="q">135° = 180° − 45°;&nbsp; cos 135° = ? </span><span class="tag">по шагам</span></summary>
+        <div class="ans">Применяем <span class="m">cos(180° − α) = −cos α</span> при α = 45°: <span class="m">cos 135° = −cos 45° = −√2/2</span>.<br>Проверка здравым смыслом: угол тупой → косинус обязан быть отрицательным. Так и вышло.</div>
+      </details>
+      <details>
+        <summary><span class="q">Сам: найди sin 150° и cos 150°</span><span class="tag">применение</span></summary>
+        <div class="ans"><span class="m">150° = 180° − 30°</span>. Значит <span class="m">sin 150° = sin 30° = 1/2</span> и <span class="m">cos 150° = −cos 30° = −√3/2</span>.</div>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Теперь ты · нажми, чтобы проверить</p>
+    <h2>Практика по нарастанию</h2>
+    <div class="drill">
+      <details>
+        <summary><span class="q">Какой знак у cos 100° и у sin 100°?</span><span class="tag">понимание</span></summary>
+        <div class="ans">100° — угол тупой, точка на полуокружности стоит <strong>слева</strong> от оси Oy, значит её x отрицателен: <span class="m">cos 100° &lt; 0</span>. А по высоте точка всё ещё выше оси Ox, y &gt; 0, значит <span class="m">sin 100° &gt; 0</span>. Точное значение считать не нужно — знак виден по чертежу.</div>
+      </details>
+      <details>
+        <summary><span class="q">Вычисли sin 135°</span><span class="tag">применение</span></summary>
+        <div class="ans"><span class="m">sin 135° = sin(180° − 45°) = sin 45° = √2/2</span>. Синус тупого угла остаётся положительным.</div>
+      </details>
+      <details>
+        <summary><span class="q">Вычисли cos 60° и tg 45°</span><span class="tag">применение</span></summary>
+        <div class="ans">Оба угла острые, берём прямо из таблицы: <span class="m">cos 60° = 1/2</span>, <span class="m">tg 45° = 1</span>.</div>
+      </details>
+      <details>
+        <summary><span class="q">Вычисли cos 180°</span><span class="tag">применение</span></summary>
+        <div class="ans"><span class="m">cos 180° = −1</span>. Луч под углом 180° идёт по отрицательной полуоси Ox, точка попадает в (−1; 0): x = −1, y = 0. Заодно видно, что <span class="m">sin 180° = 0</span>.</div>
+      </details>
+      <details>
+        <summary><span class="q">Что изменится со знаком косинуса, если угол увеличить с 80° до 100°?</span><span class="tag">анализ</span></summary>
+        <div class="ans">Знак поменяется с плюса на минус. При 80° точка ещё справа от оси Oy (x &gt; 0), при 100° она уже слева (x &lt; 0). Ровно посередине, при 90°, точка сидит на самой оси и <span class="m">cos 90° = 0</span> — это и есть граница смены знака.</div>
+      </details>
+      <details>
+        <summary><span class="q">Найди ошибку: «cos 150° = √3/2, ведь cos 30° = √3/2»</span><span class="tag">анализ</span></summary>
+        <div class="ans">Сведение к 30° сделано верно: <span class="m">150° = 180° − 30°</span>. Ошибка в знаке — забыли минус из формулы приведения. По правилу <span class="m">cos(180° − α) = −cos α</span>, поэтому <span class="m">cos 150° = −cos 30° = −√3/2</span>. Проверка: угол тупой → косинус обязан быть отрицательным, а положительный ответ этому противоречит.</div>
+      </details>
+      <details>
+        <summary><span class="q">Обратная задача: cos α = 1/2 для острого α. Чему равен cos β, если β = 180° − α?</span><span class="tag">анализ</span></summary>
+        <div class="ans">По формуле приведения <span class="m">cos β = cos(180° − α) = −cos α = −1/2</span>. Само значение α находить не обязательно — достаточно правила. (Хотя видно, что α = 60°, а β = 120°, и мы возвращаемся к эталонному примеру.)</div>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Тренажёр · бесконечная практика</p>
+    <h2>Реши сам, сколько захочешь</h2>
+    <p>Нажимай «Новое задание» и вводи ответ. Точное значение можно записать как <b>√3/2</b>, <b>sqrt3/2</b> или <b>корень3/2</b>; дробь — как <b>1/2</b>; десятичную запись тоже приму (<b>0,87</b>). Минус ставь обычный. Если значения не существует — напиши «нет».</p>
+    <div class="trainer">
+      <div class="tr-eq" id="trQ">Найди cos 120°</div>
+      <div class="tr-ctl">
+        <button id="trNew" type="button">🎲 Новое задание</button>
+        <input id="trAns" type="text" inputmode="text" placeholder="напр.  −1/2   или   √3/2   или   нет" aria-label="Ответ">
+        <button id="trCheck" type="button" class="sec">Проверить</button>
+        <button id="trShow" type="button" class="ghost">Показать решение</button>
+      </div>
+      <div id="trResult" class="tr-result"></div>
+      <p class="tr-note">Совет: сначала реши в голове по схеме «сведи к острому → поставь знак», и только потом вводи ответ.</p>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Где чаще всего ошибаются</p>
+    <h2>Лови эти четыре ловушки</h2>
+    <ul class="pitfalls">
+      <li><b>Косинус тупого угла пишут без минуса.</b> Классика: <span class="math">cos 120° = 1/2</span> вместо <span class="math">−1/2</span>. Как не допустить: всегда мысленно ставь точку на полуокружность. Тупой угол → точка слева от оси Oy → x &lt; 0 → косинус отрицательный. Без вариантов.</li>
+      <li><b>Думают, что синус тоже меняет знак.</b> Нет. На промежутке от 0° до 180° точка всегда в верхней половине, y ≥ 0, поэтому <span class="math">sin α ≥ 0</span> для любого такого угла. Минус появляется только у косинуса — и у тангенса как следствие.</li>
+      <li><b>Пытаются вспомнить значение тупого угла наизусть.</b> Не надо это зубрить. Есть приём: сведи к острому через <span class="math">180° − α</span>, возьми табличное значение и аккуратно поставь знак. Два действия вместо мучений памяти.</li>
+      <li><b>Делят на ноль в тангенсе 90°.</b> Помни: <span class="math">cos 90° = 0</span>, а на ноль делить нельзя — значит, <span class="math">tg 90°</span> просто не существует. Это не «ноль» и не «бесконечность», это «нет такого значения».</li>
+    </ul>
+  </section>
+
+  <section>
+    <p class="kicker">Проверь себя</p>
+    <h2>Объясни своими словами</h2>
+    <p>Закрой урок и ответь вслух — как будто объясняешь другу:</p>
+    <ol class="selfcheck">
+      <li>Где на полуокружности «прячется» косинус угла, а где синус?</li>
+      <li>У какого угла из 40° и 140° косинус отрицательный — и почему?</li>
+      <li>Чему равен <span class="math">tg 90°</span> и почему именно так?</li>
+      <li>Как из <span class="math">cos 45°</span> за один шаг получить <span class="math">cos 135°</span>?</li>
+    </ol>
+    <div class="drill" style="margin-top:.9rem">
+      <details>
+        <summary><span class="q">Сверить ответы</span><span class="tag">самоконтроль</span></summary>
+        <div class="ans">
+          1. Косинус — это горизонтальная координата <span class="m">x</span> точки, синус — вертикальная <span class="m">y</span>.<br>
+          2. У 140°: он тупой, точка слева от оси Oy, значит <span class="m">x &lt; 0</span>. У 40° косинус положительный.<br>
+          3. <span class="m">tg 90°</span> не существует: <span class="m">tg α = sin α / cos α</span>, а <span class="m">cos 90° = 0</span> — деление на ноль запрещено.<br>
+          4. <span class="m">135° = 180° − 45°</span>, поэтому <span class="m">cos 135° = −cos 45° = −√2/2</span>: то же число, но со знаком минус.
+        </div>
+      </details>
+    </div>
+    <p style="margin-top:1rem">Итог одной фразой: <strong>синус, косинус и тангенс угла от 0° до 180° — это координаты точки на единичной полуокружности; синус неотрицателен всегда, а косинус отрицателен у тупых углов.</strong></p>
+  </section>
+
+  <section>
+    <div class="next">
+      <h2>Что дальше</h2>
+      <p>Ты открыл синус и косинус для любого угла треугольника — и теперь становятся доступны три большие темы:</p>
+      <div class="eq">sin²α + cos²α = 1</div>
+      <p><b>Основное тригонометрическое тождество</b> — связь синуса и косинуса одного угла: зная одно, находишь другое.</p>
+      <div class="eq" style="margin-top:1rem">a / sin A = b / sin B = c / sin C</div>
+      <p><b>Теорема синусов</b> — связывает стороны треугольника с синусами противолежащих углов. Работает и с тупыми углами, потому что синус мы теперь умеем брать у любого угла.</p>
+      <div class="eq" style="margin-top:1rem">c² = a² + b² − 2ab·cos C</div>
+      <p><b>Теорема косинусов</b> — обобщение теоремы Пифагора. Именно здесь отрицательный косинус тупого угла делает всю работу: минус на минус даёт плюс, и третья сторона против тупого угла получается длиннее, чем по Пифагору. Без сегодняшней темы эта формула не заработала бы.</p>
+    </div>
+  </section>
+
+  <p class="foot">Быстрая проверка на выходе: назови знак cos 130° · чему равен sin 150° · почему у tg 90° нет значения.</p>
+
+</div>
+
+<script>
+(function(){
+  var canvas=document.getElementById('uc'); if(!canvas) return;
+  var ctx=canvas.getContext('2d');
+  var rng=document.getElementById('ucRange');
+  var rdA=document.getElementById('rdA'), rdC=document.getElementById('rdC'), rdS=document.getElementById('rdS');
+  var W=640,H=380,dpr=1,R=1,cx=0,cy=0;
+  var ang=60;
+
+  var COL={pos:'#1E8E5A',zero:'#B9791A',neg:'#C0455B',accent:'#3B4FD0',ink:'#1B2333',muted:'#8A93A6',grid:'#EDEFF4'};
+
+  function num(v){
+    var n=Math.round(v*100)/100;
+    if(Math.abs(n)<0.005) n=0;
+    var s=Math.abs(n).toFixed(2).replace('.',',');
+    return (n<0?'−':'')+s;
+  }
+
+  function resize(){
+    var cssW=canvas.clientWidth||640;
+    dpr=Math.min(window.devicePixelRatio||1,2);
+    W=cssW;
+    H=Math.max(210,Math.round(cssW*0.62));
+    canvas.width=Math.round(W*dpr); canvas.height=Math.round(H*dpr);
+    canvas.style.height=H+'px';
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+    cx=W/2; cy=H-34;
+    R=Math.min((W-82)/2, H-58);
+    if(R<40) R=40;
+  }
+  function PX(x){ return cx+x*R; }
+  function PY(y){ return cy-y*R; }
+
+  function dash(x1,y1,x2,y2,color){
+    ctx.save(); ctx.setLineDash([4,4]); ctx.strokeStyle=color; ctx.lineWidth=1.6;
+    ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(x2,y2); ctx.stroke(); ctx.restore();
+  }
+
+  function draw(){
+    var a=ang, rad=a*Math.PI/180;
+    var x=Math.cos(rad), y=Math.sin(rad);
+    if(Math.abs(x)<1e-12) x=0;
+    if(Math.abs(y)<1e-12) y=0;
+    var col = a<90?COL.pos:(a>90?COL.neg:COL.zero);
+
+    ctx.clearRect(0,0,W,H);
+    ctx.lineJoin='round'; ctx.lineCap='round';
+    ctx.font='12px system-ui,-apple-system,"Segoe UI",Roboto,sans-serif';
+    ctx.textBaseline='alphabetic';
+
+    /* сетка: единичные отметки */
+    ctx.strokeStyle=COL.grid; ctx.lineWidth=1;
+    ctx.beginPath(); ctx.moveTo(PX(-1),PY(0)); ctx.lineTo(PX(-1),PY(1.08)); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(PX(1),PY(0)); ctx.lineTo(PX(1),PY(1.08)); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(PX(-1.1),PY(1)); ctx.lineTo(PX(1.1),PY(1)); ctx.stroke();
+
+    /* оси */
+    ctx.strokeStyle='#9AA3B2'; ctx.lineWidth=1.5;
+    ctx.beginPath(); ctx.moveTo(PX(-1.22),PY(0)); ctx.lineTo(PX(1.22),PY(0)); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(PX(0),PY(-0.12)); ctx.lineTo(PX(0),PY(1.2)); ctx.stroke();
+
+    /* подписи осей и единиц */
+    ctx.fillStyle=COL.muted;
+    ctx.textAlign='center';
+    ctx.fillText('x', PX(1.22)-2, PY(0)+20);
+    ctx.fillText('−1', PX(-1), PY(0)+16);
+    ctx.fillText('1', PX(1), PY(0)+16);
+    ctx.fillText('O', PX(0)-11, PY(0)+16);
+    ctx.textAlign='left';
+    ctx.fillText('y', PX(0)+7, PY(1.2)+10);
+    ctx.fillText('1', PX(0)+7, PY(1)-4);
+
+    /* полуокружность */
+    ctx.strokeStyle='#C3CAD8'; ctx.lineWidth=2;
+    ctx.beginPath(); ctx.arc(PX(0),PY(0),R,Math.PI,2*Math.PI); ctx.stroke();
+
+    /* дуга угла */
+    ctx.strokeStyle=col; ctx.lineWidth=2;
+    ctx.beginPath(); ctx.arc(PX(0),PY(0),R*0.26,-rad,0); ctx.stroke();
+    ctx.fillStyle=col; ctx.textAlign='left';
+    var lr=R*0.36, la=rad/2;
+    ctx.fillText(a+'°', PX(0)+lr*Math.cos(la)-8, PY(0)-lr*Math.sin(la)-4);
+
+    /* луч */
+    ctx.strokeStyle=col; ctx.lineWidth=2.5;
+    ctx.beginPath(); ctx.moveTo(PX(0),PY(0)); ctx.lineTo(PX(x),PY(y)); ctx.stroke();
+
+    /* проекции */
+    dash(PX(x),PY(y),PX(x),PY(0),COL.neg);
+    dash(PX(x),PY(y),PX(0),PY(y),COL.accent);
+
+    /* отрезок косинуса на оси Ox */
+    ctx.strokeStyle=(a===90)?COL.zero:col; ctx.lineWidth=4;
+    if(a!==90){ ctx.beginPath(); ctx.moveTo(PX(0),PY(0)); ctx.lineTo(PX(x),PY(0)); ctx.stroke(); }
+    /* отрезок синуса на оси Oy */
+    ctx.strokeStyle=COL.accent; ctx.lineWidth=4;
+    ctx.beginPath(); ctx.moveTo(PX(0),PY(0)); ctx.lineTo(PX(0),PY(y)); ctx.stroke();
+
+    /* точка */
+    ctx.fillStyle=col; ctx.beginPath(); ctx.arc(PX(x),PY(y),7,0,7); ctx.fill();
+    ctx.fillStyle='#fff'; ctx.beginPath(); ctx.arc(PX(x),PY(y),2.8,0,7); ctx.fill();
+
+    /* подпись точки */
+    ctx.fillStyle=COL.ink; ctx.font='bold 12px system-ui,-apple-system,"Segoe UI",Roboto,sans-serif';
+    var lbl='('+num(x)+'; '+num(y)+')';
+    var tw=ctx.measureText(lbl).width;
+    var lx=PX(x)+12, ly=PY(y)-10;
+    if(lx+tw>W-4) lx=PX(x)-tw-12;
+    if(lx<4) lx=4;
+    if(ly<14) ly=14;
+    ctx.textAlign='left';
+    ctx.fillText(lbl,lx,ly);
+
+    /* подписи проекций */
+    ctx.font='bold 12px system-ui,-apple-system,"Segoe UI",Roboto,sans-serif';
+    if(a!==90 && a!==0 && a!==180){
+      ctx.fillStyle=col; ctx.textAlign='center';
+      ctx.fillText('cos α', PX(x/2), PY(0)+16);
+    }
+    if(a!==0 && a!==180){
+      ctx.fillStyle=COL.accent; ctx.textAlign='left';
+      ctx.fillText('sin α', PX(0)+7, PY(y/2)+4);
+    }
+  }
+
+  function paint(){
+    rdA.querySelector('span').textContent=ang+'°';
+    var rad=ang*Math.PI/180;
+    var c=Math.cos(rad), s=Math.sin(rad);
+    if(Math.abs(c)<1e-12) c=0;
+    if(Math.abs(s)<1e-12) s=0;
+    rdC.querySelector('span').textContent=num(c);
+    rdS.querySelector('span').textContent=num(s);
+    rdC.className='rd '+(ang<90?'pos':(ang>90?'neg':'zero'));
+    rdS.className='rd pos';
+    draw();
+  }
+
+  function setAng(a){
+    a=Math.round(a);
+    if(a<0)a=0; if(a>180)a=180;
+    ang=a; rng.value=String(a); paint();
+  }
+
+  rng.addEventListener('input',function(){ setAng(parseFloat(rng.value)); });
+  Array.prototype.forEach.call(document.querySelectorAll('.circ-ctl .chip'),function(b){
+    b.addEventListener('click',function(){ setAng(parseFloat(b.getAttribute('data-a'))); });
+  });
+
+  var dragging=false;
+  function fromPointer(e){
+    var r=canvas.getBoundingClientRect();
+    var px=e.clientX-r.left, py=e.clientY-r.top;
+    var dx=px-cx, dy=cy-py;
+    var a=Math.atan2(Math.max(dy,0),dx)*180/Math.PI;
+    setAng(a);
+  }
+  canvas.addEventListener('pointerdown',function(e){ dragging=true; if(canvas.setPointerCapture){try{canvas.setPointerCapture(e.pointerId);}catch(err){}} fromPointer(e); e.preventDefault(); });
+  canvas.addEventListener('pointermove',function(e){ if(dragging){ fromPointer(e); e.preventDefault(); } });
+  canvas.addEventListener('pointerup',function(){ dragging=false; });
+  canvas.addEventListener('pointercancel',function(){ dragging=false; });
+
+  window.addEventListener('resize',function(){ resize(); paint(); });
+  resize(); paint();
+})();
+</script>
+
+<script>
+(function(){
+  var qEl=document.getElementById('trQ'), ansEl=document.getElementById('trAns'), resEl=document.getElementById('trResult');
+  if(!qEl) return;
+  var MINUS='−', DEG='°';
+
+  /* Таблица: угол -> точные значения (строка для показа + число для проверки) */
+  var T={
+    0:  {sin:['0',0],            cos:['1',1],              tg:['0',0]},
+    30: {sin:['1/2',0.5],        cos:['√3/2',Math.sqrt(3)/2], tg:['√3/3',Math.sqrt(3)/3]},
+    45: {sin:['√2/2',Math.sqrt(2)/2], cos:['√2/2',Math.sqrt(2)/2], tg:['1',1]},
+    60: {sin:['√3/2',Math.sqrt(3)/2], cos:['1/2',0.5],   tg:['√3',Math.sqrt(3)]},
+    90: {sin:['1',1],            cos:['0',0],              tg:[null,null]},
+    120:{sin:['√3/2',Math.sqrt(3)/2], cos:[MINUS+'1/2',-0.5], tg:[MINUS+'√3',-Math.sqrt(3)]},
+    135:{sin:['√2/2',Math.sqrt(2)/2], cos:[MINUS+'√2/2',-Math.sqrt(2)/2], tg:[MINUS+'1',-1]},
+    150:{sin:['1/2',0.5],        cos:[MINUS+'√3/2',-Math.sqrt(3)/2], tg:[MINUS+'√3/3',-Math.sqrt(3)/3]},
+    180:{sin:['0',0],            cos:[MINUS+'1',-1],       tg:['0',0]}
+  };
+  var ANGLES=[0,30,45,60,90,120,135,150,180];
+  var ACUTE=[30,45,60];
+  var FUNCS=['sin','cos','tg'];
+  var FNAME={sin:'sin',cos:'cos',tg:'tg'};
+
+  function ri(min,max){ return Math.floor(Math.random()*(max-min+1))+min; }
+  function pick(arr){ return arr[ri(0,arr.length-1)]; }
+
+  /* ---- задача ---- */
+  function makeTask(){
+    if(Math.random()<0.78){
+      var a=pick(ANGLES), f=pick(FUNCS);
+      /* tg 90° — краевой случай, но редкий */
+      if(a===90 && f==='tg' && Math.random()<0.75){ f=pick(['sin','cos']); }
+      return {type:'val', a:a, f:f};
+    }
+    /* обратная задача на формулу приведения */
+    var b=pick(ACUTE), g=Math.random()<0.5?'sin':'cos';
+    return {type:'red', a:b, f:g};
+  }
+
+  function taskText(t){
+    if(t.type==='val') return 'Найди ' + FNAME[t.f] + ' ' + t.a + DEG;
+    var v=T[t.a][t.f];
+    return 'Для острого угла α известно, что ' + FNAME[t.f] + ' α = ' + v[0] +
+           '. Чему равен ' + FNAME[t.f] + '(180' + DEG + ' − α)?';
+  }
+
+  /* правильный ответ: {none:true} либо {str:..., val:...} */
+  function answer(t){
+    if(t.type==='val'){
+      var v=T[t.a][t.f];
+      if(v[0]===null) return {none:true};
+      return {str:v[0], val:v[1]};
+    }
+    var base=T[t.a][t.f];
+    if(t.f==='sin') return {str:base[0], val:base[1]};
+    return {str:MINUS+base[0], val:-base[1]};
+  }
+
+  /* ---- решение по шагам ---- */
+  function solutionHTML(t){
+    var h='<div class="sol">', v, base, red;
+    if(t.type==='val'){
+      var a=t.a, f=t.f;
+      if(a===90 && f==='tg'){
+        h+='tg α = sin α / cos α<br>';
+        h+='cos 90'+DEG+' = 0 — точка лежит на оси Oy, её x = 0.<br>';
+        h+='Делить на ноль нельзя → <b>tg 90'+DEG+' не существует.</b>';
+        return h+'</div>';
+      }
+      if(a>90 && a<180){
+        red=180-a;
+        h+=a+DEG+' — тупой угол, сводим к острому: '+a+DEG+' = 180'+DEG+' − '+red+DEG+'<br>';
+        if(f==='sin'){
+          h+='sin(180'+DEG+' − '+red+DEG+') = sin '+red+DEG+' = <b>'+T[a].sin[0]+'</b><br>';
+          h+='Синус тупого угла остаётся положительным (точка выше оси Ox).';
+        } else if(f==='cos'){
+          h+='cos(180'+DEG+' − '+red+DEG+') = '+MINUS+'cos '+red+DEG+' = '+MINUS+T[red].cos[0]+' = <b>'+T[a].cos[0]+'</b><br>';
+          h+='Угол тупой → точка слева от оси Oy → косинус отрицателен.';
+        } else {
+          h+='sin '+a+DEG+' = '+T[a].sin[0]+',  cos '+a+DEG+' = '+T[a].cos[0]+'<br>';
+          h+='tg '+a+DEG+' = sin '+a+DEG+' / cos '+a+DEG+' = ('+T[a].sin[0]+') / ('+T[a].cos[0]+') = <b>'+T[a].tg[0]+'</b><br>';
+          h+='Плюс делим на минус → тангенс тупого угла отрицателен.';
+        }
+        return h+'</div>';
+      }
+      if(a===180){
+        h+='Луч под углом 180'+DEG+' идёт по отрицательной полуоси Ox, точка попадает в ('+MINUS+'1; 0).<br>';
+        h+='cos 180'+DEG+' = x = '+MINUS+'1,  sin 180'+DEG+' = y = 0.<br>';
+        h+='Значит '+FNAME[f]+' 180'+DEG+' = <b>'+T[180][f][0]+'</b>.';
+        return h+'</div>';
+      }
+      if(a===0){
+        h+='Луч под углом 0'+DEG+' идёт по положительной полуоси Ox, точка попадает в (1; 0).<br>';
+        h+='cos 0'+DEG+' = x = 1,  sin 0'+DEG+' = y = 0.<br>';
+        h+='Значит '+FNAME[f]+' 0'+DEG+' = <b>'+T[0][f][0]+'</b>.';
+        return h+'</div>';
+      }
+      v=T[a][f];
+      h+=a+DEG+' — острый угол, значение берём прямо из таблицы.<br>';
+      h+=FNAME[f]+' '+a+DEG+' = <b>'+v[0]+'</b>';
+      if(a===90){ h+='<br>Точка стоит на верхушке полуокружности: (0; 1), поэтому cos 90'+DEG+' = 0, sin 90'+DEG+' = 1.'; }
+      return h+'</div>';
+    }
+    base=T[t.a][t.f];
+    if(t.f==='sin'){
+      h+='Формула приведения: sin(180'+DEG+' − α) = sin α.<br>';
+      h+='Синус не меняется → ответ <b>'+base[0]+'</b>.<br>';
+      h+='Почему: точки для α и 180'+DEG+' − α стоят на одной высоте, y у них одинаковый.';
+    } else {
+      h+='Формула приведения: cos(180'+DEG+' − α) = '+MINUS+'cos α.<br>';
+      h+='Меняем знак: '+MINUS+'('+base[0]+') = <b>'+MINUS+base[0]+'</b>.<br>';
+      h+='Почему: угол 180'+DEG+' − α тупой, его точка зеркальна относительно оси Oy, x меняет знак.';
+    }
+    return h+'</div>';
+  }
+
+  /* ---- разбор введённого ответа ---- */
+  function norm(s){
+    return String(s).toLowerCase()
+      .replace(/\s+/g,'')
+      .replace(/[−–—]/g,'-')
+      .replace(/,/g,'.')
+      .replace(/sqrt|корень|корня|кор|root/g,'√')
+      .replace(/[*·×]/g,'');
+  }
+  function isNone(s){ return /^(нет|нету|несущ|неопр|неим|∅)/.test(s) || /несуществ/.test(s); }
+  function parseVal(s){
+    var t=String(s).replace(/[()]/g,''), sign=1;
+    while(t.charAt(0)==='-'||t.charAt(0)==='+'){ if(t.charAt(0)==='-') sign=-sign; t=t.slice(1); }
+    var m=t.match(/^(√?)(\d*(?:\.\d+)?)(?:\/(√?)(\d+(?:\.\d+)?))?$/);
+    if(!m) return null;
+    if(m[2]==='') return null;
+    var n=parseFloat(m[2]);
+    if(!isFinite(n)) return null;
+    if(m[1]){ if(n<0) return null; n=Math.sqrt(n); }
+    if(m[4]!==undefined){
+      var d=parseFloat(m[4]);
+      if(!isFinite(d)||d===0) return null;
+      if(m[3]) d=Math.sqrt(d);
+      if(d===0) return null;
+      n=n/d;
+    }
+    if(!isFinite(n)) return null;
+    return sign*n;
+  }
+
+  var cur={type:'val',a:120,f:'cos'};
+
+  function render(focus){
+    qEl.textContent=taskText(cur);
+    resEl.innerHTML='';
+    ansEl.value='';
+    if(focus) ansEl.focus();
+  }
+  function newTask(){ cur=makeTask(); render(true); }
+
+  function check(){
+    var raw=ansEl.value.trim();
+    if(!raw){ resEl.innerHTML='<span class="bad">Введи ответ или нажми «Показать решение».</span>'; return; }
+    var exp=answer(cur), t=norm(raw), ok;
+    if(exp.none){
+      ok=isNone(t);
+      resEl.innerHTML = ok
+        ? '<span class="ok">✓ Верно — такого значения нет.</span>'+solutionHTML(cur)
+        : '<span class="bad">✗ Не то. Посмотри на косинус этого угла — и вспомни, на что делить нельзя.</span>'+solutionHTML(cur);
+      return;
+    }
+    if(isNone(t)){
+      resEl.innerHTML='<span class="bad">✗ Значение здесь есть. Правильный ответ: '+exp.str+'.</span>'+solutionHTML(cur);
+      return;
+    }
+    var got=parseVal(t);
+    if(got===null){
+      resEl.innerHTML='<span class="bad">Не понял запись. Введи число или дробь: например «−1/2», «√3/2» или «0,87».</span>';
+      return;
+    }
+    ok=Math.abs(got-exp.val)<0.01;
+    if(ok){
+      resEl.innerHTML='<span class="ok">✓ Верно! Ответ: '+exp.str+'.</span>'+solutionHTML(cur);
+    } else {
+      var hint='';
+      if(Math.abs(got+exp.val)<0.01 && Math.abs(exp.val)>0.001) hint=' Значение по модулю верное — ошибка в знаке.';
+      resEl.innerHTML='<span class="bad">✗ Пока не то.'+hint+' Правильный ответ: '+exp.str+'.</span>'+solutionHTML(cur);
+    }
+  }
+
+  document.getElementById('trNew').addEventListener('click',newTask);
+  document.getElementById('trCheck').addEventListener('click',check);
+  document.getElementById('trShow').addEventListener('click',function(){ resEl.innerHTML=solutionHTML(cur); });
+  ansEl.addEventListener('keydown',function(e){ if(e.key==='Enter') check(); });
+
+  render(false); /* первичный рендер без focus() */
+
+  /* экспорт для самопроверки */
+  if(typeof module!=='undefined'&&module.exports){
+    module.exports={makeTask:makeTask,taskText:taskText,answer:answer,solutionHTML:solutionHTML,parseVal:parseVal,norm:norm,isNone:isNone,T:T};
+  }
+})();
+</script>
+<!--LESSON-NAV-BOT--><nav class="lnav lnav-bot"><a class="prev" href="./geo9-koord-zadachi.html"><span class="dir">← Предыдущая</span><span class="ttl">Решение геометрических задач методом координат</span></a><a class="to-cat" href="./catalog.html">📚 <span>Все темы</span></a><a class="next" href="./geo9-trig-osnovnoe-tozhdestvo.html"><span class="dir">Следующая →</span><span class="ttl">Основное тригонометрическое тождество и формулы приведения</span></a></nav><!--/LESSON-NAV-BOT-->

@@ -1,0 +1,864 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Наглядное представление данных — урок, алгебра 9 класс</title>
+<style>
+  :root{
+    --paper:#F6F7F9;
+    --card:#FFFFFF;
+    --ink:#1B2333;
+    --muted:#5A6478;
+    --line:#E2E5EC;
+    --accent:#3B4FD0;
+    --accent-soft:#EAEDFB;
+    --pos:#1E8E5A;
+    --pos-bg:#E7F4EC;
+    --zero:#B9791A;
+    --zero-bg:#FBF1DC;
+    --neg:#C0455B;
+    --neg-bg:#F9E9EC;
+  }
+  *{box-sizing:border-box}
+  body{margin:0}
+  .wrap{
+    max-width:760px;
+    margin:0 auto;
+    padding:clamp(1.4rem,4vw,3rem) clamp(1.1rem,4vw,2rem) 4rem;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    font-size:17px;
+    line-height:1.62;
+    -webkit-font-smoothing:antialiased;
+  }
+  .eyebrow{
+    font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--accent);font-weight:600;margin:0 0 .5rem;
+  }
+  h1{
+    font-family:Georgia,"Times New Roman",serif;
+    font-size:clamp(2rem,6.5vw,2.9rem);
+    line-height:1.06;margin:0;font-weight:700;letter-spacing:-.01em;
+    text-wrap:balance;
+  }
+  .lede{
+    font-size:1.08rem;color:var(--muted);margin:.7rem 0 0;max-width:60ch;
+    text-wrap:pretty;
+  }
+  h2{
+    font-family:Georgia,serif;font-size:1.32rem;font-weight:700;
+    margin:0 0 .1rem;letter-spacing:-.005em;
+  }
+  section{margin-top:2.6rem}
+  .kicker{
+    font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--muted);font-weight:600;margin:0 0 .8rem;
+    display:flex;align-items:center;gap:.6rem;
+  }
+  .kicker::before{
+    content:"";width:1.4rem;height:2px;background:var(--accent);border-radius:2px;
+  }
+  p{margin:.65rem 0}
+  strong{font-weight:650}
+  .math{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-weight:600}
+  sup{font-size:.72em}
+
+  /* Главная формула */
+  .hero-formula{
+    margin-top:2.2rem;
+    background:var(--ink);color:#fff;border-radius:14px;
+    padding:1.6rem 1.4rem;text-align:center;
+  }
+  .hero-formula .lbl{
+    font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;
+    color:#9aa6c9;margin:0 0 .7rem;
+  }
+  .hero-formula .eq{
+    font-family:ui-monospace,"SF Mono",Menlo,monospace;
+    font-size:clamp(1.15rem,4.6vw,1.9rem);font-weight:700;letter-spacing:.01em;
+  }
+  .hero-formula .eq b{color:#8ea0ff;font-weight:700}
+  .hero-formula .note{font-size:.86rem;color:#9aa6c9;margin:.8rem 0 0}
+
+  /* Пререквизит */
+  .recall{
+    background:var(--accent-soft);border-radius:12px;padding:1rem 1.15rem;
+    font-size:.96rem;
+  }
+  .recall p{margin:.3rem 0}
+
+  /* Четыре типа */
+  .cases{display:grid;gap:.85rem;margin-top:.4rem}
+  @media(min-width:620px){.cases{grid-template-columns:repeat(2,1fr)}}
+  .case{
+    border-radius:12px;padding:1.05rem 1.1rem;border:1px solid var(--line);
+    background:var(--card);display:flex;flex-direction:column;gap:.35rem;
+  }
+  .case .sign{font-weight:700;font-size:1.05rem}
+  .case .count{font-weight:650;font-size:.95rem}
+  .case .desc{font-size:.9rem;color:var(--muted)}
+  .case.c1{border-top:4px solid var(--accent);background:var(--accent-soft)}
+  .case.c1 .sign{color:var(--accent)}
+  .case.c2{border-top:4px solid var(--pos);background:var(--pos-bg)}
+  .case.c2 .sign{color:var(--pos)}
+  .case.c3{border-top:4px solid var(--zero);background:var(--zero-bg)}
+  .case.c3 .sign{color:var(--zero)}
+  .case.c4{border-top:4px solid var(--neg);background:var(--neg-bg)}
+  .case.c4 .sign{color:var(--neg)}
+
+  /* Разбор */
+  .worked{
+    background:var(--card);border:1px solid var(--line);border-radius:12px;
+    padding:1.2rem 1.3rem;
+  }
+  .worked .task{
+    font-weight:700;font-size:1.02rem;
+    margin:0 0 1rem;padding-bottom:.8rem;border-bottom:1px solid var(--line);
+  }
+  ol.steps{margin:0;padding:0;list-style:none;counter-reset:s;display:flex;flex-direction:column;gap:.7rem}
+  ol.steps li{position:relative;padding-left:2.1rem;counter-increment:s}
+  ol.steps li::before{
+    content:counter(s);position:absolute;left:0;top:.05rem;
+    width:1.5rem;height:1.5rem;border-radius:50%;
+    background:var(--accent-soft);color:var(--accent);
+    font-size:.82rem;font-weight:700;display:flex;align-items:center;justify-content:center;
+  }
+  ol.steps .m{font-family:ui-monospace,Menlo,monospace;font-weight:600;color:var(--ink)}
+  ol.steps .why{display:block;font-size:.88rem;color:var(--muted)}
+  .verdict{
+    margin-top:1rem;padding:.7rem 1rem;background:var(--pos-bg);
+    border-radius:9px;font-weight:600;color:var(--pos);font-size:.98rem;
+  }
+
+  /* Практика */
+  .drill{display:flex;flex-direction:column;gap:.7rem}
+  details{
+    background:var(--card);border:1px solid var(--line);border-radius:10px;
+    padding:.85rem 1.05rem;
+  }
+  details[open]{border-color:var(--accent)}
+  summary{
+    cursor:pointer;font-weight:600;list-style:none;
+    display:flex;justify-content:space-between;align-items:center;gap:.8rem;
+  }
+  summary::-webkit-details-marker{display:none}
+  summary:focus-visible{outline:3px solid var(--accent);outline-offset:3px;border-radius:6px}
+  summary .q{min-width:0}
+  summary .tag{
+    font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);
+    border:1px solid var(--line);border-radius:20px;padding:.1rem .55rem;white-space:nowrap;
+  }
+  .ans{margin-top:.7rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.96rem;color:var(--muted)}
+  .ans .m{font-family:ui-monospace,Menlo,monospace;color:var(--ink);font-weight:600}
+
+  /* Ошибки */
+  ul.pitfalls{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:.6rem}
+  ul.pitfalls li{padding-left:1.5rem;position:relative;font-size:.98rem}
+  ul.pitfalls li::before{
+    content:"×";position:absolute;left:0;top:-.05rem;color:var(--neg);font-weight:700;font-size:1.1rem;
+  }
+  ul.pitfalls b{color:var(--ink)}
+
+  .next{background:var(--accent);color:#fff;border-radius:12px;padding:1.2rem 1.3rem}
+  .next h2{color:#fff}
+  .next p{color:#dfe4fb;font-size:.96rem;margin:.4rem 0 0}
+  .foot{margin-top:2.4rem;font-size:.82rem;color:var(--muted);text-align:center}
+
+  /* Галерея диаграмм */
+  .gal{display:grid;gap:.9rem;margin-top:.6rem}
+  @media(min-width:640px){.gal{grid-template-columns:repeat(2,1fr)}}
+  .chart{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:.8rem .8rem .9rem}
+  .chart canvas{width:100%;height:auto;display:block;border-radius:8px}
+  .chart .cap{font-size:.86rem;color:var(--muted);margin:.5rem 0 0}
+  .chart .cap b{color:var(--ink)}
+
+  /* Три представления */
+  .tri{display:grid;gap:.9rem}
+  @media(min-width:640px){.tri{grid-template-columns:repeat(2,1fr)}}
+  .tbl-wrap{overflow-x:auto;background:var(--card);border:1px solid var(--line);border-radius:12px}
+  table{border-collapse:collapse;width:100%;font-size:.94rem}
+  th,td{padding:.55rem .8rem;text-align:left;border-bottom:1px solid var(--line);white-space:nowrap}
+  th{font-size:.78rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:600}
+  tbody tr:last-child td{border-bottom:none}
+  td.n{font-family:ui-monospace,Menlo,monospace;font-weight:600}
+
+  /* Обман с осью */
+  .lie{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.1rem 1.1rem 1rem;margin-top:1rem}
+  .lie-grid{display:grid;gap:.9rem}
+  @media(min-width:600px){.lie-grid{grid-template-columns:repeat(2,1fr)}}
+  .lie figure{margin:0}
+  .lie figcaption{font-size:.8rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;margin-bottom:.4rem}
+  .lie .fair figcaption{color:var(--pos)}
+  .lie .cut figcaption{color:var(--neg)}
+  .lie canvas{width:100%;height:auto;display:block;border-radius:8px;background:#FCFDFF}
+  .lie-ctl{display:flex;align-items:center;gap:.6rem;margin-top:1rem;font-weight:700;font-size:.92rem;flex-wrap:wrap}
+  .lie-ctl input[type=range]{flex:1;min-width:140px;accent-color:var(--neg)}
+  .lie-ctl input[type=range]:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+  .lie-ctl .sval{min-width:2.5ch;text-align:right;color:var(--neg);font-variant-numeric:tabular-nums}
+  .lie-text{font-size:.94rem;color:var(--muted);margin:.8rem 0 0}
+  .lie-text b{color:var(--ink)}
+
+  /* Тренажёр */
+  .trainer{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.2rem 1.2rem;margin-top:1rem}
+  .trainer canvas{width:100%;height:auto;display:block;border-radius:10px;background:#FCFDFF;border:1px solid var(--line)}
+  .tr-q{font-weight:700;font-size:1.02rem;margin:.9rem 0 0;padding:.7rem .9rem;background:var(--accent-soft);border-radius:10px;color:var(--ink)}
+  .tr-ctl{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.9rem;align-items:center}
+  .tr-ctl button{font:inherit;font-weight:700;font-size:.9rem;cursor:pointer;border:none;border-radius:9px;padding:.55rem .95rem;color:#fff;background:var(--accent)}
+  .tr-ctl button.sec{background:var(--pos)}
+  .tr-ctl button.ghost{background:transparent;color:var(--accent);border:1px solid var(--accent)}
+  .tr-ctl input{flex:1;min-width:140px;font:inherit;padding:.5rem .7rem;border:1px solid var(--line);border-radius:9px;background:#fff;color:var(--ink)}
+  .tr-ctl button:focus-visible,.tr-ctl input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+  .tr-result{margin-top:.9rem;font-size:.96rem;min-height:1.2rem}
+  .tr-result .ok{color:var(--pos);font-weight:700}
+  .tr-result .bad{color:var(--neg);font-weight:700}
+  .tr-result .sol{margin-top:.7rem;padding:.85rem 1rem;background:#FCFBFE;border:1px solid var(--line);border-radius:10px;font-size:.92rem;line-height:1.8}
+  .tr-result .sol b{color:var(--accent)}
+
+  @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+<style>
+.oge-tip{display:flex;gap:.8rem;align-items:flex-start;background:#FFF8E7;border:1px solid #F0D98A;border-left:4px solid #E0A315;border-radius:10px;padding:.85rem 1.05rem;margin:1.5rem 0}
+.oge-tip .b{font-size:.72rem;font-weight:800;letter-spacing:.03em;color:#8A6A15;white-space:nowrap;text-transform:uppercase;padding-top:.15rem}
+.oge-tip .x{font-size:.95rem;line-height:1.5}
+</style>
+
+<!--LESSON-NAV-TOP--><style>.lnav{--lnav-accent:#3D5AF1}.lnav a{text-decoration:none;font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif}.lnav-top{max-width:820px;margin:0 auto;padding:.75rem clamp(1rem,4vw,1.5rem) .1rem}.lnav-top a{display:inline-flex;align-items:center;gap:.35rem;color:var(--lnav-accent);font-weight:600;font-size:.9rem}.lnav-top a:hover{text-decoration:underline}.lnav-bot{max-width:820px;margin:2.6rem auto 3rem;padding:1.1rem clamp(1rem,4vw,1.5rem) 0;border-top:1px solid #E4E8EF;display:flex;align-items:stretch;gap:.55rem}.lnav-bot a{min-width:0;display:flex;flex-direction:column;justify-content:center;gap:.15rem;border:1px solid #E4E8EF;border-radius:12px;padding:.65rem .85rem;color:#182233;background:#fff;transition:border-color .1s,transform .08s}.lnav-bot a:hover{border-color:var(--lnav-accent);transform:translateY(-1px)}.lnav-bot .prev,.lnav-bot .next{flex:1 1 0}.lnav-bot .next{text-align:right}.lnav-bot .dir{font-size:.72rem;color:#8A93A6;font-weight:600}.lnav-bot .ttl{font-size:.9rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.lnav-bot .to-cat{flex:0 0 auto;flex-direction:row;align-items:center;justify-content:center;color:var(--lnav-accent);font-weight:700;font-size:.85rem;white-space:nowrap}@media(max-width:420px){.lnav-bot .to-cat span{display:none}.lnav-bot .to-cat{padding:.65rem .7rem}}</style><nav class="lnav lnav-top"><a href="./catalog.html">← Все темы</a></nav><!--/LESSON-NAV-TOP-->
+<div class="wrap">
+
+  <header>
+    <p class="eyebrow">Алгебра · 9 класс · статистика</p>
+    <h1>Наглядное представление данных</h1>
+    <p class="lede">Как превратить столбик чисел в картинку, которую понимаешь с одного взгляда — и как не дать картинке себя обмануть.</p>
+  </header>
+
+  <div class="hero-formula">
+    <p class="lbl">Главная формула темы</p>
+    <div class="eq">угол сектора = <b>доля</b> × 360°</div>
+    <p class="note">весь круг — это целое, то есть 100% и 360°</p>
+  </div>
+
+  <section>
+    <p class="kicker">Зачем это нужно</p>
+    <h2>Числа глазами не видно, а картинку — видно</h2>
+    <p>Голый столбик чисел почти невозможно «увидеть»: трудно понять, что больше, как меняется величина, какая доля приходится на каждую группу. Диаграмма или график за секунду показывают то, что в таблице приходится вычитывать строчку за строчкой.</p>
+    <p>Поэтому статистические графики повсюду: прогноз погоды (температура по дням — это график), результаты выборов и опросов (круговые диаграммы долей), цены и курсы валют, школьная успеваемость, результаты соревнований.</p>
+    <p>Типичное житейское заблуждение: <em>«график можно нарисовать как угодно, лишь бы красиво»</em>. На самом деле у каждого типа данных есть подходящий тип диаграммы, а у любой диаграммы обязателен честный масштаб и подписанные оси — <strong>иначе картинка обманывает</strong>. Уметь и строить, и «читать» такие графики — отдельный навык, который пригодится и в физике, и в жизни.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Что вспомнить с прошлых шагов</p>
+    <div class="recall">
+      <p><strong>Сбор и группировка данных.</strong> <span class="math">n</span> — общее число данных. <strong>Частота</strong> — сколько раз встретилось значение. <strong>Относительная частота</strong> — частота, делённая на <span class="math">n</span> (это и есть доля; её можно записать дробью, десятичной дробью или в процентах).</p>
+      <p><strong>Координатная плоскость.</strong> Точка задаётся парой (по горизонтали; по вертикали). Это понадобится для полигона частот: по горизонтали — значение, по вертикали — частота.</p>
+      <p><strong>Доля от целого.</strong> доля = часть : целое. Например, 6 из 25 — это <span class="math">6 : 25 = 0,24</span>, то есть 24%.</p>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Суть темы</p>
+    <h2>Число превращается в геометрию</h2>
+    <p>Наглядное представление данных — это <strong>перевод чисел в геометрический образ</strong>: длину столбика, угол сектора, высоту точки. Чем больше число — тем длиннее столбик или выше точка. Глаз сравнивает длины и площади гораздо быстрее, чем мозг сравнивает числа, поэтому диаграмма и «работает».</p>
+    <p>Главная идея: каждому значению ставится в соответствие геометрическая величина <strong>по одному фиксированному правилу — масштабу</strong>. Если масштаб единый для всех, картинка честная и по ней можно сравнивать. А разные типы графиков подчёркивают разные стороны данных.</p>
+
+    <div class="cases">
+      <div class="case c1">
+        <div class="sign">Столбчатая диаграмма</div>
+        <div class="count">Сравнение категорий</div>
+        <div class="desc">Каждой категории — свой прямоугольный столбик, высота пропорциональна значению. Столбики стоят <b>раздельно</b>, ширина у всех одинакова и роли не играет.</div>
+      </div>
+      <div class="case c2">
+        <div class="sign">Круговая диаграмма</div>
+        <div class="count">Доли от целого</div>
+        <div class="desc">Весь круг — это 100%. Каждой части — сектор, угол которого пропорционален её доле: <span class="math">угол = доля × 360°</span>.</div>
+      </div>
+      <div class="case c3">
+        <div class="sign">Полигон частот</div>
+        <div class="count">Как меняется частота</div>
+        <div class="desc">Точки (значение; частота) на координатной плоскости, соединённые отрезками. Для отдельных числовых значений признака.</div>
+      </div>
+      <div class="case c4">
+        <div class="sign">Гистограмма частот</div>
+        <div class="count">Распределение по интервалам</div>
+        <div class="desc">Данные разбиты на равные числовые интервалы, над каждым — столбик высотой в частоту. Столбики стоят <b>вплотную</b>.</div>
+      </div>
+    </div>
+
+    <p style="font-size:.95rem;color:var(--muted);margin-top:1rem">Проверь себя вопросом: <strong>это доли от целого</strong> (круговая), <strong>сравнение отдельных категорий</strong> (столбчатая) или <strong>распределение по числовой шкале</strong> (полигон / гистограмма)?</p>
+
+    <p>И ещё одно правило, общее для всех: на любой диаграмме обязаны быть <strong>заголовок, подписанные оси или категории, единый масштаб и единицы измерения</strong>. Без них диаграмму просто нельзя прочитать.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Наглядность · четыре типа рядом</p>
+    <h2>Как они выглядят на самом деле</h2>
+    <p>Посмотри на четыре картинки и найди на каждой то, о чём мы говорили: где столбики раздельно, где вплотную, где сектор, где точки.</p>
+    <div class="gal">
+      <div class="chart">
+        <canvas id="cBar" aria-label="Столбчатая диаграмма продаж мороженого по дням"></canvas>
+        <p class="cap"><b>Столбчатая.</b> Пять отдельных категорий — дни недели. Столбики разделены зазорами.</p>
+      </div>
+      <div class="chart">
+        <canvas id="cPie" aria-label="Круговая диаграмма способов добраться до школы"></canvas>
+        <p class="cap"><b>Круговая.</b> 25 учеников — это целое, весь круг. Видно доли, а не сами числа.</p>
+      </div>
+      <div class="chart">
+        <canvas id="cPoly" aria-label="Полигон частот оценок за контрольную"></canvas>
+        <p class="cap"><b>Полигон частот.</b> Точки (оценка; частота) соединены отрезками — сразу виден пик.</p>
+      </div>
+      <div class="chart">
+        <canvas id="cHist" aria-label="Гистограмма частот роста учеников по интервалам"></canvas>
+        <p class="cap"><b>Гистограмма.</b> Рост 30 учеников по интервалам. Столбики вплотную — по горизонтали непрерывная шкала.</p>
+      </div>
+    </div>
+
+    <div class="oge-tip"><div class="b">🎯 В ОГЭ</div><div class="x"><b>Задания 1–5.</b> В практическом блоке первой части часто дают диаграмму или график и просят снять с них значения и сравнить. Баллы там теряют не из-за сложной математики, а из-за невнимательного чтения масштаба и подписей.</div></div>
+  </section>
+
+  <section>
+    <p class="kicker">Одни и те же данные · три представления</p>
+    <h2>Числа одни, а «видно» разное</h2>
+    <p>Возьмём один набор: в классе 25 учеников, 10 ездят в школу пешком, 9 — на автобусе, 6 — на машине. Покажем его тремя способами.</p>
+    <div class="tri">
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Как добирается</th><th>Человек</th><th>Доля</th></tr></thead>
+          <tbody>
+            <tr><td>Пешком</td><td class="n">10</td><td class="n">0,4 = 40%</td></tr>
+            <tr><td>Автобус</td><td class="n">9</td><td class="n">0,36 = 36%</td></tr>
+            <tr><td>Машина</td><td class="n">6</td><td class="n">0,24 = 24%</td></tr>
+            <tr><td><b>Всего</b></td><td class="n"><b>25</b></td><td class="n"><b>1 = 100%</b></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="chart">
+        <canvas id="cTriBar" aria-label="Столбчатая диаграмма того же набора данных"></canvas>
+        <p class="cap">По <b>столбчатой</b> удобно сравнивать: пешком больше всех, машина меньше всех.</p>
+      </div>
+    </div>
+    <p style="font-size:.95rem;color:var(--muted)">По <strong>таблице</strong> видно точные числа. По <strong>столбчатой</strong> — кто больше и на сколько. По <strong>круговой</strong> (она выше) — какую часть целого занимает каждая группа. Данные одни и те же, а замечаешь ты каждый раз разное — поэтому тип диаграммы и выбирают под вопрос, на который отвечаешь.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Покрути сам · интерактив</p>
+    <h2>Как диаграмма начинает врать</h2>
+    <p>Слева — честная диаграмма продаж мороженого: вертикальная ось начинается с нуля. Справа — те же самые числа, но ось «обрезали» снизу. Двигай ползунок и смотри, как разница между столбиками раздувается на пустом месте.</p>
+    <div class="lie">
+      <div class="lie-grid">
+        <figure class="fair">
+          <figcaption>Честно · ось от 0</figcaption>
+          <canvas id="lieFair" aria-label="Честная столбчатая диаграмма с осью от нуля"></canvas>
+        </figure>
+        <figure class="cut">
+          <figcaption>Обман · ось обрезана</figcaption>
+          <canvas id="lieCut" aria-label="Та же диаграмма с обрезанной осью"></canvas>
+        </figure>
+      </div>
+      <label class="lie-ctl">Ось начинается с: <span id="lieVal" class="sval">8</span>
+        <input id="lieRange" type="range" min="0" max="8" step="1" value="8" aria-label="Нижняя граница вертикальной оси">
+      </label>
+      <p id="lieText" class="lie-text"></p>
+    </div>
+    <p style="font-size:.95rem;color:var(--muted)">Вывод простой: <strong>первым делом смотри, с какого числа начинается вертикальная ось.</strong> Если не с нуля — сравнивать «на глаз» нельзя, надо читать сами числа.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Разбираем вместе · думаю вслух</p>
+    <h2>Эталон: строим круговую диаграмму</h2>
+    <div class="worked">
+      <p class="task">В классе 25 учеников: 10 ходят пешком, 9 ездят на автобусе, 6 — на машине. Построить круговую диаграмму.</p>
+      <ol class="steps">
+        <li>Находим доли: пешком <span class="m">10 : 25 = 0,4</span>, автобус <span class="m">9 : 25 = 0,36</span>, машина <span class="m">6 : 25 = 0,24</span>.
+          <span class="why">Почему сначала доли: сектор пропорционален <em>доле</em>, а не самому числу. Число 10 само по себе ещё ничего не говорит — важно, 10 из скольких.</span></li>
+        <li>Проверяем: <span class="m">0,4 + 0,36 + 0,24 = 1</span>.
+          <span class="why">Почему проверяем: единица — это всё целое. Если сумма не 1 (не 100%), значит кого-то потеряли или посчитали дважды.</span></li>
+        <li>Переводим доли в углы: <span class="m">0,4 × 360° = 144°</span>, <span class="m">0,36 × 360° = 129,6°</span>, <span class="m">0,24 × 360° = 86,4°</span>.
+          <span class="why">Почему умножаем на 360: весь круг — это 360°, и доля «съедает» ровно такую же часть круга, какую составляет от целого.</span></li>
+        <li>Проверяем сумму углов: <span class="m">144° + 129,6° + 86,4° = 360°</span>.
+          <span class="why">Почему это важно: углы должны замкнуть круг. Сошлось — значит, ошибки в вычислениях нет.</span></li>
+        <li>Чертим круг, транспортиром откладываем секторы <span class="m">144°</span>, <span class="m">129,6°</span>, <span class="m">86,4°</span>, подписываем их и указываем проценты: <span class="m">40%, 36%, 24%</span>.
+          <span class="why">Почему подписываем: без подписей и процентов диаграмму нельзя прочитать — останутся просто разноцветные куски.</span></li>
+      </ol>
+      <div class="verdict">Готово: три сектора, сумма 360°, сумма долей 100%.</div>
+    </div>
+
+    <h2 style="margin-top:1.8rem">Второй разбор: масштаб столбчатой</h2>
+    <div class="worked">
+      <p class="task">За 5 дней магазин продал мороженого: пн — 12, вт — 15, ср — 9, чт — 18, пт — 21 (штук). Масштаб: 1 клетка по вертикали = 3 штуки.</p>
+      <ol class="steps">
+        <li>По горизонтали отмечаем 5 категорий: <span class="m">пн, вт, ср, чт, пт</span>.</li>
+        <li>Высота столбика в клетках = значение : 3. Пн: <span class="m">12 : 3 = 4</span> клетки; вт: <span class="m">15 : 3 = 5</span>; ср: <span class="m">9 : 3 = 3</span>; чт: <span class="m">18 : 3 = 6</span>.
+          <span class="why">Почему делим на 3: это и есть единый масштаб — «цена клетки». Один и тот же для всех столбиков, иначе сравнение сломается.</span></li>
+        <li>А теперь допиши сам: сколько клеток будет у пятницы?</li>
+      </ol>
+      <details style="margin-top:.9rem">
+        <summary><span class="q">Проверить последний шаг</span><span class="tag">пт = 21</span></summary>
+        <div class="ans"><span class="m">21 : 3 = 7</span> клеток. Заметь: столбик пятницы ровно в 7/4 раза выше столбика понедельника — и это честно, потому что цена клетки у них одна.</div>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Теперь ты · нажми, чтобы проверить</p>
+    <h2>Практика по нарастанию</h2>
+    <div class="drill">
+      <details>
+        <summary><span class="q">По круговой диаграмме в начале урока: какая категория самая большая?</span><span class="tag">понимание</span></summary>
+        <div class="ans">Самый большой сектор — <strong>«пешком»</strong>: 10 человек, доля 0,4, то есть 40% и угол 144°. Он занимает почти половину круга — это видно даже без чисел.</div>
+      </details>
+      <details>
+        <summary><span class="q">Чем гистограмма частот отличается от столбчатой диаграммы?</span><span class="tag">понимание</span></summary>
+        <div class="ans">У гистограммы столбики стоят <strong>вплотную</strong>, и по горизонтали идут <strong>числовые интервалы</strong> (например, 140–150 см). У столбчатой столбики <strong>разделены</strong>, а по горизонтали — <strong>отдельные категории</strong> (дни, классы, города).</div>
+      </details>
+      <details>
+        <summary><span class="q">Рост 30 учеников: 140–150 см — 8 человек, 150–160 см — 14, 160–170 см — 8. Построй гистограмму частот.</span><span class="tag">применение</span></summary>
+        <div class="ans">По горизонтали откладываем три равных интервала подряд, без зазоров. Возьмём масштаб <span class="m">1 клетка = 2 человека</span>: высоты столбиков <span class="m">8 : 2 = 4</span>, <span class="m">14 : 2 = 7</span>, <span class="m">8 : 2 = 4</span> клетки. Проверка: <span class="m">8 + 14 + 8 = 30</span> — все ученики учтены. Средний столбик самый высокий: рост большинства попал в интервал 150–160 см.</div>
+      </details>
+      <details>
+        <summary><span class="q">Опросили 200 человек о любимом напитке: чай — 90, кофе — 70, сок — 40. Какой угол у сектора «кофе»?</span><span class="tag">применение</span></summary>
+        <div class="ans">Сначала доля: <span class="m">70 : 200 = 0,35</span>. Потом угол: <span class="m">0,35 × 360° = 126°</span>. Проверка целого: <span class="m">90 + 70 + 40 = 200</span> — все опрошенные на месте.</div>
+      </details>
+      <details>
+        <summary><span class="q">Что изменится, если на круговой диаграмме одну долю увеличить?</span><span class="tag">анализ</span></summary>
+        <div class="ans">Остальные секторы обязательно <strong>уменьшатся в сумме</strong>. Круг не резиновый: сумма всех углов всегда 360°, сумма долей — всегда 100%. Если один сектор забрал больше, эти градусы он забрал у других.</div>
+      </details>
+      <details>
+        <summary><span class="q">Найди ошибку: ученик построил круговую диаграмму, и сумма его секторов получилась 400°.</span><span class="tag">анализ</span></summary>
+        <div class="ans">Такой диаграммы не бывает: <strong>сумма секторов всегда ровно 360°</strong>. Скорее всего, углы считали не от долей, а прямо от чисел (например, «кофе — 70» → отложили 70°), либо ошиблись в делении на целое. Лечится порядком действий: сначала <span class="m">доля = часть : целое</span>, потом <span class="m">угол = доля × 360°</span>, и обязательно проверка суммы.</div>
+      </details>
+      <details>
+        <summary><span class="q">Найди ошибку в диаграмме: на графике продаж ось начинается не с нуля, а с 8, и продавец говорит «в четверг продали почти в 10 раз больше, чем в среду».</span><span class="tag">анализ</span></summary>
+        <div class="ans">Он читает <em>высоту картинки</em>, а не данные. По числам: <span class="m">18 : 9 = 2</span> — в четверг продали ровно в 2 раза больше. «В 10 раз» получилось только потому, что ось обрезали снизу и от столбиков остались верхушки <span class="m">18 − 8 = 10</span> и <span class="m">9 − 8 = 1</span>. Правило: ось значений начинаем с нуля, иначе сравнивать на глаз нельзя.</div>
+      </details>
+      <details>
+        <summary><span class="q">Обратная задача: сектор «спорт» равен 90°. Какую долю он составляет и сколько это человек, если опрошено 80?</span><span class="tag">анализ</span></summary>
+        <div class="ans">Идём назад по той же формуле: доля <span class="m">= 90 : 360 = 0,25</span> (это четверть круга, 25%). Человек: <span class="m">0,25 × 80 = 20</span>.</div>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Тренажёр · бесконечная практика</p>
+    <h2>Читай диаграмму и отвечай</h2>
+    <p>Нажми «Новое задание» — тренажёр нарисует случайную диаграмму и задаст по ней вопрос. Ответ — одно число (без единиц). Десятичную запятую и знак минус пиши как удобно.</p>
+    <div class="trainer">
+      <canvas id="trCv" aria-label="Диаграмма к заданию тренажёра"></canvas>
+      <p class="tr-q" id="trQ">…</p>
+      <div class="tr-ctl">
+        <button id="trNew" type="button">🎲 Новое задание</button>
+        <input id="trAns" type="text" inputmode="text" placeholder="ответ числом" aria-label="Ответ">
+        <button id="trCheck" type="button" class="sec">Проверить</button>
+        <button id="trShow" type="button" class="ghost">Показать решение</button>
+      </div>
+      <div id="trResult" class="tr-result"></div>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Где чаще всего ошибаются</p>
+    <h2>Пять ловушек темы</h2>
+    <ul class="pitfalls">
+      <li><b>Берут неподходящий тип диаграммы.</b> Круговую рисуют для данных, которые не складываются в одно целое — например, температура по дням это не доли, их нельзя сложить в 100%. Спроси себя: доли от целого, сравнение категорий или распределение по числовой шкале?</li>
+      <li><b>Обрезают вертикальную ось.</b> Начали ось не с нуля — и разница в 2 раза выглядит как разница в 10 раз. Ось значений начинаем с 0 и подписываем цену деления.</li>
+      <li><b>Берут разный масштаб для разных столбиков.</b> Тогда сравнивать высоты бессмысленно. Единый масштаб для всех — это условие честной картинки.</li>
+      <li><b>Путают гистограмму и столбчатую.</b> Рисуют гистограмму с зазорами или подписывают её столбцы как отдельные категории. Помни: гистограмма — про числовые <b>интервалы</b>, столбики <b>вплотную</b>; столбчатая — про <b>категории</b>, столбики <b>раздельно</b>.</li>
+      <li><b>Считают угол от самого числа, а не от доли.</b> «Кофе — 70» → откладывают 70°. Отсюда и берётся невозможная сумма вроде 400°. Сначала доля = часть : целое, потом угол = доля × 360°, и проценты в сумме должны дать ровно 100.</li>
+      <li><b>Забывают подписи и единицы.</b> Без заголовка, осей и единиц измерения диаграмму прочитать невозможно — это не украшение, а часть ответа.</li>
+    </ul>
+  </section>
+
+  <section>
+    <p class="kicker">Проверка понимания</p>
+    <h2>Ответь своими словами</h2>
+    <div class="drill">
+      <details>
+        <summary><span class="q">1. По какой формуле находят угол сектора круговой диаграммы?</span><span class="tag">вспомни</span></summary>
+        <div class="ans"><span class="m">угол = доля × 360°</span>, где доля = часть : целое.</div>
+      </details>
+      <details>
+        <summary><span class="q">2. Чем гистограмма частот отличается от столбчатой диаграммы?</span><span class="tag">вспомни</span></summary>
+        <div class="ans">Столбики стоят вплотную, и по горизонтали отложены числовые интервалы, а не отдельные категории.</div>
+      </details>
+      <details>
+        <summary><span class="q">3. Чему всегда равна сумма всех секторов круговой диаграммы в градусах?</span><span class="tag">вспомни</span></summary>
+        <div class="ans">Ровно <span class="m">360°</span> — и это твоя главная проверка после вычислений.</div>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <div class="next">
+      <h2>Что дальше</h2>
+      <p>Диаграмма показывает весь набор данных целиком. Но часто нужно сжать его до нескольких чисел, которые «за всех отвечают», — к этому и ведёт следующая тема, <strong>средние показатели</strong>.</p>
+      <p>Картинка и показатели работают в паре: по диаграмме ты видишь форму данных, а показатели дают короткий числовой ответ.</p>
+    </div>
+  </section>
+
+  <p class="foot">Итог темы: наглядное представление переводит данные в геометрический образ (столбик, сектор, точка) по единому масштабу, и правильный выбор типа диаграммы делает данные понятными с одного взгляда.</p>
+
+</div>
+
+<script>
+(function(){
+  var COLORS=['#3B4FD0','#1E8E5A','#B9791A','#C0455B','#6C4FB0'];
+  var MINUS='−';
+  var REG=[];
+
+  function fmtN(x){
+    var n=Math.round(x*1000)/1000;
+    if(n===0) n=0;
+    var a=Math.abs(n), s;
+    if(Math.abs(a-Math.round(a))<1e-9) s=String(Math.round(a));
+    else s=String(a).replace('.',',');
+    return (n<0?MINUS:'')+s;
+  }
+  function pctStr(v,total){
+    var p=Math.round(v/total*1000)/10;
+    var s=(Math.abs(p-Math.round(p))<1e-9)?String(Math.round(p)):String(p).replace('.',',');
+    return s+'%';
+  }
+  function ri(a,b){ return a+Math.floor(Math.random()*(b-a+1)); }
+  function pick(a){ return a[Math.floor(Math.random()*a.length)]; }
+  function sum(a){ var s=0; for(var i=0;i<a.length;i++) s+=a[i]; return s; }
+
+  function niceStep(r){
+    var c=[1,2,5,10,20,25,50,100,200,500];
+    for(var i=0;i<c.length;i++){ if(r/c[i]<=6) return c[i]; }
+    return c[c.length-1];
+  }
+  function axisFor(vals,forceZero,forceMin){
+    var mn=Math.min.apply(null,vals), mx=Math.max.apply(null,vals);
+    var lo=(forceMin!==null&&forceMin!==undefined)?forceMin:(forceZero?Math.min(0,mn):mn);
+    var range=mx-lo; if(!(range>0)) range=1;
+    var step=niceStep(range);
+    var y0=(forceMin!==null&&forceMin!==undefined)?forceMin:Math.floor(lo/step)*step;
+    var y1=Math.ceil((mx+range*0.16)/step)*step;
+    if(y1<=y0) y1=y0+step;
+    return {y0:y0,y1:y1,step:step};
+  }
+
+  function prep(cv,ratio){
+    var w=cv.clientWidth||320;
+    var dpr=Math.min(window.devicePixelRatio||1,2);
+    var h=Math.round(w*ratio);
+    cv.width=Math.round(w*dpr); cv.height=Math.round(h*dpr);
+    cv.style.height=h+'px';
+    var ctx=cv.getContext('2d');
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+    ctx.clearRect(0,0,w,h);
+    return {ctx:ctx,w:w,h:h};
+  }
+  function register(cv,fn){ if(cv){ REG.push({cv:cv,fn:fn}); fn(cv); } }
+  function redraw(){ for(var i=0;i<REG.length;i++){ REG[i].fn(REG[i].cv); } }
+  window.addEventListener('resize',redraw);
+
+  function frame(ctx,W,H,o,ax){
+    var L=38,R=12,T=24,B=32;
+    var ph=H-T-B;
+    ctx.font='600 12px system-ui,sans-serif'; ctx.fillStyle='#1B2333';
+    ctx.textAlign='left'; ctx.textBaseline='alphabetic';
+    ctx.fillText(o.title,2,14);
+    function Y(v){ return T+ph-(v-ax.y0)/(ax.y1-ax.y0)*ph; }
+    ctx.font='11px system-ui,sans-serif'; ctx.textAlign='right'; ctx.textBaseline='middle';
+    var steps=Math.round((ax.y1-ax.y0)/ax.step);
+    for(var i=0;i<=steps;i++){
+      var v=ax.y0+i*ax.step, y=Y(v);
+      ctx.strokeStyle='#E8EBF1'; ctx.lineWidth=1;
+      ctx.beginPath(); ctx.moveTo(L,y); ctx.lineTo(W-R,y); ctx.stroke();
+      ctx.fillStyle='#6B7488'; ctx.fillText(fmtN(v),L-6,y);
+    }
+    ctx.strokeStyle='#9AA3B2'; ctx.lineWidth=1.4;
+    ctx.beginPath(); ctx.moveTo(L,T); ctx.lineTo(L,T+ph); ctx.lineTo(W-R,T+ph); ctx.stroke();
+    return {L:L,R:R,T:T,B:B,ph:ph,pw:W-L-R,Y:Y};
+  }
+
+  function drawBars(cv,o){
+    var p=prep(cv,o.ratio||0.66), ctx=p.ctx, W=p.w, H=p.h;
+    var ax=axisFor(o.vals,true,o.forceMin);
+    var f=frame(ctx,W,H,o,ax);
+    var n=o.vals.length, band=f.pw/n;
+    var bw=o.tight?band:Math.min(band*0.56,58);
+    var base=f.Y(Math.min(Math.max(0,ax.y0),ax.y1));
+    for(var i=0;i<n;i++){
+      var cx=f.L+band*(i+0.5);
+      var x0=o.tight?(f.L+band*i):(cx-bw/2);
+      var yv=f.Y(o.vals[i]);
+      var top=Math.min(yv,base), hh=Math.abs(base-yv);
+      ctx.fillStyle=COLORS[(o.mono?0:i)%COLORS.length];
+      ctx.fillRect(x0,top,bw,hh);
+      if(o.tight){ ctx.strokeStyle='#FFFFFF'; ctx.lineWidth=1.2; ctx.strokeRect(x0,top,bw,hh); }
+      ctx.fillStyle='#1B2333'; ctx.font='700 11px system-ui,sans-serif';
+      ctx.textAlign='center'; ctx.textBaseline='bottom';
+      ctx.fillText(fmtN(o.vals[i]),x0+bw/2,top-3);
+      ctx.fillStyle='#5A6478'; ctx.font='11px system-ui,sans-serif'; ctx.textBaseline='top';
+      ctx.fillText(o.cats[i],cx,f.T+f.ph+6);
+    }
+  }
+
+  function drawPoly(cv,o){
+    var p=prep(cv,o.ratio||0.66), ctx=p.ctx, W=p.w, H=p.h;
+    var ax=axisFor(o.vals,false,null);
+    var f=frame(ctx,W,H,o,ax);
+    var n=o.vals.length, band=f.pw/n, i, x, y;
+    if(ax.y0<0 && ax.y1>0){
+      ctx.strokeStyle='#9AA3B2'; ctx.lineWidth=1;
+      ctx.beginPath(); ctx.moveTo(f.L,f.Y(0)); ctx.lineTo(W-f.R,f.Y(0)); ctx.stroke();
+    }
+    ctx.strokeStyle=COLORS[0]; ctx.lineWidth=2.4; ctx.beginPath();
+    for(i=0;i<n;i++){
+      x=f.L+band*(i+0.5); y=f.Y(o.vals[i]);
+      if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+    }
+    ctx.stroke();
+    for(i=0;i<n;i++){
+      x=f.L+band*(i+0.5); y=f.Y(o.vals[i]);
+      ctx.fillStyle=COLORS[0]; ctx.beginPath(); ctx.arc(x,y,4.5,0,Math.PI*2); ctx.fill();
+      ctx.fillStyle='#FFFFFF'; ctx.beginPath(); ctx.arc(x,y,1.8,0,Math.PI*2); ctx.fill();
+      ctx.fillStyle='#1B2333'; ctx.font='700 11px system-ui,sans-serif';
+      ctx.textAlign='center'; ctx.textBaseline='bottom';
+      ctx.fillText(fmtN(o.vals[i]),x,y-8);
+      ctx.fillStyle='#5A6478'; ctx.font='11px system-ui,sans-serif'; ctx.textBaseline='top';
+      ctx.fillText(o.cats[i],x,f.T+f.ph+6);
+    }
+  }
+
+  function drawPie(cv,o){
+    var p=prep(cv,o.ratio||0.86), ctx=p.ctx, W=p.w, H=p.h;
+    var total=sum(o.vals), i;
+    ctx.font='600 12px system-ui,sans-serif'; ctx.fillStyle='#1B2333';
+    ctx.textAlign='left'; ctx.textBaseline='alphabetic';
+    ctx.fillText(o.title,2,14);
+    var rows=o.vals.length, legH=rows*19+6, top=24;
+    var availH=H-top-legH;
+    var R0=Math.max(28,Math.min(W*0.30,availH*0.46));
+    var cx=W/2, cy=top+availH/2, a0=-Math.PI/2;
+    for(i=0;i<rows;i++){
+      var ang=o.vals[i]/total*Math.PI*2;
+      ctx.beginPath(); ctx.moveTo(cx,cy); ctx.arc(cx,cy,R0,a0,a0+ang); ctx.closePath();
+      ctx.fillStyle=COLORS[i%COLORS.length]; ctx.fill();
+      ctx.strokeStyle='#FFFFFF'; ctx.lineWidth=2; ctx.stroke();
+      if(ang>0.6){
+        var mid=a0+ang/2;
+        ctx.fillStyle='#FFFFFF'; ctx.font='700 12px system-ui,sans-serif';
+        ctx.textAlign='center'; ctx.textBaseline='middle';
+        ctx.fillText(o.mode==='pct'?pctStr(o.vals[i],total):fmtN(o.vals[i]),
+                     cx+Math.cos(mid)*R0*0.62, cy+Math.sin(mid)*R0*0.62);
+      }
+      a0+=ang;
+    }
+    var ly=top+availH+4;
+    for(i=0;i<rows;i++){
+      var yy=ly+i*19;
+      ctx.fillStyle=COLORS[i%COLORS.length]; ctx.fillRect(6,yy+3,11,11);
+      ctx.fillStyle='#1B2333'; ctx.font='12px system-ui,sans-serif';
+      ctx.textAlign='left'; ctx.textBaseline='top';
+      var t=o.cats[i]+' — '+fmtN(o.vals[i])+(o.unit?' '+o.unit:'');
+      if(o.mode==='pct') t+=' ('+pctStr(o.vals[i],total)+')';
+      ctx.fillText(t,23,yy+2);
+    }
+  }
+
+  /* ---------- статические иллюстрации ---------- */
+  var ICE={title:'Продано мороженого за неделю, шт',cats:['пн','вт','ср','чт','пт'],vals:[12,15,9,18,21]};
+  var WAY={title:'Как 25 учеников добираются до школы',cats:['Пешком','Автобус','Машина'],vals:[10,9,6],unit:'чел',mode:'pct'};
+
+  register(document.getElementById('cBar'),function(cv){ drawBars(cv,ICE); });
+  register(document.getElementById('cPie'),function(cv){ drawPie(cv,WAY); });
+  register(document.getElementById('cPoly'),function(cv){
+    drawPoly(cv,{title:'Полигон частот: оценки за контрольную',cats:['2','3','4','5'],vals:[2,7,12,5]});
+  });
+  register(document.getElementById('cHist'),function(cv){
+    drawBars(cv,{title:'Гистограмма: рост 30 учеников, см',cats:['140–150','150–160','160–170'],vals:[8,14,8],tight:true,mono:true});
+  });
+  register(document.getElementById('cTriBar'),function(cv){
+    drawBars(cv,{title:'Те же данные столбиками, чел',cats:['Пешком','Автобус','Машина'],vals:[10,9,6],ratio:0.78});
+  });
+
+  /* ---------- демонстрация обмана ---------- */
+  (function(){
+    var fair=document.getElementById('lieFair'), cut=document.getElementById('lieCut');
+    var rng=document.getElementById('lieRange'), val=document.getElementById('lieVal'), txt=document.getElementById('lieText');
+    if(!fair||!cut||!rng) return;
+    function cutMin(){ return parseInt(rng.value,10)||0; }
+    function tell(){
+      var c=cutMin();
+      val.textContent=String(c);
+      if(c===0){
+        txt.innerHTML='Сейчас обе оси начинаются с нуля — картинки одинаковые, обе честные. Потяни ползунок вправо.';
+        return;
+      }
+      var r=(18-c)/(9-c);
+      txt.innerHTML='По данным четверг (18) больше среды (9) ровно <b>в 2 раза</b>. А на обрезанной оси столбик четверга выглядит выше столбика среды примерно <b>в '+fmtN(Math.round(r*100)/100)+' раз</b> — числа те же, впечатление другое.';
+    }
+    register(fair,function(cv){ drawBars(cv,{title:'Продано мороженого, шт',cats:ICE.cats,vals:ICE.vals,ratio:0.72}); });
+    register(cut,function(cv){ drawBars(cv,{title:'Продано мороженого, шт',cats:ICE.cats,vals:ICE.vals,ratio:0.72,forceMin:cutMin()}); });
+    rng.addEventListener('input',function(){
+      for(var i=0;i<REG.length;i++){ if(REG[i].cv===cut) REG[i].fn(cut); }
+      tell();
+    });
+    tell();
+  })();
+
+  /* ---------- тренажёр ---------- */
+  (function(){
+    var cv=document.getElementById('trCv'), qEl=document.getElementById('trQ');
+    var ansEl=document.getElementById('trAns'), resEl=document.getElementById('trResult');
+    if(!cv||!qEl) return;
+
+    var BAR_CTX=[
+      {title:'Продано книг за неделю, шт',cats:['пн','вт','ср','чт','пт'],unit:'шт'},
+      {title:'Голоса за кружок, чел',cats:['шахматы','танцы','роботы','футбол'],unit:'чел'},
+      {title:'Собрано макулатуры, кг',cats:['7А','7Б','8А','8Б'],unit:'кг'}
+    ];
+    var PIE_CTX=[
+      {title:'Любимый предмет, опрошено',cats:['матем.','физика','история','спорт']},
+      {title:'Как добираются в школу, опрошено',cats:['пешком','автобус','метро','машина']},
+      {title:'Куда поедут летом, опрошено',cats:['море','дача','город','лагерь']}
+    ];
+    var T_ANG=[20,40,90,120,180];
+    var T_PCT=[20,25,50,100];
+
+    function distinct(n,lo,hi){
+      var v=[],guard=0;
+      while(v.length<n && guard<800){
+        var x=ri(lo,hi); guard++;
+        if(v.indexOf(x)<0) v.push(x);
+      }
+      while(v.length<n){ v.push(lo+v.length); }
+      return v;
+    }
+    function parts(total,k){
+      var minc=Math.max(2,Math.ceil(total/12));
+      var c=[],i;
+      for(i=0;i<k;i++) c.push(minc);
+      var rem=total-minc*k;
+      for(i=0;i<rem;i++) c[ri(0,k-1)]++;
+      return c;
+    }
+
+    function genBar(){
+      var c=pick(BAR_CTX), n=c.cats.length;
+      var vals=distinct(n,4,30);
+      var kind=ri(0,2), q, ans, sol;
+      if(kind===0){
+        var i=ri(0,n-1), j=ri(0,n-1), guard=0;
+        while(j===i && guard<50){ j=ri(0,n-1); guard++; }
+        if(j===i) j=(i+1)%n;
+        var hi=vals[i]>=vals[j]?i:j, lo=(hi===i)?j:i;
+        q='На сколько столбик «'+c.cats[hi]+'» выше столбика «'+c.cats[lo]+'»?';
+        ans=vals[hi]-vals[lo];
+        sol='Снимаем значения с оси: «'+c.cats[hi]+'» = '+fmtN(vals[hi])+', «'+c.cats[lo]+'» = '+fmtN(vals[lo])+'.<br>'+
+            'Разность: '+fmtN(vals[hi])+' '+MINUS+' '+fmtN(vals[lo])+' = <b>'+fmtN(ans)+'</b> '+c.unit+'.';
+      } else if(kind===1){
+        ans=sum(vals);
+        q='Чему равна сумма значений по всем столбикам?';
+        sol='Складываем все столбики: '+vals.map(fmtN).join(' + ')+' = <b>'+fmtN(ans)+'</b> '+c.unit+'.';
+      } else {
+        var mx=Math.max.apply(null,vals), mn=Math.min.apply(null,vals);
+        ans=mx-mn;
+        q='На сколько наибольшее значение больше наименьшего?';
+        sol='Самый высокий столбик = '+fmtN(mx)+', самый низкий = '+fmtN(mn)+'.<br>'+
+            fmtN(mx)+' '+MINUS+' '+fmtN(mn)+' = <b>'+fmtN(ans)+'</b> '+c.unit+'.';
+      }
+      return {q:q,ans:ans,sol:sol,draw:function(cnv){ drawBars(cnv,{title:c.title,cats:c.cats,vals:vals,ratio:0.6}); }};
+    }
+
+    function genPie(){
+      var c=pick(PIE_CTX), k=ri(3,4);
+      var angleMode=Math.random()<0.5;
+      var total=angleMode?pick(T_ANG):pick(T_PCT);
+      var vals=parts(total,k);
+      var cats=c.cats.slice(0,k);
+      var idx=ri(0,k-1), q, ans, sol;
+      var title=c.title+' '+total+' чел.';
+      if(angleMode){
+        ans=vals[idx]*360/total;
+        q='Чему равен угол сектора «'+cats[idx]+'» (в градусах)?';
+        sol='Доля: '+fmtN(vals[idx])+' : '+fmtN(total)+'.<br>'+
+            'Угол = доля × 360° = 360° · '+fmtN(vals[idx])+' : '+fmtN(total)+' = <b>'+fmtN(ans)+'°</b>.<br>'+
+            'Проверка: все секторы вместе дают 360°.';
+      } else {
+        ans=vals[idx]*100/total;
+        q='Какую долю (в процентах) составляет «'+cats[idx]+'»?';
+        sol='Доля: '+fmtN(vals[idx])+' : '+fmtN(total)+'.<br>'+
+            'В процентах: 100% · '+fmtN(vals[idx])+' : '+fmtN(total)+' = <b>'+fmtN(ans)+'%</b>.<br>'+
+            'Проверка: все доли вместе дают 100%.';
+      }
+      return {q:q,ans:ans,sol:sol,draw:function(cnv){
+        drawPie(cnv,{title:title,cats:cats,vals:vals,unit:'чел',mode:'val',ratio:0.9});
+      }};
+    }
+
+    function genPoly(){
+      var signed=Math.random()<0.5;
+      var c=signed
+        ? {title:'Температура в полдень, °C',cats:['пн','вт','ср','чт','пт'],unit:'°C'}
+        : {title:'Полигон частот: оценки за работу',cats:['2','3','4','5'],unit:'работ'};
+      var n=c.cats.length;
+      var vals=signed?distinct(n,-8,14):distinct(n,1,14);
+      var q,ans,sol;
+      if(signed){
+        var i=ri(0,n-2), j=ri(i+1,n-1);
+        ans=vals[j]-vals[i];
+        q='На сколько градусов изменилась температура от «'+c.cats[i]+'» к «'+c.cats[j]+'»? Если понизилась — поставь минус.';
+        sol='Снимаем значения: «'+c.cats[i]+'» = '+fmtN(vals[i])+', «'+c.cats[j]+'» = '+fmtN(vals[j])+'.<br>'+
+            'Изменение = стало '+MINUS+' было = '+fmtN(vals[j])+' '+MINUS+' ('+fmtN(vals[i])+') = <b>'+fmtN(ans)+'</b> °C.';
+      } else {
+        ans=sum(vals);
+        q='Сколько всего работ проверили (сумма всех частот)?';
+        sol='Складываем частоты всех точек: '+vals.map(fmtN).join(' + ')+' = <b>'+fmtN(ans)+'</b> работ.';
+      }
+      return {q:q,ans:ans,sol:sol,draw:function(cnv){ drawPoly(cnv,{title:c.title,cats:c.cats,vals:vals,ratio:0.6}); }};
+    }
+
+    function makeTask(){
+      var r=Math.random();
+      if(r<0.34) return genBar();
+      if(r<0.67) return genPie();
+      return genPoly();
+    }
+
+    function parseAns(s){
+      s=String(s).replace(/[−–—‐‑]/g,'-');
+      s=s.replace(/[\s°%]/g,'').replace(',','.');
+      if(!/^[+-]?\d+(\.\d+)?$/.test(s)) return null;
+      var v=parseFloat(s);
+      return isFinite(v)?v:null;
+    }
+
+    var cur=makeTask();
+
+    function render(){
+      qEl.textContent=cur.q;
+      resEl.innerHTML='';
+      ansEl.value='';
+      for(var i=0;i<REG.length;i++){ if(REG[i].cv===cv){ REG[i].fn(cv); return; } }
+    }
+    register(cv,function(cnv){ cur.draw(cnv); });
+    qEl.textContent=cur.q;
+
+    function solHTML(){ return '<div class="sol">'+cur.sol+'</div>'; }
+
+    document.getElementById('trNew').addEventListener('click',function(){
+      cur=makeTask(); render(); ansEl.focus();
+    });
+    document.getElementById('trShow').addEventListener('click',function(){
+      resEl.innerHTML=solHTML();
+    });
+    function check(){
+      var v=parseAns(ansEl.value);
+      if(v===null){
+        resEl.innerHTML='<span class="bad">Введи ответ одним числом (можно с запятой и минусом).</span>';
+        return;
+      }
+      if(Math.abs(v-cur.ans)<0.005){
+        resEl.innerHTML='<span class="ok">✓ Верно!</span>'+solHTML();
+      } else {
+        resEl.innerHTML='<span class="bad">✗ Пока не то. Перечитай значения на диаграмме и попробуй ещё раз.</span>'+solHTML();
+      }
+    }
+    document.getElementById('trCheck').addEventListener('click',check);
+    ansEl.addEventListener('keydown',function(e){ if(e.key==='Enter') check(); });
+  })();
+})();
+</script>
+<!--LESSON-NAV-BOT--><nav class="lnav lnav-bot"><a class="prev" href="./alg9-sbor-gruppirovka-dannyh.html"><span class="dir">← Предыдущая</span><span class="ttl">Сбор и группировка статистических данных</span></a><a class="to-cat" href="./catalog.html">📚 <span>Все темы</span></a><a class="next" href="./alg9-srednie-pokazateli.html"><span class="dir">Следующая →</span><span class="ttl">Среднее, мода и медиана</span></a></nav><!--/LESSON-NAV-BOT-->

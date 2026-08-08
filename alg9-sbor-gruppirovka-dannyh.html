@@ -1,0 +1,723 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Сбор и группировка статистических данных — урок, алгебра 9 класс</title>
+<style>
+  :root{
+    --paper:#F6F7F9;
+    --card:#FFFFFF;
+    --ink:#1B2333;
+    --muted:#5A6478;
+    --line:#E2E5EC;
+    --accent:#3B4FD0;
+    --accent-soft:#EAEDFB;
+    --pos:#1E8E5A;
+    --pos-bg:#E7F4EC;
+    --zero:#B9791A;
+    --zero-bg:#FBF1DC;
+    --neg:#C0455B;
+    --neg-bg:#F9E9EC;
+  }
+  *{box-sizing:border-box}
+  body{margin:0}
+  .wrap{
+    max-width:760px;
+    margin:0 auto;
+    padding:clamp(1.4rem,4vw,3rem) clamp(1.1rem,4vw,2rem) 4rem;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    font-size:17px;
+    line-height:1.62;
+    -webkit-font-smoothing:antialiased;
+  }
+  .eyebrow{
+    font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--accent);font-weight:600;margin:0 0 .5rem;
+  }
+  h1{
+    font-family:Georgia,"Times New Roman",serif;
+    font-size:clamp(2rem,6.4vw,2.9rem);
+    line-height:1.06;margin:0;font-weight:700;letter-spacing:-.01em;
+    text-wrap:balance;
+  }
+  .lede{
+    font-size:1.08rem;color:var(--muted);margin:.7rem 0 0;max-width:60ch;
+    text-wrap:pretty;
+  }
+  h2{
+    font-family:Georgia,serif;font-size:1.32rem;font-weight:700;
+    margin:0 0 .1rem;letter-spacing:-.005em;
+  }
+  section{margin-top:2.6rem}
+  .kicker{
+    font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--muted);font-weight:600;margin:0 0 .8rem;
+    display:flex;align-items:center;gap:.6rem;
+  }
+  .kicker::before{
+    content:"";width:1.4rem;height:2px;background:var(--accent);border-radius:2px;
+  }
+  p{margin:.65rem 0}
+  strong{font-weight:650}
+  .math{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-weight:600}
+  sup{font-size:.72em}
+
+  /* Главная формула */
+  .hero-formula{
+    margin-top:2.2rem;
+    background:var(--ink);color:#fff;border-radius:14px;
+    padding:1.6rem 1.4rem;text-align:center;
+  }
+  .hero-formula .lbl{
+    font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;
+    color:#9aa6c9;margin:0 0 .7rem;
+  }
+  .hero-formula .eq{
+    font-family:ui-monospace,"SF Mono",Menlo,monospace;
+    font-size:clamp(1.4rem,5.2vw,2.1rem);font-weight:700;letter-spacing:.01em;
+  }
+  .hero-formula .eq b{color:#8ea0ff;font-weight:700}
+  .hero-formula .note{font-size:.86rem;color:#9aa6c9;margin:.8rem 0 0}
+
+  /* Пререквизит */
+  .recall{
+    background:var(--accent-soft);border-radius:12px;padding:1rem 1.15rem;
+    font-size:.96rem;
+  }
+  .recall p{margin:.3rem 0}
+
+  /* Карточки понятий */
+  .cases{display:grid;gap:.85rem;margin-top:.4rem}
+  @media(min-width:620px){.cases{grid-template-columns:repeat(3,1fr)}}
+  .case{
+    border-radius:12px;padding:1.05rem 1.1rem;border:1px solid var(--line);
+    background:var(--card);display:flex;flex-direction:column;gap:.35rem;
+  }
+  .case .sign{font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.1rem}
+  .case .count{font-weight:650;font-size:1rem}
+  .case .desc{font-size:.9rem;color:var(--muted)}
+  .case.pos{border-top:4px solid var(--pos);background:var(--pos-bg)}
+  .case.pos .sign{color:var(--pos)}
+  .case.zero{border-top:4px solid var(--zero);background:var(--zero-bg)}
+  .case.zero .sign{color:var(--zero)}
+  .case.neg{border-top:4px solid var(--neg);background:var(--neg-bg)}
+  .case.neg .sign{color:var(--neg)}
+
+  /* Разбор */
+  .worked{
+    background:var(--card);border:1px solid var(--line);border-radius:12px;
+    padding:1.2rem 1.3rem;
+  }
+  .worked .task{
+    font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:.98rem;
+    margin:0 0 1rem;padding-bottom:.8rem;border-bottom:1px solid var(--line);
+    line-height:1.7;
+  }
+  ol.steps{margin:0;padding:0;list-style:none;counter-reset:s;display:flex;flex-direction:column;gap:.7rem}
+  ol.steps li{position:relative;padding-left:2.1rem;counter-increment:s}
+  ol.steps li::before{
+    content:counter(s);position:absolute;left:0;top:.05rem;
+    width:1.5rem;height:1.5rem;border-radius:50%;
+    background:var(--accent-soft);color:var(--accent);
+    font-size:.82rem;font-weight:700;display:flex;align-items:center;justify-content:center;
+  }
+  ol.steps .m{font-family:ui-monospace,Menlo,monospace;font-weight:600;color:var(--ink)}
+  .verdict{
+    margin-top:1rem;padding:.7rem 1rem;background:var(--pos-bg);
+    border-radius:9px;font-weight:600;color:var(--pos);font-size:.98rem;
+  }
+
+  /* Таблицы */
+  .tscroll{overflow-x:auto;margin:1rem 0;-webkit-overflow-scrolling:touch}
+  table.freq{border-collapse:collapse;width:100%;min-width:340px;background:var(--card);font-size:.95rem}
+  table.freq th,table.freq td{
+    border:1px solid var(--line);padding:.5rem .7rem;text-align:center;
+    font-family:ui-monospace,Menlo,monospace;
+  }
+  table.freq th{background:var(--accent-soft);color:var(--accent);font-weight:700;font-size:.82rem;letter-spacing:.03em}
+  table.freq tr.sum td{background:var(--pos-bg);color:var(--pos);font-weight:800}
+
+  /* Практика */
+  .drill{display:flex;flex-direction:column;gap:.7rem}
+  details{
+    background:var(--card);border:1px solid var(--line);border-radius:10px;
+    padding:.85rem 1.05rem;
+  }
+  details[open]{border-color:var(--accent)}
+  summary{
+    cursor:pointer;font-weight:600;list-style:none;
+    display:flex;justify-content:space-between;align-items:center;gap:1rem;
+  }
+  summary:focus-visible{outline:3px solid var(--accent);outline-offset:3px;border-radius:6px}
+  summary::-webkit-details-marker{display:none}
+  summary .q{font-size:.97rem;min-width:0}
+  summary .tag{
+    font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);
+    border:1px solid var(--line);border-radius:20px;padding:.1rem .55rem;white-space:nowrap;
+  }
+  .ans{margin-top:.7rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.96rem;color:var(--muted)}
+  .ans .m{font-family:ui-monospace,Menlo,monospace;color:var(--ink);font-weight:600}
+
+  /* Ошибки */
+  ul.pitfalls{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:.6rem}
+  ul.pitfalls li{padding-left:1.5rem;position:relative;font-size:.98rem}
+  ul.pitfalls li::before{
+    content:"×";position:absolute;left:0;top:-.05rem;color:var(--neg);font-weight:700;font-size:1.1rem;
+  }
+  ul.pitfalls b{color:var(--ink)}
+
+  ol.checkq{margin:.4rem 0 0;padding-left:1.3rem;display:flex;flex-direction:column;gap:.5rem}
+  ol.checkq li{padding-left:.2rem}
+
+  .next{background:var(--accent);color:#fff;border-radius:12px;padding:1.2rem 1.3rem}
+  .next h2{color:#fff}
+  .next .eq{font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.1rem;margin:.6rem 0 .3rem}
+  .next p{color:#dfe4fb;font-size:.96rem;margin:.4rem 0 0}
+  .foot{margin-top:2.4rem;font-size:.82rem;color:var(--muted);text-align:center}
+
+  /* Сырой ряд данных */
+  .rawrow{
+    display:flex;flex-wrap:wrap;gap:.32rem;margin:.7rem 0 0;
+    font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:.9rem;
+  }
+  .rawrow span{
+    background:var(--card);border:1px solid var(--line);border-radius:7px;
+    padding:.18rem .5rem;min-width:2.2rem;text-align:center;
+  }
+
+  @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+<style>
+.oge-tip{display:flex;gap:.8rem;align-items:flex-start;background:#FFF8E7;border:1px solid #F0D98A;border-left:4px solid #E0A315;border-radius:10px;padding:.85rem 1.05rem;margin:1.5rem 0}
+.oge-tip .b{font-size:.72rem;font-weight:800;letter-spacing:.03em;color:#8A6A15;white-space:nowrap;text-transform:uppercase;padding-top:.15rem}
+.oge-tip .x{font-size:.95rem;line-height:1.5}
+</style>
+
+<!--LESSON-NAV-TOP--><style>.lnav{--lnav-accent:#3D5AF1}.lnav a{text-decoration:none;font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif}.lnav-top{max-width:820px;margin:0 auto;padding:.75rem clamp(1rem,4vw,1.5rem) .1rem}.lnav-top a{display:inline-flex;align-items:center;gap:.35rem;color:var(--lnav-accent);font-weight:600;font-size:.9rem}.lnav-top a:hover{text-decoration:underline}.lnav-bot{max-width:820px;margin:2.6rem auto 3rem;padding:1.1rem clamp(1rem,4vw,1.5rem) 0;border-top:1px solid #E4E8EF;display:flex;align-items:stretch;gap:.55rem}.lnav-bot a{min-width:0;display:flex;flex-direction:column;justify-content:center;gap:.15rem;border:1px solid #E4E8EF;border-radius:12px;padding:.65rem .85rem;color:#182233;background:#fff;transition:border-color .1s,transform .08s}.lnav-bot a:hover{border-color:var(--lnav-accent);transform:translateY(-1px)}.lnav-bot .prev,.lnav-bot .next{flex:1 1 0}.lnav-bot .next{text-align:right}.lnav-bot .dir{font-size:.72rem;color:#8A93A6;font-weight:600}.lnav-bot .ttl{font-size:.9rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.lnav-bot .to-cat{flex:0 0 auto;flex-direction:row;align-items:center;justify-content:center;color:var(--lnav-accent);font-weight:700;font-size:.85rem;white-space:nowrap}@media(max-width:420px){.lnav-bot .to-cat span{display:none}.lnav-bot .to-cat{padding:.65rem .7rem}}</style><nav class="lnav lnav-top"><a href="./catalog.html">← Все темы</a></nav><!--/LESSON-NAV-TOP-->
+<div class="wrap">
+
+  <header>
+    <p class="eyebrow">Алгебра · 9 класс</p>
+    <h1>Сбор и группировка данных</h1>
+    <p class="lede">Как превратить длинный список чисел, в котором глазом ничего не разглядеть, в короткую таблицу, где всё видно сразу.</p>
+  </header>
+
+  <div class="hero-formula">
+    <p class="lbl">Главная формула темы</p>
+    <div class="eq">относительная частота = <b>m</b> / <b>N</b></div>
+    <p class="note">m — частота значения (сколько раз встретилось), N — объём выборки (сколько всего наблюдений)</p>
+  </div>
+
+  <section>
+    <p class="kicker">Зачем это нужно</p>
+    <h2>Список чисел молчит, таблица — говорит</h2>
+    <p>Каждый день вокруг тебя данные: оценки в классе, рост и вес учеников, число пропущенных уроков, цены в магазинах, результаты опросов. Но сам по себе длинный список чисел почти бесполезен — просто глядя на него, ничего не поймёшь.</p>
+    <p>Чтобы данные «заговорили», их надо <strong>собрать</strong> (записать без потерь) и <strong>сгруппировать</strong> — упорядочить и посчитать, как часто встречается каждое значение.</p>
+    <p>Это первый шаг всей статистики. Без аккуратной таблицы частот нельзя ни построить диаграмму, ни честно посчитать среднее. Тем же приёмом пользуются социологи, врачи, экономисты, спортивные аналитики.</p>
+    <p><strong>Главное заблуждение:</strong> «чем больше цифр выписал, тем точнее результат». Нет. Куча цифр без группировки не даёт никакого понимания — важно не количество чисел, а их <strong>организация</strong>.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Что вспомнить перед стартом</p>
+    <div class="recall">
+      <p>Тут понадобится только то, что ты умеешь с младших классов:</p>
+      <p>· <strong>считать количество</strong> — сколько раз число встретилось в списке;</p>
+      <p>· <strong>делить</strong> одно число на другое: <span class="math">m / N</span> — это обычная дробь;</p>
+      <p>· <strong>переводить долю в проценты</strong> — умножить на 100%: <span class="math">0,25 = 25%</span>.</p>
+      <p>Никаких новых формул, кроме одной дроби, в теме нет. Вся сложность — в аккуратности.</p>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Ядро темы · три понятия</p>
+    <h2>Выборка, частота, относительная частота</h2>
+    <p>Мы берём набор наблюдений и вместо длинного списка считаем, <strong>сколько раз</strong> встречается каждое значение. Вот и всё, что тут происходит.</p>
+    <div class="cases">
+      <div class="case pos">
+        <div class="sign">N</div>
+        <div class="count">Выборка</div>
+        <div class="desc">Все собранные данные. N — объём выборки, сколько всего наблюдений.</div>
+      </div>
+      <div class="case zero">
+        <div class="sign">m</div>
+        <div class="count">Частота</div>
+        <div class="desc">Сколько раз значение встретилось. Целое неотрицательное число, «в штуках».</div>
+      </div>
+      <div class="case neg">
+        <div class="sign">m / N</div>
+        <div class="count">Отн. частота</div>
+        <div class="desc">Доля значения от всех данных. Число от 0 до 1; ×100% — проценты.</div>
+      </div>
+    </div>
+    <p style="margin-top:1rem">Смысл относительной частоты — это <strong>«вес» значения в общей картине</strong>. Она всегда между 0 и 1 (или от 0% до 100%).</p>
+    <p>Два обязательных контроля, которые ловят почти любую ошибку:</p>
+    <div class="worked" style="margin-top:.6rem">
+      <p style="margin:0"><strong>Сумма всех частот = N.</strong> Если меньше — потерял данные, если больше — посчитал что-то дважды.</p>
+      <p style="margin:.5rem 0 0"><strong>Сумма всех относительных частот = 1</strong> (то есть 100%). Получилось другое — ищи ошибку, а не «округляй как есть».</p>
+    </div>
+    <p style="margin-top:1.1rem">Когда разных значений много (например, рост учеников — десятки разных чисел), их объединяют в <strong>интервалы</strong> и считают частоту попадания в каждый интервал. Это и есть <strong>группировка по интервалам</strong>.</p>
+    <p><strong>Интервал группировки</strong> записывают как <span class="math">[a; b)</span>. Квадратная скобка слева значит «границу <em>a</em> включаем», круглая справа — «границу <em>b</em> не включаем»: число, равное правой границе, идёт уже в следующий интервал. Так каждое число попадёт ровно в один интервал — ни в два, ни в ноль. Ширина интервала <span class="math">h = b − a</span>, и её обычно делают одинаковой у всех интервалов.</p>
+    <p style="font-size:.92rem;color:var(--muted)">У относительной частоты единиц измерения нет — это доля (в процентах пишем «%»). Частота всегда в штуках.</p>
+    <div class="oge-tip"><div class="b">🎯 В ОГЭ</div><div class="x"><b>Задание 10.</b> Здесь нужно найти долю: сколько объектов из общего числа подходят под условие. Это ровно наша относительная частота <span class="math">m / N</span> — часть делим на целое. А в заданиях 1–5 данные почти всегда даны таблицей, и читать таблицу надо уверенно и без потерь.</div></div>
+  </section>
+
+  <section>
+    <p class="kicker">Разбираем вместе · думаю вслух</p>
+    <h2>Эталонный пример: строим таблицу частот</h2>
+    <div class="worked">
+      <p class="task">Оценки за контрольную у 20 учеников:<br>3, 5, 4, 4, 3, 5, 4, 2, 3, 4, 5, 4, 3, 4, 5, 4, 3, 2, 4, 5.<br>Построить таблицу частот и относительных частот.</p>
+      <ol class="steps">
+        <li>Смотрю, какие вообще значения встречаются: <span class="m">2, 3, 4, 5</span>. Больше никаких оценок в списке нет — значит, в таблице будет 4 строки.</li>
+        <li>Считаю частоты. Иду по списку слева направо и каждому числу ставлю «палочку» напротив его значения. <em>Почему так, а не «на глаз»:</em> при движении по списку по порядку ни одно число не потеряется.<br>
+        <span class="m">«2» → 2 раза · «3» → 5 раз · «4» → 8 раз · «5» → 5 раз.</span></li>
+        <li>Первая проверка — сумма частот обязана дать N: <span class="m">2 + 5 + 8 + 5 = 20 = N</span>. Сходится, значит ничего не потерял.</li>
+        <li>Считаю относительные частоты — делю каждую частоту на <span class="m">N = 20</span>:<br>
+        <span class="m">2/20 = 0,1 = 10%</span> · <span class="m">5/20 = 0,25 = 25%</span> · <span class="m">8/20 = 0,4 = 40%</span> · <span class="m">5/20 = 0,25 = 25%</span>.</li>
+        <li>Вторая проверка — сумма относительных частот обязана дать 1: <span class="m">0,1 + 0,25 + 0,4 + 0,25 = 1</span>. Верно, таблицу можно сдавать.</li>
+      </ol>
+      <div class="tscroll">
+        <table class="freq">
+          <thead><tr><th>Оценка</th><th>Частота</th><th>Отн. частота</th></tr></thead>
+          <tbody>
+            <tr><td>2</td><td>2</td><td>0,10</td></tr>
+            <tr><td>3</td><td>5</td><td>0,25</td></tr>
+            <tr><td>4</td><td>8</td><td>0,40</td></tr>
+            <tr><td>5</td><td>5</td><td>0,25</td></tr>
+            <tr class="sum"><td>Сумма</td><td>20</td><td>1,00</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="verdict">Обе проверки сошлись: 20 = N и 1,00 = 100%. Данные собраны без потерь.</div>
+    </div>
+
+    <p style="margin-top:1.4rem"><strong>А теперь допиши сам.</strong> В выборке <span class="math">N = 25</span> человек. Значение «спортом занимается» встретилось 15 раз. Найди относительную частоту.</p>
+    <div class="drill">
+      <details>
+        <summary><span class="q">относительная частота = 15 / 25 = ____ = ____ %</span><span class="tag">подсказка и ответ</span></summary>
+        <div class="ans">Сначала делим: <span class="m">15 / 25 = 0,6</span>. Потом переводим в проценты — умножаем на 100%: <span class="m">0,6 = 60%</span>.</div>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Покрути сам · интерактив</p>
+    <h2>Смотри, зачем нужна группировка</h2>
+    <p>Слева — <strong>сырой ряд</strong>: просто числа в том порядке, в каком их записали. Попробуй по нему быстро сказать, какое значение самое частое. Трудно, да? Теперь жми «Сгруппировать» — те же данные превратятся в таблицу частот и столбики.</p>
+    <div class="grouper">
+      <div class="gtabs" role="group" aria-label="Выбор набора данных">
+        <button type="button" class="gtab on" data-set="0">Оценки · по значениям</button>
+        <button type="button" class="gtab" data-set="1">Рост · по интервалам</button>
+      </div>
+      <p class="gcap" id="gCap">Оценки за контрольную у 20 учеников (сырой ряд):</p>
+      <div class="rawrow" id="gRaw"></div>
+      <div class="gctl">
+        <button type="button" id="gBtn">📊 Сгруппировать</button>
+      </div>
+      <div id="gOut" class="gout" hidden>
+        <div class="tscroll"><table class="freq" id="gTable"></table></div>
+        <canvas id="gCanvas" width="640" height="320" aria-label="Гистограмма частот"></canvas>
+        <p class="gnote" id="gNote"></p>
+      </div>
+    </div>
+    <p style="font-size:.92rem;color:var(--muted)">Одни и те же данные в трёх видах: сырой список → таблица частот → столбики. Спроси себя: по какому представлению самое частое значение видно быстрее всего? Вот ради этого группировку и делают.</p>
+    <p style="font-size:.92rem;color:var(--muted)">Перед тем как жать кнопку на вкладке «Рост», <strong>предскажи</strong>: какой интервал окажется самым «населённым»? Потом проверь и объясни, почему вышло именно так.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Теперь ты · нажми, чтобы проверить</p>
+    <h2>Практика по нарастанию</h2>
+    <div class="drill">
+      <details>
+        <summary><span class="q">В таблице частот у значения «отлично» стоит частота 6. Что означает число 6?</span><span class="tag">понимание</span></summary>
+        <div class="ans">Оценку «отлично» поставили <strong>6 раз</strong>. Это количество повторений, а не доля и не процент.</div>
+      </details>
+      <details>
+        <summary><span class="q">Число книг за лето у 10 учеников: 2, 0, 1, 3, 2, 1, 2, 4, 1, 2. Построй таблицу частот и относительных частот.</span><span class="tag">применение</span></summary>
+        <div class="ans">
+          <span class="m">«0» — 1 (0,1) · «1» — 3 (0,3) · «2» — 4 (0,4) · «3» — 1 (0,1) · «4» — 1 (0,1)</span>.<br>
+          Проверки: сумма частот <span class="m">1 + 3 + 4 + 1 + 1 = 10 = N</span>; сумма относительных частот <span class="m">0,1 + 0,3 + 0,4 + 0,1 + 0,1 = 1</span>. Обе сошлись.
+        </div>
+      </details>
+      <details>
+        <summary><span class="q">Рост 8 учеников (см): 152, 158, 160, 151, 165, 159, 154, 162. Сгруппируй по интервалам шириной 5, начиная со 150.</span><span class="tag">применение</span></summary>
+        <div class="ans">
+          Интервалы: <span class="m">[150;155), [155;160), [160;165), [165;170)</span>. Левую границу включаем, правую — нет.<br>
+          <span class="m">[150;155) — 3</span> (152, 151, 154) · <span class="m">[155;160) — 2</span> (158, 159) · <span class="m">[160;165) — 2</span> (160, 162) · <span class="m">[165;170) — 1</span> (165).<br>
+          Проверка: <span class="m">3 + 2 + 2 + 1 = 8 = N</span>. Обрати внимание: 160 ушло не в «[155;160)», а в следующий интервал — правая граница не включается.
+        </div>
+      </details>
+      <details>
+        <summary><span class="q">Найди ошибку: в таблице сумма относительных частот получилась 0,9. Что это значит и где ошибка?</span><span class="tag">анализ</span></summary>
+        <div class="ans">Сумма относительных частот <strong>обязана</strong> быть равна 1. Раз вышло 0,9 — какое-то значение потеряли при подсчёте частот или ошиблись в делении. Лечится одним способом: пересчитать частоты и сверить их сумму с N.</div>
+      </details>
+      <details>
+        <summary><span class="q">Что изменится в относительных частотах, если объём выборки удвоить, а пропорции значений сохранить?</span><span class="tag">анализ</span></summary>
+        <div class="ans">Относительные частоты <strong>не изменятся</strong>. Они зависят от долей, а не от абсолютного количества: если и m, и N выросли вдвое, дробь <span class="m">m / N</span> осталась той же. Частоты при этом удвоятся — вот они как раз изменятся.</div>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Тренажёр · бесконечная практика</p>
+    <h2>Посчитай сам</h2>
+    <p>Нажми «Новые данные», прочитай задание под рядом чисел и введи ответ. Десятичную часть можно писать хоть через запятую, хоть через точку. Потом проверь себя или посмотри пошаговое решение.</p>
+    <div class="trainer">
+      <p class="tr-cap" id="trCap"></p>
+      <div class="rawrow" id="trRaw"></div>
+      <div class="tr-q" id="trQ"></div>
+      <div class="tr-ctl">
+        <button id="trNew" type="button">🎲 Новые данные</button>
+        <input id="trAns" type="text" inputmode="text" placeholder="ответ числом" aria-label="Ответ">
+        <button id="trCheck" type="button" class="sec">Проверить</button>
+        <button id="trShow" type="button" class="ghost">Показать решение</button>
+      </div>
+      <div id="trResult" class="tr-result"></div>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Где чаще всего ошибаются</p>
+    <h2>Четыре ловушки</h2>
+    <ul class="pitfalls">
+      <li><b>Путают частоту и относительную частоту.</b> Частота — это «сколько раз» (целое число, например 8). Относительная частота — доля от всех (например, 0,4). Как не попасться: всегда подписывай столбцы таблицы и помни — частоты в сумме дают N, относительные частоты в сумме дают 1.</li>
+      <li><b>Неверно строят интервалы.</b> Берут интервалы разной ширины или с «дырками» и перекрытиями — и тогда число попадает сразу в два интервала или не попадает никуда. Как не попасться: одинаковая ширина у всех интервалов и заранее договорённая граница (левую включаем, правую — нет).</li>
+      <li><b>Теряют данные при подсчёте.</b> Считают «на глаз» по длинному списку и пропускают числа. Как не попасться: вычёркивай каждое посчитанное число или ставь «палочку», а в конце обязательно проверь: сумма частот = N.</li>
+      <li><b>Забывают проверку.</b> Не сверяют сумму относительных частот с 1 — и не замечают ошибку. Как не попасться: проверка суммы — обязательный последний шаг, а не «если останется время».</li>
+    </ul>
+  </section>
+
+  <section>
+    <p class="kicker">Проверка понимания</p>
+    <h2>Объясни своими словами</h2>
+    <p>Ответь вслух, не подглядывая, — потом раскрой и сверься.</p>
+    <div class="drill">
+      <details>
+        <summary><span class="q">Чему всегда равна сумма всех относительных частот в таблице?</span><span class="tag">проверь себя</span></summary>
+        <div class="ans">Единице, то есть <span class="m">100%</span>.</div>
+      </details>
+      <details>
+        <summary><span class="q">Значение встретилось 7 раз при объёме выборки 28. Какова его относительная частота?</span><span class="tag">проверь себя</span></summary>
+        <div class="ans"><span class="m">7 / 28 = 0,25</span> (это 25%).</div>
+      </details>
+      <details>
+        <summary><span class="q">Чем частота отличается от относительной частоты?</span><span class="tag">проверь себя</span></summary>
+        <div class="ans">Частота — количество повторений значения. Относительная частота — доля этого значения от всех данных.</div>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <div class="next">
+      <h2>Что дальше</h2>
+      <p>Таблица частот — заготовка для всего остального в статистике. Из неё вырастают две следующие темы:</p>
+      <div class="eq">таблица частот → графики → средние</div>
+      <p><strong>Статистические графики</strong> — таблицу превращают в столбчатую диаграмму, гистограмму или круговую диаграмму: высота столбика равна частоте, и картина видна с одного взгляда.</p>
+      <p><strong>Средние показатели</strong> — по тем же сгруппированным данным честно считают среднее, моду и медиану. Без аккуратной таблицы частот они посчитаются неверно.</p>
+    </div>
+  </section>
+
+  <p class="foot">Проверка на выходе: чему равна сумма частот? · чему равна сумма относительных частот? · куда попадёт число 160 в интервале [155;160)?</p>
+
+</div>
+
+<style>
+  .grouper{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.1rem 1.1rem 1rem;margin:1rem 0}
+  .gtabs{display:flex;gap:.5rem;flex-wrap:wrap}
+  .gtab{
+    font:inherit;font-size:.85rem;font-weight:700;cursor:pointer;
+    border:1px solid var(--line);background:var(--paper);color:var(--muted);
+    border-radius:20px;padding:.35rem .8rem;
+  }
+  .gtab.on{background:var(--accent-soft);border-color:var(--accent);color:var(--accent)}
+  .gtab:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+  .gcap{font-size:.9rem;color:var(--muted);margin:.9rem 0 0}
+  .gctl{margin-top:.9rem}
+  .gctl button{
+    font:inherit;font-weight:700;font-size:.9rem;cursor:pointer;border:none;
+    border-radius:9px;padding:.55rem .95rem;color:#fff;background:var(--accent);
+  }
+  .gctl button:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
+  .gout canvas{width:100%;height:auto;display:block;border-radius:10px;background:#FCFDFF;border:1px solid var(--line)}
+  .gnote{font-size:.9rem;color:var(--muted);margin:.8rem 0 0}
+  .gnote b{color:var(--ink)}
+
+  .trainer{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.2rem 1.3rem;margin-top:1rem}
+  .tr-cap{font-size:.9rem;color:var(--muted);margin:0}
+  .tr-q{
+    margin-top:.9rem;padding:.8rem 1rem;background:var(--accent-soft);border-radius:10px;
+    font-weight:700;font-size:1rem;color:var(--ink);
+  }
+  .tr-ctl{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.9rem;align-items:center}
+  .tr-ctl button{font:inherit;font-weight:700;font-size:.9rem;cursor:pointer;border:none;border-radius:9px;padding:.55rem .95rem;color:#fff;background:var(--accent)}
+  .tr-ctl button.sec{background:var(--pos)}
+  .tr-ctl button.ghost{background:transparent;color:var(--accent);border:1px solid var(--accent)}
+  .tr-ctl input{flex:1;min-width:150px;font:inherit;padding:.5rem .7rem;border:1px solid var(--line);border-radius:9px;background:#fff;color:var(--ink)}
+  .tr-ctl button:focus-visible,.tr-ctl input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+  .tr-result{margin-top:.9rem;font-size:.96rem;min-height:1.2rem}
+  .tr-result .ok{color:var(--pos);font-weight:700}
+  .tr-result .bad{color:var(--neg);font-weight:700}
+  .tr-result .sol{margin-top:.7rem;padding:.85rem 1rem;background:#FCFBFE;border:1px solid var(--line);border-radius:10px;font-family:ui-monospace,Menlo,monospace;font-size:.9rem;line-height:1.8}
+  .tr-result .sol b{color:var(--accent)}
+</style>
+
+<script>
+(function(){
+  var raw=document.getElementById('gRaw'); if(!raw) return;
+  var cap=document.getElementById('gCap'), out=document.getElementById('gOut'),
+      btn=document.getElementById('gBtn'), tbl=document.getElementById('gTable'),
+      note=document.getElementById('gNote'), cv=document.getElementById('gCanvas');
+  var ctx=cv.getContext('2d');
+
+  var SETS=[
+    {
+      cap:'Оценки за контрольную у 20 учеников (сырой ряд):',
+      data:[3,5,4,4,3,5,4,2,3,4,5,4,3,4,5,4,3,2,4,5],
+      head:'Оценка',
+      groups:[{lbl:'2',test:function(v){return v===2;}},
+              {lbl:'3',test:function(v){return v===3;}},
+              {lbl:'4',test:function(v){return v===4;}},
+              {lbl:'5',test:function(v){return v===5;}}],
+      note:'Самое частое значение — <b>«4»</b>: 8 раз из 20, то есть 40% всех оценок. По сырому ряду это было не видно, а по столбикам — сразу.'
+    },
+    {
+      cap:'Рост 8 учеников в сантиметрах (сырой ряд):',
+      data:[152,158,160,151,165,159,154,162],
+      head:'Интервал',
+      groups:[{lbl:'150–155',test:function(v){return v>=150&&v<155;}},
+              {lbl:'155–160',test:function(v){return v>=155&&v<160;}},
+              {lbl:'160–165',test:function(v){return v>=160&&v<165;}},
+              {lbl:'165–170',test:function(v){return v>=165&&v<170;}}],
+      note:'Значений много, и почти все разные — поэтому считаем не каждое число, а попадание в интервал. Число <b>160</b> попало в [160;165), а не в [155;160): правую границу не включаем.'
+    }
+  ];
+  var cur=0, shown=false;
+
+  function dec(x){ return String(Math.round(x*100)/100).replace('.',','); }
+
+  function renderRaw(){
+    var s=SETS[cur];
+    cap.textContent=s.cap;
+    raw.innerHTML=s.data.map(function(v){return '<span>'+v+'</span>';}).join('');
+  }
+
+  function counts(){
+    var s=SETS[cur];
+    return s.groups.map(function(g){
+      return s.data.filter(function(v){return g.test(v);}).length;
+    });
+  }
+
+  function renderTable(c){
+    var s=SETS[cur], N=s.data.length;
+    var h='<thead><tr><th>'+s.head+'</th><th>Частота</th><th>Отн. частота</th></tr></thead><tbody>';
+    for(var i=0;i<s.groups.length;i++){
+      h+='<tr><td>'+s.groups[i].lbl+'</td><td>'+c[i]+'</td><td>'+dec(c[i]/N)+'</td></tr>';
+    }
+    var sum=c.reduce(function(a,b){return a+b;},0);
+    h+='<tr class="sum"><td>Сумма</td><td>'+sum+'</td><td>'+dec(sum/N)+'</td></tr></tbody>';
+    tbl.innerHTML=h;
+  }
+
+  function drawHist(c){
+    var s=SETS[cur];
+    var cssW=cv.clientWidth||640, dpr=Math.min(window.devicePixelRatio||1,2);
+    var W=cssW, H=Math.max(200,Math.round(cssW*0.55));
+    cv.width=W*dpr; cv.height=H*dpr; cv.style.height=H+'px';
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+    ctx.clearRect(0,0,W,H);
+
+    var padL=34, padR=12, padB=34, padT=24;
+    var n=c.length, plotW=W-padL-padR, plotH=H-padT-padB;
+    var maxC=Math.max.apply(null,c); if(maxC<1) maxC=1;
+
+    ctx.strokeStyle='#E4E8EF'; ctx.lineWidth=1;
+    ctx.fillStyle='#8A93A6'; ctx.font='11px system-ui,sans-serif'; ctx.textAlign='right'; ctx.textBaseline='middle';
+    for(var t=0;t<=maxC;t++){
+      var y=padT+plotH-(t/maxC)*plotH;
+      ctx.beginPath(); ctx.moveTo(padL,y); ctx.lineTo(W-padR,y); ctx.stroke();
+      if(maxC<=8 || t%2===0) ctx.fillText(String(t),padL-6,y);
+    }
+    ctx.strokeStyle='#9AA3B2'; ctx.lineWidth=1.5;
+    ctx.beginPath(); ctx.moveTo(padL,padT); ctx.lineTo(padL,padT+plotH); ctx.lineTo(W-padR,padT+plotH); ctx.stroke();
+
+    var slot=plotW/n, bw=Math.min(slot*0.68,70);
+    for(var i=0;i<n;i++){
+      var cx=padL+slot*(i+0.5);
+      var bh=(c[i]/maxC)*plotH;
+      ctx.fillStyle='#3B4FD0';
+      ctx.fillRect(cx-bw/2,padT+plotH-bh,bw,bh);
+      ctx.fillStyle='#1B2333'; ctx.font='700 12px system-ui,sans-serif'; ctx.textAlign='center'; ctx.textBaseline='bottom';
+      ctx.fillText(String(c[i]),cx,padT+plotH-bh-4);
+      ctx.fillStyle='#5A6478'; ctx.font='10px system-ui,sans-serif'; ctx.textBaseline='top';
+      ctx.fillText(SETS[cur].groups[i].lbl,cx,padT+plotH+7);
+    }
+    ctx.fillStyle='#8A93A6'; ctx.font='11px system-ui,sans-serif'; ctx.textAlign='left'; ctx.textBaseline='top';
+    ctx.fillText('частота',padL,4);
+  }
+
+  function group(){
+    var c=counts();
+    out.hidden=false; shown=true;
+    renderTable(c); drawHist(c);
+    note.innerHTML=SETS[cur].note;
+    btn.textContent='🔄 Показать сырой ряд';
+  }
+  function ungroup(){
+    out.hidden=true; shown=false;
+    btn.textContent='📊 Сгруппировать';
+  }
+
+  btn.addEventListener('click',function(){ if(shown) ungroup(); else group(); });
+
+  Array.prototype.forEach.call(document.querySelectorAll('.gtab'),function(b){
+    b.addEventListener('click',function(){
+      cur=parseInt(b.getAttribute('data-set'),10)||0;
+      Array.prototype.forEach.call(document.querySelectorAll('.gtab'),function(x){ x.classList.remove('on'); });
+      b.classList.add('on');
+      renderRaw(); ungroup();
+    });
+  });
+
+  window.addEventListener('resize',function(){ if(shown) drawHist(counts()); });
+
+  renderRaw(); ungroup();
+})();
+</script>
+
+<script>
+(function(){
+  // ---- ядро тренажёра (чистые функции, без DOM) ----
+  var T={};
+  function ri(min,max){ return Math.floor(Math.random()*(max-min+1))+min; }
+  function pick(a){ return a[Math.floor(Math.random()*a.length)]; }
+  function mn(x){ var n=Math.round(x*1000)/1000; return (n<0?'−':'')+Math.abs(n); }
+  function dec(x){ return mn(x).replace('.',','); }
+
+  var THEMES=[
+    {cap:'Оценки за контрольную:', unit:'', vals:[2,3,4,5], word:'оценка'},
+    {cap:'Число книг, прочитанных за лето:', unit:'', vals:[0,1,2,3,4], word:'значение'},
+    {cap:'Число пропущенных уроков за месяц:', unit:'', vals:[0,1,2,3], word:'значение'}
+  ];
+  var NICE=[10,20,25];
+
+  // сколько раз target встречается
+  function countOf(data,v){ var k=0; for(var i=0;i<data.length;i++) if(data[i]===v) k++; return k; }
+
+  T.generate=function(){
+    var kind=pick(['freq','rel','size','interval']);
+    if(kind==='interval'){
+      var N=ri(8,14), lo=150, h=5, k=5;         // интервалы 150–175, ширина 5
+      var data=[];
+      for(var i=0;i<N;i++) data.push(ri(lo,lo+h*k-1));
+      var idx=ri(0,k-1);
+      var a=lo+h*idx, b=a+h;
+      return {kind:kind,data:data,N:N,a:a,b:b,lo:lo,h:h,k:k,
+              cap:'Рост учеников в сантиметрах:',
+              q:'Сколько значений попадает в интервал [' + a + '; ' + b + ')? Левую границу включаем, правую — нет.'};
+    }
+    var th=pick(THEMES);
+    var n2 = (kind==='rel') ? pick(NICE) : ri(8,16);
+    var d2=[];
+    for(var j=0;j<n2;j++) d2.push(pick(th.vals));
+    var target=pick(th.vals);
+    if(countOf(d2,target)===0) d2[ri(0,n2-1)]=target;   // чтобы частота не была нулевой
+    if(kind==='size') return {kind:kind,data:d2,N:n2,cap:th.cap,q:'Каков объём выборки N, то есть сколько всего наблюдений?'};
+    if(kind==='freq') return {kind:kind,data:d2,N:n2,target:target,cap:th.cap,
+                              q:'Какова частота значения «'+target+'», то есть сколько раз оно встретилось?'};
+    return {kind:kind,data:d2,N:n2,target:target,cap:th.cap,
+            q:'Какова относительная частота значения «'+target+'»? Ответ дай в процентах.'};
+  };
+
+  T.answer=function(q){
+    if(q.kind==='size') return {value:q.N, unit:''};
+    if(q.kind==='interval'){
+      var m=0; for(var i=0;i<q.data.length;i++) if(q.data[i]>=q.a && q.data[i]<q.b) m++;
+      return {value:m, unit:'', m:m};
+    }
+    var k=countOf(q.data,q.target);
+    if(q.kind==='freq') return {value:k, unit:'', m:k};
+    return {value:Math.round(k/q.N*1e6)/1e4, unit:'%', m:k};   // проценты
+  };
+
+  T.solution=function(q){
+    var A=T.answer(q), h='';
+    if(q.kind==='size'){
+      h+='Объём выборки N — это просто количество чисел в ряду.<br>';
+      h+='Пересчитываем их по порядку, не пропуская: <b>N = '+mn(q.N)+'</b>.<br>';
+      h+='Контроль: сумма всех частот в таблице тоже обязана дать '+mn(q.N)+'.';
+    } else if(q.kind==='interval'){
+      var inside=[]; for(var i=0;i<q.data.length;i++) if(q.data[i]>=q.a && q.data[i]<q.b) inside.push(q.data[i]);
+      h+='Интервал [' + q.a + '; ' + q.b + '): значение '+q.a+' включаем, значение '+q.b+' — уже нет.<br>';
+      h+='Идём по ряду и отмечаем подходящие числа: '+(inside.length?inside.join(', '):'подходящих нет')+'.<br>';
+      h+='Частота интервала: <b>m = '+mn(A.m)+'</b> при N = '+mn(q.N)+'.<br>';
+      h+='Контроль: сложив частоты всех интервалов от '+q.lo+' до '+(q.lo+q.h*q.k)+', снова получим '+mn(q.N)+'.';
+    } else if(q.kind==='freq'){
+      h+='Идём по ряду слева направо и считаем, сколько раз встретилось «'+q.target+'».<br>';
+      h+='Частота: <b>m = '+mn(A.m)+'</b>.<br>';
+      h+='Это количество, в штуках — не доля и не проценты. Всего наблюдений N = '+mn(q.N)+'.';
+    } else {
+      h+='Сначала частота: «'+q.target+'» встретилось <b>m = '+mn(A.m)+'</b> раз.<br>';
+      h+='Объём выборки N = '+mn(q.N)+'.<br>';
+      h+='Относительная частота = m / N = '+mn(A.m)+' / '+mn(q.N)+' = '+dec(Math.round(A.m/q.N*1e6)/1e6)+'.<br>';
+      h+='В процентах: умножаем на 100% → <b>'+dec(A.value)+' %</b>.';
+    }
+    return h;
+  };
+
+  T.parse=function(raw){
+    var s=String(raw).trim().toLowerCase().replace(/−/g,'-').replace(/\s+/g,'').replace(/%/g,'').replace(/,/g,'.');
+    if(!s) return null;
+    if(!/^-?\d+(\.\d+)?$/.test(s)) return null;
+    var v=parseFloat(s);
+    return isFinite(v)?v:null;
+  };
+
+  T.check=function(q,raw){
+    var got=T.parse(raw); if(got===null) return null;
+    var A=T.answer(q);
+    if(A.unit==='%'){
+      if(Math.abs(got-A.value)<0.05) return true;
+      if(Math.abs(got-A.value/100)<0.0005) return true;   // ученик написал долей — тоже верно
+      return false;
+    }
+    return Math.abs(got-A.value)<1e-6;
+  };
+
+  if(typeof window!=='undefined') window.__trainerCore=T;
+
+  // ---- DOM ----
+  var capEl=document.getElementById('trCap'); if(!capEl) return;
+  var rawEl=document.getElementById('trRaw'), qEl=document.getElementById('trQ'),
+      ansEl=document.getElementById('trAns'), resEl=document.getElementById('trResult');
+  var cur=null;
+
+  function render(q){
+    cur=q;
+    capEl.textContent=q.cap;
+    rawEl.innerHTML=q.data.map(function(v){return '<span>'+v+'</span>';}).join('');
+    qEl.textContent=q.q;
+    resEl.innerHTML=''; ansEl.value='';
+    ansEl.placeholder = (q.kind==='rel') ? 'ответ в %, напр. 25' : 'ответ числом';
+  }
+  function solHTML(){ return '<div class="sol">'+T.solution(cur)+'</div>'; }
+  function check(){
+    var r=T.check(cur,ansEl.value);
+    if(r===null){ resEl.innerHTML='<span class="bad">Введи ответ одним числом (можно с запятой) или нажми «Показать решение».</span>'; return; }
+    if(r){ resEl.innerHTML='<span class="ok">✓ Верно!</span>'+solHTML(); }
+    else{
+      var hint = (cur.kind==='rel') ? ' Подсказка: сначала частота m, потом m / N, потом ×100%.'
+               : (cur.kind==='interval') ? ' Подсказка: правую границу интервала не включаем.'
+               : ' Подсказка: пройди по ряду по порядку, чтобы ничего не потерять.';
+      resEl.innerHTML='<span class="bad">✗ Пока не то.'+hint+'</span>'+solHTML();
+    }
+  }
+  document.getElementById('trNew').addEventListener('click',function(){ render(T.generate()); ansEl.focus(); });
+  document.getElementById('trCheck').addEventListener('click',check);
+  document.getElementById('trShow').addEventListener('click',function(){ resEl.innerHTML=solHTML(); });
+  ansEl.addEventListener('keydown',function(e){ if(e.key==='Enter') check(); });
+
+  render(T.generate());   // первичный рендер — без фокуса
+})();
+</script>
+<!--LESSON-NAV-BOT--><nav class="lnav lnav-bot"><a class="prev" href="./alg9-veroyatnost-slozhnye-sobytiya.html"><span class="dir">← Предыдущая</span><span class="ttl">Вероятность и комбинаторика в задачах</span></a><a class="to-cat" href="./catalog.html">📚 <span>Все темы</span></a><a class="next" href="./alg9-statisticheskie-grafiki.html"><span class="dir">Следующая →</span><span class="ttl">Наглядное представление данных</span></a></nav><!--/LESSON-NAV-BOT-->

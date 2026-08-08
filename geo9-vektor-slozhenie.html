@@ -1,0 +1,858 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Сложение векторов — урок, геометрия 9 класс</title>
+<style>
+  :root{
+    --paper:#F6F7F9;
+    --card:#FFFFFF;
+    --ink:#1B2333;
+    --muted:#5A6478;
+    --line:#E2E5EC;
+    --accent:#3B4FD0;
+    --accent-soft:#EAEDFB;
+    --va:#3B4FD0;      /* вектор a */
+    --va-bg:#EAEDFB;
+    --vb:#B9791A;      /* вектор b */
+    --vb-bg:#FBF1DC;
+    --vs:#1E8E5A;      /* сумма */
+    --vs-bg:#E7F4EC;
+    --neg:#C0455B;     /* ошибка */
+    --neg-bg:#F9E9EC;
+  }
+  *{box-sizing:border-box}
+  body{margin:0}
+  .wrap{
+    max-width:760px;
+    margin:0 auto;
+    padding:clamp(1.4rem,4vw,3rem) clamp(1.1rem,4vw,2rem) 4rem;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    font-size:17px;
+    line-height:1.62;
+    -webkit-font-smoothing:antialiased;
+  }
+  .eyebrow{
+    font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--accent);font-weight:600;margin:0 0 .5rem;
+  }
+  h1{
+    font-family:Georgia,"Times New Roman",serif;
+    font-size:clamp(2.1rem,7vw,3rem);
+    line-height:1.05;margin:0;font-weight:700;letter-spacing:-.01em;
+    text-wrap:balance;
+  }
+  .lede{
+    font-size:1.08rem;color:var(--muted);margin:.7rem 0 0;max-width:60ch;
+    text-wrap:pretty;
+  }
+  h2{
+    font-family:Georgia,serif;font-size:1.32rem;font-weight:700;
+    margin:0 0 .1rem;letter-spacing:-.005em;
+  }
+  section{margin-top:2.6rem}
+  .kicker{
+    font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--muted);font-weight:600;margin:0 0 .8rem;
+    display:flex;align-items:center;gap:.6rem;
+  }
+  .kicker::before{
+    content:"";width:1.4rem;height:2px;background:var(--accent);border-radius:2px;
+  }
+  p{margin:.65rem 0}
+  strong{font-weight:650}
+  .math{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-weight:600}
+  sup{font-size:.72em}
+  .va{color:var(--va);font-weight:700}
+  .vb{color:var(--vb);font-weight:700}
+  .vs{color:var(--vs);font-weight:700}
+
+  /* Главное правило */
+  .hero-formula{
+    margin-top:2.2rem;
+    background:var(--ink);color:#fff;border-radius:14px;
+    padding:1.6rem 1.4rem;text-align:center;
+  }
+  .hero-formula .lbl{
+    font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;
+    color:#9aa6c9;margin:0 0 .7rem;
+  }
+  .hero-formula .eq{
+    font-family:ui-monospace,"SF Mono",Menlo,monospace;
+    font-size:clamp(1.5rem,5.4vw,2.2rem);font-weight:700;letter-spacing:.01em;
+  }
+  .hero-formula .eq b{color:#8ea0ff;font-weight:700}
+  .hero-formula .note{font-size:.86rem;color:#9aa6c9;margin:.8rem 0 0}
+
+  /* Пререквизит */
+  .recall{
+    background:var(--accent-soft);border-radius:12px;padding:1rem 1.15rem;
+    font-size:.96rem;
+  }
+  .recall p{margin:.3rem 0}
+
+  /* Три правила */
+  .cases{display:grid;gap:.85rem;margin-top:.4rem}
+  @media(min-width:620px){.cases{grid-template-columns:repeat(3,1fr)}}
+  .case{
+    border-radius:12px;padding:1.05rem 1.1rem;border:1px solid var(--line);
+    background:var(--card);display:flex;flex-direction:column;gap:.35rem;
+  }
+  .case .sign{font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.05rem}
+  .case .count{font-weight:650;font-size:1rem}
+  .case .desc{font-size:.9rem;color:var(--muted)}
+  .case.t1{border-top:4px solid var(--va);background:var(--va-bg)}
+  .case.t1 .sign{color:var(--va)}
+  .case.t2{border-top:4px solid var(--vb);background:var(--vb-bg)}
+  .case.t2 .sign{color:var(--vb)}
+  .case.t3{border-top:4px solid var(--vs);background:var(--vs-bg)}
+  .case.t3 .sign{color:var(--vs)}
+
+  /* Разбор */
+  .worked{
+    background:var(--card);border:1px solid var(--line);border-radius:12px;
+    padding:1.2rem 1.3rem;
+  }
+  .worked .task{
+    font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.05rem;
+    margin:0 0 1rem;padding-bottom:.8rem;border-bottom:1px solid var(--line);
+  }
+  ol.steps{margin:0;padding:0;list-style:none;counter-reset:s;display:flex;flex-direction:column;gap:.7rem}
+  ol.steps li{position:relative;padding-left:2.1rem;counter-increment:s}
+  ol.steps li::before{
+    content:counter(s);position:absolute;left:0;top:.05rem;
+    width:1.5rem;height:1.5rem;border-radius:50%;
+    background:var(--accent-soft);color:var(--accent);
+    font-size:.82rem;font-weight:700;display:flex;align-items:center;justify-content:center;
+  }
+  ol.steps .m{font-family:ui-monospace,Menlo,monospace;font-weight:600;color:var(--ink)}
+  ol.steps .why{color:var(--muted);font-size:.93rem}
+  .verdict{
+    margin-top:1rem;padding:.7rem 1rem;background:var(--vs-bg);
+    border-radius:9px;font-weight:600;color:var(--vs);font-size:.98rem;
+  }
+
+  /* Практика */
+  .drill{display:flex;flex-direction:column;gap:.7rem}
+  details{
+    background:var(--card);border:1px solid var(--line);border-radius:10px;
+    padding:.85rem 1.05rem;
+  }
+  details[open]{border-color:var(--accent)}
+  summary{
+    cursor:pointer;font-weight:600;list-style:none;
+    display:flex;justify-content:space-between;align-items:center;gap:1rem;
+  }
+  summary::-webkit-details-marker{display:none}
+  summary:focus-visible{outline:3px solid var(--accent);outline-offset:3px;border-radius:6px}
+  summary .q{min-width:0}
+  summary .tag{
+    font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);
+    border:1px solid var(--line);border-radius:20px;padding:.1rem .55rem;white-space:nowrap;
+  }
+  .ans{margin-top:.7rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.96rem;color:var(--muted)}
+  .ans .m{font-family:ui-monospace,Menlo,monospace;color:var(--ink);font-weight:600}
+  .ans p{margin:.4rem 0}
+
+  /* Ошибки */
+  ul.pitfalls{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:.6rem}
+  ul.pitfalls li{padding-left:1.5rem;position:relative;font-size:.98rem}
+  ul.pitfalls li::before{
+    content:"×";position:absolute;left:0;top:-.05rem;color:var(--neg);font-weight:700;font-size:1.1rem;
+  }
+  ul.pitfalls b{color:var(--ink)}
+
+  .next{background:var(--accent);color:#fff;border-radius:12px;padding:1.2rem 1.3rem}
+  .next h2{color:#fff}
+  .next .eq{
+    font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.2rem;
+    margin:.6rem 0 .3rem;
+  }
+  .next p{color:#dfe4fb;font-size:.96rem;margin:.4rem 0 0}
+  .foot{margin-top:2.4rem;font-size:.82rem;color:var(--muted);text-align:center}
+
+  /* Мини-факты про длину */
+  .lenset{display:grid;gap:.85rem;margin-top:.5rem}
+  @media(min-width:640px){.lenset{grid-template-columns:repeat(2,1fr)}}
+  .col{border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--card);display:flex;flex-direction:column}
+  .col > header{
+    font-weight:700;font-size:.95rem;padding:.7rem .9rem;color:#fff;
+  }
+  .col.t3 > header{background:var(--vs)}
+  .col.t2 > header{background:var(--vb)}
+  .col .ex{padding:.75rem .9rem;border-top:1px solid var(--line)}
+  .col .ex:first-of-type{border-top:none}
+  .ex .eq{font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:.98rem}
+  .ex .calc{font-family:ui-monospace,Menlo,monospace;font-size:.86rem;color:var(--muted);margin-top:.25rem}
+  .ex .calc b{color:var(--ink)}
+
+  .qlist{margin:0;padding-left:1.2rem}
+  .qlist li{margin:.35rem 0}
+
+  @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+<style>
+.oge-tip{display:flex;gap:.8rem;align-items:flex-start;background:#FFF8E7;border:1px solid #F0D98A;border-left:4px solid #E0A315;border-radius:10px;padding:.85rem 1.05rem;margin:1.5rem 0}
+.oge-tip .b{font-size:.72rem;font-weight:800;letter-spacing:.03em;color:#8A6A15;white-space:nowrap;text-transform:uppercase;padding-top:.15rem}
+.oge-tip .x{font-size:.95rem;line-height:1.5}
+</style>
+
+<!--LESSON-NAV-TOP--><style>.lnav{--lnav-accent:#3D5AF1}.lnav a{text-decoration:none;font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif}.lnav-top{max-width:820px;margin:0 auto;padding:.75rem clamp(1rem,4vw,1.5rem) .1rem}.lnav-top a{display:inline-flex;align-items:center;gap:.35rem;color:var(--lnav-accent);font-weight:600;font-size:.9rem}.lnav-top a:hover{text-decoration:underline}.lnav-bot{max-width:820px;margin:2.6rem auto 3rem;padding:1.1rem clamp(1rem,4vw,1.5rem) 0;border-top:1px solid #E4E8EF;display:flex;align-items:stretch;gap:.55rem}.lnav-bot a{min-width:0;display:flex;flex-direction:column;justify-content:center;gap:.15rem;border:1px solid #E4E8EF;border-radius:12px;padding:.65rem .85rem;color:#182233;background:#fff;transition:border-color .1s,transform .08s}.lnav-bot a:hover{border-color:var(--lnav-accent);transform:translateY(-1px)}.lnav-bot .prev,.lnav-bot .next{flex:1 1 0}.lnav-bot .next{text-align:right}.lnav-bot .dir{font-size:.72rem;color:#8A93A6;font-weight:600}.lnav-bot .ttl{font-size:.9rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.lnav-bot .to-cat{flex:0 0 auto;flex-direction:row;align-items:center;justify-content:center;color:var(--lnav-accent);font-weight:700;font-size:.85rem;white-space:nowrap}@media(max-width:420px){.lnav-bot .to-cat span{display:none}.lnav-bot .to-cat{padding:.65rem .7rem}}</style><nav class="lnav lnav-top"><a href="./catalog.html">← Все темы</a></nav><!--/LESSON-NAV-TOP-->
+<div class="wrap">
+
+  <header>
+    <p class="eyebrow">Геометрия · 9 класс</p>
+    <h1>Сложение векторов</h1>
+    <p class="lede">Два перемещения подряд можно заменить одним. Правила треугольника, параллелограмма и многоугольника — это просто три способа нарисовать одно и то же.</p>
+  </header>
+
+  <div class="hero-formula">
+    <p class="lbl">Главная идея</p>
+    <div class="eq"><b>a</b> + <b>b</b> = вектор из начала первого<br>в конец последнего</div>
+    <p class="note">Складываем не длины, а направленные отрезки: «конец первого — начало второго».</p>
+  </div>
+
+  <section>
+    <p class="kicker">Зачем это нужно</p>
+    <h2>Где ты встретишь сумму векторов</h2>
+    <p>Складывать векторы приходится всюду, где два «направленных воздействия» соединяются в одно.</p>
+    <p><strong>Лодка и течение.</strong> Лодка плывёт поперёк реки, а течение сносит её вбок. Куда она приплывёт на самом деле? Это сумма двух векторов: собственной скорости лодки и скорости течения.</p>
+    <p><strong>Прогулка.</strong> Человек прошёл 3 км на восток, потом 4 км на север. На каком расстоянии он от старта? Это длина суммы двух перемещений — получится ровно 5 км по теореме Пифагора.</p>
+    <p>В физике 9 класса так же складывают силы, скорости, перемещения. Так что навык понадобится и на математике, и на физике.</p>
+    <p><strong>Главное заблуждение, которое надо снести сразу:</strong> «длина суммы векторов равна сумме длин». Это неверно. Если векторы направлены в разные стороны, длина суммы почти всегда <em>меньше</em> суммы длин. Равенство <span class="math">|a + b| = |a| + |b|</span> бывает только когда векторы сонаправлены.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Что вспомнить с прошлого шага</p>
+    <div class="recall">
+      <p><strong>Вектор</strong> — это направленный отрезок: у него есть <strong>длина</strong> и <strong>направление</strong>.</p>
+      <p>Вектор из точки A в точку B записывают <span class="math">AB</span> (в тетради — со стрелкой сверху). Порядок букв важен: первая буква — начало, вторая — конец.</p>
+      <p>Длину вектора обозначают <span class="math">|a|</span> — это просто число, длина отрезка.</p>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Суть темы</p>
+    <h2>Сложить — значит пройти два пути подряд</h2>
+    <p>Сложить два вектора — значит выполнить два перемещения подряд и заменить их одним «итоговым» перемещением, которое ведёт прямо из начала в конец.</p>
+    <p>Словами: если сначала пройти по вектору <span class="va">a</span>, а потом из той точки по вектору <span class="vb">b</span>, то суммарный путь «из начала первого в конец второго» и есть вектор <span class="vs">a + b</span>.</p>
+    <p>Результат сложения — снова <strong>вектор</strong>, а не число. И мы не складываем числа-длины, а «состыковываем» направленные отрезки — именно поэтому итог зависит и от направлений, а не только от длин.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Ядро · три способа построения</p>
+    <h2>Три правила — один и тот же результат</h2>
+    <div class="cases">
+      <div class="case t1">
+        <div class="sign">Треугольника</div>
+        <div class="count">Второй — от конца первого</div>
+        <div class="desc">От точки A отложи <b>a</b> (получишь B), от B отложи <b>b</b> (получишь C). Тогда <b>AC = a + b</b>.</div>
+      </div>
+      <div class="case t2">
+        <div class="sign">Параллелограмма</div>
+        <div class="count">Оба — из одной точки</div>
+        <div class="desc">Дострой параллелограмм на <b>a</b> и <b>b</b> как на сторонах. Сумма — диагональ из той же точки A.</div>
+      </div>
+      <div class="case t3">
+        <div class="sign">Многоугольника</div>
+        <div class="count">Цепочка из многих</div>
+        <div class="desc">Откладывай векторы цепочкой «конец к началу». Сумма — замыкающий вектор от начала первого к концу последнего.</div>
+      </div>
+    </div>
+    <p style="margin-top:1rem"><strong>Ключевое условие правила треугольника:</strong> второй вектор откладывается <strong>от конца первого</strong>, а не от его начала. Если перепутать — фигура получится не та и замыкающая будет неверной.</p>
+    <p><strong>Про параллелограмм.</strong> Он применяется, когда оба вектора уже отложены из одной точки A. Сумма — та диагональ, которая выходит <strong>из той же точки A</strong>. Оба правила дают один и тот же вектор суммы: это просто два способа построения.</p>
+
+    <h2 style="margin-top:1.6rem">Законы сложения</h2>
+    <p>Переместительный (коммутативность): <span class="math">a + b = b + a</span>.<br>
+    Сочетательный (ассоциативность): <span class="math">(a + b) + c = a + (b + c)</span>.</p>
+    <p>Из-за этих законов <strong>порядок слагаемых и расстановка скобок на результат не влияют</strong>. Складывай в том порядке, в каком удобнее строить.</p>
+
+    <h2 style="margin-top:1.6rem">А что с длиной суммы?</h2>
+    <p>В общем случае длина суммы <strong>НЕ</strong> равна сумме длин. Два случая, которые надо знать:</p>
+    <div class="lenset">
+      <div class="col t3">
+        <header>Векторы перпендикулярны</header>
+        <div class="ex">
+          <div class="eq">|a + b| = √(|a|² + |b|²)</div>
+          <div class="calc">это теорема Пифагора: сумма — гипотенуза</div>
+        </div>
+        <div class="ex">
+          <div class="eq">|a| = 3, |b| = 4</div>
+          <div class="calc">|a + b| = √(9 + 16) = √25 = <b>5</b></div>
+        </div>
+      </div>
+      <div class="col t2">
+        <header>Векторы сонаправлены</header>
+        <div class="ex">
+          <div class="eq">|a + b| = |a| + |b|</div>
+          <div class="calc">единственный случай, когда длины просто складываются</div>
+        </div>
+        <div class="ex">
+          <div class="eq">|a| = 3, |b| = 4</div>
+          <div class="calc">|a + b| = 3 + 4 = <b>7</b></div>
+        </div>
+      </div>
+    </div>
+    <p style="font-size:.92rem;color:var(--muted);margin-top:.9rem">Сравни: одни и те же длины 3 и 4, а сумма то 5, то 7. Всё решает направление.</p>
+
+    <div class="oge-tip"><div class="b">🎯 В ОГЭ</div><div class="x"><b>Задания 15–19.</b> Отдельного номера «на векторы» в первой части нет, но сложение векторов работает внутри задач по планиметрии: в параллелограмме сумма смежных сторон — это диагональ, а длину суммы перпендикулярных векторов ищут тем же Пифагором, что и в №15–19. Тот же приём выручает и в задачах второй части (№24–25), где надо аккуратно расписать отрезки треугольника или параллелограмма.</div></div>
+  </section>
+
+  <section>
+    <p class="kicker">Покрути сам · интерактив</p>
+    <h2>Два вектора, один результат</h2>
+    <p>Двигай ползунки: длины векторов <span class="va">a</span> и <span class="vb">b</span> и угол между ними. Переключай способ построения и убедись, что <strong>треугольник и параллелограмм дают одну и ту же сумму</strong>. И следи за нижней строкой: длина суммы почти всегда меньше суммы длин.</p>
+    <div class="vsim">
+      <canvas id="vcanvas" width="640" height="420" aria-label="Интерактивное построение суммы двух векторов"></canvas>
+      <div class="vmodes" role="group" aria-label="Способ построения">
+        <button id="mTri" type="button" class="on">Правило треугольника</button>
+        <button id="mPar" type="button">Правило параллелограмма</button>
+      </div>
+      <div class="sliders">
+        <label>|a| <span id="vla" class="sval">4</span><input id="sla" type="range" min="1" max="8" step="1" value="4" aria-label="Длина вектора a"></label>
+        <label>|b| <span id="vlb" class="sval">3</span><input id="slb" type="range" min="1" max="8" step="1" value="3" aria-label="Длина вектора b"></label>
+        <label>угол <span id="vth" class="sval">60°</span><input id="sth" type="range" min="0" max="170" step="5" value="60" aria-label="Угол между векторами"></label>
+      </div>
+      <div id="vreadout" class="vreadout"></div>
+    </div>
+    <p style="font-size:.9rem;color:var(--muted)">Сначала <strong>предскажи</strong>, а потом проверь: поставь угол 170° — векторы смотрят почти в разные стороны. Как думаешь, сумма будет длиннее или короче каждого из них? А теперь поставь угол 0° — это единственное положение, где длина суммы равна сумме длин.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Разбираем вместе · думаю вслух</p>
+    <h2>Эталонный пример</h2>
+    <div class="worked">
+      <p class="task">Дан прямоугольник ABCD. Найти сумму AB + AD.</p>
+      <ol class="steps">
+        <li>Смотрю, откуда выходят векторы: <span class="m">AB</span> и <span class="m">AD</span> отложены <strong>из одной точки A</strong>.<br><span class="why">Почему это важно: раз векторы выходят из одной точки, удобно применить правило параллелограмма, а не треугольника.</span></li>
+        <li>Смотрю на фигуру: <span class="m">ABCD</span> — прямоугольник, а это частный случай параллелограмма, построенного на сторонах <span class="m">AB</span> и <span class="m">AD</span>.<br><span class="why">Почему: AB и AD — две смежные стороны, выходящие из вершины A.</span></li>
+        <li>Применяю правило: сумма — это диагональ, выходящая <strong>из точки A</strong>, то есть вектор <span class="m">AC</span>.<br><span class="why">Проверяю себя вторым способом: AD = BC (в параллелограмме противоположные стороны — равные векторы), поэтому AB + AD = AB + BC, а это уже правило треугольника: из A в C. Тот же ответ.</span></li>
+      </ol>
+      <div class="verdict">Ответ: AB + AD = AC.</div>
+    </div>
+
+    <div class="worked" style="margin-top:1rem">
+      <p class="task">Точки M, N, K. Известны векторы MN и NK. Найти MN + NK.</p>
+      <ol class="steps">
+        <li>Смотрю, как расположены векторы: конец первого — точка <span class="m">N</span>, начало второго — тоже <span class="m">N</span>. Они уже состыкованы «конец к началу».<br><span class="why">Значит, подходит правило треугольника — ничего перестраивать не нужно.</span></li>
+        <li>По правилу треугольника сумма идёт из начала первого вектора (<span class="m">M</span>) в конец второго (<span class="m">K</span>).</li>
+      </ol>
+      <div class="verdict">Ответ: MN + NK = MK.</div>
+    </div>
+
+    <div class="worked" style="margin-top:1rem">
+      <p class="task">Лодка идёт перпендикулярно течению: |v лодки| = 3 м/с, |v течения| = 4 м/с. Найти длину суммарной скорости.</p>
+      <ol class="steps">
+        <li>Векторы перпендикулярны — значит, работает Пифагор: <span class="m">|v| = √(3² + 4²)</span>.</li>
+        <li>Считаю: <span class="m">√(9 + 16) = √25 = 5</span>.<br><span class="why">Проверяю здравым смыслом: 5 меньше, чем 3 + 4 = 7. Так и должно быть — векторы не сонаправлены.</span></li>
+      </ol>
+      <div class="verdict">Ответ: |v| = 5 м/с.</div>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Наглядность · сделай руками</p>
+    <h2>Три способа увидеть одно и то же</h2>
+    <p><strong>1. Полоски-стрелки.</strong> Возьми две бумажные стрелки (или нарисуй) и физически приставь конец одной к началу другой. Так правило треугольника перестаёт быть текстом и становится очевидным движением.</p>
+    <p><strong>2. Координатная плоскость.</strong> Отложи <span class="va">a</span> из точки (0; 0) в точку (3; 0), затем <span class="vb">b</span> из (3; 0) в (3; 4). Замыкающая идёт из (0; 0) в (3; 4), её длина 5 — сразу видно и «конец к началу», и Пифагора.</p>
+    <p><strong>3. Два представления одной суммы.</strong> Построй сумму сначала по треугольнику, потом по параллелограмму на тех же векторах — и убедись, что получился один и тот же вектор. Ровно это и делает интерактив выше.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Теперь ты · нажми, чтобы проверить</p>
+    <h2>Практика по шагам</h2>
+    <div class="drill">
+      <details>
+        <summary><span class="q">На рисунке сумма построена по правилу треугольника. Какой вектор отложен «от конца» другого и какой является суммой?</span><span class="tag">понимание</span></summary>
+        <div class="ans">
+          <p>«От конца» отложен <strong>второй</strong> вектор: его начало совпадает с концом первого. Суммой является <strong>замыкающий</strong> вектор — тот, что идёт из начала первого в конец второго.</p>
+          <p>Пример: если построены <span class="m">AB</span> и <span class="m">BC</span>, то от конца отложен <span class="m">BC</span>, а сумма — <span class="m">AC</span>.</p>
+        </div>
+      </details>
+      <details>
+        <summary><span class="q">Сформулируй: чему равна диагональ параллелограмма, построенного на векторах a и b из одной точки?</span><span class="tag">понимание</span></summary>
+        <div class="ans">
+          <p>Диагональ, выходящая из <strong>той же точки</strong>, что и оба вектора, равна их <strong>сумме</strong>: <span class="m">a + b</span>.</p>
+        </div>
+      </details>
+      <details>
+        <summary><span class="q">В параллелограмме ABCD найди AB + AD и BA + BC.</span><span class="tag">применение</span></summary>
+        <div class="ans">
+          <p><span class="m">AB + AD = AC</span> — оба вектора выходят из A, значит сумма это диагональ из A.</p>
+          <p><span class="m">BA + BC = BD</span> — оба вектора выходят из B, значит сумма это диагональ из B.</p>
+          <p>Заметь: диагонали разные, потому что точки старта разные.</p>
+        </div>
+      </details>
+      <details>
+        <summary><span class="q">Векторы a и b перпендикулярны, |a| = 6, |b| = 8. Найди |a + b|.</span><span class="tag">применение</span></summary>
+        <div class="ans">
+          <p><span class="m">|a + b| = √(6² + 8²) = √(36 + 64) = √100 = 10.</span></p>
+          <p>Проверка на здравый смысл: 10 меньше, чем 6 + 8 = 14. Так и должно быть.</p>
+        </div>
+      </details>
+      <details>
+        <summary><span class="q">Найди ошибку: ученик складывал AB + BC и отложил BC от точки A.</span><span class="tag">анализ</span></summary>
+        <div class="ans">
+          <p>Ошибка в главном условии правила треугольника: второй вектор откладывают <strong>от конца первого</strong>, то есть от точки <strong>B</strong>, а не от начала A.</p>
+          <p>Отложив BC от A, ученик построил не ту фигуру, и замыкающая получилась неверной. Правильно: цепочка A → B → C, сумма <span class="m">AB + BC = AC</span>.</p>
+        </div>
+      </details>
+      <details>
+        <summary><span class="q">Что изменится, если сложить те же два вектора в обратном порядке: b + a?</span><span class="tag">анализ</span></summary>
+        <div class="ans">
+          <p><strong>Ничего не изменится:</strong> <span class="m">a + b = b + a</span> — это переместительный закон.</p>
+          <p>Почему так видно на чертеже: если оба вектора отложить из одной точки и достроить параллелограмм, то сумма — это его диагональ из той же точки. Параллелограмм один и тот же, значит и диагональ одна и та же — от порядка слагаемых она не зависит. Поменяется только промежуточный путь (через другую вершину), но не результат.</p>
+        </div>
+      </details>
+      <details>
+        <summary><span class="q">Обратная задача: вектор AC — диагональ параллелограмма ABCD. Какие два вектора-стороны его дали?</span><span class="tag">анализ</span></summary>
+        <div class="ans">
+          <p>Диагональ AC выходит из вершины A, значит слагаемые — это две стороны, выходящие из A: <span class="m">AB</span> и <span class="m">AD</span>.</p>
+          <p>Ответ: <span class="m">AC = AB + AD</span>. По правилу треугольника то же самое можно записать как <span class="m">AC = AB + BC</span>, ведь <span class="m">BC = AD</span>.</p>
+        </div>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Тренажёр · бесконечная практика</p>
+    <h2>Реши сам</h2>
+    <p>Нажми «Новое задание». Если ответ — вектор, напиши его двумя буквами (например <b>AC</b>); если ответ — длина, напиши число. Потом проверь себя или посмотри пошаговое решение.</p>
+    <div class="trainer">
+      <div class="tr-eq" id="trEq">Найди сумму: AB + BC</div>
+      <div class="tr-sub" id="trSub">Векторы выложены цепочкой «конец к началу».</div>
+      <div class="tr-ctl">
+        <button id="trNew" type="button">🎲 Новое задание</button>
+        <input id="trAns" type="text" inputmode="text" placeholder="напр.  AC   или   10" aria-label="Ответ">
+        <button id="trCheck" type="button" class="sec">Проверить</button>
+        <button id="trShow" type="button" class="ghost">Показать решение</button>
+      </div>
+      <div id="trResult" class="tr-result"></div>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Где чаще всего ошибаются</p>
+    <h2>Пять ловушек</h2>
+    <ul class="pitfalls">
+      <li><b>Откладывают второй вектор не от конца первого,</b> а из той же точки — тогда получается неверная фигура и неверная замыкающая. <em>Как не допустить:</em> проговаривай вслух «конец первого — начало второго» и ставь точку-стык пальцем.</li>
+      <li><b>Берут не ту диагональ параллелограмма.</b> Сумма — это диагональ, выходящая <strong>из той же точки</strong>, откуда отложены оба вектора. Вторая диагональ — это уже разность.</li>
+      <li><b>Считают, что |a + b| = |a| + |b| всегда.</b> Это верно только для сонаправленных векторов. Проверяй: если векторы под углом, длина суммы меньше.</li>
+      <li><b>Неверно строят замыкающую при правиле многоугольника.</b> <em>Как не допустить:</em> сначала выстрой всю цепочку «конец к началу», и только потом одной стрелкой соедини самое начало с самым концом.</li>
+      <li><b>Путают направление вектора суммы</b> — рисуют стрелку в обратную сторону. Стрелка суммы всегда смотрит <strong>в конец последнего</strong> вектора цепочки.</li>
+    </ul>
+  </section>
+
+  <section>
+    <p class="kicker">Проверь себя</p>
+    <h2>Три вопроса своими словами</h2>
+    <ol class="qlist">
+      <li>От какой точки откладывается второй вектор в правиле треугольника?</li>
+      <li>Сумма <span class="math">a + b</span> в правиле параллелограмма — это какая из двух диагоналей?</li>
+      <li>Векторы перпендикулярны, длины 5 и 12. Чему равна длина их суммы?</li>
+    </ol>
+    <div class="drill" style="margin-top:.8rem">
+      <details>
+        <summary><span class="q">Сверить ответы</span><span class="tag">итог</span></summary>
+        <div class="ans">
+          <p>1. От <strong>конца первого</strong> вектора.</p>
+          <p>2. Та, что выходит <strong>из той же точки</strong>, откуда отложены оба вектора.</p>
+          <p>3. <span class="m">√(5² + 12²) = √(25 + 144) = √169 = 13.</span></p>
+        </div>
+      </details>
+    </div>
+    <p style="margin-top:1rem"><strong>Итог одной фразой:</strong> сумма векторов — это вектор от начала первого к концу последнего; строят её по правилам треугольника, параллелограмма или многоугольника, причём длина суммы в общем случае не равна сумме длин.</p>
+  </section>
+
+  <section>
+    <div class="next">
+      <h2>Что дальше</h2>
+      <p>Сложение — первое действие с векторами. Дальше идут два соседних:</p>
+      <div class="eq">a − b = ?&nbsp;&nbsp;·&nbsp;&nbsp;k · a = ?</div>
+      <p><strong>Вычитание векторов</strong> — там пригодится вторая диагональ параллелограмма, та самая, которую сейчас нельзя было брать за сумму. А <strong>умножение вектора на число</strong> покажет, как растягивать и разворачивать вектор, не меняя прямой, вдоль которой он идёт. Оба действия опираются ровно на то, что ты сейчас разобрал: «конец к началу» и «из начала первого в конец последнего».</p>
+    </div>
+  </section>
+
+  <p class="foot">Проверка на выходе: назови условие правила треугольника · какая диагональ является суммой · когда |a + b| = |a| + |b|.</p>
+
+</div>
+
+<style>
+  .vsim{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.1rem 1.1rem 1rem;margin:1rem 0}
+  .vsim canvas{width:100%;height:auto;display:block;border-radius:10px;background:#FCFDFF}
+  .vmodes{display:flex;gap:.5rem;margin-top:.9rem;flex-wrap:wrap}
+  .vmodes button{
+    font:inherit;font-size:.85rem;font-weight:700;cursor:pointer;flex:1;min-width:9rem;
+    border:1px solid var(--line);background:#fff;color:var(--muted);
+    border-radius:9px;padding:.5rem .7rem;
+  }
+  .vmodes button.on{background:var(--accent-soft);border-color:var(--accent);color:var(--accent)}
+  .vmodes button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+  .sliders{display:grid;gap:.6rem;margin-top:.9rem}
+  @media(min-width:520px){.sliders{grid-template-columns:repeat(3,1fr)}}
+  .sliders label{display:flex;align-items:center;gap:.5rem;font-weight:700;font-family:ui-monospace,Menlo,monospace;font-size:.95rem}
+  .sliders input[type=range]{flex:1;min-width:0;accent-color:var(--accent)}
+  .sliders input[type=range]:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+  .sliders .sval{min-width:3.4ch;text-align:right;color:var(--accent);font-variant-numeric:tabular-nums}
+  .vreadout{
+    margin-top:.9rem;padding:.6rem .8rem;border-radius:9px;background:var(--paper);
+    font-family:ui-monospace,Menlo,monospace;font-size:.9rem;line-height:1.7;text-align:center;
+  }
+  .vreadout b{color:var(--vs)}
+  .vreadout .warn{color:var(--vb);font-weight:700}
+</style>
+
+<script>
+(function(){
+  var canvas=document.getElementById('vcanvas'); if(!canvas) return;
+  var ctx=canvas.getContext('2d');
+  var sla=document.getElementById('sla'), slb=document.getElementById('slb'), sth=document.getElementById('sth');
+  var vla=document.getElementById('vla'), vlb=document.getElementById('vlb'), vth=document.getElementById('vth');
+  var out=document.getElementById('vreadout');
+  var bTri=document.getElementById('mTri'), bPar=document.getElementById('mPar');
+  var mode='tri', W=640, H=420, dpr=1;
+
+  function css(v,f){ var s=getComputedStyle(document.documentElement).getPropertyValue(v).trim(); return s||f; }
+  function num1(x){
+    var n=Math.round(x*10)/10;
+    var s=Math.abs(n).toFixed(1).replace('.',',');
+    if(s.slice(-2)===',0') s=s.slice(0,-2);
+    return (n<0?'−':'')+s;
+  }
+
+  function resize(){
+    var cssW=canvas.clientWidth||640;
+    dpr=Math.min(window.devicePixelRatio||1,2);
+    W=cssW; H=Math.round(cssW*0.66);
+    canvas.width=Math.round(W*dpr); canvas.height=Math.round(H*dpr);
+    canvas.style.height=H+'px';
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+  }
+
+  function arrow(p1,p2,color,width,dash){
+    var dx=p2.x-p1.x, dy=p2.y-p1.y, len=Math.sqrt(dx*dx+dy*dy);
+    ctx.save();
+    ctx.strokeStyle=color; ctx.fillStyle=color; ctx.lineWidth=width;
+    ctx.lineCap='round';
+    ctx.setLineDash(dash?[6,6]:[]);
+    if(len<1){ ctx.beginPath(); ctx.arc(p1.x,p1.y,width,0,7); ctx.fill(); ctx.restore(); return; }
+    var head=Math.min(13,len*0.32), ux=dx/len, uy=dy/len;
+    ctx.beginPath();
+    ctx.moveTo(p1.x,p1.y);
+    ctx.lineTo(p2.x-ux*head*0.75,p2.y-uy*head*0.75);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.beginPath();
+    ctx.moveTo(p2.x,p2.y);
+    ctx.lineTo(p2.x-ux*head-uy*head*0.42, p2.y-uy*head+ux*head*0.42);
+    ctx.lineTo(p2.x-ux*head+uy*head*0.42, p2.y-uy*head-ux*head*0.42);
+    ctx.closePath(); ctx.fill();
+    ctx.restore();
+  }
+
+  function tag(p1,p2,text,color){
+    var mx=(p1.x+p2.x)/2, my=(p1.y+p2.y)/2;
+    var dx=p2.x-p1.x, dy=p2.y-p1.y, len=Math.sqrt(dx*dx+dy*dy)||1;
+    var nx=-dy/len, ny=dx/len;
+    ctx.save();
+    ctx.font='700 15px ui-monospace, Menlo, monospace';
+    ctx.textAlign='center'; ctx.textBaseline='middle';
+    var x=mx+nx*16, y=my+ny*16;
+    var w=ctx.measureText(text).width+10;
+    ctx.fillStyle='rgba(255,255,255,.85)';
+    ctx.fillRect(x-w/2,y-10,w,20);
+    ctx.fillStyle=color;
+    ctx.fillText(text,x,y);
+    ctx.restore();
+  }
+
+  function dot(p,label,dxl,dyl){
+    ctx.save();
+    ctx.fillStyle='#1B2333';
+    ctx.beginPath(); ctx.arc(p.x,p.y,3.5,0,7); ctx.fill();
+    ctx.font='700 14px system-ui, sans-serif';
+    ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.fillText(label,p.x+dxl,p.y+dyl);
+    ctx.restore();
+  }
+
+  function draw(){
+    var La=parseFloat(sla.value), Lb=parseFloat(slb.value), deg=parseFloat(sth.value);
+    var th=deg*Math.PI/180;
+    vla.textContent=String(La); vlb.textContent=String(Lb); vth.textContent=deg+'°';
+
+    var A={x:0,y:0}, B={x:La,y:0};
+    var Dp={x:Lb*Math.cos(th), y:Lb*Math.sin(th)};
+    var C={x:B.x+Dp.x, y:B.y+Dp.y};
+    var pts=[A,B,C,Dp];
+    var minx=Infinity,maxx=-Infinity,miny=Infinity,maxy=-Infinity;
+    pts.forEach(function(p){
+      if(p.x<minx)minx=p.x; if(p.x>maxx)maxx=p.x;
+      if(p.y<miny)miny=p.y; if(p.y>maxy)maxy=p.y;
+    });
+    var pad=42;
+    var ex=Math.max(maxx-minx,0.5), ey=Math.max(maxy-miny,0.5);
+    var s=Math.min((W-2*pad)/ex,(H-2*pad)/ey);
+    if(!isFinite(s)||s<=0) s=10;
+    s=Math.min(s,52);
+    var ox=(W-ex*s)/2-minx*s;
+    var oy=(H+ey*s)/2+miny*s;
+    function P(p){ return {x:ox+p.x*s, y:oy-p.y*s}; }
+
+    var cA=css('--va','#3B4FD0'), cB=css('--vb','#B9791A'), cS=css('--vs','#1E8E5A');
+    ctx.clearRect(0,0,W,H);
+
+    var pA=P(A), pB=P(B), pC=P(C), pD=P(Dp);
+    var flat=Math.abs(Math.sin(th))<0.02;
+
+    if(mode==='tri'){
+      arrow(pA,pB,cA,3.5,false);   tag(pA,pB,'a',cA);
+      arrow(pB,pC,cB,3.5,false);   tag(pB,pC,'b',cB);
+      arrow(pA,pC,cS,4.5,false);   tag(pC,pA,'a + b',cS);
+      dot(pA,'A',-14,12); dot(pB,'B',0,18); dot(pC,'C',14,-12);
+    } else {
+      arrow(pA,pB,cA,3.5,false);   tag(pA,pB,'a',cA);
+      arrow(pA,pD,cB,3.5,false);   tag(pA,pD,'b',cB);
+      if(!flat){
+        arrow(pB,pC,'#B8BFCC',2,true);
+        arrow(pD,pC,'#B8BFCC',2,true);
+      }
+      arrow(pA,pC,cS,4.5,false);   tag(pC,pA,'a + b',cS);
+      dot(pA,'A',-14,12); dot(pB,'B',0,18); dot(pC,'C',14,-12);
+      if(!flat) dot(pD,'D',-14,-12);
+    }
+
+    var lenS=Math.sqrt(La*La+Lb*Lb+2*La*Lb*Math.cos(th));
+    var sumL=La+Lb;
+    var html='|a| = '+num1(La)+' , |b| = '+num1(Lb)+' , угол '+deg+'°<br>'+
+             '|a + b| = <b>'+num1(lenS)+'</b> , а сумма длин |a| + |b| = '+num1(sumL);
+    if(deg===0){
+      html+='<br><span class="warn">Векторы сонаправлены — только здесь длины просто складываются.</span>';
+    } else if(deg===90){
+      html+='<br><span class="warn">Угол 90°: работает Пифагор √('+num1(La*La)+' + '+num1(Lb*Lb)+') = '+num1(lenS)+'.</span>';
+    } else {
+      html+='<br><span class="warn">Длина суммы меньше суммы длин — так и должно быть.</span>';
+    }
+    if(mode==='par'&&flat){
+      html+='<br>Векторы лежат на одной прямой — параллелограмма не получится, но правило треугольника работает.';
+    }
+    out.innerHTML=html;
+  }
+
+  function setMode(m){
+    mode=m;
+    if(m==='tri'){ bTri.classList.add('on'); bPar.classList.remove('on'); }
+    else { bPar.classList.add('on'); bTri.classList.remove('on'); }
+    draw();
+  }
+  bTri.addEventListener('click',function(){ setMode('tri'); });
+  bPar.addEventListener('click',function(){ setMode('par'); });
+  [sla,slb,sth].forEach(function(el){ el.addEventListener('input',draw); });
+  window.addEventListener('resize',function(){ resize(); draw(); });
+  resize(); draw();
+})();
+</script>
+
+<style>
+  .trainer{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.2rem 1.3rem;margin-top:1rem}
+  .tr-eq{font-family:ui-monospace,Menlo,monospace;font-weight:800;font-size:clamp(1.05rem,4.2vw,1.35rem);text-align:center;padding:1rem;background:var(--accent-soft);border-radius:10px;color:var(--ink)}
+  .tr-sub{text-align:center;font-size:.88rem;color:var(--muted);margin-top:.5rem}
+  .tr-ctl{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.9rem;align-items:center}
+  .tr-ctl button{font:inherit;font-weight:700;font-size:.9rem;cursor:pointer;border:none;border-radius:9px;padding:.55rem .95rem;color:#fff;background:var(--accent)}
+  .tr-ctl button.sec{background:var(--vs)}
+  .tr-ctl button.ghost{background:transparent;color:var(--accent);border:1px solid var(--accent)}
+  .tr-ctl input{flex:1;min-width:150px;font:inherit;padding:.5rem .7rem;border:1px solid var(--line);border-radius:9px;background:#fff;color:var(--ink)}
+  .tr-ctl button:focus-visible,.tr-ctl input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+  .tr-result{margin-top:.9rem;font-size:.96rem;min-height:1.2rem}
+  .tr-result .ok{color:var(--vs);font-weight:700}
+  .tr-result .bad{color:var(--neg);font-weight:700}
+  .tr-result .sol{margin-top:.7rem;padding:.85rem 1rem;background:#FCFBFE;border:1px solid var(--line);border-radius:10px;font-size:.92rem;line-height:1.75}
+  .tr-result .sol b{color:var(--accent);font-family:ui-monospace,Menlo,monospace}
+</style>
+
+<script>
+(function(){
+  var MINUS='−';
+  var LET=['A','B','C','D','E','K','M','P','T'];
+  var HOMO={'А':'A','В':'B','С':'C','Д':'D','Е':'E','К':'K','М':'M','Р':'P','Т':'T'};
+  var TRIPLES=[[3,4,5],[6,8,10],[5,12,13],[9,12,15],[8,15,17],[12,16,20],[7,24,25],[10,24,26],[20,21,29],[15,20,25]];
+
+  function ri(min,max){ return Math.floor(Math.random()*(max-min+1))+min; }
+  function pick(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+  function shuffle(a){
+    var r=a.slice();
+    for(var i=r.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)); var t=r[i]; r[i]=r[j]; r[j]=t; }
+    return r;
+  }
+  function fmtNum(x){
+    var n=Math.round(x*1000)/1000;
+    return (n<0?MINUS:'')+Math.abs(n);
+  }
+
+  /* ---------- генерация задачи ---------- */
+  function makeTask(){
+    var r=Math.random();
+    if(r<0.38) return chainTask();
+    if(r<0.70) return parTask();
+    return lenTask();
+  }
+
+  function chainTask(){
+    var n=pick([2,2,3,4]);                 // сколько векторов в цепочке
+    var v=shuffle(LET).slice(0,n+1);        // вершины цепочки
+    var terms=[];
+    for(var i=0;i<n;i++) terms.push(v[i]+v[i+1]);
+    return {
+      kind:'letters',
+      n:n,
+      chain:v,
+      terms:terms,
+      text:'Найди сумму: '+terms.join(' + '),
+      sub: n===2 ? 'Векторы выложены цепочкой «конец к началу».'
+                 : 'Цепочка из '+n+' векторов — работает правило многоугольника.',
+      answer:v[0]+v[n]
+    };
+  }
+
+  function parTask(){
+    var v=shuffle(LET).slice(0,4);          // параллелограмм v0 v1 v2 v3 по обходу
+    var i=ri(0,3);
+    var prev=v[(i+3)%4], next=v[(i+1)%4], opp=v[(i+2)%4];
+    var t1=v[i]+next, t2=v[i]+prev;
+    var terms=Math.random()<0.5?[t1,t2]:[t2,t1];
+    return {
+      kind:'letters',
+      par:v,
+      vertex:v[i],
+      terms:terms,
+      opp:opp,
+      text:'В параллелограмме '+v.join('')+' найди сумму: '+terms.join(' + '),
+      sub:'Оба вектора выходят из одной вершины.',
+      answer:v[i]+opp
+    };
+  }
+
+  function lenTask(){
+    if(Math.random()<0.65){
+      var t=pick(TRIPLES);
+      var a=t[0], b=t[1];
+      if(Math.random()<0.5){ a=t[1]; b=t[0]; }
+      return {
+        kind:'number',
+        sub2:'perp',
+        a:a, b:b,
+        text:'Векторы a и b перпендикулярны, |a| = '+a+', |b| = '+b+'. Найди |a + b|.',
+        sub:'Ответ — число.',
+        answer:t[2]
+      };
+    }
+    var a2=ri(2,15), b2=ri(2,15);
+    return {
+      kind:'number',
+      sub2:'same',
+      a:a2, b:b2,
+      text:'Векторы a и b сонаправлены, |a| = '+a2+', |b| = '+b2+'. Найди |a + b|.',
+      sub:'Ответ — число.',
+      answer:a2+b2
+    };
+  }
+
+  /* ---------- решение ---------- */
+  function solutionHTML(t){
+    var h='<div class="sol">';
+    if(t.kind==='letters' && t.terms && t.chain){
+      h+='Шаг 1. Смотрю стыки: конец каждого вектора — начало следующего, цепочка '+t.chain.join(' → ')+'.<br>';
+      h+='Шаг 2. По правилу '+(t.n===2?'треугольника':'многоугольника')+' сумма идёт из начала первого ('+t.chain[0]+') в конец последнего ('+t.chain[t.n]+').<br>';
+      h+='Ответ: '+t.terms.join(' + ')+' = <b>'+t.answer+'</b>';
+    } else if(t.kind==='letters'){
+      h+='Шаг 1. Оба вектора ('+t.terms[0]+' и '+t.terms[1]+') выходят из вершины '+t.vertex+' — значит, правило параллелограмма.<br>';
+      h+='Шаг 2. Сумма — диагональ, выходящая из той же вершины '+t.vertex+', то есть вектор в противоположную вершину '+t.opp+'.<br>';
+      h+='Ответ: '+t.terms.join(' + ')+' = <b>'+t.answer+'</b>';
+    } else if(t.sub2==='perp'){
+      h+='Шаг 1. Векторы перпендикулярны → сумма это гипотенуза, работает Пифагор.<br>';
+      h+='Шаг 2. |a + b| = √('+t.a+'² + '+t.b+'²) = √('+(t.a*t.a)+' + '+(t.b*t.b)+') = √'+(t.a*t.a+t.b*t.b)+' = <b>'+fmtNum(t.answer)+'</b><br>';
+      h+='Проверка: '+fmtNum(t.answer)+' меньше, чем '+t.a+' + '+t.b+' = '+(t.a+t.b)+'. Так и должно быть.';
+    } else {
+      h+='Шаг 1. Векторы сонаправлены — это единственный случай, когда длины складываются напрямую.<br>';
+      h+='Шаг 2. |a + b| = '+t.a+' + '+t.b+' = <b>'+fmtNum(t.answer)+'</b>';
+    }
+    return h+'</div>';
+  }
+
+  /* ---------- разбор ответа ---------- */
+  function parseLetters(raw){
+    var s=String(raw);
+    if(s.indexOf('=')>=0) s=s.slice(s.lastIndexOf('=')+1);
+    s=s.replace(/вектор\S*/gi,'')
+       .replace(/сумм\S*/gi,'')
+       .replace(/равн\S*/gi,'')
+       .replace(/ответ\S*/gi,'');
+    s=s.toUpperCase();
+    var outArr=[];
+    for(var i=0;i<s.length;i++){
+      var ch=s.charAt(i);
+      if(HOMO[ch]) ch=HOMO[ch];
+      if(ch>='A'&&ch<='Z') outArr.push(ch);
+    }
+    return outArr.join('');
+  }
+  function parseNumber(raw){
+    var s=String(raw).replace(/[−–—‐‑]/g,'-');
+    s=s.replace(/,/g,'.').replace(/\s+/g,'');
+    var m=s.match(/-?\d+(\.\d+)?/);
+    if(!m) return null;
+    var v=parseFloat(m[0]);
+    return isNaN(v)?null:v;
+  }
+
+  // возвращает {state:'ok'|'bad'|'unparsed', hint:string}
+  function checkAnswer(t,raw){
+    if(!String(raw).trim()) return {state:'unparsed',hint:'Введи ответ или нажми «Показать решение».'};
+    if(t.kind==='letters'){
+      var got=parseLetters(raw);
+      if(got.length!==2) return {state:'unparsed',hint:'Ответ здесь — вектор из двух букв, например AC.'};
+      if(got===t.answer) return {state:'ok',hint:''};
+      var rev=t.answer.charAt(1)+t.answer.charAt(0);
+      if(got===rev) return {state:'bad',hint:' Буквы верные, но порядок обратный: первая буква — начало вектора, вторая — конец.'};
+      return {state:'bad',hint:' Помни: сумма идёт из начала первого вектора в конец последнего.'};
+    }
+    var num=parseNumber(raw);
+    if(num===null) return {state:'unparsed',hint:'Ответ здесь — число.'};
+    if(Math.abs(num-t.answer)<1e-6) return {state:'ok',hint:''};
+    if(t.sub2==='perp'&&Math.abs(num-(t.a+t.b))<1e-6)
+      return {state:'bad',hint:' Ты сложил длины. Так можно только для сонаправленных векторов, а здесь угол 90° — нужен Пифагор.'};
+    return {state:'bad',hint:''};
+  }
+
+  /* ---------- связка с DOM ---------- */
+  var eqEl=document.getElementById('trEq'), subEl=document.getElementById('trSub'),
+      ansEl=document.getElementById('trAns'), resEl=document.getElementById('trResult');
+  var api={makeTask:makeTask,solutionHTML:solutionHTML,checkAnswer:checkAnswer};
+  if(typeof window!=='undefined') window.__vecTrainer=api;
+  if(!eqEl) return;
+
+  // стартовая задача совпадает с тем, что написано в разметке
+  var cur={kind:'letters',n:2,chain:['A','B','C'],terms:['AB','BC'],
+           text:'Найди сумму: AB + BC',
+           sub:'Векторы выложены цепочкой «конец к началу».',answer:'AC'};
+
+  function render(focus){
+    eqEl.textContent=cur.text;
+    subEl.textContent=cur.sub;
+    resEl.innerHTML=''; ansEl.value='';
+    if(focus) ansEl.focus();
+  }
+  function check(){
+    var r=checkAnswer(cur,ansEl.value);
+    if(r.state==='unparsed'){ resEl.innerHTML='<span class="bad">'+r.hint+'</span>'; return; }
+    if(r.state==='ok'){ resEl.innerHTML='<span class="ok">✓ Верно!</span>'+solutionHTML(cur); }
+    else { resEl.innerHTML='<span class="bad">✗ Пока не то.'+r.hint+'</span>'+solutionHTML(cur); }
+  }
+  document.getElementById('trNew').addEventListener('click',function(){ cur=makeTask(); render(true); });
+  document.getElementById('trCheck').addEventListener('click',check);
+  document.getElementById('trShow').addEventListener('click',function(){ resEl.innerHTML=solutionHTML(cur); });
+  ansEl.addEventListener('keydown',function(e){ if(e.key==='Enter') check(); });
+})();
+</script>
+<!--LESSON-NAV-BOT--><nav class="lnav lnav-bot"><a class="prev" href="./geo9-vektor-ponyatie.html"><span class="dir">← Предыдущая</span><span class="ttl">Понятие вектора</span></a><a class="to-cat" href="./catalog.html">📚 <span>Все темы</span></a><a class="next" href="./geo9-vektor-vychitanie.html"><span class="dir">Следующая →</span><span class="ttl">Вычитание векторов</span></a></nav><!--/LESSON-NAV-BOT-->

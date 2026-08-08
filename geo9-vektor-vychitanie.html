@@ -1,0 +1,736 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Вычитание векторов — урок, геометрия 9 класс</title>
+<style>
+  :root{
+    --paper:#F6F7F9;
+    --card:#FFFFFF;
+    --ink:#1B2333;
+    --muted:#5A6478;
+    --line:#E2E5EC;
+    --accent:#3B4FD0;
+    --accent-soft:#EAEDFB;
+    --pos:#1E8E5A;   /* разность a − b */
+    --pos-bg:#E7F4EC;
+    --zero:#B9791A;  /* вектор b */
+    --zero-bg:#FBF1DC;
+    --neg:#C0455B;   /* вектор −b, ошибки */
+    --neg-bg:#F9E9EC;
+  }
+  *{box-sizing:border-box}
+  body{margin:0}
+  .wrap{
+    max-width:760px;
+    margin:0 auto;
+    padding:clamp(1.4rem,4vw,3rem) clamp(1.1rem,4vw,2rem) 4rem;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    font-size:17px;
+    line-height:1.62;
+    -webkit-font-smoothing:antialiased;
+  }
+  .eyebrow{
+    font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--accent);font-weight:600;margin:0 0 .5rem;
+  }
+  h1{
+    font-family:Georgia,"Times New Roman",serif;
+    font-size:clamp(2.1rem,7vw,3rem);
+    line-height:1.05;margin:0;font-weight:700;letter-spacing:-.01em;
+    text-wrap:balance;
+  }
+  .lede{
+    font-size:1.08rem;color:var(--muted);margin:.7rem 0 0;max-width:60ch;
+    text-wrap:pretty;
+  }
+  h2{
+    font-family:Georgia,serif;font-size:1.32rem;font-weight:700;
+    margin:0 0 .1rem;letter-spacing:-.005em;
+  }
+  section{margin-top:2.6rem}
+  .kicker{
+    font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--muted);font-weight:600;margin:0 0 .8rem;
+    display:flex;align-items:center;gap:.6rem;
+  }
+  .kicker::before{
+    content:"";width:1.4rem;height:2px;background:var(--accent);border-radius:2px;
+  }
+  p{margin:.65rem 0}
+  strong{font-weight:650}
+  .math{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-weight:600}
+  sub{font-size:.72em}
+
+  /* Главная формула */
+  .hero-formula{
+    margin-top:2.2rem;
+    background:var(--ink);color:#fff;border-radius:14px;
+    padding:1.6rem 1.4rem;text-align:center;
+  }
+  .hero-formula .lbl{
+    font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;
+    color:#9aa6c9;margin:0 0 .7rem;
+  }
+  .hero-formula .eq{
+    font-family:ui-monospace,"SF Mono",Menlo,monospace;
+    font-size:clamp(1.5rem,5.4vw,2.2rem);font-weight:700;letter-spacing:.01em;
+  }
+  .hero-formula .eq b{color:#8ea0ff;font-weight:700}
+  .hero-formula .note{font-size:.86rem;color:#9aa6c9;margin:.8rem 0 0}
+
+  /* Пререквизит */
+  .recall{
+    background:var(--accent-soft);border-radius:12px;padding:1rem 1.15rem;
+    font-size:.96rem;
+  }
+  .recall p{margin:.3rem 0}
+
+  /* Два способа */
+  .cases{display:grid;gap:.85rem;margin-top:.4rem}
+  @media(min-width:620px){.cases{grid-template-columns:repeat(2,1fr)}}
+  .case{
+    border-radius:12px;padding:1.05rem 1.1rem;border:1px solid var(--line);
+    background:var(--card);display:flex;flex-direction:column;gap:.35rem;
+  }
+  .case .sign{font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.05rem}
+  .case .count{font-weight:650;font-size:1rem}
+  .case .desc{font-size:.9rem;color:var(--muted)}
+  .case.pos{border-top:4px solid var(--pos);background:var(--pos-bg)}
+  .case.pos .sign{color:var(--pos)}
+  .case.zero{border-top:4px solid var(--zero);background:var(--zero-bg)}
+  .case.zero .sign{color:var(--zero)}
+
+  /* Разбор */
+  .worked{
+    background:var(--card);border:1px solid var(--line);border-radius:12px;
+    padding:1.2rem 1.3rem;
+  }
+  .worked .task{
+    font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.02rem;
+    margin:0 0 1rem;padding-bottom:.8rem;border-bottom:1px solid var(--line);
+  }
+  ol.steps{margin:0;padding:0;list-style:none;counter-reset:s;display:flex;flex-direction:column;gap:.7rem}
+  ol.steps li{
+    position:relative;padding-left:2.1rem;counter-increment:s;
+  }
+  ol.steps li::before{
+    content:counter(s);position:absolute;left:0;top:.05rem;
+    width:1.5rem;height:1.5rem;border-radius:50%;
+    background:var(--accent-soft);color:var(--accent);
+    font-size:.82rem;font-weight:700;display:flex;align-items:center;justify-content:center;
+  }
+  ol.steps .m{font-family:ui-monospace,Menlo,monospace;font-weight:600;color:var(--ink)}
+  .verdict{
+    margin-top:1rem;padding:.7rem 1rem;background:var(--pos-bg);
+    border-radius:9px;font-weight:600;color:var(--pos);font-size:.98rem;
+  }
+
+  /* Практика */
+  .drill{display:flex;flex-direction:column;gap:.7rem}
+  details{
+    background:var(--card);border:1px solid var(--line);border-radius:10px;
+    padding:.85rem 1.05rem;
+  }
+  details[open]{border-color:var(--accent)}
+  summary{
+    cursor:pointer;font-weight:600;list-style:none;
+    display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap;
+  }
+  summary:focus-visible{outline:3px solid var(--accent);outline-offset:3px;border-radius:6px}
+  summary::-webkit-details-marker{display:none}
+  summary .q{font-family:ui-monospace,Menlo,monospace;min-width:0}
+  summary .tag{
+    font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);
+    border:1px solid var(--line);border-radius:20px;padding:.1rem .55rem;white-space:nowrap;
+  }
+  summary::after{
+    content:"показать ответ";font-size:.78rem;color:var(--accent);font-weight:600;white-space:nowrap;
+  }
+  details[open] summary::after{content:"скрыть"}
+  .ans{margin-top:.7rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.96rem;color:var(--muted)}
+  .ans .m{font-family:ui-monospace,Menlo,monospace;color:var(--ink);font-weight:600}
+
+  /* Ошибки */
+  ul.pitfalls{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:.6rem}
+  ul.pitfalls li{
+    padding-left:1.5rem;position:relative;font-size:.98rem;
+  }
+  ul.pitfalls li::before{
+    content:"×";position:absolute;left:0;top:-.05rem;color:var(--neg);font-weight:700;font-size:1.1rem;
+  }
+  ul.pitfalls b{color:var(--ink)}
+
+  .next{
+    background:var(--accent);color:#fff;border-radius:12px;padding:1.2rem 1.3rem;
+  }
+  .next h2{color:#fff}
+  .next .eq{
+    font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.2rem;
+    margin:.6rem 0 .3rem;
+  }
+  .next p{color:#dfe4fb;font-size:.96rem;margin:.4rem 0 0}
+  .foot{margin-top:2.4rem;font-size:.82rem;color:var(--muted);text-align:center}
+
+  /* Таблица координат */
+  .tbl-wrap{overflow-x:auto;margin-top:.8rem;border:1px solid var(--line);border-radius:12px;background:var(--card)}
+  table.coord{border-collapse:collapse;width:100%;font-size:.94rem;min-width:420px}
+  table.coord th,table.coord td{padding:.6rem .8rem;text-align:left;border-bottom:1px solid var(--line)}
+  table.coord th{font-size:.74rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:700}
+  table.coord tr:last-child td{border-bottom:none}
+  table.coord td{font-family:ui-monospace,Menlo,monospace;font-weight:600}
+  table.coord td.txt{font-family:inherit;font-weight:400;color:var(--muted)}
+
+  /* Цветовой ключ */
+  .legend{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:.9rem}
+  .legend span{
+    font-size:.82rem;font-weight:700;border-radius:20px;padding:.15rem .65rem;
+    font-family:ui-monospace,Menlo,monospace;
+  }
+  .lg-a{background:var(--accent-soft);color:var(--accent)}
+  .lg-b{background:var(--zero-bg);color:var(--zero)}
+  .lg-d{background:var(--pos-bg);color:var(--pos)}
+  .lg-mb{background:var(--neg-bg);color:var(--neg)}
+
+  @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+<style>
+.oge-tip{display:flex;gap:.8rem;align-items:flex-start;background:#FFF8E7;border:1px solid #F0D98A;border-left:4px solid #E0A315;border-radius:10px;padding:.85rem 1.05rem;margin:1.5rem 0}
+.oge-tip .b{font-size:.72rem;font-weight:800;letter-spacing:.03em;color:#8A6A15;white-space:nowrap;text-transform:uppercase;padding-top:.15rem}
+.oge-tip .x{font-size:.95rem;line-height:1.5}
+</style>
+<style>
+  .viz{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.1rem 1.1rem 1rem;margin:1rem 0}
+  .viz canvas{width:100%;height:auto;display:block;border-radius:10px;background:#FCFDFF}
+  .viz-verdict{text-align:center;font-weight:700;font-size:1.02rem;margin:.8rem 0 0;padding:.5rem;border-radius:9px;
+    font-family:ui-monospace,Menlo,monospace;background:var(--pos-bg);color:var(--pos)}
+  .sliders{display:grid;gap:.55rem;margin-top:.9rem}
+  @media(min-width:520px){.sliders{grid-template-columns:repeat(2,1fr)}}
+  .sliders label{display:flex;align-items:center;gap:.5rem;font-weight:700;font-family:ui-monospace,Menlo,monospace;font-size:.95rem}
+  .sliders input[type=range]{flex:1;min-width:80px;accent-color:var(--accent)}
+  .sliders .sval{min-width:3ch;text-align:right;color:var(--accent);font-variant-numeric:tabular-nums}
+  .sliders input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+  .viz-opts{margin-top:.8rem;display:flex;flex-wrap:wrap;gap:1rem;font-size:.92rem}
+  .viz-opts label{display:flex;align-items:center;gap:.4rem;cursor:pointer}
+  .viz-opts input{accent-color:var(--neg);width:1.05rem;height:1.05rem}
+  .viz-opts input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+</style>
+<style>
+  .trainer{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.2rem 1.3rem;margin-top:1rem}
+  .tr-eq{font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:clamp(1rem,3.6vw,1.18rem);text-align:center;padding:1rem;background:var(--accent-soft);border-radius:10px;color:var(--ink);line-height:1.55}
+  .tr-eq b{color:var(--accent)}
+  .tr-ctl{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.9rem;align-items:center}
+  .tr-ctl button{font:inherit;font-weight:700;font-size:.9rem;cursor:pointer;border:none;border-radius:9px;padding:.55rem .95rem;color:#fff;background:var(--accent)}
+  .tr-ctl button.sec{background:var(--pos)}
+  .tr-ctl button.ghost{background:transparent;color:var(--accent);border:1px solid var(--accent)}
+  .tr-ctl input{flex:1;min-width:150px;font:inherit;padding:.5rem .7rem;border:1px solid var(--line);border-radius:9px;background:#fff;color:var(--ink)}
+  .tr-ctl button:focus-visible,.tr-ctl input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+  .tr-result{margin-top:.9rem;font-size:.96rem;min-height:1.2rem}
+  .tr-result .ok{color:var(--pos);font-weight:700}
+  .tr-result .bad{color:var(--neg);font-weight:700}
+  .tr-result .sol{margin-top:.7rem;padding:.85rem 1rem;background:#FCFBFE;border:1px solid var(--line);border-radius:10px;font-family:ui-monospace,Menlo,monospace;font-size:.9rem;line-height:1.8;overflow-x:auto}
+  .tr-result .sol b{color:var(--accent)}
+</style>
+
+<!--LESSON-NAV-TOP--><style>.lnav{--lnav-accent:#3D5AF1}.lnav a{text-decoration:none;font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif}.lnav-top{max-width:820px;margin:0 auto;padding:.75rem clamp(1rem,4vw,1.5rem) .1rem}.lnav-top a{display:inline-flex;align-items:center;gap:.35rem;color:var(--lnav-accent);font-weight:600;font-size:.9rem}.lnav-top a:hover{text-decoration:underline}.lnav-bot{max-width:820px;margin:2.6rem auto 3rem;padding:1.1rem clamp(1rem,4vw,1.5rem) 0;border-top:1px solid #E4E8EF;display:flex;align-items:stretch;gap:.55rem}.lnav-bot a{min-width:0;display:flex;flex-direction:column;justify-content:center;gap:.15rem;border:1px solid #E4E8EF;border-radius:12px;padding:.65rem .85rem;color:#182233;background:#fff;transition:border-color .1s,transform .08s}.lnav-bot a:hover{border-color:var(--lnav-accent);transform:translateY(-1px)}.lnav-bot .prev,.lnav-bot .next{flex:1 1 0}.lnav-bot .next{text-align:right}.lnav-bot .dir{font-size:.72rem;color:#8A93A6;font-weight:600}.lnav-bot .ttl{font-size:.9rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.lnav-bot .to-cat{flex:0 0 auto;flex-direction:row;align-items:center;justify-content:center;color:var(--lnav-accent);font-weight:700;font-size:.85rem;white-space:nowrap}@media(max-width:420px){.lnav-bot .to-cat span{display:none}.lnav-bot .to-cat{padding:.65rem .7rem}}</style><nav class="lnav lnav-top"><a href="./catalog.html">← Все темы</a></nav><!--/LESSON-NAV-TOP-->
+<div class="wrap">
+
+  <header>
+    <p class="eyebrow">Геометрия · 9 класс</p>
+    <h1>Вычитание векторов</h1>
+    <p class="lede">Никакого нового действия здесь нет: вычесть вектор — значит прибавить противоположный. Вся работа — <em>следить за направлением.</em></p>
+  </header>
+
+  <div class="hero-formula">
+    <p class="lbl">Главное правило темы</p>
+    <div class="eq"><b>a</b> − <b>b</b> = <b>a</b> + (−<b>b</b>)</div>
+    <p class="note">−b — вектор той же длины, что и b, но направленный в обратную сторону</p>
+  </div>
+
+  <section>
+    <p class="kicker">Зачем это нужно</p>
+    <h2>Разность отвечает на вопрос «как попасть из одной точки в другую»</h2>
+    <p>Пусть из общей точки <span class="math">O</span> отложены два вектора: <span class="math">a</span> ведёт в точку <span class="math">A</span>, <span class="math">b</span> ведёт в точку <span class="math">B</span>. Тогда разность <span class="math">a − b</span> показывает перемещение <strong>из B в A</strong>: куда и насколько надо сместиться, чтобы из конца одного вектора попасть в конец другого.</p>
+    <p>На этом держится вся работа с координатами в геометрии и физике: разность векторов скоростей даёт относительную скорость (с какой скоростью один автомобиль удаляется от другого), а разность радиус-векторов даёт вектор между двумя точками.</p>
+    <p>Типичное житейское заблуждение: «вычитание — это просто сложение наоборот, направление можно не проверять». На самом деле у разности <strong>строго определённое направление</strong>. Перепутаешь, какой вектор уменьшаемое, а какой вычитаемое — получишь противоположный вектор. Поэтому направление здесь — главное, за чем нужно следить.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Что вспомнить с прошлого шага</p>
+    <div class="recall">
+      <p>Тема опирается на <strong>сложение векторов</strong>.</p>
+      <p>Правило треугольника: приставляем начало второго вектора к концу первого, сумма — от начала первого к концу второго.</p>
+      <p>Правило параллелограмма: откладываем оба вектора из одной точки, сумма — диагональ параллелограмма.</p>
+      <p>В координатах векторы складываются покоординатно. Это всё нам сейчас понадобится — новое действие мы придумывать не будем.</p>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Ядро темы</p>
+    <h2>Определение и правило</h2>
+    <p><strong>Определение.</strong> Разностью векторов <span class="math">a</span> и <span class="math">b</span> называется такой вектор <span class="math">c</span>, что <span class="math">b + c = a</span>. Его обозначают <span class="math">c = a − b</span>.</p>
+    <p>Читай определение внимательно: разность — это то, что <em>не хватает вектору b до вектора a</em>. Отсюда и удобная самопроверка: нашёл разность — прибавь её к вычитаемому и посмотри, получился ли уменьшаемый вектор.</p>
+
+    <h2 style="margin-top:1.6rem">Два равносильных способа построить a − b</h2>
+    <div class="cases">
+      <div class="case pos">
+        <div class="sign">Через противоположный</div>
+        <div class="count">a − b = a + (−b)</div>
+        <div class="desc">Строим −b: та же длина, обратное направление. Дальше складываем с a по правилу треугольника или параллелограмма — как привык.</div>
+      </div>
+      <div class="case zero">
+        <div class="sign">Правило треугольника</div>
+        <div class="count">OA − OB = BA</div>
+        <div class="desc">Откладываем a и b из одной точки O. Разность соединяет конец вычитаемого с концом уменьшаемого: из B в A.</div>
+      </div>
+    </div>
+    <p style="font-size:.95rem;margin-top:1rem">Короткое правило для запоминания: <strong>вектор разности направлен к уменьшаемому</strong> — к концу того вектора, из которого вычитаем.</p>
+
+    <h2 style="margin-top:1.6rem">Что важно помнить про запись</h2>
+    <div class="tbl-wrap">
+      <table class="coord">
+        <tr><th>Запись</th><th>Что значит</th></tr>
+        <tr><td>a, b</td><td class="txt">векторы</td></tr>
+        <tr><td>|a|, |b|</td><td class="txt">их длины (модули) — это числа</td></tr>
+        <tr><td>−b</td><td class="txt">вектор, противоположный b</td></tr>
+        <tr><td>a − b</td><td class="txt">разность; это <b>всегда вектор</b>, а не число</td></tr>
+      </table>
+    </div>
+
+    <p style="margin-top:1.1rem">Условия и ограничения:</p>
+    <ul>
+      <li>Действие определено для <strong>любых</strong> векторов на плоскости.</li>
+      <li><span class="math">a − b</span> и <span class="math">b − a</span> — противоположные векторы: <span class="math">(a − b) = −(b − a)</span>. <strong>Порядок важен.</strong></li>
+      <li>Частный случай: <span class="math">a − a = 0</span> — нулевой вектор. У него длина 0 и нет направления.</li>
+    </ul>
+
+    <h2 style="margin-top:1.6rem">В координатах</h2>
+    <p>Если <span class="math">a = (x<sub>1</sub>; y<sub>1</sub>)</span> и <span class="math">b = (x<sub>2</sub>; y<sub>2</sub>)</span>, то</p>
+    <div class="hero-formula" style="margin-top:.8rem">
+      <div class="eq">a − b = (x<sub>1</sub> − x<sub>2</sub>; y<sub>1</sub> − y<sub>2</sub>)</div>
+      <p class="note">вычитаем соответствующие координаты: первую из первой, вторую из второй</p>
+    </div>
+
+    <div class="oge-tip"><div class="b">🎯 В ОГЭ</div><div class="x"><b>Задание 17.</b> В геометрической задаче на клетчатой бумаге или на координатной плоскости почти всегда нужно перейти от двух точек к вектору между ними — а это и есть разность: из координат конца вычитаем координаты начала. Ошибка в порядке вычитания разворачивает вектор и ломает всё решение.</div></div>
+  </section>
+
+  <section>
+    <p class="kicker">Покрути сам · интерактив</p>
+    <h2>Разность на чертеже</h2>
+    <p>Двигай ползунки — меняй координаты векторов <span class="math">a</span> и <span class="math">b</span>, отложенных из точки <span class="math">O</span>. Зелёная стрелка — разность <span class="math">a − b</span>: она идёт <strong>из B в A</strong>, то есть остриём к уменьшаемому. Пунктирная зелёная — та же разность, отложенная от начала координат: её координаты и есть <span class="math">(x<sub>1</sub> − x<sub>2</sub>; y<sub>1</sub> − y<sub>2</sub>)</span>. Две картинки должны совпадать — в этом весь смысл.</p>
+    <div class="viz">
+      <canvas id="vizCanvas" width="640" height="512" aria-label="Чертёж: векторы a, b и их разность"></canvas>
+      <div id="vizVerdict" class="viz-verdict">a − b = (4; −2)</div>
+      <div class="sliders">
+        <label>a<sub>x</sub> <span id="vax" class="sval">5</span><input id="sax" type="range" min="-6" max="6" step="1" value="5" aria-label="x-координата вектора a"></label>
+        <label>a<sub>y</sub> <span id="vay" class="sval">2</span><input id="say" type="range" min="-6" max="6" step="1" value="2" aria-label="y-координата вектора a"></label>
+        <label>b<sub>x</sub> <span id="vbx" class="sval">1</span><input id="sbx" type="range" min="-6" max="6" step="1" value="1" aria-label="x-координата вектора b"></label>
+        <label>b<sub>y</sub> <span id="vby" class="sval">4</span><input id="sby" type="range" min="-6" max="6" step="1" value="4" aria-label="y-координата вектора b"></label>
+      </div>
+      <div class="viz-opts">
+        <label><input id="vizMinusB" type="checkbox"> показать −b и сложение a + (−b)</label>
+      </div>
+      <div class="legend">
+        <span class="lg-a">a = OA</span>
+        <span class="lg-b">b = OB</span>
+        <span class="lg-d">a − b = BA</span>
+        <span class="lg-mb">−b</span>
+      </div>
+    </div>
+    <p style="font-size:.92rem;color:var(--muted)">Попробуй сделать <span class="math">a</span> и <span class="math">b</span> одинаковыми — разность схлопнется в нулевой вектор. А теперь мысленно поменяй их местами: стрелка развернётся, потому что <span class="math">b − a = −(a − b)</span>.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Наглядность · две диагонали</p>
+    <h2>Сумма и разность живут в одном параллелограмме</h2>
+    <p>Отложи <span class="math">a</span> и <span class="math">b</span> из точки <span class="math">O</span> и достройте до параллелограмма. Тогда:</p>
+    <div class="cases">
+      <div class="case pos">
+        <div class="sign">Одна диагональ</div>
+        <div class="count">a + b</div>
+        <div class="desc">Идёт из общего начала O в противоположную вершину.</div>
+      </div>
+      <div class="case zero">
+        <div class="sign">Вторая диагональ</div>
+        <div class="count">a − b</div>
+        <div class="desc">Соединяет концы векторов, остриём к концу уменьшаемого — к A.</div>
+      </div>
+    </div>
+    <p>Держи эту картинку в голове: она не даёт перепутать два действия. Обе диагонали нарисованы одним и тем же чертежом, различает их только направление стрелки.</p>
+    <p><strong>Предскажи → проверь → объясни.</strong> Прежде чем строить, ответь себе: как, по-твоему, направлена <span class="math">a − b</span> — к <span class="math">a</span> или к <span class="math">b</span>? Потом построй в интерактиве выше и проверь. И объясни себе почему — через равенство <span class="math">b + (a − b) = a</span>.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Разбираем вместе</p>
+    <h2>Эталонный пример — думаю вслух</h2>
+    <div class="worked">
+      <p class="task">a = (5; 2), b = (1; 4). Найти a − b и её длину.</p>
+      <ol class="steps">
+        <li>Вычитаем координаты: <span class="m">a − b = (5 − 1; 2 − 4)</span>. <em>Почему так:</em> разность векторов в координатах — это покоординатная разность, первую из первой, вторую из второй.</li>
+        <li>Считаем: <span class="m">(5 − 1; 2 − 4) = (4; −2)</span>. <em>Почему минус:</em> 5 − 1 = 4, а 2 − 4 = −2. Минус сохраняем, это направление вниз по оси y.</li>
+        <li>Длина: <span class="m">|a − b| = √(4² + (−2)²) = √(16 + 4) = √20 = 2√5</span>. <em>Почему так:</em> длина вектора по координатам — корень из суммы квадратов координат.</li>
+        <li>Проверка: <span class="m">b + (a − b) = (1 + 4; 4 + (−2)) = (5; 2) = a</span>. Сошлось — значит, разность найдена верно.</li>
+      </ol>
+      <div class="verdict">Ответ: a − b = (4; −2), длина 2√5.</div>
+    </div>
+
+    <p style="margin-top:1.4rem"><strong>Пример 2 — допиши сам.</strong> На плоскости из общей точки <span class="math">O</span> отложены <span class="math">OA = a</span> и <span class="math">OB = b</span>. Построй <span class="math">a − b</span>.</p>
+    <div class="drill">
+      <details>
+        <summary><span class="q">Шаг 1 сделан: разность соединяет концы и направлена к уменьшаемому. Значит, a − b = вектор ___?</span><span class="tag">понимание</span></summary>
+        <div class="ans">Разность идёт <span class="m">от конца вычитаемого B к концу уменьшаемого A</span>, то есть это вектор <span class="m">BA</span>.</div>
+      </details>
+    </div>
+
+    <p style="margin-top:1.4rem"><strong>Пример 3 — реши сам, потом сверься.</strong> Даны <span class="math">a = (−3; 6)</span>, <span class="math">b = (2; −1)</span>. Найди <span class="math">b − a</span> и сравни с <span class="math">a − b</span>.</p>
+    <div class="drill">
+      <details>
+        <summary><span class="q">Показать разбор</span><span class="tag">применение</span></summary>
+        <div class="ans"><span class="m">b − a = (2 − (−3); −1 − 6) = (5; −7)</span>, а <span class="m">a − b = (−3 − 2; 6 − (−1)) = (−5; 7)</span>. Это <strong>противоположные векторы</strong>: одинаковая длина, обратное направление.</div>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Теперь ты · нажми, чтобы проверить</p>
+    <h2>Практика по нарастанию</h2>
+    <div class="drill">
+      <details>
+        <summary><span class="q">Закончи правило: «a − b = a + ___». Как направлен вектор, противоположный b?</span><span class="tag">понимание</span></summary>
+        <div class="ans"><span class="m">a − b = a + (−b)</span>. Вектор <span class="m">−b</span> имеет ту же длину, что и <span class="m">b</span>, но направлен в <strong>обратную сторону</strong>.</div>
+      </details>
+      <details>
+        <summary><span class="q">c = (7; 0), d = (3; −5). Найди c − d и |c − d|.</span><span class="tag">применение</span></summary>
+        <div class="ans"><span class="m">c − d = (7 − 3; 0 − (−5)) = (4; 5)</span>. Длина: <span class="m">√(4² + 5²) = √(16 + 25) = √41</span>. Проверка: <span class="m">d + (c − d) = (3 + 4; −5 + 5) = (7; 0) = c</span> ✓</div>
+      </details>
+      <details>
+        <summary><span class="q">Построй на чертеже разность двух заданных векторов через противоположный вектор.</span><span class="tag">применение</span></summary>
+        <div class="ans">Порядок действий: 1) отложить <span class="m">a</span>; 2) построить <span class="m">−b</span> — той же длины, что <span class="m">b</span>, но в обратную сторону; 3) сложить <span class="m">a</span> и <span class="m">−b</span> по правилу треугольника (приставить начало <span class="m">−b</span> к концу <span class="m">a</span>). Полученный вектор от начала <span class="m">a</span> до конца <span class="m">−b</span> и есть <span class="m">a − b</span>. Проверь себя интерактивом выше: включи галочку «показать −b».</div>
+      </details>
+      <details>
+        <summary><span class="q">Что изменится, если поменять местами уменьшаемое и вычитаемое? Как связаны a − b и b − a? Докажи на координатах.</span><span class="tag">анализ</span></summary>
+        <div class="ans">Пусть <span class="m">a = (x<sub>1</sub>; y<sub>1</sub>)</span>, <span class="m">b = (x<sub>2</sub>; y<sub>2</sub>)</span>. Тогда <span class="m">a − b = (x<sub>1</sub> − x<sub>2</sub>; y<sub>1</sub> − y<sub>2</sub>)</span>, а <span class="m">b − a = (x<sub>2</sub> − x<sub>1</sub>; y<sub>2</sub> − y<sub>1</sub>)</span>. Каждая координата поменяла знак — значит, <span class="m">b − a = −(a − b)</span>: это <strong>противоположные векторы</strong>. Длина та же, направление обратное. На чертеже стрелка просто разворачивается.</div>
+      </details>
+      <details>
+        <summary><span class="q">Найди ошибку: ученик записал «a − b = (x<sub>1</sub> − x<sub>2</sub>; y<sub>2</sub> − y<sub>1</sub>)». В чём он не прав?</span><span class="tag">анализ</span></summary>
+        <div class="ans">По первой координате он вычел правильно, а по второй — <strong>накрест</strong>: взял <span class="m">y<sub>2</sub> − y<sub>1</sub></span> вместо <span class="m">y<sub>1</sub> − y<sub>2</sub></span>. Из-за этого вторая координата получилась с обратным знаком, и вектор «сломался» — он уже не равен ни <span class="m">a − b</span>, ни <span class="m">b − a</span>. Правильно: <span class="m">a − b = (x<sub>1</sub> − x<sub>2</sub>; y<sub>1</sub> − y<sub>2</sub>)</span> — обе координаты вычитаем в одном и том же порядке.</div>
+      </details>
+      <details>
+        <summary><span class="q">Обратная задача: известно, что a − b = (4; 1) и b = (2; 3). Найди a.</span><span class="tag">анализ</span></summary>
+        <div class="ans">Из определения <span class="m">b + (a − b) = a</span>, то есть <span class="m">a = (a − b) + b</span>. Считаем: <span class="m">a = (4 + 2; 1 + 3) = (6; 4)</span>. Проверка: <span class="m">a − b = (6 − 2; 4 − 3) = (4; 1)</span> ✓</div>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Тренажёр · бесконечная практика</p>
+    <h2>Считай разность сам</h2>
+    <p>Нажми «Новое задание» и найди нужный вектор. Ответ вводи <b>двумя числами через точку с запятой</b>: например <span class="math">4; −2</span>. Минус можно писать любой (<span class="math">−</span> или <span class="math">-</span>), скобки — по желанию.</p>
+    <div class="trainer">
+      <div class="tr-eq" id="trTask">Даны <b>a</b> = (5; 2) и <b>b</b> = (1; 4). Найди <b>a − b</b>.</div>
+      <div class="tr-ctl">
+        <button id="trNew" type="button">🎲 Новое задание</button>
+        <input id="trAns" type="text" inputmode="text" placeholder="напр.  4; −2" aria-label="Ответ: координаты вектора">
+        <button id="trCheck" type="button" class="sec">Проверить</button>
+        <button id="trShow" type="button" class="ghost">Показать решение</button>
+      </div>
+      <div id="trResult" class="tr-result"></div>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Где чаще всего ошибаются</p>
+    <h2>Лови эти три ловушки</h2>
+    <ul class="pitfalls">
+      <li><b>Путают направление разности.</b> Рисуют стрелку от уменьшаемого к вычитаемому — и получают противоположный вектор. <em>Как не допустить:</em> помни правило «разность направлена к уменьшаемому», к концу того вектора, из которого вычитаем. И проверяй равенством <span class="math">b + (a − b) = a</span>.</li>
+      <li><b>Покоординатная ошибка знаков.</b> В <span class="math">a − b = (x<sub>1</sub> − x<sub>2</sub>; y<sub>1</sub> − y<sub>2</sub>)</span> теряют минус или вычитают накрест (<span class="math">y<sub>2</sub> − y<sub>1</sub></span>). <em>Как не допустить:</em> вычитай строго первую координату из первой, вторую из второй, и аккуратно переноси знаки.</li>
+      <li><b>Забывают, что разность — это сумма с противоположным вектором.</b> Начинают «вычитать длины» и думают, что <span class="math">|a − b| = |a| − |b|</span>. <em>Как не допустить:</em> всегда сводите к <span class="math">a + (−b)</span>. Длина разности считается через координаты или теорему косинусов, а не вычитанием модулей.</li>
+    </ul>
+  </section>
+
+  <section>
+    <p class="kicker">Проверка понимания</p>
+    <h2>Ответь своими словами</h2>
+    <div class="drill">
+      <details>
+        <summary><span class="q">Чему равно a − b через сложение?</span><span class="tag">проверка</span></summary>
+        <div class="ans"><span class="m">a − b = a + (−b)</span>.</div>
+      </details>
+      <details>
+        <summary><span class="q">К концу какого вектора направлена разность a − b — уменьшаемого или вычитаемого?</span><span class="tag">проверка</span></summary>
+        <div class="ans">К концу <strong>уменьшаемого</strong>, то есть к концу вектора <span class="m">a</span>.</div>
+      </details>
+      <details>
+        <summary><span class="q">Как в координатах найти a − b, если a = (x<sub>1</sub>; y<sub>1</sub>), b = (x<sub>2</sub>; y<sub>2</sub>)?</span><span class="tag">проверка</span></summary>
+        <div class="ans"><span class="m">a − b = (x<sub>1</sub> − x<sub>2</sub>; y<sub>1</sub> − y<sub>2</sub>)</span>.</div>
+      </details>
+    </div>
+    <p style="margin-top:1rem"><strong>Итог одним предложением:</strong> вычитание векторов — это сложение с противоположным вектором, а разность <span class="math">a − b</span> направлена к концу уменьшаемого.</p>
+  </section>
+
+  <section>
+    <div class="next">
+      <h2>Что дальше</h2>
+      <p>Ты умеешь складывать и вычитать векторы. Следующий шаг — <strong>умножение вектора на число</strong>:</p>
+      <div class="eq">k · a</div>
+      <p>Там вектор растягивается или сжимается, а при отрицательном k ещё и разворачивается. Кстати, ты это уже видел: <span style="font-family:ui-monospace,Menlo,monospace">−b</span> из сегодняшней темы — это в точности умножение b на −1.</p>
+    </div>
+  </section>
+
+  <p class="foot">Проверка на выходе: запиши правило a − b через сложение · куда смотрит стрелка разности · найди (5; −1) − (2; 3).</p>
+
+</div>
+
+<script>
+(function(){
+  var canvas=document.getElementById('vizCanvas'); if(!canvas) return;
+  var ctx=canvas.getContext('2d');
+  var sax=document.getElementById('sax'), say=document.getElementById('say');
+  var sbx=document.getElementById('sbx'), sby=document.getElementById('sby');
+  var vax=document.getElementById('vax'), vay=document.getElementById('vay');
+  var vbx=document.getElementById('vbx'), vby=document.getElementById('vby');
+  var chk=document.getElementById('vizMinusB');
+  var verdict=document.getElementById('vizVerdict');
+  var W=640,H=512,dpr=1,RANGE=8;
+
+  var COL_A='#3B4FD0', COL_B='#B9791A', COL_D='#1E8E5A', COL_MB='#C0455B';
+
+  function m(n){ return (n<0?'−':'')+Math.abs(n); }
+
+  function resize(){
+    var cssW=canvas.clientWidth||640;
+    dpr=Math.min(window.devicePixelRatio||1,2);
+    W=cssW; H=Math.round(cssW*0.8);
+    canvas.width=Math.round(W*dpr); canvas.height=Math.round(H*dpr);
+    canvas.style.height=H+'px';
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+  }
+  function scale(){ return Math.min(W/(2*RANGE), H/(2*RANGE)); }
+  function X(x){ return W/2 + x*scale(); }
+  function Y(y){ return H/2 - y*scale(); }
+
+  function arrow(x1,y1,x2,y2,color,dash,width){
+    var px1=X(x1),py1=Y(y1),px2=X(x2),py2=Y(y2);
+    var dx=px2-px1, dy=py2-py1, len=Math.sqrt(dx*dx+dy*dy);
+    ctx.save();
+    ctx.strokeStyle=color; ctx.fillStyle=color; ctx.lineWidth=width||3;
+    ctx.setLineDash(dash?[6,5]:[]);
+    ctx.beginPath(); ctx.moveTo(px1,py1); ctx.lineTo(px2,py2); ctx.stroke();
+    ctx.setLineDash([]);
+    if(len>4){
+      var ux=dx/len, uy=dy/len, hl=11, hw=5.5;
+      ctx.beginPath();
+      ctx.moveTo(px2,py2);
+      ctx.lineTo(px2-ux*hl-uy*hw, py2-uy*hl+ux*hw);
+      ctx.lineTo(px2-ux*hl+uy*hw, py2-uy*hl-ux*hw);
+      ctx.closePath(); ctx.fill();
+    }
+    ctx.restore();
+  }
+  function dot(x,y,color){
+    ctx.save(); ctx.fillStyle=color;
+    ctx.beginPath(); ctx.arc(X(x),Y(y),4,0,Math.PI*2); ctx.fill();
+    ctx.restore();
+  }
+  function label(text,x,y,color,dx,dy){
+    ctx.save();
+    ctx.fillStyle=color;
+    ctx.font='700 13px ui-monospace, Menlo, monospace';
+    ctx.textAlign='left'; ctx.textBaseline='middle';
+    var px=X(x)+(dx||0), py=Y(y)+(dy||0);
+    var w=ctx.measureText(text).width;
+    if(px+w>W-2) px=W-2-w;
+    if(px<2) px=2;
+    if(py<9) py=9;
+    if(py>H-9) py=H-9;
+    ctx.fillText(text,px,py);
+    ctx.restore();
+  }
+
+  function draw(){
+    var ax=parseInt(sax.value,10), ay=parseInt(say.value,10);
+    var bx=parseInt(sbx.value,10), by=parseInt(sby.value,10);
+    vax.textContent=m(ax); vay.textContent=m(ay);
+    vbx.textContent=m(bx); vby.textContent=m(by);
+    var dx=ax-bx, dy=ay-by;
+
+    ctx.clearRect(0,0,W,H);
+    var s=scale();
+    ctx.strokeStyle='#EDEFF4'; ctx.lineWidth=1;
+    var nx=Math.floor((W/2)/s), ny=Math.floor((H/2)/s);
+    for(var gx=-nx;gx<=nx;gx++){ ctx.beginPath(); ctx.moveTo(X(gx),0); ctx.lineTo(X(gx),H); ctx.stroke(); }
+    for(var gy=-ny;gy<=ny;gy++){ ctx.beginPath(); ctx.moveTo(0,Y(gy)); ctx.lineTo(W,Y(gy)); ctx.stroke(); }
+    ctx.strokeStyle='#9AA3B2'; ctx.lineWidth=1.5;
+    ctx.beginPath(); ctx.moveTo(0,Y(0)); ctx.lineTo(W,Y(0)); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(X(0),0); ctx.lineTo(X(0),H); ctx.stroke();
+    ctx.save();
+    ctx.fillStyle='#9AA3B2'; ctx.font='11px ui-monospace, Menlo, monospace';
+    ctx.textAlign='center'; ctx.textBaseline='top';
+    for(var t=-nx;t<=nx;t++){ if(t!==0) ctx.fillText(m(t),X(t),Y(0)+4); }
+    ctx.textAlign='right'; ctx.textBaseline='middle';
+    for(var u=-ny;u<=ny;u++){ if(u!==0) ctx.fillText(m(u),X(0)-5,Y(u)); }
+    ctx.restore();
+
+    if(chk.checked){
+      arrow(0,0,-bx,-by,COL_MB,true,2.5);
+      label('−b',-bx,-by,COL_MB,8,-10);
+      arrow(ax,ay,ax-bx,ay-by,COL_MB,true,2.5);
+    }
+
+    arrow(0,0,ax,ay,COL_A,false,3);
+    arrow(0,0,bx,by,COL_B,false,3);
+    arrow(bx,by,ax,ay,COL_D,false,3.5);
+    arrow(0,0,dx,dy,COL_D,true,2.5);
+
+    dot(0,0,'#1B2333');
+    label('O',0,0,'#1B2333',-16,14);
+    label('A',ax,ay,COL_A,10,-10);
+    label('B',bx,by,COL_B,10,-10);
+    label('a − b',dx,dy,COL_D,10,12);
+
+    if(dx===0&&dy===0){
+      verdict.textContent='a − b = (0; 0) · нулевой вектор';
+    } else {
+      verdict.textContent='a − b = ('+m(dx)+'; '+m(dy)+')';
+    }
+  }
+
+  [sax,say,sbx,sby].forEach(function(el){ el.addEventListener('input',draw); });
+  chk.addEventListener('change',draw);
+  window.addEventListener('resize',function(){ resize(); draw(); });
+  resize(); draw();
+})();
+</script>
+
+<script>
+(function(){
+  function m(n){ n=+n; if(n===0) n=0; return (n<0?'−':'')+Math.abs(n); }
+  function vec(v){ return '('+m(v[0])+'; '+m(v[1])+')'; }
+
+  // ---- ядро тренажёра (чистые функции) ----
+  function makeTask(rnd){
+    var r = rnd || Math.random;
+    var kind = Math.floor(r()*3); // 0: a−b, 1: b−a, 2: обратная задача
+    function n(){ return Math.floor(r()*17)-8; } // от −8 до 8
+    if(kind===2){
+      var d=[n(),n()], b=[n(),n()];
+      return {kind:2, d:d, b:b, ans:[d[0]+b[0], d[1]+b[1]]};
+    }
+    var a=[n(),n()], b2=[n(),n()];
+    if(kind===0) return {kind:0, a:a, b:b2, ans:[a[0]-b2[0], a[1]-b2[1]]};
+    return {kind:1, a:a, b:b2, ans:[b2[0]-a[0], b2[1]-a[1]]};
+  }
+
+  function taskHTML(t){
+    if(t.kind===0) return 'Даны <b>a</b> = '+vec(t.a)+' и <b>b</b> = '+vec(t.b)+'. Найди <b>a − b</b>.';
+    if(t.kind===1) return 'Даны <b>a</b> = '+vec(t.a)+' и <b>b</b> = '+vec(t.b)+'. Найди <b>b − a</b>.';
+    return 'Известно, что <b>a − b</b> = '+vec(t.d)+' и <b>b</b> = '+vec(t.b)+'. Найди <b>a</b>.';
+  }
+
+  function solutionHTML(t){
+    var h='<div class="sol">';
+    if(t.kind===0){
+      h+='Вычитаем координаты: первую из первой, вторую из второй.<br>';
+      h+='a − b = ('+m(t.a[0])+' − '+m(t.b[0])+'; '+m(t.a[1])+' − '+m(t.b[1])+') = <b>'+vec(t.ans)+'</b><br>';
+      h+='Проверка: b + (a − b) = ('+m(t.b[0])+' + '+m(t.ans[0])+'; '+m(t.b[1])+' + '+m(t.ans[1])+') = '+vec(t.a)+' = a ✓';
+    } else if(t.kind===1){
+      h+='Порядок важен: теперь уменьшаемое — b.<br>';
+      h+='b − a = ('+m(t.b[0])+' − '+m(t.a[0])+'; '+m(t.b[1])+' − '+m(t.a[1])+') = <b>'+vec(t.ans)+'</b><br>';
+      h+='Заметь: a − b = '+vec([t.a[0]-t.b[0], t.a[1]-t.b[1]])+' — противоположный вектор.';
+    } else {
+      h+='По определению разности: b + (a − b) = a, значит a = (a − b) + b.<br>';
+      h+='a = ('+m(t.d[0])+' + '+m(t.b[0])+'; '+m(t.d[1])+' + '+m(t.b[1])+') = <b>'+vec(t.ans)+'</b><br>';
+      h+='Проверка: a − b = ('+m(t.ans[0])+' − '+m(t.b[0])+'; '+m(t.ans[1])+' − '+m(t.b[1])+') = '+vec(t.d)+' ✓';
+    }
+    return h+'</div>';
+  }
+
+  function parsePair(raw){
+    if(typeof raw!=='string') return null;
+    var s=raw.replace(/[−–—‐‑‒]/g,'-')
+             .replace(/[()\[\]{}]/g,' ')
+             .replace(/[xхyу]\s*=/gi,' ')
+             .trim();
+    if(!s) return null;
+    var parts;
+    if(s.indexOf(';')>=0){
+      parts=s.split(';').map(function(p){ return p.replace(/,/g,'.').trim(); });
+    } else {
+      parts=s.split(/[,\s]+/);
+      if(parts.filter(function(p){ return p!==''; }).length!==2){
+        // запятая была десятичной: «4,5 −2,5»
+        parts=s.replace(/(\d)\s*,\s*(\d)/g,'$1.$2').split(/[,\s]+/);
+      }
+    }
+    parts=parts.filter(function(p){ return p!==''; });
+    if(parts.length!==2) return null;
+    var out=[];
+    for(var i=0;i<2;i++){
+      if(!/^[+-]?(\d+(\.\d+)?|\.\d+)$/.test(parts[i])) return null;
+      var v=parseFloat(parts[i]);
+      if(!isFinite(v)) return null;
+      out.push(v);
+    }
+    return out;
+  }
+
+  function checkAnswer(raw,t){
+    var p=parsePair(raw);
+    if(!p) return {status:'parse'};
+    var ok = Math.abs(p[0]-t.ans[0])<1e-6 && Math.abs(p[1]-t.ans[1])<1e-6;
+    return {status: ok?'ok':'wrong', got:p};
+  }
+
+  if(typeof module!=='undefined' && module.exports){
+    module.exports={makeTask:makeTask,taskHTML:taskHTML,solutionHTML:solutionHTML,parsePair:parsePair,checkAnswer:checkAnswer,vec:vec};
+  }
+
+  // ---- привязка к странице ----
+  var taskEl=document.getElementById('trTask');
+  if(!taskEl || !taskEl.addEventListener) return;
+  var ansEl=document.getElementById('trAns'), resEl=document.getElementById('trResult');
+  var cur={kind:0, a:[5,2], b:[1,4], ans:[4,-2]};
+
+  function render(focus){
+    taskEl.innerHTML=taskHTML(cur);
+    resEl.innerHTML='';
+    ansEl.value='';
+    if(focus) ansEl.focus();
+  }
+  function newTask(){
+    cur=makeTask();
+    render(true);
+  }
+  function check(){
+    if(!ansEl.value.trim()){
+      resEl.innerHTML='<span class="bad">Введи два числа через точку с запятой, напр. «4; −2».</span>';
+      return;
+    }
+    var r=checkAnswer(ansEl.value,cur);
+    if(r.status==='parse'){
+      resEl.innerHTML='<span class="bad">Не понял запись. Нужны две координаты через точку с запятой, напр. «4; −2».</span>';
+      return;
+    }
+    if(r.status==='ok'){
+      resEl.innerHTML='<span class="ok">✓ Верно!</span>'+solutionHTML(cur);
+    } else {
+      var hint='';
+      if(Math.abs(r.got[0]+cur.ans[0])<1e-6 && Math.abs(r.got[1]+cur.ans[1])<1e-6){
+        hint=' Ты нашёл противоположный вектор — перепутан порядок вычитания.';
+      } else if(Math.abs(r.got[0]-cur.ans[0])<1e-6 && Math.abs(r.got[1]+cur.ans[1])<1e-6){
+        hint=' Проверь вторую координату: вычитай в том же порядке, что и первую.';
+      }
+      resEl.innerHTML='<span class="bad">✗ Пока не то.'+hint+'</span>'+solutionHTML(cur);
+    }
+  }
+
+  document.getElementById('trNew').addEventListener('click',newTask);
+  document.getElementById('trCheck').addEventListener('click',check);
+  document.getElementById('trShow').addEventListener('click',function(){ resEl.innerHTML=solutionHTML(cur); });
+  ansEl.addEventListener('keydown',function(e){ if(e.key==='Enter') check(); });
+
+  render(false);
+})();
+</script>
+<!--LESSON-NAV-BOT--><nav class="lnav lnav-bot"><a class="prev" href="./geo9-vektor-slozhenie.html"><span class="dir">← Предыдущая</span><span class="ttl">Сложение векторов (правило треугольника и параллелограмма)</span></a><a class="to-cat" href="./catalog.html">📚 <span>Все темы</span></a><a class="next" href="./geo9-vektor-umnozhenie.html"><span class="dir">Следующая →</span><span class="ttl">Умножение вектора на число</span></a></nav><!--/LESSON-NAV-BOT-->
