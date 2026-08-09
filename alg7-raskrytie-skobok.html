@@ -1,0 +1,772 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Раскрытие скобок и распределительный закон — урок, алгебра 7 класс</title>
+<style>
+  :root{
+    --paper:#F6F7F9;
+    --card:#FFFFFF;
+    --ink:#1B2333;
+    --muted:#5A6478;
+    --line:#E2E5EC;
+    --accent:#3B4FD0;
+    --accent-soft:#EAEDFB;
+    --extract:#1E8E5A;      /* множитель, который «раздаём» */
+    --extract-bg:#E7F4EC;
+    --neg:#C0455B;          /* минус, который меняет знаки */
+    --neg-bg:#F9E9EC;
+  }
+  *{box-sizing:border-box}
+  body{margin:0}
+  .wrap{
+    max-width:760px;
+    margin:0 auto;
+    padding:clamp(1.4rem,4vw,3rem) clamp(1.1rem,4vw,2rem) 4rem;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    font-size:17px;
+    line-height:1.62;
+    -webkit-font-smoothing:antialiased;
+  }
+  .eyebrow{
+    font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--accent);font-weight:600;margin:0 0 .5rem;
+  }
+  h1{
+    font-family:Georgia,"Times New Roman",serif;
+    font-size:clamp(1.9rem,6.4vw,2.8rem);
+    line-height:1.06;margin:0;font-weight:700;letter-spacing:-.01em;
+    text-wrap:balance;
+  }
+  .lede{
+    font-size:1.08rem;color:var(--muted);margin:.7rem 0 0;max-width:60ch;
+    text-wrap:pretty;
+  }
+  h2{
+    font-family:Georgia,serif;font-size:1.32rem;font-weight:700;
+    margin:0 0 .1rem;letter-spacing:-.005em;
+  }
+  section{margin-top:2.6rem}
+  .kicker{
+    font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--muted);font-weight:600;margin:0 0 .8rem;
+    display:flex;align-items:center;gap:.6rem;
+  }
+  .kicker::before{
+    content:"";width:1.4rem;height:2px;background:var(--accent);border-radius:2px;
+  }
+  p{margin:.65rem 0}
+  strong{font-weight:650}
+  .math{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-weight:600}
+  sup{font-size:.72em}
+  .cf{color:var(--extract);font-weight:800}
+  .sg{color:var(--neg);font-weight:800}
+
+  /* Главная формула */
+  .hero-formula{
+    margin-top:2.2rem;
+    background:var(--ink);color:#fff;border-radius:14px;
+    padding:1.6rem 1.4rem;text-align:center;
+  }
+  .hero-formula .lbl{
+    font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;
+    color:#9aa6c9;margin:0 0 .7rem;
+  }
+  .hero-formula .eq{
+    font-family:ui-monospace,"SF Mono",Menlo,monospace;
+    font-size:clamp(1.5rem,6vw,2.2rem);font-weight:700;letter-spacing:.01em;
+  }
+  .hero-formula .eq b{color:#7fe0ab;font-weight:700}
+  .hero-formula .note{font-size:.86rem;color:#9aa6c9;margin:.8rem 0 0}
+
+  /* Пререквизит */
+  .recall{
+    background:var(--accent-soft);border-radius:12px;padding:1rem 1.15rem;
+    font-size:.96rem;
+  }
+  .recall p{margin:.35rem 0}
+  .recall b{color:var(--ink)}
+
+  /* Правило-ядро */
+  .rule{
+    background:var(--card);border:1px solid var(--line);border-radius:12px;
+    padding:1.2rem 1.3rem;margin-top:.4rem;
+  }
+  ol.steps{margin:0;padding:0;list-style:none;counter-reset:s;display:flex;flex-direction:column;gap:.7rem}
+  ol.steps li{position:relative;padding-left:2.1rem;counter-increment:s}
+  ol.steps li::before{
+    content:counter(s);position:absolute;left:0;top:.05rem;
+    width:1.5rem;height:1.5rem;border-radius:50%;
+    background:var(--accent-soft);color:var(--accent);
+    font-size:.82rem;font-weight:700;display:flex;align-items:center;justify-content:center;
+  }
+  ol.steps .m{font-family:ui-monospace,Menlo,monospace;font-weight:600;color:var(--ink)}
+  .rule .cap{
+    margin:1rem 0 0;padding-top:.9rem;border-top:1px solid var(--line);
+    font-family:ui-monospace,Menlo,monospace;font-weight:700;text-align:center;font-size:1.05rem;
+  }
+
+  /* Два случая знака перед скобкой — цвет-код */
+  .cases{display:flex;flex-direction:column;gap:.7rem;margin-top:.6rem}
+  .case{
+    border:1px solid var(--line);border-left-width:4px;border-radius:12px;
+    background:var(--card);padding:.9rem 1.1rem;
+  }
+  .case.plus{border-left-color:var(--extract);background:var(--extract-bg)}
+  .case.minus{border-left-color:var(--neg);background:var(--neg-bg)}
+  .case .hd{font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;font-weight:800;margin:0 0 .35rem}
+  .case.plus .hd{color:var(--extract)}
+  .case.minus .hd{color:var(--neg)}
+  .case .eq{font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.08rem;margin:.1rem 0}
+  .case p.txt{margin:.4rem 0 0;font-size:.94rem;color:var(--muted)}
+  .case p.txt b{color:var(--ink)}
+
+  /* Разбор */
+  .worked{
+    background:var(--card);border:1px solid var(--line);border-radius:12px;
+    padding:1.2rem 1.3rem;
+  }
+  .worked .task{
+    font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.05rem;
+    margin:0 0 1rem;padding-bottom:.8rem;border-bottom:1px solid var(--line);
+  }
+  .verdict{
+    margin-top:1rem;padding:.7rem 1rem;background:var(--extract-bg);
+    border-radius:9px;font-weight:600;color:var(--extract);font-size:.98rem;
+    font-family:ui-monospace,Menlo,monospace;
+  }
+
+  /* Наглядность — площадная модель */
+  .area{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:1.1rem 1.2rem;margin-top:.5rem}
+  .area-fig{display:flex;align-items:stretch;max-width:430px;margin:.3rem auto .2rem;font-family:ui-monospace,Menlo,monospace;color:var(--ink)}
+  .area-a{
+    display:flex;align-items:center;justify-content:center;
+    background:var(--extract-bg);color:var(--extract);font-weight:800;font-size:1.2rem;
+    padding:0 .8rem;border:2px solid var(--extract);border-right:none;border-radius:10px 0 0 10px;
+  }
+  .area-cols{display:flex;flex:1}
+  .area-cols .box{
+    flex:1;padding:1.35rem .4rem .9rem;text-align:center;
+    border:2px solid var(--extract);
+  }
+  .area-cols .box:first-child{border-right:1px dashed var(--extract)}
+  .area-cols .box:last-child{border-radius:0 10px 10px 0}
+  .area-cols .box b{font-size:1.05rem}
+  .area-cols .box span{display:block;font-size:.78rem;color:var(--muted);margin-top:.3rem}
+  .area-cap{font-size:.94rem;color:var(--muted);margin:.7rem 0 0}
+  .area-cap b{color:var(--ink)}
+
+  /* Интерактивная площадная модель */
+  .sim{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.1rem 1.2rem;margin-top:1rem}
+  .sim canvas{width:100%;height:auto;display:block;border-radius:10px;background:#fff}
+  .sim-ctl{display:flex;flex-wrap:wrap;gap:.9rem;margin-top:.9rem}
+  .sim-ctl label{flex:1;min-width:150px;font-size:.86rem;color:var(--muted);font-weight:600}
+  .sim-ctl label b{color:var(--ink);font-family:ui-monospace,Menlo,monospace}
+  .sim-ctl input[type=range]{width:100%;accent-color:var(--accent);margin-top:.25rem}
+  .sim-ctl input[type=range]:focus-visible{outline:3px solid var(--accent);outline-offset:3px;border-radius:6px}
+  .sim-read{
+    margin-top:.9rem;padding:.75rem .9rem;background:var(--extract-bg);border-radius:10px;
+    font-family:ui-monospace,Menlo,monospace;font-weight:700;text-align:center;
+    font-size:clamp(.86rem,3.4vw,1.02rem);overflow-x:auto;
+  }
+
+  /* Практика / details */
+  .drill{display:flex;flex-direction:column;gap:.7rem}
+  details{
+    background:var(--card);border:1px solid var(--line);border-radius:10px;
+    padding:.85rem 1.05rem;
+  }
+  details[open]{border-color:var(--accent)}
+  summary{
+    cursor:pointer;font-weight:600;list-style:none;
+    display:flex;justify-content:space-between;align-items:center;gap:1rem;
+  }
+  summary::-webkit-details-marker{display:none}
+  summary:focus-visible{outline:3px solid var(--accent);outline-offset:3px;border-radius:6px}
+  summary .q{font-family:ui-monospace,Menlo,monospace}
+  summary .tag{
+    font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);
+    border:1px solid var(--line);border-radius:20px;padding:.1rem .55rem;white-space:nowrap;
+  }
+  summary::after{
+    content:"показать ответ";font-size:.78rem;color:var(--accent);font-weight:600;white-space:nowrap;
+  }
+  details[open] summary::after{content:"скрыть"}
+  .ans{margin-top:.7rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.96rem;color:var(--muted)}
+  .ans .m{font-family:ui-monospace,Menlo,monospace;color:var(--ink);font-weight:600}
+
+  /* Ошибки */
+  ul.pitfalls{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:.6rem}
+  ul.pitfalls li{padding-left:1.5rem;position:relative;font-size:.98rem}
+  ul.pitfalls li::before{
+    content:"\00d7";position:absolute;left:0;top:-.05rem;color:var(--neg);font-weight:700;font-size:1.1rem;
+  }
+  ul.pitfalls b{color:var(--ink)}
+  ul.pitfalls .m{font-family:ui-monospace,Menlo,monospace;font-weight:600;color:var(--ink)}
+
+  .next{background:var(--accent);color:#fff;border-radius:12px;padding:1.2rem 1.3rem}
+  .next h2{color:#fff}
+  .next .eq{
+    font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.15rem;
+    margin:.6rem 0 .3rem;
+  }
+  .next p{color:#dfe4fb;font-size:.96rem;margin:.4rem 0 0}
+  .foot{margin-top:2.4rem;font-size:.82rem;color:var(--muted);text-align:center}
+
+  @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+<style>
+.oge-tip{display:flex;gap:.8rem;align-items:flex-start;background:#FFF8E7;border:1px solid #F0D98A;border-left:4px solid #E0A315;border-radius:10px;padding:.85rem 1.05rem;margin:1.5rem 0}
+.oge-tip .b{font-size:.72rem;font-weight:800;letter-spacing:.03em;color:#8A6A15;white-space:nowrap;text-transform:uppercase;padding-top:.15rem}
+.oge-tip .x{font-size:.95rem;line-height:1.5}
+</style>
+<!--LESSON-NAV-TOP--><style>.lnav{--lnav-accent:#3D5AF1}.lnav a{text-decoration:none;font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif}.lnav-top{max-width:820px;margin:0 auto;padding:.75rem clamp(1rem,4vw,1.5rem) .1rem}.lnav-top a{display:inline-flex;align-items:center;gap:.35rem;color:var(--lnav-accent);font-weight:600;font-size:.9rem}.lnav-top a:hover{text-decoration:underline}.lnav-bot{max-width:820px;margin:2.6rem auto 3rem;padding:1.1rem clamp(1rem,4vw,1.5rem) 0;border-top:1px solid #E4E8EF;display:flex;align-items:stretch;gap:.55rem}.lnav-bot a{min-width:0;display:flex;flex-direction:column;justify-content:center;gap:.15rem;border:1px solid #E4E8EF;border-radius:12px;padding:.65rem .85rem;color:#182233;background:#fff;transition:border-color .1s,transform .08s}.lnav-bot a:hover{border-color:var(--lnav-accent);transform:translateY(-1px)}.lnav-bot .prev,.lnav-bot .next{flex:1 1 0}.lnav-bot .next{text-align:right}.lnav-bot .dir{font-size:.72rem;color:#8A93A6;font-weight:600}.lnav-bot .ttl{font-size:.9rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.lnav-bot .to-cat{flex:0 0 auto;flex-direction:row;align-items:center;justify-content:center;color:var(--lnav-accent);font-weight:700;font-size:.85rem;white-space:nowrap}@media(max-width:420px){.lnav-bot .to-cat span{display:none}.lnav-bot .to-cat{padding:.65rem .7rem}}</style><nav class="lnav lnav-top"><a href="./catalog.html">← Все темы</a></nav><!--/LESSON-NAV-TOP-->
+<div class="wrap">
+
+  <header>
+    <p class="eyebrow">Алгебра · 7 класс</p>
+    <h1>Раскрытие скобок и распределительный закон</h1>
+    <p class="lede">Множитель перед скобкой «раздаётся» <em>каждому</em> слагаемому внутри. А минус перед скобкой переворачивает знаки. Разбираем оба случая до автоматизма.</p>
+  </header>
+
+  <div class="hero-formula">
+    <p class="lbl">Главная идея</p>
+    <div class="eq"><b>a</b>·(b + c) = <b>a</b>·b + <b>a</b>·c</div>
+    <p class="note">Умножить сумму на число — то же самое, что умножить на это число каждое слагаемое.</p>
+  </div>
+
+  <section>
+    <p class="kicker">Зачем это нужно и где встречается</p>
+    <h2>Рабочий инструмент всей алгебры</h2>
+    <p>Раскрытие скобок — это навык, без которого не получится ни упростить выражение, ни решить уравнение, ни собрать формулу. Проще всего почувствовать его на покупках.</p>
+    <p>Ты покупаешь <strong>5 одинаковых наборов</strong>, в каждом — ручка за 30 рублей и тетрадь за 20 рублей. Посчитать можно двумя путями:</p>
+    <div class="rule" style="font-family:ui-monospace,Menlo,monospace">
+      <p style="margin:.2rem 0"><b>Путь 1 (сначала набор):</b>&nbsp; 30 + 20 = 50, потом 5 · 50 = <b>250</b></p>
+      <p style="margin:.2rem 0"><b>Путь 2 (отдельно ручки и тетради):</b>&nbsp; 5 · 30 + 5 · 20 = 150 + 100 = <b>250</b></p>
+    </div>
+    <p>Ответ один и тот же — и это ровно распределительный закон, только в жизни. Дальше навык понадобится постоянно: чтобы привести подобные слагаемые, решить линейное уравнение, раскрыть квадрат суммы. Научишься раскрывать скобки аккуратно сейчас — в 8–9 классах будет намного легче.</p>
+    <p><strong>Главное заблуждение, которое надо убить сразу:</strong> «множитель перед скобкой умножается только на первое число». Это <em>неверно</em>. Он умножается на <span class="cf">КАЖДОЕ</span> слагаемое внутри скобки.</p>
+    <div class="oge-tip"><div class="b">🎯 В ОГЭ</div><div class="x">Раскрытие скобок — техника, которая нужна в любом задании, где надо <b>упростить выражение</b> или <b>решить уравнение</b>. Ошибка в знаках здесь стоит всей задачи, даже если дальше всё сделано верно.</div></div>
+  </section>
+
+  <section>
+    <p class="kicker">Что вспомнить перед стартом</p>
+    <div class="recall">
+      <p>Тебе понадобятся две вещи:</p>
+      <p>1. <b>Правило знаков при умножении</b> (отрицательные числа): плюс на минус даёт минус, а <span class="math">минус на минус даёт плюс</span>. Например, <span class="math">3 · (−5) = −15</span>, а <span class="math">(−2) · (−3) = 6</span>.</p>
+      <p>2. <b>Подобные слагаемые</b> — это слагаемые с одинаковой буквенной частью. Складывать можно только их: <span class="math">5x − x = 4x</span>, а вот <span class="math">6x</span> и <span class="math">−15</span> сложить нельзя.</p>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Ядро темы · два случая</p>
+    <h2>Случай 1: перед скобкой стоит множитель</h2>
+    <div class="rule">
+      <ol class="steps">
+        <li>Посмотри на множитель перед скобкой — вместе с его знаком. Это <span class="cf">a</span>.</li>
+        <li>Умножь <span class="cf">a</span> на <span class="m">первое</span> слагаемое скобки, знак результата — по правилу знаков.</li>
+        <li>Умножь <span class="cf">a</span> на <span class="m">второе</span> слагаемое. И на третье, если оно есть — <span class="m">на каждое</span>.</li>
+        <li>Запиши все полученные произведения подряд, со своими знаками.</li>
+      </ol>
+      <p class="cap"><span class="cf">a</span>·(b + c) = <span class="cf">a</span>·b + <span class="cf">a</span>·c &nbsp;&nbsp;·&nbsp;&nbsp; <span class="cf">a</span>·(b − c) = <span class="cf">a</span>·b − <span class="cf">a</span>·c</p>
+    </div>
+    <p style="font-size:.92rem;color:var(--muted)">Проверка на пальцах: произведений должно получиться <b>столько же, сколько слагаемых было в скобке</b>. Три слагаемых — три произведения: <span class="math">a·(b + c + d) = a·b + a·c + a·d</span>.</p>
+
+    <h2 style="margin-top:2rem">Случай 2: перед скобкой стоит только знак</h2>
+    <div class="cases">
+      <div class="case plus">
+        <p class="hd">Плюс перед скобкой — ничего не меняется</p>
+        <p class="eq">+ (b − c) = b − c</p>
+        <p class="txt">Скобку просто убираем, знаки слагаемых <b>не трогаем</b>.</p>
+      </div>
+      <div class="case minus">
+        <p class="hd">Минус перед скобкой — все знаки переворачиваются</p>
+        <p class="eq">− (b − c) = <span class="sg">−</span>b <span class="sg">+</span> c</p>
+        <p class="txt">Скобку убираем, а знак <b>каждого</b> слагаемого меняем на противоположный. Минус относится ко <b>всей скобке сразу</b>, а не только к первому слагаемому.</p>
+      </div>
+    </div>
+    <p style="font-size:.92rem;color:var(--muted)">Полезный трюк: мысленно поставь перед скобкой множитель <span class="math">−1</span>. Тогда второй случай сводится к первому — и знаки меняются сами собой по правилу знаков.</p>
+    <p>Закон работает с любыми числами: целыми, дробными, положительными и отрицательными. В уроке <span class="cf">зелёным</span> отмечен множитель, который раздаём, а <span class="sg">гранатовым</span> — знаки, которые меняются из-за минуса.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Разбираем вместе · думаю вслух</p>
+    <h2>Эталонный пример</h2>
+    <div class="worked">
+      <p class="task">Раскрыть скобки: 3·(2x − 5)</p>
+      <ol class="steps">
+        <li>Множитель <span class="cf">3</span> умножаю на первое слагаемое <span class="m">2x</span>: &nbsp;<span class="m">3 · 2x = 6x</span>.<br><span style="font-size:.9rem;color:var(--muted)"><b>Почему:</b> распределительный закон — раздаю тройку каждому слагаемому.</span></li>
+        <li>Тот же множитель <span class="cf">3</span> умножаю на второе слагаемое <span class="m">−5</span>: &nbsp;<span class="m">3 · (−5) = −15</span>.<br><span style="font-size:.9rem;color:var(--muted)"><b>Почему:</b> знак минус никуда не девается, плюс на минус даёт минус.</span></li>
+        <li>Записываю сумму результатов: <span class="m">6x − 15</span>. Слагаемых в скобке было два — произведений тоже два, ничего не потерял.</li>
+      </ol>
+      <div class="verdict">3·(2x − 5) = 6x − 15</div>
+      <p style="font-size:.9rem;color:var(--muted);margin:.7rem 0 0"><b>Стоп-контроль:</b> сложить <span class="math">6x</span> и <span class="math">−15</span> в одно нельзя — буквенные части разные, слагаемые не подобные. Ответ <span class="math">6x − 15</span> — уже окончательный.</p>
+    </div>
+
+    <h2 style="margin-top:2rem">Второй пример — с минусом у множителя</h2>
+    <div class="worked">
+      <p class="task">Раскрыть скобки: −2·(4a − 3)</p>
+      <ol class="steps">
+        <li>Множитель — это <span class="cf">−2</span>, вместе со знаком. Первое произведение: <span class="m">−2 · 4a = −8a</span>.</li>
+        <li>Второе: <span class="m">−2 · (−3) = 6</span>. <span style="font-size:.9rem;color:var(--muted)"><b>Почему плюс:</b> минус на минус даёт плюс.</span></li>
+      </ol>
+      <div class="verdict">−2·(4a − 3) = −8a + 6</div>
+    </div>
+
+    <h2 style="margin-top:2rem">Третий пример — со знаком перед скобкой</h2>
+    <div class="worked">
+      <p class="task">Раскрыть скобки и упростить: 5·(x + 2) − (x − 4)</p>
+      <ol class="steps">
+        <li>Первая скобка: множитель <span class="cf">5</span> раздаю каждому — <span class="m">5 · x = 5x</span> и <span class="m">5 · 2 = 10</span>. Получилось <span class="m">5x + 10</span>.</li>
+        <li>Вторая скобка: перед ней <span class="sg">минус</span> и никакого множителя. Убираю скобку и переворачиваю знаки: <span class="m">−(x − 4) = −x + 4</span>.</li>
+        <li>Собираю всё вместе: <span class="m">5x + 10 − x + 4</span>.</li>
+        <li>Привожу подобные: <span class="m">5x − x = 4x</span>, <span class="m">10 + 4 = 14</span>.</li>
+      </ol>
+      <div class="verdict">5·(x + 2) − (x − 4) = 4x + 14</div>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Наглядность · почему закон вообще верен</p>
+    <h2>Площадь прямоугольника считается двумя способами</h2>
+    <p>Нарисуй прямоугольник со сторонами <span class="cf">a</span> и <span class="math">(b + c)</span>. Его площадь — это <span class="math"><span class="cf">a</span>·(b + c)</span>. Теперь раздели его вертикальной линией на две части шириной <span class="math">b</span> и <span class="math">c</span>: площади кусков равны <span class="math">a·b</span> и <span class="math">a·c</span>, а вместе они дают тот же самый прямоугольник.</p>
+    <div class="area">
+      <div class="area-fig">
+        <div class="area-a">a</div>
+        <div class="area-cols">
+          <div class="box"><b>a·b</b><span>ширина b</span></div>
+          <div class="box"><b>a·c</b><span>ширина c</span></div>
+        </div>
+      </div>
+      <p class="area-cap">Целиком площадь равна <span class="cf">a</span>(b + c). По кусочкам — <span class="math">ab + ac</span>. Это <b>один и тот же</b> прямоугольник, значит <span class="math">a·(b + c) = a·b + a·c</span>. Это не «правило ради правила», а факт о том, как устроены умножение и сложение.</p>
+    </div>
+
+    <div class="sim">
+      <p style="margin:.1rem 0 .8rem;font-size:.94rem;color:var(--muted)">Подвигай ползунки: высота <b>a</b> — это множитель перед скобкой, ширины <b>b</b> и <b>c</b> — слагаемые внутри. Смотри, как обе записи всегда дают одно число.</p>
+      <canvas id="areaCv" width="700" height="330" role="img" aria-label="Прямоугольник со сторонами a и b плюс c, разделённый на две части площадью a·b и a·c"></canvas>
+      <div class="sim-ctl">
+        <label for="sA">высота <b>a</b> = <span id="vA">5</span><input id="sA" type="range" min="1" max="8" step="1" value="5"></label>
+        <label for="sB">ширина <b>b</b> = <span id="vB">6</span><input id="sB" type="range" min="1" max="10" step="1" value="6"></label>
+        <label for="sC">ширина <b>c</b> = <span id="vC">4</span><input id="sC" type="range" min="1" max="10" step="1" value="4"></label>
+      </div>
+      <div class="sim-read" id="areaRead"></div>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Теперь ты · реши, потом раскрой ответ</p>
+    <h2>Мини-практика</h2>
+    <div class="drill">
+      <details>
+        <summary><span class="q">Прочитай словами: a·(b + c) = a·b + a·c. Как называется закон?</span><span class="tag">понимание</span></summary>
+        <div class="ans">Число, умноженное на сумму, равно сумме произведений этого числа на каждое слагаемое. Это <b>распределительный закон</b> умножения относительно сложения.</div>
+      </details>
+      <details>
+        <summary><span class="q">Чему равно −(m − 7)?</span><span class="tag">понимание</span></summary>
+        <div class="ans">Перед скобкой минус — меняем знак каждого слагаемого: <span class="m">−(m − 7) = −m + 7</span>.</div>
+      </details>
+      <details>
+        <summary><span class="q">Раскрой скобки: 4·(3y + 1)</span><span class="tag">применение</span></summary>
+        <div class="ans"><span class="m">4 · 3y = 12y</span>, <span class="m">4 · 1 = 4</span>. Ответ: <span class="m">12y + 4</span>.</div>
+      </details>
+      <details>
+        <summary><span class="q">Раскрой скобки: −3·(2 − a)</span><span class="tag">применение</span></summary>
+        <div class="ans"><span class="m">−3 · 2 = −6</span>, <span class="m">−3 · (−a) = +3a</span>. Ответ: <span class="m">−6 + 3a</span>.</div>
+      </details>
+      <details>
+        <summary><span class="q">Упрости: 2·(x − 3) + 5x</span><span class="tag">применение</span></summary>
+        <div class="ans">Раскрываем: <span class="m">2x − 6 + 5x</span>. Приводим подобные: <span class="m">2x + 5x = 7x</span>. Ответ: <span class="m">7x − 6</span>.</div>
+      </details>
+      <details>
+        <summary><span class="q">Найди ошибку: ученик написал 3·(x − 4) = 3x − 4</span><span class="tag">анализ</span></summary>
+        <div class="ans">Он умножил тройку только на первое слагаемое, а на <span class="m">−4</span> забыл. Множитель раздаётся <b>каждому</b>: <span class="m">3 · x = 3x</span> и <span class="m">3 · (−4) = −12</span>. Правильно: <span class="m">3x − 12</span>.</div>
+      </details>
+      <details>
+        <summary><span class="q">Что изменится, если в −(x + 5) убрать минус перед скобкой?</span><span class="tag">анализ</span></summary>
+        <div class="ans">С минусом знаки переворачиваются: <span class="m">−(x + 5) = −x − 5</span>. Без минуса ничего не меняется: <span class="m">+(x + 5) = x + 5</span>. Результаты противоположны по знаку у <b>обоих</b> слагаемых.</div>
+      </details>
+      <details>
+        <summary><span class="q">Обратная задача: какое выражение со скобкой даёт после раскрытия 6a − 18?</span><span class="tag">анализ</span></summary>
+        <div class="ans">Например, <span class="m">6·(a − 3)</span>: проверяем раскрытием — <span class="m">6 · a = 6a</span>, <span class="m">6 · (−3) = −18</span>. Совпало ✓</div>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Тренажёр · бесконечная практика</p>
+    <h2>Раскрой скобки сам</h2>
+    <p>Нажми «Новый пример» и раскрой скобки, а если есть подобные слагаемые — приведи их. Ответ пиши без скобок, например <span class="math">6x-15</span> или <span class="math">-8a+6</span>. Знак минус — обычный дефис, умножение писать не нужно.</p>
+    <div class="trainer">
+      <div class="tr-eq" id="trEq">3(2x − 5)</div>
+      <div class="tr-ctl">
+        <button id="trNew" type="button">🎲 Новый пример</button>
+        <input id="trAns" type="text" inputmode="text" placeholder="напр.  6x-15" aria-label="Твой ответ: выражение без скобок">
+        <button id="trCheck" type="button" class="sec">Проверить</button>
+        <button id="trShow" type="button" class="ghost">Показать разбор</button>
+      </div>
+      <div id="trResult" class="tr-result" aria-live="polite"></div>
+    </div>
+    <p style="font-size:.9rem;color:var(--muted)">Тренажёр сравнивает твой ответ с правильным по-честному — по слагаемым, а не по буквам записи. Порядок слагаемых значения не имеет, но подобные должны быть приведены.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Где чаще всего ошибаются</p>
+    <h2>Лови эти четыре ловушки</h2>
+    <ul class="pitfalls">
+      <li><b>Умножают только на первое слагаемое.</b> Пишут <span class="m">3·(2x − 5) = 6x − 5</span>. Как не допустить: проговаривай вслух «раздаю тройку <b>каждому</b> слагаемому» и проверяй, что произведений столько же, сколько слагаемых было в скобке.</li>
+      <li><b>Не меняют знаки при минусе перед скобкой.</b> Пишут <span class="m">−(x − 4) = −x − 4</span> вместо <span class="m">−x + 4</span>. Как не допустить: помни, что минус переворачивает знак у <b>каждого</b> слагаемого; мысленно ставь перед скобкой множитель <span class="m">−1</span>.</li>
+      <li><b>Теряют минус у самого множителя.</b> Выражение <span class="m">−2·(a − 3)</span> считают как <span class="m">2a − 6</span>. Как не допустить: сначала аккуратно выпиши знак множителя (он <span class="m">−2</span>, а не <span class="m">2</span>), и только потом применяй правило знаков «минус на минус = плюс». Верно: <span class="m">−2a + 6</span>.</li>
+      <li><b>Путают раскрытие скобок с приведением подобных.</b> Получив <span class="m">6x − 15</span>, складывают разнородное и пишут <span class="m">−9x</span>. Как не допустить: складывать можно только подобные слагаемые — с одинаковой буквенной частью. Число и <span class="m">x</span> не складываются, ответ так и остаётся <span class="m">6x − 15</span>.</li>
+    </ul>
+  </section>
+
+  <section>
+    <p class="kicker">Проверка понимания · ответь себе</p>
+    <h2>Три вопроса на понимание</h2>
+    <div class="drill">
+      <details>
+        <summary><span class="q">Чему равно 4·(a + 2)?</span><span class="tag">объясни</span></summary>
+        <div class="ans"><span class="m">4 · a = 4a</span>, <span class="m">4 · 2 = 8</span>. Ответ: <span class="m">4a + 8</span>.</div>
+      </details>
+      <details>
+        <summary><span class="q">Раскрой скобку: −(3 − y)</span><span class="tag">объясни</span></summary>
+        <div class="ans">Минус перед скобкой меняет оба знака: <span class="m">−(3 − y) = −3 + y</span>.</div>
+      </details>
+      <details>
+        <summary><span class="q">На что умножается множитель перед скобкой — только на первое слагаемое или на каждое?</span><span class="tag">объясни</span></summary>
+        <div class="ans">На <b>каждое</b>. Именно поэтому закон и называется распределительным: множитель распределяется, раздаётся всем слагаемым внутри скобки.</div>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <div class="next">
+      <h2>Что дальше</h2>
+      <p>Раскрытие скобок — первый кирпич техники преобразований. Дальше он работает в двух направлениях:</p>
+      <div class="eq">5(x + 2) − (x − 4) = 4x + 14</div>
+      <p><b>Тождественные преобразования</b> — цепочки таких шагов, после которых выражение меняет вид, но не меняет значения. И <b>линейное уравнение</b>: первым делом в нём раскрывают скобки, а уже потом переносят слагаемые и находят <span class="math">x</span>.</p>
+    </div>
+  </section>
+
+  <p class="foot">Проверка на выходе: сколько произведений получится из a·(b + c + d) · чему равно −(x − 4) · почему в 6x − 15 нельзя сложить слагаемые?</p>
+
+</div>
+
+<style>
+  .trainer{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.2rem 1.3rem;margin-top:1rem}
+  .tr-eq{font-family:ui-monospace,Menlo,monospace;font-weight:800;font-size:clamp(1.3rem,5vw,1.7rem);text-align:center;padding:1rem;background:var(--extract-bg);border-radius:10px;color:var(--ink);overflow-x:auto}
+  .tr-ctl{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.9rem;align-items:center}
+  .tr-ctl button{font:inherit;font-weight:700;font-size:.9rem;cursor:pointer;border:none;border-radius:9px;padding:.55rem .95rem;color:#fff;background:var(--accent)}
+  .tr-ctl button.sec{background:var(--extract)}
+  .tr-ctl button.ghost{background:transparent;color:var(--accent);border:1px solid var(--accent)}
+  .tr-ctl input{flex:1;min-width:170px;font:inherit;padding:.5rem .7rem;border:1px solid var(--line);border-radius:9px;background:#fff;color:var(--ink)}
+  .tr-ctl button:focus-visible,.tr-ctl input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+  .tr-result{margin-top:.9rem;font-size:.96rem;min-height:1.2rem}
+  .tr-result .ok{color:var(--extract);font-weight:700}
+  .tr-result .bad{color:var(--neg);font-weight:700}
+  .tr-result .warn{color:#8A6A15;font-weight:700}
+  .tr-result .sol{margin-top:.7rem;padding:.85rem 1rem;background:#FCFBFE;border:1px solid var(--line);border-radius:10px;font-family:ui-monospace,Menlo,monospace;font-size:.9rem;line-height:1.85;overflow-x:auto}
+  .tr-result .sol .cf{color:var(--extract);font-weight:800}
+  .tr-result .sol .sg{color:var(--neg);font-weight:800}
+  .tr-result .sol i{color:var(--muted);font-style:normal}
+</style>
+
+<script>
+/* ---------- интерактивная площадная модель ---------- */
+(function(){
+  var cv=document.getElementById('areaCv'); if(!cv) return;
+  var ctx=cv.getContext('2d');
+  var sA=document.getElementById('sA'), sB=document.getElementById('sB'), sC=document.getElementById('sC');
+  var vA=document.getElementById('vA'), vB=document.getElementById('vB'), vC=document.getElementById('vC');
+  var read=document.getElementById('areaRead');
+
+  function draw(){
+    var a=+sA.value, b=+sB.value, c=+sC.value;
+    vA.textContent=a; vB.textContent=b; vC.textContent=c;
+
+    var W=cv.width, H=cv.height;
+    ctx.clearRect(0,0,W,H);
+    ctx.fillStyle='#FFFFFF'; ctx.fillRect(0,0,W,H);
+
+    var padL=64, padR=28, padT=46, padB=54;
+    var maxW=W-padL-padR, maxH=H-padT-padB;
+    var unit=Math.min(maxW/20, maxH/8);          /* b+c максимум 20, a максимум 8 */
+    var wB=b*unit, wC=c*unit, hA=a*unit;
+    var x0=padL+(maxW-(wB+wC))/2, y0=padT+(maxH-hA);   /* по центру, прижато к низу */
+
+    /* части */
+    ctx.fillStyle='#E7F4EC'; ctx.fillRect(x0,y0,wB,hA);
+    ctx.fillStyle='#EAEDFB'; ctx.fillRect(x0+wB,y0,wC,hA);
+
+    /* контур целого + разделитель */
+    ctx.lineWidth=2; ctx.strokeStyle='#1E8E5A';
+    ctx.strokeRect(x0,y0,wB+wC,hA);
+    ctx.beginPath(); ctx.setLineDash([6,5]); ctx.strokeStyle='#3B4FD0';
+    ctx.moveTo(x0+wB,y0); ctx.lineTo(x0+wB,y0+hA); ctx.stroke(); ctx.setLineDash([]);
+
+    ctx.textAlign='center'; ctx.textBaseline='middle';
+
+    /* подписи площадей */
+    ctx.fillStyle='#1E8E5A'; ctx.font='700 19px ui-monospace,Menlo,monospace';
+    if(wB>52) ctx.fillText(a+'·'+b+' = '+(a*b), x0+wB/2, y0+hA/2);
+    ctx.fillStyle='#3B4FD0';
+    if(wC>52) ctx.fillText(a+'·'+c+' = '+(a*c), x0+wB+wC/2, y0+hA/2);
+
+    /* подписи сторон */
+    ctx.font='700 17px ui-monospace,Menlo,monospace';
+    ctx.fillStyle='#5A6478';
+    ctx.fillText('b = '+b, x0+wB/2, y0+hA+20);
+    ctx.fillText('c = '+c, x0+wB+wC/2, y0+hA+20);
+    ctx.save();
+    ctx.translate(x0-24, y0+hA/2); ctx.rotate(-Math.PI/2);
+    ctx.fillStyle='#1E8E5A'; ctx.fillText('a = '+a, 0, 0);
+    ctx.restore();
+
+    /* верхняя скоба b+c */
+    ctx.strokeStyle='#5A6478'; ctx.lineWidth=1.5;
+    ctx.beginPath();
+    ctx.moveTo(x0, y0-16); ctx.lineTo(x0, y0-22);
+    ctx.lineTo(x0+wB+wC, y0-22); ctx.lineTo(x0+wB+wC, y0-16);
+    ctx.stroke();
+    ctx.fillStyle='#1B2333'; ctx.font='700 17px ui-monospace,Menlo,monospace';
+    ctx.fillText('b + c = '+(b+c), x0+(wB+wC)/2, y0-34);
+
+    read.innerHTML = a+'·('+b+' + '+c+') = '+a+'·'+(b+c)+' = '+(a*(b+c))
+      + '&nbsp;&nbsp;и&nbsp;&nbsp;' + a+'·'+b+' + '+a+'·'+c+' = '+(a*b)+' + '+(a*c)+' = '+(a*b+a*c);
+  }
+  [sA,sB,sC].forEach(function(s){ s.addEventListener('input',draw); });
+  draw();
+})();
+</script>
+
+<script>
+/* ---------- тренажёр: раскрытие скобок ---------- */
+(function(){
+  var eqEl=document.getElementById('trEq'), ansEl=document.getElementById('trAns'), resEl=document.getElementById('trResult');
+  if(!eqEl) return;
+  var MINUS='−';                  /* U+2212 */
+  var cur=null;
+
+  function ri(a,b){ return Math.floor(Math.random()*(b-a+1))+a; }
+  function pick(a){ return a[ri(0,a.length-1)]; }
+  function nz(a){ var v=pick(a); return v; }
+  function sgn(){ return Math.random()<0.5?-1:1; }
+
+  /* моном {c:число, v:'' или буква} */
+  function mono(c,v){ return {c:c, v:v||''}; }
+
+  /* --- рендер --- */
+  function fixMinus(s){ return String(s).replace(/-/g,MINUS); }
+  function monoBody(m){
+    var ac=Math.abs(m.c);
+    if(m.v==='') return String(ac);
+    return (ac===1?'':String(ac))+m.v;
+  }
+  function monoFull(m){ return (m.c<0?MINUS:'')+monoBody(m); }
+  function monoParen(m){ return m.c<0 ? '('+MINUS+monoBody(m)+')' : monoBody(m); }
+  function polyStr(list){
+    return list.map(function(m,i){
+      if(i===0) return monoFull(m);
+      return (m.c<0?' '+MINUS+' ':' + ')+monoBody(m);
+    }).join('');
+  }
+  /* группа: {sign:±1, mult:число(>=1), br:[моном,...]} */
+  function groupStr(g,i){
+    var head;
+    if(i===0) head = (g.sign<0?MINUS:'');
+    else head = (g.sign<0?' '+MINUS+' ':' + ');
+    var mm = (g.mult===1?'':String(g.mult));
+    return head+mm+'('+polyStr(g.br)+')';
+  }
+  function exprStr(groups){ return groups.map(groupStr).join(''); }
+
+  /* --- ожидаемый ответ --- */
+  function expandGroups(groups){
+    var out=[];
+    groups.forEach(function(g){
+      g.br.forEach(function(m){ out.push(mono(g.sign*g.mult*m.c, m.v)); });
+    });
+    return out;
+  }
+  function combine(list){
+    var map={};
+    list.forEach(function(m){ var k=m.v||'#'; map[k]=(map[k]||0)+m.c; });
+    var keys=Object.keys(map).filter(function(k){ return map[k]!==0; });
+    keys.sort(function(x,y){
+      if(x==='#') return 1; if(y==='#') return -1;
+      return x<y?-1:1;
+    });
+    return keys.map(function(k){ return mono(map[k], k==='#'?'':k); });
+  }
+  function keyOf(list){
+    var c=combine(list);
+    if(!c.length) return '0';
+    return c.map(function(m){ return (m.v||'#')+':'+m.c; }).join(';');
+  }
+
+  /* --- генерация --- */
+  var VARS=['x','a','y','m','p','c','b','n'];
+  var recipes=[
+    function(){ /* k(bx + c) */
+      var v=pick(VARS), k=ri(2,7), b=ri(2,6), c=sgn()*ri(2,9);
+      return [{sign:1, mult:k, br:[mono(b,v), mono(c,'')]}];
+    },
+    function(){ /* −k(bx + c) — минус у множителя */
+      var v=pick(VARS), k=ri(2,6), b=ri(2,5), c=sgn()*ri(2,9);
+      return [{sign:-1, mult:k, br:[mono(b,v), mono(c,'')]}];
+    },
+    function(){ /* −(bx + c) — только знак перед скобкой */
+      var v=pick(VARS), b=pick([1,1,2,3,4]), c=sgn()*ri(2,9);
+      var order=Math.random()<0.4;
+      var br = order ? [mono(c,''), mono(b,v)] : [mono(b,v), mono(c,'')];
+      return [{sign:-1, mult:1, br:br}];
+    },
+    function(){ /* k(bx + c + dy) — три слагаемых, две буквы */
+      var pr=pick([['x','y'],['a','b'],['m','n'],['p','q']]);
+      var k=ri(2,5), b=ri(2,4), c=sgn()*ri(2,8), d=sgn()*ri(2,4);
+      return [{sign:1, mult:k, br:[mono(b,pr[0]), mono(d,pr[1]), mono(c,'')]}];
+    },
+    function(){ /* k(x + a) − (x + b) — две скобки, нужны подобные */
+      var v=pick(VARS), k=ri(2,6), b1=pick([1,1,2]), c1=sgn()*ri(2,7), b2=pick([1,1,2,3]), c2=sgn()*ri(2,8);
+      return [{sign:1, mult:k, br:[mono(b1,v), mono(c1,'')]},
+              {sign:-1, mult:1, br:[mono(b2,v), mono(c2,'')]}];
+    },
+    function(){ /* k(bx + c) + m(dx + e) — две скобки с множителями */
+      var v=pick(VARS), k=ri(2,5), m2=ri(2,5), b=ri(1,4), c=sgn()*ri(2,6), d=ri(1,4), e=sgn()*ri(2,6);
+      var s2=sgn();
+      return [{sign:1, mult:k, br:[mono(b,v), mono(c,'')]},
+              {sign:s2, mult:m2, br:[mono(d,v), mono(e,'')]}];
+    }
+  ];
+
+  function generate(doFocus){
+    var g, exp, tries=0;
+    do{
+      g=pick(recipes)();
+      exp=combine(expandGroups(g));
+      tries++;
+    } while(exp.length===0 && tries<20);      /* не отдаём вырожденный ноль */
+    cur={groups:g, expanded:expandGroups(g), answer:exp};
+    eqEl.textContent=exprStr(g);
+    resEl.innerHTML=''; ansEl.value='';
+    if(doFocus) ansEl.focus();
+  }
+
+  /* --- парсинг ответа --- */
+  function norm(s){
+    return s
+      .replace(/[·*×]/g,'')
+      .replace(/[−–—‐]/g,'-')
+      .replace(/[хХ]/g,'x').replace(/[уУ]/g,'y')
+      .replace(/[аА]/g,'a').replace(/[сС]/g,'c')
+      .replace(/[рР]/g,'p').replace(/[мМ]/g,'m')
+      .replace(/[оО]/g,'o').replace(/[еЕ]/g,'e')
+      .replace(/[кК]/g,'k').replace(/[вВ]/g,'b')
+      .replace(/[нН]/g,'n').replace(/[тТ]/g,'t')
+      .replace(/\s+/g,'').toLowerCase();
+  }
+  function parseMono(s){
+    if(s==null||s==='') return null;
+    var sign=1;
+    s=s.replace(/^\+/,'');
+    if(s.charAt(0)==='-'){ sign=-1; s=s.slice(1); }
+    var m=s.match(/^\d+/), coef=m?parseInt(m[0],10):1;
+    if(m) s=s.slice(m[0].length);
+    if(s===''){ if(!m) return null; return mono(sign*coef,''); }
+    if(!/^[a-z]$/.test(s)) return null;
+    return mono(sign*coef, s);
+  }
+  function splitTerms(s){
+    var res=[], buf='', i, ch;
+    for(i=0;i<s.length;i++){
+      ch=s.charAt(i);
+      if(ch==='+'||ch==='-'){
+        if(i>0 && buf!=='' && buf!=='-' && buf!=='+') res.push(buf);
+        buf = (ch==='-' ? '-' : '');
+      } else buf+=ch;
+    }
+    if(buf!==''&&buf!=='-'&&buf!=='+') res.push(buf);
+    return res;
+  }
+  function parseAnswer(raw){
+    var str=norm(raw);
+    if(str==='') return null;
+    if(str.indexOf('(')>=0||str.indexOf(')')>=0) return 'brackets';
+    var parts=splitTerms(str);
+    if(!parts.length) return null;
+    var out=[], i, t;
+    for(i=0;i<parts.length;i++){
+      t=parseMono(parts[i]);
+      if(!t) return null;
+      out.push(t);
+    }
+    return out;
+  }
+
+  /* --- пошаговый разбор --- */
+  function solutionHTML(){
+    var h='<div class="sol">', n=1;
+    cur.groups.forEach(function(g,gi){
+      var f=g.sign*g.mult;
+      var label = cur.groups.length>1 ? ('Скобка '+(gi+1)+'. ') : '';
+      if(g.mult===1){
+        if(g.sign<0){
+          h+='<b>Шаг '+(n++)+'.</b> '+label+'Перед скобкой <span class="sg">минус</span> и никакого множителя — убираем скобку и меняем знак каждого слагаемого:<br>';
+          h+='&nbsp;&nbsp;'+MINUS+'('+polyStr(g.br)+') = '+polyStr(g.br.map(function(m){ return mono(-m.c,m.v); }))+'<br>';
+        } else {
+          h+='<b>Шаг '+(n++)+'.</b> '+label+'Перед скобкой плюс — просто убираем скобку, знаки не меняем:<br>';
+          h+='&nbsp;&nbsp;+('+polyStr(g.br)+') = '+polyStr(g.br)+'<br>';
+        }
+      } else {
+        var fm=mono(f,'');
+        h+='<b>Шаг '+(n++)+'.</b> '+label+'Множитель <span class="cf">'+monoFull(fm)+'</span> умножаем на каждое слагаемое:<br>';
+        g.br.forEach(function(m){
+          var pr=mono(f*m.c, m.v);
+          h+='&nbsp;&nbsp;<span class="cf">'+monoFull(fm)+'</span> · '+monoParen(m)+' = '+monoFull(pr)+'<br>';
+        });
+      }
+    });
+    var all=cur.expanded;
+    if(cur.groups.length>1){
+      h+='<b>Шаг '+(n++)+'.</b> Собираем всё вместе: '+polyStr(all)+'<br>';
+    }
+    if(all.length!==cur.answer.length){
+      h+='<b>Шаг '+(n++)+'.</b> Приводим подобные слагаемые <i>(складываем те, у кого одинаковая буквенная часть)</i>.<br>';
+    } else {
+      h+='<i>Подобных слагаемых нет — складывать нечего, ответ уже готов.</i><br>';
+    }
+    h+='<b>Ответ:</b> <span class="cf">'+polyStr(cur.answer)+'</span>';
+    return h+'</div>';
+  }
+
+  /* --- проверка --- */
+  function check(){
+    if(!ansEl.value.trim()){ resEl.innerHTML='<span class="bad">Введи ответ или нажми «Показать разбор».</span>'; return; }
+    var parsed=parseAnswer(ansEl.value);
+    if(parsed==='brackets'){
+      resEl.innerHTML='<span class="bad">В ответе не должно остаться скобок — их и надо было раскрыть.</span>'; return;
+    }
+    if(!parsed){
+      resEl.innerHTML='<span class="bad">Не понял запись. Пиши слагаемые через + и −, например 6x-15.</span>'; return;
+    }
+    if(keyOf(parsed)!==keyOf(cur.answer)){
+      resEl.innerHTML='<span class="bad">✗ Не сходится. Проверь: умножил ли ты множитель на КАЖДОЕ слагаемое и не потерял ли знаки.</span>'+solutionHTML();
+      return;
+    }
+    if(parsed.length>cur.answer.length){
+      resEl.innerHTML='<span class="warn">Почти! Скобки раскрыты верно, но подобные слагаемые не приведены — сложи те, у кого одинаковая буквенная часть.</span>'+solutionHTML();
+      return;
+    }
+    resEl.innerHTML='<span class="ok">✓ Верно! Скобки раскрыты, знаки на месте.</span>'+solutionHTML();
+  }
+
+  document.getElementById('trNew').addEventListener('click',function(){ generate(true); });
+  document.getElementById('trCheck').addEventListener('click',check);
+  document.getElementById('trShow').addEventListener('click',function(){ resEl.innerHTML=solutionHTML(); });
+  ansEl.addEventListener('keydown',function(e){ if(e.key==='Enter') check(); });
+
+  generate(false);   /* стартовая задача без фокуса */
+})();
+</script>
+<!--LESSON-NAV-BOT--><nav class="lnav lnav-bot"><a class="prev" href="./alg7-podobnye-slagaemye.html"><span class="dir">← Предыдущая</span><span class="ttl">Подобные слагаемые и приведение подобных</span></a><a class="to-cat" href="./catalog.html">📚 <span>Все темы</span></a><a class="next" href="./alg7-linejnoe-uravnenie.html"><span class="dir">Следующая →</span><span class="ttl">Линейное уравнение ax = b и алгоритм решения</span></a></nav><!--/LESSON-NAV-BOT-->

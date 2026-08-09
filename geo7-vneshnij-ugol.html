@@ -1,0 +1,496 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Внешний угол треугольника — геометрия 7 класс</title>
+<style>
+  :root{
+    --paper:#F6F7F9;
+    --card:#FFFFFF;
+    --ink:#1B2333;
+    --muted:#5A6478;
+    --line:#E2E5EC;
+    --accent:#2E5AAC;        /* брендовый — заголовки, формула */
+    --accent-soft:#E4EBF7;
+    --ca:#1E8E5A; --ca-soft:#E7F4EC;   /* угол A — зелёный */
+    --cb:#E27C2C; --cb-soft:#FBEEDF;   /* угол B — янтарный */
+    --cc:#C0455B; --cc-soft:#F9E9EC;   /* угол C — гранат */
+    --ok:#1E8E5A; --no:#C0455B;
+  }
+  *{box-sizing:border-box}
+  body{margin:0}
+  .wrap{
+    max-width:760px;margin:0 auto;
+    padding:clamp(1.4rem,4vw,3rem) clamp(1.1rem,4vw,2rem) 4rem;
+    background:var(--paper);color:var(--ink);
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    font-size:17px;line-height:1.62;-webkit-font-smoothing:antialiased;
+  }
+  .eyebrow{font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);font-weight:600;margin:0 0 .5rem}
+  h1{font-family:Georgia,"Times New Roman",serif;font-size:clamp(2rem,7vw,3rem);line-height:1.05;margin:0;font-weight:700;letter-spacing:-.01em;text-wrap:balance}
+  .lede{font-size:1.08rem;color:var(--muted);margin:.7rem 0 0;max-width:60ch;text-wrap:pretty}
+  h2{font-family:Georgia,serif;font-size:1.32rem;font-weight:700;margin:0 0 .1rem;letter-spacing:-.005em}
+  section{margin-top:2.6rem}
+  .kicker{font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:600;margin:0 0 .8rem;display:flex;align-items:center;gap:.6rem}
+  .kicker::before{content:"";width:1.4rem;height:2px;background:var(--accent);border-radius:2px}
+  p{margin:.65rem 0}
+  strong{font-weight:650}
+  .math{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-weight:600}
+  sup{font-size:.72em}
+  .wA{color:var(--ca);font-weight:700} .wB{color:var(--cb);font-weight:700} .wC{color:var(--cc);font-weight:700}
+  .wE{color:var(--accent);font-weight:700}
+
+  /* Главная формула */
+  .hero-formula{margin-top:2.2rem;background:var(--ink);color:#fff;border-radius:14px;padding:1.6rem 1.4rem;text-align:center}
+  .hero-formula .lbl{font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:#9aa6c9;margin:0 0 .7rem}
+  .hero-formula .eq{font-family:ui-monospace,"SF Mono",Menlo,monospace;font-size:clamp(1.15rem,4.6vw,1.9rem);font-weight:700;line-height:1.35}
+  .hero-formula .eq .a{color:#5fd39a} .hero-formula .eq .b{color:#f0a45e} .hero-formula .eq .c{color:#ec8497}
+  .hero-formula .eq .e{color:#8fb2ff}
+  .hero-formula .note{font-size:.86rem;color:#9aa6c9;margin:.8rem 0 0}
+
+  /* Пререквизит */
+  .recall{background:var(--accent-soft);border-radius:12px;padding:1rem 1.15rem;font-size:.96rem}
+  .recall p{margin:.35rem 0}
+  .recall b{color:var(--accent)}
+
+  /* Следствие / замечание */
+  .note-box{border-left:4px solid var(--accent);background:var(--accent-soft);border-radius:0 10px 10px 0;padding:.8rem 1.1rem;margin-top:1rem;font-size:.97rem}
+  .note-box b{color:var(--accent)}
+
+  /* Разбор */
+  .worked{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:1.2rem 1.3rem}
+  .worked .task{font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.02rem;margin:0 0 1rem;padding-bottom:.8rem;border-bottom:1px solid var(--line)}
+  ol.steps{margin:0;padding:0;list-style:none;counter-reset:s;display:flex;flex-direction:column;gap:.7rem}
+  ol.steps li{position:relative;padding-left:2.1rem;counter-increment:s}
+  ol.steps li::before{content:counter(s);position:absolute;left:0;top:.05rem;width:1.5rem;height:1.5rem;border-radius:50%;background:var(--accent-soft);color:var(--accent);font-size:.82rem;font-weight:700;display:flex;align-items:center;justify-content:center}
+  ol.steps .m{font-family:ui-monospace,Menlo,monospace;font-weight:600;color:var(--ink)}
+  ol.steps em{color:var(--muted);font-style:italic}
+  .verdict{margin-top:1rem;padding:.7rem 1rem;background:var(--accent-soft);border-radius:9px;font-weight:600;color:var(--accent);font-size:.98rem;font-family:ui-monospace,Menlo,monospace}
+
+  /* Визуализация */
+  .viz{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.1rem 1.1rem 1rem;margin:1rem 0}
+  .viz canvas{width:100%;height:auto;display:block;border-radius:10px;background:#FCFDFF}
+  .viz-read{text-align:center;font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:clamp(.88rem,3.2vw,1.02rem);margin:.85rem 0 0;padding:.55rem;border-radius:9px;background:var(--accent-soft);line-height:1.7}
+  .viz-read .a{color:var(--ca)} .viz-read .b{color:var(--cb)} .viz-read .c{color:var(--cc)} .viz-read .e{color:var(--accent)}
+  .sliders{display:grid;gap:.7rem;margin-top:.95rem}
+  .sliders label{display:flex;align-items:center;gap:.55rem;font-weight:700;font-family:ui-monospace,Menlo,monospace;font-size:.92rem}
+  .sliders label .nm{min-width:6.5ch}
+  .sliders input[type=range]{flex:1}
+  .sliders input.rA{accent-color:var(--ca)}
+  .sliders input.rB{accent-color:var(--cb)}
+  .sliders label.lA .nm{color:var(--ca)} .sliders label.lB .nm{color:var(--cb)}
+  .sliders .sval{min-width:3.5ch;text-align:right;color:var(--muted);font-variant-numeric:tabular-nums}
+  .viz-btn{margin-top:.85rem;display:flex;gap:.5rem;flex-wrap:wrap}
+  .viz-btn button{font:inherit;font-weight:700;font-size:.86rem;cursor:pointer;border:none;border-radius:9px;padding:.5rem .9rem;background:var(--accent);color:#fff}
+  .viz-btn button.reset{background:transparent;color:var(--accent);border:1px solid var(--accent)}
+  .viz-btn button:focus-visible,.sliders input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+
+  /* Практика */
+  .drill{display:flex;flex-direction:column;gap:.7rem}
+  details{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:.85rem 1.05rem}
+  details[open]{border-color:var(--accent)}
+  summary{cursor:pointer;font-weight:600;list-style:none;display:flex;justify-content:space-between;align-items:center;gap:1rem}
+  summary::-webkit-details-marker{display:none}
+  summary:focus-visible{outline:3px solid var(--accent);outline-offset:3px;border-radius:6px}
+  summary .q{font-family:ui-monospace,Menlo,monospace;font-size:.92rem}
+  summary .tag{font-size:.66rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);border:1px solid var(--line);border-radius:20px;padding:.1rem .55rem;white-space:nowrap}
+  summary::after{content:"ответ";font-size:.76rem;color:var(--accent);font-weight:600;white-space:nowrap}
+  details[open] summary::after{content:"скрыть"}
+  .ans{margin-top:.7rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.96rem;color:var(--muted)}
+  .ans .m{font-family:ui-monospace,Menlo,monospace;color:var(--ink);font-weight:600}
+  .ans b{color:var(--ink)}
+
+  /* Тренажёр */
+  .trainer{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.2rem 1.3rem;margin-top:1rem}
+  .tr-task{font-size:clamp(1rem,3.6vw,1.12rem);text-align:center;padding:1rem;background:var(--accent-soft);border-radius:10px;font-weight:600;line-height:1.5}
+  .tr-task b{font-family:ui-monospace,Menlo,monospace;color:var(--ink)}
+  .tr-ctl{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:1rem;align-items:center;justify-content:center}
+  .tr-ctl input{flex:1;min-width:130px;max-width:200px;font:inherit;padding:.5rem .7rem;border:1px solid var(--line);border-radius:9px;text-align:center;background:#fff;color:var(--ink)}
+  .tr-ctl button{font:inherit;font-weight:700;font-size:.9rem;cursor:pointer;border:none;border-radius:9px;padding:.55rem .95rem;color:#fff;background:var(--accent)}
+  .tr-ctl button.sec{background:var(--cb)}
+  .tr-ctl button.ghost{background:transparent;color:var(--accent);border:1px solid var(--accent)}
+  .tr-ctl button:focus-visible,.tr-ctl input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+  .tr-result{margin-top:.9rem;font-size:.96rem;min-height:1.2rem;text-align:center}
+  .tr-result .ok{color:var(--ok);font-weight:700}
+  .tr-result .bad{color:var(--no);font-weight:700}
+  .tr-result .sol{margin-top:.6rem;padding:.85rem 1rem;background:#FCFDFE;border:1px solid var(--line);border-radius:10px;font-family:ui-monospace,Menlo,monospace;font-size:.9rem;line-height:1.85;text-align:left}
+  .tr-result .sol b{color:var(--accent)}
+
+  /* Ошибки */
+  ul.pitfalls{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:.6rem}
+  ul.pitfalls li{padding-left:1.6rem;position:relative;font-size:.98rem}
+  ul.pitfalls li::before{content:"×";position:absolute;left:.15rem;top:-.05rem;color:var(--no);font-weight:700;font-size:1.15rem}
+  ul.pitfalls b{color:var(--ink)}
+
+  /* Проверка */
+  .selfcheck{background:var(--cb-soft);border-radius:12px;padding:1rem 1.2rem}
+  .selfcheck ol{margin:.3rem 0 0;padding-left:1.2rem;display:flex;flex-direction:column;gap:.4rem;font-size:.98rem}
+
+  .next{background:var(--accent);color:#fff;border-radius:12px;padding:1.2rem 1.3rem}
+  .next h2{color:#fff}
+  .next p{color:#dfe6f5;font-size:.96rem;margin:.4rem 0 0}
+  .next b{color:#fff}
+  .foot{margin-top:2.4rem;font-size:.82rem;color:var(--muted);text-align:center}
+
+  @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<style>
+.oge-tip{display:flex;gap:.8rem;align-items:flex-start;background:#FFF8E7;border:1px solid #F0D98A;border-left:4px solid #E0A315;border-radius:10px;padding:.85rem 1.05rem;margin:1.5rem 0}
+.oge-tip .b{font-size:.72rem;font-weight:800;letter-spacing:.03em;color:#8A6A15;white-space:nowrap;text-transform:uppercase;padding-top:.15rem}
+.oge-tip .x{font-size:.95rem;line-height:1.5}
+</style>
+
+<!--LESSON-NAV-TOP--><style>.lnav{--lnav-accent:#3D5AF1}.lnav a{text-decoration:none;font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif}.lnav-top{max-width:820px;margin:0 auto;padding:.75rem clamp(1rem,4vw,1.5rem) .1rem}.lnav-top a{display:inline-flex;align-items:center;gap:.35rem;color:var(--lnav-accent);font-weight:600;font-size:.9rem}.lnav-top a:hover{text-decoration:underline}.lnav-bot{max-width:820px;margin:2.6rem auto 3rem;padding:1.1rem clamp(1rem,4vw,1.5rem) 0;border-top:1px solid #E4E8EF;display:flex;align-items:stretch;gap:.55rem}.lnav-bot a{min-width:0;display:flex;flex-direction:column;justify-content:center;gap:.15rem;border:1px solid #E4E8EF;border-radius:12px;padding:.65rem .85rem;color:#182233;background:#fff;transition:border-color .1s,transform .08s}.lnav-bot a:hover{border-color:var(--lnav-accent);transform:translateY(-1px)}.lnav-bot .prev,.lnav-bot .next{flex:1 1 0}.lnav-bot .next{text-align:right}.lnav-bot .dir{font-size:.72rem;color:#8A93A6;font-weight:600}.lnav-bot .ttl{font-size:.9rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.lnav-bot .to-cat{flex:0 0 auto;flex-direction:row;align-items:center;justify-content:center;color:var(--lnav-accent);font-weight:700;font-size:.85rem;white-space:nowrap}@media(max-width:420px){.lnav-bot .to-cat span{display:none}.lnav-bot .to-cat{padding:.65rem .7rem}}</style><nav class="lnav lnav-top"><a href="./catalog.html">← Все темы</a></nav><!--/LESSON-NAV-TOP-->
+<div class="wrap">
+
+  <header>
+    <p class="eyebrow">Геометрия · 7 класс</p>
+    <h1>Внешний угол треугольника</h1>
+    <p class="lede">Короткий путь к ответу: вместо двух шагов через 180° — просто сложи два «дальних» угла и всё.</p>
+  </header>
+
+  <div class="hero-formula">
+    <p class="lbl">Теорема о внешнем угле</p>
+    <div class="eq"><span class="e">внешний при C</span> = <span class="a">∠A</span> + <span class="b">∠B</span></div>
+    <div class="eq" style="margin-top:.5rem;font-size:clamp(.95rem,3.6vw,1.35rem)">и одновременно <span class="e">внешний при C</span> = 180° − <span class="c">∠C</span></div>
+    <p class="note">внешний угол равен сумме двух внутренних углов, не смежных с ним</p>
+  </div>
+
+  <section>
+    <p class="kicker">Зачем это нужно</p>
+    <h2>Один шаг вместо двух</h2>
+    <p>Часто в задаче известны два угла треугольника, а спрашивают про угол «снаружи», у продолжения стороны. Можно идти длинным путём: сначала найти третий внутренний угол через сумму 180°, потом вычесть его из 180° как смежный. А можно за <strong>один шаг</strong> — просто сложить два «дальних» угла.</p>
+    <p>Эта же идея работает в задачах на доказательство: теорема о внешнем угле — основа многих рассуждений. И она пригодится дальше, когда будешь изучать соотношение между сторонами и углами треугольника.</p>
+    <p>Типичное житейское заблуждение: <strong>«внешний угол — это весь угол снаружи треугольника»</strong>. На самом деле внешний угол образуется только продолжением <strong>ОДНОЙ</strong> стороны и берётся как смежный к внутреннему, а не «всё, что снаружи».</p>
+  </section>
+
+  <section>
+    <p class="kicker">Что вспомнить с прошлых шагов</p>
+    <div class="recall">
+      <p><b>Сумма углов треугольника</b> равна <b>180°</b>: <span class="math"><span class="wA">∠A</span> + <span class="wB">∠B</span> + <span class="wC">∠C</span> = 180°</span>. Значит третий угол — это остаток: <span class="math"><span class="wC">∠C</span> = 180° − <span class="wA">∠A</span> − <span class="wB">∠B</span></span>.</p>
+      <p><b>Смежные углы</b> вместе дают развёрнутый угол — <b>180°</b>. Не «равны друг другу», а именно в сумме 180°.</p>
+      <p>Из этих двух фактов вся сегодняшняя теорема и получится — буквально в две строчки.</p>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Ядро темы</p>
+    <h2>Определение и теорема</h2>
+    <p><strong>Определение.</strong> Возьми треугольник и продли одну из его сторон за вершину — получится луч. Между этим лучом и второй стороной, выходящей из той же вершины, образуется угол. Это и есть <strong>внешний угол</strong> при данной вершине. Другими словами: внешний угол треугольника при вершине — это угол, <strong>смежный</strong> с внутренним углом этого треугольника при той же вершине.</p>
+    <p>Внешний угол и внутренний угол при одной и той же вершине — смежные: вместе они дают развёрнутый угол <strong>180°</strong>.</p>
+    <p><strong>Теорема о внешнем угле.</strong> Внешний угол треугольника равен сумме двух внутренних углов, <strong>не смежных</strong> с ним.</p>
+    <div class="note-box">
+      <p>Обозначим углы треугольника при вершинах A, B, C через <span class="math"><span class="wA">∠A</span>, <span class="wB">∠B</span>, <span class="wC">∠C</span></span>. Пусть внешний угол построен при вершине <span class="wC">C</span>. Тогда:</p>
+      <p><b>1)</b> <span class="math"><span class="wE">внешний при C</span> = <span class="wA">∠A</span> + <span class="wB">∠B</span></span> — сумма двух не смежных внутренних;</p>
+      <p><b>2)</b> <span class="math"><span class="wE">внешний при C</span> = 180° − <span class="wC">∠C</span></span> — как смежный с <span class="wC">∠C</span>.</p>
+      <p>Оба способа дают одно и то же число — это удобно для <b>проверки</b>.</p>
+    </div>
+    <p style="font-size:.95rem;color:var(--muted);margin-top:.9rem"><b>Почему так (идея в две строчки).</b> Третий внутренний угол равен <span class="math">180° − (два других)</span>. А внешний равен <span class="math">180° − третий</span>. Подставь одно в другое — и «180°» сократятся: остаются как раз те самые два других угла. Внешний угол как бы «впитывает» в себя два внутренних, которые к нему не прилегают.</p>
+    <p style="font-size:.95rem;color:var(--muted)"><b>Условия и ограничения.</b> Внутренние углы измеряются в градусах, каждый строго больше 0° и меньше 180°, сумма всех трёх — 180°. Внешний угол <b>всегда больше каждого</b> из двух не смежных с ним внутренних (ведь он равен их сумме). «Не смежные» — это два угла, у вершин которых внешний угол НЕ построен.</p>
+  </section>
+
+  <div class="oge-tip"><div class="b">🎯 В ОГЭ</div><div class="x"><b>Задание №15.</b> Внешний угол на чертеже — классика этого номера: даны два угла треугольника, спрашивают угол у продолжения стороны. Теорема о внешнем угле решает такую задачу в одно сложение, без поиска третьего угла.</div></div>
+
+  <section>
+    <p class="kicker">Разбираем вместе · думаю вслух</p>
+    <h2>Эталонный пример</h2>
+    <div class="worked">
+      <p class="task">В треугольнике <span class="wA">∠A = 50°</span>, <span class="wB">∠B = 70°</span>. Найти внешний угол при вершине <span class="wC">C</span>.</p>
+      <ol class="steps">
+        <li>Смотрю, где строится внешний угол: <span class="m">при вершине C</span>. <em>Значит смежный с ним внутренний — это ∠C, его брать нельзя.</em></li>
+        <li>Закрываю пальцем вершину C. Остались <span class="m">∠A и ∠B</span> — это и есть два не смежных внутренних угла. <em>Почему они: их вершины A и B, а внешний угол построен не там.</em></li>
+        <li>Применяю теорему: <span class="m">внешний при C = ∠A + ∠B</span>. <em>Теорема о внешнем угле: он равен сумме двух не смежных внутренних.</em></li>
+        <li>Считаю: <span class="m">внешний при C = 50° + 70° = 120°</span>. <em>Просто складываю два данных числа — один шаг.</em></li>
+        <li>Проверяю вторым способом: <span class="m">∠C = 180° − 50° − 70° = 60°</span>, тогда как смежный <span class="m">внешний = 180° − 60° = 120°</span>. <em>Совпало — значит верно.</em></li>
+      </ol>
+      <div class="verdict">Ответ: внешний угол при C = 120°</div>
+    </div>
+    <p style="font-size:.92rem;color:var(--muted);margin-top:.8rem">Теперь допиши пропущенный шаг сам: внешний угол при вершине <span class="math">B</span> равен <span class="math">145°</span>, а <span class="math">∠A = 60°</span>. По теореме <span class="math">145° = ∠A + ∠C</span>, значит <span class="math">∠C = 145° − 60° = ?</span> Должно получиться <b>85°</b>.</p>
+    <p style="font-size:.92rem;color:var(--muted)">И ещё одна на закрепление: <span class="math">∠A = 35°</span>, <span class="math">∠C = 45°</span>, найди внешний угол при вершине <span class="math">B</span>. Ответ: <b>80°</b>.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Увидь глазами · интерактив</p>
+    <h2>Чертёж: продли сторону — получишь внешний угол</h2>
+    <p>Сторона <span class="math">BC</span> продлена за вершину <span class="wC">C</span> до точки <span class="math">D</span> — это тот самый луч. <span class="wE">Синяя дуга</span> — внешний угол при <span class="wC">C</span> (между лучом <span class="math">CD</span> и стороной <span class="math">CA</span>). Рядом <span class="wC">гранатовая дуга</span> — внутренний <span class="wC">∠C</span>. Вместе они «разворачивают» прямую: <span class="math">180°</span>.</p>
+    <p>Тяни ползунки <span class="wA">∠A</span> и <span class="wB">∠B</span> и следи за нижней строкой: сколько ни меняй форму, синее число всегда равно сумме зелёного и янтарного.</p>
+    <div class="viz">
+      <canvas id="viz" width="640" height="450" aria-label="Треугольник ABC, сторона BC продлена за вершину C до точки D; отмечены внутренний угол C и внешний угол, равный сумме углов A и B"></canvas>
+      <div id="vizRead" class="viz-read"></div>
+      <div class="sliders">
+        <label class="lA"><span class="nm">∠A</span><input id="sA" class="rA" type="range" min="20" max="130" step="1" value="50" aria-label="Величина угла A"><span id="vA" class="sval">50°</span></label>
+        <label class="lB"><span class="nm">∠B</span><input id="sB" class="rB" type="range" min="20" max="130" step="1" value="70" aria-label="Величина угла B"><span id="vB" class="sval">70°</span></label>
+      </div>
+      <div class="viz-btn">
+        <button id="vizBig" type="button">Сделать ∠C большим</button>
+        <button id="vizReset" type="button" class="reset">Сбросить</button>
+      </div>
+    </div>
+    <p style="font-size:.9rem;color:var(--muted)"><b>Предскажи → проверь → объясни.</b> Как думаешь: если <span class="wC">∠C</span> станет большим, внешний угол вырастет или уменьшится? Сначала ответь про себя, потом нажми кнопку «Сделать ∠C большим» и посмотри. Внешний угол <b>уменьшается</b> при росте <span class="wC">∠C</span> — ведь он равен <span class="math">180° − <span class="wC">∠C</span></span>: чем больше вычитаем, тем меньше остаток.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Теперь ты · бесконечная практика</p>
+    <h2>Тренажёр</h2>
+    <p>Нажми «Новая», реши задачу и впиши ответ в градусах (число, можно без значка °). Проверь себя или посмотри пошаговое решение.</p>
+    <div class="trainer">
+      <div class="tr-task" id="trTask">В треугольнике <b>∠A = 50°</b> и <b>∠B = 70°</b>. Найди <b>внешний угол при вершине C</b>.</div>
+      <div class="tr-ctl">
+        <button id="trNew" type="button">🎲 Новая</button>
+        <input id="trAns" type="text" inputmode="numeric" placeholder="ответ в °" aria-label="Ответ в градусах">
+        <button id="trCheck" type="button" class="sec">Проверить</button>
+        <button id="trShow" type="button" class="ghost">Решение</button>
+      </div>
+      <div id="trResult" class="tr-result"></div>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Проверь себя · от простого к анализу</p>
+    <h2>Мини-практика</h2>
+    <div class="drill">
+      <details>
+        <summary><span class="q">Внешний угол построен при вершине A. С каким внутренним углом он смежный и какие два угла дают его в сумме?</span><span class="tag">понимание</span></summary>
+        <div class="ans">Смежный он с внутренним <b>∠A</b> (та же вершина). А в сумме его дают два не смежных: <span class="m">∠B + ∠C</span>. Приём: закрой пальцем вершину, где строишь внешний угол, — оставшиеся два угла и есть слагаемые.</div>
+      </details>
+      <details>
+        <summary><span class="q">В треугольнике два внутренних угла равны 48° и 52°. Найди внешний угол при третьей вершине.</span><span class="tag">применение</span></summary>
+        <div class="ans">Оба данных угла не смежны с искомым внешним, значит складываем: <span class="m">48° + 52° = 100°</span>. Ответ <b>100°</b>.</div>
+      </details>
+      <details>
+        <summary><span class="q">В треугольнике ∠A = 50°, ∠B = 70°. Чему равен внутренний ∠C и чему внешний угол при C?</span><span class="tag">применение</span></summary>
+        <div class="ans"><span class="m">∠C = 180° − 50° − 70° = 60°</span>, внешний при C <span class="m">= 180° − 60° = 120°</span>. Тот же результат в один шаг: <span class="m">50° + 70° = 120°</span>. Ответ: <b>∠C = 60°</b>, внешний <b>120°</b>.</div>
+      </details>
+      <details>
+        <summary><span class="q">Внешний угол при вершине B равен 145°, ∠A = 60°. Найди ∠C.</span><span class="tag">применение</span></summary>
+        <div class="ans">По теореме <span class="m">145° = ∠A + ∠C</span>, значит <span class="m">∠C = 145° − 60° = 85°</span>. Ответ <b>85°</b>.</div>
+      </details>
+      <details>
+        <summary><span class="q">Внешний угол при вершине C равен 110°. Что изменится в ответе, если один из не смежных внутренних углов увеличить на 10°, не меняя другого?</span><span class="tag">анализ</span></summary>
+        <div class="ans">Внешний угол — это <b>сумма</b> двух не смежных углов. Увеличили одно слагаемое на 10° — сумма выросла ровно на <b>10°</b>: <span class="m">110° + 10° = 120°</span>. Заодно внутренний ∠C уменьшится на 10°, ведь <span class="m">∠C = 180° − внешний</span>.</div>
+      </details>
+      <details>
+        <summary><span class="q">Найди ошибку: ученик написал «внешний угол при C = ∠C + ∠A». Где он не прав?</span><span class="tag">анализ</span></summary>
+        <div class="ans">Внешний угол равен сумме двух <b>НЕ смежных</b> внутренних, а <b>∠C — как раз смежный</b> с ним (та же вершина C), его брать нельзя. Верно: <span class="m">внешний при C = ∠A + ∠B</span>.</div>
+      </details>
+      <details>
+        <summary><span class="q">Может ли внешний угол быть меньше каждого из двух не смежных внутренних?</span><span class="tag">анализ</span></summary>
+        <div class="ans"><b>Нет.</b> Он равен их сумме, а каждый угол больше 0°, значит сумма больше любого из слагаемых. Внешний угол всегда больше каждого из этих двух внутренних.</div>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Где чаще всего ошибаются</p>
+    <h2>Лови эти ловушки</h2>
+    <ul class="pitfalls">
+      <li><b>Считают внешний угол равным смежному внутреннему.</b> Внешний и внутренний при одной вершине — смежные: они в сумме дают <b>180°</b>, а не равны друг другу (равны только если оба по 90°). Как не допустить: всегда помни «смежные = 180° в сумме».</li>
+      <li><b>Складывают не те внутренние углы.</b> Берут угол, который смежен с внешним, вместо двух дальних. Как не допустить: сначала закрой пальцем вершину, где строишь внешний угол, — оставшиеся два угла и есть нужные слагаемые.</li>
+      <li><b>Путают внешний угол с «продолжением стороны без угла».</b> Думают, что внешний угол — это просто луч-продолжение. Как не допустить: внешний угол — это именно угол между продолжением и второй стороной, у него есть градусная мера.</li>
+      <li><b>Думают, что внешний угол — «всё, что снаружи».</b> Нет: он образован продолжением только <b>одной</b> стороны и второй стороной из той же вершины.</li>
+    </ul>
+  </section>
+
+  <section>
+    <p class="kicker">Объясни своими словами</p>
+    <div class="selfcheck">
+      <ol>
+        <li>Чему равен внешний угол треугольника — назови правило одной фразой.</li>
+        <li>Внутренние углы 40° и 65°. Чему равен внешний угол при третьей вершине? <em>(105°)</em></li>
+        <li>Может ли внешний угол быть меньше каждого из двух не смежных внутренних? Почему? <em>(нет — он равен их сумме)</em></li>
+      </ol>
+    </div>
+  </section>
+
+  <section>
+    <div class="next">
+      <h2>Что дальше</h2>
+      <p>Следующий шаг — <b>соотношение между сторонами и углами треугольника</b>: против большей стороны лежит больший угол. Теорема о внешнем угле — один из инструментов, на которые там опираются рассуждения.</p>
+      <p><b>Запомни одним предложением:</b> внешний угол треугольника равен сумме двух не смежных с ним внутренних углов (и одновременно дополняет смежный внутренний до 180°).</p>
+    </div>
+  </section>
+
+  <p class="foot">Проверка на выходе: чему равен внешний угол? · углы 40° и 65° → внешний при третьей вершине? · может ли внешний быть меньше не смежного внутреннего?</p>
+
+</div>
+
+<script>
+/* ВИЗУАЛИЗАЦИЯ: треугольник ABC, сторона BC продлена за C до D; внешний угол при C = ∠A + ∠B */
+(function(){
+  var cv=document.getElementById('viz'); if(!cv) return;
+  var ctx=cv.getContext('2d');
+  var sA=document.getElementById('sA'), sB=document.getElementById('sB');
+  var vA=document.getElementById('vA'), vB=document.getElementById('vB');
+  var read=document.getElementById('vizRead');
+  var W=640,H=450,dpr=1;
+  var D2R=Math.PI/180;
+  var MIN=20; /* минимальный угол, чтобы фигура читалась */
+
+  function css(v){ return getComputedStyle(document.documentElement).getPropertyValue(v).trim(); }
+  function resize(){
+    var c=cv.clientWidth||640; dpr=Math.min(window.devicePixelRatio||1,2);
+    W=c; H=Math.round(c*0.70);
+    cv.width=W*dpr; cv.height=H*dpr; cv.style.height=H+'px';
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+  }
+  /* гарантируем A + B <= 180 - MIN, подстраивая НЕ трогаемый ползунок */
+  function clampPair(src){
+    var a=+sA.value, b=+sB.value, lim=180-MIN;
+    if(a+b>lim){
+      if(src==='B'){ sA.value=lim-b; } else { sB.value=lim-a; }
+    }
+  }
+  /* дуга угла в вершине V между лучами на P1 и P2 (экранные координаты) */
+  function angMark(V,P1,P2,rad,col,lw){
+    var t1=Math.atan2(P1[1]-V[1],P1[0]-V[0]), t2=Math.atan2(P2[1]-V[1],P2[0]-V[0]);
+    var d=t2-t1; while(d>Math.PI)d-=2*Math.PI; while(d<-Math.PI)d+=2*Math.PI;
+    ctx.beginPath();
+    for(var i=0;i<=30;i++){ var t=t1+d*i/30, x=V[0]+rad*Math.cos(t), y=V[1]+rad*Math.sin(t); i?ctx.lineTo(x,y):ctx.moveTo(x,y); }
+    ctx.strokeStyle=col; ctx.lineWidth=lw||2.6; ctx.stroke();
+    var tm=t1+d/2; return [V[0]+(rad+18)*Math.cos(tm), V[1]+(rad+18)*Math.sin(tm)];
+  }
+  function dot(p,col){ ctx.beginPath(); ctx.arc(p[0],p[1],6,0,7); ctx.fillStyle=col; ctx.fill(); ctx.beginPath(); ctx.arc(p[0],p[1],3.6,0,7); ctx.fillStyle='#fff'; ctx.fill(); }
+
+  function draw(){
+    var a=+sA.value, b=+sB.value, c=180-a-b, ext=a+b;
+    vA.textContent=a+'°'; vB.textContent=b+'°';
+
+    /* математические координаты: B=(0,0), C=(1,0), A по теореме синусов, D — продолжение BC за C */
+    var L=1;
+    var t=L*Math.sin(c*D2R)/Math.sin(a*D2R); /* длина BA */
+    var Bm=[0,0], Cm=[L,0], Am=[t*Math.cos(b*D2R), t*Math.sin(b*D2R)];
+    var Dm=[L+0.55,0];
+
+    var xs=[Am[0],Bm[0],Cm[0],Dm[0]], ys=[Am[1],Bm[1],Cm[1],Dm[1]];
+    var minx=Math.min.apply(null,xs), maxx=Math.max.apply(null,xs);
+    var miny=Math.min.apply(null,ys), maxy=Math.max.apply(null,ys);
+    var pad=Math.max(46,W*0.11), sc=Math.min((W-pad*2)/(maxx-minx||1),(H-pad*2)/(maxy-miny||1));
+    var ox=(W-(maxx-minx)*sc)/2, oy=(H-(maxy-miny)*sc)/2;
+    function S(p){ return [ox+(p[0]-minx)*sc, oy+(maxy-p[1])*sc]; } /* flip Y */
+    var A=S(Am), B=S(Bm), C=S(Cm), D=S(Dm);
+
+    var cA=css('--ca'), cB=css('--cb'), cC=css('--cc'), cAc=css('--accent'), cInk=css('--ink');
+
+    ctx.clearRect(0,0,W,H);
+
+    /* продолжение стороны BC за C — пунктиром */
+    ctx.save();
+    ctx.setLineDash([7,6]);
+    ctx.beginPath(); ctx.moveTo(C[0],C[1]); ctx.lineTo(D[0],D[1]);
+    ctx.strokeStyle=cAc; ctx.lineWidth=2.2; ctx.stroke();
+    ctx.restore();
+
+    /* сектор внешнего угла — лёгкая заливка */
+    var tD=Math.atan2(D[1]-C[1],D[0]-C[0]), tA=Math.atan2(A[1]-C[1],A[0]-C[0]);
+    ctx.beginPath(); ctx.moveTo(C[0],C[1]);
+    var dd=tA-tD; while(dd>Math.PI)dd-=2*Math.PI; while(dd<-Math.PI)dd+=2*Math.PI;
+    for(var i=0;i<=30;i++){ var tt=tD+dd*i/30; ctx.lineTo(C[0]+40*Math.cos(tt), C[1]+40*Math.sin(tt)); }
+    ctx.closePath(); ctx.fillStyle='rgba(46,90,172,0.10)'; ctx.fill();
+
+    /* треугольник */
+    ctx.beginPath(); ctx.moveTo(A[0],A[1]); ctx.lineTo(B[0],B[1]); ctx.lineTo(C[0],C[1]); ctx.closePath();
+    ctx.fillStyle='rgba(46,90,172,0.05)'; ctx.fill();
+    ctx.strokeStyle=cInk; ctx.lineWidth=2.4; ctx.stroke();
+
+    /* дуги углов */
+    var lA=angMark(A,B,C,26,cA);
+    var lB=angMark(B,A,C,26,cB);
+    var lC=angMark(C,A,B,22,cC);
+    var lE=angMark(C,D,A,40,cAc,3.2);
+
+    /* подписи величин */
+    ctx.font='700 '+Math.max(13,W*0.028)+'px ui-monospace,Menlo,monospace';
+    ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.fillStyle=cA; ctx.fillText(a+'°', lA[0], lA[1]);
+    ctx.fillStyle=cB; ctx.fillText(b+'°', lB[0], lB[1]);
+    ctx.fillStyle=cC; ctx.fillText(c+'°', lC[0], lC[1]);
+    ctx.fillStyle=cAc; ctx.fillText(ext+'°', lE[0], lE[1]);
+
+    /* вершины и буквы */
+    dot(A,cA); dot(B,cB); dot(C,cC); dot(D,cAc);
+    ctx.font='700 '+Math.max(13,W*0.03)+'px system-ui,sans-serif';
+    ctx.fillStyle=cA; ctx.fillText('A', A[0], A[1]-20);
+    ctx.fillStyle=cB; ctx.fillText('B', B[0]-16, B[1]+18);
+    ctx.fillStyle=cC; ctx.fillText('C', C[0]-4, C[1]+20);
+    ctx.fillStyle=cAc; ctx.fillText('D', D[0]+2, D[1]+20);
+
+    read.innerHTML='внешний при C: <span class="e">'+ext+'°</span> = <span class="a">'+a+'°</span> + <span class="b">'+b+'°</span>'+
+      '<br>проверка: 180° &minus; <span class="c">'+c+'°</span> = <span class="e">'+ext+'°</span>';
+  }
+
+  sA.addEventListener('input',function(){ clampPair('A'); draw(); });
+  sB.addEventListener('input',function(){ clampPair('B'); draw(); });
+  document.getElementById('vizBig').addEventListener('click',function(){ sA.value=25; sB.value=25; draw(); });
+  document.getElementById('vizReset').addEventListener('click',function(){ sA.value=50; sB.value=70; draw(); });
+  window.addEventListener('resize',function(){ resize(); draw(); });
+  resize(); draw();
+})();
+</script>
+
+<script>
+/* ТРЕНАЖЁР-ГЕНЕРАТОР: внешний угол треугольника */
+(function(){
+  var taskEl=document.getElementById('trTask'), ansEl=document.getElementById('trAns'), resEl=document.getElementById('trResult');
+  if(!taskEl) return;
+  var cur=null;
+  var MINUS='−'; /* настоящий минус − (U+2212) */
+  function ri(a,b){ return Math.floor(Math.random()*(b-a+1))+a; }
+
+  function generate(){
+    var r=Math.random(), a,b,c,e;
+    if(r<0.45){
+      /* тип 1: даны два угла — найти внешний при третьей вершине */
+      do{ a=ri(20,110); b=ri(20,110); c=180-a-b; }while(c<15);
+      cur={t:'sum', a:a, b:b, ans:a+b};
+      taskEl.innerHTML='В треугольнике <b>∠A = '+a+'°</b> и <b>∠B = '+b+'°</b>. Найди <b>внешний угол при вершине C</b>.';
+    } else if(r<0.75){
+      /* тип 2: дан внешний угол и один не смежный — найти второй не смежный */
+      do{ a=ri(20,110); c=ri(20,110); b=180-a-c; }while(b<15);
+      e=a+c; /* внешний при B */
+      cur={t:'part', e:e, known:a, ans:c};
+      taskEl.innerHTML='Внешний угол при вершине <b>B</b> равен <b>'+e+'°</b>, а <b>∠A = '+a+'°</b>. Найди <b>∠C</b>.';
+    } else {
+      /* тип 3: дан внешний угол — найти смежный с ним внутренний */
+      e=ri(95,165);
+      cur={t:'adj', e:e, ans:180-e};
+      taskEl.innerHTML='Внешний угол при вершине <b>C</b> равен <b>'+e+'°</b>. Найди внутренний угол <b>∠C</b> треугольника.';
+    }
+    resEl.innerHTML=''; ansEl.value='';
+  }
+
+  function solHTML(){
+    var q=cur, h='<div class="sol">';
+    if(q.t==='sum'){
+      h+='Внешний при C = сумме двух не смежных: ∠A + ∠B<br>';
+      h+='Внешний = '+q.a+'° + '+q.b+'° = <b>'+q.ans+'°</b><br>';
+      h+='Проверка: ∠C = 180° '+MINUS+' '+q.a+'° '+MINUS+' '+q.b+'° = '+(180-q.a-q.b)+'°, ';
+      h+='180° '+MINUS+' '+(180-q.a-q.b)+'° = '+q.ans+'° ✓';
+    } else if(q.t==='part'){
+      h+='Внешний при B = ∠A + ∠C (два не смежных)<br>';
+      h+=q.e+'° = '+q.known+'° + ∠C<br>';
+      h+='∠C = '+q.e+'° '+MINUS+' '+q.known+'° = <b>'+q.ans+'°</b>';
+    } else {
+      h+='Внешний и внутренний при одной вершине — смежные: в сумме 180°<br>';
+      h+='∠C = 180° '+MINUS+' '+q.e+'° = <b>'+q.ans+'°</b>';
+    }
+    return h+'</div>';
+  }
+
+  function check(){
+    var raw=ansEl.value.trim().replace('°','').replace(',','.');
+    if(raw===''){ resEl.innerHTML='<span class="bad">Введи ответ или нажми «Решение».</span>'; return; }
+    var got=parseFloat(raw);
+    if(!isNaN(got) && Math.abs(got-cur.ans)<0.02){ resEl.innerHTML='<span class="ok">✓ Верно!</span>'+solHTML(); }
+    else{ resEl.innerHTML='<span class="bad">✗ Пока не то — глянь решение.</span>'+solHTML(); }
+  }
+
+  document.getElementById('trNew').addEventListener('click',function(){ generate(); ansEl.focus(); });
+  document.getElementById('trCheck').addEventListener('click',check);
+  document.getElementById('trShow').addEventListener('click',function(){ resEl.innerHTML=solHTML(); });
+  ansEl.addEventListener('keydown',function(e){ if(e.key==='Enter') check(); });
+
+  /* стартовое состояние = задача, показанная в тексте */
+  cur={t:'sum', a:50, b:70, ans:120};
+})();
+</script>
+<!--LESSON-NAV-BOT--><nav class="lnav lnav-bot"><a class="prev" href="./geo7-summa-uglov-treugolnika.html"><span class="dir">← Предыдущая</span><span class="ttl">Теорема о сумме углов треугольника</span></a><a class="to-cat" href="./catalog.html">📚 <span>Все темы</span></a><a class="next" href="./geo7-neravenstvo-treugolnika.html"><span class="dir">Следующая →</span><span class="ttl">Неравенство треугольника</span></a></nav><!--/LESSON-NAV-BOT-->

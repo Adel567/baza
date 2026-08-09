@@ -1,0 +1,535 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Смежные углы — геометрия 7 класс</title>
+<style>
+  :root{
+    --paper:#F6F7F9;
+    --card:#FFFFFF;
+    --ink:#1B2333;
+    --muted:#5A6478;
+    --line:#E2E5EC;
+    --accent:#2E5AAC;        /* брендовый — заголовки, формула */
+    --accent-soft:#E4EBF7;
+    --ca:#1E8E5A; --ca-soft:#E7F4EC;   /* первый угол — зелёный */
+    --cb:#E27C2C; --cb-soft:#FBEEDF;   /* второй угол — янтарный */
+    --cc:#C0455B; --cc-soft:#F9E9EC;   /* «не смежные» / ошибка — гранат */
+    --ok:#1E8E5A; --no:#C0455B;
+  }
+  *{box-sizing:border-box}
+  body{margin:0}
+  .wrap{
+    max-width:760px;margin:0 auto;
+    padding:clamp(1.4rem,4vw,3rem) clamp(1.1rem,4vw,2rem) 4rem;
+    background:var(--paper);color:var(--ink);
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    font-size:17px;line-height:1.62;-webkit-font-smoothing:antialiased;
+  }
+  .eyebrow{font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);font-weight:600;margin:0 0 .5rem}
+  h1{font-family:Georgia,"Times New Roman",serif;font-size:clamp(2rem,7vw,3rem);line-height:1.05;margin:0;font-weight:700;letter-spacing:-.01em;text-wrap:balance}
+  .lede{font-size:1.08rem;color:var(--muted);margin:.7rem 0 0;max-width:60ch;text-wrap:pretty}
+  h2{font-family:Georgia,serif;font-size:1.32rem;font-weight:700;margin:0 0 .1rem;letter-spacing:-.005em}
+  section{margin-top:2.6rem}
+  .kicker{font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:600;margin:0 0 .8rem;display:flex;align-items:center;gap:.6rem}
+  .kicker::before{content:"";width:1.4rem;height:2px;background:var(--accent);border-radius:2px}
+  p{margin:.65rem 0}
+  strong{font-weight:650}
+  .math{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-weight:600}
+  sup{font-size:.72em}
+  .wA{color:var(--ca);font-weight:700} .wB{color:var(--cb);font-weight:700} .wC{color:var(--cc);font-weight:700}
+
+  /* Главная формула */
+  .hero-formula{margin-top:2.2rem;background:var(--ink);color:#fff;border-radius:14px;padding:1.6rem 1.4rem;text-align:center}
+  .hero-formula .lbl{font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:#9aa6c9;margin:0 0 .7rem}
+  .hero-formula .eq{font-family:ui-monospace,"SF Mono",Menlo,monospace;font-size:clamp(1.5rem,6vw,2.3rem);font-weight:700}
+  .hero-formula .eq .a{color:#5fd39a} .hero-formula .eq .b{color:#f0a45e}
+  .hero-formula .note{font-size:.86rem;color:#9aa6c9;margin:.8rem 0 0}
+
+  /* Пререквизит */
+  .recall{background:var(--accent-soft);border-radius:12px;padding:1rem 1.15rem;font-size:.96rem}
+  .recall p{margin:.35rem 0}
+  .recall b{color:var(--accent)}
+
+  /* Следствие / замечание */
+  .note-box{border-left:4px solid var(--accent);background:var(--accent-soft);border-radius:0 10px 10px 0;padding:.8rem 1.1rem;margin-top:1rem;font-size:.97rem}
+  .note-box b{color:var(--accent)}
+
+  /* Два условия */
+  .checks{margin:1rem 0 0;padding:0;list-style:none;display:flex;flex-direction:column;gap:.6rem}
+  .checks li{position:relative;padding-left:2rem;font-size:.98rem}
+  .checks li::before{content:"✓";position:absolute;left:.2rem;top:0;color:var(--ok);font-weight:700}
+  .checks b{color:var(--ink)}
+
+  /* Разбор */
+  .worked{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:1.2rem 1.3rem}
+  .worked .task{font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.02rem;margin:0 0 1rem;padding-bottom:.8rem;border-bottom:1px solid var(--line)}
+  ol.steps{margin:0;padding:0;list-style:none;counter-reset:s;display:flex;flex-direction:column;gap:.7rem}
+  ol.steps li{position:relative;padding-left:2.1rem;counter-increment:s}
+  ol.steps li::before{content:counter(s);position:absolute;left:0;top:.05rem;width:1.5rem;height:1.5rem;border-radius:50%;background:var(--accent-soft);color:var(--accent);font-size:.82rem;font-weight:700;display:flex;align-items:center;justify-content:center}
+  ol.steps .m{font-family:ui-monospace,Menlo,monospace;font-weight:600;color:var(--ink)}
+  ol.steps em{color:var(--muted);font-style:italic}
+  .verdict{margin-top:1rem;padding:.7rem 1rem;background:var(--accent-soft);border-radius:9px;font-weight:600;color:var(--accent);font-size:.98rem;font-family:ui-monospace,Menlo,monospace}
+
+  /* Визуализация */
+  .viz{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.1rem 1.1rem 1rem;margin:1rem 0}
+  .viz canvas{width:100%;height:auto;display:block;border-radius:10px;background:#FCFDFF}
+  .viz-read{text-align:center;font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:clamp(.92rem,3.4vw,1.05rem);margin:.85rem 0 0;padding:.55rem;border-radius:9px;background:var(--accent-soft)}
+  .viz-read .a{color:var(--ca)} .viz-read .b{color:var(--cb)}
+  .sliders{display:grid;gap:.7rem;margin-top:.95rem}
+  .sliders label{display:flex;align-items:center;gap:.55rem;font-weight:700;font-family:ui-monospace,Menlo,monospace;font-size:.92rem}
+  .sliders label .nm{min-width:7.5ch}
+  .sliders input[type=range]{flex:1}
+  .sliders input.rA{accent-color:var(--ca)}
+  .sliders label.lA .nm{color:var(--ca)}
+  .sliders .sval{min-width:3.5ch;text-align:right;color:var(--muted);font-variant-numeric:tabular-nums}
+  .viz-btn{margin-top:.85rem;display:flex;gap:.5rem;flex-wrap:wrap}
+  .viz-btn button{font:inherit;font-weight:700;font-size:.86rem;cursor:pointer;border:none;border-radius:9px;padding:.5rem .9rem;background:var(--accent);color:#fff}
+  .viz-btn button.reset{background:transparent;color:var(--accent);border:1px solid var(--accent)}
+  .viz-btn button:focus-visible,.sliders input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+
+  /* Практика */
+  .drill{display:flex;flex-direction:column;gap:.7rem}
+  details{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:.85rem 1.05rem}
+  details[open]{border-color:var(--accent)}
+  summary{cursor:pointer;font-weight:600;list-style:none;display:flex;justify-content:space-between;align-items:center;gap:1rem}
+  summary::-webkit-details-marker{display:none}
+  summary:focus-visible{outline:3px solid var(--accent);outline-offset:3px;border-radius:6px}
+  summary .q{font-family:ui-monospace,Menlo,monospace;font-size:.92rem}
+  summary .tag{font-size:.66rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);border:1px solid var(--line);border-radius:20px;padding:.1rem .55rem;white-space:nowrap}
+  summary::after{content:"ответ";font-size:.76rem;color:var(--accent);font-weight:600;white-space:nowrap}
+  details[open] summary::after{content:"скрыть"}
+  .ans{margin-top:.7rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.96rem;color:var(--muted)}
+  .ans .m{font-family:ui-monospace,Menlo,monospace;color:var(--ink);font-weight:600}
+  .ans b{color:var(--ink)}
+
+  /* Тренажёр */
+  .trainer{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.2rem 1.3rem;margin-top:1rem}
+  .tr-task{font-size:clamp(1rem,3.6vw,1.12rem);text-align:center;padding:1rem;background:var(--accent-soft);border-radius:10px;font-weight:600;line-height:1.5}
+  .tr-task b{font-family:ui-monospace,Menlo,monospace;color:var(--ink)}
+  .tr-ctl{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:1rem;align-items:center;justify-content:center}
+  .tr-ctl input{flex:1;min-width:130px;max-width:200px;font:inherit;padding:.5rem .7rem;border:1px solid var(--line);border-radius:9px;text-align:center;background:#fff;color:var(--ink)}
+  .tr-ctl button{font:inherit;font-weight:700;font-size:.9rem;cursor:pointer;border:none;border-radius:9px;padding:.55rem .95rem;color:#fff;background:var(--accent)}
+  .tr-ctl button.sec{background:var(--cb)}
+  .tr-ctl button.ghost{background:transparent;color:var(--accent);border:1px solid var(--accent)}
+  .tr-ctl button:focus-visible,.tr-ctl input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+  .tr-result{margin-top:.9rem;font-size:.96rem;min-height:1.2rem;text-align:center}
+  .tr-result .ok{color:var(--ok);font-weight:700}
+  .tr-result .bad{color:var(--no);font-weight:700}
+  .tr-result .sol{margin-top:.6rem;padding:.85rem 1rem;background:#FCFDFE;border:1px solid var(--line);border-radius:10px;font-family:ui-monospace,Menlo,monospace;font-size:.9rem;line-height:1.85;text-align:left}
+  .tr-result .sol b{color:var(--accent)}
+
+  /* Ошибки */
+  ul.pitfalls{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:.6rem}
+  ul.pitfalls li{padding-left:1.6rem;position:relative;font-size:.98rem}
+  ul.pitfalls li::before{content:"×";position:absolute;left:.15rem;top:-.05rem;color:var(--no);font-weight:700;font-size:1.15rem}
+  ul.pitfalls b{color:var(--ink)}
+
+  /* Проверка */
+  .selfcheck{background:var(--cb-soft);border-radius:12px;padding:1rem 1.2rem}
+  .selfcheck ol{margin:.3rem 0 0;padding-left:1.2rem;display:flex;flex-direction:column;gap:.4rem;font-size:.98rem}
+
+  .next{background:var(--accent);color:#fff;border-radius:12px;padding:1.2rem 1.3rem}
+  .next h2{color:#fff}
+  .next p{color:#dfe6f5;font-size:.96rem;margin:.4rem 0 0}
+  .next b{color:#fff}
+  .foot{margin-top:2.4rem;font-size:.82rem;color:var(--muted);text-align:center}
+
+  @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<style>
+.oge-tip{display:flex;gap:.8rem;align-items:flex-start;background:#FFF8E7;border:1px solid #F0D98A;border-left:4px solid #E0A315;border-radius:10px;padding:.85rem 1.05rem;margin:1.5rem 0}
+.oge-tip .b{font-size:.72rem;font-weight:800;letter-spacing:.03em;color:#8A6A15;white-space:nowrap;text-transform:uppercase;padding-top:.15rem}
+.oge-tip .x{font-size:.95rem;line-height:1.5}
+</style>
+
+<!--LESSON-NAV-TOP--><style>.lnav{--lnav-accent:#3D5AF1}.lnav a{text-decoration:none;font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif}.lnav-top{max-width:820px;margin:0 auto;padding:.75rem clamp(1rem,4vw,1.5rem) .1rem}.lnav-top a{display:inline-flex;align-items:center;gap:.35rem;color:var(--lnav-accent);font-weight:600;font-size:.9rem}.lnav-top a:hover{text-decoration:underline}.lnav-bot{max-width:820px;margin:2.6rem auto 3rem;padding:1.1rem clamp(1rem,4vw,1.5rem) 0;border-top:1px solid #E4E8EF;display:flex;align-items:stretch;gap:.55rem}.lnav-bot a{min-width:0;display:flex;flex-direction:column;justify-content:center;gap:.15rem;border:1px solid #E4E8EF;border-radius:12px;padding:.65rem .85rem;color:#182233;background:#fff;transition:border-color .1s,transform .08s}.lnav-bot a:hover{border-color:var(--lnav-accent);transform:translateY(-1px)}.lnav-bot .prev,.lnav-bot .next{flex:1 1 0}.lnav-bot .next{text-align:right}.lnav-bot .dir{font-size:.72rem;color:#8A93A6;font-weight:600}.lnav-bot .ttl{font-size:.9rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.lnav-bot .to-cat{flex:0 0 auto;flex-direction:row;align-items:center;justify-content:center;color:var(--lnav-accent);font-weight:700;font-size:.85rem;white-space:nowrap}@media(max-width:420px){.lnav-bot .to-cat span{display:none}.lnav-bot .to-cat{padding:.65rem .7rem}}</style><nav class="lnav lnav-top"><a href="./catalog.html">← Все темы</a></nav><!--/LESSON-NAV-TOP-->
+<div class="wrap">
+
+  <header>
+    <p class="eyebrow">Геометрия · 7 класс</p>
+    <h1>Смежные углы</h1>
+    <p class="lede">Первый рабочий инструмент геометрии: знаешь один угол — мгновенно называешь соседний, и транспортир не нужен.</p>
+  </header>
+
+  <div class="hero-formula">
+    <p class="lbl">Свойство смежных углов</p>
+    <div class="eq"><span class="a">∠1</span> + <span class="b">∠2</span> = 180°</div>
+    <p class="note">смежные углы — это две части развёрнутого угла, а он всегда 180°</p>
+  </div>
+
+  <section>
+    <p class="kicker">Зачем это нужно</p>
+    <h2>Соседний угол — без измерений</h2>
+    <p>Смежные углы пригодятся тебе буквально в каждой следующей задаче про прямые и углы: при доказательстве признаков параллельности, при работе с треугольниками, при построении перпендикуляров. Зная один угол, ты сразу находишь соседний — не прикладывая транспортир.</p>
+    <p>В жизни ты видишь их постоянно: створка двери и стена образуют с полом два угла, которые в сумме дают развёрнутый; стрелка дорожного указателя и прямая дорога; раскрытые ножницы. Если ветку отклонили от вертикального столба на <span class="math">30°</span>, то с другой стороны она «забирает» оставшиеся <span class="math">150°</span> — это и есть смежные углы.</p>
+    <p>Типичное житейское заблуждение: <strong>«два угла, которые стоят рядом, — это смежные»</strong>. Нет! Рядом стоять мало. Нужно, чтобы внешние стороны лежали на одной прямой, то есть были продолжением друг друга. Разберёмся, как это проверять.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Что вспомнить с прошлых шагов</p>
+    <div class="recall">
+      <p><b>Углы измеряются в градусах</b> (°) — транспортиром. Величина угла говорит, насколько «раскрыты» его стороны.</p>
+      <p><b>Развёрнутый угол</b> — это прямая линия, и он равен <b>180°</b>. Именно на две части его и делят смежные углы.</p>
+      <p><b>Виды углов:</b> острый — меньше 90°, прямой — ровно 90°, тупой — больше 90°, развёрнутый — 180°. Это понадобится, чтобы проверять ответ на здравый смысл.</p>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Ядро темы</p>
+    <h2>Определение и свойство</h2>
+    <p>Возьми любую прямую и поставь на ней точку. Проведи из этой точки луч вверх — он разбивает развёрнутый угол (180°) на два угла. Вот эти два угла и есть <strong>смежные</strong>: у них одна общая сторона (луч вверх), а две другие стороны вместе составляют ту самую исходную прямую.</p>
+    <p><strong>Определение.</strong> Два угла называются <strong>смежными</strong>, если у них одна сторона общая, а две другие стороны являются <strong>дополнительными лучами</strong> — то есть лежат на одной прямой и направлены в противоположные стороны от общей вершины.</p>
+    <div class="note-box">
+      <p><b>Свойство (главная формула):</b> сумма смежных углов равна <span class="math">180°</span> — <span class="math"><span class="wA">∠1</span> + <span class="wB">∠2</span> = 180°</span>. Это не отдельный факт для зубрёжки: смежные углы просто «разворачивают» прямую, а прямая — это 180°.</p>
+    </div>
+    <p style="margin-top:1.1rem"><strong>Что значат слова:</strong></p>
+    <p style="font-size:.96rem;color:var(--muted);margin-top:.3rem"><b style="color:var(--ink)">Общая сторона</b> — луч, который принадлежит сразу обоим углам. <b style="color:var(--ink)">Дополнительные лучи</b> — два луча из одной точки, которые вместе образуют прямую (развёрнутый угол 180°). Вершина у смежных углов одна, её часто обозначают одной буквой, например <span class="math">O</span>. Единица измерения здесь — градус (°).</p>
+    <p style="margin-top:1.1rem"><strong>Как проверить, смежные ли углы</strong> — два условия, оба обязательны:</p>
+    <ul class="checks">
+      <li><b>У углов общая вершина и общая сторона.</b> Один и тот же луч входит в оба угла.</li>
+      <li><b>Две оставшиеся стороны лежат на одной прямой</b> — одна является продолжением другой.</li>
+    </ul>
+    <p style="font-size:.95rem;color:var(--muted);margin-top:.8rem">Если хотя бы одно условие нарушено — углы <b style="color:var(--no)">не смежные</b>, и правило «в сумме 180°» применять нельзя.</p>
+  </section>
+
+  <div class="oge-tip"><div class="b">🎯 В ОГЭ</div><div class="x">Смежные углы — постоянный инструмент в задачах на углы по чертежу: на рисунке дан один угол, а спрашивают соседний. Достаточно увидеть, что внешние стороны образуют прямую, и вычесть данный угол из <b>180°</b>.</div></div>
+
+  <section>
+    <p class="kicker">Разбираем вместе · думаю вслух</p>
+    <h2>Эталонный пример</h2>
+    <div class="worked">
+      <p class="task">Один из смежных углов равен <span class="wA">70°</span>. Найти второй.</p>
+      <ol class="steps">
+        <li>Записываю свойство: <span class="m">∠1 + ∠2 = 180°</span>. <em>Почему: углы смежные, а значит вместе они образуют развёрнутый угол.</em></li>
+        <li>Отмечаю известное: <span class="m">∠1 = 70°</span>. <em>Это тот угол, который дан в условии.</em></li>
+        <li>Выражаю неизвестный: <span class="m">∠2 = 180° − ∠1</span>. <em>Из суммы вычитаю известное слагаемое — так всегда находят второе слагаемое.</em></li>
+        <li>Считаю: <span class="m">∠2 = 180° − 70° = 110°</span>. <em>Вычитаю аккуратно: 180 − 70 = 110.</em></li>
+        <li>Проверка смыслом: <span class="m">70° острый, 110° тупой</span>. <em>Логично: раз один угол меньше 90°, второй обязан быть больше 90°, иначе 180° не наберётся.</em></li>
+      </ol>
+      <div class="verdict">Ответ: 110°</div>
+    </div>
+
+    <p style="margin-top:1.4rem"><strong>Пример 2 — допиши пропущенный шаг сам.</strong> Один из смежных углов на 40° больше другого. Найди оба угла.</p>
+    <div class="worked" style="margin-top:.6rem">
+      <ol class="steps">
+        <li>Пусть меньший угол = <span class="m">x</span>. Тогда больший = <span class="m">x + 40°</span>.</li>
+        <li>Сумма смежных равна 180°, поэтому <span class="m">x + (x + 40°) = 180°</span>.</li>
+        <li><b>Твой шаг:</b> раскрой скобки и приведи подобные. <em>Должно получиться 2x + 40° = 180°.</em></li>
+        <li>Переношу: <span class="m">2x = 180° − 40° = 140°</span>, значит <span class="m">x = 70°</span>.</li>
+        <li>Меньший угол <span class="m">70°</span>, больший <span class="m">70° + 40° = 110°</span>. Проверка: <span class="m">70° + 110° = 180°</span> ✓</li>
+      </ol>
+      <div class="verdict">Ответ: 70° и 110°</div>
+    </div>
+
+    <p style="font-size:.95rem;color:var(--muted);margin-top:1rem"><b>Теперь сам.</b> Один из смежных углов в 4 раза меньше другого. Найди оба угла. Подсказка: пусть меньший = <span class="math">x</span>, тогда больший = <span class="math">4x</span>, и <span class="math">x + 4x = 180°</span>. Ответ — <b>36° и 144°</b>.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Увидь глазами · интерактив</p>
+    <h2>Крути луч — сумма всё равно 180°</h2>
+    <p>На чертеже прямая <span class="math">AB</span>, на ней точка <span class="math">O</span>, и из неё выходит луч <span class="math">OC</span> — это общая сторона. Слева угол <span class="wA">∠AOC</span>, справа <span class="wB">∠COB</span>.</p>
+    <p><strong>Сначала предскажи, потом проверь:</strong> если повернуть луч <span class="math">OC</span> так, чтобы <span class="wA">∠AOC</span> стал больше, что произойдёт со вторым углом? Скажи вслух свой ответ — и только потом тяни ползунок.</p>
+    <div class="viz">
+      <canvas id="viz" width="640" height="400" aria-label="Прямая AB с точкой O и лучом OC; при повороте луча один смежный угол растёт, другой уменьшается, а их сумма остаётся 180 градусов"></canvas>
+      <div id="vizRead" class="viz-read"></div>
+      <div class="sliders">
+        <label class="lA"><span class="nm">∠AOC</span><input id="sA" class="rA" type="range" min="10" max="170" step="1" value="70" aria-label="Величина угла AOC"><span id="vA" class="sval">70°</span></label>
+      </div>
+      <div class="viz-btn">
+        <button id="vizPerp" type="button">Оба по 90°</button>
+        <button id="vizTrail" type="button">Показать несколько положений</button>
+        <button id="vizReset" type="button" class="reset">Сбросить</button>
+      </div>
+    </div>
+    <p style="font-size:.9rem;color:var(--muted)">Цвет-код: <span class="wA">∠AOC зелёный</span>, <span class="wB">∠COB янтарный</span>, общая сторона <span class="math">OC</span> — синяя. Нажми «Показать несколько положений»: как ни поворачивай луч, зелёное и янтарное вместе всегда закрывают ровно всю верхнюю полуплоскость — то есть 180°.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Теперь ты · бесконечная практика</p>
+    <h2>Тренажёр</h2>
+    <p>Нажми «Новая», реши задачу и впиши ответ в градусах (число, значок ° можно не писать). Проверь себя или посмотри пошаговое решение.</p>
+    <div class="trainer">
+      <div class="tr-task" id="trTask">Один из смежных углов равен <b>70°</b>. Найди второй угол.</div>
+      <div class="tr-ctl">
+        <button id="trNew" type="button">🎲 Новая</button>
+        <input id="trAns" type="text" inputmode="numeric" placeholder="ответ в °" aria-label="Ответ в градусах">
+        <button id="trCheck" type="button" class="sec">Проверить</button>
+        <button id="trShow" type="button" class="ghost">Решение</button>
+      </div>
+      <div id="trResult" class="tr-result"></div>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Проверь себя · от простого к анализу</p>
+    <h2>Мини-практика</h2>
+    <div class="drill">
+      <details>
+        <summary><span class="q">Чему всегда равна сумма смежных углов?</span><span class="tag">понимание</span></summary>
+        <div class="ans">Всегда <b>180°</b> — потому что вместе смежные углы образуют развёрнутый угол.</div>
+      </details>
+      <details>
+        <summary><span class="q">На чертеже два угла с общей вершиной и общей стороной, их внешние стороны лежат на одной прямой. Смежные ли они?</span><span class="tag">понимание</span></summary>
+        <div class="ans"><b>Да.</b> Выполнены оба условия: общая сторона есть, а две другие стороны — дополнительные лучи на одной прямой.</div>
+      </details>
+      <details>
+        <summary><span class="q">Один смежный угол равен 125°. Найди второй.</span><span class="tag">применение</span></summary>
+        <div class="ans"><span class="m">180° − 125° = 55°</span>. Ответ <b>55°</b>. Проверка: <span class="m">125° + 55° = 180°</span> ✓</div>
+      </details>
+      <details>
+        <summary><span class="q">Один смежный угол равен 90°. Найди второй и сделай вывод о виде углов.</span><span class="tag">применение</span></summary>
+        <div class="ans"><span class="m">180° − 90° = 90°</span>. Ответ <b>90°</b> — <b>оба угла прямые</b>.</div>
+      </details>
+      <details>
+        <summary><span class="q">Найди ошибку: ученик пишет, что если один смежный угол 60°, то второй тоже 60°, «потому что они равны».</span><span class="tag">анализ</span></summary>
+        <div class="ans">Смежные углы <b>не обязаны быть равны</b> — они равны только в одном случае, когда оба по 90°. Правило другое: их <b>сумма</b> равна 180°. Верно так: <span class="m">180° − 60° = 120°</span>. Ответ <b>120°</b>.</div>
+      </details>
+      <details>
+        <summary><span class="q">Смежные углы относятся как 2 : 7. Найди их.</span><span class="tag">анализ</span></summary>
+        <div class="ans">Пусть углы <span class="m">2x</span> и <span class="m">7x</span>. Тогда <span class="m">2x + 7x = 180°</span>, то есть <span class="m">9x = 180°</span>, <span class="m">x = 20°</span>. Углы: <span class="m">2 · 20° = 40°</span> и <span class="m">7 · 20° = 140°</span>. Ответ <b>40° и 140°</b>. Проверка: <span class="m">40° + 140° = 180°</span> ✓</div>
+      </details>
+      <details>
+        <summary><span class="q">Что изменится, если… Может ли один смежный угол быть тупым и второй тоже тупым?</span><span class="tag">анализ</span></summary>
+        <div class="ans"><b>Нет.</b> Тупой угол больше 90°, значит два тупых угла в сумме дали бы больше <span class="m">180°</span>, а смежные обязаны давать ровно 180°. Поэтому тупым может быть только один из них.</div>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Где чаще всего ошибаются</p>
+    <h2>Лови эти ловушки</h2>
+    <ul class="pitfalls">
+      <li><b>«Любые соседние углы — смежные».</b> Самая частая ошибка. Соседства мало: внешние стороны обязаны лежать на одной прямой. Как не допустить: всегда проверяй взглядом — продолжают ли две крайние стороны друг друга в прямую линию.</li>
+      <li><b>Забывают про 180° и пишут 90°.</b> Путают с прямым углом или с суммой острых углов прямоугольного треугольника. Как не допустить: помни — смежные «разворачивают» прямую, а это <b>180°</b>, а не 90°.</li>
+      <li><b>Путают смежные с вертикальными.</b> Вертикальные углы образуются при пересечении двух прямых и лежат «накрест» — они <b>равны</b>, а не дают 180°. Смежные стоят «рядом» и дают 180°. Как не допустить: смежные — сумма 180°; вертикальные — равны.</li>
+      <li><b>Арифметическая ошибка при вычитании из 180.</b> Например, <span class="math">180 − 70</span> считают как 90 вместо <b>110</b>. Как не допустить: вычитай аккуратно, а потом проверь сложением — твой ответ плюс известный угол должны дать ровно <b>180°</b>.</li>
+    </ul>
+  </section>
+
+  <section>
+    <p class="kicker">Объясни своими словами</p>
+    <div class="selfcheck">
+      <ol>
+        <li>Чему равна сумма смежных углов?</li>
+        <li>Каких двух условий достаточно, чтобы назвать углы смежными?</li>
+        <li>Один смежный угол 35° — чему равен второй?</li>
+      </ol>
+      <p style="font-size:.9rem;color:var(--muted);margin:.8rem 0 0">Проговори ответы вслух — и обязательно скажи «почему» на первый вопрос. Третий: <span class="math">180° − 35° = 145°</span>.</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="next">
+      <h2>Что дальше</h2>
+      <p>Отсюда два прямых продолжения. <b>Вертикальные углы</b> — те, что при пересечении двух прямых лежат накрест; их равенство доказывается как раз через смежные. И <b>перпендикулярные прямые</b> — случай, когда оба смежных угла оказались по 90°, тот самый вариант, который ты уже разобрал в задаче.</p>
+      <p><b>Запомни одним предложением:</b> смежные углы имеют общую сторону, их внешние стороны образуют прямую, и поэтому их сумма всегда равна 180°.</p>
+    </div>
+  </section>
+
+  <p class="foot">Проверка на выходе: чему равна сумма смежных углов? · какие два условия обязательны? · один угол 35° → второй?</p>
+
+</div>
+
+<script>
+/* ВИЗУАЛИЗАЦИЯ: прямая AB, точка O, луч OC; два смежных угла, сумма всегда 180° */
+(function(){
+  var cv=document.getElementById('viz'); if(!cv) return;
+  var ctx=cv.getContext('2d');
+  var sA=document.getElementById('sA'), vA=document.getElementById('vA');
+  var read=document.getElementById('vizRead');
+  var W=640,H=400,dpr=1;
+  var D2R=Math.PI/180;
+  var trail=false;
+
+  function css(v){ return getComputedStyle(document.documentElement).getPropertyValue(v).trim(); }
+  function resize(){
+    var c=cv.clientWidth||640; dpr=Math.min(window.devicePixelRatio||1,2);
+    W=c; H=Math.round(c*0.62);
+    cv.width=W*dpr; cv.height=H*dpr; cv.style.height=H+'px';
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+  }
+  /* конец луча OC для угла a (в градусах), длина L */
+  function rayEnd(O,a,L){
+    var th=(180-a)*D2R;                    /* математический угол от направления OB */
+    return [O[0]+L*Math.cos(th), O[1]-L*Math.sin(th)];
+  }
+  /* дуга угла в вершине V между лучами на P1 и P2; возвращает точку для подписи */
+  function angMark(V,P1,P2,rad,col,lw){
+    var t1=Math.atan2(P1[1]-V[1],P1[0]-V[0]), t2=Math.atan2(P2[1]-V[1],P2[0]-V[0]);
+    var d=t2-t1; while(d>Math.PI)d-=2*Math.PI; while(d<-Math.PI)d+=2*Math.PI;
+    ctx.beginPath();
+    for(var i=0;i<=32;i++){ var t=t1+d*i/32, x=V[0]+rad*Math.cos(t), y=V[1]+rad*Math.sin(t); i?ctx.lineTo(x,y):ctx.moveTo(x,y); }
+    ctx.strokeStyle=col; ctx.lineWidth=lw||2.6; ctx.stroke();
+    var tm=t1+d/2; return [V[0]+(rad+18)*Math.cos(tm), V[1]+(rad+18)*Math.sin(tm)];
+  }
+  /* заливка сектора */
+  function sector(V,P1,P2,rad,fill){
+    var t1=Math.atan2(P1[1]-V[1],P1[0]-V[0]), t2=Math.atan2(P2[1]-V[1],P2[0]-V[0]);
+    var d=t2-t1; while(d>Math.PI)d-=2*Math.PI; while(d<-Math.PI)d+=2*Math.PI;
+    ctx.beginPath(); ctx.moveTo(V[0],V[1]);
+    for(var i=0;i<=32;i++){ var t=t1+d*i/32; ctx.lineTo(V[0]+rad*Math.cos(t), V[1]+rad*Math.sin(t)); }
+    ctx.closePath(); ctx.fillStyle=fill; ctx.fill();
+  }
+  function dot(p,col,r){ ctx.beginPath(); ctx.arc(p[0],p[1],r||6,0,7); ctx.fillStyle=col; ctx.fill(); ctx.beginPath(); ctx.arc(p[0],p[1],(r||6)*0.6,0,7); ctx.fillStyle='#fff'; ctx.fill(); }
+
+  function draw(){
+    var a=+sA.value, b=180-a;
+    vA.textContent=a+'°';
+
+    var cA=css('--ca'), cB=css('--cb'), cAcc=css('--accent'), cInk=css('--ink'), cMut=css('--muted');
+    var O=[W/2, H*0.78];
+    var half=Math.min(W*0.40, H*0.62);
+    var A=[O[0]-half, O[1]], B=[O[0]+half, O[1]];
+    var L=Math.min(half*0.95, H*0.62);
+    var C=rayEnd(O,a,L);
+
+    ctx.clearRect(0,0,W,H);
+
+    /* «шлейф» из нескольких положений луча */
+    if(trail){
+      var set=[25,60,95,130,160];
+      for(var i=0;i<set.length;i++){
+        var P=rayEnd(O,set[i],L*0.92);
+        ctx.beginPath(); ctx.moveTo(O[0],O[1]); ctx.lineTo(P[0],P[1]);
+        ctx.strokeStyle='rgba(46,90,172,0.22)'; ctx.lineWidth=2; ctx.setLineDash([5,5]); ctx.stroke(); ctx.setLineDash([]);
+        var lb=angMark(O,A,P,42+i*11,'rgba(30,142,90,0.35)',1.6);
+        ctx.font='700 '+Math.max(10,W*0.019)+'px ui-monospace,Menlo,monospace';
+        ctx.textAlign='center'; ctx.textBaseline='middle';
+        ctx.fillStyle='rgba(90,100,120,0.75)';
+        ctx.fillText(set[i]+'°+'+(180-set[i])+'°', lb[0], lb[1]);
+      }
+    }
+
+    /* заливки двух смежных углов */
+    var rs=Math.min(72, half*0.5);
+    sector(O,A,C,rs,'rgba(30,142,90,0.13)');
+    sector(O,C,B,rs,'rgba(226,124,44,0.13)');
+
+    /* прямая AB */
+    ctx.beginPath(); ctx.moveTo(A[0],A[1]); ctx.lineTo(B[0],B[1]);
+    ctx.strokeStyle=cInk; ctx.lineWidth=2.6; ctx.stroke();
+
+    /* общая сторона OC */
+    ctx.beginPath(); ctx.moveTo(O[0],O[1]); ctx.lineTo(C[0],C[1]);
+    ctx.strokeStyle=cAcc; ctx.lineWidth=3.2; ctx.stroke();
+
+    /* дуги углов */
+    var lA=angMark(O,A,C,rs*0.62,cA);
+    var lB=angMark(O,C,B,rs*0.86,cB);
+
+    /* подписи величин */
+    var fs=Math.max(13,W*0.028);
+    ctx.font='700 '+fs+'px ui-monospace,Menlo,monospace';
+    ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.fillStyle=cA; ctx.fillText(a+'°', lA[0], lA[1]);
+    ctx.fillStyle=cB; ctx.fillText(b+'°', lB[0], lB[1]);
+
+    /* точки и буквы */
+    dot(O,cAcc); dot(A,cInk,5); dot(B,cInk,5); dot(C,cAcc,5);
+    ctx.font='700 '+Math.max(13,W*0.03)+'px system-ui,sans-serif';
+    ctx.fillStyle=cInk;
+    ctx.fillText('A', A[0], A[1]+22);
+    ctx.fillText('B', B[0], B[1]+22);
+    ctx.fillStyle=cAcc;
+    ctx.fillText('O', O[0], O[1]+24);
+    ctx.fillText('C', C[0]+ (a>90? -16:16), C[1]-14);
+
+    /* подпись прямой */
+    ctx.font='600 '+Math.max(11,W*0.021)+'px system-ui,sans-serif';
+    ctx.fillStyle=cMut; ctx.textAlign='center';
+    ctx.fillText('прямая AB — развёрнутый угол 180°', W/2, H-8);
+
+    read.innerHTML='<span class="a">∠AOC = '+a+'°</span> &nbsp;+&nbsp; <span class="b">∠COB = '+b+'°</span> &nbsp;=&nbsp; 180°';
+  }
+
+  sA.addEventListener('input',draw);
+  document.getElementById('vizPerp').addEventListener('click',function(){ sA.value=90; draw(); });
+  document.getElementById('vizTrail').addEventListener('click',function(){ trail=!trail; this.textContent=trail?'Убрать положения':'Показать несколько положений'; draw(); });
+  document.getElementById('vizReset').addEventListener('click',function(){ sA.value=70; trail=false; document.getElementById('vizTrail').textContent='Показать несколько положений'; draw(); });
+  window.addEventListener('resize',function(){ resize(); draw(); });
+  resize(); draw();
+})();
+</script>
+
+<script>
+/* ТРЕНАЖЁР-ГЕНЕРАТОР: смежные углы — прямой счёт, отношение, «больше на», «в k раз» */
+(function(){
+  var taskEl=document.getElementById('trTask'), ansEl=document.getElementById('trAns'), resEl=document.getElementById('trResult');
+  if(!taskEl) return;
+  var cur=null;
+  var MINUS='−'; /* настоящий минус − (U+2212) */
+  function ri(a,b){ return Math.floor(Math.random()*(b-a+1))+a; }
+
+  /* отношения, у которых сумма частей делит 180 нацело */
+  var ratios=[[1,1],[1,2],[1,3],[1,4],[1,5],[2,3],[1,8],[2,7],[4,5],[3,7],[1,11],[5,7],[1,9],[2,1],[3,2],[5,4]];
+
+  function generate(){
+    var mode=ri(1,4);
+    if(mode===1){
+      var a=ri(15,165);
+      cur={t:'plain', a:a, ans:180-a};
+      taskEl.innerHTML='Один из смежных углов равен <b>'+a+'°</b>. Найди второй угол.';
+    } else if(mode===2){
+      var r=ratios[ri(0,ratios.length-1)], s=r[0]+r[1], x=180/s;
+      cur={t:'ratio', r:r, x:x, ans:Math.max(r[0],r[1])*x};
+      taskEl.innerHTML='Смежные углы относятся как <b>'+r[0]+' : '+r[1]+'</b>. Найди <b>больший</b> из них.';
+    } else if(mode===3){
+      var d=ri(1,17)*10; /* 180 − d чётно, значит x целый */
+      var small=(180-d)/2;
+      cur={t:'more', d:d, ans:small};
+      taskEl.innerHTML='Один из смежных углов на <b>'+d+'°</b> больше другого. Найди <b>меньший</b> угол.';
+    } else {
+      /* k+1 обязано делить 180 нацело — тогда ответ целый */
+      var okk=[2,3,4,5,8,9,11,14,17,19,29];
+      var k=okk[ri(0,okk.length-1)];
+      var word=(k===2||k===3||k===4)?'раза':'раз';
+      cur={t:'times', k:k, ans:180/(k+1)};
+      taskEl.innerHTML='Один из смежных углов в <b>'+k+'</b> '+word+' меньше другого. Найди <b>меньший</b> угол.';
+    }
+    resEl.innerHTML=''; ansEl.value='';
+  }
+
+  function solHTML(){
+    var q=cur, h='<div class="sol">';
+    if(q.t==='plain'){
+      h+='∠1 + ∠2 = 180°<br>';
+      h+='∠2 = 180° '+MINUS+' '+q.a+'°<br>';
+      h+='∠2 = <b>'+q.ans+'°</b>';
+    } else if(q.t==='ratio'){
+      var r=q.r, s=r[0]+r[1];
+      h+='Пусть углы '+r[0]+'x и '+r[1]+'x.<br>';
+      h+=r[0]+'x + '+r[1]+'x = 180° → '+s+'x = 180°<br>';
+      h+='x = 180° : '+s+' = '+q.x+'°<br>';
+      h+='Углы: '+(r[0]*q.x)+'° и '+(r[1]*q.x)+'°, больший = <b>'+q.ans+'°</b>';
+    } else if(q.t==='more'){
+      h+='Меньший = x, больший = x + '+q.d+'°<br>';
+      h+='x + (x + '+q.d+'°) = 180° → 2x + '+q.d+'° = 180°<br>';
+      h+='2x = 180° '+MINUS+' '+q.d+'° = '+(180-q.d)+'°<br>';
+      h+='x = <b>'+q.ans+'°</b> (больший = '+(q.ans+q.d)+'°)';
+    } else {
+      h+='Меньший = x, больший = '+q.k+'x<br>';
+      h+='x + '+q.k+'x = 180° → '+(q.k+1)+'x = 180°<br>';
+      h+='x = 180° : '+(q.k+1)+' = <b>'+q.ans+'°</b> (больший = '+(q.ans*q.k)+'°)';
+    }
+    return h+'</div>';
+  }
+
+  function check(){
+    var raw=ansEl.value.trim().replace('°','').replace(',','.');
+    if(raw===''){ resEl.innerHTML='<span class="bad">Введи ответ или нажми «Решение».</span>'; return; }
+    var got=parseFloat(raw);
+    if(!isNaN(got) && Math.abs(got-cur.ans)<0.02){ resEl.innerHTML='<span class="ok">✓ Верно!</span>'+solHTML(); }
+    else{ resEl.innerHTML='<span class="bad">✗ Пока не то — глянь решение.</span>'+solHTML(); }
+  }
+
+  document.getElementById('trNew').addEventListener('click',function(){ generate(); ansEl.focus(); });
+  document.getElementById('trCheck').addEventListener('click',check);
+  document.getElementById('trShow').addEventListener('click',function(){ resEl.innerHTML=solHTML(); });
+  ansEl.addEventListener('keydown',function(e){ if(e.key==='Enter') check(); });
+
+  /* стартовое состояние = задача, показанная в тексте */
+  cur={t:'plain', a:70, ans:110};
+})();
+</script>
+<!--LESSON-NAV-BOT--><nav class="lnav lnav-bot"><a class="prev" href="./alg7-moda-mediana.html"><span class="dir">← Предыдущая</span><span class="ttl">Мода и медиана</span></a><a class="to-cat" href="./catalog.html">📚 <span>Все темы</span></a><a class="next" href="./geo7-vertikalnye-ugly.html"><span class="dir">Следующая →</span><span class="ttl">Вертикальные углы</span></a></nav><!--/LESSON-NAV-BOT-->

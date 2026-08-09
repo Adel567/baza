@@ -1,0 +1,759 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Разность квадратов — урок, алгебра 7 класс</title>
+<style>
+  :root{
+    --paper:#F6F7F9;
+    --card:#FFFFFF;
+    --ink:#1B2333;
+    --muted:#5A6478;
+    --line:#E2E5EC;
+    --accent:#3B4FD0;
+    --accent-soft:#EAEDFB;
+    --extract:#1E8E5A;      /* работает: разность квадратов */
+    --extract-bg:#E7F4EC;
+    --warn:#A8730C;         /* осторожно: это другая формула */
+    --warn-bg:#FDF3DE;
+    --neg:#C0455B;          /* не работает: сумма квадратов */
+    --neg-bg:#F9E9EC;
+  }
+  *{box-sizing:border-box}
+  body{margin:0}
+  .wrap{
+    max-width:760px;
+    margin:0 auto;
+    padding:clamp(1.4rem,4vw,3rem) clamp(1.1rem,4vw,2rem) 4rem;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    font-size:17px;
+    line-height:1.62;
+    -webkit-font-smoothing:antialiased;
+  }
+  .eyebrow{
+    font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--accent);font-weight:600;margin:0 0 .5rem;
+  }
+  h1{
+    font-family:Georgia,"Times New Roman",serif;
+    font-size:clamp(1.9rem,6.4vw,2.8rem);
+    line-height:1.06;margin:0;font-weight:700;letter-spacing:-.01em;
+    text-wrap:balance;
+  }
+  .lede{
+    font-size:1.08rem;color:var(--muted);margin:.7rem 0 0;max-width:60ch;
+    text-wrap:pretty;
+  }
+  h2{
+    font-family:Georgia,serif;font-size:1.32rem;font-weight:700;
+    margin:0 0 .1rem;letter-spacing:-.005em;
+  }
+  section{margin-top:2.6rem}
+  .kicker{
+    font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--muted);font-weight:600;margin:0 0 .8rem;
+    display:flex;align-items:center;gap:.6rem;
+  }
+  .kicker::before{
+    content:"";width:1.4rem;height:2px;background:var(--accent);border-radius:2px;
+  }
+  p{margin:.65rem 0}
+  strong{font-weight:650}
+  .math{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-weight:600}
+  sup{font-size:.72em}
+  .cf{color:var(--extract);font-weight:800}
+
+  /* Главная формула */
+  .hero-formula{
+    margin-top:2.2rem;
+    background:var(--ink);color:#fff;border-radius:14px;
+    padding:1.6rem 1.4rem;text-align:center;
+  }
+  .hero-formula .lbl{
+    font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;
+    color:#9aa6c9;margin:0 0 .7rem;
+  }
+  .hero-formula .eq{
+    font-family:ui-monospace,"SF Mono",Menlo,monospace;
+    font-size:clamp(1.35rem,5.4vw,2.1rem);font-weight:700;letter-spacing:.01em;
+  }
+  .hero-formula .eq b{color:#7fe0ab;font-weight:700}
+  .hero-formula .note{font-size:.86rem;color:#9aa6c9;margin:.8rem 0 0}
+
+  /* Пререквизит */
+  .recall{
+    background:var(--accent-soft);border-radius:12px;padding:1rem 1.15rem;
+    font-size:.96rem;
+  }
+  .recall p{margin:.35rem 0}
+  .recall b{color:var(--ink)}
+
+  /* Правило-ядро */
+  .rule{
+    background:var(--card);border:1px solid var(--line);border-radius:12px;
+    padding:1.2rem 1.3rem;margin-top:.4rem;
+  }
+  ol.steps{margin:0;padding:0;list-style:none;counter-reset:s;display:flex;flex-direction:column;gap:.7rem}
+  ol.steps li{position:relative;padding-left:2.1rem;counter-increment:s}
+  ol.steps li::before{
+    content:counter(s);position:absolute;left:0;top:.05rem;
+    width:1.5rem;height:1.5rem;border-radius:50%;
+    background:var(--accent-soft);color:var(--accent);
+    font-size:.82rem;font-weight:700;display:flex;align-items:center;justify-content:center;
+  }
+  ol.steps .m{font-family:ui-monospace,Menlo,monospace;font-weight:600;color:var(--ink)}
+  .rule .cap{
+    margin:1rem 0 0;padding-top:.9rem;border-top:1px solid var(--line);
+    font-family:ui-monospace,Menlo,monospace;font-weight:700;text-align:center;font-size:1.05rem;
+  }
+
+  /* Разбор */
+  .worked{
+    background:var(--card);border:1px solid var(--line);border-radius:12px;
+    padding:1.2rem 1.3rem;
+  }
+  .worked .task{
+    font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.05rem;
+    margin:0 0 1rem;padding-bottom:.8rem;border-bottom:1px solid var(--line);
+  }
+  .verdict{
+    margin-top:1rem;padding:.7rem 1rem;background:var(--extract-bg);
+    border-radius:9px;font-weight:600;color:var(--extract);font-size:.98rem;
+    font-family:ui-monospace,Menlo,monospace;
+  }
+
+  /* Цвет-код трёх случаев */
+  .cases{display:flex;flex-direction:column;gap:.6rem;margin-top:.5rem}
+  .case{border-radius:12px;padding:.9rem 1.1rem;border:1px solid var(--line)}
+  .case .h{font-family:ui-monospace,Menlo,monospace;font-weight:800;font-size:1.02rem}
+  .case .t{font-size:.94rem;margin:.35rem 0 0}
+  .case.ok{background:var(--extract-bg);border-color:#BCE0CB}
+  .case.ok .h{color:var(--extract)}
+  .case.warn{background:var(--warn-bg);border-color:#F0D98A}
+  .case.warn .h{color:var(--warn)}
+  .case.bad{background:var(--neg-bg);border-color:#EFC3CC}
+  .case.bad .h{color:var(--neg)}
+
+  /* Наглядность — площадная модель */
+  .area{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:1.1rem 1.2rem;margin-top:.5rem}
+  .area canvas{width:100%;height:auto;display:block}
+  .sliders{display:flex;flex-wrap:wrap;gap:1rem;margin-top:.6rem}
+  .sliders label{flex:1 1 190px;font-size:.9rem;color:var(--muted);font-weight:600}
+  .sliders input[type=range]{width:100%;accent-color:var(--accent)}
+  .sliders input[type=range]:focus-visible{outline:3px solid var(--accent);outline-offset:3px;border-radius:6px}
+  .sliders b{color:var(--ink);font-family:ui-monospace,Menlo,monospace}
+  .area-cap{font-size:.94rem;color:var(--muted);margin:.8rem 0 0}
+  .area-cap b{color:var(--ink)}
+
+  /* Практика / details */
+  .drill{display:flex;flex-direction:column;gap:.7rem}
+  details{
+    background:var(--card);border:1px solid var(--line);border-radius:10px;
+    padding:.85rem 1.05rem;
+  }
+  details[open]{border-color:var(--accent)}
+  summary{
+    cursor:pointer;font-weight:600;list-style:none;
+    display:flex;justify-content:space-between;align-items:center;gap:1rem;
+  }
+  summary::-webkit-details-marker{display:none}
+  summary:focus-visible{outline:3px solid var(--accent);outline-offset:3px;border-radius:6px}
+  summary .q{font-family:ui-monospace,Menlo,monospace}
+  summary .tag{
+    font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);
+    border:1px solid var(--line);border-radius:20px;padding:.1rem .55rem;white-space:nowrap;
+  }
+  summary::after{
+    content:"показать ответ";font-size:.78rem;color:var(--accent);font-weight:600;white-space:nowrap;
+  }
+  details[open] summary::after{content:"скрыть"}
+  .ans{margin-top:.7rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.96rem;color:var(--muted)}
+  .ans .m{font-family:ui-monospace,Menlo,monospace;color:var(--ink);font-weight:600}
+
+  /* Ошибки */
+  ul.pitfalls{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:.6rem}
+  ul.pitfalls li{padding-left:1.5rem;position:relative;font-size:.98rem}
+  ul.pitfalls li::before{
+    content:"\00d7";position:absolute;left:0;top:-.05rem;color:var(--neg);font-weight:700;font-size:1.1rem;
+  }
+  ul.pitfalls b{color:var(--ink)}
+  ul.pitfalls .m{font-family:ui-monospace,Menlo,monospace;font-weight:600;color:var(--ink)}
+
+  .next{background:var(--accent);color:#fff;border-radius:12px;padding:1.2rem 1.3rem}
+  .next h2{color:#fff}
+  .next .eq{
+    font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.15rem;
+    margin:.6rem 0 .3rem;
+  }
+  .next p{color:#dfe4fb;font-size:.96rem;margin:.4rem 0 0}
+  .foot{margin-top:2.4rem;font-size:.82rem;color:var(--muted);text-align:center}
+
+  @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+<style>
+.oge-tip{display:flex;gap:.8rem;align-items:flex-start;background:#FFF8E7;border:1px solid #F0D98A;border-left:4px solid #E0A315;border-radius:10px;padding:.85rem 1.05rem;margin:1.5rem 0}
+.oge-tip .b{font-size:.72rem;font-weight:800;letter-spacing:.03em;color:#8A6A15;white-space:nowrap;text-transform:uppercase;padding-top:.15rem}
+.oge-tip .x{font-size:.95rem;line-height:1.5}
+</style>
+<!--LESSON-NAV-TOP--><style>.lnav{--lnav-accent:#3D5AF1}.lnav a{text-decoration:none;font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif}.lnav-top{max-width:820px;margin:0 auto;padding:.75rem clamp(1rem,4vw,1.5rem) .1rem}.lnav-top a{display:inline-flex;align-items:center;gap:.35rem;color:var(--lnav-accent);font-weight:600;font-size:.9rem}.lnav-top a:hover{text-decoration:underline}.lnav-bot{max-width:820px;margin:2.6rem auto 3rem;padding:1.1rem clamp(1rem,4vw,1.5rem) 0;border-top:1px solid #E4E8EF;display:flex;align-items:stretch;gap:.55rem}.lnav-bot a{min-width:0;display:flex;flex-direction:column;justify-content:center;gap:.15rem;border:1px solid #E4E8EF;border-radius:12px;padding:.65rem .85rem;color:#182233;background:#fff;transition:border-color .1s,transform .08s}.lnav-bot a:hover{border-color:var(--lnav-accent);transform:translateY(-1px)}.lnav-bot .prev,.lnav-bot .next{flex:1 1 0}.lnav-bot .next{text-align:right}.lnav-bot .dir{font-size:.72rem;color:#8A93A6;font-weight:600}.lnav-bot .ttl{font-size:.9rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.lnav-bot .to-cat{flex:0 0 auto;flex-direction:row;align-items:center;justify-content:center;color:var(--lnav-accent);font-weight:700;font-size:.85rem;white-space:nowrap}@media(max-width:420px){.lnav-bot .to-cat span{display:none}.lnav-bot .to-cat{padding:.65rem .7rem}}</style><nav class="lnav lnav-top"><a href="./catalog.html">← Все темы</a></nav><!--/LESSON-NAV-TOP-->
+<div class="wrap">
+
+  <header>
+    <p class="eyebrow">Алгебра · 7 класс</p>
+    <h1>Разность квадратов</h1>
+    <p class="lede">Самая рабочая формула сокращённого умножения: она превращает разность двух квадратов в <em>произведение двух скобок</em> — и позволяет считать в уме то, что иначе пришлось бы считать в столбик.</p>
+  </header>
+
+  <div class="hero-formula">
+    <p class="lbl">Главная формула</p>
+    <div class="eq">a<sup>2</sup> <b>−</b> b<sup>2</sup> = (a <b>−</b> b)(a <b>+</b> b)</div>
+    <p class="note">Квадрат минус квадрат = разность умножить на сумму.</p>
+  </div>
+
+  <section>
+    <p class="kicker">Зачем это нужно и где встречается</p>
+    <h2>Разность квадратов — это НЕ квадрат разности</h2>
+    <p>Сразу разберёмся с главным заблуждением. Многие думают, что «разность квадратов» и «квадрат разности» — одно и то же, ведь слова похожи. Это <strong>разные вещи</strong>:</p>
+    <div class="rule" style="text-align:center;font-family:ui-monospace,Menlo,monospace">
+      <p style="margin:.2rem 0"><b>Разность квадратов:</b>&nbsp; a² − b² = (a − b)(a + b) &nbsp;<span style="color:var(--muted)">(две разные скобки)</span></p>
+      <p style="margin:.2rem 0"><b>Квадрат разности:</b>&nbsp; (a − b)² = a² − 2ab + b² &nbsp;<span style="color:var(--muted)">(три слагаемых)</span></p>
+    </div>
+    <p>Дальше в уроке речь только про первую строчку. Зачем она нужна:</p>
+    <ul>
+      <li><strong>быстро считать в уме:</strong> <span class="math">51 · 49 = (50 + 1)(50 − 1) = 50² − 1² = 2500 − 1 = 2499</span> — без столбика;</li>
+      <li><strong>раскладывать многочлены на множители</strong> — это понадобится при сокращении дробей и решении уравнений;</li>
+      <li><strong>упрощать длинные выражения:</strong> сумму и разность множить и сокращать неудобно, а произведение — удобно.</li>
+    </ul>
+    <div class="oge-tip"><div class="b">🎯 В ОГЭ</div><div class="x"><b>Задание 8.</b> Разность квадратов — главный инструмент упрощения выражений и сокращения дробей: без разложения на множители дробь с буквами не сократить.</div></div>
+  </section>
+
+  <section>
+    <p class="kicker">Что вспомнить перед стартом</p>
+    <div class="recall">
+      <p>Тебе понадобятся три вещи:</p>
+      <p>1. <b>Что такое квадрат.</b> Возвести в квадрат — умножить выражение само на себя: <span class="math">7² = 49</span>, <span class="math">(3x)² = 9x²</span>.</p>
+      <p>2. <b>Квадраты чисел до 15².</b> Их стоит знать наизусть: <span class="math">49 = 7²</span>, <span class="math">81 = 9²</span>, <span class="math">100 = 10²</span>. Если не узнаёшь квадрат в числе — формулу просто не увидишь.</p>
+      <p>3. <b>Умение раскрывать скобки.</b> Именно раскрытием мы проверяем себя: <span class="math">(a − b)(a + b) = a² + ab − ab − b² = a² − b²</span>.</p>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Ядро темы · формула и когда она работает</p>
+    <h2>Одна формула и три условия</h2>
+    <div class="rule">
+      <p style="margin-top:0">Если перед тобой <strong>разность</strong> двух квадратов, её всегда можно записать как произведение двух скобок: <strong>разность этих же выражений</strong> умножить на <strong>их сумму</strong>.</p>
+      <ol class="steps">
+        <li><span class="m">a</span> — первое выражение, которое возводится в квадрат. Это может быть число, буква или целое выражение, например <span class="m">3x</span>.</li>
+        <li><span class="m">b</span> — второе выражение, которое возводится в квадрат.</li>
+        <li>Между ними обязан стоять <span class="m">минус</span>: формула работает только для <b>разности</b>. Для суммы квадратов <span class="m">a² + b²</span> такого разложения (с обычными числами) <b>нет</b>.</li>
+        <li>Оба слагаемых обязаны быть <span class="m">полными квадратами</span>: <span class="m">9x² = (3x)²</span>, <span class="m">25 = 5²</span>, поэтому <span class="m">9x² − 25 = (3x − 5)(3x + 5)</span>.</li>
+      </ol>
+      <p class="cap">a² − b² = (a <span class="cf">−</span> b)(a <span class="cf">+</span> b)</p>
+    </div>
+    <p style="font-size:.92rem;color:var(--muted)">Порядок скобок не важен: <span class="math">(a − b)(a + b)</span> и <span class="math">(a + b)(a − b)</span> — один и тот же ответ, от перестановки множителей произведение не меняется. Проверить себя можно всегда: раскрой скобки обратно — должна получиться исходная разность.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Разбираем вместе · думаю вслух</p>
+    <h2>Эталонный пример</h2>
+    <div class="worked">
+      <p class="task">Разложить на множители: x² − 49</p>
+      <ol class="steps">
+        <li><span class="m">x²</span> — это уже квадрат, значит <span class="m">a = x</span>. <i>Почему:</i> первое слагаемое возводится в квадрат «как есть», под квадратом стоит просто <span class="m">x</span>.</li>
+        <li><span class="m">49 = 7²</span>, значит <span class="m">b = 7</span>. <i>Почему:</i> ищем число, квадрат которого равен 49.</li>
+        <li>Между ними минус, оба слагаемых — полные квадраты, значит это <b>разность квадратов</b>: <span class="m">x² − 49 = x² − 7²</span>. <i>Почему это важно:</i> будь там плюс, формулу применить было бы нельзя.</li>
+        <li>Подставляем в <span class="m">a² − b² = (a − b)(a + b)</span>: вместо <span class="m">a</span> пишем <span class="m">x</span>, вместо <span class="m">b</span> пишем <span class="m">7</span>.</li>
+      </ol>
+      <div class="verdict">x² − 49 = <span class="cf">(x − 7)(x + 7)</span></div>
+      <p style="font-size:.9rem;color:var(--muted);margin:.7rem 0 0"><b>Проверка:</b> раскрываем скобки — <span class="math">(x − 7)(x + 7) = x² + 7x − 7x − 49 = x² − 49</span>. Слагаемые <span class="math">7x</span> и <span class="math">−7x</span> взаимно уничтожаются, поэтому и остаётся чистая разность квадратов. Совпало ✓</p>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Три случая · не перепутай</p>
+    <h2>Цвет-код: что раскладывается, а что нет</h2>
+    <div class="cases">
+      <div class="case ok">
+        <div class="h">a² − b²  →  (a − b)(a + b)</div>
+        <p class="t"><b>Работает.</b> Разность квадратов. В ответе всегда <b>две</b> скобки: одна с минусом, другая с плюсом. Пример: <span class="math">x² − 49 = (x − 7)(x + 7)</span>.</p>
+      </div>
+      <div class="case warn">
+        <div class="h">(a − b)²  →  a² − 2ab + b²</div>
+        <p class="t"><b>Это другая формула.</b> Квадрат разности. Здесь не две скобки, а три слагаемых. Пример: <span class="math">(x − 2)² = x² − 4x + 4</span> — совсем не то же, что <span class="math">x² − 4</span>.</p>
+      </div>
+      <div class="case bad">
+        <div class="h">a² + b²  →  разложить нельзя</div>
+        <p class="t"><b>Не работает.</b> Сумма квадратов на множители (с обычными числами) не раскладывается. Никакие скобки не дадут <span class="math">x² + 9</span>. Первым делом всегда смотри на знак.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Наглядность · почему формула верна</p>
+    <h2>Площадная модель: вырезаем уголок</h2>
+    <p>Возьми большой квадрат со стороной <span class="math">a</span> — его площадь <span class="math">a²</span>. Вырежи из угла маленький квадрат со стороной <span class="math">b</span> — площадь <span class="math">b²</span>. У оставшейся фигуры площадь <span class="math">a² − b²</span>. А теперь разрежь её на два куска и переложи — получится <strong>прямоугольник</strong> со сторонами <span class="math">(a − b)</span> и <span class="math">(a + b)</span>. Площадь-то не изменилась! Значит <span class="math">a² − b² = (a − b)(a + b)</span>.</p>
+    <div class="area">
+      <canvas id="areaCv" width="720" height="330" role="img" aria-label="Слева: квадрат со стороной a с вырезанным уголком b на b, разрезанный на два куска. Справа: те же куски, сложенные в прямоугольник со сторонами a минус b и a плюс b."></canvas>
+      <div class="sliders">
+        <label for="sa">Сторона большого квадрата a = <b id="vA">10</b><input id="sa" type="range" min="4" max="10" step="1" value="10"></label>
+        <label for="sb">Сторона вырезанного квадрата b = <b id="vB">4</b><input id="sb" type="range" min="1" max="9" step="1" value="4"></label>
+      </div>
+      <p class="area-cap">Подвигай ползунки: <b>зелёный</b> и <b>янтарный</b> куски — одни и те же слева и справа, они просто переложены. Красным пунктиром показан вырезанный квадрат <span class="math">b²</span>. Слева площадь считается как <b>a² − b²</b>, справа — как <b>(a − b)(a + b)</b>, и числа всегда совпадают. Спроси себя: «чему равна площадь оставшейся фигуры двумя способами?»</p>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Теперь ты · реши, потом раскрой ответ</p>
+    <h2>Мини-практика</h2>
+    <div class="drill">
+      <details>
+        <summary><span class="q">Прочитай формулу a² − b² = (a − b)(a + b) словами</span><span class="tag">понимание</span></summary>
+        <div class="ans">«Квадрат минус квадрат равен разности этих выражений, умноженной на их сумму». Или короче: <span class="m">квадрат минус квадрат = (разность) · (сумма)</span>.</div>
+      </details>
+      <details>
+        <summary><span class="q">Что является разностью квадратов: x² − 25 или x² + 25?</span><span class="tag">понимание</span></summary>
+        <div class="ans">Только <span class="m">x² − 25</span>: там стоит <b>минус</b> между двумя полными квадратами (<span class="m">x²</span> и <span class="m">5²</span>), поэтому <span class="m">x² − 25 = (x − 5)(x + 5)</span>. А <span class="m">x² + 25</span> — это сумма квадратов, её разложить нельзя.</div>
+      </details>
+      <details>
+        <summary><span class="q">Допиши шаг: 16a² − 9 = (4a)² − 3² = ( ___ )( ___ )</span><span class="tag">применение</span></summary>
+        <div class="ans">Подставляем <span class="m">4a</span> вместо первого выражения и <span class="m">3</span> вместо второго: <span class="m">16a² − 9 = (4a − 3)(4a + 3)</span>. Проверка: <span class="m">(4a − 3)(4a + 3) = 16a² + 12a − 12a − 9 = 16a² − 9</span> ✓</div>
+      </details>
+      <details>
+        <summary><span class="q">Разложи на множители: y² − 100</span><span class="tag">применение</span></summary>
+        <div class="ans"><span class="m">100 = 10²</span>, значит <span class="m">a = y</span>, <span class="m">b = 10</span>, и <span class="m">y² − 100 = (y − 10)(y + 10)</span>.</div>
+      </details>
+      <details>
+        <summary><span class="q">Разложи: 4m² − 81</span><span class="tag">применение</span></summary>
+        <div class="ans"><span class="m">4m² = (2m)²</span>, <span class="m">81 = 9²</span>. Значит <span class="m">4m² − 81 = (2m − 9)(2m + 9)</span>.</div>
+      </details>
+      <details>
+        <summary><span class="q">Вычисли удобным способом: 102 · 98</span><span class="tag">применение</span></summary>
+        <div class="ans">Оба числа стоят рядом с сотней: <span class="m">102 = 100 + 2</span>, <span class="m">98 = 100 − 2</span>. Тогда <span class="m">102 · 98 = (100 + 2)(100 − 2) = 100² − 2² = 10000 − 4 = 9996</span>.</div>
+      </details>
+      <details>
+        <summary><span class="q">Вычисли быстро: 83 · 77</span><span class="tag">применение</span></summary>
+        <div class="ans">Оба числа отстоят от 80 на 3: <span class="m">83 = 80 + 3</span>, <span class="m">77 = 80 − 3</span>. Тогда <span class="m">83 · 77 = 80² − 3² = 6400 − 9 = 6391</span>.</div>
+      </details>
+      <details>
+        <summary><span class="q">Найди ошибку: «x² − 16 = (x − 16)(x + 16)»</span><span class="tag">анализ</span></summary>
+        <div class="ans">Ошибка в том, что за <span class="m">b</span> взяли само число 16, а не его квадратный корень. В формуле <span class="m">b</span> — то, что <b>возводится в квадрат</b>: <span class="m">16 = 4²</span>, значит <span class="m">b = 4</span>. Правильно: <span class="m">x² − 16 = (x − 4)(x + 4)</span>. Проверка неверного варианта: <span class="m">(x − 16)(x + 16) = x² − 256</span> — это не наше выражение.</div>
+      </details>
+      <details>
+        <summary><span class="q">Что изменится, если вместо x² − 9 взять x² + 9?</span><span class="tag">анализ</span></summary>
+        <div class="ans">Разложить нельзя. <span class="m">x² − 9 = (x − 3)(x + 3)</span>, потому что при раскрытии средние слагаемые <span class="m">3x</span> и <span class="m">−3x</span> уничтожаются и остаётся <b>минус</b> девять. Чтобы получить <span class="m">+9</span>, скобки должны были бы дать <span class="m">+b²</span>, а такого произведения двух скобок с обычными числами нет. Формула работает только на разность.</div>
+      </details>
+      <details>
+        <summary><span class="q">Обратная задача: какое выражение дало (2x − 5)(2x + 5)?</span><span class="tag">анализ</span></summary>
+        <div class="ans">Раскрываем: <span class="m">(2x − 5)(2x + 5) = 4x² + 10x − 10x − 25 = 4x² − 25</span>. Значит исходная разность квадратов — <span class="m">4x² − 25</span>, то есть <span class="m">(2x)² − 5²</span>.</div>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Тренажёр · бесконечная практика</p>
+    <h2>Разложи на множители сам</h2>
+    <p>Нажми «Новый пример». Ответ на разложение пиши двумя скобками, например <span class="math">(x-7)(x+7)</span> или <span class="math">(3x-5y)(3x+5y)</span>. Степени — через <b>^</b> или значок ² (можно «x^2» или «x2»). Если попадётся <b>сумма квадратов</b> — так и напиши: <b>нельзя</b>. Если попадётся пример на устный счёт — впиши число.</p>
+    <div class="trainer">
+      <div class="tr-eq" id="trEq">x² − 49</div>
+      <div class="tr-ctl">
+        <button id="trNew" type="button">🎲 Новый пример</button>
+        <input id="trAns" type="text" inputmode="text" placeholder="напр.  (x-7)(x+7)" aria-label="Твой ответ: две скобки, число или слово «нельзя»">
+        <button id="trCheck" type="button" class="sec">Проверить</button>
+        <button id="trShow" type="button" class="ghost">Показать разбор</button>
+      </div>
+      <div id="trResult" class="tr-result" aria-live="polite"></div>
+    </div>
+    <p style="font-size:.9rem;color:var(--muted)">Тренажёр проверяет по-честному: раскрывает твои скобки обратно и сравнивает с исходным выражением. Порядок скобок значения не имеет.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Где чаще всего ошибаются</p>
+    <h2>Лови эти четыре ловушки</h2>
+    <ul class="pitfalls">
+      <li><b>Путают с квадратом разности.</b> Пишут <span class="m">x² − 4 = (x − 2)²</span>. Неверно: <span class="m">(x − 2)² = x² − 4x + 4</span>. Разность квадратов даёт <b>две разные</b> скобки: <span class="m">x² − 4 = (x − 2)(x + 2)</span>. Как не допустить: помни, что в ответе всегда две скобки — с минусом и с плюсом.</li>
+      <li><b>Пытаются разложить сумму квадратов.</b> Пишут <span class="m">x² + 9 = (x + 3)(x + 3)</span> или <span class="m">(x − 3)(x + 3)</span>. Неверно: сумму квадратов по этой формуле разложить <b>нельзя</b>. Как не допустить: сначала проверь знак — формула только для <b>минуса</b>.</li>
+      <li><b>Теряют знаки в множителях.</b> Берут не то число за <span class="m">b</span> или пишут <span class="m">(x − 7)(x − 7)</span>. Как не допустить: одна скобка всегда с «<b>−</b>», другая всегда с «<b>+</b>».</li>
+      <li><b>Не видят, что число — это квадрат.</b> Смотрят на <span class="m">x² − 81</span> и не замечают, что <span class="m">81 = 9²</span>. Как не допустить: выучи квадраты до <span class="m">15²</span> и первым делом проверяй, является ли каждое слагаемое полным квадратом.</li>
+    </ul>
+  </section>
+
+  <section>
+    <p class="kicker">Проверка понимания · ответь себе</p>
+    <h2>Три вопроса на понимание</h2>
+    <div class="drill">
+      <details>
+        <summary><span class="q">Запиши формулу разности квадратов по памяти</span><span class="tag">объясни</span></summary>
+        <div class="ans"><span class="m">a² − b² = (a − b)(a + b)</span>. Проверить себя можно раскрытием скобок: средние слагаемые <span class="m">ab</span> и <span class="m">−ab</span> уничтожаются.</div>
+      </details>
+      <details>
+        <summary><span class="q">Чем a² − b² отличается от (a − b)²?</span><span class="tag">объясни</span></summary>
+        <div class="ans"><span class="m">a² − b²</span> — это разность квадратов, она раскладывается на две скобки: <span class="m">(a − b)(a + b)</span>. А <span class="m">(a − b)²</span> — квадрат разности, он раскрывается в три слагаемых: <span class="m">a² − 2ab + b²</span>. Это разные выражения.</div>
+      </details>
+      <details>
+        <summary><span class="q">Разложи на множители: 25 − x²</span><span class="tag">объясни</span></summary>
+        <div class="ans">Здесь первым стоит число: <span class="m">25 = 5²</span>, значит <span class="m">a = 5</span>, <span class="m">b = x</span>. Тогда <span class="m">25 − x² = (5 − x)(5 + x)</span>. Проверка: <span class="m">(5 − x)(5 + x) = 25 + 5x − 5x − x² = 25 − x²</span> ✓</div>
+      </details>
+    </div>
+    <p style="font-size:.94rem;color:var(--muted)">Итог одной фразой: <b>разность квадратов a² − b² всегда раскладывается на две скобки — (a − b)(a + b), а сумма квадратов так не раскладывается.</b></p>
+  </section>
+
+  <section>
+    <div class="next">
+      <h2>Что дальше</h2>
+      <p>Ты освоил самую рабочую формулу сокращённого умножения. Дальше она встраивается в две большие темы:</p>
+      <div class="eq">a² − b² = (a − b)(a + b)</div>
+      <p><b>Разложение многочлена на множители по формулам</b> — где разность квадратов работает в связке с другими формулами и с вынесением общего множителя. И <b>теорема Пифагора</b> в геометрии 8 класса: там выражения вида <span style="font-family:ui-monospace,Menlo,monospace">c² − a²</span> встречаются постоянно, и разложение на множители помогает их считать.</p>
+    </div>
+  </section>
+
+  <p class="foot">Проверка на выходе: чем разность квадратов отличается от квадрата разности · можно ли разложить x² + 25 · чему равно 51 · 49 без столбика?</p>
+
+</div>
+
+<style>
+  .trainer{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.2rem 1.3rem;margin-top:1rem}
+  .tr-eq{font-family:ui-monospace,Menlo,monospace;font-weight:800;font-size:clamp(1.3rem,5vw,1.7rem);text-align:center;padding:1rem;background:var(--extract-bg);border-radius:10px;color:var(--ink)}
+  .tr-ctl{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.9rem;align-items:center}
+  .tr-ctl button{font:inherit;font-weight:700;font-size:.9rem;cursor:pointer;border:none;border-radius:9px;padding:.55rem .95rem;color:#fff;background:var(--accent)}
+  .tr-ctl button.sec{background:var(--extract)}
+  .tr-ctl button.ghost{background:transparent;color:var(--accent);border:1px solid var(--accent)}
+  .tr-ctl input{flex:1;min-width:170px;font:inherit;padding:.5rem .7rem;border:1px solid var(--line);border-radius:9px;background:#fff;color:var(--ink)}
+  .tr-ctl button:focus-visible,.tr-ctl input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+  .tr-result{margin-top:.9rem;font-size:.96rem;min-height:1.2rem}
+  .tr-result .ok{color:var(--extract);font-weight:700}
+  .tr-result .bad{color:var(--neg);font-weight:700}
+  .tr-result .sol{margin-top:.7rem;padding:.85rem 1rem;background:#FCFBFE;border:1px solid var(--line);border-radius:10px;font-family:ui-monospace,Menlo,monospace;font-size:.9rem;line-height:1.85}
+  .tr-result .sol .cf{color:var(--extract);font-weight:800}
+  .tr-result .sol i{color:var(--muted);font-style:normal}
+</style>
+
+<script>
+/* ---------------- Площадная модель: a² − b² = (a−b)(a+b) ---------------- */
+(function(){
+  var cv=document.getElementById('areaCv');
+  if(!cv || !cv.getContext) return;
+  var ctx=cv.getContext('2d');
+  var sa=document.getElementById('sa'), sb=document.getElementById('sb');
+  var vA=document.getElementById('vA'), vB=document.getElementById('vB');
+  var W=720, H=330, MINUS='−';
+
+  var dpr=Math.max(1, Math.min(2, window.devicePixelRatio||1));
+  cv.width=W*dpr; cv.height=H*dpr;
+  cv.style.aspectRatio=W+' / '+H;
+  ctx.scale(dpr,dpr);
+
+  var GREEN='#1E8E5A', GREEN_BG='#E7F4EC';
+  var AMB='#A8730C',  AMB_BG='#FDF3DE';
+  var RED='#C0455B',  INK='#1B2333', MUT='#5A6478';
+
+  function box(x,y,w,h,fill,stroke){
+    ctx.fillStyle=fill; ctx.fillRect(x,y,w,h);
+    ctx.strokeStyle=stroke; ctx.lineWidth=2; ctx.strokeRect(x,y,w,h);
+  }
+  function txt(s,x,y,color,size,align,weight){
+    ctx.fillStyle=color;
+    ctx.font=(weight||'600')+' '+(size||13)+'px ui-monospace, Menlo, monospace';
+    ctx.textAlign=align||'center'; ctx.textBaseline='middle';
+    ctx.fillText(s,x,y);
+  }
+  function draw(){
+    var a=parseInt(sa.value,10), b=parseInt(sb.value,10);
+    if(b>=a){ b=a-1; sb.value=b; }
+    sb.max=String(a-1);
+    vA.textContent=a; vB.textContent=b;
+
+    ctx.clearRect(0,0,W,H);
+    var u=17;
+    var ox1=50, oy1=44;
+    var side=a*u;
+
+    /* ---- слева: квадрат a с вырезанным уголком b ---- */
+    /* кусок I: (a−b) в ширину, a в высоту */
+    box(ox1, oy1, (a-b)*u, side, GREEN_BG, GREEN);
+    /* кусок II: b в ширину, (a−b) в высоту, снизу справа */
+    box(ox1+(a-b)*u, oy1+b*u, b*u, (a-b)*u, AMB_BG, AMB);
+    /* вырезанный квадрат b² — пунктиром */
+    ctx.save();
+    ctx.setLineDash([5,4]); ctx.strokeStyle=RED; ctx.lineWidth=2;
+    ctx.strokeRect(ox1+(a-b)*u, oy1, b*u, b*u);
+    ctx.restore();
+    txt('b'+String.fromCharCode(178)+' = '+(b*b), ox1+(a-b)*u+b*u/2, oy1+b*u/2, RED, 12);
+
+    txt('I', ox1+(a-b)*u/2, oy1+side/2, GREEN, 15, 'center', '800');
+    txt('II', ox1+(a-b)*u+b*u/2, oy1+b*u+(a-b)*u/2, AMB, 15, 'center', '800');
+
+    /* подписи слева */
+    txt('a = '+a, ox1-10, oy1+side/2, INK, 13, 'right');
+    txt('a '+MINUS+' b = '+(a-b), ox1+(a-b)*u/2, oy1-16, GREEN, 12);
+    txt('b = '+b, ox1+(a-b)*u+b*u/2, oy1-16, AMB, 12);
+    txt('a'+String.fromCharCode(178)+' '+MINUS+' b'+String.fromCharCode(178)+' = '+(a*a)+' '+MINUS+' '+(b*b)+' = '+(a*a-b*b),
+        ox1+side/2, oy1+side+24, INK, 14, 'center', '800');
+
+    /* ---- стрелка ---- */
+    var gap=ox1+side+22;
+    txt('=', gap+16, oy1+side/2, MUT, 22, 'center', '700');
+
+    /* ---- справа: прямоугольник (a−b) на (a+b) ---- */
+    var ox2=gap+42, hh=(a-b)*u, oy2=oy1+(side-hh)/2;
+    /* кусок I, повёрнутый: a в ширину, (a−b) в высоту */
+    box(ox2, oy2, a*u, hh, GREEN_BG, GREEN);
+    /* кусок II: b в ширину, (a−b) в высоту */
+    box(ox2+a*u, oy2, b*u, hh, AMB_BG, AMB);
+    txt('I', ox2+a*u/2, oy2+hh/2, GREEN, 15, 'center', '800');
+    txt('II', ox2+a*u+b*u/2, oy2+hh/2, AMB, 15, 'center', '800');
+
+    txt('a + b = '+(a+b), ox2+(a+b)*u/2, oy2-16, INK, 13);
+    txt('a '+MINUS+' b', ox2+(a+b)*u+10, oy2+hh/2, INK, 13, 'left');
+    txt('(a '+MINUS+' b)(a + b) = '+(a-b)+' '+String.fromCharCode(183)+' '+(a+b)+' = '+((a-b)*(a+b)),
+        ox2+(a+b)*u/2, oy1+side+24, INK, 14, 'center', '800');
+
+    /* ---- итог ---- */
+    txt('Площадь одна и та же '+String.fromCharCode(8594)+'  a'+String.fromCharCode(178)+' '+MINUS+' b'+String.fromCharCode(178)+' = (a '+MINUS+' b)(a + b)',
+        W/2, H-26, MUT, 14, 'center', '700');
+  }
+  sa.addEventListener('input',draw);
+  sb.addEventListener('input',draw);
+  draw();
+})();
+</script>
+
+<script>
+/* ---------------- Тренажёр: разность квадратов ---------------- */
+(function(){
+  var eqEl=document.getElementById('trEq'), ansEl=document.getElementById('trAns'), resEl=document.getElementById('trResult');
+  if(!eqEl) return;
+  var MINUS='−';                 /* U+2212 */
+  var SUP={2:'²',3:'³',4:'⁴'};
+  var cur=null, ORIGKEY='';
+
+  function ri(a,b){ return Math.floor(Math.random()*(b-a+1))+a; }
+  function pick(a){ return a[ri(0,a.length-1)]; }
+  function gcd(a,b){ a=Math.abs(a); b=Math.abs(b); while(b){ var t=b; b=a%b; a=t; } return a; }
+  function sup(e){ return e>1 ? (SUP[e]||('^'+e)) : ''; }
+
+  /* моном {c, p:{var:exp}} */
+  function mul(a,b){
+    var p=Object.assign({},a.p), k;
+    for(k in b.p){ p[k]=(p[k]||0)+b.p[k]; }
+    for(k in p){ if(p[k]===0) delete p[k]; }
+    return {c:a.c*b.c, p:p};
+  }
+  function polyKey(terms){
+    var map={};
+    terms.forEach(function(t){
+      var ks=Object.keys(t.p).filter(function(k){return t.p[k]>0;}).sort();
+      var vk=ks.map(function(k){return k+':'+t.p[k];}).join(',');
+      map[vk]=(map[vk]||0)+t.c;
+    });
+    return Object.keys(map).filter(function(k){return map[k]!==0;}).sort()
+      .map(function(k){return k+'='+map[k];}).join(';');
+  }
+  function renderMono(m){
+    var vs=Object.keys(m.p).filter(function(k){return m.p[k]>0;}).sort();
+    var body=vs.map(function(v){ return v+sup(m.p[v]); }).join('');
+    var ac=Math.abs(m.c);
+    var coefStr = body==='' ? String(ac) : (ac===1?'':String(ac));
+    var text=coefStr+body;
+    return {text:text, full:(m.c<0?MINUS:'')+text};
+  }
+  function renderPoly(terms){
+    return terms.map(function(m,i){
+      var r=renderMono(m);
+      if(i===0) return r.full;
+      return (m.c<0?' '+MINUS+' ':' + ')+r.text;
+    }).join('');
+  }
+  /* строка вида (A − B)(A + B) */
+  function pairStr(A,B){ return '('+A+' '+MINUS+' '+B+')('+A+' + '+B+')'; }
+
+  /* ---------- генерация ---------- */
+  var VARS=['x','a','m','y','p'], PAIRS=[['x','y'],['a','b'],['p','q'],['m','n']];
+
+  var recipes=[
+    function(){ /* x² − 49 */
+      var v=pick(VARS), k=ri(2,12);
+      return {kind:'fact', terms:[{c:1,p:mp(v,2)},{c:-k*k,p:{}}], A:v, B:String(k),
+              why:['<b>'+v+SUP[2]+'</b> — уже квадрат, значит a = '+v+'.',
+                   '<b>'+(k*k)+' = '+k+SUP[2]+'</b>, значит b = '+k+'.']};
+    },
+    function(){ /* 16a² − 9 */
+      var v=pick(VARS), m=ri(2,7), k; do{ k=ri(2,12); }while(gcd(m,k)!==1);
+      return {kind:'fact', terms:[{c:m*m,p:mp(v,2)},{c:-k*k,p:{}}], A:m+v, B:String(k),
+              why:['<b>'+(m*m)+v+SUP[2]+' = ('+m+v+')'+SUP[2]+'</b>, значит a = '+m+v+'.',
+                   '<b>'+(k*k)+' = '+k+SUP[2]+'</b>, значит b = '+k+'.']};
+    },
+    function(){ /* 9x² − 25y² */
+      var pr=pick(PAIRS), m=ri(2,6), n; do{ n=ri(2,6); }while(gcd(m,n)!==1);
+      return {kind:'fact', terms:[{c:m*m,p:mp(pr[0],2)},{c:-n*n,p:mp(pr[1],2)}], A:m+pr[0], B:n+pr[1],
+              why:['<b>'+(m*m)+pr[0]+SUP[2]+' = ('+m+pr[0]+')'+SUP[2]+'</b>, значит a = '+m+pr[0]+'.',
+                   '<b>'+(n*n)+pr[1]+SUP[2]+' = ('+n+pr[1]+')'+SUP[2]+'</b>, значит b = '+n+pr[1]+'.']};
+    },
+    function(){ /* 100 − x² : число впереди */
+      var v=pick(VARS), k=ri(2,12);
+      return {kind:'fact', terms:[{c:k*k,p:{}},{c:-1,p:mp(v,2)}], A:String(k), B:v,
+              why:['Первым стоит число: <b>'+(k*k)+' = '+k+SUP[2]+'</b>, значит a = '+k+'.',
+                   '<b>'+v+SUP[2]+'</b> — квадрат буквы, значит b = '+v+'.']};
+    },
+    function(){ /* краевой случай: сумма квадратов */
+      var v=pick(VARS), k=ri(2,12), m=pick([1,1,2,3]);
+      var t=[{c:m*m,p:mp(v,2)},{c:k*k,p:{}}];
+      return {kind:'sum', terms:t,
+              why:['Между слагаемыми стоит <b>плюс</b> — это сумма квадратов.']};
+    },
+    function(){ /* устный счёт: 102 · 98 */
+      var N=pick([20,30,40,50,60,70,80,90,100]), d=ri(1,4);
+      return {kind:'num', N:N, d:d, value:N*N-d*d};
+    }
+  ];
+  function mp(v,e){ var o={}; o[v]=e; return o; }
+
+  function taskText(c){
+    if(c.kind==='num') return 'Вычисли: '+(c.N+c.d)+' '+String.fromCharCode(183)+' '+(c.N-c.d);
+    if(c.kind==='sum') return 'Разложи: '+renderPoly(c.terms);
+    return 'Разложи: '+renderPoly(c.terms);
+  }
+
+  function generate(doFocus){
+    cur=pick(recipes)();
+    ORIGKEY = cur.terms ? polyKey(cur.terms) : '';
+    eqEl.textContent=taskText(cur);
+    resEl.innerHTML=''; ansEl.value='';
+    if(doFocus) ansEl.focus();
+  }
+
+  /* ---------- парсинг ответа ---------- */
+  function norm(s){
+    return s
+      .replace(/²/g,'^2').replace(/³/g,'^3').replace(/⁴/g,'^4')
+      .replace(/[·*×]/g,'')
+      .replace(/[−–—‐-]/g,'-')
+      .replace(/[хХ]/g,'x').replace(/[уУ]/g,'y').replace(/[аА]/g,'a')
+      .replace(/[сС]/g,'c').replace(/[рР]/g,'p').replace(/[мМ]/g,'m')
+      .replace(/[оО]/g,'o').replace(/[еЕ]/g,'e').replace(/[кК]/g,'k')
+      .replace(/\s+/g,'').toLowerCase();
+  }
+  function parseMono(s){
+    if(s==null || s==='') return {c:1,p:{}};
+    var sign=1;
+    s=s.replace(/^\+/,'');
+    if(s.charAt(0)==='-'){ sign=-1; s=s.slice(1); }
+    var m=s.match(/^\d+/), coef=m?parseInt(m[0],10):1;
+    if(m) s=s.slice(m[0].length);
+    var p={};
+    while(s.length){
+      var lm=s.match(/^[a-z]/);
+      if(!lm) return null;
+      var v=lm[0]; s=s.slice(1);
+      var e=1;
+      if(s.charAt(0)==='^'){ s=s.slice(1); var em=s.match(/^\d+/); if(!em) return null; e=parseInt(em[0],10); s=s.slice(em[0].length); }
+      else { var ed=s.match(/^\d+/); if(ed){ e=parseInt(ed[0],10); s=s.slice(ed[0].length); } }
+      p[v]=(p[v]||0)+e;
+    }
+    return {c:sign*coef, p:p};
+  }
+  function splitTerms(s){
+    var res=[], buf='', i, ch;
+    for(i=0;i<s.length;i++){
+      ch=s.charAt(i);
+      if(ch==='+'||ch==='-'){
+        if(i>0) res.push(buf);
+        buf = ch==='-' ? '-' : '';
+      } else buf+=ch;
+    }
+    if(buf!=='') res.push(buf);
+    return res.filter(function(x){ return x!=='' && x!=='-' && x!=='+'; });
+  }
+  function deg(m){ var d=0; for(var k in m.p) d+=m.p[k]; return d; }
+  function parseTwoBrackets(raw){
+    var str=norm(raw);
+    var m=str.match(/^\(([^()]+)\)\(([^()]+)\)$/);
+    if(!m) return null;
+    var g1=splitTerms(m[1]).map(parseMono), g2=splitTerms(m[2]).map(parseMono);
+    if(!g1.length || !g2.length) return null;
+    if(g1.some(function(t){return !t;}) || g2.some(function(t){return !t;})) return null;
+    if(g1.length!==2 || g2.length!==2) return null;                 /* ровно два слагаемых в каждой скобке */
+    if(g1.concat(g2).some(function(t){ return deg(t)>1; })) return null;  /* скобки должны быть первой степени */
+    var prod=[];
+    g1.forEach(function(x){ g2.forEach(function(y){ prod.push(mul(x,y)); }); });
+    return prod;
+  }
+  function saysNo(raw){
+    var s=raw.toLowerCase().replace(/\s+/g,'');
+    return s.indexOf('нельз')>=0        /* нельзя */
+        || s.indexOf('нераскл')>=0  /* нераскл(адывается) */
+        || s.indexOf('невозмож')>=0 /* невозможно */
+        || s==='нет';                              /* нет */
+  }
+
+  /* ---------- пошаговый разбор ---------- */
+  function solutionHTML(){
+    var h='<div class="sol">';
+    if(cur.kind==='num'){
+      var N=cur.N, d=cur.d;
+      h+='<b>Шаг 1.</b> Оба числа стоят рядом с '+N+': '+(N+d)+' = '+N+' + '+d+', '+(N-d)+' = '+N+' '+MINUS+' '+d+'.<br>';
+      h+='<b>Шаг 2.</b> Значит это (a + b)(a '+MINUS+' b) при a = '+N+', b = '+d+'.<br>';
+      h+='<b>Шаг 3.</b> По формуле наоборот: (a '+MINUS+' b)(a + b) = a'+SUP[2]+' '+MINUS+' b'+SUP[2]+' = '+(N*N)+' '+MINUS+' '+(d*d)+' = '+cur.value+'.<br>';
+      h+='<b>Ответ:</b> <span class="cf">'+cur.value+'</span>';
+      return h+'</div>';
+    }
+    if(cur.kind==='sum'){
+      h+='<b>Шаг 1.</b> '+cur.why[0]+'<br>';
+      h+='<b>Шаг 2.</b> Формула a'+SUP[2]+' '+MINUS+' b'+SUP[2]+' = (a '+MINUS+' b)(a + b) работает только для <b>разности</b>.<br>';
+      h+='<b>Ответ:</b> <span class="cf">разложить нельзя</span> — сумма квадратов на множители не раскладывается.';
+      return h+'</div>';
+    }
+    h+='<b>Шаг 1.</b> '+cur.why[0]+'<br>';
+    h+='<b>Шаг 2.</b> '+cur.why[1]+'<br>';
+    h+='<b>Шаг 3.</b> Между ними минус и оба слагаемых — полные квадраты, значит это разность квадратов: '
+       +renderPoly(cur.terms)+' = ('+cur.A+')'+SUP[2]+' '+MINUS+' ('+cur.B+')'+SUP[2]+'.<br>';
+    h+='<b>Шаг 4.</b> Подставляем в (a '+MINUS+' b)(a + b).<br>';
+    h+='<b>Ответ:</b> <span class="cf">'+pairStr(cur.A,cur.B)+'</span>';
+    return h+'</div>';
+  }
+
+  /* ---------- проверка ---------- */
+  function check(){
+    var raw=ansEl.value.trim();
+    if(!raw){ resEl.innerHTML='<span class="bad">Введи ответ или нажми «Показать разбор».</span>'; return; }
+
+    if(cur.kind==='num'){
+      var num=parseInt(norm(raw).replace(/[^0-9-]/g,''),10);
+      if(isNaN(num)){ resEl.innerHTML='<span class="bad">Здесь нужен ответ числом.</span>'; return; }
+      if(num===cur.value){ resEl.innerHTML='<span class="ok">✓ Верно!</span>'+solutionHTML(); }
+      else { resEl.innerHTML='<span class="bad">✗ Не то. Разложи каждый множитель как «круглое число ± маленькое».</span>'+solutionHTML(); }
+      return;
+    }
+
+    if(cur.kind==='sum'){
+      if(saysNo(raw)){ resEl.innerHTML='<span class="ok">✓ Верно! Сумму квадратов разложить нельзя.</span>'+solutionHTML(); }
+      else { resEl.innerHTML='<span class="bad">✗ Посмотри на знак: между квадратами <b>плюс</b>. Что тогда написать в ответе?</span>'+solutionHTML(); }
+      return;
+    }
+
+    if(saysNo(raw)){
+      resEl.innerHTML='<span class="bad">✗ Здесь как раз минус между двумя полными квадратами — формула работает.</span>'+solutionHTML(); return;
+    }
+    var prod=parseTwoBrackets(raw);
+    if(!prod){
+      resEl.innerHTML='<span class="bad">Не понял запись. Нужны две скобки по два слагаемых, например (x-7)(x+7).</span>'; return;
+    }
+    if(polyKey(prod)!==ORIGKEY){
+      resEl.innerHTML='<span class="bad">✗ Не то. Раскрой свой ответ обратно — получается не исходное выражение.</span>'+solutionHTML(); return;
+    }
+    resEl.innerHTML='<span class="ok">✓ Верно! Разность квадратов разложена.</span>'+solutionHTML();
+  }
+
+  document.getElementById('trNew').addEventListener('click',function(){ generate(true); });
+  document.getElementById('trCheck').addEventListener('click',check);
+  document.getElementById('trShow').addEventListener('click',function(){ resEl.innerHTML=solutionHTML(); });
+  ansEl.addEventListener('keydown',function(e){ if(e.key==='Enter') check(); });
+
+  /* стартовая задача — фиксированная и валидная, без фокуса */
+  cur={kind:'fact', terms:[{c:1,p:{x:2}},{c:-49,p:{}}], A:'x', B:'7',
+       why:['<b>x'+SUP[2]+'</b> — уже квадрат, значит a = x.','<b>49 = 7'+SUP[2]+'</b>, значит b = 7.']};
+  ORIGKEY=polyKey(cur.terms);
+  eqEl.textContent=taskText(cur);
+})();
+</script>
+<!--LESSON-NAV-BOT--><nav class="lnav lnav-bot"><a class="prev" href="./alg7-kvadrat-summy-raznosti.html"><span class="dir">← Предыдущая</span><span class="ttl">Квадрат суммы и квадрат разности</span></a><a class="to-cat" href="./catalog.html">📚 <span>Все темы</span></a><a class="next" href="./alg7-razlozhenie-vynesenie.html"><span class="dir">Следующая →</span><span class="ttl">Вынесение общего множителя за скобки</span></a></nav><!--/LESSON-NAV-BOT-->

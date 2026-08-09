@@ -1,0 +1,543 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Неравенство треугольника — геометрия 7 класс</title>
+<style>
+  :root{
+    --paper:#F6F7F9;
+    --card:#FFFFFF;
+    --ink:#1B2333;
+    --muted:#5A6478;
+    --line:#E2E5EC;
+    --accent:#2E5AAC;        /* брендовый — заголовки, формула */
+    --accent-soft:#E4EBF7;
+    --ca:#1E8E5A; --ca-soft:#E7F4EC;   /* сторона a — зелёный */
+    --cb:#E27C2C; --cb-soft:#FBEEDF;   /* сторона b — янтарный */
+    --cc:#C0455B; --cc-soft:#F9E9EC;   /* сторона c — гранат */
+    --ok:#1E8E5A; --no:#C0455B;
+  }
+  *{box-sizing:border-box}
+  body{margin:0}
+  .wrap{
+    max-width:760px;margin:0 auto;
+    padding:clamp(1.4rem,4vw,3rem) clamp(1.1rem,4vw,2rem) 4rem;
+    background:var(--paper);color:var(--ink);
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    font-size:17px;line-height:1.62;-webkit-font-smoothing:antialiased;
+  }
+  .eyebrow{font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);font-weight:600;margin:0 0 .5rem}
+  h1{font-family:Georgia,"Times New Roman",serif;font-size:clamp(2rem,7vw,3rem);line-height:1.05;margin:0;font-weight:700;letter-spacing:-.01em;text-wrap:balance}
+  .lede{font-size:1.08rem;color:var(--muted);margin:.7rem 0 0;max-width:60ch;text-wrap:pretty}
+  h2{font-family:Georgia,serif;font-size:1.32rem;font-weight:700;margin:0 0 .1rem;letter-spacing:-.005em}
+  section{margin-top:2.6rem}
+  .kicker{font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:600;margin:0 0 .8rem;display:flex;align-items:center;gap:.6rem}
+  .kicker::before{content:"";width:1.4rem;height:2px;background:var(--accent);border-radius:2px}
+  p{margin:.65rem 0}
+  strong{font-weight:650}
+  .math{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-weight:600}
+  sup{font-size:.72em}
+  .wA{color:var(--ca);font-weight:700} .wB{color:var(--cb);font-weight:700} .wC{color:var(--cc);font-weight:700}
+
+  /* Главная формула */
+  .hero-formula{margin-top:2.2rem;background:var(--ink);color:#fff;border-radius:14px;padding:1.6rem 1.4rem;text-align:center}
+  .hero-formula .lbl{font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:#9aa6c9;margin:0 0 .7rem}
+  .hero-formula .eq{font-family:ui-monospace,"SF Mono",Menlo,monospace;font-size:clamp(1.05rem,4.4vw,1.6rem);font-weight:700;line-height:1.9}
+  .hero-formula .eq .a{color:#5fd39a} .hero-formula .eq .b{color:#f0a45e} .hero-formula .eq .c{color:#ec8497}
+  .hero-formula .note{font-size:.86rem;color:#9aa6c9;margin:.8rem 0 0}
+
+  /* Пререквизит */
+  .recall{background:var(--accent-soft);border-radius:12px;padding:1rem 1.15rem;font-size:.96rem}
+  .recall p{margin:.35rem 0}
+  .recall b{color:var(--accent)}
+
+  /* Следствие / замечание */
+  .note-box{border-left:4px solid var(--accent);background:var(--accent-soft);border-radius:0 10px 10px 0;padding:.8rem 1.1rem;margin-top:1rem;font-size:.97rem}
+  .note-box b{color:var(--accent)}
+
+  /* Разбор */
+  .worked{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:1.2rem 1.3rem}
+  .worked .task{font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.02rem;margin:0 0 1rem;padding-bottom:.8rem;border-bottom:1px solid var(--line)}
+  ol.steps{margin:0;padding:0;list-style:none;counter-reset:s;display:flex;flex-direction:column;gap:.7rem}
+  ol.steps li{position:relative;padding-left:2.1rem;counter-increment:s}
+  ol.steps li::before{content:counter(s);position:absolute;left:0;top:.05rem;width:1.5rem;height:1.5rem;border-radius:50%;background:var(--accent-soft);color:var(--accent);font-size:.82rem;font-weight:700;display:flex;align-items:center;justify-content:center}
+  ol.steps .m{font-family:ui-monospace,Menlo,monospace;font-weight:600;color:var(--ink)}
+  ol.steps em{color:var(--muted);font-style:italic}
+  .verdict{margin-top:1rem;padding:.7rem 1rem;background:var(--accent-soft);border-radius:9px;font-weight:600;color:var(--accent);font-size:.98rem;font-family:ui-monospace,Menlo,monospace}
+
+  /* Три случая — цвет-код */
+  .cases{display:grid;gap:.7rem;margin-top:1rem}
+  .case{border-radius:12px;padding:.9rem 1.1rem;border-left:4px solid}
+  .case .h{font-weight:700;font-size:.98rem;margin:0 0 .25rem;font-family:ui-monospace,Menlo,monospace}
+  .case .t{font-size:.94rem;margin:0;color:var(--muted)}
+  .case.yes{background:var(--ca-soft);border-color:var(--ca)} .case.yes .h{color:var(--ca)}
+  .case.deg{background:var(--cb-soft);border-color:var(--cb)} .case.deg .h{color:var(--cb)}
+  .case.no{background:var(--cc-soft);border-color:var(--cc)} .case.no .h{color:var(--cc)}
+
+  /* Визуализация */
+  .viz{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.1rem 1.1rem 1rem;margin:1rem 0}
+  .viz canvas{width:100%;height:auto;display:block;border-radius:10px;background:#FCFDFF}
+  .viz-read{text-align:center;font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:clamp(.88rem,3.2vw,1.02rem);margin:.85rem 0 0;padding:.6rem;border-radius:9px;background:var(--accent-soft);line-height:1.7}
+  .viz-read.yes{background:var(--ca-soft);color:var(--ca)}
+  .viz-read.deg{background:var(--cb-soft);color:var(--cb)}
+  .viz-read.no{background:var(--cc-soft);color:var(--cc)}
+  .sliders{display:grid;gap:.7rem;margin-top:.95rem}
+  .sliders label{display:flex;align-items:center;gap:.55rem;font-weight:700;font-family:ui-monospace,Menlo,monospace;font-size:.92rem}
+  .sliders label .nm{min-width:6.5ch}
+  .sliders input[type=range]{flex:1;min-width:0}
+  .sliders input.rA{accent-color:var(--ca)}
+  .sliders input.rB{accent-color:var(--cb)}
+  .sliders input.rC{accent-color:var(--cc)}
+  .sliders label.lA .nm{color:var(--ca)} .sliders label.lB .nm{color:var(--cb)} .sliders label.lC .nm{color:var(--cc)}
+  .sliders .sval{min-width:4.5ch;text-align:right;color:var(--muted);font-variant-numeric:tabular-nums}
+  .viz-btn{margin-top:.85rem;display:flex;gap:.5rem;flex-wrap:wrap}
+  .viz-btn button{font:inherit;font-weight:700;font-size:.86rem;cursor:pointer;border:none;border-radius:9px;padding:.5rem .9rem;background:var(--accent);color:#fff}
+  .viz-btn button.reset{background:transparent;color:var(--accent);border:1px solid var(--accent)}
+  .viz-btn button:focus-visible,.sliders input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+
+  /* Практика */
+  .drill{display:flex;flex-direction:column;gap:.7rem}
+  details{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:.85rem 1.05rem}
+  details[open]{border-color:var(--accent)}
+  summary{cursor:pointer;font-weight:600;list-style:none;display:flex;justify-content:space-between;align-items:center;gap:1rem}
+  summary::-webkit-details-marker{display:none}
+  summary:focus-visible{outline:3px solid var(--accent);outline-offset:3px;border-radius:6px}
+  summary .q{font-family:ui-monospace,Menlo,monospace;font-size:.92rem}
+  summary .tag{font-size:.66rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);border:1px solid var(--line);border-radius:20px;padding:.1rem .55rem;white-space:nowrap}
+  summary::after{content:"ответ";font-size:.76rem;color:var(--accent);font-weight:600;white-space:nowrap}
+  details[open] summary::after{content:"скрыть"}
+  .ans{margin-top:.7rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.96rem;color:var(--muted)}
+  .ans .m{font-family:ui-monospace,Menlo,monospace;color:var(--ink);font-weight:600}
+  .ans b{color:var(--ink)}
+
+  /* Тренажёр */
+  .trainer{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.2rem 1.3rem;margin-top:1rem}
+  .tr-task{font-size:clamp(1rem,3.6vw,1.12rem);text-align:center;padding:1rem;background:var(--accent-soft);border-radius:10px;font-weight:600;line-height:1.5}
+  .tr-task b{font-family:ui-monospace,Menlo,monospace;color:var(--ink)}
+  .tr-ctl{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:1rem;align-items:center;justify-content:center}
+  .tr-ctl input{flex:1;min-width:130px;max-width:200px;font:inherit;padding:.5rem .7rem;border:1px solid var(--line);border-radius:9px;text-align:center;background:#fff;color:var(--ink)}
+  .tr-ctl button{font:inherit;font-weight:700;font-size:.9rem;cursor:pointer;border:none;border-radius:9px;padding:.55rem .95rem;color:#fff;background:var(--accent)}
+  .tr-ctl button.sec{background:var(--cb)}
+  .tr-ctl button.ghost{background:transparent;color:var(--accent);border:1px solid var(--accent)}
+  .tr-ctl button:focus-visible,.tr-ctl input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+  .tr-result{margin-top:.9rem;font-size:.96rem;min-height:1.2rem;text-align:center}
+  .tr-result .ok{color:var(--ok);font-weight:700}
+  .tr-result .bad{color:var(--no);font-weight:700}
+  .tr-result .sol{margin-top:.6rem;padding:.85rem 1rem;background:#FCFDFE;border:1px solid var(--line);border-radius:10px;font-family:ui-monospace,Menlo,monospace;font-size:.9rem;line-height:1.85;text-align:left}
+  .tr-result .sol b{color:var(--accent)}
+
+  /* Ошибки */
+  ul.pitfalls{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:.6rem}
+  ul.pitfalls li{padding-left:1.6rem;position:relative;font-size:.98rem}
+  ul.pitfalls li::before{content:"×";position:absolute;left:.15rem;top:-.05rem;color:var(--no);font-weight:700;font-size:1.15rem}
+  ul.pitfalls b{color:var(--ink)}
+
+  /* Проверка */
+  .selfcheck{background:var(--cb-soft);border-radius:12px;padding:1rem 1.2rem}
+  .selfcheck ol{margin:.3rem 0 0;padding-left:1.2rem;display:flex;flex-direction:column;gap:.4rem;font-size:.98rem}
+
+  .next{background:var(--accent);color:#fff;border-radius:12px;padding:1.2rem 1.3rem}
+  .next h2{color:#fff}
+  .next p{color:#dfe6f5;font-size:.96rem;margin:.4rem 0 0}
+  .next b{color:#fff}
+  .foot{margin-top:2.4rem;font-size:.82rem;color:var(--muted);text-align:center}
+
+  @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<style>
+.oge-tip{display:flex;gap:.8rem;align-items:flex-start;background:#FFF8E7;border:1px solid #F0D98A;border-left:4px solid #E0A315;border-radius:10px;padding:.85rem 1.05rem;margin:1.5rem 0}
+.oge-tip .b{font-size:.72rem;font-weight:800;letter-spacing:.03em;color:#8A6A15;white-space:nowrap;text-transform:uppercase;padding-top:.15rem}
+.oge-tip .x{font-size:.95rem;line-height:1.5}
+</style>
+
+<!--LESSON-NAV-TOP--><style>.lnav{--lnav-accent:#3D5AF1}.lnav a{text-decoration:none;font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif}.lnav-top{max-width:820px;margin:0 auto;padding:.75rem clamp(1rem,4vw,1.5rem) .1rem}.lnav-top a{display:inline-flex;align-items:center;gap:.35rem;color:var(--lnav-accent);font-weight:600;font-size:.9rem}.lnav-top a:hover{text-decoration:underline}.lnav-bot{max-width:820px;margin:2.6rem auto 3rem;padding:1.1rem clamp(1rem,4vw,1.5rem) 0;border-top:1px solid #E4E8EF;display:flex;align-items:stretch;gap:.55rem}.lnav-bot a{min-width:0;display:flex;flex-direction:column;justify-content:center;gap:.15rem;border:1px solid #E4E8EF;border-radius:12px;padding:.65rem .85rem;color:#182233;background:#fff;transition:border-color .1s,transform .08s}.lnav-bot a:hover{border-color:var(--lnav-accent);transform:translateY(-1px)}.lnav-bot .prev,.lnav-bot .next{flex:1 1 0}.lnav-bot .next{text-align:right}.lnav-bot .dir{font-size:.72rem;color:#8A93A6;font-weight:600}.lnav-bot .ttl{font-size:.9rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.lnav-bot .to-cat{flex:0 0 auto;flex-direction:row;align-items:center;justify-content:center;color:var(--lnav-accent);font-weight:700;font-size:.85rem;white-space:nowrap}@media(max-width:420px){.lnav-bot .to-cat span{display:none}.lnav-bot .to-cat{padding:.65rem .7rem}}</style><nav class="lnav lnav-top"><a href="./catalog.html">← Все темы</a></nav><!--/LESSON-NAV-TOP-->
+<div class="wrap">
+
+  <header>
+    <p class="eyebrow">Геометрия · 7 класс</p>
+    <h1>Неравенство треугольника</h1>
+    <p class="lede">Не из любых трёх отрезков складывается треугольник. Есть одна короткая проверка, которая сразу говорит: получится или нет.</p>
+  </header>
+
+  <div class="hero-formula">
+    <p class="lbl">Неравенство треугольника</p>
+    <div class="eq"><span class="a">a</span> &lt; <span class="b">b</span> + <span class="c">c</span>,&nbsp;&nbsp; <span class="b">b</span> &lt; <span class="a">a</span> + <span class="c">c</span>,&nbsp;&nbsp; <span class="c">c</span> &lt; <span class="a">a</span> + <span class="b">b</span></div>
+    <p class="note">каждая сторона треугольника меньше суммы двух других сторон</p>
+  </div>
+
+  <section>
+    <p class="kicker">Зачем это нужно</p>
+    <h2>Три палочки — ещё не треугольник</h2>
+    <p>Представь, что у тебя три палочки: <span class="math">2 см</span>, <span class="math">3 см</span> и <span class="math">10 см</span>. Можно ли сложить из них треугольник? Многие сразу говорят «да, три отрезка — значит треугольник». Но если попробовать реально, две короткие палочки (<span class="math">2 + 3 = 5</span> см) просто <strong>не дотянутся</strong> друг до друга над длинной палочкой в 10 см — треугольник не замкнётся.</p>
+    <p>Вот оно, главное житейское заблуждение: <strong>«любые три отрезка дают треугольник»</strong>. На самом деле — нет. Неравенство треугольника как раз отвечает на вопрос «существует ли треугольник с такими сторонами?».</p>
+    <p>Где это работает:</p>
+    <ul>
+      <li>чтобы не браться за построение треугольника, которого не бывает;</li>
+      <li>в жизни: кратчайший путь между двумя точками — прямой отрезок, а не «через третью точку». Поэтому мы срезаем угол по диагонали, а не идём вдоль двух сторон;</li>
+      <li>как фундамент для дальнейшей геометрии, где сравнивают расстояния.</li>
+    </ul>
+  </section>
+
+  <section>
+    <p class="kicker">Что вспомнить с прошлых шагов</p>
+    <div class="recall">
+      <p><b>Сравнение отрезков.</b> Отрезки сравнивают по длине: длиннее тот, у кого больше число. Длины обязательно в одних единицах — 5 см и 5 м напрямую сравнивать нельзя.</p>
+      <p><b>Стороны и углы треугольника связаны.</b> Ты уже знаешь, что в треугольнике против большей стороны лежит больший угол. Сейчас разбираемся с другой связью — между самими сторонами.</p>
+      <p><b>Знак «&lt;»</b> читается «строго меньше». «Строго» — значит равенство не считается. Дальше это будет ключевым моментом.</p>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Ядро темы</p>
+    <h2>Правило и как им пользоваться</h2>
+    <p><strong>Неравенство треугольника.</strong> В любом треугольнике <strong>каждая сторона короче, чем сумма двух других сторон</strong>. Если стороны обозначить <span class="math"><span class="wA">a</span></span>, <span class="math"><span class="wB">b</span></span>, <span class="math"><span class="wC">c</span></span>, то одновременно верны три условия:</p>
+    <p style="text-align:center" class="math"><span class="wA">a</span> &lt; <span class="wB">b</span> + <span class="wC">c</span>, &nbsp; <span class="wB">b</span> &lt; <span class="wA">a</span> + <span class="wC">c</span>, &nbsp; <span class="wC">c</span> &lt; <span class="wA">a</span> + <span class="wB">b</span></p>
+    <p><strong>Почему так?</strong> Сторона треугольника — это прямой путь от одной вершины к другой. А две другие стороны — «обходной путь» через третью вершину. Прямой путь всегда короче ломаного: по прямой ближе, чем в обход. Поэтому одна сторона не может дотянуться до длины двух остальных вместе.</p>
+    <div class="note-box">
+      <p><b>Признак существования треугольника (рабочий приём):</b> три отрезка могут быть сторонами треугольника тогда и только тогда, когда <b>самая большая сторона меньше суммы двух других</b>. Если самая длинная сторона короче суммы двух коротких — остальные два неравенства выполняются автоматически, проверять их не нужно. Одна проверка вместо трёх.</p>
+    </div>
+    <p><strong>Важные оговорки.</strong> Неравенство <strong>строгое</strong>. Если получилось равенство, например <span class="math"><span class="wC">c</span> = <span class="wA">a</span> + <span class="wB">b</span></span>, треугольника нет: три точки лягут на одну прямую. Это «вырожденный», сплющенный случай — получается отрезок, а не треугольник. И ещё раз: все длины должны быть в одних единицах.</p>
+
+    <div class="cases">
+      <div class="case yes">
+        <p class="h">наибольшая &lt; сумма двух других → треугольник ЕСТЬ</p>
+        <p class="t">Пример: 4, 6, 9. Наибольшая 9, сумма двух других 4 + 6 = 10, и 9 &lt; 10. Фигура замыкается.</p>
+      </div>
+      <div class="case deg">
+        <p class="h">наибольшая = сумма двух других → ТРЕУГОЛЬНИКА НЕТ (вырожденный случай)</p>
+        <p class="t">Пример: 3, 5, 8. Здесь 3 + 5 = 8 — ровно дотянулись, но легли на одну прямую. Это отрезок, а не треугольник.</p>
+      </div>
+      <div class="case no">
+        <p class="h">наибольшая &gt; сумма двух других → треугольника НЕТ</p>
+        <p class="t">Пример: 2, 3, 10. Короткие 2 + 3 = 5 не дотягиваются до 10, остаётся зазор.</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="oge-tip"><div class="b">🎯 В ОГЭ</div><div class="x">Формулировка «каждая сторона треугольника меньше суммы двух других» — типовой пункт в <b>задании про верные утверждения</b>. Там же любят утверждение-ловушку вида «любые три отрезка могут быть сторонами треугольника» — оно <b>неверное</b>.</div></div>
+
+  <section>
+    <p class="kicker">Разбираем вместе · думаю вслух</p>
+    <h2>Эталонный пример</h2>
+    <div class="worked">
+      <p class="task">Существует ли треугольник со сторонами 4 см, 6 см, 9 см?</p>
+      <ol class="steps">
+        <li>Нахожу самую большую сторону: это <span class="m">9 см</span>. <em>Почему именно её? Потому что если даже самая длинная сторона короче суммы двух других, то и остальные два неравенства точно выполнятся.</em></li>
+        <li>Складываю две другие: <span class="m">4 + 6 = 10</span> (см). <em>Это тот самый «обходной путь» — насколько далеко дотянутся две короткие палочки вместе.</em></li>
+        <li>Сравниваю: <span class="m">9 &lt; 10</span> — верно. <em>Длинная сторона короче обходного пути, значит палочки сомкнутся.</em></li>
+        <li>Вывод: треугольник существует. <em>Достаточно одной проверки — для наибольшей стороны.</em></li>
+      </ol>
+      <div class="verdict">Ответ: да, существует</div>
+    </div>
+    <p style="font-size:.92rem;color:var(--muted);margin-top:.8rem">А теперь тот же ход, но с пропущенным шагом — допиши сам. <b>Существует ли треугольник со сторонами 3 см, 5 см, 8 см?</b> Наибольшая сторона — 8 см. Сумма двух других: <span class="math">3 + 5 = 8</span> (см). Сравниваю: <span class="math">8 ☐ 8</span> — какой знак? Получилось <b>равенство</b>, а неравенство должно быть строгим («меньше»). Значит… <b>треугольника нет</b>.</p>
+    <p style="font-size:.92rem;color:var(--muted)">И совсем самостоятельно: можно ли составить треугольник из отрезков 7 см, 7 см и 15 см? Наибольшая 15, сумма двух других <span class="math">7 + 7 = 14</span>, а <span class="math">15 &gt; 14</span> — неравенство нарушено, <b>нельзя</b>.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Увидь глазами · интерактив</p>
+    <h2>Собери треугольник из трёх палочек</h2>
+    <p>Три ползунка — три палочки длиной <span class="wA">a</span>, <span class="wB">b</span>, <span class="wC">c</span>. Самая длинная всегда ложится вниз как основание, две другие пытаются сомкнуться над ней. Сначала <strong>предскажи</strong>, сомкнутся ли они, потом двигай ползунок и <strong>проверь</strong>.</p>
+    <div class="viz">
+      <canvas id="viz" width="640" height="420" aria-label="Три отрезка: самый длинный лежит основанием, два других либо смыкаются в треугольник, либо не дотягиваются друг до друга"></canvas>
+      <div id="vizRead" class="viz-read"></div>
+      <div class="sliders">
+        <label class="lA"><span class="nm">a</span><input id="sA" class="rA" type="range" min="1" max="12" step="1" value="4" aria-label="Длина стороны a"><span id="vA" class="sval">4</span></label>
+        <label class="lB"><span class="nm">b</span><input id="sB" class="rB" type="range" min="1" max="12" step="1" value="6" aria-label="Длина стороны b"><span id="vB" class="sval">6</span></label>
+        <label class="lC"><span class="nm">c</span><input id="sC" class="rC" type="range" min="1" max="12" step="1" value="9" aria-label="Длина стороны c"><span id="vC" class="sval">9</span></label>
+      </div>
+      <div class="viz-btn">
+        <button id="p1" type="button">4, 6, 9 — есть</button>
+        <button id="p2" type="button">3, 5, 8 — ровно</button>
+        <button id="p3" type="button">2, 3, 10 — нет</button>
+        <button id="vizReset" type="button" class="reset">Сбросить</button>
+      </div>
+    </div>
+    <p style="font-size:.9rem;color:var(--muted)">Каждая сторона — своим цветом: <span class="wA">a зелёная</span>, <span class="wB">b янтарная</span>, <span class="wC">c гранатовая</span>. Поставь 3, 4 и 8 — две короткие (<span class="math">3 + 4 = 7</span>) не дотягиваются над длинной (8), виден зазор. Теперь сделай длинную равной 6: <span class="math">6 &lt; 3 + 4 = 7</span>, и треугольник собирается. Вопрос на подумать: <b>при какой длине третьей палочки треугольник только-только перестанет получаться?</b> (Проверь на ползунке: когда она станет равна сумме двух других, то есть 7.)</p>
+  </section>
+
+  <section>
+    <p class="kicker">Теперь ты · бесконечная практика</p>
+    <h2>Тренажёр</h2>
+    <p>Нажми «Новая» и реши. В задачах на существование пиши <b>да</b> или <b>нет</b>, в остальных — число. Потом проверь себя или посмотри пошаговое решение.</p>
+    <div class="trainer">
+      <div class="tr-task" id="trTask">Существует ли треугольник со сторонами <b>4</b>, <b>6</b>, <b>9</b>? Напиши «да» или «нет».</div>
+      <div class="tr-ctl">
+        <button id="trNew" type="button">🎲 Новая</button>
+        <input id="trAns" type="text" placeholder="да / нет / число" aria-label="Ответ">
+        <button id="trCheck" type="button" class="sec">Проверить</button>
+        <button id="trShow" type="button" class="ghost">Решение</button>
+      </div>
+      <div id="trResult" class="tr-result"></div>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Проверь себя · от простого к анализу</p>
+    <h2>Мини-практика</h2>
+    <div class="drill">
+      <details>
+        <summary><span class="q">Сформулируй неравенство треугольника словами. Сколько условий нужно проверить и почему обычно хватает одного?</span><span class="tag">понимание</span></summary>
+        <div class="ans">Каждая сторона треугольника меньше суммы двух других. Всего условий <b>три</b>, но на практике хватает <b>одного</b> — для наибольшей стороны: если она меньше суммы двух других, остальные два неравенства выполняются автоматически.</div>
+      </details>
+      <details>
+        <summary><span class="q">Существует ли треугольник со сторонами 5, 6, 10?</span><span class="tag">применение</span></summary>
+        <div class="ans">Наибольшая сторона 10, сумма двух других <span class="m">5 + 6 = 11</span>, и <span class="m">10 &lt; 11</span>. Ответ: <b>да, существует</b>.</div>
+      </details>
+      <details>
+        <summary><span class="q">Даны стороны 2, 4, 6. Будет ли треугольник?</span><span class="tag">применение</span></summary>
+        <div class="ans">Наибольшая 6, сумма двух других <span class="m">2 + 4 = 6</span>. Получилось <b>равенство</b>, а нужно строго меньше. Ответ: <b>нет</b> — точки лягут на одну прямую.</div>
+      </details>
+      <details>
+        <summary><span class="q">Существует ли треугольник со сторонами 6, 8, 14?</span><span class="tag">применение</span></summary>
+        <div class="ans">Наибольшая 14, сумма двух других <span class="m">6 + 8 = 14</span>, снова равенство. Ответ: <b>нет</b>.</div>
+      </details>
+      <details>
+        <summary><span class="q">Две стороны треугольника равны 4 см и 9 см. В каких границах может быть третья сторона x?</span><span class="tag">анализ</span></summary>
+        <div class="ans">С одной стороны, <span class="m">x &lt; 4 + 9 = 13</span> — если бы x была наибольшей, она должна быть меньше суммы двух других. С другой стороны, наибольшей может оказаться 9, и тогда <span class="m">9 &lt; x + 4</span>, откуда <span class="m">x &gt; 5</span>. Итого <b>5 &lt; x &lt; 13</b> (см).</div>
+      </details>
+      <details>
+        <summary><span class="q">Найди ошибку: «Стороны 1, 2, 3 — треугольник есть, ведь 1 &lt; 2 + 3». В чём промах?</span><span class="tag">анализ</span></summary>
+        <div class="ans"><b>Проверили не ту сторону.</b> Наибольшая здесь 3, а <span class="m">3 = 1 + 2</span> — равенство, значит треугольника нет. Неравенство <span class="m">1 &lt; 2 + 3</span> действительно верное, но оно ничего не доказывает: проверять надо именно <b>наибольшую</b> сторону.</div>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Где чаще всего ошибаются</p>
+    <h2>Лови эти ловушки</h2>
+    <ul class="pitfalls">
+      <li><b>Проверяют одно из трёх неравенств наугад, не наибольшее.</b> Из-за этого пропускают нарушение — как в примере со сторонами 1, 2, 3. <i>Как не допустить:</i> всегда бери самую большую сторону и сравнивай её с суммой двух других — этого достаточно.</li>
+      <li><b>Считают, что любые три отрезка образуют треугольник.</b> <i>Как не допустить:</i> помни про палочки 2, 3 и 10 — короткие «не дотягиваются». Всегда делай проверку, даже если числа выглядят безобидно.</li>
+      <li><b>Путают строгое и нестрогое неравенство.</b> При равенстве <span class="math">c = a + b</span> пишут «треугольник есть». <i>Как не допустить:</i> равенство — это не треугольник, а три точки на одной прямой; нужен именно знак «строго меньше».</li>
+      <li><b>Сравнивают длины в разных единицах.</b> 5 см и 5 м — это не одно и то же. <i>Как не допустить:</i> сначала переведи всё в одни единицы, потом складывай.</li>
+    </ul>
+  </section>
+
+  <section>
+    <p class="kicker">Объясни своими словами</p>
+    <div class="selfcheck">
+      <ol>
+        <li>Каждая сторона треугольника меньше … (закончи фразу).</li>
+        <li>Существует ли треугольник со сторонами 6, 8, 14? Почему?</li>
+        <li>Достаточно ли проверить только одно неравенство, и какое?</li>
+      </ol>
+    </div>
+  </section>
+
+  <section>
+    <div class="next">
+      <h2>Что дальше</h2>
+      <p>Следующий шаг — <b>построение треугольника</b> по трём сторонам с циркулем и линейкой. Неравенство треугольника там работает как «входной фильтр»: сначала проверяешь, существует ли треугольник, и только потом берёшься за циркуль. Иначе дуги окружностей просто не пересекутся — построение не получится.</p>
+      <p><b>Запомни одним предложением:</b> треугольник из трёх отрезков существует только тогда, когда самая длинная сторона строго меньше суммы двух других.</p>
+    </div>
+  </section>
+
+  <p class="foot">Проверка на выходе: каждая сторона меньше чего? · есть ли треугольник со сторонами 6, 8, 14? · какое одно неравенство достаточно проверить?</p>
+
+</div>
+
+<script>
+/* ВИЗУАЛИЗАЦИЯ: три палочки — либо смыкаются в треугольник, либо нет */
+(function(){
+  var cv=document.getElementById('viz'); if(!cv) return;
+  var ctx=cv.getContext('2d');
+  var sA=document.getElementById('sA'), sB=document.getElementById('sB'), sC=document.getElementById('sC');
+  var vA=document.getElementById('vA'), vB=document.getElementById('vB'), vC=document.getElementById('vC');
+  var read=document.getElementById('vizRead');
+  var W=640,H=420,dpr=1;
+  var UNITS_X=13.2, UNITS_Y=13.2;   /* запас поля в «единицах длины» */
+
+  function css(v){ return getComputedStyle(document.documentElement).getPropertyValue(v).trim(); }
+  function resize(){
+    var c=cv.clientWidth||640; dpr=Math.min(window.devicePixelRatio||1,2);
+    W=c; H=Math.round(c*0.66);
+    cv.width=W*dpr; cv.height=H*dpr; cv.style.height=H+'px';
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+  }
+  function rod(p1,p2,col,w){
+    ctx.beginPath(); ctx.moveTo(p1[0],p1[1]); ctx.lineTo(p2[0],p2[1]);
+    ctx.strokeStyle=col; ctx.lineWidth=w||6; ctx.lineCap='round'; ctx.stroke();
+  }
+  function tag(p1,p2,txt,col,off){
+    var mx=(p1[0]+p2[0])/2, my=(p1[1]+p2[1])/2;
+    var dx=p2[0]-p1[0], dy=p2[1]-p1[1], L=Math.hypot(dx,dy)||1;
+    var nx=-dy/L, ny=dx/L, d=off||18;
+    ctx.fillStyle=col; ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.fillText(txt, mx+nx*d, my+ny*d);
+  }
+  function dot(p,col){
+    ctx.beginPath(); ctx.arc(p[0],p[1],5.5,0,7); ctx.fillStyle=col; ctx.fill();
+    ctx.beginPath(); ctx.arc(p[0],p[1],3,0,7); ctx.fillStyle='#fff'; ctx.fill();
+  }
+
+  function draw(){
+    var a=+sA.value, b=+sB.value, c=+sC.value;
+    vA.textContent=a; vB.textContent=b; vC.textContent=c;
+
+    var cA=css('--ca'), cB=css('--cb'), cC=css('--cc'), cInk=css('--ink'), cMut=css('--muted');
+    var side=[{v:a,n:'a',col:cA},{v:b,n:'b',col:cB},{v:c,n:'c',col:cC}];
+    var srt=side.slice().sort(function(x,y){ return y.v-x.v; });
+    var big=srt[0], p=srt[1], q=srt[2];        /* big — наибольшая, p и q — две другие */
+    var sum=p.v+q.v;
+    var state = sum>big.v ? 'yes' : (sum===big.v ? 'deg' : 'no');
+
+    var sc=Math.min(W/UNITS_X, H/UNITS_Y);
+    var baseW=big.v*sc;
+    var ox=(W-baseW)/2, oy=H-Math.max(46,H*0.14);
+    var P0=[ox,oy], P1=[ox+baseW,oy];
+
+    ctx.clearRect(0,0,W,H);
+    ctx.font='700 '+Math.max(12,W*0.026)+'px ui-monospace,Menlo,monospace';
+
+    if(state==='yes'){
+      /* вершина по двум радиусам: x = (L² + p² − q²) / (2L) */
+      var L=big.v;
+      var x=(L*L+p.v*p.v-q.v*q.v)/(2*L);
+      var y=Math.sqrt(Math.max(0,p.v*p.v-x*x));
+      var AP=[ox+x*sc, oy-y*sc];
+      /* заливка */
+      ctx.beginPath(); ctx.moveTo(P0[0],P0[1]); ctx.lineTo(P1[0],P1[1]); ctx.lineTo(AP[0],AP[1]); ctx.closePath();
+      ctx.fillStyle='rgba(30,142,90,0.09)'; ctx.fill();
+      rod(P0,P1,big.col); rod(P0,AP,p.col); rod(P1,AP,q.col);
+      tag(P0,P1,big.n+' = '+big.v,big.col,20);
+      tag(P0,AP,p.n+' = '+p.v,p.col,-20);
+      tag(P1,AP,q.n+' = '+q.v,q.col,20);
+      dot(P0,cInk); dot(P1,cInk); dot(AP,cInk);
+    } else {
+      /* палочки лежат на прямой: p от левого конца вправо, q от правого влево */
+      var e1=[ox+p.v*sc, oy], e2=[ox+baseW-q.v*sc, oy];
+      var up=Math.max(26,H*0.09);
+      var U0=[P0[0],P0[1]-up], U1=[P1[0],P1[1]-up];
+      var E1=[e1[0],e1[1]-up], E2=[e2[0],e2[1]-up];
+      rod(P0,P1,big.col);
+      tag(P0,P1,big.n+' = '+big.v,big.col,20);
+      rod(U0,E1,p.col); rod(U1,E2,q.col);
+      tag(U0,E1,p.n+' = '+p.v,p.col,-18);
+      tag(U1,E2,q.n+' = '+q.v,q.col,18);
+      dot(P0,cInk); dot(P1,cInk);
+      if(state==='no'){
+        /* зазор */
+        ctx.save();
+        ctx.setLineDash([6,5]); ctx.beginPath();
+        ctx.moveTo(E1[0],E1[1]); ctx.lineTo(E2[0],E2[1]);
+        ctx.strokeStyle=cC; ctx.lineWidth=2; ctx.stroke();
+        ctx.restore();
+        ctx.fillStyle=cC; ctx.textAlign='center'; ctx.textBaseline='bottom';
+        ctx.fillText('зазор '+(big.v-sum), (E1[0]+E2[0])/2, E1[1]-10);
+        ctx.font='700 '+Math.max(12,W*0.024)+'px system-ui,sans-serif';
+        ctx.fillStyle=cC; ctx.textBaseline='top';
+        ctx.fillText('не смыкаются', W/2, Math.max(10,H*0.06));
+      } else {
+        dot(E1,cB);
+        ctx.font='700 '+Math.max(12,W*0.024)+'px system-ui,sans-serif';
+        ctx.fillStyle=cB; ctx.textAlign='center'; ctx.textBaseline='top';
+        ctx.fillText('дотянулись ровно — все точки на одной прямой', W/2, Math.max(10,H*0.06));
+      }
+    }
+
+    var sign = state==='yes' ? '&lt;' : (state==='deg' ? '=' : '&gt;');
+    var verdict = state==='yes' ? 'треугольник есть' : (state==='deg' ? 'треугольника нет: вырожденный случай' : 'треугольника нет');
+    read.className='viz-read '+state;
+    read.innerHTML='наибольшая '+big.v+' '+sign+' '+p.v+' + '+q.v+' = '+sum+'<br>'+verdict;
+  }
+
+  sA.addEventListener('input',draw); sB.addEventListener('input',draw); sC.addEventListener('input',draw);
+  function preset(x,y,z){ sA.value=x; sB.value=y; sC.value=z; draw(); }
+  document.getElementById('p1').addEventListener('click',function(){ preset(4,6,9); });
+  document.getElementById('p2').addEventListener('click',function(){ preset(3,5,8); });
+  document.getElementById('p3').addEventListener('click',function(){ preset(2,3,10); });
+  document.getElementById('vizReset').addEventListener('click',function(){ preset(4,6,9); });
+  window.addEventListener('resize',function(){ resize(); draw(); });
+  resize(); draw();
+})();
+</script>
+
+<script>
+/* ТРЕНАЖЁР-ГЕНЕРАТОР: существует ли треугольник + границы третьей стороны */
+(function(){
+  var taskEl=document.getElementById('trTask'), ansEl=document.getElementById('trAns'), resEl=document.getElementById('trResult');
+  if(!taskEl) return;
+  var cur=null;
+  var MINUS='−'; /* настоящий минус − (U+2212) */
+  function ri(a,b){ return Math.floor(Math.random()*(b-a+1))+a; }
+  function shuffle(arr){
+    for(var i=arr.length-1;i>0;i--){ var j=ri(0,i), t=arr[i]; arr[i]=arr[j]; arr[j]=t; }
+    return arr;
+  }
+
+  function generate(){
+    var r=Math.random();
+    if(r<0.7){
+      /* существует ли треугольник со сторонами ... */
+      var p=ri(2,9), q=ri(2,9), big, kind=Math.random();
+      if(kind<0.5){ big=ri(Math.max(p,q), p+q-1); }        /* существует */
+      else if(kind<0.75){ big=p+q; }                        /* вырожденный */
+      else { big=p+q+ri(1,4); }                             /* невозможен */
+      var trio=shuffle([p,q,big]);
+      var ok = big < p+q;
+      cur={t:'exist', s:trio, big:big, p:p, q:q, ans: ok?'да':'нет'};
+      taskEl.innerHTML='Существует ли треугольник со сторонами <b>'+trio[0]+'</b>, <b>'+trio[1]+'</b>, <b>'+trio[2]+'</b>? Напиши «да» или «нет».';
+    } else {
+      /* границы третьей стороны */
+      var m=ri(3,12), n=ri(3,12);
+      while(n===m){ n=ri(3,12); }
+      var hi=Math.random()<0.5;
+      if(hi){
+        cur={t:'max', m:m, n:n, ans:m+n-1};
+        taskEl.innerHTML='Две стороны треугольника равны <b>'+m+'</b> и <b>'+n+'</b>. Назови <b>наибольшее целое</b> значение третьей стороны.';
+      } else {
+        cur={t:'min', m:m, n:n, ans:Math.abs(m-n)+1};
+        taskEl.innerHTML='Две стороны треугольника равны <b>'+m+'</b> и <b>'+n+'</b>. Назови <b>наименьшее целое</b> значение третьей стороны.';
+      }
+    }
+    resEl.innerHTML=''; ansEl.value='';
+  }
+
+  function solHTML(){
+    var q=cur, h='<div class="sol">';
+    if(q.t==='exist'){
+      h+='Наибольшая сторона: <b>'+q.big+'</b><br>';
+      h+='Сумма двух других: '+q.p+' + '+q.q+' = '+(q.p+q.q)+'<br>';
+      var rel = q.big<q.p+q.q ? 'lt' : (q.big===q.p+q.q ? 'eq' : 'gt');
+      var sign = rel==='lt' ? '&lt;' : (rel==='eq' ? '=' : '&gt;');
+      h+='Сравниваю: '+q.big+' '+sign+' '+(q.p+q.q)+'<br>';
+      if(rel==='lt'){ h+='Наибольшая меньше суммы двух других → <b>да, существует</b>'; }
+      else if(rel==='eq'){ h+='Равенство, а нужно строго меньше → <b>нет</b> (вырожденный случай)'; }
+      else { h+='Наибольшая больше суммы двух других → <b>нет</b>'; }
+    } else if(q.t==='max'){
+      h+='Если третья сторона x — наибольшая, то x &lt; '+q.m+' + '+q.n+' = '+(q.m+q.n)+'<br>';
+      h+='Значит x &lt; '+(q.m+q.n)+', наибольшее целое: '+(q.m+q.n)+' '+MINUS+' 1 = <b>'+q.ans+'</b>';
+    } else {
+      var mx=Math.max(q.m,q.n), mn=Math.min(q.m,q.n);
+      h+='Наибольшей может оказаться сторона '+mx+', тогда '+mx+' &lt; x + '+mn+'<br>';
+      h+='Отсюда x &gt; '+mx+' '+MINUS+' '+mn+' = '+(mx-mn)+'<br>';
+      h+='Наименьшее целое: '+(mx-mn)+' + 1 = <b>'+q.ans+'</b>';
+    }
+    return h+'</div>';
+  }
+
+  function check(){
+    var raw=ansEl.value.trim().toLowerCase().replace(',','.');
+    if(raw===''){ resEl.innerHTML='<span class="bad">Введи ответ или нажми «Решение».</span>'; return; }
+    var good=false;
+    if(cur.t==='exist'){
+      if(raw==='да'||raw==='нет'){ good=(raw===cur.ans); }
+      else { resEl.innerHTML='<span class="bad">Здесь ответ — слово «да» или «нет».</span>'; return; }
+    } else {
+      var got=parseFloat(raw);
+      good=!isNaN(got)&&Math.abs(got-cur.ans)<0.001;
+    }
+    if(good){ resEl.innerHTML='<span class="ok">✓ Верно!</span>'+solHTML(); }
+    else{ resEl.innerHTML='<span class="bad">✗ Пока не то — глянь решение.</span>'+solHTML(); }
+  }
+
+  document.getElementById('trNew').addEventListener('click',function(){ generate(); ansEl.focus(); });
+  document.getElementById('trCheck').addEventListener('click',check);
+  document.getElementById('trShow').addEventListener('click',function(){ resEl.innerHTML=solHTML(); });
+  ansEl.addEventListener('keydown',function(e){ if(e.key==='Enter') check(); });
+
+  /* стартовое состояние = задача, показанная в тексте */
+  cur={t:'exist', s:[4,6,9], big:9, p:4, q:6, ans:'да'};
+})();
+</script>
+<!--LESSON-NAV-BOT--><nav class="lnav lnav-bot"><a class="prev" href="./geo7-vneshnij-ugol.html"><span class="dir">← Предыдущая</span><span class="ttl">Внешний угол треугольника</span></a><a class="to-cat" href="./catalog.html">📚 <span>Все темы</span></a><a class="next" href="./geo7-svojstva-pryamougolnogo.html"><span class="dir">Следующая →</span><span class="ttl">Свойства прямоугольного треугольника</span></a></nav><!--/LESSON-NAV-BOT-->
