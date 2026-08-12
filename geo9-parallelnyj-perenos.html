@@ -1,0 +1,480 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Параллельный перенос — геометрия 9 класс</title>
+<style>
+  :root{
+    --paper:#F6F7F9; --card:#FFFFFF; --ink:#1D2530; --muted:#606B7A; --line:#E3E7EE;
+    --brand:#2E5AAC; --brand-soft:#E4EBF7;
+    --pre:#2E5AAC; --pre-soft:#E4EBF7;   /* прообраз — исходная фигура */
+    --img:#E27C2C; --img-soft:#FBEEDF;   /* образ — перенесённая фигура */
+    --vec:#159A8A; --vec-soft:#DEF3F0;   /* вектор переноса */
+    --ok:#1E8E5A; --no:#C23B3B;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper)}
+  .page{max-width:720px;margin:0 auto;padding:clamp(1.4rem,4vw,3rem) clamp(1.1rem,4vw,2rem) 4.5rem;
+    color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:17.5px;line-height:1.68;-webkit-font-smoothing:antialiased}
+  .mono{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-variant-numeric:tabular-nums;font-weight:600}
+  sub{font-size:.72em}
+
+  .hero{border-bottom:3px solid var(--brand);padding-bottom:1.4rem;margin-bottom:1.8rem}
+  .eyebrow{font-size:.74rem;letter-spacing:.15em;text-transform:uppercase;color:var(--brand);font-weight:700;margin:0 0 .55rem}
+  h1{font-size:clamp(1.9rem,6vw,2.8rem);line-height:1.05;margin:0;font-weight:800;letter-spacing:-.02em;text-wrap:balance}
+  .tagline{font-size:1.12rem;color:var(--muted);margin:.85rem 0 0;text-wrap:pretty}
+
+  section{margin-top:2.4rem}
+  h2{font-size:1.5rem;margin:0 0 .3rem;font-weight:780;letter-spacing:-.015em;text-wrap:balance}
+  h2 .em{color:var(--brand)}
+  p{margin:.7rem 0}
+  strong{font-weight:680}
+  .prew{color:var(--pre);font-weight:800} .imgw{color:var(--img);font-weight:800} .vecw{color:var(--vec);font-weight:800}
+
+  .lead-in{background:var(--brand-soft);border-radius:14px;padding:1.1rem 1.3rem;font-size:1.02rem}
+  .lead-in p{margin:.4rem 0}
+  .lead-in b{color:var(--brand)}
+
+  .recall{border:1px dashed var(--line);background:var(--card);border-radius:14px;padding:1rem 1.2rem;margin-top:1rem;font-size:.97rem}
+  .recall b{color:var(--brand)}
+  .recall ul{margin:.5rem 0 0;padding-left:1.1rem}
+  .recall li{margin:.25rem 0}
+
+  .formula-box{background:var(--ink);color:#fff;border-radius:14px;padding:1.3rem;text-align:center;margin-top:1rem}
+  .formula-box .eq{font-family:ui-monospace,Menlo,monospace;font-size:clamp(1.35rem,5.2vw,2rem);font-weight:700}
+  .formula-box .eq .p{color:#8FB2E6} .formula-box .eq .v{color:#6FD3C6} .formula-box .eq .i{color:#F0A45E}
+  .formula-box .note{font-size:.9rem;color:#AEB8C6;margin:.7rem 0 0}
+
+  .note{border-left:4px solid var(--brand);background:var(--brand-soft);border-radius:0 10px 10px 0;padding:.8rem 1.1rem;margin-top:1rem;font-size:.98rem}
+  .note b{color:var(--brand)}
+
+  .tbl-wrap{overflow-x:auto;margin-top:1rem;-webkit-overflow-scrolling:touch}
+  table{border-collapse:collapse;width:100%;min-width:380px;background:var(--card);font-size:.95rem}
+  th,td{border:1px solid var(--line);padding:.55rem .7rem;text-align:left}
+  th{background:var(--brand-soft);font-weight:700;color:var(--brand)}
+  td.m{font-family:ui-monospace,Menlo,monospace;font-weight:600}
+
+  /* Диаграмма */
+  .diagram{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:1.2rem;margin-top:1rem}
+  .diagram canvas{width:100%;height:auto;display:block;border-radius:8px}
+  .sliders{display:grid;gap:.6rem;margin-top:.9rem}
+  @media(min-width:520px){.sliders{grid-template-columns:1fr 1fr}}
+  .sliders label{display:flex;align-items:center;gap:.5rem;font-weight:700;font-family:ui-monospace,Menlo,monospace;color:var(--vec)}
+  .sliders input[type=range]{flex:1;accent-color:var(--vec)}
+  .sliders input[type=range]:focus-visible{outline:3px solid var(--vec);outline-offset:3px}
+  .sliders .sval{min-width:3ch;text-align:right}
+  .diag-eq{text-align:center;font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1rem;margin:.9rem 0 0;line-height:1.9}
+  .diag-eq .p{color:var(--pre)} .diag-eq .i{color:var(--img)} .diag-eq .v{color:var(--vec)}
+  .presets{display:flex;gap:.45rem;flex-wrap:wrap;margin-top:.8rem;justify-content:center}
+  .presets button{font:inherit;font-size:.82rem;font-weight:700;cursor:pointer;border:1px solid var(--vec);background:transparent;color:var(--vec);border-radius:999px;padding:.3rem .75rem;font-family:ui-monospace,Menlo,monospace}
+  .presets button:hover{background:var(--vec-soft)}
+  .presets button:focus-visible{outline:3px solid var(--vec);outline-offset:2px}
+
+  .walk{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.15rem 1.3rem;margin-top:1rem}
+  .walk .q{font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1rem;margin:0 0 .9rem;padding-bottom:.7rem;border-bottom:1px solid var(--line)}
+  .walk ol{margin:0;padding-left:1.2rem;display:flex;flex-direction:column;gap:.5rem}
+  .walk li{font-size:.95rem}
+  .walk b{font-weight:700}
+  .verdict{margin-top:1rem;padding:.7rem 1rem;background:var(--brand-soft);border-radius:10px;font-weight:650;color:var(--brand);font-family:ui-monospace,Menlo,monospace}
+
+  /* Тренажёр */
+  .trainer{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.2rem 1.3rem;margin-top:1rem}
+  .tr-task{font-size:clamp(1rem,4vw,1.12rem);text-align:center;padding:1rem;background:var(--brand-soft);border-radius:10px;font-weight:600}
+  .tr-task b{font-family:ui-monospace,Menlo,monospace;color:var(--ink)}
+  .tr-ctl{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:1rem;align-items:center;justify-content:center}
+  .tr-ctl input{flex:1;min-width:110px;max-width:180px;font:inherit;padding:.5rem .7rem;border:1px solid var(--line);border-radius:9px;text-align:center;background:#fff;color:var(--ink)}
+  .tr-ctl button{font:inherit;font-weight:700;font-size:.9rem;cursor:pointer;border:none;border-radius:9px;padding:.55rem .95rem;color:#fff;background:var(--brand)}
+  .tr-ctl button.sec{background:var(--img)}
+  .tr-ctl button.ghost{background:transparent;color:var(--brand);border:1px solid var(--brand)}
+  .tr-ctl button:focus-visible,.tr-ctl input:focus-visible{outline:3px solid var(--brand);outline-offset:2px}
+  .tr-hint{font-size:.84rem;color:var(--muted);text-align:center;margin:.6rem 0 0}
+  .tr-result{margin-top:.9rem;font-size:.96rem;min-height:1.2rem;text-align:center}
+  .tr-result .ok{color:var(--ok);font-weight:700} .tr-result .bad{color:var(--no);font-weight:700}
+  .tr-result .sol{margin-top:.6rem;padding:.8rem 1rem;background:#FCFDFE;border:1px solid var(--line);border-radius:10px;font-family:ui-monospace,Menlo,monospace;font-size:.9rem;line-height:1.8;text-align:left;overflow-x:auto}
+
+  details{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:.9rem 1.1rem;margin-top:.7rem}
+  details[open]{border-color:var(--brand)}
+  summary{cursor:pointer;font-weight:650;list-style:none;display:flex;justify-content:space-between;gap:1rem;align-items:center}
+  summary::-webkit-details-marker{display:none}
+  summary::after{content:"проверить";font-size:.8rem;color:var(--brand);font-weight:700;white-space:nowrap}
+  details[open] summary::after{content:"скрыть"}
+  summary:focus-visible{outline:3px solid var(--brand);outline-offset:3px;border-radius:6px}
+  .ans{margin-top:.75rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.96rem;color:var(--muted)}
+  .ans b{color:var(--ink)}
+  .drill{display:flex;flex-direction:column;gap:.2rem;margin-top:1rem}
+
+  ul.traps{list-style:none;margin:1rem 0 0;padding:0;display:flex;flex-direction:column;gap:.7rem}
+  ul.traps li{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:.85rem 1.05rem;padding-left:2.5rem;position:relative;font-size:.97rem}
+  ul.traps li::before{content:"⚠";position:absolute;left:1rem;top:.85rem;color:var(--img)}
+  ul.traps b{font-weight:700}
+
+  .selfcheck{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.1rem 1.3rem;margin-top:1rem;font-size:.98rem}
+  .selfcheck ol{margin:.4rem 0 0;padding-left:1.2rem}
+  .selfcheck li{margin:.4rem 0}
+
+  .wrapup{background:var(--brand);color:#fff;border-radius:16px;padding:1.4rem 1.5rem;margin-top:2.4rem}
+  .wrapup h2{color:#fff;margin:0 0 .5rem}
+  .wrapup p{color:#DEE7F5;margin:.4rem 0;font-size:1rem}
+  .wrapup .big-rule{font-size:clamp(1rem,4.4vw,1.2rem);font-weight:800;color:#fff;margin:.6rem 0;font-family:ui-monospace,Menlo,monospace}
+  .wrapup .next{font-size:.95rem;color:#C6D5EE;margin-top:1rem;padding-top:1rem;border-top:1px solid rgba(255,255,255,.2)}
+  .wrapup .next b{color:#fff}
+
+  @media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+<!--LESSON-NAV-TOP--><style>.lnav{--lnav-accent:#3D5AF1}.lnav a{text-decoration:none;font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif}.lnav-top{max-width:820px;margin:0 auto;padding:.75rem clamp(1rem,4vw,1.5rem) .1rem}.lnav-top a{display:inline-flex;align-items:center;gap:.35rem;color:var(--lnav-accent);font-weight:600;font-size:.9rem}.lnav-top a:hover{text-decoration:underline}.lnav-bot{max-width:820px;margin:2.6rem auto 3rem;padding:1.1rem clamp(1rem,4vw,1.5rem) 0;border-top:1px solid #E4E8EF;display:flex;align-items:stretch;gap:.55rem}.lnav-bot a{min-width:0;display:flex;flex-direction:column;justify-content:center;gap:.15rem;border:1px solid #E4E8EF;border-radius:12px;padding:.65rem .85rem;color:#182233;background:#fff;transition:border-color .1s,transform .08s}.lnav-bot a:hover{border-color:var(--lnav-accent);transform:translateY(-1px)}.lnav-bot .prev,.lnav-bot .next{flex:1 1 0}.lnav-bot .next{text-align:right}.lnav-bot .dir{font-size:.72rem;color:#8A93A6;font-weight:600}.lnav-bot .ttl{font-size:.9rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.lnav-bot .to-cat{flex:0 0 auto;flex-direction:row;align-items:center;justify-content:center;color:var(--lnav-accent);font-weight:700;font-size:.85rem;white-space:nowrap}@media(max-width:420px){.lnav-bot .to-cat span{display:none}.lnav-bot .to-cat{padding:.65rem .7rem}}</style><nav class="lnav lnav-top"><a href="./catalog.html">← Все темы</a></nav><!--/LESSON-NAV-TOP-->
+<div class="page">
+
+  <header class="hero">
+    <p class="eyebrow">Геометрия · 9 класс</p>
+    <h1>Параллельный перенос</h1>
+    <p class="tagline">Сдвигаем фигуру на вектор: все точки едут в одну сторону и на одно расстояние — форма и размер не меняются.</p>
+  </header>
+
+  <div class="lead-in">
+    <p><b>Где встречается.</b> Так движется лента эскалатора и кабина лифта, так выложены ряды плитки на полу и повторяется орнамент на обоях, так «едет» картинка при горизонтальной прокрутке экрана.</p>
+    <p>В математике перенос — один из видов <b>движения</b> (вместе с осевой симметрией, центральной симметрией и поворотом). Через него удобно доказывать равенство фигур и решать задачи на построение.</p>
+  </div>
+
+  <section>
+    <h2>Что вспомнить перед стартом</h2>
+    <div class="recall">
+      <b>Тебе понадобятся две вещи:</b>
+      <ul>
+        <li><b>Движение</b> — преобразование, которое сохраняет расстояния между точками. Значит, фигура остаётся точно такой же, просто оказывается в другом месте.</li>
+        <li><b>Вектор</b> — стрелка с направлением и длиной; в координатах записывается парой чисел <span class="mono">a&#8407; = (a; b)</span>.</li>
+      </ul>
+    </div>
+    <p><strong>Главный миф, который надо сломать сразу:</strong> «перенести фигуру — значит просто положить её куда-нибудь в другое место». Нет. Перенос строго задан вектором: <strong>все</strong> точки сдвигаются в <strong>одну</strong> сторону и на <strong>одну</strong> длину. Повернул или растянул — это уже не перенос.</p>
+  </section>
+
+  <section>
+    <h2>Суть: <span class="em">одна стрелка на всех</span></h2>
+    <p>Выбираем вектор переноса — стрелочку с заданными направлением и длиной. Каждую точку фигуры сдвигаем по этому вектору и получаем новую фигуру: точную копию исходной, просто стоящую в другом месте.</p>
+    <p>Вектор отвечает на вопрос «<strong>куда и насколько</strong>». А поскольку все точки сдвигаются одинаково, форма и размеры измениться не могут — поэтому перенос и является движением, а <span class="imgw">образ</span> равен <span class="prew">прообразу</span>.</p>
+
+    <div class="note">
+      <p><b>Определение.</b> Параллельным переносом на вектор <span class="mono">a&#8407;</span> называется отображение плоскости на себя, при котором каждая точка <span class="mono">M</span> переходит в такую точку <span class="mono">M<sub>1</sub></span>, что <span class="mono">MM<sub>1</sub></span> как вектор равен <span class="mono">a&#8407;</span>.</p>
+    </div>
+
+    <p>В координатах всё превращается в обычное сложение. Если <span class="mono">a&#8407; = (a; b)</span>, а точка имеет координаты <span class="mono">M(x; y)</span>, то её образ:</p>
+
+    <div class="formula-box">
+      <div class="eq"><span class="i">M<sub>1</sub></span>( <span class="p">x</span> + <span class="v">a</span> ; <span class="p">y</span> + <span class="v">b</span> )</div>
+      <div class="note">к абсциссе прибавляем первую координату вектора, к ординате — вторую</div>
+    </div>
+
+    <div class="tbl-wrap">
+      <table>
+        <tr><th>Обозначение</th><th>Что это</th></tr>
+        <tr><td class="m">a&#8407; = (a; b)</td><td>вектор переноса: <span class="mono">a</span> — сдвиг по оси <span class="mono">x</span>, <span class="mono">b</span> — сдвиг по оси <span class="mono">y</span></td></tr>
+        <tr><td class="m">M(x; y)</td><td>исходная точка — <span class="prew">прообраз</span></td></tr>
+        <tr><td class="m">M<sub>1</sub></td><td>её <span class="imgw">образ</span> после переноса</td></tr>
+      </table>
+    </div>
+
+    <p style="margin-top:1.1rem"><strong>Свойства, ради которых перенос и нужен:</strong></p>
+    <div class="tbl-wrap">
+      <table>
+        <tr><th>Свойство</th><th>Что из него следует</th></tr>
+        <tr><td>Перенос сохраняет расстояния между точками (это движение)</td><td>сохраняются длины отрезков, величины углов, площади</td></tr>
+        <tr><td>Образ прямой — параллельная ей прямая (или та же самая)</td><td>прямые не «ломаются» и не наклоняются</td></tr>
+        <tr><td class="m">a &lt; 0 · b &lt; 0</td><td>знаки важны: минус в первой координате — сдвиг влево, минус во второй — сдвиг вниз</td></tr>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2>Увидь глазами — <span class="em">одинаковые стрелки</span></h2>
+    <p>Двигай ползунки вектора и смотри: от каждой вершины <span class="prew">синего</span> треугольника к соответствующей вершине <span class="imgw">оранжевого</span> идёт <span class="vecw">одна и та же стрелка</span>. Треугольники всегда равны — меняется только их место.</p>
+    <div class="diagram">
+      <canvas id="cv" width="640" height="640" aria-label="Координатная плоскость: исходный треугольник, его образ при параллельном переносе и векторы переноса"></canvas>
+      <div class="sliders">
+        <label>a (по x) <span id="va" class="sval">3</span><input id="sa" type="range" min="-5" max="5" step="1" value="3" aria-label="Первая координата вектора переноса"></label>
+        <label>b (по y) <span id="vb" class="sval">−2</span><input id="sb" type="range" min="-5" max="5" step="1" value="-2" aria-label="Вторая координата вектора переноса"></label>
+      </div>
+      <div class="presets">
+        <button type="button" data-a="0" data-b="-4">a&#8407; = (0; −4)</button>
+        <button type="button" data-a="-5" data-b="0">a&#8407; = (−5; 0)</button>
+        <button type="button" data-a="2" data-b="1">a&#8407; = (2; 1)</button>
+        <button type="button" data-a="0" data-b="0">a&#8407; = (0; 0)</button>
+      </div>
+      <p class="diag-eq" id="diagEq"></p>
+    </div>
+    <p style="font-size:.9rem;color:var(--muted)">Нажми <span class="mono">a&#8407; = (0; −4)</span> и сначала <strong>предскажи</strong>, куда уедет треугольник, — потом проверь. Сдвиг только по вертикали, потому что первая координата вектора равна нулю.</p>
+  </section>
+
+  <section>
+    <h2>Эталон: думаю вслух</h2>
+    <div class="walk">
+      <p class="q">Дан вектор a&#8407; = (3; −2) и точка A(1; 4). Найти образ A<sub>1</sub>.</p>
+      <ol>
+        <li>Записываю формулу переноса: <span class="mono">A<sub>1</sub>(x + a; y + b)</span>. <b>Почему так:</b> образ получается прибавлением координат вектора к координатам точки.</li>
+        <li>Выписываю, что подставляю: <span class="mono">x = 1, y = 4, a = 3, b = −2</span>. Проговариваю знаки вслух, чтобы не потерять минус.</li>
+        <li>Первая координата: <span class="mono">1 + 3 = 4</span> — это сдвиг <b>вправо</b> на 3.</li>
+        <li>Вторая координата: <span class="mono">4 + (−2) = 2</span> — минус, значит сдвиг <b>вниз</b> на 2.</li>
+      </ol>
+      <div class="verdict">Ответ: A<sub>1</sub>(4; 2)</div>
+    </div>
+
+    <div class="walk" style="margin-top:.8rem">
+      <p class="q">Допиши сам: a&#8407; = (−5; 1), точка B(7; −3). Найти B<sub>1</sub>.</p>
+      <ol>
+        <li>Первая координата: <span class="mono">7 + (−5) = ?</span> &nbsp; <span style="color:var(--muted)">(проверь знак: a = −5 — сдвиг влево)</span></li>
+        <li>Вторая координата: <span class="mono">−3 + 1 = ?</span></li>
+        <li>Запиши ответ в виде <span class="mono">B<sub>1</sub>( ? ; ? )</span>.</li>
+      </ol>
+      <details style="margin-top:.9rem"><summary>Сверить ответ</summary><div class="ans"><span class="mono">7 + (−5) = 2</span>, <span class="mono">−3 + 1 = −2</span>. Значит <b>B<sub>1</sub>(2; −2)</b>.</div></details>
+    </div>
+
+    <div class="walk" style="margin-top:.8rem">
+      <p class="q">Обратная задача: при переносе на a&#8407; = (2; 6) точка C перешла в C<sub>1</sub>(5; 1). Найти C.</p>
+      <ol>
+        <li>Здесь известен образ, а нужен прообраз — значит делаем <b>обратное действие</b>: не прибавляем вектор, а вычитаем его.</li>
+        <li><span class="mono">образ = прообраз + вектор</span> &nbsp;⟹&nbsp; <span class="mono">прообраз = образ − вектор</span>.</li>
+        <li><span class="mono">5 − 2 = 3</span> и <span class="mono">1 − 6 = −5</span>.</li>
+      </ol>
+      <div class="verdict">Ответ: C(3; −5)</div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Тренажёр · перенос в координатах</h2>
+    <p>Бесконечные задания трёх типов: найти образ, найти прообраз, найти сам вектор переноса. Ответ вводи двумя числами через точку с запятой, например <span class="mono">4; -2</span>.</p>
+    <div class="trainer">
+      <div class="tr-task" id="trTask">Вектор <b>a&#8407; = (3; −2)</b>. Найди образ точки <b>A(1; 4)</b>.</div>
+      <div class="tr-ctl">
+        <button id="trNew" type="button">🎲 Новое</button>
+        <input id="trAns" type="text" placeholder="напр. 4; -2" aria-label="Ответ: две координаты через точку с запятой">
+        <button id="trCheck" type="button" class="sec">Проверить</button>
+        <button id="trShow" type="button" class="ghost">Решение</button>
+      </div>
+      <p class="tr-hint">Скобки писать не обязательно. Минус — обычный дефис.</p>
+      <div id="trResult" class="tr-result"></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Проверь себя</h2>
+    <div class="drill">
+      <details><summary>1) Что задаёт вектор переноса и что сохраняется при параллельном переносе?</summary><div class="ans">Вектор задаёт <b>куда и насколько</b> сдвинуть: направление и длину сдвига. Сохраняются <b>длины, углы, форма и размер</b> — образ равен прообразу.</div></details>
+      <details><summary>2) Построй образ треугольника ABC с вершинами A(0; 0), B(4; 0), C(0; 3) при переносе на a&#8407; = (2; 1). Запиши координаты.</summary><div class="ans">К каждой вершине прибавляем (2; 1): <span class="mono">A<sub>1</sub>(2; 1)</span>, <span class="mono">B<sub>1</sub>(6; 1)</span>, <span class="mono">C<sub>1</sub>(2; 4)</span>. Треугольник тот же, просто сдвинут.</div></details>
+      <details><summary>3) Точка M(2; 2) перешла в M<sub>1</sub>(2; −1). Чему равен вектор переноса?</summary><div class="ans">Вектор = образ − прообраз: <span class="mono">2 − 2 = 0</span>, <span class="mono">−1 − 2 = −3</span>. Значит <b>a&#8407; = (0; −3)</b> — чистый сдвиг вниз на 3.</div></details>
+      <details><summary>4) <b>Анализ.</b> Что изменится в координатах образа, если вектор переноса заменить на противоположный, −a&#8407;?</summary><div class="ans">Сдвиг произойдёт <b>в обратную сторону</b>: вместо прибавления (a; b) мы прибавляем (−a; −b), то есть фактически вычитаем вектор. Образ уедет ровно туда, откуда «пришла» бы точка при исходном переносе.</div></details>
+      <details><summary>5) <b>Найди ошибку.</b> Для a&#8407; = (−3; 2) и M(4; 1) ученик получил M<sub>1</sub>(7; 3). Где промах?</summary><div class="ans">Он прибавил <b>3 вместо −3</b>, то есть потерял минус и уехал вправо вместо влево. Верно: <span class="mono">4 + (−3) = 1</span>, <span class="mono">1 + 2 = 3</span>, значит <b>M<sub>1</sub>(1; 3)</b>.</div></details>
+    </div>
+  </section>
+
+  <section>
+    <h2>Ловушки</h2>
+    <ul class="traps">
+      <li><b>Перенос «куда удобно».</b> Сдвигают не на тот вектор или меняют местами его координаты. Всегда подписывай <span class="mono">a&#8407; = (a; b)</span> и помни: <span class="mono">a</span> — по <span class="mono">x</span>, <span class="mono">b</span> — по <span class="mono">y</span>. Рисуй стрелку от точки к образу.</li>
+      <li><b>Потерянный минус.</b> При <span class="mono">a &lt; 0</span> или <span class="mono">b &lt; 0</span> забывают, что это сдвиг влево/вниз, и прибавляют по модулю. Проговаривай знак вслух: «минус — значит вниз».</li>
+      <li><b>Меняют форму или размер.</b> Кажется, что фигуру можно заодно повернуть или растянуть. Нельзя: перенос — это движение, образ РАВЕН прообразу, все точки сдвигаются одинаково.</li>
+      <li><b>Путают прообраз и образ.</b> В обратной задаче прибавляют вектор вместо вычитания. Держи в голове цепочку: <span class="mono">образ = прообраз + вектор</span>, значит <span class="mono">прообраз = образ − вектор</span>.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Объясни своими словами</h2>
+    <div class="selfcheck">
+      <p>Закрой урок и ответь вслух — как будто объясняешь другу:</p>
+      <ol>
+        <li>По какой формуле в координатах находят образ точки при переносе на <span class="mono">a&#8407; = (a; b)</span>?</li>
+        <li>Что при параллельном переносе сохраняется, а что делать с фигурой нельзя?</li>
+        <li>Точка <span class="mono">M(2; 2)</span> перешла в <span class="mono">M<sub>1</sub>(2; −1)</span>. Чему равен вектор переноса и куда он направлен?</li>
+      </ol>
+      <p style="margin-top:.8rem;color:var(--muted);font-size:.93rem">Если на каком-то пункте запнулся — вернись к нужному блоку выше. Это нормально: понимание собирается со второго прохода.</p>
+    </div>
+  </section>
+
+  <div class="wrapup">
+    <h2>Запомни главное</h2>
+    <p class="big-rule">M(x; y) → M<sub>1</sub>(x + a; y + b)</p>
+    <p>Параллельный перенос — это движение, при котором каждая точка фигуры сдвигается на один и тот же вектор <span class="mono">a&#8407; = (a; b)</span>. Форма и размер не меняются, образ равен прообразу. Обратно: прообраз = образ − вектор.</p>
+    <p class="next">👉 Дальше — <b>задачи на движения</b>: там переносом, симметрией и поворотом доказывают равенство фигур и выполняют построения.</p>
+  </div>
+
+</div>
+
+<script>
+(function(){
+  var cv=document.getElementById('cv'); if(!cv) return;
+  var ctx=cv.getContext('2d'), sa=document.getElementById('sa'), sb=document.getElementById('sb');
+  var va=document.getElementById('va'), vb=document.getElementById('vb'), eq=document.getElementById('diagEq');
+  var MIN='−';
+  function fmt(n){ return String(n).replace('-',MIN); }
+  function css(v){ return getComputedStyle(document.documentElement).getPropertyValue(v).trim(); }
+  var XLO=-7, XHI=11, YLO=-9, YHI=9;   // сетка 18×18: образ при любом векторе не выходит за край
+  var tri=[[0,0],[4,0],[0,3]], names=['A','B','C'];
+  var W=640,H=640,dpr=1,sc=30,ox=0,oy=0,step=1;
+  function resize(){
+    var c=cv.clientWidth||640; dpr=Math.min(window.devicePixelRatio||1,2);
+    W=c; H=c;                          // квадрат: диапазоны по x и y одинаковой длины
+    cv.width=W*dpr; cv.height=H*dpr; cv.style.height=H+'px'; ctx.setTransform(dpr,0,0,dpr,0,0);
+    sc=W/(XHI-XLO); ox=-XLO*sc; oy=YHI*sc; // экранные координаты начала отсчёта
+    step = sc<24 ? 2 : 1;              // на узком экране подписываем через одну
+  }
+  function SX(x){ return ox+x*sc; }
+  function SY(y){ return oy-y*sc; }
+  function arrow(x1,y1,x2,y2,col,dash){
+    var hx=SX(x2), hy=SY(y2), tx=SX(x1), ty=SY(y1);
+    var dx=hx-tx, dy=hy-ty, len=Math.sqrt(dx*dx+dy*dy);
+    ctx.strokeStyle=col; ctx.lineWidth=2; ctx.setLineDash(dash?[5,4]:[]);
+    ctx.beginPath(); ctx.moveTo(tx,ty); ctx.lineTo(hx,hy); ctx.stroke(); ctx.setLineDash([]);
+    if(len<6) return;
+    var ux=dx/len, uy=dy/len, s=Math.min(10,sc*0.42);
+    ctx.fillStyle=col; ctx.beginPath();
+    ctx.moveTo(hx,hy);
+    ctx.lineTo(hx-ux*s-uy*s*0.5, hy-uy*s+ux*s*0.5);
+    ctx.lineTo(hx-ux*s+uy*s*0.5, hy-uy*s-ux*s*0.5);
+    ctx.closePath(); ctx.fill();
+  }
+  function poly(p,fill,stroke){
+    ctx.beginPath();
+    p.forEach(function(q,i){ var x=SX(q[0]),y=SY(q[1]); i?ctx.lineTo(x,y):ctx.moveTo(x,y); });
+    ctx.closePath(); ctx.fillStyle=fill; ctx.fill();
+    ctx.strokeStyle=stroke; ctx.lineWidth=2.2; ctx.stroke();
+  }
+  function dot(x,y,col){ ctx.fillStyle=col; ctx.beginPath(); ctx.arc(SX(x),SY(y),3.4,0,6.284); ctx.fill(); }
+  function draw(){
+    var a=+sa.value, b=+sb.value;
+    va.textContent=fmt(a); vb.textContent=fmt(b);
+    ctx.clearRect(0,0,W,H);
+    // сетка
+    ctx.strokeStyle=css('--line'); ctx.lineWidth=1;
+    for(var i=XLO;i<=XHI;i++){ ctx.beginPath(); ctx.moveTo(SX(i),SY(YHI)); ctx.lineTo(SX(i),SY(YLO)); ctx.stroke(); }
+    for(var i2=YLO;i2<=YHI;i2++){ ctx.beginPath(); ctx.moveTo(SX(XLO),SY(i2)); ctx.lineTo(SX(XHI),SY(i2)); ctx.stroke(); }
+    // оси
+    ctx.strokeStyle=css('--muted'); ctx.lineWidth=1.8;
+    ctx.beginPath(); ctx.moveTo(SX(XLO),SY(0)); ctx.lineTo(SX(XHI),SY(0)); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(SX(0),SY(YHI)); ctx.lineTo(SX(0),SY(YLO)); ctx.stroke();
+    // подписи осей
+    var fs=Math.max(9,Math.min(12,sc*0.42));
+    ctx.fillStyle=css('--muted'); ctx.font='600 '+fs+'px ui-monospace,Menlo,monospace';
+    ctx.textAlign='center'; ctx.textBaseline='top';
+    for(var k=XLO+1;k<=XHI-1;k++){ if(k===0||k%step!==0) continue; ctx.fillText(fmt(k),SX(k),SY(0)+3); }
+    ctx.textAlign='right'; ctx.textBaseline='middle';
+    for(var m=YLO+1;m<=YHI-1;m++){ if(m===0||m%step!==0) continue; ctx.fillText(fmt(m),SX(0)-4,SY(m)); }
+    ctx.textAlign='left'; ctx.textBaseline='top';
+    ctx.fillText('x',SX(XHI)-12,SY(0)+3); ctx.fillText('y',SX(0)+5,SY(YHI)+2);
+    // образ = каждая вершина + вектор
+    var img=tri.map(function(p){ return [p[0]+a,p[1]+b]; });
+    poly(tri, css('--pre-soft'), css('--pre'));
+    poly(img, css('--img-soft'), css('--img'));
+    // одинаковые стрелки от каждой вершины к её образу
+    for(var j=0;j<3;j++) arrow(tri[j][0],tri[j][1],img[j][0],img[j][1],css('--vec'),true);
+    // точки и подписи
+    ctx.font='700 '+Math.max(11,Math.min(14,sc*0.5))+'px ui-monospace,Menlo,monospace';
+    for(var t=0;t<3;t++){
+      dot(tri[t][0],tri[t][1],css('--pre')); dot(img[t][0],img[t][1],css('--img'));
+      ctx.fillStyle=css('--pre'); ctx.textAlign='right'; ctx.textBaseline='bottom';
+      ctx.fillText(names[t], SX(tri[t][0])-5, SY(tri[t][1])-4);
+      ctx.fillStyle=css('--img'); ctx.textAlign='left'; ctx.textBaseline='bottom';
+      ctx.fillText(names[t]+'₁', SX(img[t][0])+5, SY(img[t][1])-4);
+    }
+    var rows=[];
+    for(var q=0;q<3;q++){
+      rows.push('<span class="p">'+names[q]+'('+fmt(tri[q][0])+'; '+fmt(tri[q][1])+')</span> → '+
+                '<span class="i">'+names[q]+'₁('+fmt(img[q][0])+'; '+fmt(img[q][1])+')</span>');
+    }
+    eq.innerHTML='<span class="v">a⃗ = ('+fmt(a)+'; '+fmt(b)+')</span><br>'+rows.join('<br>')+
+      (a===0&&b===0 ? '<br><span style="color:var(--muted);font-weight:600">нулевой вектор — фигура остаётся на месте</span>' : '');
+  }
+  [sa,sb].forEach(function(s){ s.addEventListener('input',draw); });
+  Array.prototype.forEach.call(document.querySelectorAll('.presets button'),function(btn){
+    btn.addEventListener('click',function(){ sa.value=btn.getAttribute('data-a'); sb.value=btn.getAttribute('data-b'); draw(); });
+  });
+  window.addEventListener('resize',function(){ resize(); draw(); });
+  resize(); draw();
+})();
+</script>
+
+<script>
+(function(){
+  var taskEl=document.getElementById('trTask'), ansEl=document.getElementById('trAns'), resEl=document.getElementById('trResult');
+  if(!taskEl) return;
+  var MIN='−';
+  function fmt(n){ return String(n).replace('-',MIN); }
+  function pt(name,x,y){ return name+'('+fmt(x)+'; '+fmt(y)+')'; }
+  function vec(a,b){ return 'a⃗ = ('+fmt(a)+'; '+fmt(b)+')'; }
+  function sum(x,a){ return a<0 ? fmt(x)+' + ('+fmt(a)+') = '+fmt(x+a) : fmt(x)+' + '+fmt(a)+' = '+fmt(x+a); }
+  function dif(x,a){ return fmt(x)+' − '+(a<0?'('+fmt(a)+')':fmt(a))+' = '+fmt(x-a); }
+  var letters=['A','B','M','N','P','K'];
+  var cur=null;
+  function ri(min,max){ return Math.floor(Math.random()*(max-min+1))+min; }
+  function coord(){ return ri(-7,7); }
+  function vcomp(){                       // компонента вектора; иногда 0 — краевой случай
+    var r=Math.random();
+    if(r<0.14) return 0;
+    var v=ri(1,6); return Math.random()<0.5 ? -v : v;
+  }
+  function generate(){
+    var a=vcomp(), b=vcomp();
+    if(a===0 && b===0){ b=ri(1,5)*(Math.random()<0.5?-1:1); }   // не даём вырожденный нулевой перенос
+    var L=letters[ri(0,letters.length-1)];
+    var x=coord(), y=coord();
+    var r=Math.random(), type = r<0.45 ? 'image' : (r<0.78 ? 'pre' : 'vec');
+    if(type==='image'){
+      cur={t:'image',L:L,a:a,b:b,x:x,y:y,ax:x+a,ay:y+b};
+      taskEl.innerHTML='Вектор <b>'+vec(a,b)+'</b>. Найди образ точки <b>'+pt(L,x,y)+'</b>.';
+    } else if(type==='pre'){
+      cur={t:'pre',L:L,a:a,b:b,x:x,y:y,ax:x+a,ay:y+b};          // дан образ (x+a; y+b), ищем (x; y)
+      taskEl.innerHTML='При переносе на <b>'+vec(a,b)+'</b> точка <b>'+L+'</b> перешла в <b>'+pt(L+'₁',x+a,y+b)+'</b>. Найди координаты точки <b>'+L+'</b>.';
+    } else {
+      cur={t:'vec',L:L,a:a,b:b,x:x,y:y,ax:x+a,ay:y+b};
+      taskEl.innerHTML='Точка <b>'+pt(L,x,y)+'</b> перешла в <b>'+pt(L+'₁',x+a,y+b)+'</b>. Найди вектор переноса <b>a⃗</b>.';
+    }
+    resEl.innerHTML=''; ansEl.value='';
+  }
+  function right(){
+    if(cur.t==='image') return [cur.ax,cur.ay];
+    if(cur.t==='pre')   return [cur.x,cur.y];
+    return [cur.a,cur.b];
+  }
+  function solHTML(){
+    var q=cur, h='<div class="sol">';
+    if(q.t==='image'){
+      h+='образ = прообраз + вектор: '+q.L+'₁(x + a; y + b)<br>';
+      h+='x: '+sum(q.x,q.a)+'<br>y: '+sum(q.y,q.b)+'<br>';
+      h+='Ответ: <b>'+pt(q.L+'₁',q.ax,q.ay)+'</b>';
+    } else if(q.t==='pre'){
+      h+='прообраз = образ − вектор<br>';
+      h+='x: '+dif(q.ax,q.a)+'<br>y: '+dif(q.ay,q.b)+'<br>';
+      h+='Ответ: <b>'+pt(q.L,q.x,q.y)+'</b>';
+    } else {
+      h+='вектор = образ − прообраз<br>';
+      h+='a: '+dif(q.ax,q.x)+'<br>b: '+dif(q.ay,q.y)+'<br>';
+      h+='Ответ: <b>'+vec(q.a,q.b)+'</b>';
+      if(q.a===0) h+='<br>первая координата 0 → сдвиг только по вертикали';
+      else if(q.b===0) h+='<br>вторая координата 0 → сдвиг только по горизонтали';
+    }
+    return h+'</div>';
+  }
+  function parse(raw){
+    var s=raw.replace(/[()\[\]]/g,'').replace(/−/g,'-').replace(/[;,]/g,' ').trim();
+    var parts=s.split(/\s+/).filter(function(v){ return v!==''; });
+    if(parts.length!==2) return null;
+    var n1=parseFloat(parts[0].replace(',','.')), n2=parseFloat(parts[1].replace(',','.'));
+    if(isNaN(n1)||isNaN(n2)) return null;
+    return [n1,n2];
+  }
+  function check(){
+    var raw=ansEl.value.trim();
+    if(raw===''){ resEl.innerHTML='<span class="bad">Введи ответ двумя числами или нажми «Решение».</span>'; return; }
+    var got=parse(raw);
+    if(!got){ resEl.innerHTML='<span class="bad">Нужны две координаты через точку с запятой, например 4; -2.</span>'; return; }
+    var r=right();
+    if(Math.abs(got[0]-r[0])<1e-9 && Math.abs(got[1]-r[1])<1e-9){
+      resEl.innerHTML='<span class="ok">✓ Верно!</span>'+solHTML();
+    } else {
+      resEl.innerHTML='<span class="bad">✗ Пока не то — проверь знаки и глянь решение.</span>'+solHTML();
+    }
+  }
+  document.getElementById('trNew').addEventListener('click',function(){ generate(); ansEl.focus(); });
+  document.getElementById('trCheck').addEventListener('click',check);
+  document.getElementById('trShow').addEventListener('click',function(){ resEl.innerHTML=solHTML(); });
+  ansEl.addEventListener('keydown',function(e){ if(e.key==='Enter') check(); });
+  cur={t:'image',L:'A',a:3,b:-2,x:1,y:4,ax:4,ay:2};   // стартовая задача = та, что показана в разметке
+})();
+</script>
+<!--LESSON-NAV-BOT--><nav class="lnav lnav-bot"><a class="prev" href="./geo9-centralnaya-simmetriya.html"><span class="dir">← Предыдущая</span><span class="ttl">Центральная симметрия</span></a><a class="to-cat" href="./catalog.html">📚 <span>Все темы</span></a><a class="next" href="./geo9-povorot.html"><span class="dir">Следующая →</span><span class="ttl">Поворот</span></a></nav><!--/LESSON-NAV-BOT-->

@@ -1,0 +1,735 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Задачи на наибольшее и наименьшее значение — алгебра 9 класс</title>
+<style>
+  :root{
+    --paper:#F6F7F9;
+    --card:#FFFFFF;
+    --ink:#1B2333;
+    --muted:#5A6478;
+    --line:#E2E5EC;
+    --accent:#3B4FD0;
+    --accent-soft:#EAEDFB;
+    --pos:#1E8E5A;   /* максимум, a < 0 */
+    --pos-bg:#E7F4EC;
+    --zero:#B9791A;  /* внимание, ОДЗ */
+    --zero-bg:#FBF1DC;
+    --neg:#C0455B;   /* ошибки */
+    --neg-bg:#F9E9EC;
+  }
+  *{box-sizing:border-box}
+  body{margin:0}
+  .wrap{
+    max-width:760px;
+    margin:0 auto;
+    padding:clamp(1.4rem,4vw,3rem) clamp(1.1rem,4vw,2rem) 4rem;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    font-size:17px;
+    line-height:1.62;
+    -webkit-font-smoothing:antialiased;
+  }
+  .eyebrow{
+    font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--accent);font-weight:600;margin:0 0 .5rem;
+  }
+  h1{
+    font-family:Georgia,"Times New Roman",serif;
+    font-size:clamp(2rem,6.4vw,2.9rem);
+    line-height:1.06;margin:0;font-weight:700;letter-spacing:-.01em;
+    text-wrap:balance;
+  }
+  .lede{
+    font-size:1.08rem;color:var(--muted);margin:.7rem 0 0;max-width:60ch;
+    text-wrap:pretty;
+  }
+  h2{
+    font-family:Georgia,serif;font-size:1.32rem;font-weight:700;
+    margin:0 0 .1rem;letter-spacing:-.005em;
+  }
+  section{margin-top:2.6rem}
+  .kicker{
+    font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--muted);font-weight:600;margin:0 0 .8rem;
+    display:flex;align-items:center;gap:.6rem;
+  }
+  .kicker::before{
+    content:"";width:1.4rem;height:2px;background:var(--accent);border-radius:2px;
+  }
+  p{margin:.65rem 0}
+  strong{font-weight:650}
+  .math{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-weight:600}
+  sup{font-size:.72em}
+
+  /* Главная формула */
+  .hero-formula{
+    margin-top:2.2rem;
+    background:var(--ink);color:#fff;border-radius:14px;
+    padding:1.6rem 1.4rem;text-align:center;
+  }
+  .hero-formula .lbl{
+    font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;
+    color:#9aa6c9;margin:0 0 .7rem;
+  }
+  .hero-formula .eq{
+    font-family:ui-monospace,"SF Mono",Menlo,monospace;
+    font-size:clamp(1.6rem,5.6vw,2.3rem);font-weight:700;letter-spacing:.01em;
+  }
+  .hero-formula .eq b{color:#8ea0ff;font-weight:700}
+  .hero-formula .note{font-size:.86rem;color:#9aa6c9;margin:.8rem 0 0}
+
+  /* Пререквизит */
+  .recall{
+    background:var(--accent-soft);border-radius:12px;padding:1rem 1.15rem;
+    font-size:.96rem;
+  }
+  .recall p{margin:.3rem 0}
+
+  /* Два случая по знаку a */
+  .cases{display:grid;gap:.85rem;margin-top:.4rem}
+  @media(min-width:620px){.cases{grid-template-columns:repeat(2,1fr)}}
+  .case{
+    border-radius:12px;padding:1.05rem 1.1rem;border:1px solid var(--line);
+    background:var(--card);display:flex;flex-direction:column;gap:.35rem;
+  }
+  .case .sign{font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.15rem}
+  .case .count{font-weight:650;font-size:1rem}
+  .case .desc{font-size:.9rem;color:var(--muted)}
+  .case.pos{border-top:4px solid var(--pos);background:var(--pos-bg)}
+  .case.pos .sign{color:var(--pos)}
+  .case.min{border-top:4px solid var(--accent);background:var(--accent-soft)}
+  .case.min .sign{color:var(--accent)}
+
+  /* Шаги модели */
+  ol.plan{margin:.4rem 0 0;padding:0;list-style:none;counter-reset:p;display:flex;flex-direction:column;gap:.55rem}
+  ol.plan li{position:relative;padding-left:2.1rem;counter-increment:p}
+  ol.plan li::before{
+    content:counter(p);position:absolute;left:0;top:.05rem;
+    width:1.5rem;height:1.5rem;border-radius:50%;
+    background:var(--ink);color:#fff;
+    font-size:.82rem;font-weight:700;display:flex;align-items:center;justify-content:center;
+  }
+
+  /* Разбор */
+  .worked{
+    background:var(--card);border:1px solid var(--line);border-radius:12px;
+    padding:1.2rem 1.3rem;
+  }
+  .worked .task{
+    font-weight:700;font-size:1.02rem;
+    margin:0 0 1rem;padding-bottom:.8rem;border-bottom:1px solid var(--line);
+  }
+  ol.steps{margin:0;padding:0;list-style:none;counter-reset:s;display:flex;flex-direction:column;gap:.7rem}
+  ol.steps li{position:relative;padding-left:2.1rem;counter-increment:s}
+  ol.steps li::before{
+    content:counter(s);position:absolute;left:0;top:.05rem;
+    width:1.5rem;height:1.5rem;border-radius:50%;
+    background:var(--accent-soft);color:var(--accent);
+    font-size:.82rem;font-weight:700;display:flex;align-items:center;justify-content:center;
+  }
+  ol.steps .m{font-family:ui-monospace,Menlo,monospace;font-weight:600;color:var(--ink)}
+  ol.steps .why{display:block;font-size:.88rem;color:var(--muted);margin-top:.1rem}
+  .verdict{
+    margin-top:1rem;padding:.7rem 1rem;background:var(--pos-bg);
+    border-radius:9px;font-weight:600;color:var(--pos);font-size:.98rem;
+  }
+
+  .warnbox{
+    background:var(--zero-bg);border:1px solid #EBD8A8;border-left:4px solid var(--zero);
+    border-radius:10px;padding:.85rem 1.05rem;font-size:.96rem;margin-top:1rem;
+  }
+  .warnbox b{color:#8A6A15}
+
+  /* Таблица значений */
+  .tblwrap{overflow-x:auto;margin-top:.7rem;border:1px solid var(--line);border-radius:12px;background:var(--card)}
+  table{border-collapse:collapse;width:100%;min-width:420px;font-family:ui-monospace,Menlo,monospace;font-size:.92rem}
+  th,td{padding:.55rem .7rem;text-align:center;border-bottom:1px solid var(--line)}
+  th{background:#F1F3F8;font-weight:700;color:var(--muted);font-size:.82rem;letter-spacing:.04em}
+  tr:last-child td{border-bottom:none}
+  td.peak{background:var(--pos-bg);color:var(--pos);font-weight:800}
+
+  /* Практика */
+  .drill{display:flex;flex-direction:column;gap:.7rem}
+  details{
+    background:var(--card);border:1px solid var(--line);border-radius:10px;
+    padding:.85rem 1.05rem;
+  }
+  details[open]{border-color:var(--accent)}
+  summary{
+    cursor:pointer;font-weight:600;list-style:none;
+    display:flex;justify-content:space-between;align-items:flex-start;gap:1rem;
+  }
+  summary::-webkit-details-marker{display:none}
+  summary:focus-visible{outline:3px solid var(--accent);outline-offset:3px;border-radius:6px}
+  summary .q{min-width:0}
+  summary .tag{
+    font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);
+    border:1px solid var(--line);border-radius:20px;padding:.1rem .55rem;white-space:nowrap;
+  }
+  .ans{margin-top:.7rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.96rem;color:var(--muted)}
+  .ans .m{font-family:ui-monospace,Menlo,monospace;color:var(--ink);font-weight:600}
+  .ans b{color:var(--ink)}
+
+  /* Ошибки */
+  ul.pitfalls{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:.6rem}
+  ul.pitfalls li{padding-left:1.5rem;position:relative;font-size:.98rem}
+  ul.pitfalls li::before{
+    content:"×";position:absolute;left:0;top:-.05rem;color:var(--neg);font-weight:700;font-size:1.1rem;
+  }
+  ul.pitfalls b{color:var(--ink)}
+  ul.pitfalls .fix{color:var(--muted);font-size:.92rem}
+
+  /* Проверка понимания */
+  ol.selfcheck{margin:.3rem 0 0;padding-left:1.3rem}
+  ol.selfcheck li{margin:.45rem 0}
+
+  .next{
+    background:var(--accent);color:#fff;border-radius:12px;padding:1.2rem 1.3rem;
+  }
+  .next h2{color:#fff}
+  .next .eq{
+    font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.15rem;
+    margin:.6rem 0 .3rem;
+  }
+  .next p{color:#dfe4fb;font-size:.96rem;margin:.4rem 0 0}
+  .foot{margin-top:2.4rem;font-size:.82rem;color:var(--muted);text-align:center}
+
+  .oge-tip{display:flex;gap:.8rem;align-items:flex-start;background:#FFF8E7;border:1px solid #F0D98A;border-left:4px solid #E0A315;border-radius:10px;padding:.85rem 1.05rem;margin:1.5rem 0}
+  .oge-tip .b{font-size:.72rem;font-weight:800;letter-spacing:.03em;color:#8A6A15;white-space:nowrap;text-transform:uppercase;padding-top:.15rem}
+  .oge-tip .x{font-size:.95rem;line-height:1.5}
+
+  @media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+<!--LESSON-NAV-TOP--><style>.lnav{--lnav-accent:#3D5AF1}.lnav a{text-decoration:none;font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif}.lnav-top{max-width:820px;margin:0 auto;padding:.75rem clamp(1rem,4vw,1.5rem) .1rem}.lnav-top a{display:inline-flex;align-items:center;gap:.35rem;color:var(--lnav-accent);font-weight:600;font-size:.9rem}.lnav-top a:hover{text-decoration:underline}.lnav-bot{max-width:820px;margin:2.6rem auto 3rem;padding:1.1rem clamp(1rem,4vw,1.5rem) 0;border-top:1px solid #E4E8EF;display:flex;align-items:stretch;gap:.55rem}.lnav-bot a{min-width:0;display:flex;flex-direction:column;justify-content:center;gap:.15rem;border:1px solid #E4E8EF;border-radius:12px;padding:.65rem .85rem;color:#182233;background:#fff;transition:border-color .1s,transform .08s}.lnav-bot a:hover{border-color:var(--lnav-accent);transform:translateY(-1px)}.lnav-bot .prev,.lnav-bot .next{flex:1 1 0}.lnav-bot .next{text-align:right}.lnav-bot .dir{font-size:.72rem;color:#8A93A6;font-weight:600}.lnav-bot .ttl{font-size:.9rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.lnav-bot .to-cat{flex:0 0 auto;flex-direction:row;align-items:center;justify-content:center;color:var(--lnav-accent);font-weight:700;font-size:.85rem;white-space:nowrap}@media(max-width:420px){.lnav-bot .to-cat span{display:none}.lnav-bot .to-cat{padding:.65rem .7rem}}</style><nav class="lnav lnav-top"><a href="./catalog.html">← Все темы</a></nav><!--/LESSON-NAV-TOP-->
+<div class="wrap">
+
+  <header>
+    <p class="eyebrow">Алгебра · 9 класс</p>
+    <h1>Наибольшее и наименьшее значение</h1>
+    <p class="lede">Как из задачи «сделай наилучшим образом» получить параболу — и снять ответ прямо с её вершины, <em>без всякого перебора.</em></p>
+  </header>
+
+  <div class="hero-formula">
+    <p class="lbl">Вершина параболы</p>
+    <div class="eq">x<sub>0</sub> = − <b>b</b> / (2<b>a</b>)</div>
+    <p class="note">для функции y = a·x² + b·x + c, где a ≠ 0. Само значение: y<sub>0</sub> = f(x<sub>0</sub>)</p>
+  </div>
+
+  <section>
+    <p class="kicker">Зачем это нужно</p>
+    <h2>Вопрос не «как сделать», а «как сделать лучше всего»</h2>
+    <p>В жизни и в технике постоянно спрашивают именно так. Какую форму придать загону, чтобы при том же заборе вместить как можно больше скота? При какой цене билета выручка кинотеатра будет наибольшей? На какой высоте мяч окажется выше всего? Все эти вопросы — про <strong>наибольшее или наименьшее значение</strong> некоторой величины.</p>
+    <p>В 9 классе мы берём тот случай, когда зависимость получается <strong>квадратичной</strong>. И тогда искать перебором ничего не надо: у параболы ровно одна вершина, и именно в ней достигается экстремум.</p>
+    <p>Житейское заблуждение звучит так: «чтобы площадь была больше, надо просто взять стороны побольше». Но если забор задан и его длина фиксирована, то, увеличивая одну сторону, ты автоматически уменьшаешь другую. Площадь меняется не как попало, а <strong>по параболе</strong> — и у неё есть конкретный максимум, мимо которого ни в одну сторону не улучшить.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Что вспомнить перед стартом</p>
+    <div class="recall">
+      <p><strong>Квадратичная функция.</strong> График <span class="math">y = ax² + bx + c</span> — парабола. При <span class="math">a &gt; 0</span> ветви смотрят вверх, при <span class="math">a &lt; 0</span> — вниз. Вершина — самая «крайняя» точка графика.</p>
+      <p><strong>Текстовая задача.</strong> Умение обозначить неизвестное буквой и выразить через неё всё остальное — здесь оно главное рабочее.</p>
+      <p><strong>Знаки.</strong> Коэффициенты берём вместе со знаком: в <span class="math">S = −x² + 20x</span> это <span class="math">a = −1</span>, <span class="math">b = 20</span>.</p>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Суть · один и тот же план</p>
+    <h2>Смоделируй задачу функцией</h2>
+    <p>Что бы ни спрашивали — про площадь, выручку или высоту — действуешь одинаково:</p>
+    <ol class="plan">
+      <li>Обозначь буквой (обычно <span class="math">x</span>) ту величину, <strong>которую ты можешь выбирать</strong>. Это «управляющая» переменная.</li>
+      <li>Вырази через <span class="math">x</span> ту величину, которую надо сделать наибольшей или наименьшей. Получится функция <span class="math">y = f(x)</span>.</li>
+      <li>Если <span class="math">f(x)</span> квадратичная — ищи <strong>вершину</strong>: она и есть ответ.</li>
+      <li>Проверь, какие значения <span class="math">x</span> вообще возможны по смыслу задачи (ОДЗ).</li>
+    </ol>
+  </section>
+
+  <section>
+    <p class="kicker">Ядро · знак a решает всё</p>
+    <h2>Что именно есть у функции</h2>
+    <div class="cases">
+      <div class="case pos">
+        <div class="sign">a &lt; 0</div>
+        <div class="count">Есть наибольшее значение</div>
+        <div class="desc">Ветви вниз, вершина наверху — выше неё график не поднимается.</div>
+      </div>
+      <div class="case min">
+        <div class="sign">a &gt; 0</div>
+        <div class="count">Есть наименьшее значение</div>
+        <div class="desc">Ветви вверх, вершина внизу — ниже неё график не опускается.</div>
+      </div>
+    </div>
+    <p style="margin-top:1rem">Координата вершины по <span class="math">x</span> говорит, <strong>при каком выборе</strong> достигается экстремум:</p>
+    <p style="text-align:center"><span class="math" style="font-size:1.15rem">x<sub>0</sub> = −b / (2a)</span></p>
+    <p>А само наибольшее (наименьшее) значение — это <span class="math">y<sub>0</sub> = f(x<sub>0</sub>) = a·x<sub>0</sub>² + b·x<sub>0</sub> + c</span>, то есть надо подставить найденное <span class="math">x<sub>0</sub></span> обратно в функцию.</p>
+    <div class="warnbox">
+      <b>Не забудь про ОДЗ.</b> Длина, площадь, цена, количество не бывают отрицательными; сторона прямоугольника меньше полупериметра. Если найденное <span class="math">x<sub>0</sub></span> не попадает в допустимый промежуток — экстремум на отрезке достигается на его границе. И единицы измерения (м, м², рубли, секунды) выписываем в ответ.
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Разбираем вместе · думаю вслух</p>
+    <h2>Эталонный пример</h2>
+    <div class="worked">
+      <p class="task">Из проволоки длиной 40 м надо сделать прямоугольную рамку. При каких размерах её площадь наибольшая и чему она равна?</p>
+      <ol class="steps">
+        <li>Периметр равен 40 м, значит полупериметр равен <span class="m">40 : 2 = 20</span> м.
+          <span class="why">Почему: периметр = 2(x + y), отсюда x + y = 20.</span></li>
+        <li>Пусть одна сторона <span class="m">x</span> м, тогда соседняя <span class="m">y = 20 − x</span> м.
+          <span class="why">Почему: их сумма должна быть равна 20.</span></li>
+        <li>Площадь: <span class="m">S = x · (20 − x) = 20x − x²</span>.
+          <span class="why">Почему: площадь прямоугольника — произведение сторон.</span></li>
+        <li>Это квадратичная функция <span class="m">S(x) = −x² + 20x</span>, здесь <span class="m">a = −1 &lt; 0</span> — значит, есть <strong>наибольшее</strong> значение.
+          <span class="why">Почему: ветви параболы направлены вниз.</span></li>
+        <li>Абсцисса вершины: <span class="m">x<sub>0</sub> = −b/(2a) = −20 / (2·(−1)) = 10</span>.
+          <span class="why">Почему: это и есть формула вершины; a подставляем вместе со знаком.</span></li>
+        <li>Проверяем ОДЗ: сторона <span class="m">x</span> должна быть от 0 до 20, и <span class="m">x<sub>0</sub> = 10</span> в этот промежуток попадает — годится.
+          <span class="why">Почему: иначе такого прямоугольника просто не существует.</span></li>
+        <li>Вторая сторона: <span class="m">20 − 10 = 10</span> м, получился квадрат. Площадь <span class="m">S = 10 · 10 = 100</span> м².
+          <span class="why">Почему: вопрос был и про размеры, и про саму площадь — отвечаем на оба.</span></li>
+      </ol>
+      <div class="verdict">Ответ: наибольшая площадь 100 м² при сторонах 10 м × 10 м (квадрат).</div>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Допиши сам · один шаг пропущен</p>
+    <h2>Мяч, брошенный вверх</h2>
+    <div class="worked">
+      <p class="task">Высота мяча (в метрах) меняется по закону h(t) = −5t² + 20t, где t — время в секундах. Найди наибольшую высоту.</p>
+      <ol class="steps">
+        <li>Здесь <span class="m">a = −5 &lt; 0</span>, значит, наибольшая высота есть — вершина наверху.</li>
+        <li>Момент наибольшей высоты: <span class="m">t<sub>0</sub> = −b/(2a) = −20 / (2·(−5)) = ?</span> с <span class="why">допиши вычисление</span></li>
+        <li>Подставь найденное <span class="m">t<sub>0</sub></span> в <span class="m">h(t)</span> и вычисли <span class="m">h(t<sub>0</sub>) = ?</span> м <span class="why">допиши</span></li>
+      </ol>
+      <details style="margin-top:1rem">
+        <summary><span class="q">Проверить себя</span><span class="tag">контроль</span></summary>
+        <div class="ans"><span class="m">t<sub>0</sub> = 2</span> с; наибольшая высота <span class="m">h = −5·4 + 20·2 = −20 + 40 = 20</span> м.</div>
+      </details>
+    </div>
+    <div class="oge-tip"><div class="b">🎯 В ОГЭ</div><div class="x"><b>Текстовые задачи и задачи на функции.</b> Формулировка «наибольшее / наименьшее значение» — сигнал искать вершину параболы, а не подставлять числа наугад. Ответ всегда выписывай с единицами измерения.</div></div>
+  </section>
+
+  <section>
+    <p class="kicker">Покрути сам · интерактив</p>
+    <h2>Площадь меняется по параболе</h2>
+    <p>Забор фиксированной длины 40 м. Двигай ползунок — меняется одна сторона, вторая подстраивается сама. Смотри, как площадь ползёт по параболе и где именно достигает пика.</p>
+    <div class="fence">
+      <div class="modes" role="group" aria-label="Вариант задачи">
+        <button type="button" id="mode4" class="mode on">Забор со всех 4 сторон</button>
+        <button type="button" id="mode3" class="mode">Вдоль стены (3 стороны)</button>
+      </div>
+      <canvas id="fenceCanvas" width="640" height="380" aria-label="График площади прямоугольника в зависимости от стороны x"></canvas>
+      <div id="fenceVerdict" class="fence-verdict">x = 5 м, вторая сторона 15 м · S = 75 м²</div>
+      <div class="fslider">
+        <label for="fx">сторона x</label>
+        <input id="fx" type="range" min="0.5" max="19.5" step="0.5" value="5" aria-label="Сторона x в метрах">
+        <span id="fxv" class="fval">5</span>
+      </div>
+      <div class="rectbox">
+        <div id="rectShape" class="rect"><span id="rectLabel">5 × 15</span></div>
+      </div>
+      <p class="fence-eq" id="fenceEq">S(x) = x · (20 − x) = −x² + 20x</p>
+    </div>
+    <p style="font-size:.9rem;color:var(--muted)">Поймай вершину: слева и справа от неё площадь меньше. Переключи режим «вдоль стены» — там на площадь работает только три стороны забора, и картинка становится другой.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Предскажи → проверь → объясни</p>
+    <h2>Три прямоугольника с периметром 40</h2>
+    <p>Сначала <strong>предскажи</strong>, у какого площадь больше — 5×15, 8×12 или 10×10. Потом посмотри в таблицу и <strong>объясни</strong>, почему «самый ровный» выигрывает.</p>
+    <div class="tblwrap">
+      <table>
+        <thead><tr><th>сторона x</th><th>вторая сторона 20 − x</th><th>площадь S = x(20 − x)</th></tr></thead>
+        <tbody>
+          <tr><td>5</td><td>15</td><td>75</td></tr>
+          <tr><td>8</td><td>12</td><td>96</td></tr>
+          <tr><td>10</td><td>10</td><td class="peak">100</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p style="font-size:.93rem;color:var(--muted);margin-top:.7rem">Значения сначала растут, доходят до пика и потом падают — это и есть «портрет» вершины. Таблица, график и формула говорят одно и то же тремя способами.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Теперь ты · нажми, чтобы проверить</p>
+    <h2>Практика по нарастанию</h2>
+    <div class="drill">
+      <details>
+        <summary><span class="q">У функции y = −x² + 6x + 1 какой знак у коэффициента a? Что у этой функции есть — наибольшее или наименьшее значение?</span><span class="tag">понимание</span></summary>
+        <div class="ans"><span class="m">a = −1 &lt; 0</span>, ветви вниз → у функции есть <b>наибольшее</b> значение.</div>
+      </details>
+      <details>
+        <summary><span class="q">Найди наименьшее значение функции y = x² − 8x + 3.</span><span class="tag">применение</span></summary>
+        <div class="ans"><span class="m">a = 1 &gt; 0</span> → есть наименьшее. <span class="m">x<sub>0</sub> = −(−8)/(2·1) = 4</span>; <span class="m">y<sub>0</sub> = 16 − 32 + 3 = −13</span>. Наименьшее значение <b>−13</b> при <span class="m">x = 4</span>.</div>
+      </details>
+      <details>
+        <summary><span class="q">Число 16 разбили на два слагаемых так, чтобы их произведение было наибольшим. Найди эти слагаемые и произведение.</span><span class="tag">применение</span></summary>
+        <div class="ans">Оба слагаемых равны <b>8</b>, наибольшее произведение <span class="m">8 · 8 = 64</span>.</div>
+      </details>
+      <details>
+        <summary><span class="q">Что изменится, если… В задаче про рамку из 40 м проволоки потребовали огородить прямоугольник, одна сторона которого идёт вдоль готовой стены (забор нужен только с трёх сторон). Изменится ли ответ?</span><span class="tag">анализ</span></summary>
+        <div class="ans">Да, изменится. Теперь <span class="m">2x + y = 40</span>, поэтому <span class="m">S = x(40 − 2x) = −2x² + 40x</span>. Здесь <span class="m">a = −2, b = 40</span>, вершина при <span class="m">x<sub>0</sub> = −40/(2·(−2)) = 10</span>, тогда <span class="m">y = 40 − 20 = 20</span>. Наибольшая площадь <b>200 м²</b> при сторонах 10 м и 20 м — вдвое больше, чем в исходной задаче.</div>
+      </details>
+      <details>
+        <summary><span class="q">Найди ошибку. В задаче про мяч h(t) = −5t² + 20t ученик написал t<sub>0</sub> = 20 / (2·5) = 2 и обрадовался, но забыл, что a = −5. Где здесь риск ошибиться со знаком и почему ответ всё же t<sub>0</sub> = 2?</span><span class="tag">анализ</span></summary>
+        <div class="ans">Правильная запись — <span class="m">t<sub>0</sub> = −20 / (2·(−5))</span>: минус в числителе и минус в <span class="m">a</span> взаимно сокращаются, поэтому результат совпал случайно. Риск в том, что при другом знаке <span class="m">b</span> такая «упрощённая» запись даст ответ с неверным знаком. Вывод: <b>подставляй a вместе со знаком</b>.</div>
+      </details>
+      <details>
+        <summary><span class="q">Обратная задача. Функция y = x² + bx принимает наименьшее значение в точке x = 3. Найди b.</span><span class="tag">анализ</span></summary>
+        <div class="ans">Абсцисса вершины <span class="m">x<sub>0</sub> = −b/(2·1) = −b/2</span>. По условию <span class="m">−b/2 = 3</span>, отсюда <span class="m">b = −6</span>.</div>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Тренажёр · бесконечная практика</p>
+    <h2>Реши задачу на оптимум сам</h2>
+    <p>Нажми «Новое задание», реши и введи <b>только число</b> (без единиц). Дробные — через точку. Потом проверь себя или посмотри пошаговое решение.</p>
+    <div class="trainer">
+      <div class="tr-eq" id="trTask">Найди наименьшее значение функции y = x² − 8x + 19</div>
+      <div class="tr-ctl">
+        <button id="trNew" type="button">🎲 Новое задание</button>
+        <input id="trAns" type="text" placeholder="напр.  3   или   −13" aria-label="Ответ" inputmode="text">
+        <button id="trCheck" type="button" class="sec">Проверить</button>
+        <button id="trShow" type="button" class="ghost">Показать решение</button>
+      </div>
+      <div id="trResult" class="tr-result"></div>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Где чаще всего ошибаются</p>
+    <h2>Пять типовых ловушек</h2>
+    <ul class="pitfalls">
+      <li><b>Ищут экстремум перебором.</b> Подставляют 1, 2, 3, … и берут лучшее. Перебор почти никогда не попадает в точный максимум и ничего не доказывает.
+        <span class="fix">Как не допустить: как только зависимость оказалась квадратичной — сразу формула <span class="math">x<sub>0</sub> = −b/(2a)</span>.</span></li>
+      <li><b>Не учитывают ОДЗ переменной.</b> Находят <span class="math">x<sub>0</sub></span>, не проверив, возможна ли такая длина или цена.
+        <span class="fix">Как не допустить: до вычислений выпиши, в каких пределах меняется <span class="math">x</span> по смыслу задачи, и проверь, попал ли <span class="math">x<sub>0</sub></span> туда.</span></li>
+      <li><b>Путают наибольшее и наименьшее.</b> Считают <span class="math">x<sub>0</sub></span> верно, но не смотрят на знак <span class="math">a</span> и заявляют «минимум» там, где ветви вниз.
+        <span class="fix">Как не допустить: первым делом смотри на знак a: <span class="math">a &gt; 0</span> — минимум, <span class="math">a &lt; 0</span> — максимум.</span></li>
+      <li><b>Останавливаются на <span class="math">x<sub>0</sub></span> и пишут его в ответ.</b> Но <span class="math">x<sub>0</sub></span> — это лишь значение переменной, а не сам экстремум.
+        <span class="fix">Как не допустить: перечитай вопрос — спрашивают про значение функции, про размеры или про то и другое сразу.</span></li>
+      <li><b>Теряют минус при раскрытии скобок.</b> Пишут <span class="math">x(20 − x) = 20x + x²</span> вместо <span class="math">20x − x²</span> — и парабола «переворачивается».
+        <span class="fix">Как не допустить: раскрывай скобки аккуратно и всегда проверяй знак при <span class="math">x²</span>.</span></li>
+    </ul>
+  </section>
+
+  <section>
+    <p class="kicker">Проверка понимания</p>
+    <h2>Объясни своими словами</h2>
+    <p>Ответь вслух, как будто объясняешь другу, — и только потом раскрывай.</p>
+    <div class="drill">
+      <details>
+        <summary><span class="q">По какой формуле находят x-координату вершины параболы y = ax² + bx + c?</span><span class="tag">вопрос 1</span></summary>
+        <div class="ans"><span class="m">x<sub>0</sub> = −b / (2a)</span>.</div>
+      </details>
+      <details>
+        <summary><span class="q">Функция имеет наибольшее или наименьшее значение, если a &lt; 0?</span><span class="tag">вопрос 2</span></summary>
+        <div class="ans"><b>Наибольшее</b> — ветви параболы направлены вниз.</div>
+      </details>
+      <details>
+        <summary><span class="q">Почему после нахождения x<sub>0</sub> работа ещё не закончена?</span><span class="tag">вопрос 3</span></summary>
+        <div class="ans">Нужно подставить <span class="m">x<sub>0</sub></span> в функцию и найти сам экстремум <span class="m">y<sub>0</sub></span>, а ещё проверить, что <span class="m">x<sub>0</sub></span> входит в ОДЗ задачи.</div>
+      </details>
+    </div>
+    <p style="margin-top:1.1rem"><strong>Итог одним предложением.</strong> Задачу на наибольшее или наименьшее значение сводят к квадратичной функции и находят экстремум в вершине параболы по формуле <span class="math">x<sub>0</sub> = −b/(2a)</span>, не забывая про знак <span class="math">a</span> и область допустимых значений.</p>
+  </section>
+
+  <section>
+    <div class="next">
+      <h2>Что дальше</h2>
+      <p>Ты научился снимать ответ с одной точки параболы — с вершины. Следующий шаг с тем же графиком: смотреть не на одну точку, а на целые куски параболы — где она выше оси, где ниже.</p>
+      <div class="eq">ax² + bx + c &gt; 0</div>
+      <p>Это квадратные неравенства: тот же рисунок параболы, только вопрос уже не «где пик», а «где график выше нуля».</p>
+    </div>
+  </section>
+
+  <p class="foot">Проверка на выходе: запиши формулу вершины по памяти · при каком знаке a есть максимум? · что нужно сделать после того, как нашёл x<sub>0</sub>?</p>
+
+</div>
+
+<style>
+  .fence{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.1rem 1.1rem 1rem;margin:1rem 0}
+  .fence canvas{width:100%;height:auto;display:block;border-radius:10px;background:#FCFDFF}
+  .modes{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:.9rem}
+  .mode{font:inherit;font-size:.86rem;font-weight:650;cursor:pointer;border:1px solid var(--line);
+    background:#fff;color:var(--muted);border-radius:20px;padding:.35rem .8rem}
+  .mode.on{background:var(--accent);border-color:var(--accent);color:#fff}
+  .mode:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+  .fence-verdict{text-align:center;font-weight:700;font-size:1rem;margin:.8rem 0 0;padding:.5rem;
+    border-radius:9px;font-family:ui-monospace,Menlo,monospace;background:var(--accent-soft);color:var(--accent)}
+  .fence-verdict.best{background:var(--pos-bg);color:var(--pos)}
+  .fslider{display:flex;align-items:center;gap:.6rem;margin-top:.9rem;font-family:ui-monospace,Menlo,monospace;font-weight:700}
+  .fslider label{font-size:.9rem;white-space:nowrap}
+  .fslider input[type=range]{flex:1;min-width:80px;accent-color:var(--accent)}
+  .fslider input[type=range]:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+  .fslider .fval{min-width:3.5ch;text-align:right;color:var(--accent);font-variant-numeric:tabular-nums}
+  .rectbox{margin-top:1rem;display:flex;justify-content:center;align-items:flex-end;height:150px;
+    border:1px dashed var(--line);border-radius:10px;padding:.5rem}
+  .rect{background:var(--accent-soft);border:2px solid var(--accent);border-radius:4px;
+    display:flex;align-items:center;justify-content:center;font-family:ui-monospace,Menlo,monospace;
+    font-size:.8rem;font-weight:700;color:var(--accent);overflow:hidden;min-width:6px;min-height:6px}
+  .rect.wall{border-bottom:4px solid var(--ink)}
+  .fence-eq{text-align:center;font-family:ui-monospace,Menlo,monospace;font-weight:700;
+    font-size:clamp(.85rem,3.4vw,1.05rem);margin:.9rem 0 0;color:var(--ink)}
+</style>
+
+<script>
+(function(){
+  var cv=document.getElementById('fenceCanvas'); if(!cv) return;
+  var ctx=cv.getContext('2d');
+  var sx=document.getElementById('fx'), xv=document.getElementById('fxv');
+  var verdict=document.getElementById('fenceVerdict'), eqEl=document.getElementById('fenceEq');
+  var rect=document.getElementById('rectShape'), rectLbl=document.getElementById('rectLabel');
+  var b4=document.getElementById('mode4'), b3=document.getElementById('mode3');
+  var W=640,H=380,dpr=1,mode=4;
+  var XMAX=20;                 // сторона x меняется от 0 до 20 в обоих режимах
+  var PAD_L=42, PAD_B=30, PAD_T=14, PAD_R=12;
+
+  function other(x){ return mode===4 ? (20-x) : (40-2*x); }   // вторая сторона
+  function area(x){ return x*other(x); }
+  function ymax(){ return mode===4 ? 100 : 200; }
+
+  function resize(){
+    var cssW=cv.clientWidth||640; dpr=Math.min(window.devicePixelRatio||1,2);
+    W=cssW; H=Math.round(Math.max(200,Math.min(cssW*0.62,360)));
+    cv.width=W*dpr; cv.height=H*dpr; cv.style.height=H+'px';
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+  }
+  function PX(x){ return PAD_L + x/XMAX*(W-PAD_L-PAD_R); }
+  function PY(y){ return H-PAD_B - y/(ymax()*1.12)*(H-PAD_B-PAD_T); }
+
+  function draw(){
+    var x=parseFloat(sx.value), S=area(x), o=other(x), top=ymax();
+    ctx.clearRect(0,0,W,H);
+
+    // сетка + подписи оси x
+    ctx.strokeStyle='#EDEFF4'; ctx.lineWidth=1;
+    ctx.fillStyle='#8A93A6'; ctx.font='11px system-ui,sans-serif'; ctx.textAlign='center';
+    for(var gx=0;gx<=XMAX;gx+=5){
+      ctx.beginPath(); ctx.moveTo(PX(gx),PAD_T); ctx.lineTo(PX(gx),H-PAD_B); ctx.stroke();
+      ctx.fillText(gx,PX(gx),H-PAD_B+15);
+    }
+    // сетка + подписи оси y
+    ctx.textAlign='right';
+    var stepY = top/4;
+    for(var gy=0;gy<=top;gy+=stepY){
+      ctx.beginPath(); ctx.moveTo(PAD_L,PY(gy)); ctx.lineTo(W-PAD_R,PY(gy)); ctx.stroke();
+      ctx.fillText(gy,PAD_L-6,PY(gy)+4);
+    }
+    // оси
+    ctx.strokeStyle='#9AA3B2'; ctx.lineWidth=1.5;
+    ctx.beginPath(); ctx.moveTo(PAD_L,H-PAD_B); ctx.lineTo(W-PAD_R,H-PAD_B); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(PAD_L,PAD_T); ctx.lineTo(PAD_L,H-PAD_B); ctx.stroke();
+    ctx.textAlign='left'; ctx.fillStyle='#5A6478';
+    ctx.fillText('x, м',W-PAD_R-30,H-PAD_B+15);
+    ctx.fillText('S, м²',PAD_L-34,PAD_T+8);
+
+    // парабола S(x)
+    ctx.strokeStyle='#3B4FD0'; ctx.lineWidth=3; ctx.beginPath();
+    for(var i=0;i<=200;i++){
+      var xx=i/200*XMAX, yy=area(xx), px=PX(xx), py=PY(yy);
+      if(i===0) ctx.moveTo(px,py); else ctx.lineTo(px,py);
+    }
+    ctx.stroke();
+
+    // вершина
+    ctx.setLineDash([4,4]); ctx.strokeStyle='#1E8E5A'; ctx.lineWidth=1.5;
+    ctx.beginPath(); ctx.moveTo(PX(10),PY(0)); ctx.lineTo(PX(10),PY(top)); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle='#1E8E5A'; ctx.beginPath(); ctx.arc(PX(10),PY(top),5,0,7); ctx.fill();
+    ctx.textAlign='center'; ctx.font='bold 12px system-ui,sans-serif';
+    ctx.fillText('вершина '+top,PX(10),PY(top)-10);
+
+    // текущая точка
+    ctx.strokeStyle='#C0455B'; ctx.lineWidth=1.5; ctx.setLineDash([3,3]);
+    ctx.beginPath(); ctx.moveTo(PX(x),PY(0)); ctx.lineTo(PX(x),PY(S)); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(PAD_L,PY(S)); ctx.lineTo(PX(x),PY(S)); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle='#C0455B'; ctx.beginPath(); ctx.arc(PX(x),PY(S),6,0,7); ctx.fill();
+    ctx.fillStyle='#fff'; ctx.beginPath(); ctx.arc(PX(x),PY(S),2.4,0,7); ctx.fill();
+
+    // подписи-числа
+    xv.textContent=x;
+    var isTop=Math.abs(x-10)<0.01;
+    verdict.className='fence-verdict'+(isTop?' best':'');
+    verdict.textContent = isTop
+      ? ('x = 10 м, вторая сторона '+o+' м · S = '+S+' м² — это максимум!')
+      : ('x = '+x+' м, вторая сторона '+o+' м · S = '+S+' м²');
+
+    // прямоугольник в масштабе
+    var scale=130/(mode===4?20:40);   // единый масштаб по обеим сторонам
+    rect.style.width=(x*scale)+'px';
+    rect.style.height=(o*scale)+'px';
+    rect.className='rect'+(mode===3?' wall':'');
+    rectLbl.textContent=(x*scale>44 && o*scale>16) ? (x+' × '+o) : '';
+
+    eqEl.textContent = mode===4
+      ? 'S(x) = x · (20 − x) = −x² + 20x'
+      : 'S(x) = x · (40 − 2x) = −2x² + 40x';
+  }
+
+  function setMode(m){
+    mode=m;
+    b4.classList.toggle('on',m===4); b3.classList.toggle('on',m===3);
+    draw();
+  }
+  b4.addEventListener('click',function(){ setMode(4); });
+  b3.addEventListener('click',function(){ setMode(3); });
+  sx.addEventListener('input',draw);
+  window.addEventListener('resize',function(){ resize(); draw(); });
+  resize(); draw();
+})();
+</script>
+
+<style>
+  .trainer{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.2rem 1.3rem;margin-top:1rem}
+  .tr-eq{font-weight:700;font-size:clamp(1rem,3.6vw,1.2rem);text-align:center;padding:1rem;
+    background:var(--accent-soft);border-radius:10px;color:var(--ink);line-height:1.5}
+  .tr-eq .m{font-family:ui-monospace,Menlo,monospace}
+  .tr-ctl{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.9rem;align-items:center}
+  .tr-ctl button{font:inherit;font-weight:700;font-size:.9rem;cursor:pointer;border:none;border-radius:9px;padding:.55rem .95rem;color:#fff;background:var(--accent)}
+  .tr-ctl button.sec{background:var(--pos)}
+  .tr-ctl button.ghost{background:transparent;color:var(--accent);border:1px solid var(--accent)}
+  .tr-ctl input{flex:1;min-width:150px;font:inherit;padding:.5rem .7rem;border:1px solid var(--line);border-radius:9px;background:#fff;color:var(--ink)}
+  .tr-ctl button:focus-visible,.tr-ctl input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+  .tr-result{margin-top:.9rem;font-size:.96rem;min-height:1.2rem}
+  .tr-result .ok{color:var(--pos);font-weight:700}
+  .tr-result .bad{color:var(--neg);font-weight:700}
+  .tr-result .sol{margin-top:.7rem;padding:.85rem 1rem;background:#FCFBFE;border:1px solid var(--line);border-radius:10px;font-family:ui-monospace,Menlo,monospace;font-size:.9rem;line-height:1.8}
+  .tr-result .sol b{color:var(--accent)}
+</style>
+
+<script>
+(function(){
+  var taskEl=document.getElementById('trTask'), ansEl=document.getElementById('trAns'), resEl=document.getElementById('trResult');
+  if(!taskEl) return;
+
+  function ri(min,max){ return Math.floor(Math.random()*(max-min+1))+min; }
+  function pick(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+  function n(v){ return String(v).replace(/-/g,'−'); }          // настоящий минус
+  function signed(v){ return (v<0?' − ':' + ')+Math.abs(v); }   // « + 5 » / « − 5 »
+
+  function quad(a,b,c){
+    var s = (a===1?'':(a===-1?'−':n(a)))+'x²';
+    if(b!==0) s += (b<0?' − ':' + ')+(Math.abs(b)===1?'':Math.abs(b))+'x';
+    if(c!==0) s += (c<0?' − ':' + ')+Math.abs(c);
+    return s;
+  }
+
+  // ——— генераторы заданий ———
+  function genFunc(askX){
+    var a=pick([-3,-2,-1,1,2,3]), x0=ri(-6,6), y0=ri(-20,20);
+    var b=-2*a*x0, c=y0+a*x0*x0;
+    var big=a<0, word=big?'наибольшее':'наименьшее';
+    var q = askX
+      ? ('При каком x функция y = '+quad(a,b,c)+' принимает '+word+' значение?')
+      : ('Найди '+word+' значение функции y = '+quad(a,b,c)+'.');
+    var subst='y₀ = '+n(a)+'·('+n(x0)+')²';
+    if(b!==0) subst += signed(b)+'·('+n(x0)+')';
+    if(c!==0) subst += signed(c);
+    var sol='a = '+n(a)+', b = '+n(b)+', c = '+n(c)+'<br>'+
+      'a '+(big?'&lt; 0 → есть наибольшее значение':'&gt; 0 → есть наименьшее значение')+'<br>'+
+      'x₀ = −b/(2a) = −('+n(b)+')/(2·('+n(a)+')) = <b>'+n(x0)+'</b><br>'+
+      (askX ? 'Ответ: x = <b>'+n(x0)+'</b>'
+            : subst+' = <b>'+n(y0)+'</b>');
+    return {q:q, ans:(askX?x0:y0), sol:sol, unit:''};
+  }
+  function genSum(){
+    var N=2*ri(3,25);                       // чётное число
+    var h=N/2;
+    return {
+      q:'Число '+N+' разбили на два слагаемых так, чтобы их произведение было наибольшим. Чему равно это наибольшее произведение?',
+      ans:h*h,
+      sol:'Пусть первое слагаемое x, тогда второе '+N+' − x.<br>'+
+          'P(x) = x('+N+' − x) = −x² + '+N+'x, a = −1 &lt; 0 → есть наибольшее.<br>'+
+          'x₀ = −'+N+'/(2·(−1)) = <b>'+h+'</b>, второе слагаемое тоже '+h+'.<br>'+
+          'P = '+h+' · '+h+' = <b>'+(h*h)+'</b>',
+      unit:''
+    };
+  }
+  function genFrame(){
+    var P=4*ri(4,20);                        // периметр кратен 4
+    var half=P/2, s=P/4;
+    return {
+      q:'Из проволоки длиной '+P+' м делают прямоугольную рамку. Какова наибольшая возможная площадь (в м²)?',
+      ans:s*s,
+      sol:'Полупериметр: '+P+' : 2 = '+half+'. Стороны x и '+half+' − x, где 0 &lt; x &lt; '+half+'.<br>'+
+          'S(x) = x('+half+' − x) = −x² + '+half+'x, a = −1 &lt; 0 → есть наибольшая.<br>'+
+          'x₀ = −'+half+'/(2·(−1)) = <b>'+s+'</b> — в ОДЗ попадает.<br>'+
+          'Вторая сторона '+half+' − '+s+' = '+s+', квадрат. S = '+s+' · '+s+' = <b>'+(s*s)+'</b> м²',
+      unit:' м²'
+    };
+  }
+  function genWall(){
+    var L=4*ri(4,20);                        // забор на три стороны, кратен 4
+    var x0=L/4, y0=L/2;
+    return {
+      q:'Прямоугольную площадку огораживают у стены здания: забор длиной '+L+' м идёт с трёх сторон, четвёртая — стена. Какова наибольшая площадь площадки (в м²)?',
+      ans:x0*y0,
+      sol:'Пусть x — сторона, перпендикулярная стене, тогда 2x + y = '+L+', y = '+L+' − 2x.<br>'+
+          'S(x) = x('+L+' − 2x) = −2x² + '+L+'x, a = −2 &lt; 0 → есть наибольшая.<br>'+
+          'x₀ = −'+L+'/(2·(−2)) = <b>'+x0+'</b>, тогда y = '+L+' − '+(2*x0)+' = '+y0+'.<br>'+
+          'S = '+x0+' · '+y0+' = <b>'+(x0*y0)+'</b> м²',
+      unit:' м²'
+    };
+  }
+  function genBall(){
+    var v=10*ri(1,6);
+    var t0=v/10, h=v*v/20;
+    return {
+      q:'Мяч брошен вверх, его высота меняется по закону h(t) = −5t² + '+v+'t (t — время в секундах, h — в метрах). Найди наибольшую высоту (в метрах).',
+      ans:h,
+      sol:'a = −5 &lt; 0 → есть наибольшая высота.<br>'+
+          't₀ = −'+v+'/(2·(−5)) = <b>'+t0+'</b> с<br>'+
+          'h = −5·'+t0+'² + '+v+'·'+t0+' = −'+(5*t0*t0)+' + '+(v*t0)+' = <b>'+h+'</b> м',
+      unit:' м'
+    };
+  }
+
+  var cur=null;
+  function generate(){
+    var r=Math.random();
+    if(r<0.30) cur=genFunc(false);
+    else if(r<0.45) cur=genFunc(true);
+    else if(r<0.60) cur=genSum();
+    else if(r<0.75) cur=genFrame();
+    else if(r<0.90) cur=genWall();
+    else cur=genBall();
+    taskEl.innerHTML='<span class="m">'+cur.q+'</span>';
+    resEl.innerHTML=''; ansEl.value='';
+  }
+  function solutionHTML(){ return '<div class="sol">'+cur.sol+'</div>'; }
+  function check(){
+    var raw=ansEl.value.trim().replace(/−/g,'-').replace(/,/g,'.').replace(/\s+/g,'');
+    if(!raw){ resEl.innerHTML='<span class="bad">Введи число или нажми «Показать решение».</span>'; return; }
+    var got=parseFloat(raw);
+    if(isNaN(got)){ resEl.innerHTML='<span class="bad">Не понял запись. Введи только число, напр. «12» или «−13».</span>'; return; }
+    if(Math.abs(got-cur.ans)<1e-6){
+      resEl.innerHTML='<span class="ok">✓ Верно! Ответ '+n(cur.ans)+cur.unit+'.</span>'+solutionHTML();
+    } else {
+      resEl.innerHTML='<span class="bad">✗ Пока не то. Проверь знак a и не забудь подставить x₀ обратно в функцию.</span>'+solutionHTML();
+    }
+  }
+  document.getElementById('trNew').addEventListener('click',function(){ generate(); ansEl.focus(); });
+  document.getElementById('trCheck').addEventListener('click',check);
+  document.getElementById('trShow').addEventListener('click',function(){ resEl.innerHTML=solutionHTML(); });
+  ansEl.addEventListener('keydown',function(e){ if(e.key==='Enter') check(); });
+
+  // стартовая задача — фиксированная, совпадает с показанным условием (без фокуса)
+  cur={
+    q:'Найди наименьшее значение функции y = x² − 8x + 19.',
+    ans:3,
+    sol:'a = 1, b = −8, c = 19<br>a &gt; 0 → есть наименьшее значение<br>'+
+        'x₀ = −(−8)/(2·1) = <b>4</b><br>'+
+        'y₀ = 4² − 8·4 + 19 = 16 − 32 + 19 = <b>3</b>',
+    unit:''
+  };
+  taskEl.innerHTML='<span class="m">'+cur.q+'</span>';
+})();
+</script>
+<!--LESSON-NAV-BOT--><nav class="lnav lnav-bot"><a class="prev" href="./alg9-tekstovye-zadachi-sistemy.html"><span class="dir">← Предыдущая</span><span class="ttl">Текстовые задачи, решаемые системами уравнений</span></a><a class="to-cat" href="./catalog.html">📚 <span>Все темы</span></a><a class="next" href="./alg9-posledovatelnost.html"><span class="dir">Следующая →</span><span class="ttl">Числовая последовательность</span></a></nav><!--/LESSON-NAV-BOT-->

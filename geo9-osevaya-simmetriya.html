@@ -1,0 +1,522 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Осевая симметрия — геометрия 9 класс</title>
+<style>
+  :root{
+    --paper:#F6F7F9; --card:#FFFFFF; --ink:#1D2530; --muted:#606B7A; --line:#E3E7EE;
+    --brand:#2E5AAC; --brand-soft:#E4EBF7;
+    --pre:#E27C2C; --pre-soft:#FBEEDF;   /* прообраз M */
+    --img:#159A8A; --img-soft:#DEF3F0;   /* образ M₁ */
+    --ok:#1E8E5A; --no:#C23B3B;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper)}
+  .page{max-width:720px;margin:0 auto;padding:clamp(1.4rem,4vw,3rem) clamp(1.1rem,4vw,2rem) 4.5rem;
+    color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:17.5px;line-height:1.68;-webkit-font-smoothing:antialiased}
+  .mono{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-variant-numeric:tabular-nums;font-weight:600}
+  sup{font-size:.72em}
+
+  .hero{border-bottom:3px solid var(--brand);padding-bottom:1.4rem;margin-bottom:1.8rem}
+  .eyebrow{font-size:.74rem;letter-spacing:.15em;text-transform:uppercase;color:var(--brand);font-weight:700;margin:0 0 .55rem}
+  h1{font-size:clamp(1.9rem,6vw,2.8rem);line-height:1.05;margin:0;font-weight:800;letter-spacing:-.02em;text-wrap:balance}
+  .tagline{font-size:1.12rem;color:var(--muted);margin:.85rem 0 0;text-wrap:pretty}
+
+  section{margin-top:2.4rem}
+  h2{font-size:1.5rem;margin:0 0 .3rem;font-weight:780;letter-spacing:-.015em;text-wrap:balance}
+  h2 .em{color:var(--brand)}
+  p{margin:.7rem 0}
+  strong{font-weight:680}
+  .prew{color:var(--pre);font-weight:800} .imgw{color:var(--img);font-weight:800}
+
+  .lead-in{background:var(--brand-soft);border-radius:14px;padding:1.1rem 1.3rem;font-size:1.02rem}
+  .lead-in p{margin:.4rem 0}
+  .lead-in b{color:var(--brand)}
+
+  .recall{border:1px dashed var(--line);background:var(--card);border-radius:14px;padding:.95rem 1.2rem;margin-top:1rem;font-size:.97rem}
+  .recall b{color:var(--brand)}
+
+  .formula-box{background:var(--ink);color:#fff;border-radius:14px;padding:1.3rem;text-align:center;margin-top:1rem}
+  .formula-box .eq{font-family:ui-monospace,Menlo,monospace;font-size:clamp(1.1rem,4.4vw,1.6rem);font-weight:700;line-height:1.7}
+  .formula-box .eq .p{color:#F0A45E} .formula-box .eq .i{color:#6FD3C6}
+  .formula-box .note{font-size:.9rem;color:#AEB8C6;margin:.7rem 0 0}
+
+  .note{border-left:4px solid var(--brand);background:var(--brand-soft);border-radius:0 10px 10px 0;padding:.8rem 1.1rem;margin-top:1rem;font-size:.98rem}
+  .note b{color:var(--brand)}
+
+  ol.steps{margin:1rem 0 0;padding-left:1.25rem;display:flex;flex-direction:column;gap:.45rem}
+  ol.steps li{font-size:.99rem}
+
+  /* Диаграмма */
+  .diagram{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:1.2rem;margin-top:1rem}
+  .diagram canvas{width:100%;height:auto;display:block;border-radius:8px;touch-action:none}
+  .axis-pick{display:flex;gap:.5rem;justify-content:center;margin-bottom:.9rem;flex-wrap:wrap}
+  .axis-pick button{font:inherit;font-weight:700;font-size:.9rem;cursor:pointer;border:1px solid var(--brand);border-radius:9px;padding:.45rem .95rem;background:#fff;color:var(--brand)}
+  .axis-pick button[aria-pressed=true]{background:var(--brand);color:#fff}
+  .axis-pick button:focus-visible{outline:3px solid var(--brand);outline-offset:2px}
+  .sliders{display:grid;gap:.6rem;margin-top:.9rem}
+  @media(min-width:520px){.sliders{grid-template-columns:1fr 1fr}}
+  .sliders label{display:flex;align-items:center;gap:.5rem;font-weight:700;font-family:ui-monospace,Menlo,monospace;color:var(--pre)}
+  .sliders input[type=range]{flex:1;accent-color:var(--pre)}
+  .sliders input[type=range]:focus-visible{outline:3px solid var(--brand);outline-offset:3px}
+  .sliders .sval{min-width:3ch;text-align:right}
+  .diag-eq{text-align:center;font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:clamp(.9rem,3.6vw,1.1rem);margin:.9rem 0 0}
+  .diag-eq .p{color:var(--pre)} .diag-eq .i{color:var(--img)}
+
+  .walk{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.15rem 1.3rem;margin-top:1rem}
+  .walk .q{font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.02rem;margin:0 0 .9rem;padding-bottom:.7rem;border-bottom:1px solid var(--line)}
+  .walk ol{margin:0;padding-left:1.2rem;display:flex;flex-direction:column;gap:.5rem}
+  .walk li{font-size:.95rem}
+  .walk .why{color:var(--muted);font-style:italic}
+  .verdict{margin-top:1rem;padding:.7rem 1rem;background:var(--brand-soft);border-radius:10px;font-weight:650;color:var(--brand);font-family:ui-monospace,Menlo,monospace}
+
+  .tablewrap{overflow-x:auto;margin-top:1rem;border:1px solid var(--line);border-radius:12px;background:var(--card)}
+  table{border-collapse:collapse;width:100%;font-size:.95rem}
+  th,td{padding:.55rem .9rem;text-align:left;border-bottom:1px solid var(--line);white-space:nowrap}
+  th{background:#FAFBFD;font-weight:700;font-size:.85rem;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+  tr:last-child td{border-bottom:none}
+  td.n{font-family:ui-monospace,Menlo,monospace;font-weight:700;color:var(--brand)}
+
+  /* Тренажёр */
+  .trainer{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.2rem 1.3rem;margin-top:1rem}
+  .tr-task{font-size:clamp(1rem,4vw,1.15rem);text-align:center;padding:1rem;background:var(--brand-soft);border-radius:10px;font-weight:600}
+  .tr-task b{font-family:ui-monospace,Menlo,monospace;color:var(--ink)}
+  .tr-ctl{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:1rem;align-items:center;justify-content:center}
+  .tr-ctl input{flex:1;min-width:110px;max-width:180px;font:inherit;padding:.5rem .7rem;border:1px solid var(--line);border-radius:9px;text-align:center;background:#fff;color:var(--ink)}
+  .tr-ctl button{font:inherit;font-weight:700;font-size:.9rem;cursor:pointer;border:none;border-radius:9px;padding:.55rem .95rem;color:#fff;background:var(--brand)}
+  .tr-ctl button.sec{background:var(--pre)}
+  .tr-ctl button.ghost{background:transparent;color:var(--brand);border:1px solid var(--brand)}
+  .tr-ctl button:focus-visible,.tr-ctl input:focus-visible{outline:3px solid var(--brand);outline-offset:2px}
+  .tr-result{margin-top:.9rem;font-size:.96rem;min-height:1.2rem;text-align:center}
+  .tr-result .ok{color:var(--ok);font-weight:700} .tr-result .bad{color:var(--no);font-weight:700}
+  .tr-result .sol{margin-top:.6rem;padding:.8rem 1rem;background:#FCFDFE;border:1px solid var(--line);border-radius:10px;font-family:ui-monospace,Menlo,monospace;font-size:.9rem;line-height:1.8;text-align:left;overflow-x:auto}
+  .tr-hint{font-size:.85rem;color:var(--muted);text-align:center;margin:.6rem 0 0}
+
+  details{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:.9rem 1.1rem;margin-top:.7rem}
+  details[open]{border-color:var(--brand)}
+  summary{cursor:pointer;font-weight:650;list-style:none;display:flex;justify-content:space-between;gap:1rem;align-items:center}
+  summary::-webkit-details-marker{display:none}
+  summary::after{content:"проверить";font-size:.8rem;color:var(--brand);font-weight:700;white-space:nowrap}
+  details[open] summary::after{content:"скрыть"}
+  summary:focus-visible{outline:3px solid var(--brand);outline-offset:3px;border-radius:6px}
+  .ans{margin-top:.75rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.96rem;color:var(--muted)}
+  .ans b{color:var(--ink)}
+  .drill{display:flex;flex-direction:column;gap:.2rem;margin-top:1rem}
+  .lvl{font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:700;margin:1.2rem 0 .2rem}
+
+  ul.traps{list-style:none;margin:1rem 0 0;padding:0;display:flex;flex-direction:column;gap:.7rem}
+  ul.traps li{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:.85rem 1.05rem;padding-left:2.5rem;position:relative;font-size:.97rem}
+  ul.traps li::before{content:"⚠";position:absolute;left:1rem;top:.85rem;color:var(--pre)}
+  ul.traps b{font-weight:700}
+
+  .selfcheck{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.1rem 1.3rem;margin-top:1rem}
+  .selfcheck ol{margin:.3rem 0 0;padding-left:1.2rem;display:flex;flex-direction:column;gap:.4rem}
+
+  .wrapup{background:var(--brand);color:#fff;border-radius:16px;padding:1.4rem 1.5rem;margin-top:2.4rem}
+  .wrapup h2{color:#fff;margin:0 0 .5rem}
+  .wrapup p{color:#DEE7F5;margin:.4rem 0;font-size:1rem}
+  .wrapup .big-rule{font-size:clamp(1rem,4vw,1.2rem);font-weight:800;color:#fff;margin:.6rem 0;font-family:ui-monospace,Menlo,monospace}
+  .wrapup .next{font-size:.95rem;color:#C6D5EE;margin-top:1rem;padding-top:1rem;border-top:1px solid rgba(255,255,255,.2)}
+  .wrapup .next b{color:#fff}
+
+  @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<!--LESSON-NAV-TOP--><style>.lnav{--lnav-accent:#3D5AF1}.lnav a{text-decoration:none;font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif}.lnav-top{max-width:820px;margin:0 auto;padding:.75rem clamp(1rem,4vw,1.5rem) .1rem}.lnav-top a{display:inline-flex;align-items:center;gap:.35rem;color:var(--lnav-accent);font-weight:600;font-size:.9rem}.lnav-top a:hover{text-decoration:underline}.lnav-bot{max-width:820px;margin:2.6rem auto 3rem;padding:1.1rem clamp(1rem,4vw,1.5rem) 0;border-top:1px solid #E4E8EF;display:flex;align-items:stretch;gap:.55rem}.lnav-bot a{min-width:0;display:flex;flex-direction:column;justify-content:center;gap:.15rem;border:1px solid #E4E8EF;border-radius:12px;padding:.65rem .85rem;color:#182233;background:#fff;transition:border-color .1s,transform .08s}.lnav-bot a:hover{border-color:var(--lnav-accent);transform:translateY(-1px)}.lnav-bot .prev,.lnav-bot .next{flex:1 1 0}.lnav-bot .next{text-align:right}.lnav-bot .dir{font-size:.72rem;color:#8A93A6;font-weight:600}.lnav-bot .ttl{font-size:.9rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.lnav-bot .to-cat{flex:0 0 auto;flex-direction:row;align-items:center;justify-content:center;color:var(--lnav-accent);font-weight:700;font-size:.85rem;white-space:nowrap}@media(max-width:420px){.lnav-bot .to-cat span{display:none}.lnav-bot .to-cat{padding:.65rem .7rem}}</style><nav class="lnav lnav-top"><a href="./catalog.html">← Все темы</a></nav><!--/LESSON-NAV-TOP-->
+<div class="page">
+
+  <header class="hero">
+    <p class="eyebrow">Геометрия · 9 класс</p>
+    <h1>Осевая симметрия</h1>
+    <p class="tagline">Отражение в зеркале — но по точному правилу: перпендикуляр к оси и равные расстояния.</p>
+  </header>
+
+  <div class="lead-in">
+    <p><b>Где встречается.</b> Крылья бабочки, буквы А, Н, М, О, лист дерева, фасады зданий, орнаменты, снежинки. Поставь зеркало вдоль прямой — отражение фигуры и есть её образ при осевой симметрии.</p>
+    <p>В математике это <b>первое из четырёх движений</b> (дальше — центральная симметрия, параллельный перенос, поворот). Движения нужны, чтобы доказывать равенство фигур наложением и решать конструктивные задачи: например, «как пройти от точки A к прямой и потом к точке B кратчайшим путём» решается именно отражением.</p>
+    <p><b>Главный миф:</b> «симметрия — это просто красиво и одинаково с двух сторон». На самом деле это точное преобразование с правилом, и строить его надо циркулем и линейкой, а не на глаз.</p>
+  </div>
+
+  <div class="recall">
+    <b>Вспомни перед стартом.</b> <b>Движение</b> — преобразование, которое сохраняет расстояния между точками. Осевая симметрия — движение, поэтому фигура и её образ <strong>равны</strong>: ничего не растягивается и не сжимается. Ещё понадобятся <strong>перпендикуляр к прямой</strong> и <strong>серединный перпендикуляр</strong> к отрезку.
+  </div>
+
+  <section>
+    <h2>Суть: <span class="em">ось — это линия сгиба</span></h2>
+    <p>Возьмём прямую (ось) и точку. Чтобы найти симметричную точку, надо опустить из точки <strong>перпендикуляр</strong> на ось и продолжить его за ось <strong>на такое же расстояние</strong>. Получится точка, будто отражённая в зеркале-оси.</p>
+    <p>Если сложить лист по оси, точка и её образ совпадут. Поэтому ось всегда делит отрезок между точкой и её образом <strong>пополам и под прямым углом</strong> — то есть является серединным перпендикуляром к этому отрезку.</p>
+
+    <div class="formula-box">
+      <div class="eq">a ⊥ <span class="p">M</span><span class="i">M₁</span>&nbsp;&nbsp;и&nbsp;&nbsp;<span class="p">M</span>O = O<span class="i">M₁</span></div>
+      <div class="note">a — ось симметрии · <span class="p">M</span> — точка (прообраз) · <span class="i">M₁</span> — её образ · O — основание перпендикуляра</div>
+    </div>
+
+    <p><strong>Определение.</strong> Точки M и M₁ называются симметричными относительно прямой a, если прямая a — серединный перпендикуляр к отрезку MM₁. Если точка лежит <strong>на оси</strong> a, то она симметрична сама себе.</p>
+
+    <p><strong>Правило построения образа точки M:</strong></p>
+    <ol class="steps">
+      <li>Провести из M перпендикуляр к оси a; пусть он пересекает ось в точке O (основание перпендикуляра).</li>
+      <li>На этом перпендикуляре <strong>по другую сторону</strong> от оси отложить отрезок OM₁ = MO.</li>
+      <li>Точка M₁ — образ точки M.</li>
+    </ol>
+
+    <div class="note">
+      <p><b>Координатная запись</b> — важный частный случай, его стоит выучить:</p>
+      <p class="mono">относительно оси Ox: (x; y) → (x; −y)<br>относительно оси Oy: (x; y) → (−x; y)</p>
+      <p>Отражаем в Ox — меняем знак <strong>y</strong>. Отражаем в Oy — меняем знак <strong>x</strong>.</p>
+    </div>
+
+    <p><strong>Ось симметрии фигуры</strong> — это прямая, при симметрии относительно которой фигура переходит <strong>сама в себя</strong>. У одной фигуры осей может не быть, может быть одна или несколько.</p>
+  </section>
+
+  <section>
+    <h2>Увидь глазами — <span class="em">зеркало на координатной плоскости</span></h2>
+    <p>Выбери ось, подвигай точку <span class="prew">M</span> и смотри за образом <span class="imgw">M₁</span>: пунктир всегда перпендикулярен оси, а два отрезка от оси всегда равны.</p>
+    <div class="diagram">
+      <div class="axis-pick">
+        <button id="bOx" type="button" aria-pressed="true">Ось Ox</button>
+        <button id="bOy" type="button" aria-pressed="false">Ось Oy</button>
+      </div>
+      <canvas id="sym" width="640" height="640" aria-label="Точка и её образ при осевой симметрии на координатной плоскости"></canvas>
+      <div class="sliders">
+        <label>x = <span id="vx" class="sval">3</span><input id="sx" type="range" min="-6" max="6" step="1" value="3" aria-label="Координата x точки M"></label>
+        <label>y = <span id="vy" class="sval">2</span><input id="sy" type="range" min="-6" max="6" step="1" value="2" aria-label="Координата y точки M"></label>
+      </div>
+      <p class="diag-eq" id="diagEq"></p>
+    </div>
+    <p style="font-size:.9rem;color:var(--muted)">Поставь точку прямо <strong>на ось</strong> (например, y = 0 при отражении в Ox) — образ совпадёт с самой точкой. Это тот самый случай «точка на оси симметрична сама себе».</p>
+  </section>
+
+  <section>
+    <h2>Разбор «думаю вслух»</h2>
+    <div class="walk">
+      <p class="q">Построить точку, симметричную M(3; 2) относительно оси Ox.</p>
+      <ol>
+        <li>Ось Ox горизонтальна, значит перпендикуляр к ней вертикален — проводим из M вертикальную прямую. <span class="why">Почему: образ лежит на перпендикуляре к оси.</span></li>
+        <li>Перпендикуляр пересекает Ox в точке O(3; 0). Расстояние от M до оси равно 2. <span class="why">Почему: расстояние до оси Ox — это |y|.</span></li>
+        <li>Откладываем такое же расстояние вниз от оси: получаем M₁(3; −2). <span class="why">Почему: MO = OM₁, образ по другую сторону.</span></li>
+        <li>Проверка по правилу: <span class="mono">(x; y) → (x; −y)</span>, то есть <span class="mono">(3; 2) → (3; −2)</span>. Совпало. ✓</li>
+      </ol>
+      <div class="verdict">Ответ: M₁(3; −2)</div>
+    </div>
+
+    <div class="walk" style="margin-top:.8rem">
+      <p class="q">Построить точку, симметричную K(−4; 1) относительно оси Oy. Один шаг пропущен — допиши.</p>
+      <ol>
+        <li>Ось Oy вертикальна → перпендикуляр горизонтален, основание O(0; 1).</li>
+        <li>Расстояние от K до оси Oy равно <span class="mono">|−4| = 4</span>.</li>
+        <li>Откладываем 4 по другую сторону оси: K₁(____; ____). <span class="why">Подсказка: по правилу (x; y) → (−x; y). Впиши координаты сам.</span></li>
+      </ol>
+      <details><summary>Сверить свой ответ</summary><div class="ans">Меняем знак x, y не трогаем: <span class="mono">(−4; 1) → (4; 1)</span>. Значит <b>K₁(4; 1)</b>.</div></details>
+    </div>
+
+    <div class="walk" style="margin-top:.8rem">
+      <p class="q">Точка P(−5; 7) отражается относительно оси Ox. Найди координаты образа P₁.</p>
+      <details><summary>Показать ответ</summary><div class="ans">Отражаем в Ox → меняем знак y: <span class="mono">(−5; 7) → (−5; −7)</span>. Ответ <b>P₁(−5; −7)</b>.</div></details>
+    </div>
+  </section>
+
+  <section>
+    <h2>Сколько осей у фигуры</h2>
+    <p>Ось симметрии фигуры ищут «сгибом»: по какой прямой можно сложить фигуру так, чтобы половинки совпали.</p>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Фигура</th><th>Число осей симметрии</th></tr></thead>
+        <tbody>
+          <tr><td>Равносторонний треугольник</td><td class="n">3</td></tr>
+          <tr><td>Квадрат</td><td class="n">4</td></tr>
+          <tr><td>Прямоугольник (не квадрат)</td><td class="n">2</td></tr>
+          <tr><td>Круг (окружность)</td><td class="n">∞</td></tr>
+          <tr><td>Произвольный треугольник</td><td class="n">0</td></tr>
+          <tr><td>Буква «Н»</td><td class="n">2</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="note">
+      <p><b>Предскажи → проверь → объясни.</b> Сколько осей симметрии у буквы «Б»? Сначала ответь, потом проверь сгибом.</p>
+      <p><details style="margin-top:.5rem"><summary>Проверить</summary><div class="ans">Большинство говорят «одна». На самом деле — <b>0</b>: ни по вертикали, ни по горизонтали половинки «Б» не совпадают.</div></details></p>
+    </div>
+    <p style="font-size:.95rem;color:var(--muted)">Дома попробуй ещё честный опыт со сгибом: нарисуй точку, согни лист по оси, проколи иглой — дырка на обороте и есть образ. Подумай, почему она оказалась ровно на перпендикуляре к линии сгиба.</p>
+  </section>
+
+  <section>
+    <h2>Тренажёр · отрази точку</h2>
+    <p>Бесконечные задания. Координаты пиши через точку с запятой или пробел, например <span class="mono">3; −2</span>. Где спрашивают число осей — просто число (для круга можно написать «бесконечно»).</p>
+    <div class="trainer">
+      <div class="tr-task" id="trTask">Отрази точку <b>M(3; 2)</b> относительно оси <b>Ox</b>. Запиши координаты образа.</div>
+      <div class="tr-ctl">
+        <button id="trNew" type="button">🎲 Новая</button>
+        <input id="trAns" type="text" placeholder="ответ" aria-label="Ответ">
+        <button id="trCheck" type="button" class="sec">Проверить</button>
+        <button id="trShow" type="button" class="ghost">Решение</button>
+      </div>
+      <div id="trResult" class="tr-result"></div>
+      <p class="tr-hint">Минус можно писать обычным дефисом — он засчитывается.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Проверь себя</h2>
+
+    <p class="lvl">Уровень 1 · понимание</p>
+    <div class="drill">
+      <details><summary>1) Сколько осей симметрии у равностороннего треугольника? У прямоугольника (не квадрата)? У буквы «Н»?</summary><div class="ans">Равносторонний треугольник — <b>3</b>; прямоугольник — <b>2</b>; буква «Н» — <b>2</b> (одна вертикальная, одна горизонтальная).</div></details>
+      <details><summary>2) Какое условие должно выполняться, чтобы M₁ была симметрична M относительно прямой a?</summary><div class="ans">Прямая a — <b>серединный перпендикуляр</b> к отрезку MM₁: <span class="mono">a ⊥ MM₁</span> и <span class="mono">MO = OM₁</span>.</div></details>
+      <details><summary>3) Куда перейдёт точка, которая лежит прямо на оси симметрии?</summary><div class="ans">Сама в себя: расстояние до оси равно нулю, откладывать нечего.</div></details>
+    </div>
+
+    <p class="lvl">Уровень 2 · применение</p>
+    <div class="drill">
+      <details><summary>4) Точка A(2; −6). Найди её образ при симметрии относительно оси Ox.</summary><div class="ans">Меняем знак y: <span class="mono">(2; −6) → (2; 6)</span>. Ответ <b>A₁(2; 6)</b>.</div></details>
+      <details><summary>5) Та же точка A(2; −6). Найди её образ относительно оси Oy.</summary><div class="ans">Меняем знак x: <span class="mono">(2; −6) → (−2; −6)</span>. Ответ <b>(−2; −6)</b>.</div></details>
+      <details><summary>6) Во что перейдёт точка (−7; 4) при симметрии относительно оси Oy?</summary><div class="ans">Меняем знак x: <b>(7; 4)</b>.</div></details>
+    </div>
+
+    <p class="lvl">Уровень 3 · анализ</p>
+    <div class="drill">
+      <details><summary>7) Что изменится, если точку отразить сначала относительно Ox, а потом результат — относительно Oy? Возьми M(3; 2), проделай оба шага и сравни с исходной точкой.</summary><div class="ans">Шаг 1: <span class="mono">(3; 2) → (3; −2)</span>. Шаг 2: <span class="mono">(3; −2) → (−3; −2)</span>. У точки поменялись <b>оба</b> знака. Это уже не осевая симметрия, а <b>центральная симметрия относительно начала координат</b> — два отражения подряд дали новое движение.</div></details>
+      <details><summary>8) Найди ошибку. Ученик пишет: «M(5; 3) при симметрии относительно Ox переходит в (−5; 3)».</summary><div class="ans">Он поменял не ту координату. При отражении в <b>Ox</b> меняется знак <b>y</b>: правильный ответ <b>(5; −3)</b>. А (−5; 3) — это образ при симметрии относительно Oy.</div></details>
+      <details><summary>9) Точка и её образ — это (4; 1) и (4; −1). Относительно какой прямой их отразили и почему?</summary><div class="ans">Изменился знак только у y, x остался тем же → ось <b>Ox</b>. Проверка по определению: отрезок между точками вертикален, значит перпендикулярен Ox, а его середина (4; 0) лежит на Ox — ось действительно серединный перпендикуляр.</div></details>
+    </div>
+  </section>
+
+  <section>
+    <h2>Ловушки</h2>
+    <ul class="traps">
+      <li><b>Строят «на глаз», без перпендикуляра.</b> Тогда образ уезжает вкривь. Всегда сначала перпендикуляр к оси — и только по нему откладывай отрезок.</li>
+      <li><b>Откладывают неравные отрезки.</b> Образ ставят ближе или дальше, чем прообраз. Измеряй MO и откладывай ровно такое же OM₁: ось — <strong>середина</strong> отрезка MM₁.</li>
+      <li><b>Путают ось симметрии фигуры и осевую симметрию как преобразование.</b> «Ось симметрии» — свойство конкретной фигуры (фигура переходит в себя). «Осевая симметрия» — операция, применимая к любой точке относительно любой прямой. Спроси себя: я ищу особую линию этой фигуры или строю образ относительно заданной прямой?</li>
+      <li><b>Теряют минус в координатах.</b> Пишут <span class="mono">(x; y) → (x; y)</span> при отражении в Ox. Запомни: <strong>Ox — меняем знак y, Oy — меняем знак x</strong>.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Объясни своими словами</h2>
+    <div class="selfcheck">
+      <p>Закрой урок и ответь вслух — как будто объясняешь другу:</p>
+      <ol>
+        <li>Какое условие связывает точку M, её образ M₁ и ось a?</li>
+        <li>Во что перейдёт точка (−7; 4) при симметрии относительно оси Oy?</li>
+        <li>Сколько осей симметрии у квадрата?</li>
+      </ol>
+      <details style="margin-top:.8rem"><summary>Сверить</summary><div class="ans">1) Ось a — серединный перпендикуляр к отрезку MM₁ (a ⊥ MM₁ и MO = OM₁). 2) В точку <b>(7; 4)</b>. 3) <b>Четыре</b>.</div></details>
+    </div>
+  </section>
+
+  <div class="wrapup">
+    <h2>Запомни главное</h2>
+    <p class="big-rule">a ⊥ MM₁, MO = OM₁ · Ox: (x; y) → (x; −y) · Oy: (x; y) → (−x; y)</p>
+    <p>Осевая симметрия относительно прямой переводит каждую точку в её «зеркальное отражение» — на перпендикуляре к оси, на равном расстоянии по другую сторону, сохраняя все размеры фигуры.</p>
+    <p class="next">👉 Дальше — <b>задачи на движения</b>: там осевая симметрия работает вместе с центральной симметрией, переносом и поворотом, и ею уже доказывают равенство фигур и ищут кратчайшие пути.</p>
+  </div>
+
+</div>
+
+<script>
+(function(){
+  var cv=document.getElementById('sym'); if(!cv) return;
+  var ctx=cv.getContext('2d');
+  var sx=document.getElementById('sx'), sy=document.getElementById('sy');
+  var vx=document.getElementById('vx'), vy=document.getElementById('vy'), eq=document.getElementById('diagEq');
+  var bOx=document.getElementById('bOx'), bOy=document.getElementById('bOy');
+  var axis='x';                       // 'x' — отражаем относительно Ox, 'y' — относительно Oy
+  var W=640,H=640,dpr=1,R=6.6;        // R — половина видимого диапазона координат
+  var MINUS='−';
+  function num(n){ return (n<0? MINUS+Math.abs(n) : ''+n); }
+  function css(v){ return getComputedStyle(document.documentElement).getPropertyValue(v).trim(); }
+  function resize(){
+    var c=cv.clientWidth||640; dpr=Math.min(window.devicePixelRatio||1,2);
+    W=c; H=c; cv.width=W*dpr; cv.height=H*dpr; cv.style.height=H+'px'; ctx.setTransform(dpr,0,0,dpr,0,0);
+  }
+  function draw(){
+    var x=+sx.value, y=+sy.value;
+    vx.textContent=num(x); vy.textContent=num(y);
+    var ix=(axis==='x')? x : -x, iy=(axis==='x')? -y : y;
+    var pad=Math.max(16,W*0.045), sc=(W-2*pad)/(2*R), cx=W/2, cy=H/2;
+    function SX(u){ return cx+u*sc; }
+    function SY(v){ return cy-v*sc; }
+    ctx.clearRect(0,0,W,H);
+    ctx.fillStyle='#fff'; ctx.fillRect(0,0,W,H);
+    // сетка
+    ctx.strokeStyle=css('--line'); ctx.lineWidth=1;
+    for(var g=-6; g<=6; g++){
+      ctx.beginPath(); ctx.moveTo(SX(g),SY(-R)); ctx.lineTo(SX(g),SY(R)); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(SX(-R),SY(g)); ctx.lineTo(SX(R),SY(g)); ctx.stroke();
+    }
+    // оси
+    function drawAxis(kind){
+      var hot=(kind===axis);
+      ctx.strokeStyle=hot?css('--brand'):css('--ink'); ctx.lineWidth=hot?4:1.6;
+      ctx.beginPath();
+      if(kind==='x'){ ctx.moveTo(SX(-R),SY(0)); ctx.lineTo(SX(R),SY(0)); }
+      else{ ctx.moveTo(SX(0),SY(-R)); ctx.lineTo(SX(0),SY(R)); }
+      ctx.stroke();
+    }
+    drawAxis(axis==='x'?'y':'x'); drawAxis(axis);   // активную рисуем поверх
+    // подписи осей и делений
+    ctx.fillStyle=css('--muted'); ctx.font='600 '+Math.max(9,W*0.021)+'px ui-monospace,Menlo,monospace';
+    ctx.textAlign='center'; ctx.textBaseline='top';
+    for(var t=-6; t<=6; t++){ if(t===0) continue; ctx.fillText(num(t),SX(t),SY(0)+4); }
+    ctx.textAlign='right'; ctx.textBaseline='middle';
+    for(var s=-6; s<=6; s++){ if(s===0) continue; ctx.fillText(num(s),SX(0)-5,SY(s)); }
+    ctx.textAlign='left'; ctx.textBaseline='middle'; ctx.fillStyle=css('--ink');
+    ctx.font='700 '+Math.max(11,W*0.026)+'px ui-monospace,Menlo,monospace';
+    ctx.fillText('x',SX(R)-10,SY(0)-14); ctx.fillText('y',SX(0)+8,SY(R)+12);
+    ctx.fillStyle=css('--brand');
+    ctx.fillText(axis==='x'?'ось Ox':'ось Oy', axis==='x'? SX(-R)+4 : SX(0)+8, axis==='x'? SY(0)-16 : SY(-R)-14);
+    // пунктир-перпендикуляр и основание O
+    var same=(x===ix && y===iy);
+    if(!same){
+      ctx.save(); ctx.setLineDash([6,5]); ctx.strokeStyle=css('--muted'); ctx.lineWidth=1.8;
+      ctx.beginPath(); ctx.moveTo(SX(x),SY(y)); ctx.lineTo(SX(ix),SY(iy)); ctx.stroke(); ctx.restore();
+      var ox=(axis==='x')? x : 0, oy=(axis==='x')? 0 : y;
+      // прямой угол у основания
+      var m=Math.max(7,sc*0.28); ctx.strokeStyle=css('--brand'); ctx.lineWidth=1.6;
+      ctx.beginPath();
+      if(axis==='x'){ var sgn=(y>0?-1:1); ctx.moveTo(SX(ox)+m,SY(oy)); ctx.lineTo(SX(ox)+m,SY(oy)+sgn*m); ctx.lineTo(SX(ox),SY(oy)+sgn*m); }
+      else{ var sg2=(x>0?1:-1); ctx.moveTo(SX(ox),SY(oy)-m); ctx.lineTo(SX(ox)+sg2*m,SY(oy)-m); ctx.lineTo(SX(ox)+sg2*m,SY(oy)); }
+      ctx.stroke();
+      // равные «засечки» на половинках
+      ctx.strokeStyle=css('--brand'); ctx.lineWidth=2.2;
+      var midA=[(x+ox)/2,(y+oy)/2], midB=[(ix+ox)/2,(iy+oy)/2], k=Math.max(5,sc*0.2);
+      [midA,midB].forEach(function(p){
+        ctx.beginPath();
+        if(axis==='x'){ ctx.moveTo(SX(p[0])-k,SY(p[1])); ctx.lineTo(SX(p[0])+k,SY(p[1])); }
+        else{ ctx.moveTo(SX(p[0]),SY(p[1])-k); ctx.lineTo(SX(p[0]),SY(p[1])+k); }
+        ctx.stroke();
+      });
+      // точка O
+      ctx.fillStyle=css('--brand'); ctx.beginPath(); ctx.arc(SX(ox),SY(oy),Math.max(3,sc*0.11),0,6.2832); ctx.fill();
+    }
+    function dot(px,py,col,txt,up){
+      ctx.fillStyle=col; ctx.beginPath(); ctx.arc(SX(px),SY(py),Math.max(4.5,sc*0.16),0,6.2832); ctx.fill();
+      ctx.font='800 '+Math.max(11,W*0.027)+'px ui-monospace,Menlo,monospace';
+      ctx.textAlign=(px<=0?'left':'right'); ctx.textBaseline=up?'bottom':'top';
+      var dx=(px<=0? 9 : -9), dy=(up? -9 : 9);
+      ctx.fillText(txt,SX(px)+dx,SY(py)+dy);
+    }
+    dot(ix,iy,css('--img'),'M₁('+num(ix)+'; '+num(iy)+')', iy<=y);
+    dot(x,y,css('--pre'),'M('+num(x)+'; '+num(y)+')', y>iy || same);
+    eq.innerHTML= same
+      ? '<span class="p">M('+num(x)+'; '+num(y)+')</span> лежит на оси → образ совпадает с самой точкой'
+      : '<span class="p">M('+num(x)+'; '+num(y)+')</span> → <span class="i">M₁('+num(ix)+'; '+num(iy)+')</span>'+
+        '&nbsp; (меняем знак '+(axis==='x'?'y':'x')+')';
+  }
+  function setAxis(a){ axis=a; bOx.setAttribute('aria-pressed', a==='x'?'true':'false'); bOy.setAttribute('aria-pressed', a==='y'?'true':'false'); draw(); }
+  bOx.addEventListener('click',function(){ setAxis('x'); });
+  bOy.addEventListener('click',function(){ setAxis('y'); });
+  [sx,sy].forEach(function(s){ s.addEventListener('input',draw); });
+  window.addEventListener('resize',function(){ resize(); draw(); });
+  resize(); draw();
+})();
+</script>
+
+<script>
+(function(){
+  var taskEl=document.getElementById('trTask'), ansEl=document.getElementById('trAns'), resEl=document.getElementById('trResult');
+  if(!taskEl) return;
+  var MINUS='−';
+  function num(n){ return (n<0? MINUS+Math.abs(n) : ''+n); }
+  function pt(x,y){ return '('+num(x)+'; '+num(y)+')'; }
+  function ri(a,b){ return Math.floor(Math.random()*(b-a+1))+a; }
+  var figures=[
+    {name:'равностороннего треугольника', n:3},
+    {name:'квадрата', n:4},
+    {name:'прямоугольника (не квадрата)', n:2},
+    {name:'круга', n:'inf'},
+    {name:'произвольного треугольника', n:0},
+    {name:'буквы «Н»', n:2}
+  ];
+  var cur=null;
+  function coord(allowZero){
+    var v=ri(-8,8);
+    if(!allowZero && v===0) v=ri(1,8)*(Math.random()<0.5?-1:1);
+    return v;
+  }
+  function generate(){
+    var r=Math.random();
+    if(r<0.18){                                   // сколько осей у фигуры
+      var f=figures[ri(0,figures.length-1)];
+      cur={t:'fig',f:f};
+      taskEl.innerHTML='Сколько осей симметрии у <b>'+f.name+'</b>?';
+    } else if(r<0.34){                            // двойное отражение (анализ)
+      var x3=coord(false), y3=coord(false);
+      cur={t:'both',x:x3,y:y3};
+      taskEl.innerHTML='Точку <b>M'+pt(x3,y3)+'</b> отразили относительно оси <b>Ox</b>, а результат — относительно оси <b>Oy</b>. Какие координаты у итоговой точки?';
+    } else if(r<0.47){                            // обратный вопрос: какая ось
+      var x4=coord(false), y4=coord(false), useOx=Math.random()<0.5;
+      var ix4=useOx? x4 : -x4, iy4=useOx? -y4 : y4;
+      cur={t:'which',x:x4,y:y4,ix:ix4,iy:iy4,ax:useOx?'Ox':'Oy'};
+      taskEl.innerHTML='Точка <b>'+pt(x4,y4)+'</b> перешла в <b>'+pt(ix4,iy4)+'</b>. Относительно какой оси её отразили — <b>Ox</b> или <b>Oy</b>?';
+    } else {                                      // базовое отражение, иногда точка на оси
+      var onAxis=Math.random()<0.15;
+      var ax=(Math.random()<0.5)?'Ox':'Oy';
+      var x1,y1;
+      if(onAxis && ax==='Ox'){ x1=coord(false); y1=0; }
+      else if(onAxis && ax==='Oy'){ x1=0; y1=coord(false); }
+      else { x1=coord(false); y1=coord(false); }
+      cur={t:'refl',x:x1,y:y1,ax:ax};
+      taskEl.innerHTML='Отрази точку <b>M'+pt(x1,y1)+'</b> относительно оси <b>'+ax+'</b>. Запиши координаты образа.';
+    }
+    resEl.innerHTML=''; ansEl.value='';
+  }
+  function image(x,y,ax){ return (ax==='Ox')? [x,-y] : [-x,y]; }
+  function solHTML(){
+    var q=cur, h='<div class="sol">', im;
+    if(q.t==='refl'){
+      im=image(q.x,q.y,q.ax);
+      h+='Отражаем в '+q.ax+' → меняем знак '+(q.ax==='Ox'?'y':'x')+'.<br>';
+      h+='(x; y) → '+(q.ax==='Ox'?'(x; '+MINUS+'y)':'('+MINUS+'x; y)')+'<br>';
+      h+=pt(q.x,q.y)+' → <b>'+pt(im[0],im[1])+'</b>';
+      if(im[0]===q.x && im[1]===q.y) h+='<br>Точка лежит на оси '+q.ax+' → она симметрична сама себе.';
+    } else if(q.t==='both'){
+      var s1=image(q.x,q.y,'Ox'), s2=image(s1[0],s1[1],'Oy');
+      h+='Шаг 1 (Ox, меняем знак y): '+pt(q.x,q.y)+' → '+pt(s1[0],s1[1])+'<br>';
+      h+='Шаг 2 (Oy, меняем знак x): '+pt(s1[0],s1[1])+' → <b>'+pt(s2[0],s2[1])+'</b><br>';
+      h+='Поменялись оба знака — это центральная симметрия относительно начала координат.';
+    } else if(q.t==='which'){
+      h+= (q.ax==='Ox')
+        ? 'Знак поменялся только у y, x остался прежним → ось <b>Ox</b>.'
+        : 'Знак поменялся только у x, y остался прежним → ось <b>Oy</b>.';
+      h+='<br>Проверка: '+pt(q.x,q.y)+' → '+pt(q.ix,q.iy)+' по правилу '+(q.ax==='Ox'?'(x; y) → (x; '+MINUS+'y)':'(x; y) → ('+MINUS+'x; y)');
+    } else {
+      h+='Ось симметрии — прямая, по которой фигуру можно сложить пополам так, чтобы половинки совпали.<br>';
+      h+='У '+q.f.name+' их <b>'+(q.f.n==='inf'?'бесконечно много':q.f.n)+'</b>.';
+    }
+    return h+'</div>';
+  }
+  function nums(raw){
+    var s=raw.replace(/−/g,'-').replace(/,/g,' ').replace(/;/g,' ');
+    var m=s.match(/-?\d+/g);
+    return m? m.map(Number) : [];
+  }
+  function verdict(good){
+    resEl.innerHTML=(good?'<span class="ok">✓ Верно!</span>':'<span class="bad">✗ Пока не то — глянь решение.</span>')+solHTML();
+  }
+  function check(){
+    var raw=ansEl.value.trim();
+    if(raw===''){ resEl.innerHTML='<span class="bad">Введи ответ или нажми «Решение».</span>'; return; }
+    var low=raw.toLowerCase();
+    if(cur.t==='which'){
+      var saysX=/ox|ох|о\s*x|абсцисс/.test(low), saysY=/oy|оу|о\s*y|ордин/.test(low);
+      verdict( (cur.ax==='Ox' && saysX && !saysY) || (cur.ax==='Oy' && saysY && !saysX) );
+      return;
+    }
+    if(cur.t==='fig'){
+      if(cur.f.n==='inf'){ verdict(/беск|много|∞|inf/.test(low)); return; }
+      var v=nums(raw); verdict(v.length===1 && v[0]===cur.f.n); return;
+    }
+    var got=nums(raw);
+    var want;
+    if(cur.t==='refl'){ want=image(cur.x,cur.y,cur.ax); }
+    else { var a=image(cur.x,cur.y,'Ox'); want=image(a[0],a[1],'Oy'); }
+    verdict(got.length===2 && got[0]===want[0] && got[1]===want[1]);
+  }
+  document.getElementById('trNew').addEventListener('click',function(){ generate(); ansEl.focus(); });
+  document.getElementById('trCheck').addEventListener('click',check);
+  document.getElementById('trShow').addEventListener('click',function(){ resEl.innerHTML=solHTML(); });
+  ansEl.addEventListener('keydown',function(e){ if(e.key==='Enter') check(); });
+  cur={t:'refl',x:3,y:2,ax:'Ox'};                 // стартовая задача = то, что показано в разметке
+})();
+</script>
+<!--LESSON-NAV-BOT--><nav class="lnav lnav-bot"><a class="prev" href="./geo9-dvizhenie-ponyatie.html"><span class="dir">← Предыдущая</span><span class="ttl">Понятие движения и его свойства</span></a><a class="to-cat" href="./catalog.html">📚 <span>Все темы</span></a><a class="next" href="./geo9-centralnaya-simmetriya.html"><span class="dir">Следующая →</span><span class="ttl">Центральная симметрия</span></a></nav><!--/LESSON-NAV-BOT-->

@@ -1,0 +1,685 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Графический способ решения систем второй степени — урок, алгебра 9 класс</title>
+<style>
+  :root{
+    --paper:#F6F7F9;
+    --card:#FFFFFF;
+    --ink:#1B2333;
+    --muted:#5A6478;
+    --line:#E2E5EC;
+    --accent:#3B4FD0;
+    --accent-soft:#EAEDFB;
+    --pos:#1E8E5A;   /* два решения */
+    --pos-bg:#E7F4EC;
+    --zero:#B9791A;  /* касание, одно решение */
+    --zero-bg:#FBF1DC;
+    --neg:#C0455B;   /* нет решений */
+    --neg-bg:#F9E9EC;
+  }
+  *{box-sizing:border-box}
+  body{margin:0}
+  .wrap{
+    max-width:760px;
+    margin:0 auto;
+    padding:clamp(1.4rem,4vw,3rem) clamp(1.1rem,4vw,2rem) 4rem;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    font-size:17px;
+    line-height:1.62;
+    -webkit-font-smoothing:antialiased;
+  }
+  .eyebrow{
+    font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--accent);font-weight:600;margin:0 0 .5rem;
+  }
+  h1{
+    font-family:Georgia,"Times New Roman",serif;
+    font-size:clamp(1.9rem,6.4vw,2.7rem);
+    line-height:1.06;margin:0;font-weight:700;letter-spacing:-.01em;
+    text-wrap:balance;
+  }
+  .lede{font-size:1.08rem;color:var(--muted);margin:.7rem 0 0;max-width:60ch;text-wrap:pretty}
+  h2{font-family:Georgia,serif;font-size:1.32rem;font-weight:700;margin:0 0 .1rem;letter-spacing:-.005em}
+  section{margin-top:2.6rem}
+  .kicker{
+    font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--muted);font-weight:600;margin:0 0 .8rem;
+    display:flex;align-items:center;gap:.6rem;
+  }
+  .kicker::before{content:"";width:1.4rem;height:2px;background:var(--accent);border-radius:2px}
+  p{margin:.65rem 0}
+  strong{font-weight:650}
+  .math{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-weight:600}
+  sup{font-size:.72em}
+
+  /* Главная «формула» — система */
+  .hero-formula{
+    margin-top:2.2rem;background:var(--ink);color:#fff;border-radius:14px;
+    padding:1.6rem 1.4rem;text-align:center;
+  }
+  .hero-formula .lbl{font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:#9aa6c9;margin:0 0 .9rem}
+  .sys{
+    display:inline-flex;align-items:center;gap:.55rem;
+    font-family:ui-monospace,"SF Mono",Menlo,monospace;
+    font-size:clamp(1.15rem,4.6vw,1.6rem);font-weight:700;text-align:left;
+  }
+  .sys .brace{
+    font-size:clamp(2.6rem,10vw,3.6rem);font-weight:300;line-height:.8;
+    color:#8ea0ff;transform:translateY(-.02em);
+  }
+  .sys .rows{display:flex;flex-direction:column;gap:.25rem}
+  .hero-formula .note{font-size:.86rem;color:#9aa6c9;margin:1rem 0 0}
+  .hero-formula .note b{color:#c9d2ff}
+
+  /* Пререквизит */
+  .recall{background:var(--accent-soft);border-radius:12px;padding:1rem 1.15rem;font-size:.96rem}
+  .recall p{margin:.3rem 0}
+
+  /* Три случая */
+  .cases{display:grid;gap:.85rem;margin-top:.4rem}
+  @media(min-width:620px){.cases{grid-template-columns:repeat(3,1fr)}}
+  .case{border-radius:12px;padding:1.05rem 1.1rem;border:1px solid var(--line);background:var(--card);display:flex;flex-direction:column;gap:.35rem}
+  .case .sign{font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.05rem}
+  .case .count{font-weight:650;font-size:1rem}
+  .case .desc{font-size:.9rem;color:var(--muted)}
+  .case.pos{border-top:4px solid var(--pos);background:var(--pos-bg)}
+  .case.pos .sign{color:var(--pos)}
+  .case.zero{border-top:4px solid var(--zero);background:var(--zero-bg)}
+  .case.zero .sign{color:var(--zero)}
+  .case.neg{border-top:4px solid var(--neg);background:var(--neg-bg)}
+  .case.neg .sign{color:var(--neg)}
+
+  /* Разбор */
+  .worked{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:1.2rem 1.3rem}
+  .worked .task{font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.02rem;margin:0 0 1rem;padding-bottom:.8rem;border-bottom:1px solid var(--line)}
+  ol.steps{margin:0;padding:0;list-style:none;counter-reset:s;display:flex;flex-direction:column;gap:.75rem}
+  ol.steps li{position:relative;padding-left:2.1rem;counter-increment:s}
+  ol.steps li::before{
+    content:counter(s);position:absolute;left:0;top:.05rem;
+    width:1.5rem;height:1.5rem;border-radius:50%;
+    background:var(--accent-soft);color:var(--accent);
+    font-size:.82rem;font-weight:700;display:flex;align-items:center;justify-content:center;
+  }
+  ol.steps .m{font-family:ui-monospace,Menlo,monospace;font-weight:600;color:var(--ink)}
+  ol.steps .why{display:block;font-size:.9rem;color:var(--muted);margin-top:.15rem}
+  .verdict{margin-top:1rem;padding:.7rem 1rem;background:var(--pos-bg);border-radius:9px;font-weight:600;color:var(--pos);font-size:.98rem}
+
+  /* Таблица графиков */
+  .tablewrap{overflow-x:auto;-webkit-overflow-scrolling:touch;margin-top:.7rem;border:1px solid var(--line);border-radius:12px;background:var(--card)}
+  table.gt{border-collapse:collapse;width:100%;min-width:430px;font-size:.94rem}
+  table.gt th,table.gt td{text-align:left;padding:.6rem .85rem;border-bottom:1px solid var(--line)}
+  table.gt tr:last-child td{border-bottom:none}
+  table.gt th{font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:700}
+  table.gt td.eq{font-family:ui-monospace,Menlo,monospace;font-weight:700;white-space:nowrap}
+
+  /* Практика */
+  .drill{display:flex;flex-direction:column;gap:.7rem}
+  details{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:.85rem 1.05rem}
+  details[open]{border-color:var(--accent)}
+  summary{cursor:pointer;font-weight:600;list-style:none;display:flex;justify-content:space-between;align-items:center;gap:1rem}
+  summary::-webkit-details-marker{display:none}
+  summary:focus-visible{outline:3px solid var(--accent);outline-offset:3px;border-radius:6px}
+  summary .q{font-family:ui-monospace,Menlo,monospace;min-width:0}
+  summary .tag{font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);border:1px solid var(--line);border-radius:20px;padding:.1rem .55rem;white-space:nowrap}
+  summary::after{content:"ответ";font-size:.78rem;color:var(--accent);font-weight:600;white-space:nowrap}
+  details[open] summary::after{content:"скрыть"}
+  .ans{margin-top:.7rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.96rem;color:var(--muted)}
+  .ans .m{font-family:ui-monospace,Menlo,monospace;color:var(--ink);font-weight:600}
+
+  /* Ошибки */
+  ul.pitfalls{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:.7rem}
+  ul.pitfalls li{padding-left:1.5rem;position:relative;font-size:.98rem}
+  ul.pitfalls li::before{content:"×";position:absolute;left:0;top:-.05rem;color:var(--neg);font-weight:700;font-size:1.1rem}
+  ul.pitfalls b{color:var(--ink)}
+  ul.pitfalls .fix{display:block;font-size:.92rem;color:var(--muted);margin-top:.1rem}
+
+  /* Проверка понимания */
+  .selfcheck{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:1.1rem 1.3rem}
+  .selfcheck ol{margin:.3rem 0 0;padding-left:1.2rem}
+  .selfcheck li{margin:.35rem 0}
+
+  .next{background:var(--accent);color:#fff;border-radius:12px;padding:1.2rem 1.3rem}
+  .next h2{color:#fff}
+  .next .eq{font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.05rem;margin:.6rem 0 .3rem}
+  .next p{color:#dfe4fb;font-size:.96rem;margin:.4rem 0 0}
+  .foot{margin-top:2.4rem;font-size:.82rem;color:var(--muted);text-align:center}
+
+  .oge-tip{display:flex;gap:.8rem;align-items:flex-start;background:#FFF8E7;border:1px solid #F0D98A;border-left:4px solid #E0A315;border-radius:10px;padding:.85rem 1.05rem;margin:1.5rem 0}
+  .oge-tip .b{font-size:.72rem;font-weight:800;letter-spacing:.03em;color:#8A6A15;white-space:nowrap;text-transform:uppercase;padding-top:.15rem}
+  .oge-tip .x{font-size:.95rem;line-height:1.5}
+
+  @media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+<!--LESSON-NAV-TOP--><style>.lnav{--lnav-accent:#3D5AF1}.lnav a{text-decoration:none;font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif}.lnav-top{max-width:820px;margin:0 auto;padding:.75rem clamp(1rem,4vw,1.5rem) .1rem}.lnav-top a{display:inline-flex;align-items:center;gap:.35rem;color:var(--lnav-accent);font-weight:600;font-size:.9rem}.lnav-top a:hover{text-decoration:underline}.lnav-bot{max-width:820px;margin:2.6rem auto 3rem;padding:1.1rem clamp(1rem,4vw,1.5rem) 0;border-top:1px solid #E4E8EF;display:flex;align-items:stretch;gap:.55rem}.lnav-bot a{min-width:0;display:flex;flex-direction:column;justify-content:center;gap:.15rem;border:1px solid #E4E8EF;border-radius:12px;padding:.65rem .85rem;color:#182233;background:#fff;transition:border-color .1s,transform .08s}.lnav-bot a:hover{border-color:var(--lnav-accent);transform:translateY(-1px)}.lnav-bot .prev,.lnav-bot .next{flex:1 1 0}.lnav-bot .next{text-align:right}.lnav-bot .dir{font-size:.72rem;color:#8A93A6;font-weight:600}.lnav-bot .ttl{font-size:.9rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.lnav-bot .to-cat{flex:0 0 auto;flex-direction:row;align-items:center;justify-content:center;color:var(--lnav-accent);font-weight:700;font-size:.85rem;white-space:nowrap}@media(max-width:420px){.lnav-bot .to-cat span{display:none}.lnav-bot .to-cat{padding:.65rem .7rem}}</style><nav class="lnav lnav-top"><a href="./catalog.html">← Все темы</a></nav><!--/LESSON-NAV-TOP-->
+<div class="wrap">
+
+  <header>
+    <p class="eyebrow">Алгебра · 9 класс</p>
+    <h1>Системы второй степени: решаем по графику</h1>
+    <p class="lede">Два уравнения — две линии на одной плоскости. Решение системы — там, где линии пересеклись. <em>Видно глазами, сколько решений, ещё до всякой алгебры.</em></p>
+  </header>
+
+  <div class="hero-formula">
+    <p class="lbl">Что значит «решить систему»</p>
+    <div class="sys">
+      <span class="brace">{</span>
+      <span class="rows"><span>F(x, y) = 0</span><span>G(x, y) = 0</span></span>
+    </div>
+    <p class="note">Решение — точка <b>(x₀; y₀)</b>, которая лежит <b>на обоих графиках сразу</b></p>
+  </div>
+
+  <section>
+    <p class="kicker">Зачем это нужно</p>
+    <h2>График отвечает на вопрос «сколько решений?»</h2>
+    <p>Система двух уравнений — это вопрос: <strong>при каких x и y выполняются оба условия сразу?</strong> Каждое уравнение рисует на координатной плоскости свою линию: прямую, параболу, окружность, гиперболу. А решить систему графически — значит найти точки, где эти линии пересекаются: именно там оба уравнения верны одновременно.</p>
+    <p>Этот способ ценен не точностью, а <strong>наглядностью</strong>. Он мгновенно показывает, сколько у системы решений — 0, 1, 2 и больше, — ещё до всякой алгебры. Видно, касаются линии или честно пересекаются, и в каких четвертях лежат решения. Дальше ты будешь решать те же системы алгебраически (подстановкой, сложением) — и график станет проверкой: «а правдоподобен ли мой ответ?»</p>
+    <p><strong>Сразу разрушим главный миф:</strong> «графический способ даёт точный ответ». Не даёт. Координаты пересечения почти всегда снимаются с чертежа <em>приближённо</em>. Точные значения даёт только алгебра.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Что вспомнить с прошлых шагов</p>
+    <div class="recall">
+      <p><strong>Уравнение с двумя переменными.</strong> График уравнения — это множество <em>всех</em> точек (x; y), которые ему удовлетворяют. Не одна точка, а целая линия.</p>
+      <p><strong>Построение параболы.</strong> <span class="math">y = ax² + bx + c</span>: ветви вверх при <span class="math">a &gt; 0</span> и вниз при <span class="math">a &lt; 0</span>; вершина в точке <span class="math">x<sub>в</sub> = −b/(2a)</span>; нули — там, где <span class="math">ax² + bx + c = 0</span>.</p>
+      <p><strong>Прямая</strong> <span class="math">y = kx + b</span> однозначно строится по любым двум своим точкам.</p>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Ядро темы · алгоритм</p>
+    <h2>Пять шагов графического способа</h2>
+    <div class="worked">
+      <ol class="steps">
+        <li>Каждое уравнение привести к удобному для построения виду.<span class="why">Например, выразить y через x: <span class="m">y = x² − 1</span>. Или узнать знакомую кривую: <span class="m">x² + y² = 25</span> — это окружность радиуса 5.</span></li>
+        <li>Построить в <strong>одной</strong> системе координат график каждого уравнения.</li>
+        <li>Найти <strong>все</strong> точки пересечения графиков.</li>
+        <li>Снять (приближённо) координаты этих точек — это и есть решения.</li>
+        <li>Записать ответ парами: <span class="m">(x₁; y₁), (x₂; y₂), …</span></li>
+      </ol>
+      <div class="verdict">Число решений системы = число точек пересечения графиков.</div>
+    </div>
+
+    <p style="margin-top:1.4rem">Какие графики чаще всего встречаются в 9 классе — узнавай их по виду уравнения:</p>
+    <div class="tablewrap">
+      <table class="gt">
+        <tr><th>Уравнение</th><th>Что это за линия</th></tr>
+        <tr><td class="eq">y = kx + b</td><td>прямая</td></tr>
+        <tr><td class="eq">y = ax² + bx + c</td><td>парабола (ветви вверх при a &gt; 0, вниз при a &lt; 0)</td></tr>
+        <tr><td class="eq">x² + y² = r²</td><td>окружность с центром в начале координат, радиус r</td></tr>
+        <tr><td class="eq">y = k/x</td><td>гипербола</td></tr>
+      </table>
+    </div>
+
+    <p style="margin-top:1.3rem">Возьмём самую частую пару — <strong>прямая и парабола</strong>. Вариантов всего три:</p>
+    <div class="cases">
+      <div class="case pos">
+        <div class="sign">2 точки</div>
+        <div class="count">Два решения</div>
+        <div class="desc">Прямая «прошивает» параболу насквозь.</div>
+      </div>
+      <div class="case zero">
+        <div class="sign">1 точка</div>
+        <div class="count">Одно решение</div>
+        <div class="desc">Прямая касается параболы — задевает её ровно в одном месте.</div>
+      </div>
+      <div class="case neg">
+        <div class="sign">0 точек</div>
+        <div class="count">Решений нет</div>
+        <div class="desc">Линии проходят мимо друг друга, общих точек нет.</div>
+      </div>
+    </div>
+    <p style="font-size:.92rem;color:var(--muted);margin-top:.9rem"><strong>Где метод «не тянет»:</strong> координаты получаются приближёнными. Если решение нецелое (например, <span class="math">x = √7</span>), с чертежа его точно не снять. Поэтому график — для оценки числа решений и грубой проверки, а точный ответ ищут алгебраически.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Разбираем вместе · думаю вслух</p>
+    <h2>Эталонный пример</h2>
+    <div class="worked">
+      <p class="task">Решить графически: &nbsp; { y = x² − 2x − 3 ; &nbsp; y = x − 3 }</p>
+      <ol class="steps">
+        <li>Первое уравнение — <strong>парабола</strong>: <span class="m">a = 1 &gt; 0</span>, значит ветви вверх. Ищу вершину: <span class="m">x<sub>в</sub> = −b/(2a) = −(−2)/2 = 1</span>, <span class="m">y<sub>в</sub> = 1 − 2 − 3 = −4</span>. Вершина <span class="m">(1; −4)</span>. Нули: <span class="m">x² − 2x − 3 = 0 → (x − 3)(x + 1) = 0 → x = 3 и x = −1</span>, то есть точки <span class="m">(−1; 0)</span> и <span class="m">(3; 0)</span>.<span class="why">Почему именно так: нули показывают, где парабола пересекает ось x, а вершина задаёт «дно». Этих трёх точек уже хватает на аккуратный эскиз.</span></li>
+        <li>Второе уравнение — <strong>прямая</strong> <span class="m">y = x − 3</span>. Беру две точки: при <span class="m">x = 0</span> получаю <span class="m">y = −3</span>, точка <span class="m">(0; −3)</span>; при <span class="m">x = 3</span> получаю <span class="m">y = 0</span>, точка <span class="m">(3; 0)</span>.<span class="why">Почему две точки: прямая однозначно строится по любым двум своим точкам, третью брать не обязательно.</span></li>
+        <li>Строю обе линии <strong>в одной</strong> системе координат и смотрю, где они пересекаются. Вижу две точки пересечения.<span class="why">Смотрю внимательно на обе ветви параболы — вторую точку теряют чаще всего.</span></li>
+        <li>Снимаю координаты с чертежа: пересечения в <span class="m">(0; −3)</span> и <span class="m">(3; 0)</span>. Тут повезло — обе точки попали в узлы сетки, значит координаты точные.</li>
+        <li>Проверяю алгеброй (хорошая привычка): приравниваю правые части, <span class="m">x² − 2x − 3 = x − 3 → x² − 3x = 0 → x(x − 3) = 0 → x = 0 или x = 3</span>. При <span class="m">x = 0</span>: <span class="m">y = −3</span>; при <span class="m">x = 3</span>: <span class="m">y = 0</span>. Совпало с чертежом.</li>
+      </ol>
+      <div class="verdict">Ответ: (0; −3) и (3; 0) — два решения.</div>
+    </div>
+    <div class="oge-tip"><div class="b">🎯 В ОГЭ</div><div class="x">График в системе — быстрый способ <b>проверить себя</b>. Решил подстановкой и получил три пары? Нарисуй эскиз: прямая и парабола больше двух общих точек иметь не могут — значит, где-то ошибка.</div></div>
+  </section>
+
+  <section>
+    <p class="kicker">Покрути сам · интерактив</p>
+    <h2>Как два решения превращаются в одно, а потом в ноль</h2>
+    <p>Парабола <span class="math">y = x²</span> стоит на месте, а прямую двигаешь ты. Сначала <strong>предскажи</strong>, сколько будет решений, потом двигай ползунок и <strong>проверяй</strong>.</p>
+    <div class="sim">
+      <div class="tabs" role="tablist" aria-label="Вид второго уравнения">
+        <button type="button" class="tab on" data-mode="h" role="tab" aria-selected="true">y = c &nbsp;(горизонталь)</button>
+        <button type="button" class="tab" data-mode="s" role="tab" aria-selected="false">y = x + c &nbsp;(наклонная)</button>
+      </div>
+      <canvas id="simCv" width="640" height="420" aria-label="Парабола y = x² и подвижная прямая"></canvas>
+      <div id="simVerdict" class="sim-verdict pos">два решения</div>
+      <div class="sliders">
+        <label for="simC">c <span id="simCval" class="sval">4</span></label>
+        <input id="simC" type="range" min="-5" max="5" step="0.25" value="4" aria-label="Параметр c">
+      </div>
+      <p class="sim-eq" id="simEq">y = x² &nbsp;и&nbsp; y = 4</p>
+    </div>
+    <p style="font-size:.92rem;color:var(--muted)">Поймай момент касания: на горизонтали это <span class="math">c = 0</span> (прямая ложится ровно на вершину), на наклонной — <span class="math">c = −0,25</span>. Это и есть граница между «два решения» и «решений нет». <strong>Объясни словами:</strong> почему при <span class="math">c &lt; 0</span> у системы <span class="math">{ y = x², y = c }</span> решений нет?</p>
+  </section>
+
+  <section>
+    <p class="kicker">Теперь ты · нажми, чтобы проверить</p>
+    <h2>Практика по нарастанию</h2>
+    <div class="drill">
+      <details>
+        <summary><span class="q">Что геометрически означает решение системы?</span><span class="tag">понимание</span></summary>
+        <div class="ans">Это <strong>точка пересечения графиков</strong> двух уравнений. Её координаты — та самая пара чисел, которая обращает в верное равенство и первое уравнение, и второе.</div>
+      </details>
+      <details>
+        <summary><span class="q">Прямая касается окружности. Сколько решений у системы?</span><span class="tag">понимание</span></summary>
+        <div class="ans"><strong>Одно.</strong> Касание — это ровно одна общая точка, значит и решение одно.</div>
+      </details>
+      <details>
+        <summary><span class="q">Решить графически: { y = x² − 4 ; y = 0 }</span><span class="tag">применение</span></summary>
+        <div class="ans">Парабола <span class="m">y = x² − 4</span> (ветви вверх, вершина (0; −4)) и ось x. Пересечение там, где <span class="m">x² − 4 = 0 → x = ±2</span>. Ответ: <span class="m">(−2; 0)</span> и <span class="m">(2; 0)</span> — два решения.</div>
+      </details>
+      <details>
+        <summary><span class="q">Решить графически: { y = x² ; y = 4 }</span><span class="tag">применение</span></summary>
+        <div class="ans">Парабола <span class="m">y = x²</span> с вершиной (0; 0) и горизонтальная прямая <span class="m">y = 4</span>. Пересекаются там, где <span class="m">x² = 4</span>, то есть <span class="m">x = −2</span> и <span class="m">x = 2</span>. Точки: <span class="m">(−2; 4)</span> и <span class="m">(2; 4)</span>.</div>
+      </details>
+      <details>
+        <summary><span class="q">Сколько решений и где: { y = −x² + 4 ; y = 1 }</span><span class="tag">применение</span></summary>
+        <div class="ans">Парабола ветвями вниз с вершиной (0; 4) и горизонталь <span class="m">y = 1</span>. Приравниваем: <span class="m">−x² + 4 = 1 → x² = 3 → x = ±√3</span>. Два решения: <span class="m">(−√3; 1)</span> и <span class="m">(√3; 1)</span>, то есть примерно <span class="m">(−1,7; 1)</span> и <span class="m">(1,7; 1)</span>. На чертеже видно ровно две точки пересечения.</div>
+      </details>
+      <details>
+        <summary><span class="q">Найди ошибку в ответе к системе { y = −x² + 4 ; y = 1 }</span><span class="tag">анализ</span></summary>
+        <div class="ans">Ученик снял координаты с чертежа и записал в ответ: <span class="m">(−1,7; 1) и (1,7; 1)</span> — как <em>точный</em> ответ. Ошибка не в числах, а в статусе: <span class="m">1,7</span> — это прикидка «на глаз». Точный ответ <span class="m">(−√3; 1)</span> и <span class="m">(√3; 1)</span>. С графика можно писать только «приближённо ≈ 1,7», а точное значение досчитывают алгеброй.</div>
+      </details>
+      <details>
+        <summary><span class="q">Что будет с числом решений { y = x² ; y = x + c }, если c увеличивать?</span><span class="tag">анализ</span></summary>
+        <div class="ans">Прямая <span class="m">y = x + c</span> при росте c поднимается вверх, не меняя наклона. Пока она ниже параболы — общих точек нет. В какой-то момент она <strong>касается</strong> параболы (одно решение), а дальше режет её в двух точках, и точки пересечения расходятся всё дальше друг от друга.<br>Момент касания ловим алгеброй: <span class="m">x² = x + c</span>, то есть <span class="m">x² − x − c = 0</span>, и один корень бывает при <span class="m">D = 0</span>: <span class="m">1 + 4c = 0 → c = −1/4</span>. Итого: при <span class="m">c &lt; −1/4</span> — решений нет, при <span class="m">c = −1/4</span> — одно (касание), при <span class="m">c &gt; −1/4</span> — два.</div>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Тренажёр · бесконечная практика</p>
+    <h2>Реши систему сам</h2>
+    <p>Нажми «Новая система». Приравняй правые части, найди <strong>x-координаты</strong> точек пересечения и введи их через <b>точку с запятой</b> (дробные — с точкой), либо напиши «нет», если пересечений нет. Чертёж рядом — подсказка: сначала посчитай, потом сверься с картинкой.</p>
+    <div class="trainer">
+      <div class="tr-eq"><span class="brace2">{</span><span class="rows2"><span id="trL1">y = x² − 3x + 2</span><span id="trL2">y = 2x − 2</span></span></div>
+      <canvas id="trCv" width="640" height="380" aria-label="График текущей системы"></canvas>
+      <div class="tr-ctl">
+        <button id="trNew" type="button">🎲 Новая система</button>
+        <input id="trAns" type="text" placeholder="напр.  −2; 3   или   нет" aria-label="Ответ: x-координаты точек пересечения">
+        <button id="trCheck" type="button" class="sec">Проверить</button>
+        <button id="trShow" type="button" class="ghost">Показать решение</button>
+      </div>
+      <div id="trResult" class="tr-result"></div>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Где чаще всего ошибаются</p>
+    <h2>Четыре ловушки графического способа</h2>
+    <ul class="pitfalls">
+      <li><b>Считают число решений «на глаз», не разбираясь во взаимном расположении.</b> Пишут «две точки», хотя линии на самом деле касаются (одна точка) или вовсе расходятся (ноль).<span class="fix">Как не попасться: аккуратно строй вершину параболы и две точки прямой. Сомневаешься — проверь алгеброй: приравняй правые части и посмотри на дискриминант.</span></li>
+      <li><b>Снимают приближённые координаты и выдают их за точные.</b> С чертежа «x ≈ 1,7» переезжает в ответ как точное число.<span class="fix">Как не попасться: помни — график даёт оценку. Нецелый ответ либо помечай «приближённо», либо досчитывай точно (например, <span class="math">x = √3</span>).</span></li>
+      <li><b>Пропускают одно из пересечений.</b> Чаще всего теряют вторую точку у параболы: нарисовали одну ветвь или оборвали чертёж слишком рано.<span class="fix">Как не попасться: строй параболу симметрично относительно её оси <span class="math">x = x<sub>в</sub></span>, продлевай обе ветви подальше и проверяй обе стороны от вершины.</span></li>
+      <li><b>Путают «решение системы» и «нуль функции».</b> Точки, где парабола пересекает ось x, — это нули, а не решения системы (если только второе уравнение не <span class="math">y = 0</span>).<span class="fix">Как не попасться: решение системы — пересечение <strong>двух заданных графиков между собой</strong>, а не с осями.</span></li>
+    </ul>
+  </section>
+
+  <section>
+    <p class="kicker">Проверка понимания</p>
+    <h2>Объясни своими словами</h2>
+    <div class="selfcheck">
+      <ol>
+        <li>Что геометрически означает решение системы двух уравнений?</li>
+        <li>Почему графический способ обычно даёт лишь приближённый ответ?</li>
+        <li>Сколько общих точек могут иметь прямая и парабола? Перечисли все случаи.</li>
+      </ol>
+      <p style="font-size:.92rem;color:var(--muted);margin-top:.9rem">Скажи ответы вслух, как будто объясняешь однокласснику, и только потом сверься: <em>точка пересечения графиков · координаты снимаются с чертежа на глаз · 0, 1 (касание) или 2.</em></p>
+      <p style="margin-top:.8rem"><strong>Итог одним предложением:</strong> решить систему графически — значит построить графики обоих уравнений в одной системе координат и найти точки их пересечения, координаты которых и есть (приближённые) решения.</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="next">
+      <h2>Что дальше</h2>
+      <p>График показал, <em>сколько</em> решений и примерно <em>где</em> они. Теперь нужен точный ответ — за ним идём к алгебре:</p>
+      <div class="eq">Решение систем способом подстановки</div>
+      <p>Выражаешь одну переменную через другую, подставляешь во второе уравнение — и получаешь точные значения вместо «примерно 1,7». А чертёж из этого урока останется твоей проверкой: столько ли корней вышло, сколько было точек пересечения.</p>
+    </div>
+  </section>
+
+  <p class="foot">Проверка на выходе: что такое решение системы на чертеже · сколько общих точек у прямой и параболы бывает · почему ответ с графика — приближённый.</p>
+
+</div>
+
+<style>
+  .sim{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.1rem 1.1rem 1rem;margin:1rem 0}
+  .sim canvas{width:100%;height:auto;display:block;border-radius:10px;background:#FCFDFF}
+  .tabs{display:flex;gap:.5rem;margin-bottom:.9rem;flex-wrap:wrap}
+  .tab{
+    font:inherit;font-size:.86rem;font-weight:700;cursor:pointer;
+    border:1px solid var(--line);background:#fff;color:var(--muted);
+    border-radius:999px;padding:.4rem .9rem;font-family:ui-monospace,Menlo,monospace;
+  }
+  .tab.on{background:var(--accent-soft);border-color:var(--accent);color:var(--accent)}
+  .tab:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+  .sim-verdict{text-align:center;font-weight:700;font-size:1.02rem;margin:.85rem 0 0;padding:.5rem;border-radius:9px;font-family:ui-monospace,Menlo,monospace}
+  .sim-verdict.pos{background:var(--pos-bg);color:var(--pos)}
+  .sim-verdict.zero{background:var(--zero-bg);color:var(--zero)}
+  .sim-verdict.neg{background:var(--neg-bg);color:var(--neg)}
+  .sliders{display:flex;align-items:center;gap:.7rem;margin-top:.9rem;flex-wrap:wrap}
+  .sliders label{font-weight:700;font-family:ui-monospace,Menlo,monospace;display:flex;gap:.4rem;align-items:center}
+  .sliders .sval{min-width:4ch;text-align:right;color:var(--accent);font-variant-numeric:tabular-nums}
+  .sliders input[type=range]{flex:1;min-width:150px;accent-color:var(--accent)}
+  .sliders input[type=range]:focus-visible{outline:3px solid var(--accent);outline-offset:3px;border-radius:6px}
+  .sim-eq{text-align:center;font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.02rem;margin:.9rem 0 0;color:var(--ink)}
+</style>
+
+<script>
+(function(){
+  var cv=document.getElementById('simCv'); if(!cv) return;
+  var ctx=cv.getContext('2d');
+  var sc=document.getElementById('simC'), cval=document.getElementById('simCval');
+  var verdict=document.getElementById('simVerdict'), eqEl=document.getElementById('simEq');
+  var tabs=[].slice.call(document.querySelectorAll('.tab'));
+  var mode='h', W=640, H=420, dpr=1;
+  var XMIN=-4.5, XMAX=4.5, YMIN=-5.5, YMAX=9.5;
+  var MINUS='−';
+
+  function num(n){ n=Math.round(n*100)/100; var s=Math.abs(n).toString().replace('.',','); return (n<0?MINUS:'')+s; }
+  function css(v){ return getComputedStyle(document.documentElement).getPropertyValue(v).trim()||'#3B4FD0'; }
+  function X(x){ return (x-XMIN)/(XMAX-XMIN)*W; }
+  function Y(y){ return (YMAX-y)/(YMAX-YMIN)*H; }
+
+  function resize(){
+    var w=cv.clientWidth||640; dpr=Math.min(window.devicePixelRatio||1,2);
+    W=w; H=Math.round(w*0.66);
+    cv.width=W*dpr; cv.height=H*dpr; cv.style.height=H+'px';
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+  }
+
+  function grid(){
+    ctx.clearRect(0,0,W,H);
+    ctx.strokeStyle='#EDEFF4'; ctx.lineWidth=1;
+    for(var gx=Math.ceil(XMIN);gx<=XMAX;gx++){ ctx.beginPath(); ctx.moveTo(X(gx),0); ctx.lineTo(X(gx),H); ctx.stroke(); }
+    for(var gy=Math.ceil(YMIN);gy<=YMAX;gy++){ ctx.beginPath(); ctx.moveTo(0,Y(gy)); ctx.lineTo(W,Y(gy)); ctx.stroke(); }
+    ctx.strokeStyle='#9AA3B2'; ctx.lineWidth=1.5;
+    ctx.beginPath(); ctx.moveTo(0,Y(0)); ctx.lineTo(W,Y(0)); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(X(0),0); ctx.lineTo(X(0),H); ctx.stroke();
+    ctx.fillStyle='#8A93A6'; ctx.font='11px ui-monospace,Menlo,monospace';
+    for(var lx=Math.ceil(XMIN);lx<=XMAX;lx++){ if(lx!==0) ctx.fillText((lx<0?MINUS:'')+Math.abs(lx), X(lx)-4, Y(0)+13); }
+    for(var ly=Math.ceil(YMIN);ly<=YMAX;ly++){ if(ly!==0 && ly%2===0) ctx.fillText((ly<0?MINUS:'')+Math.abs(ly), X(0)+5, Y(ly)-3); }
+  }
+
+  function draw(){
+    var c=parseFloat(sc.value);
+    cval.textContent=num(c);
+    grid();
+    // парабола y = x^2
+    ctx.strokeStyle='#3B4FD0'; ctx.lineWidth=3; ctx.beginPath();
+    for(var px=0;px<=W;px+=2){
+      var x=XMIN+(px/W)*(XMAX-XMIN), y=x*x;
+      if(px===0) ctx.moveTo(px,Y(y)); else ctx.lineTo(px,Y(y));
+    }
+    ctx.stroke();
+    // прямая
+    var roots=[], D;
+    if(mode==='h'){
+      if(c>0){ roots=[-Math.sqrt(c),Math.sqrt(c)]; } else if(c===0){ roots=[0]; }
+    } else {
+      D=1+4*c;
+      if(D>1e-9){ roots=[(1-Math.sqrt(D))/2,(1+Math.sqrt(D))/2]; }
+      else if(Math.abs(D)<=1e-9){ roots=[0.5]; }
+    }
+    var col = roots.length===2?css('--pos'):(roots.length===1?css('--zero'):css('--neg'));
+    ctx.strokeStyle=col; ctx.lineWidth=3; ctx.beginPath();
+    if(mode==='h'){ ctx.moveTo(0,Y(c)); ctx.lineTo(W,Y(c)); }
+    else { ctx.moveTo(X(XMIN),Y(XMIN+c)); ctx.lineTo(X(XMAX),Y(XMAX+c)); }
+    ctx.stroke();
+    // точки пересечения
+    roots.forEach(function(r){
+      ctx.fillStyle=col; ctx.beginPath(); ctx.arc(X(r),Y(r*r),6.5,0,7); ctx.fill();
+      ctx.fillStyle='#fff'; ctx.beginPath(); ctx.arc(X(r),Y(r*r),2.6,0,7); ctx.fill();
+    });
+    // подписи
+    eqEl.textContent = mode==='h'
+      ? 'y = x²  и  y = '+num(c)
+      : 'y = x²  и  y = x '+(c<0?MINUS:'+')+' '+num(Math.abs(c));
+    verdict.className='sim-verdict '+(roots.length===2?'pos':(roots.length===1?'zero':'neg'));
+    if(roots.length===2){
+      verdict.textContent='2 точки · два решения: x ≈ '+num(roots[0])+' и x ≈ '+num(roots[1]);
+    } else if(roots.length===1){
+      verdict.textContent='касание · одно решение: x = '+num(roots[0]);
+    } else {
+      verdict.textContent='общих точек нет · решений нет';
+    }
+  }
+
+  tabs.forEach(function(t){
+    t.addEventListener('click',function(){
+      tabs.forEach(function(o){ o.classList.remove('on'); o.setAttribute('aria-selected','false'); });
+      t.classList.add('on'); t.setAttribute('aria-selected','true');
+      mode=t.getAttribute('data-mode'); draw();
+    });
+  });
+  sc.addEventListener('input',draw);
+  window.addEventListener('resize',function(){ resize(); draw(); });
+  resize(); draw();
+})();
+</script>
+
+<style>
+  .trainer{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.2rem 1.3rem;margin-top:1rem}
+  .tr-eq{
+    display:flex;align-items:center;justify-content:center;gap:.5rem;
+    font-family:ui-monospace,Menlo,monospace;font-weight:800;
+    font-size:clamp(1rem,4vw,1.3rem);padding:1rem;background:var(--accent-soft);
+    border-radius:10px;color:var(--ink);
+  }
+  .tr-eq .brace2{font-size:2.6em;font-weight:300;line-height:.7;color:var(--accent)}
+  .tr-eq .rows2{display:flex;flex-direction:column;gap:.2rem;text-align:left}
+  .trainer canvas{width:100%;height:auto;display:block;border-radius:10px;background:#FCFDFF;margin-top:.9rem;border:1px solid var(--line)}
+  .tr-ctl{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.9rem;align-items:center}
+  .tr-ctl button{font:inherit;font-weight:700;font-size:.9rem;cursor:pointer;border:none;border-radius:9px;padding:.55rem .95rem;color:#fff;background:var(--accent)}
+  .tr-ctl button.sec{background:var(--pos)}
+  .tr-ctl button.ghost{background:transparent;color:var(--accent);border:1px solid var(--accent)}
+  .tr-ctl input{flex:1;min-width:150px;font:inherit;padding:.5rem .7rem;border:1px solid var(--line);border-radius:9px;background:#fff;color:var(--ink)}
+  .tr-ctl button:focus-visible,.tr-ctl input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+  .tr-result{margin-top:.9rem;font-size:.96rem;min-height:1.2rem}
+  .tr-result .ok{color:var(--pos);font-weight:700}
+  .tr-result .bad{color:var(--neg);font-weight:700}
+  .tr-result .sol{margin-top:.7rem;padding:.85rem 1rem;background:#FCFBFE;border:1px solid var(--line);border-radius:10px;font-family:ui-monospace,Menlo,monospace;font-size:.9rem;line-height:1.8;overflow-x:auto}
+  .tr-result .sol b{color:var(--accent)}
+</style>
+
+<script>
+(function(){
+  var l1=document.getElementById('trL1'), l2=document.getElementById('trL2');
+  var ansEl=document.getElementById('trAns'), resEl=document.getElementById('trResult');
+  var cv=document.getElementById('trCv');
+  if(!l1||!cv) return;
+  var ctx=cv.getContext('2d');
+  var MINUS='−';
+  // текущая система: y = a x^2 + b x + c  и  y = k x + m
+  var cur={a:1,b:-3,c:2,k:2,m:-2};
+
+  function ri(min,max){ return Math.floor(Math.random()*(max-min+1))+min; }
+  function num(n){
+    n=Math.round(n*1000)/1000; if(n===0) n=0;
+    var s=Math.abs(n).toString().replace('.',',');
+    return (n<0?MINUS:'')+s;
+  }
+  function poly(a,b,c){ // a x^2 + b x + c
+    var s='';
+    s += (a===1?'':(a===-1?MINUS:num(a)))+'x²';
+    if(b!==0) s += (b<0?' '+MINUS+' ':' + ')+(Math.abs(b)===1?'':Math.abs(b))+'x';
+    if(c!==0) s += (c<0?' '+MINUS+' ':' + ')+Math.abs(c);
+    return s;
+  }
+  function lin(k,m){
+    if(k===0) return num(m);
+    var s=(k===1?'':(k===-1?MINUS:num(k)))+'x';
+    if(m!==0) s += (m<0?' '+MINUS+' ':' + ')+Math.abs(m);
+    return s;
+  }
+  // приведённое уравнение пересечения: a x^2 + (b-k) x + (c-m) = 0
+  function solve(q){
+    var A=q.a, B=q.b-q.k, C=q.c-q.m, D=B*B-4*A*C;
+    if(D>1e-9){ var s=Math.sqrt(D); return {A:A,B:B,C:C,D:D,n:2,xs:[(-B-s)/(2*A),(-B+s)/(2*A)].sort(function(p,r){return p-r;})}; }
+    if(Math.abs(D)<=1e-9){ return {A:A,B:B,C:C,D:0,n:1,xs:[-B/(2*A)]}; }
+    return {A:A,B:B,C:C,D:D,n:0,xs:[]};
+  }
+  function yOf(q,x){ return q.a*x*x+q.b*x+q.c; }
+
+  function generate(){
+    var a = Math.random()<0.75?1:-1;
+    var k = ri(-3,3), m = ri(-5,5);
+    var r=Math.random(), q;
+    if(r<0.68){                       // два пересечения, целые x
+      var x1=ri(-4,4), x2=ri(-4,4);
+      while(x2===x1) x2=ri(-4,4);
+      q={a:a, b:k - a*(x1+x2), c:m + a*x1*x2, k:k, m:m};
+    } else if(r<0.84){                // касание
+      var x0=ri(-3,3);
+      q={a:a, b:k - a*2*x0, c:m + a*x0*x0, k:k, m:m};
+    } else {                          // нет пересечений
+      var p=ri(-4,4), t=ri(1,6);
+      var qq=Math.floor(p*p/4)+t;     // p^2 - 4q < 0
+      q={a:a, b:k + a*p, c:m + a*qq, k:k, m:m};
+    }
+    cur=q;
+    render(); resEl.innerHTML=''; ansEl.value='';
+  }
+
+  function render(){
+    l1.textContent='y = '+poly(cur.a,cur.b,cur.c);
+    l2.textContent='y = '+lin(cur.k,cur.m);
+    drawGraph();
+  }
+
+  function drawGraph(){
+    var sol=solve(cur);
+    // диапазон по x — вокруг корней и вершины
+    var pts=sol.xs.slice(); pts.push(-cur.b/(2*cur.a));
+    var lo=Math.min.apply(null,pts), hi=Math.max.apply(null,pts);
+    var mid=(lo+hi)/2, half=Math.max((hi-lo)/2+2.5,4);
+    var XMIN=mid-half, XMAX=mid+half;
+    // диапазон по y — по значениям в интересных точках
+    var ys=[yOf(cur,-cur.b/(2*cur.a))];
+    sol.xs.forEach(function(x){ ys.push(yOf(cur,x)); });
+    ys.push(cur.k*XMIN+cur.m, cur.k*XMAX+cur.m);
+    var ylo=Math.min.apply(null,ys), yhi=Math.max.apply(null,ys);
+    var ymid=(ylo+yhi)/2, yhalf=Math.max((yhi-ylo)/2+2.5,4);
+    var YMIN=ymid-yhalf, YMAX=ymid+yhalf;
+
+    var w=cv.clientWidth||640, dpr=Math.min(window.devicePixelRatio||1,2);
+    var W=w, H=Math.round(w*0.62);
+    cv.width=W*dpr; cv.height=H*dpr; cv.style.height=H+'px';
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+    function X(x){ return (x-XMIN)/(XMAX-XMIN)*W; }
+    function Y(y){ return (YMAX-y)/(YMAX-YMIN)*H; }
+
+    ctx.clearRect(0,0,W,H);
+    var stepY = (YMAX-YMIN)>24?5:((YMAX-YMIN)>12?2:1);
+    ctx.strokeStyle='#EDEFF4'; ctx.lineWidth=1;
+    for(var gx=Math.ceil(XMIN);gx<=XMAX;gx++){ ctx.beginPath(); ctx.moveTo(X(gx),0); ctx.lineTo(X(gx),H); ctx.stroke(); }
+    for(var gy=Math.ceil(YMIN/stepY)*stepY;gy<=YMAX;gy+=stepY){ ctx.beginPath(); ctx.moveTo(0,Y(gy)); ctx.lineTo(W,Y(gy)); ctx.stroke(); }
+    ctx.strokeStyle='#9AA3B2'; ctx.lineWidth=1.5;
+    if(YMIN<0&&YMAX>0){ ctx.beginPath(); ctx.moveTo(0,Y(0)); ctx.lineTo(W,Y(0)); ctx.stroke(); }
+    if(XMIN<0&&XMAX>0){ ctx.beginPath(); ctx.moveTo(X(0),0); ctx.lineTo(X(0),H); ctx.stroke(); }
+    ctx.fillStyle='#8A93A6'; ctx.font='11px ui-monospace,Menlo,monospace';
+    var axisY = (YMIN<0&&YMAX>0)?Y(0):H-4;
+    for(var lx=Math.ceil(XMIN);lx<=XMAX;lx++){ if(lx!==0) ctx.fillText((lx<0?MINUS:'')+Math.abs(lx), X(lx)-4, Math.min(axisY+13,H-3)); }
+    var axisX = (XMIN<0&&XMAX>0)?X(0):4;
+    for(var ly=Math.ceil(YMIN/stepY)*stepY;ly<=YMAX;ly+=stepY){ if(ly!==0) ctx.fillText((ly<0?MINUS:'')+Math.abs(ly), axisX+5, Y(ly)-3); }
+
+    // парабола
+    ctx.strokeStyle='#3B4FD0'; ctx.lineWidth=3; ctx.beginPath();
+    for(var px=0;px<=W;px+=2){
+      var x=XMIN+(px/W)*(XMAX-XMIN);
+      var yv=yOf(cur,x);
+      if(px===0) ctx.moveTo(px,Y(yv)); else ctx.lineTo(px,Y(yv));
+    }
+    ctx.stroke();
+    // прямая
+    var col = sol.n===2?'#1E8E5A':(sol.n===1?'#B9791A':'#C0455B');
+    ctx.strokeStyle=col; ctx.lineWidth=3; ctx.beginPath();
+    ctx.moveTo(X(XMIN),Y(cur.k*XMIN+cur.m)); ctx.lineTo(X(XMAX),Y(cur.k*XMAX+cur.m));
+    ctx.stroke();
+    // точки
+    sol.xs.forEach(function(x){
+      ctx.fillStyle=col; ctx.beginPath(); ctx.arc(X(x),Y(yOf(cur,x)),6.5,0,7); ctx.fill();
+      ctx.fillStyle='#fff'; ctx.beginPath(); ctx.arc(X(x),Y(yOf(cur,x)),2.6,0,7); ctx.fill();
+    });
+  }
+
+  function solutionHTML(){
+    var q=cur, sol=solve(q), h='<div class="sol">';
+    h+='Приравниваем правые части:<br>';
+    h+=poly(q.a,q.b,q.c)+' = '+lin(q.k,q.m)+'<br>';
+    h+='Переносим всё влево: '+poly(sol.A,sol.B,sol.C)+' = 0<br>';
+    h+='D = '+(sol.B<0?'('+num(sol.B)+')':num(sol.B))+'² − 4·'+(sol.A<0?'('+num(sol.A)+')':num(sol.A))+'·'+(sol.C<0?'('+num(sol.C)+')':num(sol.C))+' = <b>'+num(sol.D)+'</b><br>';
+    if(sol.n===2){
+      h+='D &gt; 0 → <b>две точки пересечения</b>. x₁ = '+num(sol.xs[0])+', x₂ = '+num(sol.xs[1])+'<br>';
+      h+='y₁ = '+num(yOf(q,sol.xs[0]))+', y₂ = '+num(yOf(q,sol.xs[1]))+'<br>';
+      h+='Ответ: ('+num(sol.xs[0])+'; '+num(yOf(q,sol.xs[0]))+') и ('+num(sol.xs[1])+'; '+num(yOf(q,sol.xs[1]))+')';
+    } else if(sol.n===1){
+      h+='D = 0 → <b>касание</b>, одна общая точка. x = '+num(sol.xs[0])+'<br>';
+      h+='y = '+num(yOf(q,sol.xs[0]))+'<br>';
+      h+='Ответ: ('+num(sol.xs[0])+'; '+num(yOf(q,sol.xs[0]))+')';
+    } else {
+      h+='D &lt; 0 → <b>общих точек нет</b>, система решений не имеет.';
+    }
+    return h+'</div>';
+  }
+
+  function check(){
+    var sol=solve(cur), raw=ansEl.value.trim().toLowerCase().replace(/−/g,'-');
+    if(!raw){ resEl.innerHTML='<span class="bad">Введи ответ или нажми «Показать решение».</span>'; return; }
+    if(sol.n===0){
+      if(/нет|net|∅|отсут|не перес/.test(raw)||raw==='0 точек'){
+        resEl.innerHTML='<span class="ok">✓ Верно — графики не пересекаются, решений нет.</span>'+solutionHTML();
+      } else {
+        resEl.innerHTML='<span class="bad">✗ Приравняй правые части и посмотри на D — здесь он отрицательный.</span>'+solutionHTML();
+      }
+      return;
+    }
+    if(/нет|net|∅/.test(raw)){
+      resEl.innerHTML='<span class="bad">✗ Пересечения есть — посмотри на чертёж.</span>'+solutionHTML(); return;
+    }
+    var norm=raw.replace(/(\d),(\d)/g,'$1.$2').replace(/[xх][₁₂12]?\s*=/g,'');
+    var parts=norm.split(/[;,\s]+/).filter(function(s){return s!=='';});
+    var got=parts.map(function(s){return parseFloat(s);});
+    if(!parts.length||got.some(function(v){return isNaN(v);})){
+      resEl.innerHTML='<span class="bad">Не понял запись. Введи x-координаты числами через точку с запятой, напр. «1; 4», или слово «нет».</span>'; return;
+    }
+    got=got.map(function(v){return Math.round(v*100)/100;});
+    got=got.filter(function(v,i){return got.indexOf(v)===i;}).sort(function(p,r){return p-r;});
+    var exp=sol.xs.map(function(v){return Math.round(v*100)/100;}).sort(function(p,r){return p-r;});
+    var ok = got.length===exp.length && exp.every(function(v,i){return Math.abs(v-got[i])<0.02;});
+    if(ok){ resEl.innerHTML='<span class="ok">✓ Верно! Отлично.</span>'+solutionHTML(); }
+    else{
+      var hint = got.length<exp.length ? ' Подсказка: точек пересечения больше — проверь обе ветви параболы.' : '';
+      resEl.innerHTML='<span class="bad">✗ Пока не то.'+hint+'</span>'+solutionHTML();
+    }
+  }
+
+  document.getElementById('trNew').addEventListener('click',function(){ generate(); ansEl.focus(); });
+  document.getElementById('trCheck').addEventListener('click',check);
+  document.getElementById('trShow').addEventListener('click',function(){ resEl.innerHTML=solutionHTML(); });
+  ansEl.addEventListener('keydown',function(e){ if(e.key==='Enter') check(); });
+  window.addEventListener('resize',drawGraph);
+  render(); // первичный рендер — без фокуса
+})();
+</script>
+<!--LESSON-NAV-BOT--><nav class="lnav lnav-bot"><a class="prev" href="./alg9-uravnenie-dvuh-peremennyh.html"><span class="dir">← Предыдущая</span><span class="ttl">Уравнение с двумя переменными и его график</span></a><a class="to-cat" href="./catalog.html">📚 <span>Все темы</span></a><a class="next" href="./alg9-sistema-podstanovka.html"><span class="dir">Следующая →</span><span class="ttl">Решение систем второй степени способом подстановки</span></a></nav><!--/LESSON-NAV-BOT-->

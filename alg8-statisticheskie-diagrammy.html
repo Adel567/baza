@@ -1,0 +1,798 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Таблицы частот и диаграммы — урок, алгебра 8 класс</title>
+<style>
+  :root{
+    --paper:#F6F7F9;
+    --card:#FFFFFF;
+    --ink:#1B2333;
+    --muted:#5A6478;
+    --line:#E2E5EC;
+    --accent:#3B4FD0;
+    --accent-soft:#EAEDFB;
+    --pos:#1E8E5A;   /* полигон / верно */
+    --pos-bg:#E7F4EC;
+    --zero:#B9791A;  /* круговая */
+    --zero-bg:#FBF1DC;
+    --neg:#C0455B;   /* ошибка */
+    --neg-bg:#F9E9EC;
+    --c1:#3B4FD0;
+    --c2:#1E8E5A;
+    --c3:#B9791A;
+    --c4:#8E4FBF;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper)}
+  .wrap{
+    max-width:760px;
+    margin:0 auto;
+    padding:clamp(1.4rem,4vw,3rem) clamp(1.1rem,4vw,2rem) 4rem;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    font-size:17px;
+    line-height:1.62;
+    -webkit-font-smoothing:antialiased;
+  }
+  .eyebrow{
+    font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--accent);font-weight:600;margin:0 0 .5rem;
+  }
+  h1{
+    font-family:Georgia,"Times New Roman",serif;
+    font-size:clamp(2rem,6.4vw,2.9rem);
+    line-height:1.06;margin:0;font-weight:700;letter-spacing:-.01em;
+    text-wrap:balance;
+  }
+  .lede{font-size:1.08rem;color:var(--muted);margin:.7rem 0 0;max-width:60ch;text-wrap:pretty}
+  h2{font-family:Georgia,serif;font-size:1.32rem;font-weight:700;margin:0 0 .1rem;letter-spacing:-.005em}
+  h3{font-family:Georgia,serif;font-size:1.05rem;margin:1.3rem 0 .2rem}
+  section{margin-top:2.6rem}
+  .kicker{
+    font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--muted);font-weight:600;margin:0 0 .8rem;
+    display:flex;align-items:center;gap:.6rem;
+  }
+  .kicker::before{content:"";width:1.4rem;height:2px;background:var(--accent);border-radius:2px}
+  p{margin:.65rem 0}
+  strong{font-weight:650}
+  .math{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-weight:600}
+  sup{font-size:.72em}
+
+  /* Главная формула */
+  .hero-formula{margin-top:2.2rem;background:var(--ink);color:#fff;border-radius:14px;padding:1.6rem 1.4rem;text-align:center}
+  .hero-formula .lbl{font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:#9aa6c9;margin:0 0 .7rem}
+  .hero-formula .eq{font-family:ui-monospace,"SF Mono",Menlo,monospace;font-size:clamp(1.5rem,5.4vw,2.2rem);font-weight:700}
+  .hero-formula .eq b{color:#8ea0ff;font-weight:700}
+  .hero-formula .eq2{font-family:ui-monospace,Menlo,monospace;font-size:clamp(1.05rem,4vw,1.35rem);font-weight:700;color:#dfe4fb;margin-top:.75rem}
+  .hero-formula .note{font-size:.86rem;color:#9aa6c9;margin:.9rem 0 0}
+
+  .recall{background:var(--accent-soft);border-radius:12px;padding:1rem 1.15rem;font-size:.96rem}
+  .recall p{margin:.3rem 0}
+
+  /* Три типа диаграмм */
+  .cases{display:grid;gap:.85rem;margin-top:.4rem}
+  @media(min-width:640px){.cases{grid-template-columns:repeat(3,1fr)}}
+  .case{border-radius:12px;padding:1.05rem 1.1rem;border:1px solid var(--line);background:var(--card);display:flex;flex-direction:column;gap:.35rem}
+  .case .sign{font-weight:800;font-size:1.02rem}
+  .case .count{font-weight:650;font-size:.95rem}
+  .case .desc{font-size:.9rem;color:var(--muted)}
+  .case.pos{border-top:4px solid var(--pos);background:var(--pos-bg)}
+  .case.pos .sign{color:var(--pos)}
+  .case.zero{border-top:4px solid var(--zero);background:var(--zero-bg)}
+  .case.zero .sign{color:var(--zero)}
+  .case.blue{border-top:4px solid var(--accent);background:var(--accent-soft)}
+  .case.blue .sign{color:var(--accent)}
+
+  /* Таблицы */
+  .tscroll{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:.9rem 0}
+  table.freq{border-collapse:collapse;width:100%;min-width:420px;background:var(--card);font-size:.94rem}
+  table.freq th,table.freq td{border:1px solid var(--line);padding:.5rem .7rem;text-align:center}
+  table.freq th{background:var(--accent-soft);font-weight:700;font-size:.86rem}
+  table.freq td:first-child,table.freq th:first-child{text-align:left}
+  table.freq tr.total td{font-weight:800;background:#F3F5FA}
+  table.freq td.num{font-family:ui-monospace,Menlo,monospace;font-variant-numeric:tabular-nums}
+
+  /* Разбор */
+  .worked{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:1.2rem 1.3rem}
+  .worked .task{font-weight:700;font-size:1.02rem;margin:0 0 1rem;padding-bottom:.8rem;border-bottom:1px solid var(--line)}
+  ol.steps{margin:0;padding:0;list-style:none;counter-reset:s;display:flex;flex-direction:column;gap:.75rem}
+  ol.steps li{position:relative;padding-left:2.1rem;counter-increment:s}
+  ol.steps li::before{
+    content:counter(s);position:absolute;left:0;top:.05rem;width:1.5rem;height:1.5rem;border-radius:50%;
+    background:var(--accent-soft);color:var(--accent);font-size:.82rem;font-weight:700;
+    display:flex;align-items:center;justify-content:center;
+  }
+  ol.steps .m{font-family:ui-monospace,Menlo,monospace;font-weight:600;color:var(--ink)}
+  ol.steps .why{display:block;font-size:.88rem;color:var(--muted);margin-top:.15rem}
+  .verdict{margin-top:1rem;padding:.7rem 1rem;background:var(--pos-bg);border-radius:9px;font-weight:600;color:var(--pos);font-size:.98rem}
+
+  /* Практика */
+  .drill{display:flex;flex-direction:column;gap:.7rem}
+  details{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:.85rem 1.05rem}
+  details[open]{border-color:var(--accent)}
+  summary{cursor:pointer;font-weight:600;list-style:none;display:flex;justify-content:space-between;align-items:flex-start;gap:1rem}
+  summary::-webkit-details-marker{display:none}
+  summary:focus-visible{outline:3px solid var(--accent);outline-offset:3px;border-radius:6px}
+  summary .q{flex:1;min-width:0}
+  summary .tag{
+    font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);
+    border:1px solid var(--line);border-radius:20px;padding:.1rem .55rem;white-space:nowrap;margin-top:.15rem;
+  }
+  .ans{margin-top:.7rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.96rem;color:var(--muted)}
+  .ans .m{font-family:ui-monospace,Menlo,monospace;color:var(--ink);font-weight:600}
+  .ans b{color:var(--ink)}
+
+  /* Ошибки */
+  ul.pitfalls{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:.7rem}
+  ul.pitfalls li{padding-left:1.5rem;position:relative;font-size:.98rem}
+  ul.pitfalls li::before{content:"×";position:absolute;left:0;top:-.05rem;color:var(--neg);font-weight:700;font-size:1.1rem}
+  ul.pitfalls b{color:var(--ink)}
+  ul.pitfalls .fix{display:block;font-size:.9rem;color:var(--muted);margin-top:.1rem}
+
+  ol.selfcheck{margin:.4rem 0 0;padding-left:1.3rem}
+  ol.selfcheck li{margin:.45rem 0}
+
+  .next{background:var(--accent);color:#fff;border-radius:12px;padding:1.2rem 1.3rem}
+  .next h2{color:#fff}
+  .next .eq{font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.15rem;margin:.6rem 0 .3rem}
+  .next p{color:#dfe4fb;font-size:.96rem;margin:.4rem 0 0}
+  .foot{margin-top:2.4rem;font-size:.82rem;color:var(--muted);text-align:center}
+
+  .oge-tip{display:flex;gap:.8rem;align-items:flex-start;background:#FFF8E7;border:1px solid #F0D98A;border-left:4px solid #E0A315;border-radius:10px;padding:.85rem 1.05rem;margin:1.5rem 0}
+  .oge-tip .b{font-size:.72rem;font-weight:800;letter-spacing:.03em;color:#8A6A15;white-space:nowrap;text-transform:uppercase;padding-top:.15rem}
+  .oge-tip .x{font-size:.95rem;line-height:1.5}
+
+  @media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+<!--LESSON-NAV-TOP--><style>.lnav{--lnav-accent:#3D5AF1}.lnav a{text-decoration:none;font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif}.lnav-top{max-width:820px;margin:0 auto;padding:.75rem clamp(1rem,4vw,1.5rem) .1rem}.lnav-top a{display:inline-flex;align-items:center;gap:.35rem;color:var(--lnav-accent);font-weight:600;font-size:.9rem}.lnav-top a:hover{text-decoration:underline}.lnav-bot{max-width:820px;margin:2.6rem auto 3rem;padding:1.1rem clamp(1rem,4vw,1.5rem) 0;border-top:1px solid #E4E8EF;display:flex;align-items:stretch;gap:.55rem}.lnav-bot a{min-width:0;display:flex;flex-direction:column;justify-content:center;gap:.15rem;border:1px solid #E4E8EF;border-radius:12px;padding:.65rem .85rem;color:#182233;background:#fff;transition:border-color .1s,transform .08s}.lnav-bot a:hover{border-color:var(--lnav-accent);transform:translateY(-1px)}.lnav-bot .prev,.lnav-bot .next{flex:1 1 0}.lnav-bot .next{text-align:right}.lnav-bot .dir{font-size:.72rem;color:#8A93A6;font-weight:600}.lnav-bot .ttl{font-size:.9rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.lnav-bot .to-cat{flex:0 0 auto;flex-direction:row;align-items:center;justify-content:center;color:var(--lnav-accent);font-weight:700;font-size:.85rem;white-space:nowrap}@media(max-width:420px){.lnav-bot .to-cat span{display:none}.lnav-bot .to-cat{padding:.65rem .7rem}}</style><nav class="lnav lnav-top"><a href="./catalog.html">← Все темы</a></nav><!--/LESSON-NAV-TOP-->
+<div class="wrap">
+
+  <header>
+    <p class="eyebrow">Алгебра · 8 класс · элементы статистики</p>
+    <h1>Таблицы частот и диаграммы</h1>
+    <p class="lede">Как превратить кучу чисел в картинку, по которой вывод виден за секунду — и не соврать при этом масштабом.</p>
+  </header>
+
+  <div class="hero-formula">
+    <p class="lbl">Относительная частота</p>
+    <div class="eq">W = <b>k</b> / <b>n</b></div>
+    <div class="eq2">в процентах: W % = (k / n) · 100 %</div>
+    <div class="eq2">угол сектора: α = (k / n) · 360°</div>
+    <p class="note">k — частота значения (сколько раз встретилось), n — сколько всего данных</p>
+  </div>
+
+  <section>
+    <p class="kicker">Зачем это нужно</p>
+    <h2>Список чисел молчит, диаграмма говорит</h2>
+    <p>Когда данных много — оценки класса, рост учеников, любимые предметы, продажи по месяцам — голый список ничего не показывает. Таблица частот и диаграмма дают увидеть <strong>за секунду</strong>: какое значение встречается чаще всего, как распределены данные, есть ли перекос. Так делают в новостях, спорте, медицине, рекламе, экономике.</p>
+    <p>Главное заблуждение, которое надо сломать сразу: <em>«диаграмма — это просто красивая картинка, главное — числа»</em>. Нет. Диаграмма — <strong>инструмент анализа</strong>. Правильно выбранный тип и масштаб делают вывод очевидным, а неправильный — обманывает. Круговая показывает доли от целого, столбчатая сравнивает величины; перепутаешь — исказишь смысл.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Что вспомнить с прошлого шага</p>
+    <div class="recall">
+      <p>Данные ты уже умеешь <strong>собирать и группировать</strong> — то есть раскладывать по одинаковым значениям.</p>
+      <p>Знаешь <strong>средние показатели</strong>: среднее арифметическое, мода, медиана — они описывают набор одним числом.</p>
+      <p>Помнишь <strong>координатную плоскость</strong>: точка задаётся парой (значение; частота) — это понадобится для полигона частот.</p>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Ядро темы</p>
+    <h2>Частота, относительная частота, таблица</h2>
+    <p><strong>Частота</strong> значения — сколько раз оно встретилось в наборе. Это всегда целое неотрицательное число, «сколько штук».</p>
+    <p><strong>Относительная частота</strong> — доля этого значения от всего набора, «какая часть». Её удобно писать в процентах.</p>
+    <p>Если всего наблюдений <span class="math">n</span>, а значение встретилось <span class="math">k</span> раз, то частота равна <span class="math">k</span>, а относительная частота <span class="math">W = k / n</span>, в процентах <span class="math">(k / n) · 100 %</span>.</p>
+    <p><strong>Таблица частот</strong> — таблица, где каждому различному значению (или интервалу) сопоставлены частота <span class="math">k</span> и, если нужно, относительная частота <span class="math">k/n</span>. По таблице потом и строят диаграмму.</p>
+    <div class="recall" style="background:var(--pos-bg)">
+      <p><strong>Две проверки, которые спасают от ошибок:</strong></p>
+      <p>· сумма всех частот равна <span class="math">n</span>;</p>
+      <p>· сумма всех относительных частот равна <span class="math">1</span> (то есть <span class="math">100 %</span>), а сумма углов всех секторов круговой диаграммы — <span class="math">360°</span>.</p>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Три способа показать одни и те же данные</p>
+    <h2>Какую диаграмму выбрать</h2>
+    <div class="cases">
+      <div class="case blue">
+        <div class="sign">Столбчатая</div>
+        <div class="count">Сравнить величины</div>
+        <div class="desc">Высота столбца пропорциональна частоте. Столбцы одинаковой ширины, между ними промежутки.</div>
+      </div>
+      <div class="case zero">
+        <div class="sign">Круговая</div>
+        <div class="count">Доли одного целого</div>
+        <div class="desc">Весь круг (360°) — это всё: n, или 100 %. Каждому значению — свой сектор с углом α = (k/n) · 360°.</div>
+      </div>
+      <div class="case pos">
+        <div class="sign">Полигон частот</div>
+        <div class="count">Как распределены числа</div>
+        <div class="desc">Ломаная через точки (значение; частота) на координатной плоскости. Для числовых данных.</div>
+      </div>
+    </div>
+    <p style="font-size:.92rem;color:var(--muted);margin-top:.9rem">Вопрос-фильтр перед выбором: это <strong>части одного целого</strong> (тогда круговая) или <strong>сравнение независимых величин</strong> (тогда столбчатая)?</p>
+    <p>И ещё одно железное правило для столбчатой: <strong>единый масштаб</strong> по оси частот (например, 1 клетка = 2 ученика) и ось частот начинается с нуля. Иначе сравнение врёт, даже если все числа посчитаны верно.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Разбираем вместе · думаю вслух</p>
+    <h2>Эталонный пример</h2>
+    <div class="worked">
+      <p class="task">В классе спросили любимый предмет: математика — 12, физика — 6, биология — 4, история — 8.<br>Построй таблицу частот с процентами и найди угол сектора для математики.</p>
+      <ol class="steps">
+        <li>Ищу <span class="m">n</span> — сколько всего опрошенных: <span class="m">n = 12 + 6 + 4 + 8 = 30</span>.
+          <span class="why">Почему первым делом: относительная частота считается от общего числа, без n дальше идти нельзя.</span></li>
+        <li>Относительная частота математики: <span class="m">W = 12/30 = 0,4 = 40 %</span>.
+          <span class="why">Почему так: доля = частота ÷ общее число. Делю на 30 (на все данные), а не на 12 — самую большую частоту.</span></li>
+        <li>Считаю остальные: <span class="m">физика 6/30 = 20 %</span>, <span class="m">биология 4/30 ≈ 13,3 %</span>, <span class="m">история 8/30 ≈ 26,7 %</span>.</li>
+        <li>Проверяю себя: <span class="m">40 + 20 + 13,3 + 26,7 = 100 %</span> — сходится.
+          <span class="why">Почему это важно: сумма долей всегда 100 %. Если не сошлось — где-то ошибка в делении или потеряно значение.</span></li>
+        <li>Угол сектора математики: <span class="m">α = 0,4 · 360° = 144°</span>.
+          <span class="why">Почему: весь круг 360° — это 100 %. Значит 40 % круга — это 40 % от 360°.</span></li>
+      </ol>
+      <div class="verdict">Ответ: математика — частота 12, относительная частота 40 %, сектор 144°.</div>
+      <div class="tscroll">
+        <table class="freq">
+          <thead><tr><th>Предмет</th><th>Частота k</th><th>W = k/n</th><th>В процентах</th><th>Сектор α</th></tr></thead>
+          <tbody>
+            <tr><td>Математика</td><td class="num">12</td><td class="num">12/30 = 0,4</td><td class="num">40 %</td><td class="num">144°</td></tr>
+            <tr><td>Физика</td><td class="num">6</td><td class="num">6/30 = 0,2</td><td class="num">20 %</td><td class="num">72°</td></tr>
+            <tr><td>Биология</td><td class="num">4</td><td class="num">4/30 ≈ 0,133</td><td class="num">≈ 13,3 %</td><td class="num">48°</td></tr>
+            <tr><td>История</td><td class="num">8</td><td class="num">8/30 ≈ 0,267</td><td class="num">≈ 26,7 %</td><td class="num">96°</td></tr>
+            <tr class="total"><td>Всего</td><td class="num">n = 30</td><td class="num">1</td><td class="num">100 %</td><td class="num">360°</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p style="font-size:.9rem;color:var(--muted);margin:.2rem 0 0">Углы: <span class="math">72° = 0,2 · 360°</span>, <span class="math">48° = (4/30) · 360°</span>, <span class="math">96° = (8/30) · 360°</span>. Сумма: <span class="math">144 + 72 + 48 + 96 = 360°</span> — контроль пройден.</p>
+    </div>
+    <div class="oge-tip"><div class="b">🎯 В ОГЭ</div><div class="x"><b>Работа с диаграммами и таблицами.</b> Часто просят прочитать данные с готовой диаграммы и посчитать долю в процентах. Формула одна и та же: <span class="math">W = k/n</span>, потом <span class="math">· 100 %</span>.</div></div>
+  </section>
+
+  <section>
+    <p class="kicker">Покрути сам · интерактив</p>
+    <h2>Один набор данных — три диаграммы</h2>
+    <p>Двигай ползунки: меняй частоты и смотри, как одновременно перестраиваются таблица и диаграмма. Переключай тип диаграммы и лови главное: <strong>данные те же, а видно на каждой разное</strong>.</p>
+    <div class="viz">
+      <div class="tabs" role="tablist" aria-label="Тип диаграммы">
+        <button type="button" class="tab is-on" data-kind="bar" role="tab" aria-selected="true">Столбчатая</button>
+        <button type="button" class="tab" data-kind="pie" role="tab" aria-selected="false">Круговая</button>
+        <button type="button" class="tab" data-kind="poly" role="tab" aria-selected="false">Полигон</button>
+      </div>
+      <canvas id="vizCanvas" width="640" height="380" aria-label="Диаграмма набора данных"></canvas>
+      <p id="vizHint" class="viz-hint"></p>
+      <div class="sliders" id="vizSliders"></div>
+      <div class="tscroll">
+        <table class="freq" id="vizTable"></table>
+      </div>
+    </div>
+    <p style="font-size:.9rem;color:var(--muted)">Попробуй сделать так, чтобы один вариант выбрало <strong>больше половины</strong>. На какой диаграмме это заметно сразу? (На круговой: сектор станет больше полукруга.) А теперь наоборот — сделай все частоты почти одинаковыми: круг разделится на равные куски, столбцы выровняются.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Ещё два разбора</p>
+    <h2>Допиши шаг и реши сам</h2>
+    <div class="worked">
+      <p class="task">Допиши пропущенный шаг. Опросили 25 человек о числе книг, прочитанных за лето. Значение «3 книги» встретилось 10 раз. Найди относительную частоту в процентах и угол сектора.</p>
+      <ol class="steps">
+        <li><span class="m">W = 10/25 = 0,4</span> — это <span class="m">____ %</span>.</li>
+        <li><span class="m">α = ____ · 360° = ____°</span>.</li>
+      </ol>
+      <details style="margin-top:.9rem">
+        <summary><span class="q">Проверить</span><span class="tag">заполнить</span></summary>
+        <div class="ans"><span class="m">W = 10/25 = 0,4 = 40 %</span>; <span class="m">α = 0,4 · 360° = 144°</span>. Те же <b>40 %</b> и <b>144°</b>, что и в эталонном примере — потому что доля та же, хотя чисел было другое количество.</div>
+      </details>
+    </div>
+    <div class="worked" style="margin-top:1rem">
+      <p class="task">Реши сам. В таблице частот оценок за контрольную: «5» — 4, «4» — 9, «3» — 6, «2» — 1. Сколько всего работ? Какова относительная частота оценки «4» в процентах?</p>
+      <details>
+        <summary><span class="q">Показать ответ</span><span class="tag">применение</span></summary>
+        <div class="ans">Всего <span class="m">n = 4 + 9 + 6 + 1 = 20</span>. Относительная частота четвёрки: <span class="m">W = 9/20 = 0,45 = 45 %</span>.</div>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Теперь ты · нажми, чтобы проверить</p>
+    <h2>Практика по нарастанию</h2>
+    <div class="drill">
+      <details>
+        <summary><span class="q">Понимание. Что вообще показывает высота столбца на столбчатой диаграмме?</span><span class="tag">понимание</span></summary>
+        <div class="ans">Высота столбца пропорциональна <b>частоте</b> — тому, сколько раз это значение встретилось. Не проценту, не «важности», а именно количеству. Поэтому масштаб по оси частот обязан быть единым, а ось — начинаться с нуля.</div>
+      </details>
+      <details>
+        <summary><span class="q">Понимание. По диаграмме из эталонного примера: какое значение встречается чаще всего и какова частота самого редкого?</span><span class="tag">понимание</span></summary>
+        <div class="ans">Чаще всего — <b>математика</b>, у неё самый высокий столбец, частота <span class="m">12</span>. Самое редкое — <b>биология</b>, частота <span class="m">4</span>.</div>
+      </details>
+      <details>
+        <summary><span class="q">Применение. Дан набор баллов за упражнение: 2, 3, 3, 5, 3, 2, 5, 3. Построй таблицу частот, посчитай относительные частоты в процентах.</span><span class="tag">применение</span></summary>
+        <div class="ans">
+          Считаю, сколько раз встречается каждое значение: <span class="m">2 → 2 раза, 3 → 4 раза, 5 → 2 раза</span>. Всего <span class="m">n = 2 + 4 + 2 = 8</span>.<br>
+          <span class="m">W(2) = 2/8 = 0,25 = 25 %</span>; <span class="m">W(3) = 4/8 = 0,5 = 50 %</span>; <span class="m">W(5) = 2/8 = 0,25 = 25 %</span>.<br>
+          Проверка: <span class="m">25 + 50 + 25 = 100 %</span> ✓. Углы секторов: <span class="m">90°, 180°, 90°</span> — в сумме <span class="m">360°</span> ✓.<br>
+          Столбчатая: три столбца одинаковой ширины высотой 2, 4 и 2 при одном масштабе; самый высокий — у значения 3.
+        </div>
+      </details>
+      <details>
+        <summary><span class="q">Анализ. Что изменится, если… На круговой диаграмме доля «спорт» была 25 %. Опрошенных стало вдвое больше, а число выбравших спорт не изменилось. Что станет с сектором?</span><span class="tag">анализ</span></summary>
+        <div class="ans">
+          В формуле <span class="m">W = k/n</span> числитель <span class="m">k</span> тот же, а знаменатель <span class="m">n</span> вырос вдвое — значит <b>доля уменьшится ровно вдвое</b>: <span class="m">25 % → 12,5 %</span>.<br>
+          Сектор тоже станет меньше: было <span class="m">0,25 · 360° = 90°</span>, стало <span class="m">0,125 · 360° = 45°</span>.<br>
+          Важный вывод: <b>та же частота может давать разную долю</b> — всё зависит от n. Поэтому «сколько человек» и «сколько процентов» — разные вещи.
+        </div>
+      </details>
+      <details>
+        <summary><span class="q">Анализ. Найди ошибку. Ученик построил круговую диаграмму, где сумма секторов 30 % + 30 % + 30 % = 90 %.</span><span class="tag">анализ</span></summary>
+        <div class="ans">
+          Сумма всех долей обязана быть <b>100 %</b> (весь круг = 360°). Здесь не хватает <span class="m">10 %</span> — значит либо потеряно одно значение (данные неполные), либо проценты посчитаны неверно.<br>
+          В градусах то же самое: <span class="m">3 · 108° = 324°</span>, до полного круга не хватает <span class="m">36°</span>. Такую диаграмму просто нельзя нарисовать без «дырки».
+        </div>
+      </details>
+      <details>
+        <summary><span class="q">Анализ. Обратная задача. Сектор на круговой диаграмме равен 90°. Какой доле и каким процентам он соответствует?</span><span class="tag">анализ</span></summary>
+        <div class="ans">
+          Идём по формуле <span class="m">α = W · 360°</span> в обратную сторону: <span class="m">W = 90/360 = 0,25 = 25 %</span>.<br>
+          Полезный ориентир: <span class="m">90° — четверть</span>, <span class="m">180° — половина</span>, <span class="m">120° — треть</span>.
+        </div>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Тренажёр · бесконечная практика</p>
+    <h2>Считай частоты, проценты и углы</h2>
+    <p>Нажми «Новое задание» и реши. Ответ — <b>число</b>: проценты без знака «%», градусы без «°». Дробные — через точку или запятую. Потом проверь себя или посмотри пошаговое решение.</p>
+    <div class="trainer">
+      <div class="tr-q" id="trQ"></div>
+      <div class="tr-data" id="trData"></div>
+      <div class="tr-ctl">
+        <button id="trNew" type="button">🎲 Новое задание</button>
+        <input id="trAns" type="text" inputmode="decimal" placeholder="напр.  40" aria-label="Ответ">
+        <button id="trCheck" type="button" class="sec">Проверить</button>
+        <button id="trShow" type="button" class="ghost">Показать решение</button>
+      </div>
+      <div id="trResult" class="tr-result"></div>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Где чаще всего ошибаются</p>
+    <h2>Четыре ловушки</h2>
+    <ul class="pitfalls">
+      <li><b>Неверно выбирают тип диаграммы.</b> Берут круговую там, где надо сравнивать величины (например, продажи за разные годы), хотя круговая — только для долей одного целого.
+        <span class="fix">Как не допустить: спроси себя — это «части одного целого» (круговая) или «сравнение независимых величин» (столбчатая)?</span></li>
+      <li><b>Ошибаются с масштабом.</b> Делают столбцы разной ширины или неравномерную шкалу частот — и сравнение врёт.
+        <span class="fix">Как не допустить: сначала задай шкалу (1 клетка = ... единиц) и держи её единой для всех столбцов; ось частот начинай с 0.</span></li>
+      <li><b>Неверно считают относительную частоту в процентах.</b> Делят на максимальную частоту вместо общего числа n; или забывают умножить на 100.
+        <span class="fix">Как не допустить: всегда <span class="math">W = k / n</span> — делим на ВСЕ данные, затем <span class="math">· 100 %</span>. Проверь, что сумма всех процентов = 100 %.</span></li>
+      <li><b>Путают частоту и относительную частоту.</b> Пишут «20 %» там, где надо «20 человек», и наоборот.
+        <span class="fix">Как не допустить: частота — штуки (целое число), относительная частота — доля или проценты.</span></li>
+    </ul>
+  </section>
+
+  <section>
+    <p class="kicker">Проверь себя вслух</p>
+    <h2>Объясни своими словами</h2>
+    <p>Закрой урок и ответь вслух — как будто объясняешь другу или чат-боту:</p>
+    <ol class="selfcheck">
+      <li>По какой формуле считают относительную частоту и от чего берётся доля?</li>
+      <li>Чему равна сумма всех относительных частот и сумма углов секторов круговой диаграммы?</li>
+      <li>Когда выбирают круговую диаграмму, а когда столбчатую?</li>
+    </ol>
+    <details style="margin-top:.9rem">
+      <summary><span class="q">Сверить ответы</span><span class="tag">самопроверка</span></summary>
+      <div class="ans">
+        1) <span class="m">W = k/n</span>, доля берётся <b>от общего числа данных n</b>.<br>
+        2) Сумма относительных частот = <span class="m">1</span> (или <span class="m">100 %</span>); сумма углов секторов = <span class="m">360°</span>.<br>
+        3) Круговую — для долей одного целого; столбчатую — для сравнения величин.
+      </div>
+    </details>
+  </section>
+
+  <section>
+    <div class="next">
+      <h2>Что дальше</h2>
+      <p>Ты научился превращать данные в точки и картинки: пара «значение; частота» — это точка на координатной плоскости, а ломаная через такие точки — полигон частот.</p>
+      <div class="eq">точки → график</div>
+      <p>Дальше по программе — <strong>квадратичная функция</strong>: там график задаёт уже не набор данных, а формула, и точки складываются в параболу. Навык «читать картинку и понимать, что она говорит» останется тем же самым.</p>
+    </div>
+  </section>
+
+  <p class="foot">Итог одним предложением: таблица частот и диаграммы превращают набор данных в наглядную картину, где <span class="math">W = k/n</span> показывает долю каждого значения от целого.</p>
+
+</div>
+
+<style>
+  .viz{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.1rem 1.1rem 1rem;margin:1rem 0}
+  .viz canvas{width:100%;height:auto;display:block;border-radius:10px;background:#FCFDFF}
+  .tabs{display:flex;gap:.4rem;margin-bottom:.9rem;flex-wrap:wrap}
+  .tab{
+    font:inherit;font-size:.86rem;font-weight:700;cursor:pointer;
+    border:1px solid var(--line);background:#fff;color:var(--muted);
+    border-radius:20px;padding:.35rem .9rem;
+  }
+  .tab.is-on{background:var(--accent);border-color:var(--accent);color:#fff}
+  .tab:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+  .viz-hint{font-size:.88rem;color:var(--muted);text-align:center;margin:.7rem 0 0}
+  .sliders{display:grid;gap:.55rem;margin-top:.9rem}
+  @media(min-width:560px){.sliders{grid-template-columns:repeat(2,1fr)}}
+  .sliders label{display:flex;align-items:center;gap:.5rem;font-size:.9rem;font-weight:650}
+  .sliders .dot{width:.7rem;height:.7rem;border-radius:50%;flex:0 0 auto}
+  .sliders .nm{min-width:8.5ch}
+  .sliders input[type=range]{flex:1;min-width:70px;accent-color:var(--accent)}
+  .sliders input[type=range]:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+  .sliders .sval{min-width:2.5ch;text-align:right;font-family:ui-monospace,Menlo,monospace;font-weight:700;color:var(--accent)}
+</style>
+
+<script>
+(function(){
+  var canvas=document.getElementById('vizCanvas'); if(!canvas) return;
+  var ctx=canvas.getContext('2d');
+  var tableEl=document.getElementById('vizTable'), hintEl=document.getElementById('vizHint');
+  var slotsEl=document.getElementById('vizSliders');
+  var kind='bar', W=640, H=380, dpr=1;
+
+  var data=[
+    {name:'Математика', short:'Матем.', k:12, col:'#3B4FD0'},
+    {name:'Физика',     short:'Физика', k:6,  col:'#1E8E5A'},
+    {name:'Биология',   short:'Биол.',  k:4,  col:'#B9791A'},
+    {name:'История',    short:'Истор.', k:8,  col:'#8E4FBF'}
+  ];
+
+  function num(x){ var r=Math.round(x*10)/10; return String(r).replace('.',','); }
+
+  // ползунки
+  data.forEach(function(d,i){
+    var lab=document.createElement('label');
+    lab.innerHTML='<span class="dot" style="background:'+d.col+'"></span><span class="nm">'+d.name+'</span>';
+    var inp=document.createElement('input');
+    inp.type='range'; inp.min='1'; inp.max='20'; inp.step='1'; inp.value=String(d.k);
+    inp.setAttribute('aria-label','Частота: '+d.name);
+    var out=document.createElement('span'); out.className='sval'; out.textContent=String(d.k);
+    inp.addEventListener('input',function(){ d.k=parseInt(inp.value,10); out.textContent=inp.value; render(); });
+    lab.appendChild(inp); lab.appendChild(out); slotsEl.appendChild(lab);
+  });
+
+  document.querySelectorAll('.tab').forEach(function(b){
+    b.addEventListener('click',function(){
+      document.querySelectorAll('.tab').forEach(function(x){ x.classList.remove('is-on'); x.setAttribute('aria-selected','false'); });
+      b.classList.add('is-on'); b.setAttribute('aria-selected','true');
+      kind=b.getAttribute('data-kind'); render();
+    });
+  });
+
+  function resize(){
+    var cssW=canvas.clientWidth||640;
+    dpr=Math.min(window.devicePixelRatio||1,2);
+    W=cssW; H=Math.round(Math.max(cssW*0.62,230));
+    canvas.width=W*dpr; canvas.height=H*dpr; canvas.style.height=H+'px';
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+  }
+
+  function total(){ var s=0; data.forEach(function(d){s+=d.k;}); return s; }
+  function fs(){ return Math.max(9,Math.min(13,W/34)); }
+
+  function niceStep(maxK){
+    if(maxK<=8) return 1;
+    if(maxK<=20) return 2;
+    if(maxK<=50) return 5;
+    return 10;
+  }
+
+  function axes(L,T,pw,ph,top,step){
+    var f=fs();
+    ctx.font=f+'px system-ui,sans-serif';
+    ctx.strokeStyle='#EDEFF4'; ctx.lineWidth=1;
+    ctx.fillStyle='#8A93A6'; ctx.textAlign='right'; ctx.textBaseline='middle';
+    for(var v=0; v<=top; v+=step){
+      var y=T+ph-(v/top)*ph;
+      ctx.beginPath(); ctx.moveTo(L,y); ctx.lineTo(L+pw,y); ctx.stroke();
+      ctx.fillText(String(v),L-6,y);
+    }
+    ctx.strokeStyle='#9AA3B2'; ctx.lineWidth=1.5;
+    ctx.beginPath(); ctx.moveTo(L,T); ctx.lineTo(L,T+ph); ctx.lineTo(L+pw,T+ph); ctx.stroke();
+  }
+
+  function catLabels(L,T,pw,ph){
+    var f=fs();
+    ctx.font=f+'px system-ui,sans-serif';
+    ctx.fillStyle='#5A6478'; ctx.textAlign='center'; ctx.textBaseline='top';
+    var cw=pw/data.length;
+    data.forEach(function(d,i){
+      var name = (W<430? d.short : d.name);
+      ctx.fillText(name, L+cw*(i+0.5), T+ph+7);
+    });
+  }
+
+  function drawBar(){
+    var f=fs(), L=Math.max(30,f*2.6), R=10, T=16, B=f*2.6+12;
+    var pw=W-L-R, ph=H-T-B;
+    var maxK=Math.max.apply(null,data.map(function(d){return d.k;}));
+    var step=niceStep(maxK), top=Math.max(step,Math.ceil(maxK/step)*step);
+    axes(L,T,pw,ph,top,step);
+    var cw=pw/data.length, bw=cw*0.56;
+    data.forEach(function(d,i){
+      var h=(d.k/top)*ph, x=L+cw*(i+0.5)-bw/2, y=T+ph-h;
+      ctx.fillStyle=d.col; ctx.fillRect(x,y,bw,h);
+      ctx.fillStyle='#1B2333'; ctx.font='700 '+f+'px system-ui,sans-serif';
+      ctx.textAlign='center'; ctx.textBaseline='bottom';
+      ctx.fillText(String(d.k), x+bw/2, y-3);
+    });
+    catLabels(L,T,pw,ph);
+    hintEl.textContent='Один масштаб: 1 деление по вертикали = '+step+' шт. Высота столбца = частота.';
+  }
+
+  function drawPoly(){
+    var f=fs(), L=Math.max(30,f*2.6), R=10, T=16, B=f*2.6+12;
+    var pw=W-L-R, ph=H-T-B;
+    var maxK=Math.max.apply(null,data.map(function(d){return d.k;}));
+    var step=niceStep(maxK), top=Math.max(step,Math.ceil(maxK/step)*step);
+    axes(L,T,pw,ph,top,step);
+    var cw=pw/data.length;
+    ctx.strokeStyle='#1E8E5A'; ctx.lineWidth=2.5; ctx.beginPath();
+    data.forEach(function(d,i){
+      var x=L+cw*(i+0.5), y=T+ph-(d.k/top)*ph;
+      if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+    });
+    ctx.stroke();
+    data.forEach(function(d,i){
+      var x=L+cw*(i+0.5), y=T+ph-(d.k/top)*ph;
+      ctx.fillStyle='#1E8E5A'; ctx.beginPath(); ctx.arc(x,y,5,0,7); ctx.fill();
+      ctx.fillStyle='#fff'; ctx.beginPath(); ctx.arc(x,y,2,0,7); ctx.fill();
+      ctx.fillStyle='#1B2333'; ctx.font='700 '+f+'px system-ui,sans-serif';
+      ctx.textAlign='center'; ctx.textBaseline='bottom';
+      ctx.fillText(String(d.k), x, y-9);
+    });
+    catLabels(L,T,pw,ph);
+    var mx=0, mi=0;
+    data.forEach(function(d,i){ if(d.k>mx){mx=d.k;mi=i;} });
+    hintEl.textContent='Точки (значение; частота) соединены ломаной. Пик распределения — «'+data[mi].name+'».';
+  }
+
+  function drawPie(){
+    var f=fs();
+    var n=total();
+    var cx=W/2, cy=H/2, r=Math.min(W,H)*0.36;
+    var a0=-Math.PI/2;
+    data.forEach(function(d){
+      var ang=(d.k/n)*Math.PI*2;
+      ctx.beginPath(); ctx.moveTo(cx,cy); ctx.arc(cx,cy,r,a0,a0+ang); ctx.closePath();
+      ctx.fillStyle=d.col; ctx.fill();
+      ctx.strokeStyle='#fff'; ctx.lineWidth=2; ctx.stroke();
+      if(ang>0.28){
+        var mid=a0+ang/2, lx=cx+Math.cos(mid)*r*0.64, ly=cy+Math.sin(mid)*r*0.64;
+        ctx.fillStyle='#fff'; ctx.font='700 '+f+'px system-ui,sans-serif';
+        ctx.textAlign='center'; ctx.textBaseline='middle';
+        ctx.fillText(num(d.k/n*100)+' %', lx, ly);
+      }
+      a0+=ang;
+    });
+    // подпись центра-целого
+    ctx.fillStyle='#5A6478'; ctx.font=f+'px system-ui,sans-serif';
+    ctx.textAlign='center'; ctx.textBaseline='top';
+    ctx.fillText('весь круг = 360° = 100 % = n = '+n, cx, H-f*1.6);
+    var big=null;
+    data.forEach(function(d){ if(d.k/n>0.5) big=d; });
+    hintEl.textContent = big
+      ? 'Сектор «'+big.name+'» больше полукруга — значит его выбрали больше половины.'
+      : 'Ни один сектор не больше полукруга: половины ни у кого нет.';
+  }
+
+  function renderTable(){
+    var n=total(), rows='';
+    data.forEach(function(d){
+      var w=d.k/n;
+      rows+='<tr><td><span class="dot" style="display:inline-block;width:.65rem;height:.65rem;border-radius:50%;background:'+d.col+';margin-right:.45rem"></span>'+d.name+'</td>'+
+            '<td class="num">'+d.k+'</td>'+
+            '<td class="num">'+d.k+'/'+n+'</td>'+
+            '<td class="num">'+num(w*100)+' %</td>'+
+            '<td class="num">'+num(w*360)+'°</td></tr>';
+    });
+    tableEl.innerHTML='<thead><tr><th>Значение</th><th>k</th><th>W = k/n</th><th>Проценты</th><th>Сектор α</th></tr></thead><tbody>'+rows+
+      '<tr class="total"><td>Всего</td><td class="num">n = '+n+'</td><td class="num">1</td><td class="num">100 %</td><td class="num">360°</td></tr></tbody>';
+  }
+
+  function render(){
+    resize();
+    ctx.clearRect(0,0,W,H);
+    if(kind==='bar') drawBar();
+    else if(kind==='pie') drawPie();
+    else drawPoly();
+    renderTable();
+  }
+
+  window.addEventListener('resize',render);
+  render();
+})();
+</script>
+
+<style>
+  .trainer{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.2rem 1.3rem;margin-top:1rem}
+  .tr-q{font-weight:650;font-size:1.02rem;padding:.9rem 1rem;background:var(--accent-soft);border-radius:10px;color:var(--ink)}
+  .tr-data{margin-top:.8rem;overflow-x:auto}
+  .tr-data table{border-collapse:collapse;width:100%;min-width:340px;font-size:.92rem}
+  .tr-data th,.tr-data td{border:1px solid var(--line);padding:.4rem .6rem;text-align:center;font-family:ui-monospace,Menlo,monospace}
+  .tr-data th{background:#F3F5FA;font-family:system-ui,sans-serif;font-size:.82rem}
+  .tr-data td:first-child,.tr-data th:first-child{text-align:left;font-family:system-ui,sans-serif}
+  .tr-ctl{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.9rem;align-items:center}
+  .tr-ctl button{font:inherit;font-weight:700;font-size:.9rem;cursor:pointer;border:none;border-radius:9px;padding:.55rem .95rem;color:#fff;background:var(--accent)}
+  .tr-ctl button.sec{background:var(--pos)}
+  .tr-ctl button.ghost{background:transparent;color:var(--accent);border:1px solid var(--accent)}
+  .tr-ctl input{flex:1;min-width:140px;font:inherit;padding:.5rem .7rem;border:1px solid var(--line);border-radius:9px;background:#fff;color:var(--ink)}
+  .tr-ctl button:focus-visible,.tr-ctl input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+  .tr-result{margin-top:.9rem;font-size:.96rem;min-height:1.2rem}
+  .tr-result .ok{color:var(--pos);font-weight:700}
+  .tr-result .bad{color:var(--neg);font-weight:700}
+  .tr-result .sol{margin-top:.7rem;padding:.85rem 1rem;background:#FCFBFE;border:1px solid var(--line);border-radius:10px;font-family:ui-monospace,Menlo,monospace;font-size:.9rem;line-height:1.8}
+  .tr-result .sol b{color:var(--accent)}
+</style>
+
+<script>
+(function(){
+  var qEl=document.getElementById('trQ'), dEl=document.getElementById('trData');
+  var ansEl=document.getElementById('trAns'), resEl=document.getElementById('trResult');
+  if(!qEl) return;
+
+  var MINUS='−';
+  function fmt(x){
+    var r=Math.round(x*100)/100;
+    var s=String(Math.abs(r)).replace('.',',');
+    return (r<0?MINUS:'')+s;
+  }
+  function ri(a,b){ return Math.floor(Math.random()*(b-a+1))+a; }
+  function pick(a){ return a[ri(0,a.length-1)]; }
+
+  var CTX=[
+    {q:'любимый предмет', unit:'человек', items:['Математика','Физика','Биология','История']},
+    {q:'любимый вид спорта', unit:'человек', items:['Футбол','Плавание','Волейбол','Лыжи']},
+    {q:'способ добраться до школы', unit:'человек', items:['Пешком','Автобус','Метро','На машине']},
+    {q:'оценка за контрольную', unit:'работ', items:['Оценка «5»','Оценка «4»','Оценка «3»','Оценка «2»']},
+    {q:'любимый жанр книг', unit:'человек', items:['Фантастика','Детектив','Приключения','Стихи']}
+  ];
+  // (n, шаг): подобраны так, чтобы и проценты, и углы получались целыми
+  var NS=[[20,1],[25,5],[30,3],[40,2],[50,5],[60,3],[100,5]];
+
+  var cur=null;
+
+  function makeParts(units,cnt){
+    // случайное разбиение units на cnt положительных слагаемых
+    var cuts=[], i;
+    for(i=0;i<cnt-1;i++) cuts.push(ri(1,units-1));
+    cuts.sort(function(a,b){return a-b;});
+    var parts=[], prev=0;
+    for(i=0;i<cnt-1;i++){ parts.push(cuts[i]-prev); prev=cuts[i]; }
+    parts.push(units-prev);
+    return parts;
+  }
+
+  function generate(focus){
+    var ctxd, ns, n, step, units, parts, ok=false, tries=0, ks=[];
+    while(!ok && tries<200){
+      tries++;
+      ns=pick(NS); n=ns[0]; step=ns[1]; units=n/step;
+      if(units<4) continue;
+      parts=makeParts(units,4);
+      // краевой случай: иногда делаем ровно половину у одного варианта
+      if(Math.random()<0.22 && units%2===0){
+        var half=units/2, rest=units-half;
+        if(rest>=3){
+          var r3=makeParts(rest,3);
+          parts=[half].concat(r3);
+          for(var s=parts.length-1;s>0;s--){ var j=ri(0,s), t=parts[s]; parts[s]=parts[j]; parts[j]=t; }
+        }
+      }
+      if(parts.some(function(p){return p<1;})) continue;
+      ks=parts.map(function(p){return p*step;});
+      ok=true;
+    }
+    ctxd=pick(CTX);
+    var type=ri(1,5), target=ri(0,3);
+    cur={ctx:ctxd, n:n, ks:ks, type:type, target:target};
+    cur.pct=ks.map(function(k){ return k*100/n; });
+    cur.deg=ks.map(function(k){ return k*360/n; });
+    cur.answer =
+      type===1 ? n :
+      type===2 ? cur.pct[target] :
+      type===3 ? cur.deg[target] :
+      type===4 ? cur.deg[target]*100/360 :
+                 100 - (cur.pct.reduce(function(a,b){return a+b;},0) - cur.pct[target]);
+    renderTask();
+    resEl.innerHTML=''; ansEl.value='';
+    if(focus) ansEl.focus();
+  }
+
+  function tableK(){
+    var c=cur, h='<table><thead><tr><th>Значение</th><th>Частота k</th></tr></thead><tbody>';
+    c.ctx.items.forEach(function(it,i){ h+='<tr><td>'+it+'</td><td>'+c.ks[i]+'</td></tr>'; });
+    return h+'</tbody></table>';
+  }
+  function tablePct(){
+    var c=cur, h='<table><thead><tr><th>Значение</th><th>Доля, %</th></tr></thead><tbody>';
+    c.ctx.items.forEach(function(it,i){
+      h+='<tr><td>'+it+'</td><td>'+(i===c.target?'?':fmt(c.pct[i])+' %')+'</td></tr>';
+    });
+    return h+'</tbody></table>';
+  }
+
+  function renderTask(){
+    var c=cur, name=c.ctx.items[c.target];
+    if(c.type===1){
+      qEl.textContent='Дана таблица частот («'+c.ctx.q+'»). Сколько всего данных n?';
+      dEl.innerHTML=tableK();
+    } else if(c.type===2){
+      qEl.textContent='По таблице частот найди относительную частоту значения «'+name+'» в процентах.';
+      dEl.innerHTML=tableK();
+    } else if(c.type===3){
+      qEl.textContent='По таблице частот найди угол сектора для «'+name+'» на круговой диаграмме (в градусах).';
+      dEl.innerHTML=tableK();
+    } else if(c.type===4){
+      qEl.textContent='На круговой диаграмме сектор «'+name+'» равен '+fmt(c.deg[c.target])+'°. Какой доле в процентах он соответствует?';
+      dEl.innerHTML='';
+    } else {
+      qEl.textContent='В таблице потеряли одну долю. Найди пропущенный процент для «'+name+'».';
+      dEl.innerHTML=tablePct();
+    }
+  }
+
+  function solutionHTML(){
+    var c=cur, name=c.ctx.items[c.target], k=c.ks[c.target], h='<div class="sol">';
+    if(c.type===1){
+      h+='n = '+c.ks.join(' + ')+' = <b>'+c.n+'</b><br>';
+      h+='Сумма всех частот — это и есть общее число данных.';
+    } else if(c.type===2){
+      h+='Шаг 1. n = '+c.ks.join(' + ')+' = '+c.n+'<br>';
+      h+='Шаг 2. W = k / n = '+k+' / '+c.n+' = '+fmt(k/c.n)+'<br>';
+      h+='Шаг 3. В процентах: '+fmt(k/c.n)+' · 100 % = <b>'+fmt(c.pct[c.target])+' %</b><br>';
+      h+='Проверка: сумма всех долей = 100 %.';
+    } else if(c.type===3){
+      h+='Шаг 1. n = '+c.ks.join(' + ')+' = '+c.n+'<br>';
+      h+='Шаг 2. W = '+k+' / '+c.n+' = '+fmt(k/c.n)+'<br>';
+      h+='Шаг 3. α = W · 360° = '+fmt(k/c.n)+' · 360° = <b>'+fmt(c.deg[c.target])+'°</b><br>';
+      h+='Проверка: сумма всех секторов = 360°.';
+    } else if(c.type===4){
+      h+='Весь круг 360° — это 100 %.<br>';
+      h+='W = α / 360° = '+fmt(c.deg[c.target])+' / 360 = '+fmt(c.answer/100)+'<br>';
+      h+='В процентах: <b>'+fmt(c.answer)+' %</b>';
+    } else {
+      var others=[], sum=0;
+      c.pct.forEach(function(p,i){ if(i!==c.target){ others.push(fmt(p)); sum+=p; } });
+      h+='Сумма всех долей обязана быть 100 %.<br>';
+      h+='Известные: '+others.join(' + ')+' = '+fmt(sum)+' %<br>';
+      h+='Пропущенная: 100 '+MINUS+' '+fmt(sum)+' = <b>'+fmt(c.answer)+' %</b>';
+    }
+    return h+'</div>';
+  }
+
+  function check(){
+    var raw=ansEl.value.trim().toLowerCase();
+    if(!raw){ resEl.innerHTML='<span class="bad">Введи ответ или нажми «Показать решение».</span>'; return; }
+    var norm=raw.replace(/−/g,'-').replace(/,/g,'.').replace(/[%°\s]/g,'').replace(/градус\w*/g,'');
+    var got=parseFloat(norm);
+    if(isNaN(got)){
+      resEl.innerHTML='<span class="bad">Не понял запись. Введи одно число, например 40 (без знака процента).</span>';
+      return;
+    }
+    var okv=Math.abs(got-cur.answer)<0.05;
+    if(okv){
+      resEl.innerHTML='<span class="ok">✓ Верно! Ответ '+fmt(cur.answer)+(cur.type===3?'°':(cur.type===1?'':' %'))+'.</span>'+solutionHTML();
+    } else {
+      var hint='';
+      if(cur.type===2 && Math.abs(got-cur.ks[cur.target])<0.05) hint=' Это частота (штуки), а нужна доля: раздели на n и умножь на 100.';
+      if(cur.type===2 && Math.abs(got-cur.ks[cur.target]/cur.n)<0.02) hint=' Долю получил верно — осталось умножить на 100 %.';
+      if(cur.type===3 && Math.abs(got-cur.pct[cur.target])<0.05) hint=' Это проценты, а нужен угол: умножай не на 100 %, а на 360°.';
+      resEl.innerHTML='<span class="bad">✗ Пока не то.'+hint+'</span>'+solutionHTML();
+    }
+  }
+
+  document.getElementById('trNew').addEventListener('click',function(){ generate(true); });
+  document.getElementById('trCheck').addEventListener('click',check);
+  document.getElementById('trShow').addEventListener('click',function(){ resEl.innerHTML=solutionHTML(); });
+  ansEl.addEventListener('keydown',function(e){ if(e.key==='Enter') check(); });
+
+  generate(false);
+})();
+</script>
+<!--LESSON-NAV-BOT--><nav class="lnav lnav-bot"><a class="prev" href="./alg8-srednie-pokazateli.html"><span class="dir">← Предыдущая</span><span class="ttl">Среднее арифметическое, мода, медиана и размах</span></a><a class="to-cat" href="./catalog.html">📚 <span>Все темы</span></a><a class="next" href="./geo8-mnogougolnik.html"><span class="dir">Следующая →</span><span class="ttl">Многоугольник и сумма углов</span></a></nav><!--/LESSON-NAV-BOT-->

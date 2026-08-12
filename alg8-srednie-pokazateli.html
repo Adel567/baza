@@ -1,0 +1,706 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Среднее, мода, медиана и размах — урок, алгебра 8 класс</title>
+<style>
+  :root{
+    --paper:#F6F7F9;
+    --card:#FFFFFF;
+    --ink:#1B2333;
+    --muted:#5A6478;
+    --line:#E2E5EC;
+    --accent:#3B4FD0;        /* среднее */
+    --accent-soft:#EAEDFB;
+    --pos:#1E8E5A;           /* мода */
+    --pos-bg:#E7F4EC;
+    --zero:#B9791A;          /* медиана */
+    --zero-bg:#FBF1DC;
+    --neg:#C0455B;           /* размах */
+    --neg-bg:#F9E9EC;
+  }
+  *{box-sizing:border-box}
+  body{margin:0}
+  .wrap{
+    max-width:760px;margin:0 auto;
+    padding:clamp(1.4rem,4vw,3rem) clamp(1.1rem,4vw,2rem) 4rem;
+    background:var(--paper);color:var(--ink);
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    font-size:17px;line-height:1.62;-webkit-font-smoothing:antialiased;
+  }
+  .eyebrow{font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);font-weight:600;margin:0 0 .5rem}
+  h1{font-family:Georgia,"Times New Roman",serif;font-size:clamp(2rem,6.5vw,2.8rem);line-height:1.06;margin:0;font-weight:700;letter-spacing:-.01em;text-wrap:balance}
+  .lede{font-size:1.08rem;color:var(--muted);margin:.7rem 0 0;max-width:60ch;text-wrap:pretty}
+  h2{font-family:Georgia,serif;font-size:1.32rem;font-weight:700;margin:0 0 .1rem;letter-spacing:-.005em}
+  h3{font-size:1rem;margin:1.2rem 0 .2rem}
+  section{margin-top:2.6rem}
+  .kicker{font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:600;margin:0 0 .8rem;display:flex;align-items:center;gap:.6rem}
+  .kicker::before{content:"";width:1.4rem;height:2px;background:var(--accent);border-radius:2px}
+  p{margin:.65rem 0}
+  strong{font-weight:650}
+  .math{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-weight:600}
+  sub{font-size:.72em}
+
+  /* Главная формула */
+  .hero-formula{margin-top:2.2rem;background:var(--ink);color:#fff;border-radius:14px;padding:1.5rem 1.2rem;text-align:center}
+  .hero-formula .lbl{font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:#9aa6c9;margin:0 0 .7rem}
+  .hero-formula .eq{font-family:ui-monospace,"SF Mono",Menlo,monospace;font-size:clamp(1.05rem,4.3vw,1.55rem);font-weight:700}
+  .hero-formula .eq b{color:#8ea0ff}
+  .hero-formula .note{font-size:.86rem;color:#9aa6c9;margin:.8rem 0 0}
+
+  /* Пререквизит */
+  .recall{background:var(--accent-soft);border-radius:12px;padding:1rem 1.15rem;font-size:.96rem}
+  .recall p{margin:.3rem 0}
+
+  /* Четыре показателя */
+  .cases{display:grid;gap:.85rem;margin-top:.4rem}
+  @media(min-width:620px){.cases{grid-template-columns:repeat(2,1fr)}}
+  .case{border-radius:12px;padding:1.05rem 1.1rem;border:1px solid var(--line);background:var(--card);display:flex;flex-direction:column;gap:.3rem}
+  .case .sign{font-weight:700;font-size:1.05rem}
+  .case .desc{font-size:.93rem;color:var(--muted)}
+  .case .rule{font-family:ui-monospace,Menlo,monospace;font-size:.9rem;font-weight:600;margin-top:.25rem}
+  .case.mean{border-top:4px solid var(--accent);background:var(--accent-soft)} .case.mean .sign{color:var(--accent)}
+  .case.mode{border-top:4px solid var(--pos);background:var(--pos-bg)} .case.mode .sign{color:var(--pos)}
+  .case.med{border-top:4px solid var(--zero);background:var(--zero-bg)} .case.med .sign{color:var(--zero)}
+  .case.rng{border-top:4px solid var(--neg);background:var(--neg-bg)} .case.rng .sign{color:var(--neg)}
+
+  /* Разбор */
+  .worked{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:1.2rem 1.3rem}
+  .worked .task{font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1rem;margin:0 0 1rem;padding-bottom:.8rem;border-bottom:1px solid var(--line)}
+  ol.steps{margin:0;padding:0;list-style:none;counter-reset:s;display:flex;flex-direction:column;gap:.7rem}
+  ol.steps li{position:relative;padding-left:2.1rem;counter-increment:s}
+  ol.steps li::before{content:counter(s);position:absolute;left:0;top:.05rem;width:1.5rem;height:1.5rem;border-radius:50%;background:var(--accent-soft);color:var(--accent);font-size:.82rem;font-weight:700;display:flex;align-items:center;justify-content:center}
+  ol.steps .m{font-family:ui-monospace,Menlo,monospace;font-weight:600;color:var(--ink)}
+  ol.steps .why{display:block;font-size:.88rem;color:var(--muted);font-style:italic}
+  .verdict{margin-top:1rem;padding:.7rem 1rem;background:var(--pos-bg);border-radius:9px;font-weight:600;color:var(--pos);font-size:.98rem}
+
+  /* Практика */
+  .drill{display:flex;flex-direction:column;gap:.7rem}
+  details{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:.85rem 1.05rem}
+  details[open]{border-color:var(--accent)}
+  summary{cursor:pointer;font-weight:600;list-style:none;display:flex;justify-content:space-between;align-items:center;gap:1rem}
+  summary::-webkit-details-marker{display:none}
+  summary:focus-visible{outline:3px solid var(--accent);outline-offset:3px;border-radius:6px}
+  summary .q{min-width:0}
+  summary .q .m{font-family:ui-monospace,Menlo,monospace}
+  summary .tag{font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);border:1px solid var(--line);border-radius:20px;padding:.1rem .55rem;white-space:nowrap}
+  summary::after{content:"ответ";font-size:.78rem;color:var(--accent);font-weight:600;white-space:nowrap}
+  details[open] summary::after{content:"скрыть"}
+  .ans{margin-top:.7rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.96rem;color:var(--muted)}
+  .ans .m{font-family:ui-monospace,Menlo,monospace;color:var(--ink);font-weight:600}
+  .ans p{margin:.4rem 0}
+
+  /* Ошибки */
+  ul.pitfalls{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:.6rem}
+  ul.pitfalls li{padding-left:1.5rem;position:relative;font-size:.98rem}
+  ul.pitfalls li::before{content:"×";position:absolute;left:0;top:-.05rem;color:var(--neg);font-weight:700;font-size:1.1rem}
+  ul.pitfalls b{color:var(--ink)}
+
+  .next{background:var(--accent);color:#fff;border-radius:12px;padding:1.2rem 1.3rem}
+  .next h2{color:#fff}
+  .next p{color:#dfe4fb;font-size:.96rem;margin:.4rem 0 0}
+  .foot{margin-top:2.4rem;font-size:.82rem;color:var(--muted);text-align:center}
+
+  .oge-tip{display:flex;gap:.8rem;align-items:flex-start;background:#FFF8E7;border:1px solid #F0D98A;border-left:4px solid #E0A315;border-radius:10px;padding:.85rem 1.05rem;margin:1.5rem 0}
+  .oge-tip .b{font-size:.72rem;font-weight:800;letter-spacing:.03em;color:#8A6A15;white-space:nowrap;text-transform:uppercase;padding-top:.15rem}
+  .oge-tip .x{font-size:.95rem;line-height:1.5}
+
+  /* Ряд чисел */
+  .series{font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.02rem;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:.7rem .9rem;overflow-x:auto;white-space:nowrap}
+  .series .hi{background:var(--zero-bg);color:var(--zero);border-radius:5px;padding:0 .2em}
+
+  /* Визуализация */
+  .viz{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.1rem 1.1rem 1rem;margin:1rem 0}
+  .viz canvas{width:100%;height:auto;display:block;border-radius:10px;background:#FCFDFF}
+  .presets{display:flex;gap:.45rem;flex-wrap:wrap;margin-bottom:.9rem}
+  .presets button{font:inherit;font-size:.83rem;font-weight:600;cursor:pointer;border:1px solid var(--line);background:#fff;color:var(--ink);border-radius:20px;padding:.35rem .8rem}
+  .presets button[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft);color:var(--accent)}
+  .presets button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+  .vslide{display:flex;align-items:center;gap:.6rem;margin-top:.9rem;font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:.9rem;flex-wrap:wrap}
+  .vslide input[type=range]{flex:1;min-width:150px;accent-color:var(--accent)}
+  .vslide input[type=range]:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+  .vslide .sval{min-width:3ch;text-align:right;color:var(--accent);font-variant-numeric:tabular-nums}
+  .chips{display:grid;grid-template-columns:repeat(2,1fr);gap:.5rem;margin-top:.9rem}
+  @media(min-width:560px){.chips{grid-template-columns:repeat(4,1fr)}}
+  .chip{border-radius:10px;padding:.5rem .6rem;text-align:center;font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:.95rem}
+  .chip small{display:block;font-family:system-ui,sans-serif;font-size:.68rem;letter-spacing:.06em;text-transform:uppercase;font-weight:700;opacity:.8;margin-bottom:.15rem}
+  .chip.mean{background:var(--accent-soft);color:var(--accent)}
+  .chip.mode{background:var(--pos-bg);color:var(--pos)}
+  .chip.med{background:var(--zero-bg);color:var(--zero)}
+  .chip.rng{background:var(--neg-bg);color:var(--neg)}
+
+  /* Тренажёр */
+  .trainer{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.2rem 1.3rem;margin-top:1rem}
+  .tr-series{font-family:ui-monospace,Menlo,monospace;font-weight:800;font-size:clamp(1.05rem,4.2vw,1.4rem);text-align:center;padding:.9rem .7rem;background:var(--accent-soft);border-radius:10px;color:var(--ink);overflow-x:auto;white-space:nowrap}
+  .tr-q{text-align:center;font-weight:700;margin:.8rem 0 0;font-size:1.02rem}
+  .tr-q em{font-style:normal;color:var(--accent)}
+  .tr-hint{text-align:center;font-size:.83rem;color:var(--muted);margin:.2rem 0 0}
+  .tr-ctl{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.9rem;align-items:center}
+  .tr-ctl button{font:inherit;font-weight:700;font-size:.9rem;cursor:pointer;border:none;border-radius:9px;padding:.55rem .95rem;color:#fff;background:var(--accent)}
+  .tr-ctl button.sec{background:var(--pos)}
+  .tr-ctl button.ghost{background:transparent;color:var(--accent);border:1px solid var(--accent)}
+  .tr-ctl input{flex:1;min-width:150px;font:inherit;padding:.5rem .7rem;border:1px solid var(--line);border-radius:9px;background:#fff;color:var(--ink)}
+  .tr-ctl button:focus-visible,.tr-ctl input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+  .tr-result{margin-top:.9rem;font-size:.96rem;min-height:1.2rem}
+  .tr-result .ok{color:var(--pos);font-weight:700}
+  .tr-result .bad{color:var(--neg);font-weight:700}
+  .tr-result .sol{margin-top:.7rem;padding:.85rem 1rem;background:#FCFBFE;border:1px solid var(--line);border-radius:10px;font-family:ui-monospace,Menlo,monospace;font-size:.88rem;line-height:1.8;overflow-x:auto}
+  .tr-result .sol b{color:var(--accent)}
+  .tr-result .sol .tgt{background:var(--accent-soft);border-radius:5px;padding:0 .25em}
+
+  @media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+<!--LESSON-NAV-TOP--><style>.lnav{--lnav-accent:#3D5AF1}.lnav a{text-decoration:none;font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif}.lnav-top{max-width:820px;margin:0 auto;padding:.75rem clamp(1rem,4vw,1.5rem) .1rem}.lnav-top a{display:inline-flex;align-items:center;gap:.35rem;color:var(--lnav-accent);font-weight:600;font-size:.9rem}.lnav-top a:hover{text-decoration:underline}.lnav-bot{max-width:820px;margin:2.6rem auto 3rem;padding:1.1rem clamp(1rem,4vw,1.5rem) 0;border-top:1px solid #E4E8EF;display:flex;align-items:stretch;gap:.55rem}.lnav-bot a{min-width:0;display:flex;flex-direction:column;justify-content:center;gap:.15rem;border:1px solid #E4E8EF;border-radius:12px;padding:.65rem .85rem;color:#182233;background:#fff;transition:border-color .1s,transform .08s}.lnav-bot a:hover{border-color:var(--lnav-accent);transform:translateY(-1px)}.lnav-bot .prev,.lnav-bot .next{flex:1 1 0}.lnav-bot .next{text-align:right}.lnav-bot .dir{font-size:.72rem;color:#8A93A6;font-weight:600}.lnav-bot .ttl{font-size:.9rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.lnav-bot .to-cat{flex:0 0 auto;flex-direction:row;align-items:center;justify-content:center;color:var(--lnav-accent);font-weight:700;font-size:.85rem;white-space:nowrap}@media(max-width:420px){.lnav-bot .to-cat span{display:none}.lnav-bot .to-cat{padding:.65rem .7rem}}</style><nav class="lnav lnav-top"><a href="./catalog.html">← Все темы</a></nav><!--/LESSON-NAV-TOP-->
+<div class="wrap">
+
+  <header>
+    <p class="eyebrow">Алгебра · 8 класс · статистика</p>
+    <h1>Среднее, мода, медиана и размах</h1>
+    <p class="lede">Четыре числа, которые заменяют длинный список данных: три говорят, где «типичное» значение, а одно — насколько сильно данные разбросаны.</p>
+  </header>
+
+  <div class="hero-formula">
+    <p class="lbl">Главная формула темы</p>
+    <div class="eq">среднее = (<b>x</b><sub>1</sub> + <b>x</b><sub>2</sub> + … + <b>x</b><sub>n</sub>) ÷ <b>n</b></div>
+    <p class="note">сумму всех чисел делим на их количество n</p>
+  </div>
+
+  <section>
+    <p class="kicker">Зачем это нужно</p>
+    <h2>Когда данных много, нужен «сжатый пересказ»</h2>
+    <p>Оценки за четверть, цены в разных магазинах, рост учеников в классе, время на дорогу — такие наборы неудобно перечислять целиком. Нужны одно-два числа, которые коротко описывают весь ряд: где он <strong>в среднем</strong> расположен и насколько широко <strong>разбросан</strong>. Этим занимается статистика, а средние показатели — её первый и самый главный инструмент.</p>
+    <p><strong>Главное заблуждение:</strong> «среднее — это всегда честная характеристика». Смотри: если в классе один ученик получает 100 000 рублей в месяц (помогает родителям), а остальные — карманные 1000, то «средний доход» окажется огромным и обманет нас. В таких случаях правду лучше говорит <strong>медиана</strong>. Разницу между средним и медианой полезно понимать всю жизнь — от зарплат до цен.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Что вспомнить с прошлого шага</p>
+    <div class="recall">
+      <p><strong>Числовой ряд</strong> — это просто набор данных, записанных числами: <span class="math">2, 3, 4, 4, 5</span>.</p>
+      <p><strong>Упорядочить ряд</strong> — выстроить числа по возрастанию, от меньшего к большему. Это первое, что мы будем делать почти всегда.</p>
+      <p><strong>Деление суммы на количество</strong> — обычное деление, и результат вполне может быть дробным (например, <span class="math">140 : 6 ≈ 23,3</span>). Это нормально: средний рост может быть 157,4 см, хотя такого ученика в классе нет.</p>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Ядро темы · четыре взгляда на один ряд</p>
+    <h2>Что считаем и что это значит</h2>
+    <p>Пусть ряд состоит из <span class="math">n</span> чисел: <span class="math">x<sub>1</sub>, x<sub>2</sub>, …, x<sub>n</sub></span>. Четыре показателя смотрят на него с разных сторон:</p>
+    <div class="cases">
+      <div class="case mean">
+        <div class="sign">Среднее арифметическое</div>
+        <div class="desc">Если «поровну раздать» всю сумму на всех — сколько достанется каждому. Центр тяжести ряда.</div>
+        <div class="rule">среднее = (сумма всех) ÷ n</div>
+      </div>
+      <div class="case mode">
+        <div class="sign">Мода</div>
+        <div class="desc">Самое «популярное» значение — то, которое встречается чаще всех.</div>
+        <div class="rule">мод может быть несколько, а может не быть вовсе</div>
+      </div>
+      <div class="case med">
+        <div class="sign">Медиана</div>
+        <div class="desc">Значение ровно в середине упорядоченного ряда: половина данных меньше, половина больше.</div>
+        <div class="rule">сначала упорядочить — потом искать середину</div>
+      </div>
+      <div class="case rng">
+        <div class="sign">Размах</div>
+        <div class="desc">Насколько ряд «широкий»: от самого маленького до самого большого.</div>
+        <div class="rule">размах = наибольшее − наименьшее</div>
+      </div>
+    </div>
+    <p>Первые три показывают, где «типичное» значение (это <strong>меры центра</strong>), а размах показывает <strong>разброс</strong>.</p>
+
+    <h3>Медиана: два случая — запомни оба</h3>
+    <p>Сначала <strong>всегда</strong> упорядочиваем ряд по возрастанию. Дальше смотрим на количество чисел <span class="math">n</span>:</p>
+    <div class="series" style="margin-top:.5rem">n <b>нечётное</b>: 2, 3, <span class="hi">4</span>, 5, 5 → медиана = 4 (серединное число)</div>
+    <div class="series" style="margin-top:.5rem">n <b>чётное</b>: 2, 3, <span class="hi">4</span>, <span class="hi">5</span>, 5, 9 → медиана = (4 + 5) ÷ 2 = 4,5</div>
+    <p style="font-size:.92rem;color:var(--muted);margin-top:.9rem">Единицы измерения: среднее, медиана и размах выражаются в тех же единицах, что и сами данные — рубли, см, баллы. Порядок обязателен для медианы, но упорядочить ряд полезно всегда: так легче увидеть и моду, и размах.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Покрути сам · интерактив</p>
+    <h2>Числовая прямая: где живут все четыре показателя</h2>
+    <p>Отметим значения ряда точками на числовой прямой (повторы — точками друг над другом). Тогда видно сразу всё: <span style="color:var(--pos);font-weight:650">мода</span> — самый высокий столбик точек, <span style="color:var(--neg);font-weight:650">размах</span> — длина отрезка от крайней левой до крайней правой точки, <span style="color:var(--zero);font-weight:650">медиана</span> — точка, слева и справа от которой поровну данных, а <span style="color:var(--accent);font-weight:650">среднее</span> — «точка равновесия», вокруг которой ряд уравновешен.</p>
+
+    <div class="viz">
+      <div class="presets" id="vzPresets">
+        <button type="button" data-set="2,3,4,4,5,5,5" aria-pressed="false">Оценки: 2, 3, 4, 4, 5, 5, 5</button>
+        <button type="button" data-set="2,2,2,2,18" aria-pressed="true">Ряд с выбросом: 2, 2, 2, 2, 18</button>
+        <button type="button" data-set="20,20,20,25,25,30" aria-pressed="false">Дорога: 20, 20, 20, 25, 25, 30</button>
+      </div>
+      <canvas id="vzCanvas" width="640" height="250" aria-label="Числовая прямая с точками ряда, отметками среднего, медианы и размаха"></canvas>
+      <div class="vslide">
+        <label for="vzSlider">последнее число ряда</label>
+        <input id="vzSlider" type="range" min="1" max="30" step="1" value="18">
+        <span class="sval" id="vzVal">18</span>
+      </div>
+      <div class="chips">
+        <div class="chip mean"><small>среднее</small><span id="vzMean">5,2</span></div>
+        <div class="chip mode"><small>мода</small><span id="vzMode">2</span></div>
+        <div class="chip med"><small>медиана</small><span id="vzMed">2</span></div>
+        <div class="chip rng"><small>размах</small><span id="vzRng">16</span></div>
+      </div>
+      <p id="vzSeries" style="text-align:center;font-family:ui-monospace,Menlo,monospace;font-weight:700;margin:.9rem 0 0">2, 2, 2, 2, 18</p>
+    </div>
+
+    <p><strong>Проверь предсказание.</strong> Возьми ряд <span class="math">2, 2, 2, 2, 18</span> и спроси себя: что больше — среднее или медиана? Многие говорят «одинаково». Считаем: медиана = 2, а среднее = 26 ÷ 5 = 5,2. Теперь потяни ползунок и смотри: одно большое число тянет <span style="color:var(--accent);font-weight:650">среднее</span> вправо, а <span style="color:var(--zero);font-weight:650">медиана</span> почти не двигается. Вот чем меры центра и отличаются.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Разбираем вместе · думаю вслух</p>
+    <h2>Эталонный пример</h2>
+    <div class="worked">
+      <p class="task">Оценки ученика: 5, 4, 5, 3, 5, 4, 2. Найти все четыре показателя.</p>
+      <ol class="steps">
+        <li>Упорядочиваю по возрастанию: <span class="m">2, 3, 4, 4, 5, 5, 5</span>.
+          <span class="why">Почему: без порядка нельзя найти медиану и легко ошибиться с модой и размахом.</span></li>
+        <li>Считаю количество чисел: <span class="m">n = 7</span>.
+          <span class="why">Почему: на это число я потом буду делить сумму, и от его чётности зависит поиск медианы.</span></li>
+        <li>Среднее: <span class="m">(2 + 3 + 4 + 4 + 5 + 5 + 5) ÷ 7 = 28 ÷ 7 = 4</span>.
+          <span class="why">Почему: сложил всё и разделил на количество.</span></li>
+        <li>Мода: <span class="m">5</span>.
+          <span class="why">Почему: пятёрка встречается 3 раза — чаще всех остальных.</span></li>
+        <li>Медиана: чисел 7 (нечётно), беру 4-е число упорядоченного ряда 2, 3, 4, <b>4</b>, 5, 5, 5 → <span class="m">медиана = 4</span>.
+          <span class="why">Почему: при нечётном n медиана — ровно центральное число.</span></li>
+        <li>Размах: <span class="m">5 − 2 = 3</span>.
+          <span class="why">Почему: из наибольшего значения вычел наименьшее.</span></li>
+      </ol>
+      <div class="verdict">Ответ: среднее 4, мода 5, медиана 4, размах 3.</div>
+    </div>
+
+    <h3>Теперь с пропущенными шагами — допиши сам</h3>
+    <p>Рост (см) пятерых: <span class="math">150, 162, 158, 150, 165</span>. Упорядочим: <span class="math">150, 150, 158, 162, 165</span>.</p>
+    <div class="drill">
+      <details>
+        <summary><span class="q">Среднее = (150 + 162 + 158 + 150 + 165) ÷ 5 = 785 ÷ 5 = ___</span><span class="tag">шаг 1</span></summary>
+        <div class="ans"><span class="m">785 ÷ 5 = 157</span> см. Средний рост — 157 см.</div>
+      </details>
+      <details>
+        <summary><span class="q">Мода = ___ (какое значение повторяется?)</span><span class="tag">шаг 2</span></summary>
+        <div class="ans"><span class="m">150</span> — оно встречается дважды, остальные по одному разу.</div>
+      </details>
+      <details>
+        <summary><span class="q">Медиана: n = 5 (нечётно), серединное число — это ___</span><span class="tag">шаг 3</span></summary>
+        <div class="ans">Третье число упорядоченного ряда 150, 150, <b>158</b>, 162, 165 → <span class="m">медиана = 158</span> см.</div>
+      </details>
+      <details>
+        <summary><span class="q">Размах = 165 − 150 = ___</span><span class="tag">шаг 4</span></summary>
+        <div class="ans"><span class="m">15</span> см.</div>
+      </details>
+    </div>
+    <div class="oge-tip"><div class="b">🎯 В ОГЭ</div><div class="x"><b>Статистика в первой части.</b> Просят найти среднее, моду, медиану или размах по готовому ряду или по таблице данных. Ошибка почти всегда одна и та же — забыли упорядочить ряд перед поиском медианы.</div></div>
+  </section>
+
+  <section>
+    <p class="kicker">Теперь ты · сначала реши, потом раскрой</p>
+    <h2>Практика по нарастанию</h2>
+    <div class="drill">
+      <details>
+        <summary><span class="q">Дан ряд <span class="m">3, 7, 7, 8</span>. Назови моду и объясни своими словами, что такое размах.</span><span class="tag">понимание</span></summary>
+        <div class="ans">
+          <p>Мода = <span class="m">7</span>: это единственное значение, которое встречается дважды, остальные — по одному разу.</p>
+          <p>Размах — это «ширина» ряда: разность между наибольшим и наименьшим значением. Здесь <span class="m">8 − 3 = 5</span>.</p>
+        </div>
+      </details>
+      <details>
+        <summary><span class="q">Найди среднее, медиану и размах ряда <span class="m">12, 15, 11, 18, 14</span>.</span><span class="tag">применение</span></summary>
+        <div class="ans">
+          <p>Упорядочим: <span class="m">11, 12, 14, 15, 18</span>.</p>
+          <p>Среднее: <span class="m">(11 + 12 + 14 + 15 + 18) ÷ 5 = 70 ÷ 5 = 14</span>.</p>
+          <p>Медиана: n = 5 (нечётно), третье число → <span class="m">14</span>.</p>
+          <p>Размах: <span class="m">18 − 11 = 7</span>.</p>
+        </div>
+      </details>
+      <details>
+        <summary><span class="q">Время (мин) на дорогу за 6 дней: <span class="m">20, 25, 20, 30, 25, 20</span>. Все четыре показателя.</span><span class="tag">применение</span></summary>
+        <div class="ans">
+          <p>Упорядоченный ряд: <span class="m">20, 20, 20, 25, 25, 30</span>.</p>
+          <p>Среднее: <span class="m">140 ÷ 6 ≈ 23,3</span> мин.</p>
+          <p>Мода: <span class="m">20</span> мин (три раза).</p>
+          <p>Медиана: n = 6 — чётное, берём два центральных (3-е и 4-е): <span class="m">(20 + 25) ÷ 2 = 22,5</span> мин.</p>
+          <p>Размах: <span class="m">30 − 20 = 10</span> мин.</p>
+        </div>
+      </details>
+      <details>
+        <summary><span class="q">Что изменится, если к ряду <span class="m">4, 4, 5, 6</span> добавить число 100? Какой показатель устойчивее к выбросу?</span><span class="tag">анализ</span></summary>
+        <div class="ans">
+          <p>Было: среднее <span class="m">(4 + 4 + 5 + 6) ÷ 4 = 19 ÷ 4 = 4,75</span>; медиана при n = 4 — <span class="m">(4 + 5) ÷ 2 = 4,5</span>.</p>
+          <p>Стало (ряд 4, 4, 5, 6, 100): среднее <span class="m">119 ÷ 5 = 23,8</span>; медиана при n = 5 — третье число, то есть <span class="m">5</span>.</p>
+          <p>Среднее подскочило с 4,75 до 23,8 — почти в пять раз, хотя четыре из пяти чисел маленькие. Медиана сдвинулась с 4,5 всего до 5. Значит, <strong>медиана устойчивее к выбросу</strong> — именно поэтому про зарплаты и цены честнее говорить медианой.</p>
+        </div>
+      </details>
+      <details>
+        <summary><span class="q">Найди ошибку. Ученик ищет медиану ряда <span class="m">8, 3, 5</span>: «середина — 5, потому что 5 стоит между 8 и 3». Прав ли он?</span><span class="tag">анализ</span></summary>
+        <div class="ans">
+          <p>Число он назвал верное, но <strong>рассуждение неправильное</strong>: он смотрел на порядок записи, а не на упорядоченный ряд. «Между 8 и 3» — это про место в списке, а медиана — про место по величине.</p>
+          <p>Как надо: упорядочим <span class="m">3, 5, 8</span>; n = 3 (нечётно), серединное число — второе → <span class="m">медиана = 5</span>. Здесь ответы совпали случайно; возьми ряд <span class="m">8, 3, 5</span> и переставь как <span class="m">3, 8, 5</span> — по его логике медианой стала бы 8, а это уже неверно.</p>
+        </div>
+      </details>
+      <details>
+        <summary><span class="q">Обратная задача. Среднее трёх чисел равно 6, два из них — 4 и 5. Найди третье.</span><span class="tag">анализ</span></summary>
+        <div class="ans">
+          <p>Идём от формулы наоборот. Если среднее трёх чисел равно 6, то сумма равна <span class="m">6 · 3 = 18</span>.</p>
+          <p>Два числа уже известны: <span class="m">18 − 4 − 5 = 9</span>.</p>
+          <p>Проверка: <span class="m">(4 + 5 + 9) ÷ 3 = 18 ÷ 3 = 6</span> ✓. Третье число — <strong>9</strong>.</p>
+        </div>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Тренажёр · бесконечная практика</p>
+    <h2>Считай показатели сам</h2>
+    <p>Нажми «Новый ряд», прочитай вопрос и введи ответ числом (дробный — через запятую или точку). Если мод несколько — перечисли их через запятую; если моды нет — напиши «нет». Потом проверь себя или посмотри пошаговое решение.</p>
+    <div class="trainer">
+      <div class="tr-series" id="trSeries">7, 4, 9, 7, 3</div>
+      <p class="tr-q" id="trQ">Найди <em>медиану</em> ряда</p>
+      <p class="tr-hint" id="trHint">ответ — одно число</p>
+      <div class="tr-ctl">
+        <button id="trNew" type="button">🎲 Новый ряд</button>
+        <input id="trAns" type="text" placeholder="напр.  7   или   22,5   или   нет" aria-label="Ответ">
+        <button id="trCheck" type="button" class="sec">Проверить</button>
+        <button id="trShow" type="button" class="ghost">Показать решение</button>
+      </div>
+      <div id="trResult" class="tr-result"></div>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Где чаще всего ошибаются</p>
+    <h2>Пять типичных ловушек</h2>
+    <ul class="pitfalls">
+      <li><b>Ищут медиану без упорядочивания.</b> Берут «среднее по списку» число как есть. Как избежать: <em>первым делом</em> всегда выстраивай ряд по возрастанию и только потом ищи середину.</li>
+      <li><b>Путают моду и медиану.</b> Мода — самое частое значение; медиана — серединное по порядку. Запомни: мо<b>Д</b>а — «<b>Д</b>оминирует» (чаще всех), ме<b>Д</b>иана — «в сере<b>Д</b>ине».</li>
+      <li><b>Неверная медиана при чётном числе данных.</b> Берут одно из двух серединных чисел вместо их среднего. Как избежать: если n чётное, найди <strong>два</strong> центральных числа и возьми их полусумму (сложи и раздели на 2).</li>
+      <li><b>Считают размах как «самое большое число».</b> Размах — это разность, а не максимум. Всегда вычитай: наибольшее минус наименьшее.</li>
+      <li><b>Забывают разделить на количество.</b> Находят только сумму и называют её средним. Среднее — это сумма, делённая на n.</li>
+    </ul>
+  </section>
+
+  <section>
+    <p class="kicker">Проверка понимания</p>
+    <h2>Объясни своими словами</h2>
+    <div class="drill">
+      <details>
+        <summary><span class="q">Чем отличается мода от медианы? Ответь одним предложением.</span><span class="tag">вопрос 1</span></summary>
+        <div class="ans">Мода — значение, которое встречается чаще всех; медиана — значение, стоящее в середине упорядоченного ряда.</div>
+      </details>
+      <details>
+        <summary><span class="q">Как найти медиану, если в ряду чётное число элементов?</span><span class="tag">вопрос 2</span></summary>
+        <div class="ans">Упорядочить ряд, взять два центральных числа и найти их среднее арифметическое: сложить и разделить на 2.</div>
+      </details>
+      <details>
+        <summary><span class="q">Размах ряда равен 0. Что это говорит о данных?</span><span class="tag">вопрос 3</span></summary>
+        <div class="ans">Наибольшее и наименьшее значения совпадают, значит <strong>все числа ряда одинаковые</strong> — разброса нет вообще. Тогда среднее, мода и медиана тоже равны этому же числу.</div>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <div class="next">
+      <h2>Что дальше</h2>
+      <p>Ты научился сжимать ряд данных до четырёх чисел. Следующий шаг — <strong>статистические диаграммы</strong>: те же данные показывают картинкой (столбики, круговые диаграммы), и по картинке сразу видно и «типичное» значение, и разброс — то, что сейчас ты считал руками.</p>
+    </div>
+  </section>
+
+  <p class="foot">Проверка на выходе: назови формулу среднего · что делаем первым делом перед поиском медианы? · чему равен размах ряда 20, 20, 20, 25, 25, 30?</p>
+
+</div>
+
+<script>
+/* ---------- Интерактивная числовая прямая ---------- */
+(function(){
+  var cv=document.getElementById('vzCanvas'); if(!cv) return;
+  var ctx=cv.getContext('2d');
+  var slider=document.getElementById('vzSlider'), sval=document.getElementById('vzVal');
+  var elMean=document.getElementById('vzMean'), elMode=document.getElementById('vzMode'),
+      elMed=document.getElementById('vzMed'), elRng=document.getElementById('vzRng'),
+      elSeries=document.getElementById('vzSeries');
+  var W=640,H=250,dpr=1;
+  var data=[2,2,2,2,18];
+
+  function fmt(x){
+    var n=Math.round(x*100)/100;
+    var s=(''+Math.abs(n)).replace('.',',');
+    return (n<0?'−':'')+s;
+  }
+  function stats(a){
+    var s=a.slice().sort(function(p,q){return p-q;}), n=s.length, sum=0,i;
+    for(i=0;i<n;i++) sum+=s[i];
+    var mean=sum/n;
+    var med = (n%2) ? s[(n-1)/2] : (s[n/2-1]+s[n/2])/2;
+    var freq={},best=0;
+    for(i=0;i<n;i++){ freq[s[i]]=(freq[s[i]]||0)+1; if(freq[s[i]]>best) best=freq[s[i]]; }
+    var modes=[];
+    if(best>1){ for(var k in freq){ if(freq[k]===best) modes.push(+k); } }
+    modes.sort(function(p,q){return p-q;});
+    return {sorted:s,n:n,sum:sum,mean:mean,med:med,modes:modes,best:best,min:s[0],max:s[n-1],range:s[n-1]-s[0],freq:freq};
+  }
+
+  function resize(){
+    var cssW=cv.clientWidth||640; dpr=Math.min(window.devicePixelRatio||1,2);
+    W=cssW; H=Math.max(210,Math.round(cssW*0.42));
+    cv.width=W*dpr; cv.height=H*dpr; cv.style.height=H+'px';
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+  }
+
+  function draw(){
+    var st=stats(data);
+    var lo=Math.max(0,st.min-2), hi=st.max+2;
+    if(hi-lo<6) hi=lo+6;
+    var padL=22,padR=22, axisY=H-46, span=hi-lo;
+    function X(v){ return padL + (v-lo)/span*(W-padL-padR); }
+
+    ctx.clearRect(0,0,W,H);
+
+    /* размах — скоба сверху */
+    ctx.strokeStyle='#C0455B'; ctx.lineWidth=2;
+    var by=26;
+    ctx.beginPath();
+    ctx.moveTo(X(st.min),by+7); ctx.lineTo(X(st.min),by); ctx.lineTo(X(st.max),by); ctx.lineTo(X(st.max),by+7);
+    ctx.stroke();
+    ctx.fillStyle='#C0455B'; ctx.font='600 12px system-ui,sans-serif'; ctx.textAlign='center';
+    ctx.fillText('размах = '+fmt(st.range),(X(st.min)+X(st.max))/2,by-6);
+
+    /* медиана — пунктир */
+    ctx.save();
+    ctx.strokeStyle='#B9791A'; ctx.lineWidth=2; ctx.setLineDash([5,4]);
+    ctx.beginPath(); ctx.moveTo(X(st.med),by+14); ctx.lineTo(X(st.med),axisY); ctx.stroke();
+    ctx.restore();
+    ctx.fillStyle='#B9791A'; ctx.font='700 12px system-ui,sans-serif';
+    ctx.fillText('медиана',X(st.med),by+26);
+
+    /* ось */
+    ctx.strokeStyle='#9AA3B2'; ctx.lineWidth=1.5;
+    ctx.beginPath(); ctx.moveTo(padL-12,axisY); ctx.lineTo(W-padR+12,axisY); ctx.stroke();
+    var step=Math.ceil(span/12); if(step<1) step=1;
+    ctx.fillStyle='#5A6478'; ctx.font='11px ui-monospace,Menlo,monospace';
+    for(var t=Math.ceil(lo/step)*step;t<=hi;t+=step){
+      ctx.strokeStyle='#C8CEDA'; ctx.lineWidth=1;
+      ctx.beginPath(); ctx.moveTo(X(t),axisY); ctx.lineTo(X(t),axisY+5); ctx.stroke();
+      ctx.fillText(''+t,X(t),axisY+18);
+    }
+
+    /* точки ряда */
+    var seen={};
+    for(var i=0;i<st.sorted.length;i++){
+      var v=st.sorted[i];
+      var k=seen[v]=(seen[v]||0)+1;
+      var isMode = st.modes.indexOf(v)>=0;
+      var cy=axisY-12-(k-1)*15;
+      if(cy<by+18) cy=by+18;
+      ctx.fillStyle = isMode ? '#1E8E5A' : '#3B4FD0';
+      ctx.globalAlpha = isMode ? 1 : .55;
+      ctx.beginPath(); ctx.arc(X(v),cy,6,0,7); ctx.fill();
+      ctx.globalAlpha=1;
+    }
+
+    /* среднее — треугольник-опора под осью */
+    var mx=X(st.mean);
+    ctx.fillStyle='#3B4FD0';
+    ctx.beginPath(); ctx.moveTo(mx,axisY-1); ctx.lineTo(mx-8,axisY+13); ctx.lineTo(mx+8,axisY+13); ctx.closePath(); ctx.fill();
+    ctx.font='700 12px system-ui,sans-serif'; ctx.textAlign='center';
+    ctx.fillText('среднее '+fmt(Math.round(st.mean*10)/10),Math.min(Math.max(mx,44),W-44),axisY+30);
+
+    /* подписи чипов */
+    var meanTxt = (Math.abs(st.mean-Math.round(st.mean))<1e-9) ? fmt(st.mean) : ('≈ '+fmt(Math.round(st.mean*10)/10));
+    elMean.textContent=meanTxt;
+    elMode.textContent = st.modes.length ? st.modes.map(fmt).join(', ') : 'нет';
+    elMed.textContent=fmt(st.med);
+    elRng.textContent=fmt(st.range);
+    elSeries.textContent=data.join(', ');
+  }
+
+  function setData(arr){
+    data=arr.slice();
+    slider.value=data[data.length-1];
+    sval.textContent=data[data.length-1];
+    draw();
+  }
+
+  slider.addEventListener('input',function(){
+    var v=parseInt(slider.value,10);
+    sval.textContent=v;
+    data[data.length-1]=v;
+    draw();
+  });
+
+  var btns=document.querySelectorAll('#vzPresets button');
+  for(var b=0;b<btns.length;b++){
+    btns[b].addEventListener('click',function(){
+      for(var j=0;j<btns.length;j++) btns[j].setAttribute('aria-pressed','false');
+      this.setAttribute('aria-pressed','true');
+      setData(this.getAttribute('data-set').split(',').map(Number));
+    });
+  }
+
+  window.addEventListener('resize',function(){ resize(); draw(); });
+  resize(); draw();
+})();
+</script>
+
+<script>
+/* ---------- Тренажёр ---------- */
+(function(){
+  var sEl=document.getElementById('trSeries'), qEl=document.getElementById('trQ'),
+      hEl=document.getElementById('trHint'), aEl=document.getElementById('trAns'),
+      rEl=document.getElementById('trResult');
+  if(!sEl) return;
+
+  var MINUS='−';
+  function fmt(x){
+    var n=Math.round(x*1000)/1000;
+    var s=(''+Math.abs(n)).replace('.',',');
+    return (n<0?MINUS:'')+s;
+  }
+  function ri(a,b){ return Math.floor(Math.random()*(b-a+1))+a; }
+  function razTimes(k){ return (k>=2 && k<=4) ? 'раза' : 'раз'; }
+
+  function stats(a){
+    var s=a.slice().sort(function(p,q){return p-q;}), n=s.length, sum=0,i;
+    for(i=0;i<n;i++) sum+=s[i];
+    var mean=sum/n;
+    var med=(n%2)?s[(n-1)/2]:(s[n/2-1]+s[n/2])/2;
+    var freq={},best=0;
+    for(i=0;i<n;i++){ freq[s[i]]=(freq[s[i]]||0)+1; if(freq[s[i]]>best) best=freq[s[i]]; }
+    var modes=[];
+    if(best>1){ for(var k in freq){ if(freq[k]===best) modes.push(+k); } }
+    modes.sort(function(p,q){return p-q;});
+    return {sorted:s,n:n,sum:sum,mean:mean,med:med,modes:modes,best:best,min:s[0],max:s[n-1],range:s[n-1]-s[0]};
+  }
+
+  function genSeries(){
+    var n=ri(5,8), arr=[], i;
+    if(Math.random()<0.6){
+      /* «красивое» среднее: держим сумму равной n·m */
+      var m=ri(5,15);
+      for(i=0;i<n;i++) arr.push(m);
+      var pairs=ri(2,n-1);
+      for(var p=0;p<pairs;p++){
+        var i1=ri(0,n-1), i2=ri(0,n-1), d=ri(1,Math.min(m-1,6));
+        if(i1===i2) continue;
+        if(arr[i1]-d<1) continue;
+        arr[i1]-=d; arr[i2]+=d;
+      }
+    } else {
+      for(i=0;i<n;i++) arr.push(ri(1,25));
+      if(Math.random()<0.75){
+        var j=ri(0,n-1), k=ri(0,n-1);
+        if(j!==k) arr[k]=arr[j];
+      }
+    }
+    /* перемешиваем, чтобы ряд не был упорядочен */
+    for(i=arr.length-1;i>0;i--){ var t=ri(0,i), tmp=arr[i]; arr[i]=arr[t]; arr[t]=tmp; }
+    return arr;
+  }
+
+  var cur={arr:[7,4,9,7,3],target:'med'};
+  var TITLES={mean:'среднее арифметическое',mode:'моду',med:'медиану',range:'размах'};
+
+  function render(){
+    var st=stats(cur.arr);
+    sEl.textContent=cur.arr.join(', ');
+    qEl.innerHTML='Найди <em>'+TITLES[cur.target]+'</em> ряда';
+    if(cur.target==='mode'){
+      hEl.textContent='если мод несколько — через запятую; если моды нет — напиши «нет»';
+    } else if(cur.target==='mean'){
+      hEl.textContent='если ответ дробный — округли до десятых';
+    } else {
+      hEl.textContent='ответ — одно число (может быть дробным)';
+    }
+    rEl.innerHTML=''; aEl.value='';
+  }
+
+  function newTask(focus){
+    cur.arr=genSeries();
+    var pool=['mean','mode','med','range'];
+    cur.target=pool[ri(0,3)];
+    render();
+    if(focus) aEl.focus();
+  }
+
+  function solutionHTML(){
+    var st=stats(cur.arr), t=cur.target;
+    function wrap(key,html){ return (t===key)?'<span class="tgt">'+html+'</span>':html; }
+    var h='<div class="sol">';
+    h+='Упорядочим: <b>'+st.sorted.join(', ')+'</b> &nbsp;(n = '+st.n+')<br>';
+    h+=wrap('mean','сумма = '+st.sorted.join(' + ')+' = '+st.sum+', среднее = '+st.sum+' ÷ '+st.n+' = <b>'+
+        ((Math.abs(st.mean-Math.round(st.mean))<1e-9)?fmt(st.mean):('≈ '+fmt(Math.round(st.mean*10)/10)))+'</b>')+'<br>';
+    if(st.modes.length===0){
+      h+=wrap('mode','мода: все значения встречаются по одному разу → <b>моды нет</b>')+'<br>';
+    } else if(st.modes.length===1){
+      h+=wrap('mode','мода = <b>'+fmt(st.modes[0])+'</b> (встречается '+st.best+' '+razTimes(st.best)+')')+'<br>';
+    } else {
+      h+=wrap('mode','мод несколько: <b>'+st.modes.map(fmt).join(', ')+'</b> — каждая встречается по '+st.best+' '+razTimes(st.best))+'<br>';
+    }
+    if(st.n%2){
+      h+=wrap('med','медиана: n = '+st.n+' нечётное → серединное число ('+((st.n+1)/2)+'-е) = <b>'+fmt(st.med)+'</b>')+'<br>';
+    } else {
+      var s1=st.sorted[st.n/2-1], s2=st.sorted[st.n/2];
+      h+=wrap('med','медиана: n = '+st.n+' чётное → ('+s1+' + '+s2+') ÷ 2 = <b>'+fmt(st.med)+'</b>')+'<br>';
+    }
+    h+=wrap('range','размах = '+st.max+' '+MINUS+' '+st.min+' = <b>'+fmt(st.range)+'</b>');
+    return h+'</div>';
+  }
+
+  function parseNums(raw){
+    var norm=raw.replace(/−/g,'-').replace(/(\d),(\d)/g,'$1.$2');
+    var parts=norm.split(/[;,\s]+/).filter(function(s){return s!=='';});
+    var out=[];
+    for(var i=0;i<parts.length;i++){
+      var v=parseFloat(parts[i]);
+      if(isNaN(v)) return null;
+      out.push(v);
+    }
+    return out.length?out:null;
+  }
+
+  function check(){
+    var st=stats(cur.arr), raw=aEl.value.trim().toLowerCase();
+    if(!raw){ rEl.innerHTML='<span class="bad">Введи ответ или нажми «Показать решение».</span>'; return; }
+
+    if(cur.target==='mode'){
+      var noMode=/нет|net|отсут|∅/.test(raw);
+      if(st.modes.length===0){
+        if(noMode) rEl.innerHTML='<span class="ok">✓ Верно — все значения разные, моды нет.</span>'+solutionHTML();
+        else rEl.innerHTML='<span class="bad">✗ Посмотри внимательно: тут каждое значение встречается по одному разу — значит, моды нет.</span>'+solutionHTML();
+        return;
+      }
+      if(noMode){ rEl.innerHTML='<span class="bad">✗ Мода здесь есть: какое-то значение повторяется.</span>'+solutionHTML(); return; }
+      var got=parseNums(raw);
+      if(!got){ rEl.innerHTML='<span class="bad">Не понял запись. Введи число (или несколько через запятую), либо слово «нет».</span>'; return; }
+      got=got.filter(function(v,i){return got.indexOf(v)===i;}).sort(function(p,q){return p-q;});
+      var ok = got.length===st.modes.length && st.modes.every(function(v,i){return Math.abs(v-got[i])<1e-9;});
+      rEl.innerHTML = ok
+        ? '<span class="ok">✓ Верно!</span>'+solutionHTML()
+        : '<span class="bad">✗ Пока не то. Мода — значение, которое встречается чаще всех (посчитай повторы).</span>'+solutionHTML();
+      return;
+    }
+
+    var nums=parseNums(raw);
+    if(!nums){ rEl.innerHTML='<span class="bad">Не понял запись. Введи ответ числом, дробное — через запятую (напр. 22,5).</span>'; return; }
+    var ans=nums[0];
+    var exp = cur.target==='mean' ? st.mean : (cur.target==='med' ? st.med : st.range);
+    var tol = cur.target==='mean' ? 0.06 : 0.001;
+    var good = Math.abs(ans-exp)<=tol;
+    if(good){ rEl.innerHTML='<span class="ok">✓ Верно! Отлично.</span>'+solutionHTML(); return; }
+
+    var hint='';
+    if(cur.target==='med'){
+      if(Math.abs(ans-cur.arr[Math.floor(cur.arr.length/2)])<1e-9) hint=' Похоже, ты взял середину по записи, а не по возрастанию — сначала упорядочь ряд.';
+      else if(st.n%2===0 && (Math.abs(ans-st.sorted[st.n/2-1])<1e-9 || Math.abs(ans-st.sorted[st.n/2])<1e-9)) hint=' Чисел чётное количество: нужна полусумма двух центральных.';
+      else if(st.modes.length && Math.abs(ans-st.modes[0])<1e-9) hint=' Это мода, а не медиана: медиана — серединное значение упорядоченного ряда.';
+    }
+    if(cur.target==='range' && Math.abs(ans-st.max)<1e-9) hint=' Размах — это разность, а не самое большое число: наибольшее '+MINUS+' наименьшее.';
+    if(cur.target==='mean' && Math.abs(ans-st.sum)<1e-9) hint=' Это только сумма — её ещё надо разделить на количество чисел n.';
+    rEl.innerHTML='<span class="bad">✗ Пока не то.'+hint+'</span>'+solutionHTML();
+  }
+
+  document.getElementById('trNew').addEventListener('click',function(){ newTask(true); });
+  document.getElementById('trCheck').addEventListener('click',check);
+  document.getElementById('trShow').addEventListener('click',function(){ rEl.innerHTML=solutionHTML(); });
+  aEl.addEventListener('keydown',function(e){ if(e.key==='Enter') check(); });
+
+  render(); /* стартовое состояние без фокуса */
+})();
+</script>
+<!--LESSON-NAV-BOT--><nav class="lnav lnav-bot"><a class="prev" href="./alg8-sbor-gruppirovka-dannyh.html"><span class="dir">← Предыдущая</span><span class="ttl">Сбор и группировка статистических данных</span></a><a class="to-cat" href="./catalog.html">📚 <span>Все темы</span></a><a class="next" href="./alg8-statisticheskie-diagrammy.html"><span class="dir">Следующая →</span><span class="ttl">Наглядное представление данных: таблицы частот и диаграммы</span></a></nav><!--/LESSON-NAV-BOT-->

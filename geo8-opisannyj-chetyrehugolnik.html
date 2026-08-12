@@ -1,0 +1,493 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Описанный четырёхугольник — геометрия 8 класс</title>
+<style>
+  :root{
+    --paper:#F6F7F9; --card:#FFFFFF; --ink:#1D2530; --muted:#606B7A; --line:#E3E7EE;
+    --brand:#2E5AAC; --brand-soft:#E4EBF7;
+    --ta:#2E5AAC; --ta-soft:#E4EBF7;   /* отрезок a (из вершины A) */
+    --tb:#E27C2C; --tb-soft:#FBEEDF;   /* отрезок b (из вершины B) */
+    --tc:#159A8A; --tc-soft:#DEF3F0;   /* отрезок c (из вершины C) */
+    --td:#8B4FD0; --td-soft:#F0E7FB;   /* отрезок d (из вершины D) */
+    --ok:#1E8E5A; --no:#C23B3B;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper)}
+  .page{max-width:720px;margin:0 auto;padding:clamp(1.4rem,4vw,3rem) clamp(1.1rem,4vw,2rem) 4.5rem;
+    color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:17.5px;line-height:1.68;-webkit-font-smoothing:antialiased}
+  .mono{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-variant-numeric:tabular-nums;font-weight:600}
+  sup{font-size:.72em}
+
+  .hero{border-bottom:3px solid var(--brand);padding-bottom:1.4rem;margin-bottom:1.8rem}
+  .eyebrow{font-size:.74rem;letter-spacing:.15em;text-transform:uppercase;color:var(--brand);font-weight:700;margin:0 0 .55rem}
+  h1{font-size:clamp(1.9rem,6vw,2.8rem);line-height:1.05;margin:0;font-weight:800;letter-spacing:-.02em;text-wrap:balance}
+  .tagline{font-size:1.12rem;color:var(--muted);margin:.85rem 0 0;text-wrap:pretty}
+
+  section{margin-top:2.4rem}
+  h2{font-size:1.5rem;margin:0 0 .3rem;font-weight:780;letter-spacing:-.015em;text-wrap:balance}
+  h2 .em{color:var(--brand)}
+  p{margin:.7rem 0}
+  strong{font-weight:680}
+  .wa{color:var(--ta);font-weight:800} .wb{color:var(--tb);font-weight:800}
+  .wc{color:var(--tc);font-weight:800} .wd{color:var(--td);font-weight:800}
+
+  .lead-in{background:var(--brand-soft);border-radius:14px;padding:1.1rem 1.3rem;font-size:1.02rem}
+  .lead-in p{margin:.4rem 0}
+  .lead-in b{color:var(--brand)}
+
+  .recall{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1rem 1.25rem;margin-top:1rem}
+  .recall ul{margin:.4rem 0 0;padding-left:1.1rem;display:flex;flex-direction:column;gap:.35rem}
+  .recall li{font-size:.97rem}
+
+  .formula-box{background:var(--ink);color:#fff;border-radius:14px;padding:1.3rem;text-align:center;margin-top:1rem}
+  .formula-box .eq{font-family:ui-monospace,Menlo,monospace;font-size:clamp(1.35rem,5.4vw,2rem);font-weight:700}
+  .formula-box .eq .p1{color:#8FB2E6} .formula-box .eq .p2{color:#6FD3C6}
+  .formula-box .note{font-size:.9rem;color:#AEB8C6;margin:.7rem 0 0}
+
+  .note{border-left:4px solid var(--brand);background:var(--brand-soft);border-radius:0 10px 10px 0;padding:.8rem 1.1rem;margin-top:1rem;font-size:.98rem}
+  .note b{color:var(--brand)}
+
+  /* Диаграмма */
+  .diagram{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:1.2rem;margin-top:1rem}
+  .diagram canvas{width:100%;height:auto;display:block;border-radius:8px;background:#FCFDFF}
+  .sliders{display:grid;gap:.55rem;margin-top:.9rem}
+  @media(min-width:520px){.sliders{grid-template-columns:1fr 1fr}}
+  .sliders label{display:flex;align-items:center;gap:.5rem;font-weight:700;font-family:ui-monospace,Menlo,monospace;font-size:.92rem}
+  .sliders label.la{color:var(--ta)} .sliders label.lb{color:var(--tb)}
+  .sliders label.lc{color:var(--tc)} .sliders label.ld{color:var(--td)}
+  .sliders input[type=range]{flex:1;min-width:80px}
+  .sliders input.ra{accent-color:var(--ta)} .sliders input.rb{accent-color:var(--tb)}
+  .sliders input.rc{accent-color:var(--tc)} .sliders input.rd{accent-color:var(--td)}
+  .sliders input[type=range]:focus-visible{outline:3px solid var(--brand);outline-offset:3px}
+  .sliders .sval{min-width:2ch;text-align:right}
+  .diag-eq{font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:.98rem;margin:.9rem 0 0;text-align:center;line-height:2}
+  .diag-eq .p1{color:var(--brand)} .diag-eq .p2{color:var(--tc)}
+
+  .walk{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.15rem 1.3rem;margin-top:1rem}
+  .walk .q{font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.02rem;margin:0 0 .9rem;padding-bottom:.7rem;border-bottom:1px solid var(--line)}
+  .walk ol{margin:0;padding-left:1.2rem;display:flex;flex-direction:column;gap:.5rem}
+  .walk li{font-size:.95rem}
+  .walk .why{color:var(--muted);font-size:.9rem;display:block;margin-top:.15rem}
+  .verdict{margin-top:1rem;padding:.7rem 1rem;background:var(--brand-soft);border-radius:10px;font-weight:650;color:var(--brand);font-family:ui-monospace,Menlo,monospace}
+
+  /* Тренажёр */
+  .trainer{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.2rem 1.3rem;margin-top:1rem}
+  .tr-task{font-size:clamp(1rem,4vw,1.12rem);text-align:center;padding:1rem;background:var(--brand-soft);border-radius:10px;font-weight:600;line-height:1.6}
+  .tr-task b{font-family:ui-monospace,Menlo,monospace;color:var(--ink)}
+  .tr-ctl{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:1rem;align-items:center;justify-content:center}
+  .tr-ctl input{flex:1;min-width:110px;max-width:180px;font:inherit;padding:.5rem .7rem;border:1px solid var(--line);border-radius:9px;text-align:center;background:#fff;color:var(--ink)}
+  .tr-ctl button{font:inherit;font-weight:700;font-size:.9rem;cursor:pointer;border:none;border-radius:9px;padding:.55rem .95rem;color:#fff;background:var(--brand)}
+  .tr-ctl button.sec{background:var(--tb)}
+  .tr-ctl button.ghost{background:transparent;color:var(--brand);border:1px solid var(--brand)}
+  .tr-ctl button:focus-visible,.tr-ctl input:focus-visible{outline:3px solid var(--brand);outline-offset:2px}
+  .tr-result{margin-top:.9rem;font-size:.96rem;min-height:1.2rem;text-align:center}
+  .tr-result .ok{color:var(--ok);font-weight:700} .tr-result .bad{color:var(--no);font-weight:700}
+  .tr-result .sol{margin-top:.6rem;padding:.8rem 1rem;background:#FCFDFE;border:1px solid var(--line);border-radius:10px;font-family:ui-monospace,Menlo,monospace;font-size:.9rem;line-height:1.8;text-align:left;overflow-x:auto}
+
+  details{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:.9rem 1.1rem;margin-top:.7rem}
+  details[open]{border-color:var(--brand)}
+  summary{cursor:pointer;font-weight:650;list-style:none;display:flex;justify-content:space-between;gap:1rem;align-items:center}
+  summary::-webkit-details-marker{display:none}
+  summary::after{content:"проверить";font-size:.8rem;color:var(--brand);font-weight:700;white-space:nowrap}
+  details[open] summary::after{content:"скрыть"}
+  summary:focus-visible{outline:3px solid var(--brand);outline-offset:3px;border-radius:6px}
+  .ans{margin-top:.75rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.96rem;color:var(--muted)}
+  .ans b{color:var(--ink)}
+  .drill{display:flex;flex-direction:column;gap:.2rem;margin-top:1rem}
+  .lvl{font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:700;margin:1.2rem 0 .1rem}
+
+  .tbl-wrap{overflow-x:auto;margin-top:1rem;border:1px solid var(--line);border-radius:12px;background:var(--card)}
+  table{border-collapse:collapse;width:100%;font-size:.95rem}
+  th,td{padding:.7rem .9rem;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
+  th{background:#F1F4F9;font-weight:700;font-size:.85rem}
+  tr:last-child td{border-bottom:none}
+
+  ul.traps{list-style:none;margin:1rem 0 0;padding:0;display:flex;flex-direction:column;gap:.7rem}
+  ul.traps li{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:.85rem 1.05rem;padding-left:2.5rem;position:relative;font-size:.97rem}
+  ul.traps li::before{content:"⚠";position:absolute;left:1rem;top:.85rem;color:var(--tb)}
+  ul.traps b{font-weight:700}
+
+  .selfcheck{background:var(--card);border:1px dashed var(--brand);border-radius:14px;padding:1.1rem 1.3rem;margin-top:1rem}
+  .selfcheck ol{margin:.4rem 0 0;padding-left:1.2rem;display:flex;flex-direction:column;gap:.5rem}
+
+  .wrapup{background:var(--brand);color:#fff;border-radius:16px;padding:1.4rem 1.5rem;margin-top:2.4rem}
+  .wrapup h2{color:#fff;margin:0 0 .5rem}
+  .wrapup p{color:#DEE7F5;margin:.4rem 0;font-size:1rem}
+  .wrapup .big-rule{font-size:clamp(1.05rem,4.6vw,1.25rem);font-weight:800;color:#fff;margin:.6rem 0;font-family:ui-monospace,Menlo,monospace}
+  .wrapup .next{font-size:.95rem;color:#C6D5EE;margin-top:1rem;padding-top:1rem;border-top:1px solid rgba(255,255,255,.2)}
+  .wrapup .next b{color:#fff}
+
+  @media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+<!--LESSON-NAV-TOP--><style>.lnav{--lnav-accent:#3D5AF1}.lnav a{text-decoration:none;font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif}.lnav-top{max-width:820px;margin:0 auto;padding:.75rem clamp(1rem,4vw,1.5rem) .1rem}.lnav-top a{display:inline-flex;align-items:center;gap:.35rem;color:var(--lnav-accent);font-weight:600;font-size:.9rem}.lnav-top a:hover{text-decoration:underline}.lnav-bot{max-width:820px;margin:2.6rem auto 3rem;padding:1.1rem clamp(1rem,4vw,1.5rem) 0;border-top:1px solid #E4E8EF;display:flex;align-items:stretch;gap:.55rem}.lnav-bot a{min-width:0;display:flex;flex-direction:column;justify-content:center;gap:.15rem;border:1px solid #E4E8EF;border-radius:12px;padding:.65rem .85rem;color:#182233;background:#fff;transition:border-color .1s,transform .08s}.lnav-bot a:hover{border-color:var(--lnav-accent);transform:translateY(-1px)}.lnav-bot .prev,.lnav-bot .next{flex:1 1 0}.lnav-bot .next{text-align:right}.lnav-bot .dir{font-size:.72rem;color:#8A93A6;font-weight:600}.lnav-bot .ttl{font-size:.9rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.lnav-bot .to-cat{flex:0 0 auto;flex-direction:row;align-items:center;justify-content:center;color:var(--lnav-accent);font-weight:700;font-size:.85rem;white-space:nowrap}@media(max-width:420px){.lnav-bot .to-cat span{display:none}.lnav-bot .to-cat{padding:.65rem .7rem}}</style><nav class="lnav lnav-top"><a href="./catalog.html">← Все темы</a></nav><!--/LESSON-NAV-TOP-->
+<div class="page">
+
+  <header class="hero">
+    <p class="eyebrow">Геометрия · 8 класс</p>
+    <h1>Описанный четырёхугольник</h1>
+    <p class="tagline">Одно равенство сторон — и ты уже знаешь, влезет ли окружность внутрь. Без чертежа и без углов.</p>
+  </header>
+
+  <div class="lead-in">
+    <p><b>Где встречается.</b> Представь круглый предмет — трубу, бочку, колодец, — который надо обтянуть рамкой из четырёх прямых планок так, чтобы каждая планка касалась круга. Так устроены зажимы, обоймы, кольца-держатели: четыре грани прижимаются к одной окружности.</p>
+    <p>В математике эта тема даёт быстрый фильтр: по одному условию на стороны сразу видно, можно ли вписать окружность в четырёхугольник, и как найти недостающую сторону — <b>без чертежа и без вычисления углов</b>.</p>
+  </div>
+
+  <section>
+    <h2>Сначала вспомни</h2>
+    <p>Тема стоит на двух вещах, которые ты уже знаешь:</p>
+    <div class="recall">
+      <ul>
+        <li><strong>Вписанная окружность</strong> — та, что лежит внутри фигуры и касается всех её сторон. Её центр равноудалён от сторон, и это расстояние — радиус <span class="mono">r</span>.</li>
+        <li><strong>Касательная</strong> и главное её свойство: <strong>два отрезка касательных, проведённых из одной точки к окружности, равны</strong>. Это тот кирпичик, из которого собрано всё правило урока.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section>
+    <h2>Что такое <span class="em">описанный</span> четырёхугольник</h2>
+    <p><strong>Описанный около окружности четырёхугольник</strong> — это выпуклый четырёхугольник, все четыре стороны которого касаются одной окружности. Сама окружность при этом называется вписанной.</p>
+    <p>Главный факт темы — критерий. Он работает <strong>в обе стороны</strong>, поэтому это одновременно и свойство, и признак.</p>
+    <div class="formula-box">
+      <div class="eq"><span class="p1">AB + CD</span> = <span class="p2">BC + DA</span></div>
+      <div class="note">суммы <b>противоположных</b> сторон равны · <span class="p1">AB и CD</span> — одна пара, <span class="p2">BC и DA</span> — другая</div>
+    </div>
+    <div class="tbl-wrap">
+      <table>
+        <tr><th>Куда читаем</th><th>Что получаем</th></tr>
+        <tr><td><strong>Свойство</strong><br>окружность вписана →</td><td>равенство <span class="mono">AB + CD = BC + DA</span> обязательно выполнено, им можно искать сторону</td></tr>
+        <tr><td><strong>Признак</strong><br>равенство выполнено →</td><td>в выпуклый четырёхугольник окружность вписать <strong>можно</strong></td></tr>
+      </table>
+    </div>
+    <div class="note">
+      <p><b>Где работает.</b> Четырёхугольник должен быть <strong>выпуклым</strong> — у невыпуклого окружности, касающейся всех сторон, не бывает. И все длины — в одних единицах. Центр вписанной окружности лежит на пересечении <strong>биссектрис углов</strong> четырёхугольника.</p>
+    </div>
+    <p style="font-size:.95rem;color:var(--muted)">Сразу разрушим миф: «если окружность вписывается, то это квадрат или ромб». Нет. Описанными бывают и совсем несимметричные четырёхугольники — важно не как фигура выглядит, а одно числовое условие на стороны.</p>
+  </section>
+
+  <section>
+    <h2>Почему это работает — <span class="em">увидь глазами</span></h2>
+    <p>Из каждой вершины к окружности идут две касательные — это две стороны угла. По свойству касательных <strong>отрезки от вершины до точек касания равны</strong>. Обозначим их: из вершины A выходят два отрезка <span class="wa">a</span> и <span class="wa">a</span>, из B — <span class="wb">b</span> и <span class="wb">b</span>, из C — <span class="wc">c</span> и <span class="wc">c</span>, из D — <span class="wd">d</span> и <span class="wd">d</span>.</p>
+    <p>Подвигай ползунки: фигура меняется как угодно, а обе суммы всё время дают одно и то же число.</p>
+    <div class="diagram">
+      <canvas id="cq" width="640" height="470" aria-label="Окружность и описанный около неё четырёхугольник с отмеченными равными отрезками касательных"></canvas>
+      <div class="sliders">
+        <label class="la">a <span id="va" class="sval">3</span><input id="sa" class="ra" type="range" min="1" max="6" step="0.5" value="3" aria-label="Отрезок касательной a"></label>
+        <label class="lb">b <span id="vb" class="sval">4</span><input id="sb" class="rb" type="range" min="1" max="6" step="0.5" value="4" aria-label="Отрезок касательной b"></label>
+        <label class="lc">c <span id="vc" class="sval">2</span><input id="sc" class="rc" type="range" min="1" max="6" step="0.5" value="2" aria-label="Отрезок касательной c"></label>
+        <label class="ld">d <span id="vd" class="sval">5</span><input id="sd" class="rd" type="range" min="1" max="6" step="0.5" value="5" aria-label="Отрезок касательной d"></label>
+      </div>
+      <p class="diag-eq" id="diagEq"></p>
+    </div>
+    <p>Смотри, что происходит с формулами:</p>
+    <p class="mono" style="text-align:center;font-size:.98rem;line-height:2">
+      <span class="wa">A</span><span class="wb">B</span> + <span class="wc">C</span><span class="wd">D</span> = (<span class="wa">a</span>+<span class="wb">b</span>) + (<span class="wc">c</span>+<span class="wd">d</span>)<br>
+      <span class="wb">B</span><span class="wc">C</span> + <span class="wd">D</span><span class="wa">A</span> = (<span class="wb">b</span>+<span class="wc">c</span>) + (<span class="wd">d</span>+<span class="wa">a</span>)
+    </p>
+    <p>Обе суммы собраны из одних и тех же четырёх кусочков: <span class="mono">a + b + c + d</span>. Поэтому они просто обязаны совпасть. Это и есть <strong>теорема Пито</strong> — вся её «магия» держится на равных отрезках касательных.</p>
+  </section>
+
+  <section>
+    <h2>Эталонный разбор — <span class="em">думаю вслух</span></h2>
+    <div class="walk">
+      <p class="q">В четырёхугольник ABCD вписана окружность. AB = 7, BC = 10, CD = 8. Найти DA.</p>
+      <ol>
+        <li>Окружность <b>вписана</b> → четырёхугольник описанный → работает критерий <span class="mono">AB + CD = BC + DA</span>.
+          <span class="why">Почему: у любого описанного четырёхугольника суммы противоположных сторон равны.</span></li>
+        <li>Раскладываю по парам: <span class="mono">AB</span> и <span class="mono">CD</span> — одна пара, <span class="mono">BC</span> и <span class="mono">DA</span> — другая.
+          <span class="why">Почему: противоположные — это те, что «через одну», а не соседние.</span></li>
+        <li>Подставляю: <span class="mono">7 + 8 = 10 + DA</span>.</li>
+        <li>Считаю левую часть: <span class="mono">15 = 10 + DA</span>.</li>
+        <li>Выражаю: <span class="mono">DA = 15 − 10 = 5</span>.
+          <span class="why">Почему: переношу 10 в другую часть с противоположным знаком.</span></li>
+      </ol>
+      <div class="verdict">Ответ: DA = 5</div>
+    </div>
+
+    <div class="walk" style="margin-top:.9rem">
+      <p class="q">Стороны четырёхугольника по порядку: 4, 6, 5, 8. Можно ли вписать окружность?</p>
+      <ol>
+        <li>Про вписанную окружность здесь <b>ничего не сказано</b> — значит, сначала проверяю признак, а не «достраиваю» стороны.</li>
+        <li>Беру первую пару противоположных: <span class="mono">4 + 5 = 9</span>.
+          <span class="why">Почему именно так: стороны идут по кругу 4, 6, 5, 8 — противоположны 1-я и 3-я, 2-я и 4-я.</span></li>
+        <li>Вторая пара: <span class="mono">6 + 8 = 14</span>.</li>
+        <li>Сравниваю: <span class="mono">9 ≠ 14</span> — равенство не выполнено.</li>
+      </ol>
+      <div class="verdict">Ответ: вписать окружность нельзя</div>
+    </div>
+
+    <div class="walk" style="margin-top:.9rem">
+      <p class="q">Дострой сам: в KLMN вписана окружность, KL = 12, MN = 9, LM = 6. Найти NK.</p>
+      <ol>
+        <li>Критерий: <span class="mono">KL + MN = LM + NK</span>.</li>
+        <li>Подставляю: <span class="mono">12 + 9 = 6 + NK</span>, то есть <span class="mono">21 = 6 + NK</span>.</li>
+        <li>Дальше — твой шаг: вырази NK и посчитай.</li>
+      </ol>
+      <details style="margin-top:.9rem"><summary>Проверить последний шаг</summary><div class="ans"><span class="mono">NK = 21 − 6 = 15</span>. Ответ <b>NK = 15</b>.</div></details>
+    </div>
+  </section>
+
+  <section>
+    <h2>Тренажёр · <span class="em">бесконечная практика</span></h2>
+    <p>Три типа заданий вперемешку: найти сторону, проверить признак, подобрать сторону. Ответ — число (дробное пиши через запятую, например 5,5) или слово «да» / «нет».</p>
+    <div class="trainer">
+      <div class="tr-task" id="trTask">В четырёхугольник ABCD вписана окружность. <b>AB = 7</b>, <b>BC = 10</b>, <b>CD = 8</b>. Найди <b>DA</b>.</div>
+      <div class="tr-ctl">
+        <button id="trNew" type="button">🎲 Новая</button>
+        <input id="trAns" type="text" placeholder="ответ" aria-label="Ответ" autocomplete="off">
+        <button id="trCheck" type="button" class="sec">Проверить</button>
+        <button id="trShow" type="button" class="ghost">Решение</button>
+      </div>
+      <div id="trResult" class="tr-result"></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Проверь себя</h2>
+
+    <p class="lvl">Уровень 1 · понимание</p>
+    <div class="drill">
+      <details><summary>1) Запиши критерий для описанного ABCD. Какие стороны называются противоположными?</summary><div class="ans"><span class="mono">AB + CD = BC + DA</span>. Противоположные — те, что не имеют общей вершины и идут «через одну»: AB и CD, BC и DA. Соседние (AB и BC) складывать нельзя.</div></details>
+      <details><summary>2) Про какой четырёхугольник говорят «описанный»?</summary><div class="ans">Про выпуклый четырёхугольник, все четыре стороны которого <b>касаются одной окружности</b>. Эта окружность лежит внутри и называется вписанной.</div></details>
+    </div>
+
+    <p class="lvl">Уровень 2 · применение</p>
+    <div class="drill">
+      <details><summary>3) В четырёхугольник вписана окружность; три стороны подряд равны 3, 7, 9. Найди четвёртую.</summary><div class="ans"><span class="mono">3 + 9 = 7 + x</span> → <span class="mono">12 = 7 + x</span> → <span class="mono">x = 5</span>. Ответ <b>5</b>.</div></details>
+      <details><summary>4) В описанном ABCD: AB = 5,5, BC = 4, DA = 6,5. Найди CD.</summary><div class="ans"><span class="mono">AB + CD = BC + DA</span> → <span class="mono">5,5 + CD = 4 + 6,5 = 10,5</span> → <span class="mono">CD = 10,5 − 5,5 = 5</span>. Ответ <b>5</b>.</div></details>
+    </div>
+
+    <p class="lvl">Уровень 3 · анализ</p>
+    <div class="drill">
+      <details><summary>5) Найди ошибку. Для описанного ABCD ученик записал AB + BC = CD + DA.</summary><div class="ans">Он сложил <b>соседние</b> стороны (у AB и BC общая вершина B). Критерий — про <b>противоположные</b>: <span class="mono">AB + CD = BC + DA</span>. Помогает отметить пары разными цветами прямо на чертеже.</div></details>
+      <details><summary>6) Что изменится, если… Стороны 4, 6, 5, 8 (по порядку). Можно ли вписать окружность?</summary><div class="ans">Проверяем: <span class="mono">4 + 5 = 9</span>, <span class="mono">6 + 8 = 14</span>. <span class="mono">9 ≠ 14</span> — <b>нельзя</b>. Даже если фигуру нарисовать красиво, окружности, касающейся всех четырёх сторон, не существует.</div></details>
+      <details><summary>7) Обратная задача. Стороны идут по кругу: 5, 8, 7, x. Подбери x так, чтобы окружность вписывалась.</summary><div class="ans"><span class="mono">5 + 7 = 8 + x</span> → <span class="mono">12 = 8 + x</span> → <span class="mono">x = 4</span>. Ответ <b>x = 4</b>.</div></details>
+      <details><summary>8) Предскажи → проверь. Стороны 6, 4, 6, 4 — фигура выглядит симметрично. Вписывается ли окружность?</summary><div class="ans">Сначала предскажи, потом считай: <span class="mono">6 + 6 = 12</span>, <span class="mono">4 + 4 = 8</span>. Не равны — <b>нельзя</b>. Симметричный вид обманывает: складывать надо противоположные стороны, а здесь противоположны как раз одинаковые.</div></details>
+    </div>
+  </section>
+
+  <section>
+    <h2>Ловушки</h2>
+    <ul class="traps">
+      <li><b>Путаешь с вписанным четырёхугольником.</b> У <b>описанного</b> (окружность внутри, касается сторон) равны суммы противоположных <b>сторон</b>. У <b>вписанного</b> (сам лежит на окружности, она проходит через вершины) равны суммы противоположных <b>углов</b> — по 180°. Спроси себя: окружность внутри или снаружи?</li>
+      <li><b>Складываешь соседние стороны.</b> <span class="mono">AB + BC = CD + DA</span> — неверно. Только через одну: <span class="mono">AB + CD = BC + DA</span>.</li>
+      <li><b>Применяешь критерий без проверки.</b> Если про вписанную окружность не сказано — сначала проверь равенство сумм. Не выполнено — окружности нет, и «достраивать» сторону нечем.</li>
+      <li><b>Забываешь про выпуклость.</b> Критерий работает только для выпуклого четырёхугольника.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Объясни своими словами</h2>
+    <div class="selfcheck">
+      <p>Закрой урок и ответь вслух — себе, другу или голосовому помощнику. Если объяснил без запинок, тема твоя.</p>
+      <ol>
+        <li>Сформулируй критерий: когда в четырёхугольник можно вписать окружность?</li>
+        <li>В описанном ABCD: AB = 9, BC = 5, CD = 4. Найди DA.</li>
+        <li>Чем условие для <b>описанного</b> четырёхугольника отличается от условия для <b>вписанного</b>?</li>
+      </ol>
+      <details style="margin-top:1rem"><summary>Сверить ответы</summary><div class="ans">
+        1) Тогда и только тогда, когда суммы противоположных сторон равны (для выпуклого четырёхугольника).<br>
+        2) <span class="mono">9 + 4 = 5 + DA</span> → <span class="mono">13 = 5 + DA</span> → <span class="mono">DA = 8</span>.<br>
+        3) Описанный — равны суммы противоположных <b>сторон</b>; вписанный — равны суммы противоположных <b>углов</b>.
+      </div></details>
+    </div>
+  </section>
+
+  <div class="wrapup">
+    <h2>Запомни главное</h2>
+    <p class="big-rule">AB + CD = BC + DA</p>
+    <p>Четырёхугольник описан около окружности тогда и только тогда, когда суммы его противоположных сторон равны. Работает в обе стороны: окружность вписана → равенство верно; равенство верно (и фигура выпуклая) → окружность вписать можно.</p>
+    <p class="next">👉 Дальше — <b>замечательные точки треугольника</b>. Там та же идея: центр вписанной окружности — точка пересечения биссектрис, потому что она равноудалена от сторон.</p>
+  </div>
+
+</div>
+
+<script>
+(function(){
+  var cv=document.getElementById('cq'); if(!cv) return;
+  var ctx=cv.getContext('2d');
+  var S={a:document.getElementById('sa'),b:document.getElementById('sb'),c:document.getElementById('sc'),d:document.getElementById('sd')};
+  var V={a:document.getElementById('va'),b:document.getElementById('vb'),c:document.getElementById('vc'),d:document.getElementById('vd')};
+  var eq=document.getElementById('diagEq');
+  var W=640,H=470,dpr=1;
+  function css(v){ return getComputedStyle(document.documentElement).getPropertyValue(v).trim(); }
+  function num(x){ return String(x).replace('.',',').replace('-','−'); }
+
+  function resize(){
+    var c=cv.clientWidth||640; dpr=Math.min(window.devicePixelRatio||1,2);
+    W=c; H=Math.round(c*0.78);
+    cv.width=Math.round(W*dpr); cv.height=Math.round(H*dpr); cv.style.height=H+'px';
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+  }
+  // подбираем радиус r так, чтобы четыре угла «сомкнулись»: sum arctan(t/r) = pi
+  function solveR(t){
+    var lo=0.0001, hi=100;
+    function f(r){ var s=0; for(var i=0;i<4;i++) s+=Math.atan(t[i]/r); return s-Math.PI; }
+    for(var k=0;k<80;k++){ var m=(lo+hi)/2; if(f(m)>0) lo=m; else hi=m; }
+    return (lo+hi)/2;
+  }
+  function draw(){
+    var a=+S.a.value,b=+S.b.value,c=+S.c.value,d=+S.d.value;
+    V.a.textContent=num(a); V.b.textContent=num(b); V.c.textContent=num(c); V.d.textContent=num(d);
+    var t=[a,b,c,d], r=solveR(t);
+    var al=t.map(function(x){ return Math.atan(x/r); });   // al[0]=A, al[1]=B, al[2]=C, al[3]=D
+    var psi0=-Math.PI/2;                                   // точка касания на AB — внизу
+    var pAB=psi0, pBC=psi0+2*al[1], pCD=pBC+2*al[2], pDA=pCD+2*al[3];
+    function onCirc(ang){ return [r*Math.cos(ang), r*Math.sin(ang)]; }
+    function vert(ang,len){ var R=Math.sqrt(r*r+len*len); return [R*Math.cos(ang), R*Math.sin(ang)]; }
+    var A=vert(psi0-al[0],a), B=vert(psi0+al[1],b), C=vert(pBC+al[2],c), D=vert(pCD+al[3],d);
+    var TAB=onCirc(pAB), TBC=onCirc(pBC), TCD=onCirc(pCD), TDA=onCirc(pDA);
+    var pts=[A,B,C,D,[r,0],[-r,0],[0,r],[0,-r]];
+    var minx=Math.min.apply(null,pts.map(function(p){return p[0];})), maxx=Math.max.apply(null,pts.map(function(p){return p[0];}));
+    var miny=Math.min.apply(null,pts.map(function(p){return p[1];})), maxy=Math.max.apply(null,pts.map(function(p){return p[1];}));
+    var pad=44, sc=Math.min((W-pad*2)/(maxx-minx),(H-pad*2)/(maxy-miny));
+    var ox=(W-(maxx-minx)*sc)/2, oy=(H-(maxy-miny)*sc)/2;
+    function SX(x){ return ox+(x-minx)*sc; }
+    function SY(y){ return oy+(maxy-y)*sc; }
+
+    ctx.clearRect(0,0,W,H);
+    // окружность
+    ctx.beginPath(); ctx.arc(SX(0),SY(0),r*sc,0,Math.PI*2);
+    ctx.fillStyle='#F2F5FA'; ctx.fill(); ctx.strokeStyle='#9FB0C8'; ctx.lineWidth=1.4; ctx.setLineDash([5,4]); ctx.stroke(); ctx.setLineDash([]);
+    // центр
+    ctx.beginPath(); ctx.arc(SX(0),SY(0),2.6,0,Math.PI*2); ctx.fillStyle='#9FB0C8'; ctx.fill();
+    // контур четырёхугольника
+    ctx.beginPath();
+    [A,B,C,D].forEach(function(p,i){ var x=SX(p[0]),y=SY(p[1]); i?ctx.lineTo(x,y):ctx.moveTo(x,y); });
+    ctx.closePath(); ctx.strokeStyle='#C6CEDA'; ctx.lineWidth=1.2; ctx.stroke();
+
+    var fs=Math.max(11,Math.min(16,W*0.026));
+    function seg(P,Q,col){ ctx.beginPath(); ctx.moveTo(SX(P[0]),SY(P[1])); ctx.lineTo(SX(Q[0]),SY(Q[1]));
+      ctx.strokeStyle=col; ctx.lineWidth=4; ctx.lineCap='round'; ctx.stroke(); }
+    function tag(P,Q,txt,col){
+      var mx=(SX(P[0])+SX(Q[0]))/2, my=(SY(P[1])+SY(Q[1]))/2;
+      var cx=SX(0), cy=SY(0), dx=mx-cx, dy=my-cy, L=Math.hypot(dx,dy)||1;
+      var x=mx+dx/L*(fs*1.05), y=my+dy/L*(fs*1.05);
+      ctx.font='700 '+fs+'px ui-monospace,Menlo,monospace'; ctx.textAlign='center'; ctx.textBaseline='middle';
+      ctx.fillStyle='#FFFFFF'; ctx.beginPath(); ctx.arc(x,y,fs*0.72,0,Math.PI*2); ctx.fill();
+      ctx.fillStyle=col; ctx.fillText(txt,x,y);
+    }
+    var CA=css('--ta'),CB=css('--tb'),CC=css('--tc'),CD_=css('--td');
+    seg(A,TAB,CA); seg(TAB,B,CB);
+    seg(B,TBC,CB); seg(TBC,C,CC);
+    seg(C,TCD,CC); seg(TCD,D,CD_);
+    seg(D,TDA,CD_); seg(TDA,A,CA);
+    tag(A,TAB,'a',CA); tag(TAB,B,'b',CB);
+    tag(B,TBC,'b',CB); tag(TBC,C,'c',CC);
+    tag(C,TCD,'c',CC); tag(TCD,D,'d',CD_);
+    tag(D,TDA,'d',CD_); tag(TDA,A,'a',CA);
+    // точки касания
+    [TAB,TBC,TCD,TDA].forEach(function(P){ ctx.beginPath(); ctx.arc(SX(P[0]),SY(P[1]),3.4,0,Math.PI*2); ctx.fillStyle='#1D2530'; ctx.fill(); });
+    // вершины
+    function vlabel(P,txt){
+      var cx=SX(0), cy=SY(0), x=SX(P[0]), y=SY(P[1]), dx=x-cx, dy=y-cy, L=Math.hypot(dx,dy)||1;
+      ctx.beginPath(); ctx.arc(x,y,3.6,0,Math.PI*2); ctx.fillStyle='#1D2530'; ctx.fill();
+      ctx.font='800 '+(fs+1)+'px system-ui,sans-serif'; ctx.textAlign='center'; ctx.textBaseline='middle';
+      ctx.fillStyle='#1D2530'; ctx.fillText(txt, x+dx/L*(fs*1.1), y+dy/L*(fs*1.1));
+    }
+    vlabel(A,'A'); vlabel(B,'B'); vlabel(C,'C'); vlabel(D,'D');
+
+    var s1=a+b, s2=b+c, s3=c+d, s4=d+a, tot=a+b+c+d;
+    eq.innerHTML=
+      '<span class="p1">AB + CD = '+num(s1)+' + '+num(s3)+' = '+num(tot)+'</span><br>'+
+      '<span class="p2">BC + DA = '+num(s2)+' + '+num(s4)+' = '+num(tot)+'</span>';
+  }
+  ['a','b','c','d'].forEach(function(k){ S[k].addEventListener('input',draw); });
+  window.addEventListener('resize',function(){ resize(); draw(); });
+  resize(); draw();
+})();
+</script>
+
+<script>
+(function(){
+  var taskEl=document.getElementById('trTask'), ansEl=document.getElementById('trAns'), resEl=document.getElementById('trResult');
+  if(!taskEl) return;
+  var MINUS='−';
+  function fmt(x){ x=Math.round(x*100)/100; return String(x).replace('.',',').replace('-',MINUS); }
+  function ri(min,max){ return Math.floor(Math.random()*(max-min+1))+min; }
+  function tang(){                    // отрезки касательных → стороны заведомо «правильные»
+    var half=(Math.random()<0.22);
+    var t=[];
+    for(var i=0;i<4;i++){ t.push(ri(1,7) + (half && i%2===0 ? 0.5 : 0)); }
+    return t;
+  }
+  function sidesFrom(t){ return [t[0]+t[1], t[1]+t[2], t[2]+t[3], t[3]+t[0]]; }  // AB, BC, CD, DA
+  var NAMES=['AB','BC','CD','DA'];
+  var cur=null;
+
+  function generate(){
+    var r=Math.random(), s=sidesFrom(tang());
+    if(r<0.45){                        // найти недостающую сторону
+      var k=ri(0,3);
+      var known=[];
+      for(var i=0;i<4;i++) if(i!==k) known.push('<b>'+NAMES[i]+' = '+fmt(s[i])+'</b>');
+      cur={type:'find',s:s,k:k,ans:s[k]};
+      taskEl.innerHTML='В четырёхугольник ABCD вписана окружность. '+known.join(', ')+'. Найди <b>'+NAMES[k]+'</b>.';
+    } else if(r<0.75){                 // признак: да / нет
+      var ok=(Math.random()<0.5), sh=s.slice();
+      if(!ok){ var j=ri(0,3), delta=(Math.random()<0.5?1:2)*(Math.random()<0.5?-1:1);
+        if(sh[j]+delta<1) delta=Math.abs(delta); sh[j]=sh[j]+delta; }
+      cur={type:'check',s:sh,ans:(sh[0]+sh[2]===sh[1]+sh[3])?'да':'нет'};
+      taskEl.innerHTML='Стороны четырёхугольника по порядку: <b>'+sh.map(fmt).join('</b>; <b>')+'</b>. Можно ли вписать в него окружность? Ответь <b>да</b> или <b>нет</b>.';
+    } else {                           // обратная задача: подобрать сторону
+      var m=ri(0,3), disp=[];
+      for(var q=0;q<4;q++) disp.push(q===m?'x':fmt(s[q]));
+      cur={type:'pick',s:s,k:m,ans:s[m]};
+      taskEl.innerHTML='Стороны идут по кругу: <b>'+disp.join('</b>; <b>')+'</b>. Подбери <b>x</b> так, чтобы в четырёхугольник можно было вписать окружность.';
+    }
+    resEl.innerHTML=''; ansEl.value='';
+  }
+
+  function solHTML(){
+    var q=cur, s=q.s, h='<div class="sol">';
+    if(q.type==='check'){
+      var L=s[0]+s[2], R=s[1]+s[3];
+      h+='1-я и 3-я стороны противоположны: '+fmt(s[0])+' + '+fmt(s[2])+' = '+fmt(L)+'<br>';
+      h+='2-я и 4-я: '+fmt(s[1])+' + '+fmt(s[3])+' = '+fmt(R)+'<br>';
+      h+=(L===R? 'Суммы равны → окружность вписать <b>можно</b> (ответ: да)'
+               : 'Суммы не равны ('+fmt(L)+' ≠ '+fmt(R)+') → вписать <b>нельзя</b> (ответ: нет)');
+      return h+'</div>';
+    }
+    var k=q.k, sum, part;
+    if(k===0||k===2){ sum=s[1]+s[3]; part=(k===0?s[2]:s[0]); }
+    else { sum=s[0]+s[2]; part=(k===1?s[3]:s[1]); }
+    if(q.type==='pick'){
+      h+='Противоположны 1-я и 3-я стороны, 2-я и 4-я. Суммы этих пар равны.<br>';
+      h+='Складываю известную пару противоположных: '+fmt(sum)+'<br>';
+      h+='Вторая пара: '+fmt(part)+' + x = '+fmt(sum)+'<br>';
+      h+='x = '+fmt(sum)+' '+MINUS+' '+fmt(part)+' = <b>'+fmt(q.ans)+'</b>';
+    } else {
+      h+=(k===0||k===2 ? 'Критерий: AB + CD = BC + DA<br>' : 'Критерий: BC + DA = AB + CD<br>');
+      h+='Известная пара в сумме: '+fmt(sum)+'<br>';
+      h+='Вторая пара: '+fmt(part)+' + '+NAMES[k]+' = '+fmt(sum)+'<br>';
+      h+=NAMES[k]+' = '+fmt(sum)+' '+MINUS+' '+fmt(part)+' = <b>'+fmt(q.ans)+'</b>';
+    }
+    return h+'</div>';
+  }
+
+  function check(){
+    var raw=ansEl.value.trim().toLowerCase();
+    if(raw===''){ resEl.innerHTML='<span class="bad">Введи ответ или нажми «Решение».</span>'; return; }
+    var good;
+    if(cur.type==='check'){
+      var yes=(raw==='да'||raw==='da'||raw==='+'||raw==='можно');
+      var no=(raw==='нет'||raw==='net'||raw==='-'||raw==='−'||raw==='нельзя');
+      if(!yes&&!no){ resEl.innerHTML='<span class="bad">Ответ здесь — слово «да» или «нет».</span>'; return; }
+      good=((yes?'да':'нет')===cur.ans);
+    } else {
+      var got=parseFloat(raw.replace(',','.').replace(/[^0-9.\-]/g,''));
+      good=(!isNaN(got) && Math.abs(got-cur.ans)<0.01);
+    }
+    resEl.innerHTML=(good?'<span class="ok">✓ Верно!</span>':'<span class="bad">✗ Пока не то — глянь решение.</span>')+solHTML();
+  }
+
+  document.getElementById('trNew').addEventListener('click',function(){ generate(); ansEl.focus(); });
+  document.getElementById('trCheck').addEventListener('click',check);
+  document.getElementById('trShow').addEventListener('click',function(){ resEl.innerHTML=solHTML(); });
+  ansEl.addEventListener('keydown',function(e){ if(e.key==='Enter') check(); });
+  cur={type:'find',s:[7,10,8,5],k:3,ans:5};   // совпадает со стартовым текстом задания
+})();
+</script>
+<!--LESSON-NAV-BOT--><nav class="lnav lnav-bot"><a class="prev" href="./geo8-vpisannyj-chetyrehugolnik.html"><span class="dir">← Предыдущая</span><span class="ttl">Вписанный четырёхугольник</span></a><a class="to-cat" href="./catalog.html">📚 <span>Все темы</span></a><a class="next" href="./geo8-zamechatelnye-tochki.html"><span class="dir">Следующая →</span><span class="ttl">Замечательные точки треугольника</span></a></nav><!--/LESSON-NAV-BOT-->

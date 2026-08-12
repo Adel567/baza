@@ -1,0 +1,524 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Отношение отрезков и пропорциональность — геометрия 8 класс</title>
+<style>
+  :root{
+    --paper:#F6F7F9; --card:#FFFFFF; --ink:#1D2530; --muted:#606B7A; --line:#E3E7EE;
+    --brand:#2E5AAC; --brand-soft:#E4EBF7;
+    --ca:#2E5AAC; --ca-soft:#E4EBF7;    /* отрезок AB */
+    --cb:#E27C2C; --cb-soft:#FBEEDF;    /* отрезок CD */
+    --cc:#159A8A; --cc-soft:#DEF3F0;    /* результат-отношение */
+    --ok:#1E8E5A; --no:#C23B3B;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper)}
+  .page{max-width:720px;margin:0 auto;padding:clamp(1.4rem,4vw,3rem) clamp(1.1rem,4vw,2rem) 4.5rem;
+    color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:17.5px;line-height:1.68;-webkit-font-smoothing:antialiased}
+  .mono{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-variant-numeric:tabular-nums;font-weight:600}
+  sup{font-size:.72em}
+
+  .hero{border-bottom:3px solid var(--brand);padding-bottom:1.4rem;margin-bottom:1.8rem}
+  .eyebrow{font-size:.74rem;letter-spacing:.15em;text-transform:uppercase;color:var(--brand);font-weight:700;margin:0 0 .55rem}
+  h1{font-size:clamp(1.9rem,6vw,2.8rem);line-height:1.05;margin:0;font-weight:800;letter-spacing:-.02em;text-wrap:balance}
+  .tagline{font-size:1.12rem;color:var(--muted);margin:.85rem 0 0;text-wrap:pretty}
+
+  section{margin-top:2.4rem}
+  h2{font-size:1.5rem;margin:0 0 .3rem;font-weight:780;letter-spacing:-.015em;text-wrap:balance}
+  h2 .em{color:var(--brand)}
+  p{margin:.7rem 0}
+  strong{font-weight:680}
+  .caw{color:var(--ca);font-weight:800} .cbw{color:var(--cb);font-weight:800} .ccw{color:var(--cc);font-weight:800}
+
+  .lead-in{background:var(--brand-soft);border-radius:14px;padding:1.1rem 1.3rem;font-size:1.02rem}
+  .lead-in p{margin:.4rem 0}
+  .lead-in b{color:var(--brand)}
+
+  .recall{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1rem 1.25rem;margin-top:1rem}
+  .recall p{margin:.35rem 0;font-size:.97rem}
+  .recall .ttl{font-weight:750;font-size:.8rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:0 0 .5rem}
+
+  .formula-box{background:var(--ink);color:#fff;border-radius:14px;padding:1.3rem;text-align:center;margin-top:1rem}
+  .formula-box .eq{font-family:ui-monospace,Menlo,monospace;font-size:clamp(1.5rem,5.4vw,2.1rem);font-weight:700}
+  .formula-box .eq .a{color:#8FB2E6} .formula-box .eq .b{color:#F0A45E} .formula-box .eq .c{color:#6FD3C6}
+  .formula-box .note{font-size:.9rem;color:#AEB8C6;margin:.7rem 0 0}
+
+  .frac{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;line-height:1.15;margin:0 .18em}
+  .frac .num{padding:0 .3em}
+  .frac .den{padding:0 .3em;border-top:2px solid currentColor}
+
+  .note{border-left:4px solid var(--brand);background:var(--brand-soft);border-radius:0 10px 10px 0;padding:.8rem 1.1rem;margin-top:1rem;font-size:.98rem}
+  .note b{color:var(--brand)}
+
+  .terms{width:100%;border-collapse:collapse;margin-top:.9rem;font-size:.95rem}
+  .terms th,.terms td{border:1px solid var(--line);padding:.55rem .7rem;text-align:left}
+  .terms th{background:var(--brand-soft);font-weight:700}
+  .tbl-wrap{overflow-x:auto}
+
+  /* Диаграмма */
+  .diagram{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:1.2rem;margin-top:1rem}
+  .diagram canvas{width:100%;height:auto;display:block;border-radius:8px}
+  .sliders{display:grid;gap:.6rem;margin-top:.9rem}
+  @media(min-width:520px){.sliders{grid-template-columns:1fr 1fr}}
+  .sliders label{display:flex;align-items:center;gap:.5rem;font-weight:700;font-family:ui-monospace,Menlo,monospace}
+  .sliders label.la{color:var(--ca)} .sliders label.lb{color:var(--cb)}
+  .sliders input[type=range]{flex:1;min-width:0}
+  .sliders input.ra{accent-color:var(--ca)} .sliders input.rb{accent-color:var(--cb)}
+  .sliders input[type=range]:focus-visible{outline:3px solid var(--brand);outline-offset:3px}
+  .sliders .sval{min-width:3ch;text-align:right}
+  .diag-eq{text-align:center;font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:clamp(.95rem,3.6vw,1.1rem);margin:.9rem 0 0}
+  .diag-eq .a{color:var(--ca)} .diag-eq .b{color:var(--cb)} .diag-eq .c{color:var(--cc)}
+  .diag-hint{text-align:center;font-size:.9rem;color:var(--muted);margin:.4rem 0 0}
+
+  .walk{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.15rem 1.3rem;margin-top:1rem}
+  .walk .q{font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.02rem;margin:0 0 .9rem;padding-bottom:.7rem;border-bottom:1px solid var(--line)}
+  .walk ol{margin:0;padding-left:1.2rem;display:flex;flex-direction:column;gap:.55rem}
+  .walk li{font-size:.95rem}
+  .walk li .why{display:block;color:var(--muted);font-size:.9rem;margin-top:.15rem}
+  .walk b{font-weight:700}
+  .verdict{margin-top:1rem;padding:.7rem 1rem;background:var(--brand-soft);border-radius:10px;font-weight:650;color:var(--brand);font-family:ui-monospace,Menlo,monospace}
+
+  /* Тренажёр */
+  .trainer{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.2rem 1.3rem;margin-top:1rem}
+  .tr-task{font-size:clamp(1rem,4vw,1.15rem);text-align:center;padding:1rem;background:var(--brand-soft);border-radius:10px;font-weight:600}
+  .tr-task b{font-family:ui-monospace,Menlo,monospace;color:var(--ink)}
+  .tr-ctl{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:1rem;align-items:center;justify-content:center}
+  .tr-ctl input{flex:1;min-width:110px;max-width:180px;font:inherit;padding:.5rem .7rem;border:1px solid var(--line);border-radius:9px;text-align:center;background:#fff;color:var(--ink)}
+  .tr-ctl button{font:inherit;font-weight:700;font-size:.9rem;cursor:pointer;border:none;border-radius:9px;padding:.55rem .95rem;color:#fff;background:var(--brand)}
+  .tr-ctl button.sec{background:var(--cb)}
+  .tr-ctl button.ghost{background:transparent;color:var(--brand);border:1px solid var(--brand)}
+  .tr-ctl button:focus-visible,.tr-ctl input:focus-visible{outline:3px solid var(--brand);outline-offset:2px}
+  .tr-result{margin-top:.9rem;font-size:.96rem;min-height:1.2rem;text-align:center}
+  .tr-result .ok{color:var(--ok);font-weight:700} .tr-result .bad{color:var(--no);font-weight:700}
+  .tr-result .sol{margin-top:.6rem;padding:.8rem 1rem;background:#FCFDFE;border:1px solid var(--line);border-radius:10px;font-family:ui-monospace,Menlo,monospace;font-size:.9rem;line-height:1.8;text-align:left;overflow-x:auto}
+
+  details{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:.9rem 1.1rem;margin-top:.7rem}
+  details[open]{border-color:var(--brand)}
+  summary{cursor:pointer;font-weight:650;list-style:none;display:flex;justify-content:space-between;gap:1rem;align-items:center}
+  summary::-webkit-details-marker{display:none}
+  summary::after{content:"проверить";font-size:.8rem;color:var(--brand);font-weight:700;white-space:nowrap}
+  details[open] summary::after{content:"скрыть"}
+  summary:focus-visible{outline:3px solid var(--brand);outline-offset:3px;border-radius:6px}
+  .ans{margin-top:.75rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.96rem;color:var(--muted)}
+  .ans b{color:var(--ink)}
+  .lvl{display:inline-block;font-size:.68rem;letter-spacing:.09em;text-transform:uppercase;font-weight:800;color:var(--muted);margin:1.4rem 0 .2rem}
+  .drill{display:flex;flex-direction:column;gap:.2rem;margin-top:.4rem}
+
+  ul.traps{list-style:none;margin:1rem 0 0;padding:0;display:flex;flex-direction:column;gap:.7rem}
+  ul.traps li{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:.85rem 1.05rem;padding-left:2.5rem;position:relative;font-size:.97rem}
+  ul.traps li::before{content:"⚠";position:absolute;left:1rem;top:.85rem;color:var(--cb)}
+  ul.traps b{font-weight:700}
+
+  ol.selfcheck{margin:1rem 0 0;padding-left:1.3rem;display:flex;flex-direction:column;gap:.45rem;font-size:.99rem}
+
+  .wrapup{background:var(--brand);color:#fff;border-radius:16px;padding:1.4rem 1.5rem;margin-top:2.4rem}
+  .wrapup h2{color:#fff;margin:0 0 .5rem}
+  .wrapup p{color:#DEE7F5;margin:.4rem 0;font-size:1rem}
+  .wrapup .big-rule{font-size:clamp(1rem,4.2vw,1.2rem);font-weight:800;color:#fff;margin:.6rem 0;font-family:ui-monospace,Menlo,monospace}
+  .wrapup .next{font-size:.95rem;color:#C6D5EE;margin-top:1rem;padding-top:1rem;border-top:1px solid rgba(255,255,255,.2)}
+  .wrapup .next b{color:#fff}
+
+  @media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+<!--LESSON-NAV-TOP--><style>.lnav{--lnav-accent:#3D5AF1}.lnav a{text-decoration:none;font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif}.lnav-top{max-width:820px;margin:0 auto;padding:.75rem clamp(1rem,4vw,1.5rem) .1rem}.lnav-top a{display:inline-flex;align-items:center;gap:.35rem;color:var(--lnav-accent);font-weight:600;font-size:.9rem}.lnav-top a:hover{text-decoration:underline}.lnav-bot{max-width:820px;margin:2.6rem auto 3rem;padding:1.1rem clamp(1rem,4vw,1.5rem) 0;border-top:1px solid #E4E8EF;display:flex;align-items:stretch;gap:.55rem}.lnav-bot a{min-width:0;display:flex;flex-direction:column;justify-content:center;gap:.15rem;border:1px solid #E4E8EF;border-radius:12px;padding:.65rem .85rem;color:#182233;background:#fff;transition:border-color .1s,transform .08s}.lnav-bot a:hover{border-color:var(--lnav-accent);transform:translateY(-1px)}.lnav-bot .prev,.lnav-bot .next{flex:1 1 0}.lnav-bot .next{text-align:right}.lnav-bot .dir{font-size:.72rem;color:#8A93A6;font-weight:600}.lnav-bot .ttl{font-size:.9rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.lnav-bot .to-cat{flex:0 0 auto;flex-direction:row;align-items:center;justify-content:center;color:var(--lnav-accent);font-weight:700;font-size:.85rem;white-space:nowrap}@media(max-width:420px){.lnav-bot .to-cat span{display:none}.lnav-bot .to-cat{padding:.65rem .7rem}}</style><nav class="lnav lnav-top"><a href="./catalog.html">← Все темы</a></nav><!--/LESSON-NAV-TOP-->
+<div class="page">
+
+  <header class="hero">
+    <p class="eyebrow">Геометрия · 8 класс</p>
+    <h1>Отношение отрезков и пропорциональность</h1>
+    <p class="tagline">Число без сантиметров, которое говорит: во сколько раз один отрезок длиннее другого.</p>
+  </header>
+
+  <div class="lead-in">
+    <p><b>Где встречается.</b> Карта и масштаб (1 см на карте = 100 000 см на местности), чертежи в технике, измерение высоты дерева или дома по его тени. Всюду, где фигура «такая же по форме, но в несколько раз больше», работает отношение соответственных отрезков.</p>
+    <p>Это фундамент всей темы «подобие»: чтобы сравнивать треугольники по форме, надо сначала уметь верно составить пропорцию из их сторон.</p>
+  </div>
+
+  <div class="recall">
+    <p class="ttl">Вспомни перед стартом</p>
+    <p>· Отношение двух чисел — это их <strong>частное</strong> (то есть дробь).</p>
+    <p>· Дробь можно сокращать и переводить в десятичную запись.</p>
+    <p>· Пропорция — равенство двух отношений; ты уже встречал её в 6 классе.</p>
+  </div>
+
+  <section>
+    <h2>Главный миф — <span class="em">и как его разрушить</span></h2>
+    <p>Многие думают так: «во сколько раз отрезок длиннее — на столько и измеряется отношение в сантиметрах». Это неверно.</p>
+    <p>Пусть <span class="caw">AB = 6 см</span>, <span class="cbw">CD = 2 см</span>. Их отношение равно <span class="ccw">3</span> — просто <strong>3</strong>, а не «3 см». <span class="caw">AB</span> ровно втрое длиннее <span class="cbw">CD</span>, и всё.</p>
+    <div class="note">
+      <p><b>Почему без единиц.</b> Отношение — это деление длины на длину. Если обе длины взять в сантиметрах или обе в миллиметрах, единицы <strong>сокращаются</strong> и результат получается один и тот же. Поэтому отношение «помнит» только соотношение длин (форму), но не сам размер.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Ядро темы</h2>
+    <p><strong>Отношение отрезков</strong> <span class="caw">AB</span> и <span class="cbw">CD</span> — это отношение их длин, взятых в <strong>одной и той же</strong> единице измерения:</p>
+    <div class="formula-box">
+      <div class="eq"><span class="frac"><span class="num"><span class="a">AB</span></span><span class="den"><span class="b">CD</span></span></span></div>
+      <div class="note">безразмерное число: показывает, во сколько раз <span class="a">AB</span> длиннее <span class="b">CD</span></div>
+    </div>
+    <p style="margin-top:1.4rem"><strong>Пропорция</strong> — это равенство двух отношений. Она говорит, что пара отрезков <span class="mono">a, b</span> относится так же, как пара <span class="mono">c, d</span>:</p>
+    <div class="formula-box">
+      <div class="eq"><span class="frac"><span class="num">a</span><span class="den">b</span></span> = <span class="frac"><span class="num">c</span><span class="den">d</span></span></div>
+      <div class="note"><span class="c">a</span> и <span class="c">d</span> — крайние члены · <span class="a">b</span> и <span class="a">c</span> — средние члены</div>
+    </div>
+    <div class="tbl-wrap">
+      <table class="terms">
+        <tr><th>Название</th><th>Кто это в записи a/b = c/d</th><th>Как запомнить</th></tr>
+        <tr><td>Крайние члены</td><td class="mono">a и d</td><td>стоят с краёв записи</td></tr>
+        <tr><td>Средние члены</td><td class="mono">b и c</td><td>стоят в середине</td></tr>
+      </table>
+    </div>
+    <p style="margin-top:1.3rem"><strong>Основное свойство пропорции:</strong> произведение крайних членов равно произведению средних.</p>
+    <div class="formula-box">
+      <div class="eq"><span class="frac"><span class="num">a</span><span class="den">b</span></span> = <span class="frac"><span class="num">c</span><span class="den">d</span></span> &nbsp;⟺&nbsp; <span class="c">a · d</span> = <span class="a">b · c</span></div>
+      <div class="note">это и есть умножение «крест-накрест» — им находят неизвестный член пропорции</div>
+    </div>
+    <div class="note">
+      <p><b>Три условия, без которых ответ поедет:</b></p>
+      <p>1. Длины — всегда положительные числа, в знаменателе отрезок не может быть нулевым (<span class="mono">b ≠ 0</span>, <span class="mono">d ≠ 0</span>).</p>
+      <p>2. Перед делением приведи оба отрезка к <strong>одной единице</strong> (оба в см либо оба в мм).</p>
+      <p>3. Порядок важен: <span class="mono">AB/CD</span> и <span class="mono">CD/AB</span> — разные, взаимно обратные числа.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Увидь глазами — <span class="em">сколько раз короткий помещается в длинном</span></h2>
+    <p>Двигай ползунки и смотри: <span class="cbw">CD</span> откладывается вдоль <span class="caw">AB</span> столько раз, сколько говорит отношение. Полоски-клетки внизу — та же мысль другим способом: отношение про <strong>количество равных частей</strong>, а не про сантиметры.</p>
+    <div class="diagram">
+      <canvas id="segs" width="640" height="380" aria-label="Два отрезка AB и CD, откладывание CD вдоль AB и бар-модель отношения"></canvas>
+      <div class="sliders">
+        <label class="la">AB <span id="va" class="sval">8</span><input id="sa" class="ra" type="range" min="1" max="12" step="1" value="8" aria-label="Длина AB в сантиметрах"></label>
+        <label class="lb">CD <span id="vb" class="sval">4</span><input id="sb" class="rb" type="range" min="1" max="12" step="1" value="4" aria-label="Длина CD в сантиметрах"></label>
+      </div>
+      <p class="diag-eq" id="diagEq"></p>
+      <p class="diag-hint" id="diagHint"></p>
+    </div>
+    <p style="font-size:.9rem;color:var(--muted)">Поставь AB = 6 и CD = 2 — увидишь ровно 3 укладки, то самое отношение <span class="mono">3</span>. Поставь равные длины — отношение станет <span class="mono">1</span>.</p>
+  </section>
+
+  <section>
+    <h2>Эталонный разбор — <span class="em">думаю вслух</span></h2>
+    <div class="walk">
+      <p class="q">Найди отношение отрезков AB = 8 см и CD = 0,5 дм.</p>
+      <ol>
+        <li>Смотрю на единицы: сантиметры и дециметры — <b>разные</b>. Перевожу: <span class="mono">0,5 дм = 5 см</span>.
+          <span class="why">Почему: отношение считается только в одинаковых единицах, иначе число будет неверным.</span></li>
+        <li>Записываю отношение в том порядке, который спрашивают — сначала AB, потом CD: <span class="mono">AB/CD = 8/5</span>.
+          <span class="why">Почему: отношение — это частное длин, и порядок задаёт условие.</span></li>
+        <li>Перевожу в удобный вид: <span class="mono">8/5 = 1,6</span>.
+          <span class="why">Почему: так проще читать — AB в 1,6 раза длиннее CD.</span></li>
+        <li>Проверяю смысл: 8 см больше 5 см, значит отношение должно быть больше 1. Получилось 1,6 ✓</li>
+      </ol>
+      <div class="verdict">Ответ: AB/CD = 8/5 = 1,6</div>
+    </div>
+
+    <div class="walk" style="margin-top:.8rem">
+      <p class="q">В пропорции x/6 = 10/15 найди x.</p>
+      <ol>
+        <li>Работаю по основному свойству: перемножаю <b>крест-накрест</b> — крайние на крайние, средние на средние: <span class="mono">x · 15 = 6 · 10</span>.
+          <span class="why">Почему: произведение крайних равно произведению средних. Крайние здесь — x и 15, средние — 6 и 10.</span></li>
+        <li>Считаю обе части: <span class="mono">15x = 60</span>.</li>
+        <li>Делю: <span class="mono">x = 60/15 = 4</span>.</li>
+        <li>Проверяю подстановкой: <span class="mono">4/6 = 2/3</span> и <span class="mono">10/15 = 2/3</span> — совпало ✓</li>
+      </ol>
+      <div class="verdict">Ответ: x = 4</div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Тренажёр · отношения и пропорции</h2>
+    <p>Бесконечные задания четырёх типов: найти отношение, привести к одной единице, найти член пропорции, найти отрезок по известному отношению. Ответ можно писать дробью (<span class="mono">8/5</span>) или десятичным числом (<span class="mono">1,6</span>).</p>
+    <div class="trainer">
+      <div class="tr-task" id="trTask">—</div>
+      <div class="tr-ctl">
+        <button id="trNew" type="button">🎲 Новая</button>
+        <input id="trAns" type="text" inputmode="text" placeholder="ответ" aria-label="Ответ">
+        <button id="trCheck" type="button" class="sec">Проверить</button>
+        <button id="trShow" type="button" class="ghost">Решение</button>
+      </div>
+      <div id="trResult" class="tr-result"></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Практика по нарастанию</h2>
+
+    <p class="lvl">Уровень 1 · понимание</p>
+    <div class="drill">
+      <details><summary>1) Прочитай пропорцию a/b = c/d словами и назови крайние и средние члены.</summary>
+        <div class="ans">«<b>a</b> относится к <b>b</b> как <b>c</b> к <b>d</b>». Крайние — <b>a и d</b>, средние — <b>b и c</b>.</div></details>
+      <details><summary>2) Чему равно отношение двух равных отрезков?</summary>
+        <div class="ans">Одинаковое число делим само на себя — получается <b>1</b>.</div></details>
+      <details><summary>3) Чему равно отношение отрезков AB = 10 см и CD = 4 см?</summary>
+        <div class="ans"><span class="mono">AB/CD = 10/4 = 2,5</span>. Ответ <b>2,5</b> — без сантиметров.</div></details>
+    </div>
+
+    <p class="lvl">Уровень 2 · применение</p>
+    <div class="drill">
+      <details><summary>4) Отрезок MN = 3 см, отрезок KL = 12 см. Найди MN/KL и KL/MN.</summary>
+        <div class="ans"><span class="mono">MN/KL = 3/12 = 1/4 = 0,25</span>, <span class="mono">KL/MN = 12/3 = 4</span>. Видно, что это взаимно обратные числа.</div></details>
+      <details><summary>5) Найди неизвестный отрезок: 4/x = 6/9.</summary>
+        <div class="ans">Крест-накрест: <span class="mono">6x = 4 · 9 = 36</span>, значит <span class="mono">x = 36/6 = 6</span>. Ответ <b>x = 6</b>.</div></details>
+      <details><summary>6) Найди x: x/5 = 8/4.</summary>
+        <div class="ans">Крест-накрест: <span class="mono">4x = 5 · 8 = 40</span>, значит <span class="mono">x = 40/4 = 10</span>. Ответ <b>x = 10</b>.</div></details>
+    </div>
+
+    <p class="lvl">Уровень 3 · анализ</p>
+    <div class="drill">
+      <details><summary>7) В пропорции AB/CD = 3/7 известно, что AB = 9 см. Найди CD. Изменится ли длина CD, если переписать отношение как CD/AB?</summary>
+        <div class="ans">Подставляю: <span class="mono">9/CD = 3/7</span>. Крест-накрест: <span class="mono">3 · CD = 9 · 7 = 63</span>, значит <span class="mono">CD = 21 см</span>.<br>
+        Если переписать отношение наоборот, получится <span class="mono">CD/AB = 7/3</span> — <b>меняется только запись отношения</b>. Сам отрезок никуда не делся: <b>CD = 21 см</b>, как и было.</div></details>
+      <details><summary>8) Найди ошибку. Из пропорции x/6 = 10/15 ученик написал «6x = 150».</summary>
+        <div class="ans">Он перемножил <b>по строке</b>: 6 · 15 и 10 · … — а надо крест-накрест. Крайние здесь <b>x и 15</b>, средние <b>6 и 10</b>, поэтому верно <span class="mono">15x = 60</span> и <span class="mono">x = 4</span>. Из «6x = 150» вышло бы <span class="mono">x = 25</span> — проверка это сразу ловит: <span class="mono">25/6</span> и <span class="mono">10/15</span> явно не равны.</div></details>
+      <details><summary>9) Найди ошибку. «AB = 6 см, CD = 2 см, значит отношение равно 3 см».</summary>
+        <div class="ans">Число посчитано верно, а вот единицы лишние. При делении сантиметров на сантиметры они сокращаются, поэтому ответ — просто <b>3</b>, без «см».</div></details>
+    </div>
+  </section>
+
+  <section>
+    <h2>Ловушки</h2>
+    <ul class="traps">
+      <li><b>Порядок отношения.</b> Спрашивают <span class="mono">AB/CD</span>, а ученик пишет <span class="mono">CD/AB</span>. Читай условие буквально: что названо первым — то и в числителе.</li>
+      <li><b>Несоответственные стороны.</b> В двух фигурах берут большую сторону одной и малую другой. Сопоставляй «такой же элемент с таким же»: большую с большой, основание с основанием. Полезно подписать соответствие стрелками прямо на чертеже.</li>
+      <li><b>Перемножают «по строке».</b> Пишут <span class="mono">a · b = c · d</span> вместо креста. Помни: произведение <b>крайних</b> равно произведению <b>средних</b>, то есть <span class="mono">a · d = b · c</span>.</li>
+      <li><b>Забывают про единицы.</b> Делят сантиметры на дециметры. Первым делом переведи оба отрезка в одну единицу, и только потом дели.</li>
+      <li><b>Пишут единицы у отношения.</b> Ответ «3 см» вместо «3». Отношение — безразмерное число.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Проверка понимания</h2>
+    <p>Объясни своими словами — вслух или другу, без подглядывания:</p>
+    <ol class="selfcheck">
+      <li>Что такое отношение двух отрезков и почему у него нет единиц измерения?</li>
+      <li>Сформулируй основное свойство пропорции.</li>
+      <li>Почему <span class="mono">AB/CD</span> и <span class="mono">CD/AB</span> — разные числа, хотя отрезки те же?</li>
+      <li>Что нужно сделать до деления, если один отрезок дан в см, а другой в дм?</li>
+    </ol>
+    <details style="margin-top:.9rem"><summary>Сверься с ответами</summary>
+      <div class="ans">1) Частное длин, взятых в одной единице; единицы при делении сокращаются, остаётся чистое число — во сколько раз один длиннее другого.<br>
+      2) Произведение крайних членов равно произведению средних: <span class="mono">a · d = b · c</span>.<br>
+      3) Потому что это взаимно обратные дроби: например <span class="mono">3/12 = 0,25</span>, а <span class="mono">12/3 = 4</span>.<br>
+      4) Перевести оба в одну единицу измерения — например, дм в см.</div></details>
+  </section>
+
+  <div class="wrapup">
+    <h2>Запомни главное</h2>
+    <p class="big-rule">AB/CD — число без единиц · a/b = c/d ⟺ a · d = b · c</p>
+    <p>Отношение отрезков — это безразмерное частное их длин в одинаковых единицах. Верная пропорция связывает соответственные элементы фигур и решается по основному свойству «крест-накрест».</p>
+    <p class="next">👉 Дальше — <b>подобные треугольники</b>: там ты будешь составлять пропорции из соответственных сторон двух треугольников. Всё, что тут отработано (порядок отношения, соответствие элементов, крест-накрест), пойдёт в дело сразу.</p>
+  </div>
+
+</div>
+
+<script>
+(function(){
+  var cv=document.getElementById('segs'); if(!cv) return;
+  var ctx=cv.getContext('2d'), sa=document.getElementById('sa'), sb=document.getElementById('sb');
+  var va=document.getElementById('va'), vb=document.getElementById('vb');
+  var eq=document.getElementById('diagEq'), hint=document.getElementById('diagHint');
+  var W=640,H=380,dpr=1, MAXLEN=12;
+  function css(v){ return getComputedStyle(document.documentElement).getPropertyValue(v).trim(); }
+  function gcd(x,y){ while(y){ var t=x%y; x=y; y=t; } return x; }
+  function resize(){
+    var c=cv.clientWidth||640; dpr=Math.min(window.devicePixelRatio||1,2);
+    W=c; H=Math.max(230,Math.round(c*0.58));
+    cv.width=W*dpr; cv.height=H*dpr; cv.style.height=H+'px'; ctx.setTransform(dpr,0,0,dpr,0,0);
+  }
+  function draw(){
+    var a=+sa.value, b=+sb.value; va.textContent=a; vb.textContent=b;
+    var pad=Math.max(14,W*0.045), unit=(W-2*pad)/MAXLEN;
+    var barH=Math.max(16,Math.min(26,W*0.045));
+    var yA=Math.round(H*0.14), yB=Math.round(H*0.36), yBar=Math.round(H*0.66);
+    var fs=Math.max(11,Math.min(15,W*0.026));
+    ctx.clearRect(0,0,W,H);
+    ctx.font='700 '+fs+'px ui-monospace,Menlo,monospace';
+    ctx.textBaseline='alphabetic';
+
+    // линейка-подложка (сантиметровая сетка)
+    ctx.strokeStyle=css('--line'); ctx.lineWidth=1;
+    for(var i=0;i<=MAXLEN;i++){
+      var x=pad+i*unit;
+      ctx.beginPath(); ctx.moveTo(x,yA-8); ctx.lineTo(x,yB+barH+8); ctx.stroke();
+    }
+
+    function bar(y,len,fill,stroke,name){
+      ctx.fillStyle=fill; ctx.strokeStyle=stroke; ctx.lineWidth=2;
+      ctx.beginPath(); ctx.rect(pad,y,len*unit,barH); ctx.fill(); ctx.stroke();
+      ctx.fillStyle=stroke; ctx.textAlign='left';
+      ctx.fillText(name+' = '+len+' см', pad+2, y-6);
+    }
+    bar(yA,a,css('--ca-soft'),css('--ca'),'AB');
+    bar(yB,b,css('--cb-soft'),css('--cb'),'CD');
+
+    // откладываем CD вдоль AB: полные укладки + остаток
+    var full=Math.floor(a/b), rest=a-full*b;
+    ctx.setLineDash([4,4]); ctx.strokeStyle=css('--cb'); ctx.lineWidth=1.5;
+    for(var k=1;k<=full;k++){
+      var xk=pad+k*b*unit;
+      if(xk<=pad+a*unit+0.5){ ctx.beginPath(); ctx.moveTo(xk,yA-4); ctx.lineTo(xk,yA+barH+4); ctx.stroke(); }
+    }
+    ctx.setLineDash([]);
+    ctx.fillStyle=css('--cb'); ctx.textAlign='center';
+    for(var m=0;m<full;m++){
+      var xc=pad+(m+0.5)*b*unit;
+      ctx.fillText(String(m+1), xc, yA+barH/2+fs*0.36);
+    }
+    if(rest>0){
+      ctx.fillStyle=css('--muted');
+      ctx.fillText('+'+rest, pad+(full*b+rest/2)*unit, yA+barH/2+fs*0.36);
+    }
+
+    // бар-модель: отношение как количество равных частей
+    var g=gcd(a,b), pa=a/g, pb=b/g;
+    var cellW=Math.min(unit, (W-2*pad)/Math.max(pa,pb));
+    var cellH=Math.max(13,Math.min(22,cellW*0.8));
+    ctx.font='700 '+Math.max(10,fs-2)+'px ui-monospace,Menlo,monospace';
+    ctx.textAlign='left'; ctx.fillStyle=css('--muted');
+    ctx.fillText('бар-модель: '+pa+' : '+pb, pad, yBar-8);
+    function cells(y,n,fill,stroke){
+      for(var i2=0;i2<n;i2++){
+        ctx.fillStyle=fill; ctx.strokeStyle=stroke; ctx.lineWidth=1.5;
+        ctx.beginPath(); ctx.rect(pad+i2*cellW,y,cellW,cellH); ctx.fill(); ctx.stroke();
+      }
+    }
+    cells(yBar,pa,css('--ca-soft'),css('--ca'));
+    cells(yBar+cellH+6,pb,css('--cb-soft'),css('--cb'));
+
+    // подпись-итог на канве
+    var val=a/b, txt;
+    if(Number.isInteger(val)) txt=String(val);
+    else { var r=Math.round(val*1000)/1000; txt=(Math.abs(r*1-val)<1e-9?'':'≈ ')+String(r).replace('.',','); }
+    ctx.textAlign='left'; ctx.fillStyle=css('--cc');
+    ctx.font='800 '+fs+'px ui-monospace,Menlo,monospace';
+    ctx.fillText('AB : CD = '+pa+' : '+pb+'  →  '+txt, pad, yBar+2*cellH+24);
+
+    // формула под канвой
+    var fracTxt = (g>1 && pb!==1) ? (a+'/'+b+' = '+pa+'/'+pb) : (a+'/'+b);
+    eq.innerHTML='<span class="a">AB</span> / <span class="b">CD</span> = '+fracTxt+' = <span class="c">'+txt+'</span>';
+    if(a===b) hint.textContent='Отрезки равны — отношение равно 1.';
+    else if(rest===0) hint.textContent='CD укладывается в AB ровно '+full+' раз(а).';
+    else if(full===0) hint.textContent='CD длиннее AB, поэтому отношение меньше 1.';
+    else hint.textContent='CD укладывается '+full+' раз(а) и остаётся ещё '+rest+' см.';
+  }
+  [sa,sb].forEach(function(s){ s.addEventListener('input',draw); });
+  window.addEventListener('resize',function(){ resize(); draw(); });
+  resize(); draw();
+})();
+</script>
+
+<script>
+(function(){
+  var taskEl=document.getElementById('trTask'), ansEl=document.getElementById('trAns'), resEl=document.getElementById('trResult');
+  if(!taskEl) return;
+  var cur=null;
+  function ri(min,max){ return Math.floor(Math.random()*(max-min+1))+min; }
+  function pick(arr){ return arr[ri(0,arr.length-1)]; }
+  function gcd(x,y){ while(y){ var t=x%y; x=y; y=t; } return x; }
+  function num(v){ // красивая запись числа: запятая вместо точки, настоящий минус на всякий случай
+    var s=(Math.round(v*10000)/10000).toString().replace('.',',');
+    return s.replace(/-/g,'−');
+  }
+  function parseAns(raw){
+    var s=raw.replace(/\s/g,'').replace(/−/g,'-').replace(',','.');
+    if(s==='') return NaN;
+    if(s.indexOf('/')>-1){
+      var p=s.split('/');
+      if(p.length!==2) return NaN;
+      var n1=parseFloat(p[0]), n2=parseFloat(p[1]);
+      if(isNaN(n1)||isNaN(n2)||n2===0) return NaN;
+      return n1/n2;
+    }
+    return parseFloat(s);
+  }
+  // ---- генераторы типов ----
+  function genRatio(){                    // отношение двух отрезков в одинаковых единицах
+    var den=pick([1,2,4,5,10]), m=ri(1,10), g0=ri(1,3);
+    if(ri(1,10)===1) m=den;               // краевой случай: равные отрезки → отношение 1
+    var a=g0*m, b=g0*den;
+    if(a>24||b>24){ a=m; b=den; }
+    var g=gcd(a,b), pa=a/g, pb=b/g, val=a/b;
+    var names=pick([['AB','CD'],['MN','KL'],['PQ','RS']]);
+    return {
+      html:'Отрезки <b>'+names[0]+' = '+a+' см</b> и <b>'+names[1]+' = '+b+' см</b>. Найди отношение '+names[0]+' / '+names[1]+'.',
+      ans:val,
+      sol:names[0]+' / '+names[1]+' = '+a+'/'+b+(g>1&&pb!==1?' = '+pa+'/'+pb:'')+' = <b>'+num(val)+'</b><br>'+
+          'Единицы одинаковые, поэтому просто делим длину на длину. Ответ — число без «см».'
+    };
+  }
+  function genUnits(){                    // разные единицы: привести к одной
+    var bcm=pick([2,4,5,10]);           // CD в сантиметрах
+    var a=ri(1,12);
+    var val=a/bcm, g=gcd(a,bcm);
+    var second, hintline;
+    if(ri(0,1)===0){                      // CD дан в дециметрах
+      second=num(bcm/10)+' дм'; hintline=second+' = '+bcm+' см (в 1 дм 10 см)';
+    } else {                              // CD дан в миллиметрах
+      second=(bcm*10)+' мм'; hintline=second+' = '+bcm+' см (в 1 см 10 мм)';
+    }
+    return {
+      html:'Отрезки <b>AB = '+a+' см</b> и <b>CD = '+second+'</b>. Найди отношение AB / CD.',
+      ans:val,
+      sol:'Шаг 1. Приводим к одной единице: '+hintline+'.<br>'+
+          'Шаг 2. AB / CD = '+a+'/'+bcm+(g>1&&bcm/g!==1?' = '+(a/g)+'/'+(bcm/g):'')+' = <b>'+num(val)+'</b>'
+    };
+  }
+  function genProp(){                     // найти член пропорции
+    var x=ri(2,12), b=ri(2,12), k=ri(2,3);
+    var c=x*k, d=b*k;
+    if(ri(0,1)===0){                      // x в числителе слева: x/b = c/d
+      return {
+        html:'Найди <b>x</b> из пропорции: <b>x / '+b+' = '+c+' / '+d+'</b>',
+        ans:x,
+        sol:'Крест-накрест: x · '+d+' = '+b+' · '+c+'<br>'+
+            d+'x = '+(b*c)+'<br>'+
+            'x = '+(b*c)+' / '+d+' = <b>'+num(x)+'</b>'
+      };
+    }
+    // x в знаменателе слева: top/x = c/d  (тогда x = top·d/c, берём top = c·t → x = t·d)
+    var t=ri(2,3), top=c*t, xx=t*d;
+    return {
+      html:'Найди <b>x</b> из пропорции: <b>'+top+' / x = '+c+' / '+d+'</b>',
+      ans:xx,
+      sol:'Крест-накрест: '+top+' · '+d+' = x · '+c+'<br>'+
+          (top*d)+' = '+c+'x<br>'+
+          'x = '+(top*d)+' / '+c+' = <b>'+num(xx)+'</b>'
+    };
+  }
+  function genSegment(){                  // отрезок по известному отношению
+    var pairs=[[2,3],[3,7],[3,4],[4,5],[5,2],[2,5],[3,5],[7,4],[1,4],[5,6]];
+    var pr=pick(pairs), p=pr[0], q=pr[1], t=ri(1,6);
+    var AB=p*t, CD=q*t;
+    return {
+      html:'Известно, что <b>AB / CD = '+p+' / '+q+'</b> и <b>AB = '+AB+' см</b>. Найди <b>CD</b> (в см).',
+      ans:CD,
+      sol:'Подставляем: '+AB+' / CD = '+p+' / '+q+'<br>'+
+          'Крест-накрест: '+p+' · CD = '+AB+' · '+q+' = '+(AB*q)+'<br>'+
+          'CD = '+(AB*q)+' / '+p+' = <b>'+num(CD)+' см</b>'
+    };
+  }
+  var gens=[genRatio,genRatio,genUnits,genProp,genProp,genSegment];
+  function generate(){
+    cur=pick(gens)();
+    taskEl.innerHTML=cur.html;
+    ansEl.value=''; resEl.innerHTML='';
+  }
+  function solHTML(){ return '<div class="sol">'+cur.sol+'</div>'; }
+  function check(){
+    if(!cur) return;
+    var raw=ansEl.value.trim();
+    if(raw===''){ resEl.innerHTML='<span class="bad">Введи ответ или нажми «Решение».</span>'; return; }
+    var got=parseAns(raw);
+    if(!isNaN(got) && Math.abs(got-cur.ans)<0.005){ resEl.innerHTML='<span class="ok">✓ Верно!</span>'+solHTML(); }
+    else { resEl.innerHTML='<span class="bad">✗ Пока не то — глянь решение.</span>'+solHTML(); }
+  }
+  document.getElementById('trNew').addEventListener('click',function(){ generate(); ansEl.focus(); });
+  document.getElementById('trCheck').addEventListener('click',check);
+  document.getElementById('trShow').addEventListener('click',function(){ if(cur) resEl.innerHTML=solHTML(); });
+  ansEl.addEventListener('keydown',function(e){ if(e.key==='Enter') check(); });
+  generate();   // первичный рендер — без focus()
+})();
+</script>
+<!--LESSON-NAV-BOT--><nav class="lnav lnav-bot"><a class="prev" href="./geo8-obratnaya-teorema-pifagora.html"><span class="dir">← Предыдущая</span><span class="ttl">Обратная теорема Пифагора</span></a><a class="to-cat" href="./catalog.html">📚 <span>Все темы</span></a><a class="next" href="./geo8-podobnye-treugolniki.html"><span class="dir">Следующая →</span><span class="ttl">Подобные треугольники: определение</span></a></nav><!--/LESSON-NAV-BOT-->

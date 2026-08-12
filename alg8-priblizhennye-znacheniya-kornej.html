@@ -1,0 +1,583 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Приближённые значения и оценка квадратных корней — алгебра 8 класс</title>
+<style>
+  :root{
+    --paper:#F6F7F9;
+    --card:#FFFFFF;
+    --ink:#1B2333;
+    --muted:#5A6478;
+    --line:#E2E5EC;
+    --accent:#3B4FD0;
+    --accent-soft:#EAEDFB;
+    --pos:#1E8E5A;   /* точное значение */
+    --pos-bg:#E7F4EC;
+    --zero:#B9791A;  /* приближённое значение */
+    --zero-bg:#FBF1DC;
+    --neg:#C0455B;   /* ошибка */
+    --neg-bg:#F9E9EC;
+  }
+  *{box-sizing:border-box}
+  body{margin:0}
+  .wrap{
+    max-width:760px;margin:0 auto;
+    padding:clamp(1.4rem,4vw,3rem) clamp(1.1rem,4vw,2rem) 4rem;
+    background:var(--paper);color:var(--ink);
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    font-size:17px;line-height:1.62;-webkit-font-smoothing:antialiased;
+  }
+  .eyebrow{font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);font-weight:600;margin:0 0 .5rem}
+  h1{font-family:Georgia,"Times New Roman",serif;font-size:clamp(2rem,6.4vw,2.8rem);line-height:1.07;margin:0;font-weight:700;letter-spacing:-.01em;text-wrap:balance}
+  .lede{font-size:1.08rem;color:var(--muted);margin:.7rem 0 0;max-width:60ch;text-wrap:pretty}
+  h2{font-family:Georgia,serif;font-size:1.32rem;font-weight:700;margin:0 0 .1rem;letter-spacing:-.005em}
+  section{margin-top:2.6rem}
+  .kicker{font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:600;margin:0 0 .8rem;display:flex;align-items:center;gap:.6rem}
+  .kicker::before{content:"";width:1.4rem;height:2px;background:var(--accent);border-radius:2px}
+  p{margin:.65rem 0}
+  strong{font-weight:650}
+  .math{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-weight:600}
+  sup{font-size:.72em}
+
+  .hero-formula{margin-top:2.2rem;background:var(--ink);color:#fff;border-radius:14px;padding:1.6rem 1.4rem;text-align:center}
+  .hero-formula .lbl{font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:#9aa6c9;margin:0 0 .7rem}
+  .hero-formula .eq{font-family:ui-monospace,"SF Mono",Menlo,monospace;font-size:clamp(1.35rem,5.2vw,2rem);font-weight:700;letter-spacing:.01em}
+  .hero-formula .eq b{color:#8ea0ff;font-weight:700}
+  .hero-formula .note{font-size:.86rem;color:#9aa6c9;margin:.8rem 0 0}
+
+  .recall{background:var(--accent-soft);border-radius:12px;padding:1rem 1.15rem;font-size:.96rem}
+  .recall p{margin:.3rem 0}
+
+  .cases{display:grid;gap:.85rem;margin-top:.4rem}
+  @media(min-width:620px){.cases{grid-template-columns:repeat(2,1fr)}}
+  .case{border-radius:12px;padding:1.05rem 1.1rem;border:1px solid var(--line);background:var(--card);display:flex;flex-direction:column;gap:.35rem}
+  .case .sign{font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.1rem}
+  .case .count{font-weight:650;font-size:1rem}
+  .case .desc{font-size:.9rem;color:var(--muted)}
+  .case.pos{border-top:4px solid var(--pos);background:var(--pos-bg)}
+  .case.pos .sign{color:var(--pos)}
+  .case.zero{border-top:4px solid var(--zero);background:var(--zero-bg)}
+  .case.zero .sign{color:var(--zero)}
+
+  .worked{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:1.2rem 1.3rem}
+  .worked .task{font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.05rem;margin:0 0 1rem;padding-bottom:.8rem;border-bottom:1px solid var(--line)}
+  ol.steps{margin:0;padding:0;list-style:none;counter-reset:s;display:flex;flex-direction:column;gap:.7rem}
+  ol.steps li{position:relative;padding-left:2.1rem;counter-increment:s}
+  ol.steps li::before{content:counter(s);position:absolute;left:0;top:.05rem;width:1.5rem;height:1.5rem;border-radius:50%;background:var(--accent-soft);color:var(--accent);font-size:.82rem;font-weight:700;display:flex;align-items:center;justify-content:center}
+  ol.steps .m{font-family:ui-monospace,Menlo,monospace;font-weight:600;color:var(--ink)}
+  ol.steps .why{display:block;font-size:.9rem;color:var(--muted);margin-top:.15rem}
+  .verdict{margin-top:1rem;padding:.7rem 1rem;background:var(--zero-bg);border-radius:9px;font-weight:600;color:var(--zero);font-size:.98rem;font-family:ui-monospace,Menlo,monospace}
+
+  .drill{display:flex;flex-direction:column;gap:.7rem}
+  details{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:.85rem 1.05rem}
+  details[open]{border-color:var(--accent)}
+  summary{cursor:pointer;font-weight:600;list-style:none;display:flex;justify-content:space-between;align-items:center;gap:1rem}
+  summary::-webkit-details-marker{display:none}
+  summary:focus-visible{outline:3px solid var(--accent);outline-offset:3px;border-radius:6px}
+  summary .q{min-width:0}
+  summary .tag{font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);border:1px solid var(--line);border-radius:20px;padding:.1rem .55rem;white-space:nowrap}
+  summary::after{content:"ответ";font-size:.78rem;color:var(--accent);font-weight:600;white-space:nowrap}
+  details[open] summary::after{content:"скрыть"}
+  .ans{margin-top:.7rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.96rem;color:var(--muted)}
+  .ans .m{font-family:ui-monospace,Menlo,monospace;color:var(--ink);font-weight:600}
+
+  ul.pitfalls{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:.6rem}
+  ul.pitfalls li{padding-left:1.5rem;position:relative;font-size:.98rem}
+  ul.pitfalls li::before{content:"×";position:absolute;left:0;top:-.05rem;color:var(--neg);font-weight:700;font-size:1.1rem}
+  ul.pitfalls b{color:var(--ink)}
+
+  .check{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:1.1rem 1.25rem}
+  .check ol{margin:.2rem 0 0;padding-left:1.2rem}
+  .check li{margin:.45rem 0}
+
+  .next{background:var(--accent);color:#fff;border-radius:12px;padding:1.2rem 1.3rem}
+  .next h2{color:#fff}
+  .next .eq{font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.15rem;margin:.6rem 0 .3rem}
+  .next p{color:#dfe4fb;font-size:.96rem;margin:.4rem 0 0}
+  .foot{margin-top:2.4rem;font-size:.82rem;color:var(--muted);text-align:center}
+
+  /* таблица квадратов */
+  .sq-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;margin-top:.6rem;border:1px solid var(--line);border-radius:12px;background:var(--card)}
+  table.squares{border-collapse:collapse;width:100%;min-width:520px;font-family:ui-monospace,Menlo,monospace;font-size:.92rem}
+  table.squares th,table.squares td{padding:.45rem .5rem;text-align:center;border-bottom:1px solid var(--line)}
+  table.squares tr:last-child td{border-bottom:none}
+  table.squares th{background:var(--accent-soft);color:var(--accent);font-weight:700}
+  table.squares td.head{background:#F1F3F8;font-weight:700;text-align:left;white-space:nowrap}
+
+  .oge-tip{display:flex;gap:.8rem;align-items:flex-start;background:#FFF8E7;border:1px solid #F0D98A;border-left:4px solid #E0A315;border-radius:10px;padding:.85rem 1.05rem;margin:1.5rem 0}
+  .oge-tip .b{font-size:.72rem;font-weight:800;letter-spacing:.03em;color:#8A6A15;white-space:nowrap;text-transform:uppercase;padding-top:.15rem}
+  .oge-tip .x{font-size:.95rem;line-height:1.5}
+
+  /* интерактив: числовая прямая */
+  .numline{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.1rem 1.1rem 1rem;margin:1rem 0}
+  .numline canvas{width:100%;height:auto;display:block;border-radius:10px;background:#FCFDFF}
+  .nl-verdict{text-align:center;font-weight:700;font-size:1.02rem;margin:.85rem 0 0;padding:.55rem;border-radius:9px;font-family:ui-monospace,Menlo,monospace;background:var(--zero-bg);color:var(--zero)}
+  .nl-verdict.exact{background:var(--pos-bg);color:var(--pos)}
+  .nl-ctl{display:flex;align-items:center;gap:.6rem;margin-top:.9rem;font-family:ui-monospace,Menlo,monospace;font-weight:700}
+  .nl-ctl input[type=range]{flex:1;accent-color:var(--accent);min-width:120px}
+  .nl-ctl input[type=range]:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+  .nl-ctl .sval{min-width:4ch;text-align:right;color:var(--accent);font-variant-numeric:tabular-nums}
+
+  /* тренажёр */
+  .trainer{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.2rem 1.3rem;margin-top:1rem}
+  .tr-eq{font-family:ui-monospace,Menlo,monospace;font-weight:800;font-size:clamp(1.05rem,4vw,1.35rem);text-align:center;padding:1rem;background:var(--accent-soft);border-radius:10px;color:var(--ink);line-height:1.45}
+  .tr-hint{text-align:center;font-size:.84rem;color:var(--muted);margin:.5rem 0 0}
+  .tr-ctl{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.9rem;align-items:center}
+  .tr-ctl button{font:inherit;font-weight:700;font-size:.9rem;cursor:pointer;border:none;border-radius:9px;padding:.55rem .95rem;color:#fff;background:var(--accent)}
+  .tr-ctl button.sec{background:var(--pos)}
+  .tr-ctl button.ghost{background:transparent;color:var(--accent);border:1px solid var(--accent)}
+  .tr-ctl input{flex:1;min-width:150px;font:inherit;padding:.5rem .7rem;border:1px solid var(--line);border-radius:9px;background:#fff;color:var(--ink)}
+  .tr-ctl button:focus-visible,.tr-ctl input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+  .tr-result{margin-top:.9rem;font-size:.96rem;min-height:1.2rem}
+  .tr-result .ok{color:var(--pos);font-weight:700}
+  .tr-result .bad{color:var(--neg);font-weight:700}
+  .tr-result .sol{margin-top:.7rem;padding:.85rem 1rem;background:#FCFBFE;border:1px solid var(--line);border-radius:10px;font-family:ui-monospace,Menlo,monospace;font-size:.9rem;line-height:1.8;overflow-x:auto}
+  .tr-result .sol b{color:var(--accent)}
+
+  @media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+<!--LESSON-NAV-TOP--><style>.lnav{--lnav-accent:#3D5AF1}.lnav a{text-decoration:none;font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif}.lnav-top{max-width:820px;margin:0 auto;padding:.75rem clamp(1rem,4vw,1.5rem) .1rem}.lnav-top a{display:inline-flex;align-items:center;gap:.35rem;color:var(--lnav-accent);font-weight:600;font-size:.9rem}.lnav-top a:hover{text-decoration:underline}.lnav-bot{max-width:820px;margin:2.6rem auto 3rem;padding:1.1rem clamp(1rem,4vw,1.5rem) 0;border-top:1px solid #E4E8EF;display:flex;align-items:stretch;gap:.55rem}.lnav-bot a{min-width:0;display:flex;flex-direction:column;justify-content:center;gap:.15rem;border:1px solid #E4E8EF;border-radius:12px;padding:.65rem .85rem;color:#182233;background:#fff;transition:border-color .1s,transform .08s}.lnav-bot a:hover{border-color:var(--lnav-accent);transform:translateY(-1px)}.lnav-bot .prev,.lnav-bot .next{flex:1 1 0}.lnav-bot .next{text-align:right}.lnav-bot .dir{font-size:.72rem;color:#8A93A6;font-weight:600}.lnav-bot .ttl{font-size:.9rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.lnav-bot .to-cat{flex:0 0 auto;flex-direction:row;align-items:center;justify-content:center;color:var(--lnav-accent);font-weight:700;font-size:.85rem;white-space:nowrap}@media(max-width:420px){.lnav-bot .to-cat span{display:none}.lnav-bot .to-cat{padding:.65rem .7rem}}</style><nav class="lnav lnav-top"><a href="./catalog.html">← Все темы</a></nav><!--/LESSON-NAV-TOP-->
+<div class="wrap">
+
+  <header>
+    <p class="eyebrow">Алгебра · 8 класс</p>
+    <h1>Приближённые значения и оценка корней</h1>
+    <p class="lede">√10 нельзя записать точно десятичной дробью — и это нормально. Зато всегда можно сказать, <em>между какими целыми числами</em> он лежит и чему примерно равен.</p>
+  </header>
+
+  <div class="hero-formula">
+    <p class="lbl">Правило оценки корня</p>
+    <div class="eq">если <b>n</b><sup>2</sup> &lt; x &lt; (<b>n</b>+1)<sup>2</sup>,<br>то <b>n</b> &lt; √x &lt; <b>n</b>+1</div>
+    <p class="note">зажимаем подкоренное число между двумя соседними точными квадратами</p>
+  </div>
+
+  <section>
+    <p class="kicker">Зачем это нужно</p>
+    <h2>Не каждый корень «красивый» — и это не ошибка</h2>
+    <p>√9 = 3 — точно и красиво. А вот √10 — бесконечная непериодическая десятичная дробь: её нельзя записать точно никакой конечной записью. Но в задачах нам часто нужно не красивое число, а понимание величины: <strong>примерно сколько это?</strong></p>
+    <p>Где встречается:</p>
+    <ul>
+      <li>диагональ квадрата со стороной 1 м равна <span class="math">√2 ≈ 1,41</span> м — рулеткой именно столько и отмеришь;</li>
+      <li>в ответе стоит <span class="math">√20</span> — надо прикинуть, это примерно 4 или примерно 5, чтобы проверить разумность решения;</li>
+      <li>в физике формулы дают выражения с корнем (время падения, скорость), а ответ нужен в секундах — то есть десятичной оценкой.</li>
+    </ul>
+    <p>Типичное заблуждение: <em>«раз корень точно не извлекается, значит я решил неправильно»</em>. Нет. <span class="math">√10</span> — нормальное, законное число, просто иррациональное. Мы умеем и оставить его точным (<span class="math">√10</span>), и оценить приближённо (<span class="math">≈ 3,16</span>).</p>
+  </section>
+
+  <section>
+    <p class="kicker">Что вспомнить перед стартом</p>
+    <div class="recall">
+      <p><strong>Арифметический квадратный корень</strong> <span class="math">√x</span> определён при <span class="math">x ≥ 0</span>: под корнем в 8 классе не бывает отрицательного числа.</p>
+      <p><strong>Точные квадраты</strong> надо знать наизусть: 1, 4, 9, 16, 25, 36, 49, 64, 81, 100, 121, 144.</p>
+      <p><strong>Десятичные дроби</strong>: умей возводить их в квадрат столбиком — <span class="math">5,4² = 29,16</span>. Это главный инструмент уточнения.</p>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Суть темы</p>
+    <h2>Корень возрастает — значит его можно зажать</h2>
+    <p>Главная идея простая: <strong>квадратные корни возрастают вместе с подкоренным числом</strong>. Если <span class="math">a &lt; b</span>, то <span class="math">√a &lt; √b</span>. Поэтому любой корень можно «зажать» между двумя соседними целыми — теми, чьи квадраты стоят слева и справа от подкоренного числа.</p>
+    <p>Словами: чтобы оценить <span class="math">√x</span>, ищем два соседних точных квадрата — один меньше x, другой больше. Корни из этих квадратов и есть целая «вилка» для нашего значения.</p>
+    <p>Мы не вычисляем корень, а <strong>локализуем</strong> его на числовой прямой между двумя известными целыми — а потом при желании уточняем десятичными.</p>
+
+    <div class="cases">
+      <div class="case pos">
+        <div class="sign">x — точный квадрат</div>
+        <div class="count">Значение точное</div>
+        <div class="desc"><span class="math">√49 = 7</span>. Оценка не нужна, ставим знак «равно».</div>
+      </div>
+      <div class="case zero">
+        <div class="sign">x — не квадрат</div>
+        <div class="count">Значение приближённое</div>
+        <div class="desc"><span class="math">5 &lt; √30 &lt; 6</span>, дальше уточняем: <span class="math">√30 ≈ 5,5</span>. Знак «≈».</div>
+      </div>
+    </div>
+
+    <p style="font-size:.92rem;color:var(--muted);margin-top:.9rem">Знак <span class="math">≈</span> читается «приближённо равно». Запись <span class="math">√10 ≈ 3,16</span> значит «√10 примерно 3,16», но <strong>не равно</strong> ему: <span class="math">3,16² = 9,9856</span>, а не 10.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Правило по шагам</p>
+    <h2>Как оценивать корень</h2>
+    <div class="worked">
+      <p class="task">Между какими соседними натуральными числами лежит √x?</p>
+      <ol class="steps">
+        <li>Находим наибольший точный квадрат <span class="m">n²</span>, который ещё не больше x <span class="m">(n² ≤ x)</span>.</li>
+        <li>Тогда <span class="m">n ≤ √x &lt; n+1</span>. <span class="why">Если x — точный квадрат, здесь равенство и корень целый; если нет — строгое неравенство <span class="m">n &lt; √x &lt; n+1</span>.</span></li>
+        <li><strong>Уточняем десятичными:</strong> пробуем числа <span class="m">n,1; n,2; …</span> — возводим в квадрат и смотрим, между какими из них «застряло» x. <span class="why">Так шаг за шагом получаем приближённое значение с нужной точностью.</span></li>
+      </ol>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Наглядность · две прямые</p>
+    <h2>Смотри, где корень стоит на самом деле</h2>
+    <p>Двигай ползунок и следи за двумя прямыми. Сверху едет <strong>подкоренное число x</strong> между двумя точными квадратами. Снизу — <strong>сам корень √x</strong> между двумя соседними целыми. Корень — это не «непонятное число», а конкретное место на прямой.</p>
+    <div class="numline">
+      <canvas id="nlCanvas" width="680" height="300" aria-label="Числовая прямая: подкоренное число и корень"></canvas>
+      <div id="nlVerdict" class="nl-verdict">5 &lt; √30 &lt; 6 · √30 ≈ 5,5</div>
+      <div class="nl-ctl">
+        <label for="nlRange">x</label>
+        <input id="nlRange" type="range" min="1" max="168" step="1" value="30" aria-label="Подкоренное число x">
+        <span id="nlVal" class="sval">30</span>
+      </div>
+    </div>
+    <p style="font-size:.9rem;color:var(--muted)">Поймай момент, когда x становится точным квадратом: точка прыгает точно на целую отметку, и знак «≈» превращается в «=». А ещё заметь: когда x почти доехал до правого квадрата, корень почти доехал до правого целого — но никогда его не перескакивает.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Таблица под рукой</p>
+    <h2>Оценка корня = поиск строки в таблице квадратов</h2>
+    <p>Держи перед глазами столбик квадратов. Оценить корень — значит найти, между какими двумя числами второй строки стоит твоё подкоренное число.</p>
+    <div class="sq-scroll">
+      <table class="squares">
+        <tr><td class="head">n</td><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>9</th><th>10</th><th>11</th><th>12</th></tr>
+        <tr><td class="head">n²</td><td>1</td><td>4</td><td>9</td><td>16</td><td>25</td><td>36</td><td>49</td><td>64</td><td>81</td><td>100</td><td>121</td><td>144</td></tr>
+      </table>
+    </div>
+    <p style="font-size:.9rem;color:var(--muted);margin-top:.7rem">Например, 30 стоит между 25 и 36 → значит <span class="math">√30</span> между 5 и 6.</p>
+    <div class="oge-tip"><div class="b">🎯 В ОГЭ</div><div class="x">Оценка корня выручает при <b>проверке ответа</b>: если в ходе решения получилось «√20 = 10», прикидка (√20 между 4 и 5) сразу показывает, что где-то ошибка.</div></div>
+  </section>
+
+  <section>
+    <p class="kicker">Разбираем вместе · думаю вслух</p>
+    <h2>Эталонный пример: оценить √30</h2>
+    <div class="worked">
+      <p class="task">Оценить √30 между соседними целыми и уточнить одним знаком после запятой</p>
+      <ol class="steps">
+        <li>Перебираю точные квадраты: <span class="m">25 = 5²</span>, <span class="m">36 = 6²</span>. Подкоренное 30 лежит между ними: <span class="m">25 &lt; 30 &lt; 36</span>. <span class="why">Почему именно эти: 25 — самый большой квадрат, не превышающий 30, а следующий, 36, уже больше.</span></li>
+        <li>Извлекаю корень из всех частей: <span class="m">√25 &lt; √30 &lt; √36</span>. <span class="why">Так можно, потому что корень сохраняет порядок: большему числу — больший корень.</span></li>
+        <li>Получаю <span class="m">5 &lt; √30 &lt; 6</span>. <span class="why">Потому что √25 = 5, а √36 = 6.</span></li>
+        <li>Прикидываю, к какому краю ближе: 30 ближе к 36, чем к 25, значит <span class="m">√30</span> ближе к 6. Проверяю <span class="m">5,5² = 30,25</span> — чуть больше 30, значит √30 чуть меньше 5,5. <span class="why">Беру шаг назад: 5,4² = 29,16 — это уже мало.</span></li>
+        <li>Итого <span class="m">5,4 &lt; √30 &lt; 5,5</span>, и 30 гораздо ближе к 30,25, чем к 29,16. <span class="why">Значит с одним знаком после запятой √30 ≈ 5,5.</span></li>
+      </ol>
+      <div class="verdict">5 &lt; √30 &lt; 6, √30 ≈ 5,5</div>
+    </div>
+
+    <p style="margin-top:1.3rem"><strong>Теперь допиши сам.</strong> Оценить <span class="math">√50</span>:</p>
+    <div class="drill">
+      <details>
+        <summary><span class="q">Ближайшие квадраты 49 = 7² и 64 = 8², значит 49 &lt; 50 &lt; 64, то есть ___ &lt; √50 &lt; ___</span><span class="tag">разбор</span></summary>
+        <div class="ans"><span class="m">7 &lt; √50 &lt; 8</span>. Уточняем: <span class="m">7,1² = 50,41</span> — чуть больше 50, значит √50 чуть меньше 7,1. Ответ: <strong><span class="m">√50 ≈ 7,1</span></strong>.</div>
+      </details>
+      <details>
+        <summary><span class="q">Сам: между какими целыми лежит √85? Уточни одним знаком.</span><span class="tag">разбор</span></summary>
+        <div class="ans"><span class="m">9² = 81, 10² = 100</span>, и <span class="m">81 &lt; 85 &lt; 100</span>, значит <span class="m">9 &lt; √85 &lt; 10</span>. Уточняем: <span class="m">9,2² = 84,64</span> (мало), <span class="m">9,3² = 86,49</span> (много). Ответ: <strong><span class="m">√85 ≈ 9,2</span></strong>.</div>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Теперь ты · от простого к сложному</p>
+    <h2>Практика</h2>
+    <div class="drill">
+      <details>
+        <summary><span class="q">Прочитай запись √40 ≈ 6,32. Что означает знак ≈? Точное ли это значение?</span><span class="tag">понимание</span></summary>
+        <div class="ans">Знак ≈ читается «приближённо равно». 6,32 — <strong>не точное</strong> значение: <span class="m">6,32² = 39,9424</span>, а не 40. Точная запись этого числа — только <span class="m">√40</span>.</div>
+      </details>
+      <details>
+        <summary><span class="q">Между какими соседними целыми лежат √7, √20, √99?</span><span class="tag">применение</span></summary>
+        <div class="ans"><span class="m">4 &lt; 7 &lt; 9 → 2 &lt; √7 &lt; 3</span>; <span class="m">16 &lt; 20 &lt; 25 → 4 &lt; √20 &lt; 5</span>; <span class="m">81 &lt; 99 &lt; 100 → 9 &lt; √99 &lt; 10</span>.</div>
+      </details>
+      <details>
+        <summary><span class="q">Верно ли, что √8 &gt; √9?</span><span class="tag">применение</span></summary>
+        <div class="ans">Нет. Корень возрастает: под корнем 8 меньше, чем 9, значит <span class="m">√8 &lt; √9 = 3</span>.</div>
+      </details>
+      <details>
+        <summary><span class="q">Найди ошибку: ученик написал 3 &lt; √15 &lt; 4, а потом — «значит √15 ≈ 3,9, ведь 15 близко к 16».</span><span class="tag">анализ</span></summary>
+        <div class="ans">Границы найдены верно, а вот уточнение — на глаз, без проверки. Проверяем: <span class="m">3,9² = 15,21</span> — это <strong>больше</strong> 15, значит √15 чуть меньше 3,9. Верное приближение: <span class="m">√15 ≈ 3,87</span>. Неаккуратность в том, что «близко» заменили расчётом квадрата: догадку всегда надо проверять возведением в квадрат.</div>
+      </details>
+      <details>
+        <summary><span class="q">Что изменится, если… Ты знаешь, что √2 ≈ 1,41. Не вычисляя заново, оцени √200.</span><span class="tag">анализ</span></summary>
+        <div class="ans"><span class="m">√200 = √(2 · 100) = 10 · √2 ≈ 10 · 1,41 = 14,1</span>. Множитель 100 под корнем даёт множитель 10 снаружи.</div>
+      </details>
+      <details>
+        <summary><span class="q">Обратная задача: целая часть некоторого √x равна 6, то есть 6 &lt; √x &lt; 7. В каких границах лежит само x?</span><span class="tag">анализ</span></summary>
+        <div class="ans">Возводим все части в квадрат: <span class="m">6² &lt; x &lt; 7²</span>, то есть <strong><span class="m">36 &lt; x &lt; 49</span></strong>.</div>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Тренажёр · бесконечная практика</p>
+    <h2>Оцени корень сам</h2>
+    <p>Нажми «Новое задание» и реши. Ответ вводи так, как просит подсказка под заданием: два числа — через <b>точку с запятой</b>, десятичные — с запятой или точкой. Потом проверь себя или посмотри пошаговое решение.</p>
+    <div class="trainer">
+      <div class="tr-eq" id="trTask">Между какими соседними целыми числами лежит √30?</div>
+      <p class="tr-hint" id="trHint">Введи два числа через точку с запятой, например «5; 6»</p>
+      <div class="tr-ctl">
+        <button id="trNew" type="button">🎲 Новое задание</button>
+        <input id="trAns" type="text" placeholder="твой ответ" aria-label="Ответ">
+        <button id="trCheck" type="button" class="sec">Проверить</button>
+        <button id="trShow" type="button" class="ghost">Показать решение</button>
+      </div>
+      <div id="trResult" class="tr-result"></div>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Где чаще всего ошибаются</p>
+    <h2>Четыре ловушки</h2>
+    <ul class="pitfalls">
+      <li><b>Округляют ДО извлечения корня.</b> Пишут <span class="math">√30 ≈ √36 = 6</span> «потому что 30 близко к 36». Так терять точность нельзя. Правильно: сначала <strong>зажать</strong> корень между двумя целыми и только потом уточнять десятичными — округляем результат, а не подкоренное число.</li>
+      <li><b>Неверно оценивают границы.</b> Берут случайные числа: «√30 между 3 и 6». Нужны именно <strong>соседние точные квадраты</strong> <span class="math">n²</span> и <span class="math">(n+1)²</span>, а не любые числа. Держи в голове таблицу квадратов до 144.</li>
+      <li><b>Путают точное и приближённое.</b> Пишут <span class="math">√10 = 3,16</span> со знаком «равно». Но <span class="math">3,16² = 9,9856 ≠ 10</span>. Для иррациональных корней — знак <span class="math">≈</span>; точной считается только сама запись <span class="math">√10</span> (или корень из настоящего квадрата).</li>
+      <li><b>Сравнивают корни наоборот.</b> Думают: «чем больше число под корнем, тем меньше корень». Наоборот — корень возрастает: <span class="math">√7 &lt; √8</span>. Проверяй на простом: <span class="math">√4 = 2 &lt; √9 = 3</span>.</li>
+    </ul>
+  </section>
+
+  <section>
+    <p class="kicker">Проверка понимания</p>
+    <h2>Объясни своими словами</h2>
+    <div class="check">
+      <ol>
+        <li>Между какими соседними целыми лежит <span class="math">√45</span>?<br><span style="font-size:.9rem;color:var(--muted)">Ответ: 6 и 7, потому что 36 &lt; 45 &lt; 49.</span></li>
+        <li>Чем запись <span class="math">√10 ≈ 3,16</span> отличается от записи <span class="math">√16 = 4</span>?<br><span style="font-size:.9rem;color:var(--muted)">Ответ: первая приближённая — число иррациональное; вторая точная — корень из точного квадрата.</span></li>
+        <li>Верно ли, что <span class="math">√8 &gt; √9</span>?<br><span style="font-size:.9rem;color:var(--muted)">Ответ: нет, корень возрастает, поэтому √8 &lt; √9 = 3.</span></li>
+      </ol>
+      <p style="margin-top:1rem"><strong>Итог одним предложением:</strong> чтобы оценить квадратный корень, его зажимают между корнями двух соседних точных квадратов (<span class="math">n &lt; √x &lt; n+1</span>), а затем уточняют десятичными, не путая приближённое значение с точным.</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="next">
+      <h2>Что дальше</h2>
+      <p>Ты научился понимать, <em>сколько это примерно</em>. Следующий шаг — работать с корнями <em>точно</em>, не переходя к десятичным:</p>
+      <div class="eq">преобразования выражений с корнями</div>
+      <p>Там как раз пригодится приём из задачи про √200: <span class="math">√200 = √(2 · 100) = 10√2</span> — множитель-квадрат выносят из-под корня, и запись остаётся точной.</p>
+    </div>
+  </section>
+
+  <p class="foot">Проверка на выходе: назови квадраты от 1 до 12 по памяти · между какими целыми лежит √60? · почему в √10 ≈ 3,16 стоит «≈», а не «=»?</p>
+
+</div>
+
+<script>
+/* ── Интерактив: две числовые прямые ─────────────────────────────── */
+(function(){
+  var cv=document.getElementById('nlCanvas'); if(!cv) return;
+  var ctx=cv.getContext('2d');
+  var rng=document.getElementById('nlRange'), val=document.getElementById('nlVal'), verd=document.getElementById('nlVerdict');
+  var W=680,H=300,dpr=1;
+
+  function ru(n,d){ var s=(typeof d==='number')? n.toFixed(d) : String(n); return s.replace('.',','); }
+
+  function resize(){
+    var cssW=cv.clientWidth||680;
+    dpr=Math.min(window.devicePixelRatio||1,2);
+    W=cssW; H=Math.max(230,Math.round(cssW*0.44));
+    cv.width=Math.round(W*dpr); cv.height=Math.round(H*dpr); cv.style.height=H+'px';
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+  }
+
+  function axis(y,left,right,t,labL,labR,labP,color,title){
+    var padL=Math.max(34,W*0.09), padR=Math.max(34,W*0.09);
+    var x0=padL, x1=W-padR;
+    ctx.strokeStyle='#9AA3B2'; ctx.lineWidth=1.5;
+    ctx.beginPath(); ctx.moveTo(x0,y); ctx.lineTo(x1,y); ctx.stroke();
+    /* стрелка */
+    ctx.beginPath(); ctx.moveTo(x1,y); ctx.lineTo(x1-8,y-4.5); ctx.lineTo(x1-8,y+4.5); ctx.closePath();
+    ctx.fillStyle='#9AA3B2'; ctx.fill();
+    /* засечки по краям */
+    [[x0,labL],[x1-14,labR]].forEach(function(p){
+      ctx.strokeStyle='#7A8497'; ctx.lineWidth=2;
+      ctx.beginPath(); ctx.moveTo(p[0],y-7); ctx.lineTo(p[0],y+7); ctx.stroke();
+      ctx.fillStyle='#5A6478'; ctx.font='600 '+Math.max(11,Math.round(W*0.021))+'px ui-monospace,Menlo,monospace';
+      ctx.textAlign='center'; ctx.fillText(p[1],p[0],y+24);
+    });
+    /* заголовок прямой */
+    ctx.fillStyle='#8A93A6'; ctx.textAlign='left';
+    ctx.font='600 '+Math.max(10,Math.round(W*0.019))+'px system-ui,sans-serif';
+    ctx.fillText(title,x0,y-30);
+    /* точка */
+    var px=x0+t*((x1-14)-x0);
+    ctx.strokeStyle=color; ctx.lineWidth=2;
+    ctx.beginPath(); ctx.moveTo(px,y-11); ctx.lineTo(px,y+11); ctx.stroke();
+    ctx.fillStyle=color; ctx.beginPath(); ctx.arc(px,y,6,0,7); ctx.fill();
+    ctx.fillStyle='#fff'; ctx.beginPath(); ctx.arc(px,y,2.3,0,7); ctx.fill();
+    ctx.fillStyle=color; ctx.textAlign='center';
+    ctx.font='700 '+Math.max(12,Math.round(W*0.024))+'px ui-monospace,Menlo,monospace';
+    ctx.fillText(labP,Math.min(Math.max(px,x0+18),x1-24),y-18);
+    return px;
+  }
+
+  function draw(){
+    var x=parseInt(rng.value,10);
+    var n=Math.floor(Math.sqrt(x)+1e-9);
+    var exact=(n*n===x);
+    var lo=n*n, hi=(n+1)*(n+1);
+    var r=Math.sqrt(x);
+    val.textContent=x;
+
+    ctx.clearRect(0,0,W,H);
+    var yTop=Math.round(H*0.33), yBot=Math.round(H*0.80);
+    var accent=exact?'#1E8E5A':'#B9791A';
+
+    var pxTop=axis(yTop,lo,hi,(x-lo)/(hi-lo),lo,hi,String(x),accent,'подкоренное число x');
+    var pxBot=axis(yBot,n,n+1,r-n,n,n+1,'√'+x,accent,'корень √x');
+
+    /* соединяющая пунктирная линия */
+    ctx.save();
+    ctx.setLineDash([4,4]); ctx.strokeStyle=accent; ctx.globalAlpha=.5; ctx.lineWidth=1.5;
+    ctx.beginPath(); ctx.moveTo(pxTop,yTop+12); ctx.lineTo(pxBot,yBot-24); ctx.stroke();
+    ctx.restore();
+
+    if(exact){
+      verd.className='nl-verdict exact';
+      verd.textContent='√'+x+' = '+n+' · точный квадрат, значение точное';
+    } else {
+      verd.className='nl-verdict';
+      verd.textContent=n+' < √'+x+' < '+(n+1)+' · √'+x+' ≈ '+ru(r,1);
+    }
+  }
+
+  rng.addEventListener('input',draw);
+  window.addEventListener('resize',function(){ resize(); draw(); });
+  resize(); draw();
+})();
+</script>
+
+<script>
+/* ── Тренажёр-генератор ──────────────────────────────────────────── */
+(function(){
+  var taskEl=document.getElementById('trTask'), hintEl=document.getElementById('trHint'),
+      ansEl=document.getElementById('trAns'), resEl=document.getElementById('trResult');
+  if(!taskEl) return;
+
+  var MINUS='−';
+  function ri(a,b){ return Math.floor(Math.random()*(b-a+1))+a; }
+  function ru(v,d){ var s=(typeof d==='number')?v.toFixed(d):String(v); s=s.replace('.',','); return s.replace('-',MINUS); }
+  function isSq(x){ var n=Math.round(Math.sqrt(x)); return n*n===x; }
+
+  var HINTS={
+    bounds:'Введи два числа через точку с запятой, например «5; 6». Если корень извлекается точно — одно число.',
+    approx:'Введи десятичную дробь с одним знаком, например «5,5».',
+    inverse:'Введи две границы через точку с запятой, например «36; 49».',
+    compare:'Введи знак: &lt; или &gt; (или = если равны).'
+  };
+
+  var cur=null;
+
+  function makeBounds(){
+    var x, tries=0;
+    do{ x=ri(2,168); tries++; } while(isSq(x) && Math.random()<0.8 && tries<40); /* краевой случай — точный квадрат — редко, но бывает */
+    var n=Math.floor(Math.sqrt(x)+1e-9);
+    return {type:'bounds', x:x, n:n, exact:(n*n===x),
+      text:'Между какими соседними целыми числами лежит √'+x+'?'};
+  }
+  function makeApprox(){
+    var x,n,r,d,tries=0;
+    do{
+      x=ri(2,168); n=Math.floor(Math.sqrt(x)+1e-9); r=Math.sqrt(x);
+      d=Math.round(r*10)/10; tries++;
+    } while((isSq(x) || d>=n+1 || d<=n) && tries<80);
+    return {type:'approx', x:x, n:n, r:r, d:d,
+      text:'Найди приближённое значение √'+x+' с одним знаком после запятой.'};
+  }
+  function makeInverse(){
+    var n=ri(2,11);
+    return {type:'inverse', n:n,
+      text:'Целая часть √x равна '+n+', то есть '+n+' < √x < '+(n+1)+'. В каких границах лежит само x?'};
+  }
+  function makeCompare(){
+    var a=ri(2,150), b;
+    if(Math.random()<0.12){ b=a; } else { do{ b=ri(2,150); } while(b===a); }
+    return {type:'compare', a:a, b:b, text:'Сравни: √'+a+' и √'+b+'  (поставь знак между ними)'};
+  }
+
+  function generate(){
+    var p=Math.random();
+    cur = p<0.32 ? makeBounds() : p<0.60 ? makeApprox() : p<0.78 ? makeInverse() : makeCompare();
+    taskEl.textContent=cur.text;
+    hintEl.innerHTML=HINTS[cur.type];
+    ansEl.value=''; resEl.innerHTML='';
+  }
+
+  function numbers(raw){
+    var s=raw.replace(/−/g,'-').replace(/(\d)[,](\d)/g,'$1.$2');
+    var parts=s.split(/[^0-9.\-]+/).filter(function(t){ return t!=='' && !isNaN(parseFloat(t)); });
+    return parts.map(parseFloat);
+  }
+
+  function solutionHTML(){
+    var q=cur, h='<div class="sol">';
+    if(q.type==='bounds'){
+      if(q.exact){
+        h+='√'+q.x+': число '+q.x+' — точный квадрат, '+q.x+' = '+q.n+'²<br>';
+        h+='Значит корень извлекается точно: <b>√'+q.x+' = '+q.n+'</b>';
+      } else {
+        h+='Ближайшие квадраты: '+q.n+'² = '+(q.n*q.n)+' и '+(q.n+1)+'² = '+((q.n+1)*(q.n+1))+'<br>';
+        h+=(q.n*q.n)+' &lt; '+q.x+' &lt; '+((q.n+1)*(q.n+1))+'<br>';
+        h+='Извлекаем корень (он сохраняет порядок):<br>';
+        h+='<b>'+q.n+' &lt; √'+q.x+' &lt; '+(q.n+1)+'</b>';
+      }
+    } else if(q.type==='approx'){
+      h+='Сначала границы: '+(q.n*q.n)+' &lt; '+q.x+' &lt; '+((q.n+1)*(q.n+1))+' → '+q.n+' &lt; √'+q.x+' &lt; '+(q.n+1)+'<br>';
+      var lowD=Math.floor(q.r*10)/10, hiD=Math.round((lowD+0.1)*10)/10;
+      h+='Уточняем десятичными: '+ru(lowD,1)+'² = '+ru(lowD*lowD,2)+' (мало), '+ru(hiD,1)+'² = '+ru(hiD*hiD,2)+' (много)<br>';
+      h+='Значит '+ru(lowD,1)+' &lt; √'+q.x+' &lt; '+ru(hiD,1)+', и '+q.x+' ближе к '+ru((q.d===lowD?lowD:hiD)*(q.d===lowD?lowD:hiD),2)+'<br>';
+      h+='<b>√'+q.x+' ≈ '+ru(q.d,1)+'</b>';
+    } else if(q.type==='inverse'){
+      h+=q.n+' &lt; √x &lt; '+(q.n+1)+'<br>';
+      h+='Возводим все части в квадрат (числа положительные, порядок сохраняется):<br>';
+      h+=q.n+'² &lt; x &lt; '+(q.n+1)+'²<br>';
+      h+='<b>'+(q.n*q.n)+' &lt; x &lt; '+((q.n+1)*(q.n+1))+'</b>';
+    } else {
+      var sign = q.a<q.b ? '&lt;' : (q.a>q.b ? '&gt;' : '=');
+      h+='Корень возрастает: чем больше число под корнем, тем больше корень.<br>';
+      h+='Под корнями: '+q.a+' '+sign+' '+q.b+'<br>';
+      h+='<b>√'+q.a+' '+sign+' √'+q.b+'</b>';
+    }
+    return h+'</div>';
+  }
+
+  function check(){
+    var raw=ansEl.value.trim().toLowerCase();
+    if(!raw){ resEl.innerHTML='<span class="bad">Введи ответ или нажми «Показать решение».</span>'; return; }
+    var q=cur, ok=false, hint='';
+
+    if(q.type==='compare'){
+      var expect = q.a<q.b ? '<' : (q.a>q.b ? '>' : '=');
+      var has=function(t){ return raw.indexOf(t)>=0; };
+      var got = (has('<')||has('меньш')) ? '<' : ((has('>')||has('больш')) ? '>' : ((has('=')||has('равн')) ? '=' : ''));
+      if(!got){ resEl.innerHTML='<span class="bad">Не понял запись. Поставь знак &lt;, &gt; или =.</span>'; return; }
+      ok = (got===expect);
+      if(!ok) hint=' Помни: корень возрастает вместе с подкоренным числом.';
+    } else {
+      var g=numbers(raw);
+      if(!g.length){ resEl.innerHTML='<span class="bad">Не понял запись. Введи числа, как просит подсказка.</span>'; return; }
+      if(q.type==='bounds'){
+        if(q.exact){
+          ok = (g.length===1 && g[0]===q.n) || (g.length===2 && Math.min(g[0],g[1])===q.n && Math.max(g[0],g[1])===q.n);
+          if(!ok) hint=' Проверь: подкоренное число — точный квадрат, корень целый.';
+        } else {
+          g.sort(function(a,b){return a-b;});
+          ok = (g.length===2 && g[0]===q.n && g[1]===q.n+1);
+          if(!ok) hint=' Ищи два соседних точных квадрата: один меньше подкоренного, другой больше.';
+        }
+      } else if(q.type==='approx'){
+        ok = (g.length===1 && Math.abs(g[0]-q.d)<0.001);
+        if(!ok) hint=' Возведи свой ответ в квадрат и сравни с подкоренным числом.';
+      } else if(q.type==='inverse'){
+        g.sort(function(a,b){return a-b;});
+        ok = (g.length===2 && g[0]===q.n*q.n && g[1]===(q.n+1)*(q.n+1));
+        if(!ok) hint=' Возведи обе границы неравенства в квадрат.';
+      }
+    }
+    resEl.innerHTML = ok
+      ? '<span class="ok">✓ Верно!</span>'+solutionHTML()
+      : '<span class="bad">✗ Пока не то.'+hint+'</span>'+solutionHTML();
+  }
+
+  document.getElementById('trNew').addEventListener('click',function(){ generate(); ansEl.focus(); });
+  document.getElementById('trCheck').addEventListener('click',check);
+  document.getElementById('trShow').addEventListener('click',function(){ resEl.innerHTML=solutionHTML(); });
+  ansEl.addEventListener('keydown',function(e){ if(e.key==='Enter') check(); });
+
+  /* стартовое состояние = задача, показанная в разметке (без автофокуса) */
+  cur={type:'bounds', x:30, n:5, exact:false, text:'Между какими соседними целыми числами лежит √30?'};
+  hintEl.innerHTML=HINTS.bounds;
+})();
+</script>
+<!--LESSON-NAV-BOT--><nav class="lnav lnav-bot"><a class="prev" href="./alg8-osvobozhdenie-ot-irracionalnosti.html"><span class="dir">← Предыдущая</span><span class="ttl">Освобождение от иррациональности в знаменателе</span></a><a class="to-cat" href="./catalog.html">📚 <span>Все темы</span></a><a class="next" href="./alg8-kvadratnoe-uravnenie.html"><span class="dir">Следующая →</span><span class="ttl">Квадратное уравнение и его коэффициенты</span></a></nav><!--/LESSON-NAV-BOT-->

@@ -1,0 +1,563 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Поворот — геометрия 9 класс</title>
+<style>
+  :root{
+    --paper:#F6F7F9; --card:#FFFFFF; --ink:#1D2530; --muted:#606B7A; --line:#E3E7EE;
+    --brand:#2E5AAC; --brand-soft:#E4EBF7;
+    --pre:#E27C2C; --pre-soft:#FBEEDF;   /* прообраз */
+    --img:#159A8A; --img-soft:#DEF3F0;   /* образ */
+    --cen:#8B3FB5; --cen-soft:#F1E6F8;   /* центр */
+    --ok:#1E8E5A; --no:#C23B3B;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper)}
+  .page{max-width:720px;margin:0 auto;padding:clamp(1.4rem,4vw,3rem) clamp(1.1rem,4vw,2rem) 4.5rem;
+    color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:17.5px;line-height:1.68;-webkit-font-smoothing:antialiased}
+  .mono{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-variant-numeric:tabular-nums;font-weight:600}
+  sup{font-size:.72em}
+
+  .hero{border-bottom:3px solid var(--brand);padding-bottom:1.4rem;margin-bottom:1.8rem}
+  .eyebrow{font-size:.74rem;letter-spacing:.15em;text-transform:uppercase;color:var(--brand);font-weight:700;margin:0 0 .55rem}
+  h1{font-size:clamp(1.9rem,6vw,2.8rem);line-height:1.05;margin:0;font-weight:800;letter-spacing:-.02em;text-wrap:balance}
+  .tagline{font-size:1.12rem;color:var(--muted);margin:.85rem 0 0;text-wrap:pretty}
+
+  section{margin-top:2.4rem}
+  h2{font-size:1.5rem;margin:0 0 .3rem;font-weight:780;letter-spacing:-.015em;text-wrap:balance}
+  h2 .em{color:var(--brand)}
+  p{margin:.7rem 0}
+  strong{font-weight:680}
+  .prew{color:var(--pre);font-weight:800} .imgw{color:var(--img);font-weight:800} .cenw{color:var(--cen);font-weight:800}
+
+  .lead-in{background:var(--brand-soft);border-radius:14px;padding:1.1rem 1.3rem;font-size:1.02rem}
+  .lead-in p{margin:.4rem 0}
+  .lead-in b{color:var(--brand)}
+
+  .recall{background:var(--card);border:1px dashed var(--line);border-radius:14px;padding:1rem 1.2rem;margin-top:1rem;font-size:.98rem}
+  .recall h3{margin:0 0 .4rem;font-size:.8rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+  .recall ul{margin:.3rem 0 0;padding-left:1.1rem}
+  .recall li{margin:.25rem 0}
+
+  .formula-box{background:var(--ink);color:#fff;border-radius:14px;padding:1.3rem;text-align:center;margin-top:1rem}
+  .formula-box .eq{font-family:ui-monospace,Menlo,monospace;font-size:clamp(1.25rem,4.6vw,1.75rem);font-weight:700;line-height:1.5}
+  .formula-box .eq .p{color:#F0A45E} .formula-box .eq .i{color:#6FD3C6} .formula-box .eq .o{color:#CDA0E8}
+  .formula-box .note{font-size:.9rem;color:#AEB8C6;margin:.7rem 0 0}
+
+  .three{display:grid;gap:.6rem;margin-top:1rem}
+  @media(min-width:560px){.three{grid-template-columns:repeat(3,1fr)}}
+  .three div{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:.85rem 1rem;font-size:.95rem}
+  .three div b{display:block;font-size:1.02rem;margin-bottom:.15rem}
+  .three .t1{border-top:3px solid var(--cen)} .three .t1 b{color:var(--cen)}
+  .three .t2{border-top:3px solid var(--pre)} .three .t2 b{color:var(--pre)}
+  .three .t3{border-top:3px solid var(--img)} .three .t3 b{color:var(--img)}
+
+  .note{border-left:4px solid var(--brand);background:var(--brand-soft);border-radius:0 10px 10px 0;padding:.8rem 1.1rem;margin-top:1rem;font-size:.98rem}
+  .note b{color:var(--brand)}
+  .note p{margin:.35rem 0}
+
+  .tblwrap{overflow-x:auto;margin-top:1rem}
+  table{border-collapse:collapse;width:100%;min-width:420px;background:var(--card);border:1px solid var(--line);border-radius:12px;font-size:.95rem}
+  th,td{padding:.6rem .8rem;border-bottom:1px solid var(--line);text-align:left}
+  th{font-size:.8rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:700}
+  tr:last-child td{border-bottom:none}
+  td.mono{font-weight:700}
+
+  /* Визуализация */
+  .diagram{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:1.2rem;margin-top:1rem}
+  .diagram canvas{width:100%;height:auto;display:block;border-radius:8px}
+  .ctlrow{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:.9rem;align-items:center}
+  .ctlrow .lbl{font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:700;width:100%}
+  .chip{font:inherit;font-size:.88rem;font-weight:650;cursor:pointer;border:1px solid var(--line);background:#fff;color:var(--ink);border-radius:999px;padding:.4rem .85rem}
+  .chip[aria-pressed="true"]{background:var(--brand);border-color:var(--brand);color:#fff}
+  .chip:focus-visible{outline:3px solid var(--brand);outline-offset:2px}
+  .slider{display:flex;align-items:center;gap:.6rem;margin-top:.9rem;font-family:ui-monospace,Menlo,monospace;font-weight:700}
+  .slider input[type=range]{flex:1;accent-color:var(--brand)}
+  .slider input[type=range]:focus-visible{outline:3px solid var(--brand);outline-offset:3px}
+  .slider .sval{min-width:4.5ch;text-align:right;color:var(--brand)}
+  .readout{margin:.9rem 0 0;padding:.7rem .9rem;background:var(--brand-soft);border-radius:10px;font-size:.94rem;text-align:center}
+  .readout .hit{color:var(--ok);font-weight:800}
+
+  .walk{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.15rem 1.3rem;margin-top:1rem}
+  .walk .q{font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.02rem;margin:0 0 .9rem;padding-bottom:.7rem;border-bottom:1px solid var(--line)}
+  .walk ol{margin:0;padding-left:1.2rem;display:flex;flex-direction:column;gap:.55rem}
+  .walk li{font-size:.95rem}
+  .walk li .why{display:block;color:var(--muted);font-size:.9rem;margin-top:.15rem}
+  .walk b{font-weight:700}
+  .verdict{margin-top:1rem;padding:.7rem 1rem;background:var(--brand-soft);border-radius:10px;font-weight:650;color:var(--brand);font-family:ui-monospace,Menlo,monospace}
+
+  /* Тренажёр */
+  .trainer{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.2rem 1.3rem;margin-top:1rem}
+  .tr-task{font-size:clamp(1rem,4vw,1.12rem);text-align:center;padding:1rem;background:var(--brand-soft);border-radius:10px;font-weight:600;line-height:1.55}
+  .tr-task b{font-family:ui-monospace,Menlo,monospace;color:var(--ink)}
+  .tr-ctl{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:1rem;align-items:center;justify-content:center}
+  .tr-ctl input{flex:1;min-width:110px;max-width:180px;font:inherit;padding:.5rem .7rem;border:1px solid var(--line);border-radius:9px;text-align:center;background:#fff;color:var(--ink)}
+  .tr-ctl button{font:inherit;font-weight:700;font-size:.9rem;cursor:pointer;border:none;border-radius:9px;padding:.55rem .95rem;color:#fff;background:var(--brand)}
+  .tr-ctl button.sec{background:var(--pre)}
+  .tr-ctl button.ghost{background:transparent;color:var(--brand);border:1px solid var(--brand)}
+  .tr-ctl button:focus-visible,.tr-ctl input:focus-visible{outline:3px solid var(--brand);outline-offset:2px}
+  .tr-result{margin-top:.9rem;font-size:.96rem;min-height:1.2rem;text-align:center}
+  .tr-result .ok{color:var(--ok);font-weight:700} .tr-result .bad{color:var(--no);font-weight:700}
+  .tr-result .sol{margin-top:.6rem;padding:.8rem 1rem;background:#FCFDFE;border:1px solid var(--line);border-radius:10px;font-family:ui-monospace,Menlo,monospace;font-size:.9rem;line-height:1.8;text-align:left;overflow-x:auto}
+
+  details{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:.9rem 1.1rem;margin-top:.7rem}
+  details[open]{border-color:var(--brand)}
+  summary{cursor:pointer;font-weight:650;list-style:none;display:flex;justify-content:space-between;gap:1rem;align-items:center}
+  summary::-webkit-details-marker{display:none}
+  summary::after{content:"проверить";font-size:.8rem;color:var(--brand);font-weight:700;white-space:nowrap}
+  details[open] summary::after{content:"скрыть"}
+  summary:focus-visible{outline:3px solid var(--brand);outline-offset:3px;border-radius:6px}
+  .ans{margin-top:.75rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.96rem;color:var(--muted)}
+  .ans b{color:var(--ink)}
+  .drill{display:flex;flex-direction:column;gap:.2rem;margin-top:1rem}
+  .lvl{display:inline-block;font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;font-weight:800;color:var(--muted);margin:1.1rem 0 .1rem}
+
+  ul.traps{list-style:none;margin:1rem 0 0;padding:0;display:flex;flex-direction:column;gap:.7rem}
+  ul.traps li{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:.85rem 1.05rem;padding-left:2.5rem;position:relative;font-size:.97rem}
+  ul.traps li::before{content:"⚠";position:absolute;left:1rem;top:.85rem;color:var(--pre)}
+  ul.traps b{font-weight:700}
+
+  .selfcheck{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.1rem 1.3rem;margin-top:1rem}
+  .selfcheck ol{margin:.3rem 0 0;padding-left:1.2rem}
+  .selfcheck li{margin:.35rem 0}
+
+  .wrapup{background:var(--brand);color:#fff;border-radius:16px;padding:1.4rem 1.5rem;margin-top:2.4rem}
+  .wrapup h2{color:#fff;margin:0 0 .5rem}
+  .wrapup p{color:#DEE7F5;margin:.4rem 0;font-size:1rem}
+  .wrapup .big-rule{font-size:1.05rem;font-weight:800;color:#fff;margin:.6rem 0;font-family:ui-monospace,Menlo,monospace}
+  .wrapup .next{font-size:.95rem;color:#C6D5EE;margin-top:1rem;padding-top:1rem;border-top:1px solid rgba(255,255,255,.2)}
+  .wrapup .next b{color:#fff}
+
+  @media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+<!--LESSON-NAV-TOP--><style>.lnav{--lnav-accent:#3D5AF1}.lnav a{text-decoration:none;font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif}.lnav-top{max-width:820px;margin:0 auto;padding:.75rem clamp(1rem,4vw,1.5rem) .1rem}.lnav-top a{display:inline-flex;align-items:center;gap:.35rem;color:var(--lnav-accent);font-weight:600;font-size:.9rem}.lnav-top a:hover{text-decoration:underline}.lnav-bot{max-width:820px;margin:2.6rem auto 3rem;padding:1.1rem clamp(1rem,4vw,1.5rem) 0;border-top:1px solid #E4E8EF;display:flex;align-items:stretch;gap:.55rem}.lnav-bot a{min-width:0;display:flex;flex-direction:column;justify-content:center;gap:.15rem;border:1px solid #E4E8EF;border-radius:12px;padding:.65rem .85rem;color:#182233;background:#fff;transition:border-color .1s,transform .08s}.lnav-bot a:hover{border-color:var(--lnav-accent);transform:translateY(-1px)}.lnav-bot .prev,.lnav-bot .next{flex:1 1 0}.lnav-bot .next{text-align:right}.lnav-bot .dir{font-size:.72rem;color:#8A93A6;font-weight:600}.lnav-bot .ttl{font-size:.9rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.lnav-bot .to-cat{flex:0 0 auto;flex-direction:row;align-items:center;justify-content:center;color:var(--lnav-accent);font-weight:700;font-size:.85rem;white-space:nowrap}@media(max-width:420px){.lnav-bot .to-cat span{display:none}.lnav-bot .to-cat{padding:.65rem .7rem}}</style><nav class="lnav lnav-top"><a href="./catalog.html">← Все темы</a></nav><!--/LESSON-NAV-TOP-->
+<div class="page">
+
+  <header class="hero">
+    <p class="eyebrow">Геометрия · 9 класс</p>
+    <h1>Поворот</h1>
+    <p class="tagline">Каждая точка едет по дуге вокруг одного центра — и ни на миллиметр не приближается к нему и не удаляется.</p>
+  </header>
+
+  <div class="lead-in">
+    <p><b>Где встречается.</b> Стрелки часов, колесо, лопасти вентилятора, деталь на станке. Узоры с симметрией вращения: снежинка, гайка, шестерёнка, мозаика.</p>
+    <p><b>Главный миф.</b> «Повернуть — это просто сдвинуть набок или наклонить». Нет. При повороте каждая точка движется <strong>по дуге окружности вокруг одного и того же центра</strong>, а её расстояние до центра не меняется. Это не сдвиг (параллельный перенос) и не отражение.</p>
+  </div>
+
+  <div class="recall">
+    <h3>Сначала вспомни</h3>
+    <ul>
+      <li><b>Движение</b> — преобразование, которое сохраняет расстояния. Поворот — один из четырёх типов движений.</li>
+      <li><b>Угол и направление его отсчёта:</b> против часовой стрелки угол считают положительным, по часовой — отрицательным. Это та же договорённость, что и в тригонометрии.</li>
+    </ul>
+  </div>
+
+  <section>
+    <h2>Суть: <span class="em">кнопка в листе бумаги</span></h2>
+    <p>Представь, что ты воткнул в лист кнопку — это <span class="cenw">центр поворота O</span> — и повернул весь лист. Кнопка осталась на месте, а всё остальное поехало по дугам вокруг неё. Точка, которая была в 5 см от кнопки, останется в 5 см — просто окажется в другом месте той же окружности.</p>
+    <p>Поворот вокруг центра O на угол α переводит каждую точку <span class="prew">M</span> в такую точку <span class="imgw">M₁</span>, что луч OM₁ повёрнут относительно луча OM на угол α, а длина сохраняется. Сам центр O остаётся на месте — это единственная неподвижная точка (если α не кратен 360°).</p>
+  </section>
+
+  <section>
+    <h2>Определение и обозначения</h2>
+    <p><strong>Поворотом плоскости вокруг точки O на угол α</strong> называется отображение, при котором точка O переходит сама в себя, а любая другая точка M переходит в точку M₁ так, что:</p>
+    <div class="formula-box">
+      <div class="eq"><span class="i">OM₁</span> = <span class="p">OM</span> &nbsp;и&nbsp; ∠<span class="p">M</span><span class="o">O</span><span class="i">M₁</span> = α</div>
+      <div class="note"><span class="o">O</span> — центр поворота (неподвижная точка) · α — угол поворота, 0° ≤ α ≤ 360° · <span class="p">M</span> — прообраз · <span class="i">M₁</span> — образ<br>плюс обязательно указано направление: по часовой стрелке или против неё</div>
+    </div>
+    <p>Поворот задаётся <strong>тремя</strong> вещами. Измени любую из них — получишь другой образ:</p>
+    <div class="three">
+      <div class="t1"><b>Центр O</b>Точка, вокруг которой всё вращается. Может лежать где угодно: внутри фигуры, на ней или снаружи.</div>
+      <div class="t2"><b>Угол α</b>На сколько градусов повернули. Это угол MOM₁ — от луча к прообразу до луча к образу.</div>
+      <div class="t3"><b>Направление</b>Против часовой стрелки (положительное) или по часовой (отрицательное).</div>
+    </div>
+    <div class="note">
+      <p><b>Свойства, которые надо знать наизусть:</b></p>
+      <p>• Поворот — это <strong>движение</strong>: он сохраняет расстояния между точками и сохраняет углы. Образ фигуры <strong>равен</strong> самой фигуре.</p>
+      <p>• Поворот на <strong>180°</strong> вокруг O — это в точности <strong>центральная симметрия</strong> относительно O (направление при 180° роли не играет).</p>
+      <p>• Поворот на <strong>360°</strong> (или на 0°) оставляет каждую точку на месте — тождественное движение.</p>
+    </div>
+    <div class="tblwrap">
+      <table>
+        <tr><th>Угол поворота</th><th>Что получается</th></tr>
+        <tr><td class="mono">0° или 360°</td><td>Всё на месте (тождественное движение)</td></tr>
+        <tr><td class="mono">180°</td><td>Центральная симметрия относительно O</td></tr>
+        <tr><td class="mono">любой α</td><td>OM₁ = OM, ∠MOM₁ = α, фигура равна исходной</td></tr>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2>Увидь глазами — <span class="em">точки едут по окружностям</span></h2>
+    <p>Выбери фигуру, крути угол и меняй направление. Смотри на пунктирные окружности: <strong>образ каждой точки лежит на той же окружности, что и прообраз</strong>. Это ключевая идея всей темы.</p>
+    <div class="diagram">
+      <canvas id="rot" width="640" height="512" aria-label="Поворот фигуры вокруг центра O"></canvas>
+      <div class="ctlrow">
+        <span class="lbl">Фигура</span>
+        <button class="chip" type="button" data-fig="point" aria-pressed="true">точка M</button>
+        <button class="chip" type="button" data-fig="tri" aria-pressed="false">треугольник</button>
+        <button class="chip" type="button" data-fig="sq" aria-pressed="false">квадрат с центром O</button>
+      </div>
+      <div class="ctlrow">
+        <span class="lbl">Направление</span>
+        <button class="chip" type="button" data-dir="1" aria-pressed="true">↺ против часовой</button>
+        <button class="chip" type="button" data-dir="-1" aria-pressed="false">↻ по часовой</button>
+      </div>
+      <label class="slider">угол α <input id="rAng" type="range" min="0" max="360" step="5" value="90" aria-label="Угол поворота"><span class="sval" id="rAngV">90°</span></label>
+      <p class="readout" id="rOut"></p>
+    </div>
+    <p style="font-size:.9rem;color:var(--muted)">Тот же приём руками: вырежи фигуру из кальки, проколи кнопкой центр O и физически поверни. Точки едут по дугам, расстояния не меняются — это видно пальцами.</p>
+  </section>
+
+  <section>
+    <h2>Эталонный разбор — <span class="em">думаю вслух</span></h2>
+    <p>Задача: построить образ точки A при повороте вокруг центра O на 90° против часовой стрелки, если OA = 4 см.</p>
+    <div class="walk">
+      <p class="q">Дано: центр O, точка A, OA = 4 см, α = 90°, против часовой.</p>
+      <ol>
+        <li>Отмечаю центр <b>O</b> и точку <b>A</b>, провожу отрезок OA.
+          <span class="why">Почему: и угол, и расстояние отсчитываются <b>от центра</b> — без отрезка OA не от чего откладывать.</span></li>
+        <li>От луча OA откладываю угол <b>90° против часовой стрелки</b> — получаю новый луч из O.
+          <span class="why">Почему: угол поворота — это угол AOA₁, то есть угол между лучом к прообразу и лучом к образу.</span></li>
+        <li>На новом луче откладываю отрезок длиной <b>4 см</b>, равный OA.
+          <span class="why">Почему: поворот сохраняет расстояние до центра, значит OA₁ = OA = 4 см. Тут же циркуль: тем же раствором, что мерил OA.</span></li>
+        <li>Конец отрезка — это точка <b>A₁</b>, образ точки A.
+          <span class="why">Проверка: OA₁ = 4 см ✓, ∠AOA₁ = 90° ✓, направление против часовой ✓ — все три условия выполнены.</span></li>
+      </ol>
+      <div class="verdict">Ответ: A₁ построена, OA₁ = 4 см, ∠AOA₁ = 90°</div>
+    </div>
+
+    <div class="walk" style="margin-top:.8rem">
+      <p class="q">Допиши пропущенный шаг. Точку B повернули вокруг O на 60° по часовой стрелке, OB = 5 см.</p>
+      <ol>
+        <li>Провожу OB.</li>
+        <li>От луча OB откладываю угол 60° <b>по часовой стрелке</b> (в сторону движения часов).</li>
+        <li>_________ — попробуй сам, потом раскрой.</li>
+      </ol>
+      <details><summary>Шаг 3 — что делать</summary><div class="ans">На полученном луче отложить отрезок длиной <b>5 см</b>, равный OB. Его конец — точка <b>B₁</b>. Это тот же третий шаг, что и в эталоне: расстояние до центра обязано сохраниться.</div></details>
+    </div>
+
+    <div class="walk" style="margin-top:.8rem">
+      <p class="q">Реши сам. Треугольник OMN повернули вокруг вершины O на 180°. Чему равна длина образа стороны MN, если MN = 7 см? Каким движением является этот поворот?</p>
+      <details><summary>Ответ и рассуждение</summary><div class="ans"><b>M₁N₁ = 7 см</b> — поворот сохраняет расстояния, значит образ отрезка равен самому отрезку. А поворот на 180° вокруг O — это <b>центральная симметрия</b> относительно точки O.</div></details>
+    </div>
+  </section>
+
+  <section>
+    <h2>Тренажёр · бесконечные задания</h2>
+    <p>Ответ вводи числом (градусы — без значка «°», сантиметры — без «см»). Сначала посчитай сам, потом проверь.</p>
+    <div class="trainer">
+      <div class="tr-task" id="trTask">Точку M повернули вокруг центра O на <b>70°</b> против часовой стрелки. Известно, что OM = <b>3</b> см. Чему равно OM₁?</div>
+      <div class="tr-ctl">
+        <button id="trNew" type="button">🎲 Новое</button>
+        <input id="trAns" type="text" inputmode="decimal" placeholder="ответ" aria-label="Ответ">
+        <button id="trCheck" type="button" class="sec">Проверить</button>
+        <button id="trShow" type="button" class="ghost">Решение</button>
+      </div>
+      <div id="trResult" class="tr-result"></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Практика по нарастанию</h2>
+
+    <p class="lvl">Уровень 1 · понимание</p>
+    <div class="drill">
+      <details><summary>1) Назови три величины, которыми задаётся поворот.</summary><div class="ans"><b>Центр</b>, <b>угол</b> и <b>направление</b> (по часовой стрелке или против). Изменишь любую — получится другой образ.</div></details>
+      <details><summary>2) Какая точка при повороте остаётся на месте?</summary><div class="ans">Только <b>центр поворота O</b>. Он переходит сам в себя и является единственной неподвижной точкой (если угол не кратен 360°).</div></details>
+      <details><summary>3) Чему равно OM₁, если OM = 3 см, а фигуру повернули на 70°?</summary><div class="ans"><b>3 см.</b> Расстояние до центра при повороте сохраняется, угол тут ни при чём.</div></details>
+      <details><summary>4) Поворот на какой угол совпадает с центральной симметрией?</summary><div class="ans">На <b>180°</b>. Причём направление при 180° роли не играет — результат один и тот же.</div></details>
+    </div>
+
+    <p class="lvl">Уровень 2 · применение</p>
+    <div class="drill">
+      <details><summary>5) Дан квадрат ABCD с центром O. На какой наименьший положительный угол надо повернуть квадрат вокруг O, чтобы он совместился сам с собой?</summary><div class="ans">На <b>90°</b>. У квадрата 4 равные вершины, и поворот на 360° : 4 = 90° переводит каждую вершину в соседнюю — фигура ложится сама на себя. (Проверь это на визуализации выше, выбрав «квадрат с центром O».)</div></details>
+      <details><summary>6) А для правильного n-угольника — на какой наименьший угол?</summary><div class="ans">На <b>360° : n</b>. Для треугольника 120°, для шестиугольника 60°, для восьмиугольника 45°. Меняй n и смотри закономерность — это та же идея, что и с квадратом.</div></details>
+      <details><summary>7) Построй образ точки P при повороте вокруг O на 120° по часовой стрелке, если OP = 3 см. Опиши шаги.</summary><div class="ans">1) Провожу OP. 2) От луча OP откладываю 120° <b>по часовой стрелке</b>. 3) На новом луче откладываю 3 см (равно OP). 4) Конец — точка P₁. Проверка: OP₁ = OP = <b>3 см</b>, ∠POP₁ = 120°.</div></details>
+    </div>
+
+    <p class="lvl">Уровень 3 · анализ</p>
+    <div class="drill">
+      <details><summary>8) Что изменится, если… точку повернули на 90° против часовой стрелки, а затем ещё на 90° против часовой вокруг того же центра. Каким одним поворотом это можно заменить?</summary><div class="ans">Углы складываются: 90° + 90° = <b>180°</b> против часовой. А поворот на 180° — это <b>центральная симметрия</b> относительно центра. Центр при этом тот же самый, он ведь не двигался ни разу.</div></details>
+      <details><summary>9) Найди ошибку. Ученик повернул точку M на 90° вокруг O, но отложил образ на расстоянии 6 см, хотя OM = 4 см.</summary><div class="ans">Нарушено <b>сохранение расстояния</b>: поворот — движение, поэтому обязано быть OM₁ = OM = <b>4 см</b>, а не 6. Угол ученик, возможно, отложил верно, но точка всё равно построена неправильно — она вылетела со своей окружности.</div></details>
+      <details><summary>10) Что изменится, если у той же точки и того же угла поменять только направление — с «против часовой» на «по часовой»?</summary><div class="ans">Получится <b>другая точка</b> (кроме случая α = 180°, когда направление не важно, и случая α = 0° или 360°). Расстояние до центра при этом остаётся тем же — обе точки лежат на одной окружности с центром O, просто по разные стороны от луча OM.</div></details>
+    </div>
+  </section>
+
+  <section>
+    <h2>Ловушки</h2>
+    <ul class="traps">
+      <li><b>Путают направление.</b> Один и тот же угол в разные стороны даёт разные образы. Подписывай направление стрелкой на чертеже и проверяй: против часовой — это «вверх-влево», как растёт угол в тригонометрии.</li>
+      <li><b>Не сохраняют расстояние до центра.</b> Откладывают образ «на глаз», и OM₁ ≠ OM. Меряй OM циркулем и тем же раствором откладывай OM₁ — поворот это движение, длина обязана сохраниться.</li>
+      <li><b>Откладывают угол не от того луча.</b> Угол поворота — это всегда ∠MOM₁, от луча к прообразу до луча к образу, от центра. Не от горизонтали и не от стороны фигуры.</li>
+      <li><b>Думают, что центр обязательно внутри фигуры.</b> Центр поворота может лежать в любой точке плоскости — внутри фигуры, на ней или снаружи.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Проверь, что понял</h2>
+    <div class="selfcheck">
+      <p>Закрой урок и объясни вслух (себе, другу или голосовому помощнику) своими словами:</p>
+      <ol>
+        <li>Какими тремя данными задаётся поворот?</li>
+        <li>Чему равно OM₁, если OM = 3 см, а фигуру повернули на 70°? Почему?</li>
+        <li>Поворот на какой угол совпадает с центральной симметрией?</li>
+        <li>Почему образ точки всегда лежит на окружности с центром O и радиусом OM?</li>
+      </ol>
+      <p style="font-size:.93rem;color:var(--muted)">Если на любой из вопросов ответ «ну, это когда фигура наклоняется» — вернись к разделу «Суть» и прокрути визуализацию ещё раз.</p>
+    </div>
+  </section>
+
+  <div class="wrapup">
+    <h2>Запомни главное</h2>
+    <p class="big-rule">OM₁ = OM, ∠MOM₁ = α</p>
+    <p>Поворот — это движение, при котором каждая точка вращается вокруг центра O на заданный угол в заданном направлении с сохранением расстояния до центра. Задаётся тремя вещами: центр, угол, направление. Поворот на 180° — центральная симметрия, на 360° — всё на месте.</p>
+    <p class="next">👉 Дальше — <b>задачи на движения</b>: там повороты, переносы и симметрии комбинируют и используют, чтобы доказывать равенство фигур и «накладывать» одну фигуру на другую.</p>
+  </div>
+
+</div>
+
+<script>
+(function(){
+  var cv=document.getElementById('rot'); if(!cv) return;
+  var ctx=cv.getContext('2d');
+  var angEl=document.getElementById('rAng'), angV=document.getElementById('rAngV'), out=document.getElementById('rOut');
+  var W=640,H=512,dpr=1,dir=1,fig='point';
+  function css(v){ return getComputedStyle(document.documentElement).getPropertyValue(v).trim(); }
+
+  var FIGS={
+    point:{pts:[[3,4]], names:['M'], closed:false, title:'точка M'},
+    tri:{pts:[[1,-1],[4.5,-1],[4.5,2.5]], names:['A','B','C'], closed:true, title:'треугольник ABC'},
+    sq:{pts:[[2.6,2.6],[-2.6,2.6],[-2.6,-2.6],[2.6,-2.6]], names:['A','B','C','D'], closed:true, title:'квадрат ABCD'}
+  };
+  var R=6.4; // половина видимой области в условных единицах
+
+  function resize(){
+    var c=cv.clientWidth||640;
+    dpr=Math.min(window.devicePixelRatio||1,2);
+    W=c; H=Math.round(c*0.8);
+    cv.width=Math.round(W*dpr); cv.height=Math.round(H*dpr);
+    cv.style.height=H+'px';
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+  }
+  function scale(){ return Math.min(W,H)/(2*R); }
+  function SX(x){ return W/2 + x*scale(); }
+  function SY(y){ return H/2 - y*scale(); }
+  function rot(p,deg){ var t=deg*Math.PI/180, c=Math.cos(t), s=Math.sin(t);
+    return [p[0]*c - p[1]*s, p[0]*s + p[1]*c]; }
+  function poly(pts,closed,stroke,fill,dash,w){
+    ctx.save(); ctx.setLineDash(dash||[]); ctx.lineWidth=w||2; ctx.strokeStyle=stroke;
+    ctx.beginPath();
+    pts.forEach(function(p,i){ var x=SX(p[0]), y=SY(p[1]); i?ctx.lineTo(x,y):ctx.moveTo(x,y); });
+    if(closed) ctx.closePath();
+    if(fill && closed){ ctx.fillStyle=fill; ctx.fill(); }
+    if(pts.length>1) ctx.stroke();
+    ctx.restore();
+  }
+  function dot(p,color,r){ ctx.beginPath(); ctx.arc(SX(p[0]),SY(p[1]),r||4.5,0,Math.PI*2); ctx.fillStyle=color; ctx.fill(); }
+  function label(p,txt,color,fs){
+    var len=Math.hypot(p[0],p[1])||1, k=(len+0.62)/len;
+    ctx.fillStyle=color; ctx.font='700 '+(fs||14)+'px ui-monospace,Menlo,monospace';
+    ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.fillText(txt, SX(p[0]*k), SY(p[1]*k));
+  }
+  function circleThrough(p,color){
+    var r=Math.hypot(p[0],p[1]); if(r<0.05) return;
+    ctx.save(); ctx.setLineDash([3,5]); ctx.lineWidth=1; ctx.strokeStyle=color;
+    ctx.beginPath(); ctx.arc(SX(0),SY(0),r*scale(),0,Math.PI*2); ctx.stroke(); ctx.restore();
+  }
+  function arcPath(p,deg,color){
+    if(Math.abs(deg)<0.5) return;
+    ctx.save(); ctx.lineWidth=2; ctx.strokeStyle=color; ctx.beginPath();
+    var steps=Math.max(6,Math.round(Math.abs(deg)/3));
+    for(var i=0;i<=steps;i++){
+      var q=rot(p, deg*i/steps), x=SX(q[0]), y=SY(q[1]);
+      i?ctx.lineTo(x,y):ctx.moveTo(x,y);
+    }
+    ctx.stroke();
+    // наконечник стрелки в конце дуги
+    var e1=rot(p,deg), e0=rot(p,deg-(deg>0?3:-3));
+    var vx=SX(e1[0])-SX(e0[0]), vy=SY(e1[1])-SY(e0[1]), L=Math.hypot(vx,vy)||1;
+    vx/=L; vy/=L;
+    var ax=SX(e1[0]), ay=SY(e1[1]), s=8;
+    ctx.beginPath();
+    ctx.moveTo(ax,ay);
+    ctx.lineTo(ax - s*vx + s*0.5*vy, ay - s*vy - s*0.5*vx);
+    ctx.lineTo(ax - s*vx - s*0.5*vy, ay - s*vy + s*0.5*vx);
+    ctx.closePath(); ctx.fillStyle=color; ctx.fill();
+    ctx.restore();
+  }
+
+  function draw(){
+    var a=+angEl.value, deg=a*dir, F=FIGS[fig];
+    angV.textContent=a+'°';
+    ctx.clearRect(0,0,W,H);
+    // крестовина через центр
+    ctx.save(); ctx.setLineDash([2,6]); ctx.lineWidth=1; ctx.strokeStyle=css('--line');
+    ctx.beginPath(); ctx.moveTo(0,SY(0)); ctx.lineTo(W,SY(0)); ctx.moveTo(SX(0),0); ctx.lineTo(SX(0),H); ctx.stroke(); ctx.restore();
+
+    var pre=F.pts, img=pre.map(function(p){ return rot(p,deg); });
+    pre.forEach(function(p){ circleThrough(p, css('--line')); });
+
+    // радиусы к прообразу и образу
+    pre.forEach(function(p,i){
+      poly([[0,0],p], false, css('--pre-soft'), null, [], 2);
+      poly([[0,0],img[i]], false, css('--img-soft'), null, [], 2);
+    });
+    // дуги движения
+    pre.forEach(function(p){ arcPath(p, deg, 'rgba(139,63,181,0.45)'); });
+
+    // фигуры
+    poly(pre, F.closed, css('--pre'), 'rgba(226,124,44,0.10)', [6,4], 2);
+    poly(img, F.closed, css('--img'), 'rgba(21,154,138,0.16)', [], 2.6);
+
+    pre.forEach(function(p,i){ dot(p, css('--pre')); label(p, F.names[i], css('--pre')); });
+    img.forEach(function(p,i){ dot(p, css('--img')); label(p, F.names[i]+'₁', css('--img')); });
+
+    dot([0,0], css('--cen'), 5.5);
+    ctx.fillStyle=css('--cen'); ctx.font='700 14px ui-monospace,Menlo,monospace';
+    ctx.textAlign='left'; ctx.textBaseline='top';
+    ctx.fillText('O', SX(0)+8, SY(0)+6);
+
+    // подпись
+    var dname = dir>0 ? 'против часовой стрелки' : 'по часовой стрелке';
+    var d0=Math.hypot(pre[0][0],pre[0][1]), d1=Math.hypot(img[0][0],img[0][1]);
+    var txt='Поворот вокруг <b>O</b> на <b>'+a+'°</b> '+dname+'. ';
+    txt+='O'+F.names[0]+' = '+d0.toFixed(2).replace(/\.?0+$/,'')+', O'+F.names[0]+'₁ = '+d1.toFixed(2).replace(/\.?0+$/,'')+' — расстояние до центра не изменилось.';
+    if(a===180) txt+=' <span class="hit">Это центральная симметрия относительно O.</span>';
+    if(a===0||a===360) txt+=' <span class="hit">Образ совпал с прообразом: всё на месте.</span>';
+    if(fig==='sq' && a%90===0 && a!==0 && a!==360) txt+=' <span class="hit">Квадрат совместился сам с собой.</span>';
+    out.innerHTML=txt;
+  }
+
+  angEl.addEventListener('input',draw);
+  Array.prototype.forEach.call(document.querySelectorAll('.chip[data-fig]'),function(b){
+    b.addEventListener('click',function(){
+      fig=b.getAttribute('data-fig');
+      Array.prototype.forEach.call(document.querySelectorAll('.chip[data-fig]'),function(x){ x.setAttribute('aria-pressed', x===b?'true':'false'); });
+      draw();
+    });
+  });
+  Array.prototype.forEach.call(document.querySelectorAll('.chip[data-dir]'),function(b){
+    b.addEventListener('click',function(){
+      dir=+b.getAttribute('data-dir');
+      Array.prototype.forEach.call(document.querySelectorAll('.chip[data-dir]'),function(x){ x.setAttribute('aria-pressed', x===b?'true':'false'); });
+      draw();
+    });
+  });
+  window.addEventListener('resize',function(){ resize(); draw(); });
+  resize(); draw();
+})();
+</script>
+
+<script>
+(function(){
+  var taskEl=document.getElementById('trTask'), ansEl=document.getElementById('trAns'), resEl=document.getElementById('trResult');
+  if(!taskEl) return;
+  var M='−';                 // настоящий минус U+2212
+  var DEG='°', SUB1='₁';
+  var cur=null;
+  function ri(a,b){ return Math.floor(Math.random()*(b-a+1))+a; }
+  function pick(arr){ return arr[ri(0,arr.length-1)]; }
+
+  var DIRS=['против часовой стрелки','по часовой стрелке'];
+
+  function generate(){
+    var t=ri(1,7);
+    if(t===1){                                    // сохранение расстояния до центра
+      var d=ri(2,12), a=pick([30,45,60,70,110,135,150,200,250]);
+      cur={t:1,d:d,a:a,dir:pick(DIRS),ans:d};
+      taskEl.innerHTML='Точку M повернули вокруг центра O на <b>'+a+DEG+'</b> '+cur.dir+'. Известно, что OM = <b>'+d+'</b> см. Чему равно OM'+SUB1+'?';
+    } else if(t===2){                             // сохранение длины отрезка
+      var d2=ri(3,15), a2=pick([25,40,90,120,180,270]);
+      cur={t:2,d:d2,a:a2,ans:d2};
+      taskEl.innerHTML='Отрезок MN длиной <b>'+d2+'</b> см повернули вокруг точки O на <b>'+a2+DEG+'</b>. Чему равна длина образа M'+SUB1+'N'+SUB1+'?';
+    } else if(t===3){                             // угол самосовмещения правильного n-угольника
+      var n=pick([3,4,5,6,8,9,10,12]);
+      cur={t:3,n:n,ans:360/n};
+      taskEl.innerHTML='На какой наименьший положительный угол надо повернуть правильный <b>'+n+'</b>-угольник вокруг его центра, чтобы он совместился сам с собой? Ответ в градусах.';
+    } else if(t===4){                             // композиция двух поворотов в одну сторону
+      var pr=pick([[30,45],[40,50],[45,45],[60,30],[70,110],[90,90],[90,45],[120,60],[120,150],[150,90],[180,120],[120,240],[180,180],[270,90]]);
+      var a4=pr[0], b4=pr[1];
+      var s=a4+b4, d4=pick(DIRS);
+      cur={t:4,a:a4,b:b4,dir:d4,sum:s,ans:(s===360?0:s)};
+      taskEl.innerHTML='Точку повернули вокруг O на <b>'+a4+DEG+'</b> '+d4+', а затем ещё на <b>'+b4+DEG+'</b> '+d4+' вокруг того же центра. Одним поворотом в ту же сторону на какой угол это можно заменить?';
+    } else if(t===5){                             // 180° = центральная симметрия
+      var d5=ri(2,10);
+      cur={t:5,d:d5,ans:180};
+      taskEl.innerHTML='Поворот вокруг точки O на какой угол — это в точности <b>центральная симметрия</b> относительно O? Ответ в градусах.';
+    } else if(t===6){                             // эквивалент в другом направлении
+      var a6=pick([20,30,50,70,80,100,110,130,160,200,250,290]);
+      cur={t:6,a:a6,ans:360-a6};
+      taskEl.innerHTML='Фигуру повернули вокруг O на <b>'+a6+DEG+'</b> против часовой стрелки. На какой угол <b>по часовой стрелке</b> надо повернуть исходную фигуру, чтобы получить тот же образ?';
+    } else {                                      // краевой случай: 360° / 0°
+      var d7=ri(3,9);
+      cur={t:7,d:d7,ans:0};
+      taskEl.innerHTML='Точку M, для которой OM = <b>'+d7+'</b> см, повернули вокруг O на <b>360'+DEG+'</b>. На сколько сантиметров сместилась точка?';
+    }
+    resEl.innerHTML=''; ansEl.value='';
+  }
+
+  function solHTML(){
+    var q=cur, h='<div class="sol">';
+    if(q.t===1){
+      h+='Поворот — это движение, оно сохраняет расстояния.<br>';
+      h+='По определению OM'+SUB1+' = OM независимо от угла.<br>';
+      h+='OM'+SUB1+' = <b>'+q.d+'</b> см. Угол '+q.a+DEG+' на длину не влияет.';
+    } else if(q.t===2){
+      h+='Поворот сохраняет расстояния между точками, значит образ отрезка равен самому отрезку.<br>';
+      h+='M'+SUB1+'N'+SUB1+' = MN = <b>'+q.d+'</b> см.';
+    } else if(q.t===3){
+      h+='У правильного '+q.n+'-угольника '+q.n+' одинаковых вершин, равномерно расставленных по окружности.<br>';
+      h+='Полный оборот 360'+DEG+' делим на количество вершин: 360'+DEG+' : '+q.n+' = <b>'+(360/q.n)+DEG+'</b>.<br>';
+      h+='При таком повороте каждая вершина встаёт на место соседней — фигура ложится сама на себя.';
+    } else if(q.t===4){
+      h+='Оба поворота вокруг одного центра и в одну сторону, значит углы складываются:<br>';
+      h+=q.a+DEG+' + '+q.b+DEG+' = '+q.sum+DEG+'.<br>';
+      if(q.sum===360) h+='Но 360'+DEG+' — это полный оборот, всё возвращается на место: тождественное движение, угол <b>0'+DEG+'</b> (или 360'+DEG+').';
+      else if(q.sum===180) h+='Ответ: <b>180'+DEG+'</b> — а это в точности центральная симметрия относительно O.';
+      else h+='Ответ: <b>'+q.sum+DEG+'</b> в ту же сторону.';
+    } else if(q.t===5){
+      h+='Центральная симметрия относительно O переводит каждую точку M в точку M'+SUB1+' так, что O — середина MM'+SUB1+'.<br>';
+      h+='Ровно это даёт поворот на <b>180'+DEG+'</b>: OM'+SUB1+' = OM, а луч OM'+SUB1+' направлен противоположно OM.<br>';
+      h+='При 180'+DEG+' направление поворота роли не играет.';
+    } else if(q.t===6){
+      h+='Полный оборот — 360'+DEG+', после него фигура возвращается на место.<br>';
+      h+='Значит недостающая часть оборота в обратную сторону даёт тот же образ:<br>';
+      h+='360'+DEG+' '+M+' '+q.a+DEG+' = <b>'+(360-q.a)+DEG+'</b> по часовой стрелке.';
+    } else {
+      h+='Поворот на 360'+DEG+' — это полный оборот: каждая точка возвращается точно туда, где была.<br>';
+      h+='Это тождественное движение, смещение <b>0</b> см (OM'+SUB1+' = OM = '+q.d+' см, и это та же самая точка).';
+    }
+    return h+'</div>';
+  }
+
+  function parse(raw){
+    var s=raw.replace(/[°−]/g,function(c){ return c==='−'?'-':''; })
+             .replace(/см|градусов|град|\s/gi,'').replace(',','.');
+    return parseFloat(s);
+  }
+  function check(){
+    var raw=ansEl.value.trim();
+    if(raw===''){ resEl.innerHTML='<span class="bad">Введи ответ или нажми «Решение».</span>'; return; }
+    var got=parse(raw), okv=false;
+    if(!isNaN(got)){
+      okv = Math.abs(got-cur.ans)<0.01;
+      if(cur.t===4 && cur.sum===360 && Math.abs(got-360)<0.01) okv=true;   // 0° и 360° — одно и то же
+      if(cur.t===7 && Math.abs(got-cur.d)<0.01) okv=false;                 // типичная путаница: назвал OM
+    }
+    if(okv) resEl.innerHTML='<span class="ok">✓ Верно!</span>'+solHTML();
+    else resEl.innerHTML='<span class="bad">✗ Пока не то — посмотри решение.</span>'+solHTML();
+  }
+
+  document.getElementById('trNew').addEventListener('click',function(){ generate(); ansEl.focus(); });
+  document.getElementById('trCheck').addEventListener('click',check);
+  document.getElementById('trShow').addEventListener('click',function(){ resEl.innerHTML=solHTML(); });
+  ansEl.addEventListener('keydown',function(e){ if(e.key==='Enter') check(); });
+
+  // стартовая задача — совпадает с тем, что показано в разметке (без автофокуса)
+  cur={t:1,d:3,a:70,dir:'против часовой стрелки',ans:3};
+})();
+</script>
+<!--LESSON-NAV-BOT--><nav class="lnav lnav-bot"><a class="prev" href="./geo9-parallelnyj-perenos.html"><span class="dir">← Предыдущая</span><span class="ttl">Параллельный перенос</span></a><a class="to-cat" href="./catalog.html">📚 <span>Все темы</span></a><a class="next" href="./geo9-dvizhenie-zadachi.html"><span class="dir">Следующая →</span><span class="ttl">Применение движений к решению задач</span></a></nav><!--/LESSON-NAV-BOT-->
