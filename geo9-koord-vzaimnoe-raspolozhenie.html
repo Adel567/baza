@@ -1,0 +1,1003 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Взаимное расположение прямых и окружностей — урок, геометрия 9 класс</title>
+<style>
+  :root{
+    --paper:#F6F7F9;
+    --card:#FFFFFF;
+    --ink:#1B2333;
+    --muted:#5A6478;
+    --line:#E2E5EC;
+    --accent:#3B4FD0;
+    --accent-soft:#EAEDFB;
+    --pos:#1E8E5A;   /* D > 0 — секущая */
+    --pos-bg:#E7F4EC;
+    --zero:#B9791A;  /* D = 0 — касательная */
+    --zero-bg:#FBF1DC;
+    --neg:#C0455B;   /* D < 0 — нет точек / ошибка */
+    --neg-bg:#F9E9EC;
+  }
+  *{box-sizing:border-box}
+  body{margin:0}
+  .wrap{
+    max-width:760px;
+    margin:0 auto;
+    padding:clamp(1.4rem,4vw,3rem) clamp(1.1rem,4vw,2rem) 4rem;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    font-size:17px;
+    line-height:1.62;
+    -webkit-font-smoothing:antialiased;
+  }
+  .eyebrow{
+    font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--accent);font-weight:600;margin:0 0 .5rem;
+  }
+  h1{
+    font-family:Georgia,"Times New Roman",serif;
+    font-size:clamp(1.85rem,6.4vw,2.7rem);
+    line-height:1.06;margin:0;font-weight:700;letter-spacing:-.01em;
+    text-wrap:balance;
+  }
+  .lede{
+    font-size:1.08rem;color:var(--muted);margin:.7rem 0 0;max-width:60ch;
+    text-wrap:pretty;
+  }
+  h2{
+    font-family:Georgia,serif;font-size:1.32rem;font-weight:700;
+    margin:0 0 .1rem;letter-spacing:-.005em;
+  }
+  section{margin-top:2.6rem}
+  .kicker{
+    font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--muted);font-weight:600;margin:0 0 .8rem;
+    display:flex;align-items:center;gap:.6rem;
+  }
+  .kicker::before{
+    content:"";width:1.4rem;height:2px;background:var(--accent);border-radius:2px;
+  }
+  p{margin:.65rem 0}
+  strong{font-weight:650}
+  .math{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-weight:600}
+  sup{font-size:.72em}
+  a{color:var(--accent)}
+  ul.plain{margin:.5rem 0;padding-left:1.2rem}
+  ul.plain li{margin:.28rem 0}
+
+  /* Главная формула */
+  .hero-formula{
+    margin-top:2.2rem;
+    background:var(--ink);color:#fff;border-radius:14px;
+    padding:1.6rem 1.1rem;text-align:center;
+  }
+  .hero-formula .lbl{
+    font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;
+    color:#9aa6c9;margin:0 0 .7rem;
+  }
+  .hero-formula .eq{
+    font-family:ui-monospace,"SF Mono",Menlo,monospace;
+    font-size:clamp(1.05rem,4.4vw,1.6rem);font-weight:700;letter-spacing:.01em;
+    line-height:1.7;
+  }
+  .hero-formula .eq b{color:#8ea0ff;font-weight:700}
+  .hero-formula .note{font-size:.86rem;color:#9aa6c9;margin:.8rem 0 0}
+
+  /* Пререквизит */
+  .recall{
+    background:var(--accent-soft);border-radius:12px;padding:1rem 1.15rem;
+    font-size:.96rem;
+  }
+  .recall p{margin:.35rem 0}
+  .recall .m{font-family:ui-monospace,Menlo,monospace;font-weight:700}
+
+  /* Три случая */
+  .cases{display:grid;gap:.85rem;margin-top:.4rem}
+  @media(min-width:620px){.cases{grid-template-columns:repeat(3,1fr)}}
+  .case{
+    border-radius:12px;padding:1.05rem 1.1rem;border:1px solid var(--line);
+    background:var(--card);display:flex;flex-direction:column;gap:.35rem;
+  }
+  .case .sign{font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.05rem}
+  .case .count{font-weight:650;font-size:1rem}
+  .case .desc{font-size:.9rem;color:var(--muted)}
+  .case.pos{border-top:4px solid var(--pos);background:var(--pos-bg)}
+  .case.pos .sign{color:var(--pos)}
+  .case.zero{border-top:4px solid var(--zero);background:var(--zero-bg)}
+  .case.zero .sign{color:var(--zero)}
+  .case.neg{border-top:4px solid var(--neg);background:var(--neg-bg)}
+  .case.neg .sign{color:var(--neg)}
+
+  /* Разбор */
+  .worked{
+    background:var(--card);border:1px solid var(--line);border-radius:12px;
+    padding:1.2rem 1.15rem;
+  }
+  .worked + .worked{margin-top:1rem}
+  .worked .task{
+    font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1rem;
+    margin:0 0 1rem;padding-bottom:.8rem;border-bottom:1px solid var(--line);
+    line-height:1.6;
+  }
+  ol.steps{margin:0;padding:0;list-style:none;counter-reset:s;display:flex;flex-direction:column;gap:.7rem}
+  ol.steps li{position:relative;padding-left:2.1rem;counter-increment:s}
+  ol.steps li::before{
+    content:counter(s);position:absolute;left:0;top:.05rem;
+    width:1.5rem;height:1.5rem;border-radius:50%;
+    background:var(--accent-soft);color:var(--accent);
+    font-size:.82rem;font-weight:700;display:flex;align-items:center;justify-content:center;
+  }
+  ol.steps .m{font-family:ui-monospace,Menlo,monospace;font-weight:600;color:var(--ink)}
+  ol.steps .why{display:block;font-size:.88rem;color:var(--muted);margin-top:.15rem}
+  .verdict{
+    margin-top:1rem;padding:.7rem 1rem;background:var(--pos-bg);
+    border-radius:9px;font-weight:600;color:var(--pos);font-size:.98rem;
+    font-family:ui-monospace,Menlo,monospace;
+  }
+  .verdict.zero{background:var(--zero-bg);color:var(--zero)}
+  .verdict.neg{background:var(--neg-bg);color:var(--neg)}
+
+  /* Практика */
+  .drill{display:flex;flex-direction:column;gap:.7rem}
+  details{
+    background:var(--card);border:1px solid var(--line);border-radius:10px;
+    padding:.85rem 1.05rem;
+  }
+  details[open]{border-color:var(--accent)}
+  summary{
+    cursor:pointer;font-weight:600;list-style:none;
+    display:flex;justify-content:space-between;align-items:flex-start;gap:.8rem;flex-wrap:wrap;
+  }
+  summary::-webkit-details-marker{display:none}
+  summary:focus-visible{outline:3px solid var(--accent);outline-offset:3px;border-radius:6px}
+  summary .q{font-family:ui-monospace,Menlo,monospace;flex:1;min-width:12ch}
+  summary .tag{
+    font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);
+    border:1px solid var(--line);border-radius:20px;padding:.1rem .55rem;white-space:nowrap;
+  }
+  .ans{margin-top:.7rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.96rem;color:var(--muted)}
+  .ans .m{font-family:ui-monospace,Menlo,monospace;color:var(--ink);font-weight:600}
+
+  /* Ошибки */
+  ul.pitfalls{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:.6rem}
+  ul.pitfalls li{padding-left:1.5rem;position:relative;font-size:.98rem}
+  ul.pitfalls li::before{
+    content:"×";position:absolute;left:0;top:-.05rem;color:var(--neg);font-weight:700;font-size:1.1rem;
+  }
+  ul.pitfalls b{color:var(--ink)}
+
+  .next{background:var(--accent);color:#fff;border-radius:12px;padding:1.2rem 1.2rem}
+  .next h2{color:#fff}
+  .next .eq{
+    font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:clamp(1rem,4.4vw,1.25rem);
+    margin:.6rem 0 .3rem;
+  }
+  .next p{color:#dfe4fb;font-size:.96rem;margin:.4rem 0 0}
+  .next a{color:#fff}
+  .foot{margin-top:2.4rem;font-size:.82rem;color:var(--muted);text-align:center}
+
+  .tbl-wrap{overflow-x:auto;margin-top:.6rem}
+  table{border-collapse:collapse;font-size:.95rem;min-width:100%}
+  th,td{border:1px solid var(--line);padding:.5rem .7rem;text-align:left;background:var(--card)}
+  th{background:var(--accent-soft);font-size:.8rem;text-transform:uppercase;letter-spacing:.06em;color:var(--accent)}
+  td.m{font-family:ui-monospace,Menlo,monospace;font-weight:600}
+  tr.rpos td:first-child{border-left:4px solid var(--pos)}
+  tr.rzero td:first-child{border-left:4px solid var(--zero)}
+  tr.rneg td:first-child{border-left:4px solid var(--neg)}
+
+  .oge-tip{display:flex;gap:.8rem;align-items:flex-start;background:#FFF8E7;border:1px solid #F0D98A;border-left:4px solid #E0A315;border-radius:10px;padding:.85rem 1.05rem;margin:1.5rem 0}
+  .oge-tip .b{font-size:.72rem;font-weight:800;letter-spacing:.03em;color:#8A6A15;white-space:nowrap;text-transform:uppercase;padding-top:.15rem}
+  .oge-tip .x{font-size:.95rem;line-height:1.5}
+
+  @media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+<!--LESSON-NAV-TOP--><style>.lnav{--lnav-accent:#3D5AF1}.lnav a{text-decoration:none;font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif}.lnav-top{max-width:820px;margin:0 auto;padding:.75rem clamp(1rem,4vw,1.5rem) .1rem}.lnav-top a{display:inline-flex;align-items:center;gap:.35rem;color:var(--lnav-accent);font-weight:600;font-size:.9rem}.lnav-top a:hover{text-decoration:underline}.lnav-bot{max-width:820px;margin:2.6rem auto 3rem;padding:1.1rem clamp(1rem,4vw,1.5rem) 0;border-top:1px solid #E4E8EF;display:flex;align-items:stretch;gap:.55rem}.lnav-bot a{min-width:0;display:flex;flex-direction:column;justify-content:center;gap:.15rem;border:1px solid #E4E8EF;border-radius:12px;padding:.65rem .85rem;color:#182233;background:#fff;transition:border-color .1s,transform .08s}.lnav-bot a:hover{border-color:var(--lnav-accent);transform:translateY(-1px)}.lnav-bot .prev,.lnav-bot .next{flex:1 1 0}.lnav-bot .next{text-align:right}.lnav-bot .dir{font-size:.72rem;color:#8A93A6;font-weight:600}.lnav-bot .ttl{font-size:.9rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.lnav-bot .to-cat{flex:0 0 auto;flex-direction:row;align-items:center;justify-content:center;color:var(--lnav-accent);font-weight:700;font-size:.85rem;white-space:nowrap}@media(max-width:420px){.lnav-bot .to-cat span{display:none}.lnav-bot .to-cat{padding:.65rem .7rem}}</style><nav class="lnav lnav-top"><a href="./catalog.html">← Все темы</a></nav><!--/LESSON-NAV-TOP-->
+<div class="wrap">
+
+  <header>
+    <p class="eyebrow">Геометрия · 9 класс · метод координат</p>
+    <h1>Взаимное расположение прямых и окружностей</h1>
+    <p class="lede">Пересекутся или нет? Чертёж можно не рисовать: достаточно решить систему — и <em>число решений</em> сразу скажет, сколько у линий общих точек.</p>
+  </header>
+
+  <div class="hero-formula">
+    <p class="lbl">Главное соответствие</p>
+    <div class="eq">
+      <b>2</b> решения системы → <b>2</b> точки<br>
+      <b>1</b> решение → <b>1</b> точка (касание)<br>
+      <b>0</b> решений → общих точек <b>нет</b>
+    </div>
+    <p class="note">Геометрический вопрос переведён в алгебраический</p>
+  </div>
+
+  <section>
+    <p class="kicker">Зачем это нужно</p>
+    <h2>Ответить «пересекутся?» одним вычислением</h2>
+    <p>Когда у тебя есть уравнение окружности и уравнение прямой, ты можешь <strong>не рисовать чертёж</strong>, а точно сказать: пересекаются они или нет и в скольких точках. Это нужно везде, где «геометрия превращается в алгебру»:</p>
+    <ul class="plain">
+      <li>радар видит цель: прямая — луч, окружность — зона;</li>
+      <li>мяч катится по линии и задевает (или не задевает) круглую лунку;</li>
+      <li>инженер проверяет, заденет ли траектория препятствие.</li>
+    </ul>
+    <p>В самой математике это база для аналитической геометрии (10–11 класс) и для задач ЕГЭ.</p>
+    <p>Типичное житейское заблуждение: <em>«если прямая идёт в сторону круга, она его обязательно пересечёт»</em>. Нет. Прямая может пройти <strong>мимо</strong> (далеко), <strong>коснуться</strong> (касательная) или пройти <strong>насквозь</strong> (две точки). Какой именно случай — решается одним вычислением.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Что вспомнить с прошлых шагов</p>
+    <h2>Два уравнения, без которых не поехать</h2>
+    <div class="recall">
+      <p>Окружность с центром <span class="m">(x₀; y₀)</span> и радиусом <span class="m">R</span>:</p>
+      <p class="m" style="font-size:1.05rem">(x − x₀)² + (y − y₀)² = R²</p>
+      <p>Прямая — либо <span class="m">y = kx + b</span>, либо общего вида <span class="m">Ax + By + C = 0</span>.</p>
+      <p style="margin-top:.7rem">Если что-то забылось — вернись к темам <a href="./geo9-koord-uravnenie-okruzhnosti.html">«Уравнение окружности»</a> и <a href="./geo9-koord-uravnenie-pryamoj.html">«Уравнение прямой»</a>. Вся сегодняшняя тема стоит ровно на них.</p>
+    </div>
+    <p>И ещё одна вещь из алгебры, которая сегодня сработает главным инструментом: <strong>дискриминант</strong> квадратного уравнения <span class="math">Ax² + Bx + C = 0</span>, то есть <span class="math">D = B² − 4AC</span>. Его знак говорит, сколько у уравнения корней.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Суть · главная идея</p>
+    <h2>Точка пересечения живёт в обоих уравнениях сразу</h2>
+    <p>Что вообще такое «точка пересечения двух линий»? Это точка, которая лежит и на первой линии, и на второй. А «лежит на линии» на языке координат означает «её координаты обращают уравнение линии в верное равенство».</p>
+    <p>Значит: <strong>точка пересечения — это точка, координаты которой удовлетворяют ОБОИМ уравнениям одновременно.</strong> А искать пару чисел, подходящую сразу в два уравнения, — это и есть решать <strong>систему</strong>.</p>
+    <p>Дальше работает простое соответствие:</p>
+    <ul class="plain">
+      <li>система имеет <strong>2 решения</strong> → линии пересекаются в <strong>2 точках</strong>;</li>
+      <li>система имеет <strong>1 решение</strong> → <strong>1 точка</strong> (для прямой это касание, прямая — касательная);</li>
+      <li>система <strong>не имеет решений</strong> → линии <strong>не пересекаются</strong>, 0 общих точек.</li>
+    </ul>
+    <p>То есть «число точек пересечения» = «число решений системы». Мы перевели геометрический вопрос в алгебраический — а решать уравнения ты уже умеешь.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Ядро темы · правило</p>
+    <h2>Прямая и окружность: подставил — посчитал D</h2>
+    <p>Подставляем выражение для прямой в уравнение окружности. Получается <strong>квадратное уравнение</strong> относительно одной переменной. Дальше всё решает знак дискриминанта:</p>
+    <div class="cases">
+      <div class="case pos">
+        <div class="sign">D &gt; 0</div>
+        <div class="count">2 точки</div>
+        <div class="desc">Два корня. Прямая <b>секущая</b> — проходит насквозь.</div>
+      </div>
+      <div class="case zero">
+        <div class="sign">D = 0</div>
+        <div class="count">1 точка</div>
+        <div class="desc">Один корень. Прямая <b>касательная</b> — задевает в одной точке.</div>
+      </div>
+      <div class="case neg">
+        <div class="sign">D &lt; 0</div>
+        <div class="count">0 точек</div>
+        <div class="desc">Корней нет. Прямая <b>не пересекает</b> окружность — проходит мимо.</div>
+      </div>
+    </div>
+    <p style="margin-top:1.1rem">Есть и второй способ — <strong>через расстояние от центра до прямой</strong> <span class="math">d</span>. Сравниваем его с радиусом:</p>
+    <ul class="plain">
+      <li><span class="math">d &lt; R</span> → центр ближе к прямой, чем радиус → 2 точки;</li>
+      <li><span class="math">d = R</span> → прямая дотягивается ровно до окружности → касание;</li>
+      <li><span class="math">d &gt; R</span> → прямая дальше, чем радиус → общих точек нет.</li>
+    </ul>
+    <p style="font-size:.94rem;color:var(--muted)">Этот способ удобен, когда формула расстояния от точки до прямой уже изучена. Если нет — надёжнее метод подстановки: он всегда работает и ничего сверх дискриминанта не требует.</p>
+
+    <h2 style="margin-top:2rem">Две окружности: сначала вычесть</h2>
+    <p>Для двух окружностей решаем систему из двух их уравнений. Есть удобный приём: <strong>вычесть одно уравнение из другого</strong>. Тогда <span class="math">x²</span> и <span class="math">y²</span> сократятся (они одинаковые в обоих уравнениях!) и останется <strong>уравнение прямой</strong> — той самой прямой, на которой лежат общие точки. Дальше задача сводится к уже разобранной: «прямая и окружность».</p>
+
+    <div class="tbl-wrap">
+      <table>
+        <tr><th>Обозначение</th><th>Что это</th></tr>
+        <tr><td class="m">x₀, y₀</td><td>координаты центра окружности</td></tr>
+        <tr><td class="m">R</td><td>радиус, R &gt; 0</td></tr>
+        <tr><td class="m">D</td><td>дискриминант получившегося квадратного уравнения</td></tr>
+        <tr><td class="m">d</td><td>расстояние от центра окружности до прямой</td></tr>
+      </table>
+    </div>
+    <p style="font-size:.94rem;color:var(--muted)">Единиц измерения здесь нет — это чистая координатная геометрия, всё меряется клетками.</p>
+
+    <div class="oge-tip"><div class="b">🎯 В ОГЭ</div><div class="x"><b>Метод координат, вторая часть.</b> Геометрическую задачу разрешено решать вычислениями: вводишь координаты, пишешь уравнения, решаешь систему. Число решений — это и есть ответ про число общих точек.</div></div>
+  </section>
+
+  <section>
+    <p class="kicker">Разбираем вместе · думаю вслух</p>
+    <h2>Эталонный пример</h2>
+    <div class="worked">
+      <p class="task">Окружность x² + y² = 25, прямая y = x + 1. Сколько общих точек?</p>
+      <ol class="steps">
+        <li>Подставляю <span class="m">y = x + 1</span> в уравнение окружности: <span class="m">x² + (x + 1)² = 25</span>.
+          <span class="why">Почему так можно: точка пересечения лежит на обеих линиях, значит её координаты подходят в оба уравнения. Раз y на прямой равен x + 1, именно это и ставлю вместо y.</span></li>
+        <li>Раскрываю скобку: <span class="m">x² + x² + 2x + 1 = 25</span>.
+          <span class="why">Почему: (x + 1)² = x² + 2x + 1 — квадрат суммы, средний член 2x терять нельзя.</span></li>
+        <li>Привожу к квадратному уравнению: <span class="m">2x² + 2x − 24 = 0</span>, делю на 2: <span class="m">x² + x − 12 = 0</span>.
+          <span class="why">Почему: переношу 25 влево (при переносе меняю знак), складываю подобные. Деление на 2 корней не меняет, зато считать проще.</span></li>
+        <li>Считаю дискриминант: <span class="m">D = 1² − 4·1·(−12) = 1 + 48 = 49 &gt; 0</span> → два корня.
+          <span class="why">Почему именно D: его знак и есть ответ на вопрос задачи — два корня означают две точки.</span></li>
+        <li>Найду и сами точки: <span class="m">x = (−1 ± 7)/2</span> → <span class="m">x₁ = 3</span>, <span class="m">x₂ = −4</span>. Тогда <span class="m">y₁ = 3 + 1 = 4</span>, <span class="m">y₂ = −4 + 1 = −3</span>.
+          <span class="why">Почему подставляю в уравнение прямой: оно короче. Проверка: 3² + 4² = 9 + 16 = 25 ✓ и (−4)² + (−3)² = 16 + 9 = 25 ✓ — обе точки на окружности.</span></li>
+      </ol>
+      <div class="verdict">прямая секущая, 2 точки: (3; 4) и (−4; −3)</div>
+    </div>
+
+    <div class="worked">
+      <p class="task">Две окружности: x² + y² = 25 и (x − 6)² + y² = 25. Сколько общих точек?</p>
+      <ol class="steps">
+        <li>Вычитаю из первого уравнения второе: <span class="m">x² + y² − ((x − 6)² + y²) = 25 − 25</span>.
+          <span class="why">Почему вычитаю: у обоих уравнений есть x² и y², при вычитании они сократятся — и вместо двух «кривых» уравнений останется простое линейное.</span></li>
+        <li>Раскрываю и упрощаю: <span class="m">x² − (x² − 12x + 36) = 0</span> → <span class="m">12x − 36 = 0</span> → <span class="m">x = 3</span>.
+          <span class="why">Вот она, обещанная прямая: x = 3. Все общие точки лежат на ней.</span></li>
+        <li>Подставляю <span class="m">x = 3</span> в первое уравнение: <span class="m">9 + y² = 25</span> → <span class="m">y² = 16</span>.
+          <span class="why">Почему в первое: оно проще. Можно и во второе — результат будет тот же.</span></li>
+        <li>Извлекаю корень: <span class="m">y = 4</span> или <span class="m">y = −4</span>.
+          <span class="why">Обязательно ДВА знака! Квадрат 16 дают и 4, и −4. Потерять минус здесь — потерять целую точку.</span></li>
+      </ol>
+      <div class="verdict">2 общие точки: (3; 4) и (3; −4)</div>
+      <p style="font-size:.92rem;color:var(--muted);margin:.8rem 0 0">Проверка: (3 − 6)² + (−4)² = 9 + 16 = 25 ✓ — точка лежит и на второй окружности тоже.</p>
+    </div>
+
+    <div class="worked">
+      <p class="task">Допиши шаг. Окружность x² + y² = 8, прямая y = −x + 4.</p>
+      <p style="margin:0 0 .6rem">Начало уже сделано:</p>
+      <p class="math" style="margin:0 0 .6rem">x² + (−x + 4)² = 8 → x² + x² − 8x + 16 = 8 → 2x² − 8x + 8 = 0 → x² − 4x + 4 = 0</p>
+      <p class="math" style="margin:0 0 .8rem">D = (−4)² − 4·1·4 = 16 − 16 = ____</p>
+      <details>
+        <summary><span class="q">Чему равен D, сколько корней, сколько точек, как называется прямая?</span><span class="tag">допиши сам</span></summary>
+        <div class="ans"><span class="m">D = 0</span> → ровно <strong>один</strong> корень → <strong>одна</strong> общая точка → прямая <strong>касательная</strong>.<br>
+        Сама точка: <span class="m">x² − 4x + 4 = 0</span> даёт <span class="m">x = 2</span>, тогда <span class="m">y = −2 + 4 = 2</span> — касание в точке <span class="m">(2; 2)</span>. Проверка: <span class="m">2² + 2² = 8</span> ✓</div>
+      </details>
+    </div>
+
+    <div class="worked">
+      <p class="task">Попробуй сам: окружность x² + y² = 4, прямая y = x + 5. Определи число общих точек.</p>
+      <details>
+        <summary><span class="q">Показать решение</span><span class="tag">проверь себя</span></summary>
+        <div class="ans">Подстановка: <span class="m">x² + (x + 5)² = 4</span> → <span class="m">x² + x² + 10x + 25 = 4</span> → <span class="m">2x² + 10x + 21 = 0</span>.<br>
+        <span class="m">D = 10² − 4·2·21 = 100 − 168 = −68 &lt; 0</span> → корней нет → <strong>0 точек</strong>, прямая не пересекает окружность.<br>
+        Смысл: окружность радиуса 2 у начала координат, а прямая проходит сильно выше — мимо.</div>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Покрути сам · интерактив</p>
+    <h2>Предскажи → проверь → объясни</h2>
+    <p>Ниже окружность <span class="math">x² + y² = R²</span> и прямая <span class="math">y = kx + b</span>. Двигай ползунки и <strong>сначала угадай по картинке</strong>, сколько будет точек пересечения, — а потом посмотри, что скажет алгебра. Слева от вердикта видно и <span class="math">d</span> (расстояние от центра до прямой, отмечено пунктиром), и <span class="math">D</span> — два способа, один ответ.</p>
+    <div class="sim">
+      <canvas id="simCanvas" width="560" height="560" aria-label="Окружность и прямая на координатной плоскости"></canvas>
+      <div class="sliders">
+        <label>R <span id="vr" class="sval">5</span><input id="sr" type="range" min="2" max="8" step="1" value="5" aria-label="радиус R"></label>
+        <label>k <span id="vk" class="sval">1</span><input id="sk" type="range" min="-2" max="2" step="1" value="1" aria-label="угловой коэффициент k"></label>
+        <label>b <span id="vb" class="sval">1</span><input id="sb" type="range" min="-14" max="14" step="0.5" value="1" aria-label="свободный член b"></label>
+      </div>
+      <div class="sim-btns">
+        <button id="snapBtn" type="button">Сделать прямую касательной</button>
+      </div>
+      <div id="simVerdict" class="sim-verdict">—</div>
+      <div id="simWork" class="sim-work"></div>
+    </div>
+    <p style="font-size:.9rem;color:var(--muted)">Поставь <span class="math">k = 0</span> — прямая станет горизонтальной, <span class="math">y = b</span>. Тогда касание наступает ровно при <span class="math">b = R</span> и <span class="math">b = −R</span>: прямая задевает окружность сверху или снизу.</p>
+
+    <h2 style="margin-top:2rem">Два представления рядом</h2>
+    <p>Одну и ту же ситуацию можно читать картинкой и можно читать формулой. Вот таблица соответствия — держи её в голове:</p>
+    <div class="tbl-wrap">
+      <table>
+        <tr><th>Картинка</th><th>D</th><th>d и R</th><th>Число точек</th></tr>
+        <tr class="rpos"><td>секущая</td><td class="m">D &gt; 0</td><td class="m">d &lt; R</td><td class="m">2</td></tr>
+        <tr class="rzero"><td>касательная</td><td class="m">D = 0</td><td class="m">d = R</td><td class="m">1</td></tr>
+        <tr class="rneg"><td>не пересекает</td><td class="m">D &lt; 0</td><td class="m">d &gt; R</td><td class="m">0</td></tr>
+      </table>
+    </div>
+    <p style="margin-top:.9rem">Проверь себя вопросом: <em>«по одному только знаку D, не строя чертёж, как расположена прямая?»</em> Если отвечаешь мгновенно — тема взята.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Тренажёр · бесконечная практика</p>
+    <h2>Реши сам</h2>
+    <p>Нажимай «Новая задача» — тип меняется случайно. Где спрашивают число точек, пиши <span class="math">0</span>, <span class="math">1</span> или <span class="math">2</span>. Где просят точки — четыре числа через точку с запятой: <span class="math">3; 4; −4; −3</span> (минус можно обычным дефисом, порядок точек любой).</p>
+    <div class="trainer">
+      <div class="tr-q" id="trQ">Окружность x² + y² = 25 и прямая y = x + 1. Сколько у них общих точек?</div>
+      <div class="tr-ctl">
+        <button id="trNew" type="button">🎲 Новая задача</button>
+        <input id="trAns" type="text" inputmode="text" placeholder="0, 1 или 2" aria-label="Ответ">
+        <button id="trCheck" type="button" class="sec">Проверить</button>
+        <button id="trShow" type="button" class="ghost">Показать решение</button>
+      </div>
+      <div id="trResult" class="tr-result"></div>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Проверь себя · по нарастанию</p>
+    <h2>Мини-практика</h2>
+    <div class="drill">
+      <details>
+        <summary><span class="q">Система из уравнений прямой и окружности имеет ровно одно решение. Как взаимно расположены прямая и окружность?</span><span class="tag">понимание</span></summary>
+        <div class="ans">Одно решение системы = одна общая точка. Значит прямая <strong>касается</strong> окружности, она — <strong>касательная</strong>.</div>
+      </details>
+      <details>
+        <summary><span class="q">После подстановки получилось квадратное уравнение с D = −7. Что это значит геометрически?</span><span class="tag">понимание</span></summary>
+        <div class="ans"><span class="m">D &lt; 0</span> → у уравнения нет корней → у системы нет решений → у прямой и окружности <strong>нет общих точек</strong>, прямая проходит мимо.</div>
+      </details>
+      <details>
+        <summary><span class="q">Найди число общих точек окружности (x − 1)² + (y − 2)² = 9 и прямой y = 2.</span><span class="tag">применение</span></summary>
+        <div class="ans">Подставляю <span class="m">y = 2</span>: <span class="m">(x − 1)² + (2 − 2)² = 9</span> → <span class="m">(x − 1)² + 0 = 9</span> → <span class="m">(x − 1)² = 9</span>.<br>
+        Отсюда <span class="m">x − 1 = 3</span> или <span class="m">x − 1 = −3</span>, то есть <span class="m">x = 4</span> или <span class="m">x = −2</span>. Ответ: <strong>2 точки</strong> — (4; 2) и (−2; 2).</div>
+      </details>
+      <details>
+        <summary><span class="q">Окружность x² + y² = 9 и прямая y = 4. Сколько общих точек?</span><span class="tag">применение</span></summary>
+        <div class="ans">Подставляю: <span class="m">x² + 16 = 9</span> → <span class="m">x² = −7</span>. Квадрат не бывает отрицательным → корней нет → <strong>0 точек</strong>. По картинке: радиус 3, а прямая проходит на высоте 4 — выше окружности.</div>
+      </details>
+      <details>
+        <summary><span class="q">Две окружности: x² + y² = 4 и (x − 4)² + y² = 4. Сколько общих точек?</span><span class="tag">применение</span></summary>
+        <div class="ans">Вычитаю второе из первого: <span class="m">x² − (x − 4)² = 0</span> → <span class="m">x² − x² + 8x − 16 = 0</span> → <span class="m">8x = 16</span> → <span class="m">x = 2</span>.<br>
+        Подставляю в первое: <span class="m">4 + y² = 4</span> → <span class="m">y² = 0</span> → <span class="m">y = 0</span> (один корень). Ответ: <strong>1 точка</strong> (2; 0) — окружности касаются.</div>
+      </details>
+      <details>
+        <summary><span class="q">Найди ошибку. «(x − 1)² = 9, значит x − 1 = 3, x = 4 — получилась одна точка, прямая касательная.»</span><span class="tag">анализ</span></summary>
+        <div class="ans">Ошибка в третьем действии: <strong>потерян второй корень</strong>. Квадрат равен 9 у двух чисел: и у 3, и у −3. Правильно: <span class="m">x − 1 = 3</span> <em>или</em> <span class="m">x − 1 = −3</span>, то есть <span class="m">x = 4</span> и <span class="m">x = −2</span>.<br>
+        Значит точек <strong>две</strong>, прямая <strong>секущая</strong>, а не касательная. Вывод про касание был построен на пропавшем корне.</div>
+      </details>
+      <details>
+        <summary><span class="q">Для окружности x² + y² = 16 подбери b так, чтобы прямая y = b касалась окружности. Что изменится, если взять b = 5?</span><span class="tag">анализ</span></summary>
+        <div class="ans">Подставляю <span class="m">y = b</span>: <span class="m">x² + b² = 16</span> → <span class="m">x² = 16 − b²</span>. Один корень бывает, когда <span class="m">x² = 0</span>, то есть <span class="m">16 − b² = 0</span> → <span class="m">b = 4</span> или <span class="m">b = −4</span>.<br>
+        Это логично: <span class="m">R = 4</span>, горизонтальная прямая <span class="m">y = b</span> касается, когда <span class="m">|b| = R</span>.<br>
+        Если <span class="m">b = 5</span>: <span class="m">x² = 16 − 25 = −9 &lt; 0</span> → корней нет → <strong>0 точек</strong>. Прямая ушла выше окружности.</div>
+      </details>
+      <details>
+        <summary><span class="q">Что изменится в ответе, если у окружности x² + y² = 25 и прямой y = x + 1 увеличивать b: 1 → 5 → 10?</span><span class="tag">анализ</span></summary>
+        <div class="ans">Растёт <span class="m">b</span> — прямая поднимается вверх, не меняя наклона, и <strong>уходит от центра</strong>: расстояние <span class="m">d</span> растёт. Значит ответ может меняться только в одну сторону: 2 точки → касание → ни одной.<br>
+        Считаем:<br>
+        <span class="m">b = 1</span>: <span class="m">2x² + 2x − 24 = 0</span>, <span class="m">D = 196 &gt; 0</span> → <strong>2 точки</strong>.<br>
+        <span class="m">b = 5</span>: <span class="m">x² + (x + 5)² = 25</span> → <span class="m">2x² + 10x = 0</span>, <span class="m">D = 100 &gt; 0</span> → всё ещё <strong>2 точки</strong>, это (0; 5) и (−5; 0).<br>
+        <span class="m">b = 10</span>: <span class="m">2x² + 20x + 75 = 0</span>, <span class="m">D = 400 − 600 = −200 &lt; 0</span> → <strong>0 точек</strong>.<br>
+        Значит момент касания проскочил где-то между <span class="m">b = 5</span> и <span class="m">b = 10</span>. Найди его на симуляции выше: поставь <span class="m">k = 1</span>, <span class="m">R = 5</span> и нажми «Сделать прямую касательной».</div>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Где чаще всего ошибаются</p>
+    <h2>Четыре ловушки</h2>
+    <ul class="pitfalls">
+      <li><b>Теряют один корень.</b> Из <span class="math">(x − 1)² = 9</span> пишут только <span class="math">x − 1 = 3</span>, забывая <span class="math">x − 1 = −3</span>. Как не допустить: помни — квадрат даёт <strong>два</strong> знака, ±. И проверяй себя: если <span class="math">D &gt; 0</span>, значений должно быть два.</li>
+      <li><b>Не связывают число решений с числом точек.</b> Нашли D — и остановились. Как не допустить: доводи до вывода. <span class="math">D &gt; 0</span> — 2 точки, <span class="math">D = 0</span> — касание, <span class="math">D &lt; 0</span> — точек нет. Дискриминант и есть ответ на вопрос задачи.</li>
+      <li><b>Ошибки в подстановке.</b> Подставляя <span class="math">y = kx + b</span> в окружность, пишут <span class="math">(x + 1)²</span> как <span class="math">x² + 1</span> — теряют средний член <span class="math">2x</span>. Как не допустить: раскрывай квадрат суммы полностью, <span class="math">a² + 2ab + b²</span>, и не спеши.</li>
+      <li><b>Путают знак при переносе.</b> Перенося число через «=», не меняют знак. Как не допустить: сначала собери всё в одну сторону и приравняй к нулю, и только потом считай D.</li>
+    </ul>
+  </section>
+
+  <section>
+    <p class="kicker">Проверка понимания</p>
+    <h2>Объясни своими словами</h2>
+    <div class="drill">
+      <details>
+        <summary><span class="q">Чему равно число точек пересечения, если дискриминант равен нулю?</span><span class="tag">по памяти</span></summary>
+        <div class="ans">Одна точка — это касание, прямая является касательной.</div>
+      </details>
+      <details>
+        <summary><span class="q">Как из системы «прямая + окружность» получить квадратное уравнение?</span><span class="tag">объясни</span></summary>
+        <div class="ans">Выразить <span class="m">y</span> из уравнения прямой и подставить это выражение в уравнение окружности. Останется одна переменная — и получится квадратное уравнение.</div>
+      </details>
+      <details>
+        <summary><span class="q">Если решаешь систему двух окружностей, какой приём сразу убирает x² и y²?</span><span class="tag">объясни</span></summary>
+        <div class="ans">Вычесть одно уравнение из другого: квадраты в обоих уравнениях одинаковые и взаимно уничтожаются, остаётся уравнение прямой.</div>
+      </details>
+    </div>
+    <p style="margin-top:1rem">А теперь скажи вслух одной фразой, о чём была тема. Должно получиться примерно так: <em>«взаимное расположение прямой и окружности (и двух окружностей) определяется числом решений системы: 2 решения — пересекаются, 1 — касаются, 0 — общих точек нет»</em>.</p>
+  </section>
+
+  <section>
+    <div class="next">
+      <h2>Что дальше</h2>
+      <p>Ты закрыл последний инструмент метода координат: расстояние, середина, уравнение окружности, уравнение прямой — и теперь взаимное расположение. Дальше эти инструменты соединяются в одном месте.</p>
+      <div class="eq">геометрия → координаты → система → ответ</div>
+      <p>Следующий шаг — <a href="./geo9-koord-zadachi.html"><strong>решение задач методом координат</strong></a>: там ты сам вводишь систему координат в фигуру, сам расставляешь точки и превращаешь чертёж в вычисление. А в 10–11 классе то же самое разворачивается в аналитическую геометрию.</p>
+    </div>
+  </section>
+
+  <p class="foot">Проверка на выходе: что означает D &gt; 0 в такой задаче · как из системы получить квадратное уравнение · какой приём применяют к двум окружностям?</p>
+
+</div>
+
+<style>
+  .sim{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.1rem 1rem 1rem;margin:1rem 0}
+  .sim canvas{width:100%;height:auto;display:block;border-radius:10px;background:#FCFDFF;touch-action:manipulation}
+  .sliders{display:grid;gap:.6rem;margin-top:.9rem}
+  @media(min-width:520px){.sliders{grid-template-columns:repeat(3,1fr)}}
+  .sliders label{display:flex;align-items:center;gap:.5rem;font-weight:700;font-family:ui-monospace,Menlo,monospace}
+  .sliders input[type=range]{flex:1;min-width:0;accent-color:var(--accent)}
+  .sliders input[type=range]:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+  .sliders .sval{min-width:4ch;text-align:right;color:var(--accent);font-variant-numeric:tabular-nums}
+  .sim-btns{margin-top:.8rem}
+  .sim-btns button{font:inherit;font-weight:700;font-size:.86rem;cursor:pointer;background:transparent;color:var(--accent);border:1px solid var(--accent);border-radius:9px;padding:.45rem .85rem}
+  .sim-btns button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+  .sim-verdict{
+    margin-top:.9rem;padding:.75rem .9rem;border-radius:10px;text-align:center;
+    font-family:ui-monospace,Menlo,monospace;font-weight:700;
+    font-size:clamp(.92rem,3.8vw,1.05rem);background:#F4F6FA;color:var(--muted);
+  }
+  .sim-verdict.pos{background:var(--pos-bg);color:var(--pos)}
+  .sim-verdict.zero{background:var(--zero-bg);color:var(--zero)}
+  .sim-verdict.neg{background:var(--neg-bg);color:var(--neg)}
+  .sim-work{
+    margin-top:.6rem;padding:.7rem .85rem;border-radius:10px;background:#F8F9FC;
+    font-family:ui-monospace,Menlo,monospace;font-size:.85rem;line-height:1.8;
+    color:var(--muted);overflow-x:auto;
+  }
+  .sim-work b{color:var(--ink)}
+</style>
+
+<script>
+(function(){
+  var canvas=document.getElementById('simCanvas'); if(!canvas) return;
+  var ctx=canvas.getContext('2d');
+  var sr=document.getElementById('sr'), sk=document.getElementById('sk'), sb=document.getElementById('sb');
+  var vr=document.getElementById('vr'), vk=document.getElementById('vk'), vb=document.getElementById('vb');
+  var vEl=document.getElementById('simVerdict'), wEl=document.getElementById('simWork');
+  var snapBtn=document.getElementById('snapBtn');
+  var W=560,H=560,dpr=1,RANGE=11;
+  var bExact=null;   // точное b после кнопки «сделать касательной» (ползунок ходит с шагом 0.5)
+
+  function mm(n){ return (n<0?'−':'')+Math.abs(n); }
+  function num(n){
+    var r=Math.round(n*100)/100;
+    if(Math.abs(r)<1e-9) r=0;
+    var s=String(Math.abs(r));
+    return (r<0?'−':'')+s;
+  }
+
+  function resize(){
+    var cssW=canvas.clientWidth||560;
+    dpr=Math.min(window.devicePixelRatio||1,2);
+    W=cssW; H=cssW;
+    canvas.width=Math.round(W*dpr); canvas.height=Math.round(H*dpr);
+    canvas.style.height=H+'px';
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+  }
+  function X(x){ return W/2 + x*(W/(2*RANGE)); }
+  function Y(y){ return H/2 - y*(H/(2*RANGE)); }
+
+  function state(){
+    return {
+      R:parseInt(sr.value,10),
+      k:parseInt(sk.value,10),
+      b:(bExact!==null?bExact:parseFloat(sb.value))
+    };
+  }
+
+  function draw(){
+    var st=state(), R=st.R, k=st.k, b=st.b;
+    vr.textContent=''+R; vk.textContent=mm(k); vb.textContent=num(b);
+    ctx.clearRect(0,0,W,H);
+    var step=W/(2*RANGE);
+
+    // сетка
+    ctx.strokeStyle='#ECEFF5'; ctx.lineWidth=1;
+    for(var g=-RANGE;g<=RANGE;g++){
+      ctx.beginPath(); ctx.moveTo(X(g),0); ctx.lineTo(X(g),H); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(0,Y(g)); ctx.lineTo(W,Y(g)); ctx.stroke();
+    }
+    // оси
+    ctx.strokeStyle='#98A1B2'; ctx.lineWidth=1.6;
+    ctx.beginPath(); ctx.moveTo(0,Y(0)); ctx.lineTo(W,Y(0)); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(X(0),0); ctx.lineTo(X(0),H); ctx.stroke();
+    // подписи осей
+    ctx.fillStyle='#8A93A6'; ctx.font='600 '+Math.max(9,Math.round(step*0.46))+'px ui-monospace,Menlo,monospace';
+    ctx.textAlign='center'; ctx.textBaseline='top';
+    for(var t=-10;t<=10;t+=5){ if(t===0) continue; ctx.fillText(''+t, X(t), Y(0)+3); }
+    ctx.textAlign='right'; ctx.textBaseline='middle';
+    for(var u=-10;u<=10;u+=5){ if(u===0) continue; ctx.fillText(''+u, X(0)-4, Y(u)); }
+    ctx.textAlign='right'; ctx.textBaseline='top';
+    ctx.fillText('0', X(0)-4, Y(0)+3);
+
+    // алгебра: (1+k²)x² + 2kb·x + (b² − R²) = 0
+    var A=1+k*k, B=2*k*b, C=b*b-R*R;
+    var D=B*B-4*A*C;
+    var tol=1e-7*(Math.abs(B*B)+Math.abs(4*A*C)+1);
+    var kind = D>tol ? 'pos' : (D<-tol ? 'neg' : 'zero');
+    if(kind==='zero') D=0;
+    var col = kind==='pos' ? '#1E8E5A' : (kind==='zero' ? '#B9791A' : '#C0455B');
+    var d=Math.abs(b)/Math.sqrt(k*k+1);
+
+    // окружность
+    ctx.strokeStyle='#3B4FD0'; ctx.lineWidth=3;
+    ctx.beginPath(); ctx.arc(X(0),Y(0),R*step,0,Math.PI*2); ctx.stroke();
+
+    // прямая y = kx + b (в пределах RANGE)
+    ctx.strokeStyle=col; ctx.lineWidth=3;
+    ctx.beginPath();
+    ctx.moveTo(X(-RANGE), Y(k*(-RANGE)+b));
+    ctx.lineTo(X(RANGE),  Y(k*RANGE+b));
+    ctx.stroke();
+
+    // перпендикуляр из центра к прямой: основание (px,py)
+    var px = -k*b/(k*k+1), py = b/(k*k+1);
+    ctx.strokeStyle='#8A93A6'; ctx.lineWidth=1.5; ctx.setLineDash([5,4]);
+    ctx.beginPath(); ctx.moveTo(X(0),Y(0)); ctx.lineTo(X(px),Y(py)); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle='#5A6478'; ctx.font='700 '+Math.max(10,Math.round(step*0.5))+'px ui-monospace,Menlo,monospace';
+    ctx.textAlign='left'; ctx.textBaseline='bottom';
+    if(d>0.35) ctx.fillText('d = '+num(d), X(px/2)+6, Y(py/2)-4);
+
+    // радиус (для сравнения)
+    ctx.strokeStyle='#3B4FD0'; ctx.lineWidth=1.5; ctx.setLineDash([4,4]);
+    ctx.beginPath(); ctx.moveTo(X(0),Y(0)); ctx.lineTo(X(0),Y(-R)); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle='#3B4FD0'; ctx.textAlign='left'; ctx.textBaseline='middle';
+    ctx.fillText('R = '+R, X(0)+7, Y(-R/2));
+
+    // центр
+    ctx.fillStyle='#1B2333'; ctx.beginPath(); ctx.arc(X(0),Y(0),4.5,0,Math.PI*2); ctx.fill();
+
+    // точки пересечения
+    if(kind!=='neg'){
+      var sd=Math.sqrt(Math.max(D,0));
+      var xs = kind==='zero' ? [-B/(2*A)] : [(-B-sd)/(2*A), (-B+sd)/(2*A)];
+      for(var i=0;i<xs.length;i++){
+        var xi=xs[i], yi=k*xi+b;
+        ctx.fillStyle=col; ctx.beginPath(); ctx.arc(X(xi),Y(yi),6.5,0,Math.PI*2); ctx.fill();
+        ctx.fillStyle='#fff'; ctx.beginPath(); ctx.arc(X(xi),Y(yi),2.6,0,Math.PI*2); ctx.fill();
+      }
+    }
+
+    // вердикт
+    var word = kind==='pos' ? '2 точки — прямая секущая'
+             : (kind==='zero' ? '1 точка — прямая касательная' : 'общих точек нет');
+    vEl.className='sim-verdict '+kind;
+    vEl.textContent = (kind==='pos'?'D > 0, d < R  →  ':(kind==='zero'?'D = 0, d = R  →  ':'D < 0, d > R  →  '))+word;
+
+    // выкладки
+    var line = 'y = '+(k===0?'':(k===1?'x':(k===-1?'−x':mm(k)+'x')))+
+               (k===0 ? num(b) : (b===0?'':(b>0?' + '+num(b):' − '+num(Math.abs(b)))));
+    function tm(v,tail){
+      if(v===0) return '';
+      var a=Math.abs(v);
+      return (v<0?' − ':' + ')+((tail&&a===1)?'':num(a))+(tail||'');
+    }
+    var h='';
+    h+='Окружность: <b>x² + y² = '+(R*R)+'</b>&nbsp;&nbsp;Прямая: <b>'+line+'</b><br>';
+    h+='подстановка → <b>'+(A===1?'':A)+'x²'+tm(B,'x')+tm(C)+' = 0</b><br>';
+    h+='D = ('+num(B)+')² − 4·'+A+'·('+num(C)+') = <b>'+num(D)+'</b><br>';
+    h+='d = '+num(d)+',&nbsp; R = '+R;
+    wEl.innerHTML=h;
+  }
+
+  snapBtn.addEventListener('click',function(){
+    var st=state();
+    var t=st.R*Math.sqrt(st.k*st.k+1);          // |b| для касания
+    var target=(st.b<0? -t : t);
+    target=Math.max(-14,Math.min(14,target));
+    bExact=target;                              // рисуем по точному значению
+    sb.value=String(target);                    // ползунок встанет на ближайший шаг
+    draw();
+  });
+
+  [sr,sk].forEach(function(s){ s.addEventListener('input',draw); });
+  sb.addEventListener('input',function(){ bExact=null; draw(); });
+  window.addEventListener('resize',function(){ resize(); draw(); });
+  resize(); draw();
+})();
+</script>
+
+<style>
+  .trainer{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.2rem 1.1rem;margin-top:1rem}
+  .tr-q{
+    font-family:ui-monospace,Menlo,monospace;font-weight:700;
+    font-size:clamp(.95rem,3.9vw,1.1rem);line-height:1.6;text-align:center;
+    padding:1rem .7rem;background:var(--accent-soft);border-radius:10px;color:var(--ink);
+  }
+  .tr-ctl{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.9rem;align-items:center}
+  .tr-ctl button{font:inherit;font-weight:700;font-size:.9rem;cursor:pointer;border:none;border-radius:9px;padding:.55rem .95rem;color:#fff;background:var(--accent)}
+  .tr-ctl button.sec{background:var(--pos)}
+  .tr-ctl button.ghost{background:transparent;color:var(--accent);border:1px solid var(--accent)}
+  .tr-ctl input{flex:1;min-width:150px;font:inherit;padding:.5rem .7rem;border:1px solid var(--line);border-radius:9px;background:#fff;color:var(--ink)}
+  .tr-ctl button:focus-visible,.tr-ctl input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+  .tr-result{margin-top:.9rem;font-size:.96rem;min-height:1.2rem}
+  .tr-result .ok{color:var(--pos);font-weight:700}
+  .tr-result .bad{color:var(--neg);font-weight:700}
+  .tr-result .sol{margin-top:.7rem;padding:.85rem .9rem;background:#FCFBFE;border:1px solid var(--line);border-radius:10px;font-family:ui-monospace,Menlo,monospace;font-size:.88rem;line-height:1.85;overflow-x:auto}
+  .tr-result .sol b{color:var(--accent)}
+</style>
+
+<script>
+(function(){
+  var qEl=document.getElementById('trQ'), ansEl=document.getElementById('trAns'), resEl=document.getElementById('trResult');
+  var newBtn=document.getElementById('trNew'), checkBtn=document.getElementById('trCheck'), showBtn=document.getElementById('trShow');
+  if(!qEl) return;
+
+  function ri(min,max){ return Math.floor(Math.random()*(max-min+1))+min; }
+  function pickOf(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+  function mm(n){ return (n<0?'−':'')+Math.abs(n); }
+  function gcd(a,b){ a=Math.abs(a); b=Math.abs(b); while(b){ var t=a%b; a=b; b=t; } return a||1; }
+
+  // (x − c)² или x²  — скобка окружности
+  function brace(v,letter){
+    if(v===0) return letter+'²';
+    return '('+letter+(v>0?' − ':' + ')+Math.abs(v)+')²';
+  }
+  function circStr(x0,y0,S){ return brace(x0,'x')+' + '+brace(y0,'y')+' = '+S; }
+  // y = kx + b
+  function lineStr(k,b){
+    var s='y = ';
+    if(k===0) return s+mm(b);
+    s += (k===1?'x':(k===-1?'−x':mm(k)+'x'));
+    if(b!==0) s += (b>0?' + '+b:' − '+Math.abs(b));
+    return s;
+  }
+  // «a + b» / «a − b» для (p − c)
+  function diffStr(p,c){ return mm(p)+(c<0?' + ':' − ')+Math.abs(c); }
+  // одночлен со знаком для цепочки (нулевой не выводим)
+  function term(v,tail){
+    if(v===0) return '';
+    var a=Math.abs(v);
+    return (v<0?' − ':' + ')+((tail&&a===1)?'':a)+(tail||'');
+  }
+  // знак сравнения в HTML
+  function cmp(v){ return v>0?'&gt; 0':(v===0?'= 0':'&lt; 0'); }
+
+  var cur=null;
+
+  // ——— генераторы ———
+
+  // 1. Прямая y = kx + b и окружность (x−x0)²+(y−y0)² = S. Сколько точек?
+  function genCount(){
+    var k=pickOf([1,-1,2,-2]);
+    var x0=ri(-4,4), y0=ri(-4,4);
+    var want=pickOf(['sec','sec','tan','tan','non']);
+    var S,T,q,s;
+    if(want==='tan'){
+      // нужно, чтобы S·(1+k²) было точным квадратом
+      if(Math.abs(k)===1){ s=ri(1,4); S=2*s*s; }        // S(1+k²) = (2s)²
+      else { s=ri(1,3); S=5*s*s; }                       // S(1+k²) = (5s)²
+      T=S*(1+k*k);
+      q=(Math.random()<0.5?1:-1)*Math.round(Math.sqrt(T));
+    } else {
+      S=pickOf([4,5,8,9,10,13,16,18,20,25,26,29,36,40]);
+      T=S*(1+k*k);
+      var r=Math.sqrt(T);
+      if(want==='sec'){
+        var lim=Math.floor(r-1e-9);
+        q=ri(-lim,lim);
+      } else {
+        q=(Math.random()<0.5?1:-1)*(Math.ceil(r+1e-9)+ri(0,3));
+      }
+    }
+    var b=q+y0-k*x0;
+    if(Math.abs(b)>40) return genCount();
+    cur={kind:'count',k:k,b:b,x0:x0,y0:y0,S:S};
+    return cur;
+  }
+
+  // 2. Прямая y = c или x = c и окружность. Сколько точек?
+  function genAxis(){
+    var x0=ri(-4,4), y0=ri(-4,4);
+    var R=ri(2,6), S=R*R;
+    var horiz=Math.random()<0.5;
+    var base = horiz ? y0 : x0;
+    var want=pickOf(['sec','sec','tan','non']);
+    var c;
+    if(want==='tan') c = base + (Math.random()<0.5?R:-R);
+    else if(want==='sec') c = base + ri(-(R-1),R-1);
+    else c = base + (Math.random()<0.5?1:-1)*(R+ri(1,3));
+    cur={kind:'axis',x0:x0,y0:y0,S:S,R:R,horiz:horiz,c:c};
+    return cur;
+  }
+
+  // 3. Найди точки пересечения (окружность в начале координат, k = ±1, корни целые)
+  function genPoints(){
+    var k=pickOf([1,-1]);
+    var x1=ri(-5,5), x2=ri(-5,5);
+    if(x1===x2) return genPoints();
+    var b = (k===1) ? -(x1+x2) : (x1+x2);
+    var S = b*b - 2*x1*x2;
+    if(S<=0 || S>80) return genPoints();
+    cur={kind:'points',k:k,b:b,S:S,x1:x1,x2:x2,y1:k*x1+b,y2:k*x2+b};
+    return cur;
+  }
+
+  // 4. Подбери b, при котором y = b касается окружности x² + y² = R²
+  function genTangent(){
+    var R=ri(2,9);
+    cur={kind:'tangent',R:R,S:R*R};
+    return cur;
+  }
+
+  // 5. Две окружности: x²+y²=S1 и (x−d)²+y²=S2. Сколько точек?
+  function genTwo(){
+    var d=ri(2,9);
+    var want=pickOf(['sec','sec','tan','non']);
+    var px,py,S1,S2;
+    if(want==='sec'){ px=ri(-4,4); py=ri(1,4); }
+    else if(want==='tan'){ px=pickOf([-4,-3,-2,-1,1,2,3,4,5,6]); py=0; }
+    else {
+      var R=ri(2,5); var j=ri(1,3); px=R+j;
+      var need=2*R*j+j*j;                 // px² − R²
+      var e=Math.ceil(Math.sqrt(need))+ri(0,2);
+      S1=R*R; S2=e*e-need;
+      d=px+e;
+      if(S2<=0 || d<2 || d>14) return genTwo();
+      cur={kind:'two',d:d,S1:S1,S2:S2,x:px,y2:S1-px*px};
+      return cur;
+    }
+    S1=px*px+py*py; S2=(px-d)*(px-d)+py*py;
+    if(S1<=0||S2<=0) return genTwo();
+    cur={kind:'two',d:d,S1:S1,S2:S2,x:px,y2:py*py,py:py};
+    return cur;
+  }
+
+  function generate(){
+    var g=pickOf([genCount,genCount,genAxis,genPoints,genTangent,genTwo]);
+    g();
+    render();
+    return cur;
+  }
+
+  // ——— вспомогательное: разбор «прямая + окружность» ———
+  // (x−x0)² + (kx+b−y0)² = S  →  A x² + B x + C = 0
+  function quad(q){
+    var m=q.b-q.y0, A=1+q.k*q.k, B=2*(q.k*m-q.x0), C=q.x0*q.x0+m*m-q.S;
+    var g=gcd(gcd(A,B),C);
+    return {A:A,B:B,C:C,a:A/g,b:B/g,c:C/g,g:g,D:(B/g)*(B/g)-4*(A/g)*(C/g)};
+  }
+  function countOf(D){ return D>0?2:(D===0?1:0); }
+
+  function render(){
+    var q=cur, txt='', ph='0, 1 или 2';
+    if(q.kind==='count'){
+      txt='Окружность '+circStr(q.x0,q.y0,q.S)+' и прямая '+lineStr(q.k,q.b)+'. Сколько у них общих точек?';
+    } else if(q.kind==='axis'){
+      txt='Окружность '+circStr(q.x0,q.y0,q.S)+' и прямая '+(q.horiz?'y = ':'x = ')+mm(q.c)+'. Сколько у них общих точек?';
+    } else if(q.kind==='points'){
+      txt='Найди точки пересечения окружности x² + y² = '+q.S+' и прямой '+lineStr(q.k,q.b)+'.';
+      ph='напр.  3; 4; −4; −3';
+    } else if(q.kind==='tangent'){
+      txt='Подбери положительное b так, чтобы прямая y = b касалась окружности x² + y² = '+q.S+'.';
+      ph='число, напр.  5';
+    } else {
+      txt='Две окружности: x² + y² = '+q.S1+' и (x − '+q.d+')² + y² = '+q.S2+'. Сколько у них общих точек?';
+    }
+    qEl.textContent=txt;
+    ansEl.value=''; ansEl.placeholder=ph;
+    resEl.innerHTML='';
+  }
+
+  // ——— разбор ответа ———
+  function normNum(s){ return String(s).replace(/−/g,'-').replace(/(\d),(\d)/g,'$1.$2'); }
+  function nums(s){
+    var t=normNum(s).replace(/[()\[\]]/g,' ').replace(/[a-zA-Zа-яА-ЯёЁ=]/g,' ');
+    var parts=t.split(/[;,\s]+/).filter(function(v){ return v!==''; });
+    var out=[];
+    for(var i=0;i<parts.length;i++){
+      var v=parseFloat(parts[i]);
+      if(!isFinite(v)) return null;
+      out.push(v);
+    }
+    return out;
+  }
+  function wordCount(s){
+    var low=s.toLowerCase().replace(/ё/g,'е');
+    if(/касан|касательн|одн/.test(low)) return 1;
+    if(/секущ|двe|две|пересек/.test(low) && !/не\s*пересек/.test(low)) return 2;
+    if(/нет|ноль|нуль|не\s*пересек|мимо/.test(low)) return 0;
+    return null;
+  }
+
+  function trueCount(){
+    var q=cur;
+    if(q.kind==='count'){ return countOf(quad(q).D); }
+    if(q.kind==='axis'){
+      var rest = q.S - (q.horiz ? (q.c-q.y0)*(q.c-q.y0) : (q.c-q.x0)*(q.c-q.x0));
+      return rest>0?2:(rest===0?1:0);
+    }
+    if(q.kind==='two'){ return q.y2>0?2:(q.y2===0?1:0); }
+    return null;
+  }
+
+  function solutionHTML(){
+    var q=cur, h='<div class="sol">';
+    if(q.kind==='count'){
+      var Q=quad(q);
+      h+='Подставляю <b>y = '+lineStr(q.k,q.b).slice(4)+'</b> в уравнение окружности:<br>';
+      h+=brace(q.x0,'x')+' + ('+lineStr(q.k,q.b).slice(4)+(q.y0<0?' + '+Math.abs(q.y0):(q.y0>0?' − '+q.y0:''))+')² = '+q.S+'<br>';
+      h+='раскрываю и собираю: <b>'+(Q.A===1?'':Q.A)+'x²'+term(Q.B,'x')+term(Q.C)+' = 0</b><br>';
+      if(Q.g>1) h+='делю на '+Q.g+': <b>'+(Q.a===1?'':Q.a)+'x²'+term(Q.b,'x')+term(Q.c)+' = 0</b><br>';
+      h+='D = ('+mm(Q.b)+')² − 4·'+Q.a+'·('+mm(Q.c)+') = '+(Q.b*Q.b)+' '+(Q.a*Q.c*4<0?'+ '+Math.abs(4*Q.a*Q.c):'− '+4*Q.a*Q.c)+' = <b>'+mm(Q.D)+'</b><br>';
+      var n=countOf(Q.D);
+      h+='D '+cmp(Q.D)+' → '+(n===2?'два корня':(n===1?'один корень':'корней нет'));
+      h+=' → Ответ: <b>'+n+' '+(n===1?'точка (касательная)':(n===2?'точки (секущая)':'точек'))+'</b>';
+    } else if(q.kind==='axis'){
+      var v=q.horiz?(q.c-q.y0):(q.c-q.x0);
+      var rest=q.S-v*v;
+      var other=q.horiz?'x':'y', oc=q.horiz?q.x0:q.y0;
+      h+='Подставляю '+(q.horiz?'y = ':'x = ')+mm(q.c)+' в уравнение окружности:<br>';
+      h+=brace(oc,other)+' + ('+diffStr(q.c,q.horiz?q.y0:q.x0)+')² = '+q.S+'<br>';
+      h+=brace(oc,other)+' + '+(v*v)+' = '+q.S+' → '+brace(oc,other)+' = <b>'+mm(rest)+'</b><br>';
+      if(rest>0){
+        var rt=Math.sqrt(rest);
+        h+='Число справа положительное → два значения '+other+(Number.isInteger(rt)?' ('+other+' '+(oc===0?'= ':'− '+mm(oc)+' = ')+'±'+rt+')':'')+'<br>';
+        h+='Ответ: <b>2 точки</b> — прямая секущая';
+      } else if(rest===0){
+        h+='Квадрат равен нулю → ровно одно значение '+other+'<br>';
+        h+='Ответ: <b>1 точка</b> — прямая касательная';
+      } else {
+        h+='Квадрат не может быть отрицательным → решений нет<br>';
+        h+='Ответ: <b>0 точек</b> — прямая не пересекает окружность';
+      }
+    } else if(q.kind==='points'){
+      var A=2, B=(q.k===1?2*q.b:-2*q.b), C=q.b*q.b-q.S;
+      var g=gcd(gcd(A,B),C), a2=A/g, b2=B/g, c2=C/g;
+      var D=b2*b2-4*a2*c2;
+      h+='Подставляю <b>'+lineStr(q.k,q.b)+'</b> в x² + y² = '+q.S+':<br>';
+      h+='x² + ('+lineStr(q.k,q.b).slice(4)+')² = '+q.S+'<br>';
+      h+='раскрываю: <b>'+A+'x²'+term(B,'x')+term(C)+' = 0</b><br>';
+      if(g>1) h+='делю на '+g+': <b>'+(a2===1?'':a2)+'x²'+term(b2,'x')+term(c2)+' = 0</b><br>';
+      h+='D = '+(b2*b2)+' '+(4*a2*c2<0?'+ '+Math.abs(4*a2*c2):'− '+4*a2*c2)+' = <b>'+D+'</b> &gt; 0 → два корня<br>';
+      h+='x₁ = <b>'+mm(q.x1)+'</b>, x₂ = <b>'+mm(q.x2)+'</b><br>';
+      h+='подставляю в прямую: y₁ = '+mm(q.y1)+', y₂ = '+mm(q.y2)+'<br>';
+      h+='Ответ: <b>('+mm(q.x1)+'; '+mm(q.y1)+')</b> и <b>('+mm(q.x2)+'; '+mm(q.y2)+')</b>';
+    } else if(q.kind==='tangent'){
+      h+='Подставляю y = b в уравнение окружности:<br>';
+      h+='x² + b² = '+q.S+' → x² = '+q.S+' − b²<br>';
+      h+='Касание = ровно один корень. Квадрат даёт один корень только при x² = 0:<br>';
+      h+=q.S+' − b² = 0 → b² = '+q.S+' → b = '+q.R+' или b = −'+q.R+'<br>';
+      h+='Ответ: <b>b = '+q.R+'</b> (и симметричный случай b = −'+q.R+').<br>';
+      h+='Смысл: R = '+q.R+', горизонтальная прямая касается, когда |b| = R.';
+    } else {
+      h+='Вычитаю из первого уравнения второе — x² и y² сократятся:<br>';
+      h+='x² + y² − ((x − '+q.d+')² + y²) = '+q.S1+' − '+q.S2+'<br>';
+      h+='x² − x² + '+(2*q.d)+'x − '+(q.d*q.d)+' = '+mm(q.S1-q.S2)+'<br>';
+      h+=(2*q.d)+'x = '+mm(q.S1-q.S2+q.d*q.d)+' → <b>x = '+mm(q.x)+'</b><br>';
+      h+='Подставляю x в первое уравнение: '+(q.x*q.x)+' + y² = '+q.S1+' → y² = <b>'+mm(q.y2)+'</b><br>';
+      if(q.y2>0) h+='y = '+q.py+' или y = −'+q.py+' (два знака!) → Ответ: <b>2 точки</b> ('+mm(q.x)+'; '+q.py+') и ('+mm(q.x)+'; −'+q.py+')';
+      else if(q.y2===0) h+='y = 0 — единственное значение → Ответ: <b>1 точка</b> ('+mm(q.x)+'; 0), окружности касаются';
+      else h+='квадрат не бывает отрицательным → решений нет → Ответ: <b>0 точек</b>';
+    }
+    return h+'</div>';
+  }
+
+  function check(){
+    var q=cur, raw=ansEl.value.trim();
+    if(!raw){ resEl.innerHTML='<span class="bad">Введи ответ или нажми «Показать решение».</span>'; return; }
+    var ok=false, hint='';
+    if(q.kind==='points'){
+      var v=nums(raw);
+      if(!v || v.length!==4){
+        resEl.innerHTML='<span class="bad">Нужны четыре числа — координаты двух точек, например «3; 4; −4; −3».</span>'; return;
+      }
+      var a=[[v[0],v[1]],[v[2],v[3]]];
+      var t=[[q.x1,q.y1],[q.x2,q.y2]];
+      ok = (a[0][0]===t[0][0]&&a[0][1]===t[0][1]&&a[1][0]===t[1][0]&&a[1][1]===t[1][1]) ||
+           (a[0][0]===t[1][0]&&a[0][1]===t[1][1]&&a[1][0]===t[0][0]&&a[1][1]===t[0][1]);
+      if(!ok) hint=' Проверь: найденные x подставь в уравнение прямой, а потом обе точки — в уравнение окружности.';
+    } else if(q.kind==='tangent'){
+      var w=nums(raw);
+      if(!w || w.length<1){ resEl.innerHTML='<span class="bad">Нужно одно число — значение b.</span>'; return; }
+      ok = (w[0]===q.R);
+      if(!ok && w[0]===q.S) hint=' Ты назвал R², а нужно само b: b = R = √'+q.S+'.';
+    } else {
+      var n=trueCount();
+      var vv=nums(raw), said=null;
+      if(vv && vv.length===1 && (vv[0]===0||vv[0]===1||vv[0]===2)) said=vv[0];
+      else said=wordCount(raw);
+      if(said===null){ resEl.innerHTML='<span class="bad">Ответь числом: 0, 1 или 2.</span>'; return; }
+      ok = (said===n);
+      if(!ok && said===1 && n===2) hint=' Похоже, потерян второй корень: квадрат даёт два знака, ±.';
+      else if(!ok) hint=' Доведи до знака D (или сравни d и R) и переведи в число точек.';
+    }
+    if(ok) resEl.innerHTML='<span class="ok">✓ Верно!</span>'+solutionHTML();
+    else resEl.innerHTML='<span class="bad">✗ Пока не то.'+hint+'</span>'+solutionHTML();
+  }
+
+  newBtn.addEventListener('click',function(){ generate(); ansEl.focus(); });
+  checkBtn.addEventListener('click',check);
+  showBtn.addEventListener('click',function(){ resEl.innerHTML=solutionHTML(); });
+  ansEl.addEventListener('keydown',function(e){ if(e.key==='Enter') check(); });
+
+  // стартовая задача — эталон из урока (без фокуса)
+  cur={kind:'count',k:1,b:1,x0:0,y0:0,S:25};
+  render();
+
+  if(typeof window!=='undefined'){
+    window.__trainer={generate:generate, solutionHTML:solutionHTML, trueCount:trueCount, nums:nums, get:function(){return cur;}};
+  }
+})();
+</script>
+<!--LESSON-NAV-BOT--><nav class="lnav lnav-bot"><a class="prev" href="./geo9-koord-uravnenie-pryamoj.html"><span class="dir">← Предыдущая</span><span class="ttl">Уравнение прямой</span></a><a class="to-cat" href="./catalog.html">📚 <span>Все темы</span></a><a class="next" href="./geo9-koord-zadachi.html"><span class="dir">Следующая →</span><span class="ttl">Решение геометрических задач методом координат</span></a></nav><!--/LESSON-NAV-BOT-->

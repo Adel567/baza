@@ -1,0 +1,796 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Прямые и плоскости в пространстве — геометрия 9 класс</title>
+<style>
+  @font-face{font-family:PllFix;src:local("STIXGeneral"),local("Cambria Math"),local("Segoe UI Symbol"),local("Arial Unicode MS"),local("DejaVu Sans");unicode-range:U+2225}
+  :root{
+    --paper:#F6F7F9; --card:#FFFFFF; --ink:#1D2530; --muted:#606B7A; --line:#E3E7EE;
+    --brand:#2E5AAC; --brand-soft:#E4EBF7;
+    --ok:#1E8E5A; --ok-soft:#E1F2E9;
+    --warn:#E27C2C; --warn-soft:#FBEEDF;
+    --no:#C23B3B; --no-soft:#FAE6E6;
+    --pre:#7A7FB8; --pre-soft:#ECEDF8;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper)}
+  .page{max-width:720px;margin:0 auto;padding:clamp(1.4rem,4vw,3rem) clamp(1.1rem,4vw,2rem) 4.5rem;
+    color:var(--ink);font-family:PllFix,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:17.5px;line-height:1.68;-webkit-font-smoothing:antialiased}
+  .mono{font-family:PllFix,ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-variant-numeric:tabular-nums;font-weight:600}
+  sup{font-size:.72em}
+
+  .hero{border-bottom:3px solid var(--brand);padding-bottom:1.4rem;margin-bottom:1.8rem}
+  .eyebrow{font-size:.74rem;letter-spacing:.15em;text-transform:uppercase;color:var(--brand);font-weight:700;margin:0 0 .55rem}
+  h1{font-size:clamp(1.9rem,6vw,2.8rem);line-height:1.05;margin:0;font-weight:800;letter-spacing:-.02em;text-wrap:balance}
+  .tagline{font-size:1.12rem;color:var(--muted);margin:.85rem 0 0;text-wrap:pretty}
+
+  section{margin-top:2.4rem}
+  h2{font-size:1.5rem;margin:0 0 .3rem;font-weight:780;letter-spacing:-.015em;text-wrap:balance}
+  h2 .em{color:var(--brand)}
+  h3{font-size:1.05rem;margin:1.3rem 0 .2rem;font-weight:750}
+  p{margin:.7rem 0}
+  strong{font-weight:680}
+
+  .lead-in{background:var(--brand-soft);border-radius:14px;padding:1.1rem 1.3rem;font-size:1.02rem}
+  .lead-in p{margin:.4rem 0}
+  .lead-in b{color:var(--brand)}
+
+  .recall{background:var(--pre-soft);border-left:4px solid var(--pre);border-radius:0 12px 12px 0;padding:.9rem 1.15rem;margin-top:1rem;font-size:.98rem}
+  .recall p{margin:.35rem 0}
+  .recall b{color:#565C9B}
+
+  .formula-box{background:var(--ink);color:#fff;border-radius:14px;padding:1.3rem;text-align:center;margin-top:1rem}
+  .formula-box .eq{font-family:PllFix,ui-monospace,Menlo,monospace;font-size:clamp(1.1rem,4.4vw,1.5rem);font-weight:700;line-height:1.5}
+  .formula-box .eq .im{color:#8FB2E6}
+  .formula-box .note{font-size:.9rem;color:#AEB8C6;margin:.7rem 0 0;line-height:1.6}
+
+  .note{border-left:4px solid var(--brand);background:var(--brand-soft);border-radius:0 10px 10px 0;padding:.8rem 1.1rem;margin-top:1rem;font-size:.98rem}
+  .note b{color:var(--brand)}
+
+  /* три случая — цвет-код */
+  .cases{display:flex;flex-direction:column;gap:.6rem;margin-top:1rem}
+  .case{background:var(--card);border:1px solid var(--line);border-left-width:5px;border-radius:0 12px 12px 0;padding:.85rem 1.05rem;font-size:.97rem}
+  .case .ttl{font-weight:800;display:block;margin-bottom:.15rem}
+  .case .sym{font-family:PllFix,ui-monospace,Menlo,monospace;font-weight:700}
+  .case.c1{border-left-color:var(--ok)} .case.c1 .ttl{color:var(--ok)}
+  .case.c2{border-left-color:var(--brand)} .case.c2 .ttl{color:var(--brand)}
+  .case.c3{border-left-color:var(--warn)} .case.c3 .ttl{color:var(--warn)}
+
+  ol.props{margin:1rem 0 0;padding:0;list-style:none;counter-reset:p;display:flex;flex-direction:column;gap:.55rem}
+  ol.props li{counter-increment:p;background:var(--card);border:1px solid var(--line);border-radius:11px;padding:.8rem 1rem .8rem 3rem;position:relative;font-size:.97rem}
+  ol.props li::before{content:counter(p);position:absolute;left:.85rem;top:.8rem;width:1.5rem;height:1.5rem;border-radius:50%;
+    background:var(--brand-soft);color:var(--brand);font-weight:800;font-size:.85rem;display:flex;align-items:center;justify-content:center}
+
+  /* Визуализация */
+  .diagram{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:1.2rem;margin-top:1rem}
+  .diagram canvas{width:100%;height:auto;display:block;border-radius:8px;background:#FCFDFE}
+  .tabs{display:flex;flex-wrap:wrap;gap:.4rem;margin-bottom:.9rem}
+  .tabs button{font:inherit;font-family:PllFix,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:.86rem;font-weight:700;cursor:pointer;border:1px solid var(--line);background:#fff;color:var(--muted);
+    border-radius:999px;padding:.4rem .8rem}
+  .tabs button[aria-pressed="true"]{background:var(--brand);border-color:var(--brand);color:#fff}
+  .tabs button.g[aria-pressed="true"]{background:var(--ok);border-color:var(--ok)}
+  .tabs button.w[aria-pressed="true"]{background:var(--warn);border-color:var(--warn)}
+  .tabs button:focus-visible{outline:3px solid var(--brand);outline-offset:2px}
+  .diag-cap{margin-top:.85rem;padding:.75rem 1rem;border-radius:10px;font-size:.95rem;line-height:1.6}
+  .diag-cap b{font-family:PllFix,ui-monospace,Menlo,monospace}
+  .diag-cap.k-ok{background:var(--ok-soft);color:#14663F}
+  .diag-cap.k-brand{background:var(--brand-soft);color:#1F3F7C}
+  .diag-cap.k-warn{background:var(--warn-soft);color:#95511A}
+  .diag-more{display:flex;justify-content:center;margin-top:.8rem}
+  .diag-more button{font:inherit;font-family:PllFix,system-ui,sans-serif;font-size:.88rem;font-weight:700;cursor:pointer;border:1px solid var(--brand);background:transparent;color:var(--brand);border-radius:9px;padding:.45rem .9rem}
+  .diag-more button:focus-visible{outline:3px solid var(--brand);outline-offset:2px}
+
+  .walk{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.15rem 1.3rem;margin-top:1rem}
+  .walk .q{font-weight:700;font-size:1.02rem;margin:0 0 .9rem;padding-bottom:.7rem;border-bottom:1px solid var(--line)}
+  .walk ol{margin:0;padding-left:1.2rem;display:flex;flex-direction:column;gap:.5rem}
+  .walk li{font-size:.95rem}
+  .walk .why{color:var(--muted);font-style:italic}
+  .verdict{margin-top:1rem;padding:.7rem 1rem;background:var(--brand-soft);border-radius:10px;font-weight:650;color:var(--brand);font-family:PllFix,ui-monospace,Menlo,monospace}
+
+  /* Тренажёр */
+  .trainer{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.2rem 1.3rem;margin-top:1rem}
+  .trainer canvas{width:100%;height:auto;display:block;border-radius:8px;background:#FCFDFE;margin-top:.9rem}
+  .tr-task{font-size:clamp(.98rem,3.6vw,1.1rem);text-align:center;padding:1rem;background:var(--brand-soft);border-radius:10px;font-weight:600;line-height:1.55}
+  .tr-task b{font-family:PllFix,ui-monospace,Menlo,monospace;color:var(--ink)}
+  .tr-opts{display:flex;gap:.45rem;flex-wrap:wrap;margin-top:.9rem;justify-content:center}
+  .tr-opts button{font:inherit;font-family:PllFix,system-ui,sans-serif;font-weight:700;font-size:.88rem;cursor:pointer;border:1px solid var(--line);background:#fff;color:var(--ink);border-radius:9px;padding:.5rem .85rem}
+  .tr-opts button:focus-visible{outline:3px solid var(--brand);outline-offset:2px}
+  .tr-opts button.sel-ok{background:var(--ok-soft);border-color:var(--ok);color:var(--ok)}
+  .tr-opts button.sel-bad{background:var(--no-soft);border-color:var(--no);color:var(--no)}
+  .tr-opts button[disabled]{cursor:default;opacity:.75}
+  .tr-ctl{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.9rem;align-items:center;justify-content:center}
+  .tr-ctl button{font:inherit;font-family:PllFix,system-ui,sans-serif;font-weight:700;font-size:.9rem;cursor:pointer;border:none;border-radius:9px;padding:.55rem .95rem;color:#fff;background:var(--brand)}
+  .tr-ctl button.ghost{background:transparent;color:var(--brand);border:1px solid var(--brand)}
+  .tr-ctl button:focus-visible{outline:3px solid var(--brand);outline-offset:2px}
+  .tr-result{margin-top:.9rem;font-size:.96rem;min-height:1.2rem;text-align:center}
+  .tr-result .ok{color:var(--ok);font-weight:700} .tr-result .bad{color:var(--no);font-weight:700}
+  .tr-result .sol{margin-top:.6rem;padding:.8rem 1rem;background:#FCFDFE;border:1px solid var(--line);border-radius:10px;font-size:.92rem;line-height:1.75;text-align:left}
+  .tr-result .sol .mono{font-family:PllFix,ui-monospace,Menlo,monospace;font-weight:600}
+  .tr-hint{font-size:.85rem;color:var(--muted);text-align:center;margin:.6rem 0 0}
+
+  details{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:.9rem 1.1rem;margin-top:.7rem}
+  details[open]{border-color:var(--brand)}
+  summary{cursor:pointer;font-weight:650;list-style:none;display:flex;justify-content:space-between;gap:1rem;align-items:center}
+  summary::-webkit-details-marker{display:none}
+  summary::after{content:"проверить";font-size:.8rem;color:var(--brand);font-weight:700;white-space:nowrap}
+  details[open] summary::after{content:"скрыть"}
+  summary:focus-visible{outline:3px solid var(--brand);outline-offset:3px;border-radius:6px}
+  .ans{margin-top:.75rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.96rem;color:var(--muted)}
+  .ans b{color:var(--ink)}
+  .drill{display:flex;flex-direction:column;gap:.2rem;margin-top:1rem}
+  .lvl{font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:700;margin:1.3rem 0 .1rem}
+
+  ul.traps{list-style:none;margin:1rem 0 0;padding:0;display:flex;flex-direction:column;gap:.7rem}
+  ul.traps li{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:.85rem 1.05rem;padding-left:2.5rem;position:relative;font-size:.97rem}
+  ul.traps li::before{content:"⚠";position:absolute;left:1rem;top:.85rem;color:var(--warn)}
+  ul.traps b{font-weight:700}
+
+  .selfcheck{background:var(--card);border:1px dashed var(--brand);border-radius:14px;padding:1.1rem 1.3rem;margin-top:1rem}
+  .selfcheck ol{margin:.5rem 0 0;padding-left:1.2rem;display:flex;flex-direction:column;gap:.45rem;font-size:.97rem}
+
+  .wrapup{background:var(--brand);color:#fff;border-radius:16px;padding:1.4rem 1.5rem;margin-top:2.4rem}
+  .wrapup h2{color:#fff;margin:0 0 .5rem}
+  .wrapup p{color:#DEE7F5;margin:.4rem 0;font-size:1rem}
+  .wrapup .big-rule{font-size:1.05rem;font-weight:800;color:#fff;margin:.6rem 0;font-family:PllFix,ui-monospace,Menlo,monospace;line-height:1.5}
+  .wrapup .next{font-size:.95rem;color:#C6D5EE;margin-top:1rem;padding-top:1rem;border-top:1px solid rgba(255,255,255,.2)}
+  .wrapup .next b{color:#fff}
+
+  @media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+<!--LESSON-NAV-TOP--><style>.lnav{--lnav-accent:#3D5AF1}.lnav a{text-decoration:none;font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif}.lnav-top{max-width:820px;margin:0 auto;padding:.75rem clamp(1rem,4vw,1.5rem) .1rem}.lnav-top a{display:inline-flex;align-items:center;gap:.35rem;color:var(--lnav-accent);font-weight:600;font-size:.9rem}.lnav-top a:hover{text-decoration:underline}.lnav-bot{max-width:820px;margin:2.6rem auto 3rem;padding:1.1rem clamp(1rem,4vw,1.5rem) 0;border-top:1px solid #E4E8EF;display:flex;align-items:stretch;gap:.55rem}.lnav-bot a{min-width:0;display:flex;flex-direction:column;justify-content:center;gap:.15rem;border:1px solid #E4E8EF;border-radius:12px;padding:.65rem .85rem;color:#182233;background:#fff;transition:border-color .1s,transform .08s}.lnav-bot a:hover{border-color:var(--lnav-accent);transform:translateY(-1px)}.lnav-bot .prev,.lnav-bot .next{flex:1 1 0}.lnav-bot .next{text-align:right}.lnav-bot .dir{font-size:.72rem;color:#8A93A6;font-weight:600}.lnav-bot .ttl{font-size:.9rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.lnav-bot .to-cat{flex:0 0 auto;flex-direction:row;align-items:center;justify-content:center;color:var(--lnav-accent);font-weight:700;font-size:.85rem;white-space:nowrap}@media(max-width:420px){.lnav-bot .to-cat span{display:none}.lnav-bot .to-cat{padding:.65rem .7rem}}</style><nav class="lnav lnav-top"><a href="./catalog.html">← Все темы</a></nav><!--/LESSON-NAV-TOP-->
+<div class="page">
+
+  <header class="hero">
+    <p class="eyebrow">Геометрия · 9 класс · стереометрия</p>
+    <h1>Прямые и плоскости в пространстве</h1>
+    <p class="tagline">На плоскости прямые либо пересекаются, либо параллельны. В пространстве появляется третий случай — и именно он ломает привычку.</p>
+  </header>
+
+  <div class="lead-in">
+    <p><b>Где встречается.</b> До этого вся твоя геометрия была «плоской»: треугольники, окружности — всё лежало на листе бумаги. Но реальный мир объёмный. Стены комнаты — это плоскости, ребро стола — прямая, угол комнаты — точка, где сходятся три плоскости. Чтобы строить дома, проектировать мебель, читать чертежи, нужно понимать, как прямые и плоскости располагаются друг относительно друга в пространстве.</p>
+    <p><b>Главный миф, который сейчас развалится.</b> «Если две прямые не пересекаются, значит они параллельны». На плоскости — чистая правда. В пространстве — <b>нет</b>. Оглядись в комнате: ребро пола вдоль одной стены и ребро потолка вдоль соседней стены не пересекаются и при этом не параллельны. Такие прямые называют <b>скрещивающимися</b>, и на плоскости их просто не бывает.</p>
+  </div>
+
+  <div class="recall">
+    <p><b>Вспомни перед стартом.</b></p>
+    <p>· <b>Планиметрия — про одну плоскость.</b> Все треугольники, которые ты разбирал с 7 класса, лежали в одной плоскости. Там вариантов у двух прямых ровно два: пересекаются или параллельны.</p>
+    <p>· <b>Обозначения.</b> Точки — заглавными латинскими буквами (A, B, C); прямые — строчными (a, b) или двумя точками (AB); плоскости — греческими буквами (α, β, γ).</p>
+    <p>· <b>Индекс.</b> Запись A₁ читается «A с индексом один». В кубе ABCDA₁B₁C₁D₁ буквы с индексом — это верхняя грань, ровно над нижней.</p>
+  </div>
+
+  <section>
+    <h2>Ядро: <span class="em">три случая для двух прямых</span></h2>
+    <p>В пространстве у прямых больше вариантов «встречи», чем на плоскости, потому что появляется третье измерение — глубина. Вариантов ровно три.</p>
+
+    <div class="cases">
+      <div class="case c1">
+        <span class="ttl">1. Пересекающиеся</span>
+        Имеют <strong>ровно одну общую точку</strong>. Как две дороги на перекрёстке.
+      </div>
+      <div class="case c2">
+        <span class="ttl">2. Параллельные <span class="sym">a ∥ b</span></span>
+        <strong>Лежат в одной плоскости</strong> и не имеют общих точек. Оба условия обязательны.
+      </div>
+      <div class="case c3">
+        <span class="ttl">3. Скрещивающиеся</span>
+        <strong>Не лежат ни в одной общей плоскости</strong> — а значит, и не пересекаются, и не параллельны. Такого случая на плоскости не существует.
+      </div>
+    </div>
+
+    <div class="formula-box">
+      <div class="eq">общих точек нет →<br><span class="im">лежат в одной плоскости?</span></div>
+      <div class="note">да → <b style="color:#8FB2E6">параллельны</b> &nbsp;·&nbsp; нет → <b style="color:#E8A768">скрещиваются</b><br>Это единственный вопрос, который отличает два «непересекающихся» случая друг от друга.</div>
+    </div>
+
+    <p>Смотри, в чём тут смысл. Отсутствие общих точек — <em>ещё не параллельность</em>. Параллельность требует, чтобы прямые лежали <strong>в одной плоскости</strong>. Если такой плоскости нет — прямые скрещиваются. Именно глубина (третье измерение) и порождает скрещивание.</p>
+
+    <h3>Признак скрещивающихся прямых</h3>
+    <div class="note">
+      <p><b>Если одна прямая лежит в плоскости, а другая пересекает эту плоскость в точке, не лежащей на первой прямой, то прямые скрещиваются.</b></p>
+      <p>Это твой рабочий инструмент: не надо «на глаз» решать, есть общая плоскость или нет — достаточно найти одну плоскость с первой прямой и посмотреть, где её протыкает вторая.</p>
+    </div>
+
+    <h3>Прямая и плоскость: считай общие точки</h3>
+    <ol class="props">
+      <li><strong>Прямая лежит в плоскости</strong> — все её точки в плоскости (общих точек «все»).</li>
+      <li><strong>Прямая пересекает плоскость</strong> — ровно <strong>одна</strong> общая точка.</li>
+      <li><strong>Прямая параллельна плоскости</strong> (<span class="mono">a ∥ α</span>) — общих точек <strong>ноль</strong>.</li>
+    </ol>
+    <div class="note">
+      <p><b>Признак параллельности прямой и плоскости.</b> Если прямая, не лежащая в плоскости, параллельна какой-нибудь прямой, лежащей в этой плоскости, то она параллельна и всей плоскости.</p>
+    </div>
+
+    <h3>Две плоскости: вариантов всего два</h3>
+    <p>Две плоскости либо <strong>пересекаются по прямой</strong> (как две смежные стены комнаты — линия пересечения это вертикальное ребро угла), либо <strong>параллельны</strong>, то есть не имеют общих точек (<span class="mono">α ∥ β</span>) — как пол и потолок. Третьего не дано: если у плоскостей есть хоть одна общая точка, то у них сразу есть целая общая прямая.</p>
+
+    <h3>Перпендикулярность прямой и плоскости</h3>
+    <p>Прямая перпендикулярна плоскости (<span class="mono">a ⊥ α</span>), если она перпендикулярна <strong>каждой</strong> прямой, лежащей в этой плоскости. Проверять «каждую» невозможно, поэтому есть признак:</p>
+    <div class="note">
+      <p><b>Признак.</b> Если прямая перпендикулярна <b>двум пересекающимся</b> прямым плоскости, то она перпендикулярна всей плоскости.</p>
+      <p>Слово «пересекающимся» здесь ключевое: двух параллельных прямых не хватит.</p>
+    </div>
+
+    <p style="font-size:.93rem;color:var(--muted)">И общее правило безопасности: все эти определения — <strong>про пространство</strong>. Переносить факты из планиметрии сюда без проверки нельзя, это разные ситуации.</p>
+  </section>
+
+  <section>
+    <h2>Увидь глазами — <span class="em">каркас куба</span></h2>
+    <p>Куб ABCDA₁B₁C₁D₁ — лучшая модель для этой темы: в нём есть все случаи сразу. Пунктиром показаны невидимые рёбра (те, что уходят за куб). Переключай случай, а кнопкой «другая пара» смотри следующий пример. Подсвеченные рёбра продлены пунктиром — напоминание, что мы говорим про <strong>прямые</strong>, а не про отрезки.</p>
+    <div class="diagram">
+      <div class="tabs" id="tabs">
+        <button type="button" class="g" data-i="0" aria-pressed="true">Пересекающиеся</button>
+        <button type="button" data-i="1" aria-pressed="false">Параллельные</button>
+        <button type="button" class="w" data-i="2" aria-pressed="false">Скрещивающиеся</button>
+        <button type="button" data-i="3" aria-pressed="false">Прямая и плоскость</button>
+        <button type="button" data-i="4" aria-pressed="false">Две плоскости</button>
+      </div>
+      <canvas id="cv" width="680" height="440" aria-label="Каркас куба с подсвеченной парой прямых или плоскостей"></canvas>
+      <div class="diag-cap k-ok" id="cap"></div>
+      <div class="diag-more"><button type="button" id="more">↻ другая пара</button></div>
+    </div>
+
+    <div class="note">
+      <p><b>Сделай руками.</b> Собери каркас куба из спичек или трубочек — или просто используй комнату. Пол и потолок — параллельные плоскости. Смежные стены — пересекающиеся плоскости. Ребро пола у одной стены и ребро потолка у соседней — скрещивающиеся прямые.</p>
+      <p><b>Сначала предскажи, потом проверь.</b> Прежде чем смотреть на модель, скажи вслух, как, по-твоему, расположены две прямые. Потом проверь на каркасе. Потом объясни, <em>почему</em> именно так. Предсказание, которое не сбылось, запоминается лучше всего.</p>
+      <p><b>Задание в комнате.</b> Найди пару скрещивающихся прямых и обоснуй, почему они не параллельны.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Эталон — <span class="em">думаю вслух</span></h2>
+
+    <div class="walk">
+      <p class="q">Дан куб ABCDA₁B₁C₁D₁. Как расположены прямые AB и CC₁?</p>
+      <ol>
+        <li><b>Шаг 1.</b> AB — ребро нижнего основания, CC₁ — боковое ребро. <span class="why">Почему смотрю именно на расположение: надо выбрать один из трёх вариантов — пересекаются, параллельны или скрещиваются. Третьего варианта я теперь не забываю.</span></li>
+        <li><b>Шаг 2.</b> Пересекаются ли? Общих точек у них нет: A и B — вершины нижней грани, C — тоже внизу, но прямая AB через C не проходит. <span class="why">Почему это важно: C не лежит на прямой AB, значит общей точки нет — вариант «пересекаются» отпал.</span></li>
+        <li><b>Шаг 3.</b> Параллельны ли? Для параллельности они обязаны лежать в одной плоскости. AB лежит в плоскости нижней грани ABCD, а CC₁ выходит вверх из этой плоскости — общей плоскости нет. <span class="why">Почему: CC₁ пересекает плоскость ABCD в точке C, а точка C не лежит на прямой AB — это ровно условие признака.</span></li>
+        <li><b>Шаг 4.</b> Значит, по признаку скрещивающихся прямых, они <b>скрещиваются</b>.</li>
+      </ol>
+      <div class="verdict">Ответ: AB и CC₁ — скрещивающиеся</div>
+    </div>
+
+    <div class="walk" style="margin-top:.8rem">
+      <p class="q">В том же кубе: как расположены прямые AB и A₁B₁?</p>
+      <ol>
+        <li><b>Шаг 1.</b> AB — ребро нижнего основания, A₁B₁ — ребро верхнего основания, лежащего ровно над ним.</li>
+        <li><b>Шаг 2.</b> Общих точек нет: одно ребро внизу, другое вверху. <span class="why">Здесь новичок сразу пишет «параллельны». Стоп — это ещё не ответ, это только половина проверки.</span></li>
+        <li><b>Шаг 3.</b> Лежат ли они в одной плоскости? Да: грань ABB₁A₁ содержит обе прямые целиком. <span class="why">Вот теперь второе условие выполнено — есть общая плоскость.</span></li>
+        <li><b>Шаг 4.</b> Ноль общих точек плюс общая плоскость — это и есть определение параллельности.</li>
+      </ol>
+      <div class="verdict">Ответ: AB ∥ A₁B₁ (обе лежат в плоскости ABB₁A₁)</div>
+    </div>
+
+    <p style="font-size:.93rem;color:var(--muted)">Заметил схему? Оба разбора идут по одному и тому же маршруту: <strong>есть ли общая точка → есть ли общая плоскость</strong>. Второй вопрос задавай всегда, даже когда «и так очевидно».</p>
+  </section>
+
+  <section>
+    <h2>Тренажёр · <span class="em">взаимное расположение</span></h2>
+    <p>Бесконечные задания по кубу ABCDA₁B₁C₁D₁: пары прямых, прямая и грань, две грани. Сначала посмотри на чертёж и реши сам, потом жми вариант — разбор появится в любом случае.</p>
+    <div class="trainer">
+      <div class="tr-task" id="trTask"></div>
+      <canvas id="trCv" width="680" height="380" aria-label="Чертёж куба к заданию тренажёра"></canvas>
+      <div class="tr-opts" id="trOpts"></div>
+      <div class="tr-ctl">
+        <button id="trNew" type="button">🎲 Новое</button>
+        <button id="trShow" type="button" class="ghost">Решение</button>
+      </div>
+      <div id="trResult" class="tr-result"></div>
+      <p class="tr-hint">Маршрут на все случаи: сколько общих точек? если ноль — есть ли общая плоскость?</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Проверь себя</h2>
+
+    <p class="lvl">Уровень 1 · понимание</p>
+    <div class="drill">
+      <details><summary>1) Назови три возможных взаимных расположения двух прямых в пространстве. Какое из них невозможно на плоскости?</summary><div class="ans">Пересекаются, параллельны, <b>скрещиваются</b>. На плоскости невозможно скрещивание: там любые две прямые лежат в одной плоскости по определению, а скрещивающимся такой плоскости как раз и не хватает.</div></details>
+      <details><summary>2) Чем параллельные прямые отличаются от скрещивающихся, если и у тех, и у других нет общих точек?</summary><div class="ans">Отличие ровно одно: <b>параллельные лежат в общей плоскости, скрещивающиеся — нет</b>. Это и есть проверочный вопрос.</div></details>
+      <details><summary>3) Сколько общих точек у прямой и плоскости, если прямая им параллельна?</summary><div class="ans"><b>Ноль.</b> Одна общая точка — прямая пересекает плоскость; все точки общие — прямая лежит в плоскости.</div></details>
+      <details><summary>4) Сколько вариантов взаимного расположения у двух плоскостей и какие?</summary><div class="ans">Два: <b>пересекаются по прямой</b> либо <b>параллельны</b> (общих точек нет).</div></details>
+    </div>
+
+    <p class="lvl">Уровень 2 · применение</p>
+    <div class="drill">
+      <details><summary>5) В кубе ABCDA₁B₁C₁D₁ определи расположение прямых AA₁ и BB₁.</summary><div class="ans"><b>Параллельны.</b> Общих точек нет, а грань ABB₁A₁ содержит обе прямые — общая плоскость есть.</div></details>
+      <details><summary>6) В том же кубе: AB и B₁C₁.</summary><div class="ans"><b>Скрещиваются.</b> AB лежит в плоскости грани ABB₁A₁, а прямая B₁C₁ пересекает эту плоскость в точке B₁, которая на прямой AB не лежит — сработал признак.</div></details>
+      <details><summary>7) В том же кубе: AC и BD (диагонали нижней грани).</summary><div class="ans"><b>Пересекаются.</b> Обе диагонали лежат в одной плоскости — в плоскости нижней грани ABCD, — и у квадрата диагонали пересекаются в его центре. Ровно одна общая точка.</div></details>
+      <details><summary>8) В том же кубе: AD и B₁C₁.</summary><div class="ans"><b>Параллельны.</b> AD ∥ BC (противоположные стороны квадрата ABCD), а BC ∥ B₁C₁ (противоположные стороны квадрата BCC₁B₁), значит AD ∥ B₁C₁. Общая плоскость — плоскость четырёхугольника ADC₁B₁, общих точек нет.</div></details>
+      <details><summary>9) Как расположены прямая A₁B₁ и плоскость ABCD?</summary><div class="ans"><b>Параллельны.</b> Общих точек нет (всё ребро A₁B₁ лежит в верхней грани), а по признаку: A₁B₁ ∥ AB, прямая AB лежит в плоскости ABCD, сама A₁B₁ в ней не лежит — значит A₁B₁ ∥ ABCD.</div></details>
+      <details><summary>10) Как расположены плоскости ABB₁A₁ и BCC₁B₁?</summary><div class="ans"><b>Пересекаются</b> по прямой BB₁ — это их общее ребро. Общая точка есть, значит параллельными они быть не могут.</div></details>
+    </div>
+
+    <p class="lvl">Уровень 3 · анализ</p>
+    <div class="drill">
+      <details><summary>11) Верно ли: «две прямые не пересекаются — значит, они параллельны»? Приведи контрпример на кубе. Что изменится, если перенести это утверждение на плоскость?</summary><div class="ans">В пространстве <b>неверно</b>. Контрпример: AB и CC₁ — общих точек нет, но и общей плоскости нет, они скрещиваются. <b>На плоскости утверждение становится верным</b>: там все прямые изначально лежат в одной плоскости, второе условие параллельности выполнено автоматически, и остаётся только «нет общих точек». Именно поэтому привычка из 7–8 класса и подводит: она была верна ровно для плоского случая.</div></details>
+      <details><summary>12) Найди ошибку. Ученик пишет: «Прямые AB и CC₁ не пересекаются, потому что точка C не лежит на AB. Значит, AB ∥ CC₁».</summary><div class="ans">Первая половина верна, вывод — нет. Ученик <b>проверил только отсутствие общих точек и пропустил вопрос про общую плоскость</b>. А общей плоскости здесь нет: CC₁ пересекает плоскость ABCD в точке C, не лежащей на AB. Правильный вывод — <b>скрещиваются</b>.</div></details>
+      <details><summary>13) Найди ошибку. Ученик говорит: «Прямая a перпендикулярна двум прямым плоскости α, значит a ⊥ α».</summary><div class="ans">Пропущено слово из признака: прямые должны быть <b>пересекающимися</b>. Если a перпендикулярна двум <em>параллельным</em> прямым плоскости, вывода о перпендикулярности всей плоскости сделать нельзя. Формулировку признака надо цитировать целиком.</div></details>
+      <details><summary>14) Что изменится, если… У прямой и плоскости оказались две общие точки. Что можно сказать про их расположение?</summary><div class="ans">Вариантов у прямой и плоскости три, и они различаются числом общих точек: <b>0</b> — параллельны, <b>ровно 1</b> — пересекаются, <b>все</b> — прямая лежит в плоскости. Две общие точки — это не ноль и не «ровно одна», остаётся единственный вариант: <b>прямая лежит в плоскости</b>.</div></details>
+      <details><summary>15) Известно, что прямая a параллельна прямой b, а прямая b лежит в плоскости α. Следует ли отсюда, что a ∥ α?</summary><div class="ans">Только при одной оговорке: <b>если сама a не лежит в α</b>. Тогда работает признак параллельности прямой и плоскости. А если a лежит в α, то это уже случай «прямая лежит в плоскости», а не параллельность — общих точек ведь бесконечно много.</div></details>
+      <details><summary>16) Что изменится, если… В кубе взять прямые AB и CC₁, но вместо куба — произвольный параллелепипед (грани — параллелограммы)? Изменится ли ответ?</summary><div class="ans"><b>Не изменится: по-прежнему скрещиваются.</b> В рассуждении нигде не использовались ни равные рёбра, ни прямые углы — только два факта: AB лежит в плоскости нижней грани, а CC₁ пересекает эту плоскость в точке C вне прямой AB. Оба факта верны для любого параллелепипеда. Вывод: взаимное расположение — вопрос не измерений, а того, что с чем в какой плоскости лежит.</div></details>
+    </div>
+  </section>
+
+  <section>
+    <h2>Ловушки</h2>
+    <ul class="traps">
+      <li><b>Перенос планиметрии в пространство без проверки.</b> Рука сама пишет «не пересекаются → параллельны», как привыкла на плоскости. <em>Как не попасться:</em> всегда проверяй третий вариант — скрещивание — и задавай себе вопрос «лежат ли прямые в одной плоскости?».</li>
+      <li><b>Забыть про скрещивающиеся прямые.</b> Кажется, что вариантов только два. <em>Как не попасться:</em> в пространстве вариантов ровно <b>три</b>, и скрещивание — самый «пространственный» из них.</li>
+      <li><b>Путать параллельность и скрещивание.</b> И там, и там нет общих точек, поэтому случаи смешиваются. <em>Как не попасться:</em> отличие ровно одно — параллельные лежат в общей плоскости, скрещивающиеся нет.</li>
+      <li><b>Думать, что прямая без общих точек с плоскостью «висит сбоку».</b> Забывают, что параллельность прямой и плоскости тоже даёт ноль общих точек. <em>Как не попасться:</em> считай именно число общих точек: 0 — параллельны, 1 — пересекаются, все — прямая лежит в плоскости.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Объясни своими словами</h2>
+    <div class="selfcheck">
+      <p>Закрой урок и ответь вслух — себе, другу или голосовому помощнику. Если идёт гладко, тема взята.</p>
+      <ol>
+        <li>Сколько существует видов взаимного расположения двух прямых в пространстве и какой из них «лишний» по сравнению с плоскостью?</li>
+        <li>Чем параллельные прямые отличаются от скрещивающихся, если у обоих нет общих точек?</li>
+        <li>Сколько общих точек у прямой и плоскости, если прямая ей параллельна?</li>
+      </ol>
+      <details style="margin-top:.9rem"><summary>Сверить ответы</summary><div class="ans">
+        1) <b>Три</b>: пересекаются, параллельны, скрещиваются. «Лишний» — <b>скрещивание</b>, на плоскости его нет.<br>
+        2) Параллельные <b>лежат в одной плоскости</b>, скрещивающиеся — ни в одной общей.<br>
+        3) <b>Ноль.</b>
+      </div></details>
+    </div>
+  </section>
+
+  <div class="wrapup">
+    <h2>Запомни главное</h2>
+    <p class="big-rule">нет общих точек + общая плоскость есть → параллельны<br>нет общих точек + общей плоскости нет → скрещиваются</p>
+    <p>В пространстве прямые могут пересекаться, быть параллельными или скрещиваться, а различать параллельность и скрещивание помогает один вопрос — лежат ли прямые в одной плоскости. Для прямой и плоскости считай общие точки: 0 — параллельны, 1 — пересекаются, все — прямая в плоскости. Две плоскости либо пересекаются по прямой, либо параллельны.</p>
+    <p class="next">👉 Дальше на этом фундаменте строится вся стереометрия: сначала <b>многогранники</b> (призма, параллелепипед, пирамида), потом <b>тела вращения</b> (цилиндр, конус, шар). Там на каждом шагу придётся отвечать, как расположены рёбра и грани — то есть делать ровно то, чему ты научился здесь.</p>
+  </div>
+
+</div>
+
+<script>
+(function(){
+  "use strict";
+  /* ---------- общая геометрия куба ---------- */
+  var V={A:[0,0,0],B:[1,0,0],C:[1,1,0],D:[0,1,0],A1:[0,0,1],B1:[1,0,1],C1:[1,1,1],D1:[0,1,1]};
+  var KEYS=['A','B','C','D','A1','B1','C1','D1'];
+  var EDGES=[['A','B'],['B','C'],['C','D'],['D','A'],['A1','B1'],['B1','C1'],['C1','D1'],['D1','A1'],['A','A1'],['B','B1'],['C','C1'],['D','D1']];
+  var HIDDEN={'CD':1,'DA':1,'DD1':1};
+  var FACES=[
+    {v:['A','B','C','D'],       n:2, val:0},
+    {v:['A1','B1','C1','D1'],   n:2, val:1},
+    {v:['A','B','B1','A1'],     n:1, val:0},
+    {v:['D','C','C1','D1'],     n:1, val:1},
+    {v:['A','D','D1','A1'],     n:0, val:0},
+    {v:['B','C','C1','B1'],     n:0, val:1}
+  ];
+  function nm(k){ return k.length>1 ? k.charAt(0)+'₁' : k; }
+  function lineName(p,q){ return nm(p)+nm(q); }
+  function faceName(f){ return f.v.map(nm).join(''); }
+  function sub(a,b){ return [a[0]-b[0],a[1]-b[1],a[2]-b[2]]; }
+  function axisOf(p,q){ var d=sub(V[q],V[p]); for(var i=0;i<3;i++) if(d[i]!==0) return i; return -1; }
+
+  /* классификация двух прямых, заданных парами вершин куба (рёбра) */
+  function classifyLines(e1,e2){
+    var a1=axisOf(e1[0],e1[1]), a2=axisOf(e2[0],e2[1]);
+    if(a1===a2) return 'par';
+    var common=null;
+    [e1[0],e1[1]].forEach(function(k){ if(k===e2[0]||k===e2[1]) common=k; });
+    return common ? 'cross' : 'skew';
+  }
+  function commonVertex(e1,e2){
+    var r=null; [e1[0],e1[1]].forEach(function(k){ if(k===e2[0]||k===e2[1]) r=k; }); return r;
+  }
+  /* плоскость, содержащая две параллельные прямые: четырёхугольник */
+  function planeOfParallel(e1,e2){
+    var d1=sub(V[e1[1]],V[e1[0]]), d2=sub(V[e2[1]],V[e2[0]]);
+    var dot=d1[0]*d2[0]+d1[1]*d2[1]+d1[2]*d2[2];
+    var r=e2[0], s=e2[1];
+    if(dot<0){ r=e2[1]; s=e2[0]; }
+    return [e1[0],e1[1],s,r];
+  }
+  function sameSet(a,b){
+    if(a.length!==b.length) return false;
+    var x=a.slice().sort().join(','), y=b.slice().sort().join(',');
+    return x===y;
+  }
+  function nameOfQuad(q){
+    for(var i=0;i<FACES.length;i++) if(sameSet(FACES[i].v,q)) return 'грани '+faceName(FACES[i]);
+    return 'четырёхугольника '+q.map(nm).join('');
+  }
+  /* грань, содержащая прямую e1, нормаль которой совпадает с осью e2 (для скрещивающихся) */
+  function skewWitness(e1,e2){
+    var a2=axisOf(e2[0],e2[1]);
+    for(var i=0;i<FACES.length;i++){
+      var f=FACES[i];
+      if(f.v.indexOf(e1[0])<0 || f.v.indexOf(e1[1])<0) continue;
+      if(f.n!==a2) continue;
+      var pt = (V[e2[0]][f.n]===f.val) ? e2[0] : e2[1];
+      return {face:f, pt:pt};
+    }
+    return null;
+  }
+  /* прямая (ребро) и грань */
+  function classifyLineFace(e,f){
+    var inA=f.v.indexOf(e[0])>=0, inB=f.v.indexOf(e[1])>=0;
+    if(inA&&inB) return 'in';
+    var ax=axisOf(e[0],e[1]);
+    if(ax===f.n) return 'cross';
+    return 'par';
+  }
+  function facesPair(f1,f2){
+    if(f1.n===f2.n) return 'par';
+    var shared=f1.v.filter(function(k){ return f2.v.indexOf(k)>=0; });
+    return {kind:'cross', edge:shared};
+  }
+
+  /* ---------- рендер ---------- */
+  var COL={ ok:'#1E8E5A', brand:'#2E5AAC', warn:'#E27C2C', ink:'#1D2530' };
+  function drawScene(cv, st){
+    var ctx=cv.getContext('2d');
+    var W=cv._w, H=cv._h;
+    var pad=30;
+    var S=Math.min((W-2*pad)/1.45,(H-2*pad)/1.32);
+    var ox=(W-1.45*S)/2, oy=H-(H-1.32*S)/2;
+    function P(p){ return [ox+(p[0]+p[1]*0.45)*S, oy-(p[2]+p[1]*0.32)*S]; }
+    function PK(k){ return P(V[k]); }
+    ctx.clearRect(0,0,W,H);
+    var fs=Math.max(11,Math.min(16,S*0.115));
+
+    /* подсвеченные грани */
+    (st.faces||[]).forEach(function(hf){
+      var c=COL[hf.color]||COL.brand;
+      ctx.save(); ctx.beginPath();
+      hf.f.v.forEach(function(k,i){ var s=PK(k); i?ctx.lineTo(s[0],s[1]):ctx.moveTo(s[0],s[1]); });
+      ctx.closePath();
+      ctx.globalAlpha=hf.alpha||0.16; ctx.fillStyle=c; ctx.fill();
+      ctx.globalAlpha=0.9; ctx.strokeStyle=c; ctx.lineWidth=2; ctx.stroke();
+      ctx.restore();
+    });
+
+    /* рёбра каркаса */
+    EDGES.forEach(function(e){
+      var hid=HIDDEN[e[0]+e[1]]||HIDDEN[e[1]+e[0]];
+      var p=PK(e[0]), q=PK(e[1]);
+      ctx.save();
+      ctx.strokeStyle=hid?'#C4CCD8':'#8C97A8';
+      ctx.lineWidth=hid?1.3:1.7;
+      if(hid) ctx.setLineDash([5,4]);
+      ctx.beginPath(); ctx.moveTo(p[0],p[1]); ctx.lineTo(q[0],q[1]); ctx.stroke();
+      ctx.restore();
+    });
+
+    /* подсвеченные прямые */
+    (st.lines||[]).forEach(function(hl){
+      var c=COL[hl.color]||COL.ink;
+      var a=V[hl.e[0]], b=V[hl.e[1]];
+      var d=sub(b,a), k=0.26;
+      var ea=[a[0]-d[0]*k,a[1]-d[1]*k,a[2]-d[2]*k];
+      var eb=[b[0]+d[0]*k,b[1]+d[1]*k,b[2]+d[2]*k];
+      var pa=P(a), pb=P(b), pea=P(ea), peb=P(eb);
+      ctx.save();
+      ctx.strokeStyle=c; ctx.globalAlpha=0.5; ctx.lineWidth=2; ctx.setLineDash([5,4]);
+      ctx.beginPath(); ctx.moveTo(pea[0],pea[1]); ctx.lineTo(pa[0],pa[1]); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(pb[0],pb[1]); ctx.lineTo(peb[0],peb[1]); ctx.stroke();
+      ctx.restore();
+      ctx.save();
+      ctx.strokeStyle=c; ctx.lineWidth=4.2; ctx.lineCap='round';
+      ctx.beginPath(); ctx.moveTo(pa[0],pa[1]); ctx.lineTo(pb[0],pb[1]); ctx.stroke();
+      ctx.restore();
+    });
+
+    /* точки */
+    (st.dots||[]).forEach(function(dt){
+      var c=COL[dt.color]||COL.ok, s=P(dt.p||V[dt.k]);
+      ctx.save();
+      ctx.fillStyle='#fff'; ctx.beginPath(); ctx.arc(s[0],s[1],6.5,0,6.29); ctx.fill();
+      ctx.fillStyle=c; ctx.beginPath(); ctx.arc(s[0],s[1],4.5,0,6.29); ctx.fill();
+      ctx.restore();
+    });
+
+    /* подписи вершин */
+    var cen=P([0.5,0.5,0.5]);
+    ctx.save();
+    ctx.font='700 '+fs+'px system-ui,-apple-system,sans-serif';
+    ctx.textAlign='center'; ctx.textBaseline='middle';
+    KEYS.forEach(function(k){
+      var s=PK(k), dx=s[0]-cen[0], dy=s[1]-cen[1], L=Math.hypot(dx,dy)||1;
+      ctx.fillStyle=(st.markKeys&&st.markKeys[k])?(COL[st.markKeys[k]]||COL.ink):'#5A6675';
+      ctx.fillText(nm(k), s[0]+dx/L*fs*1.25, s[1]+dy/L*fs*1.25);
+    });
+    ctx.restore();
+  }
+  function sizeCanvas(cv, ratio){
+    var c=cv.clientWidth||680, dpr=Math.min(window.devicePixelRatio||1,2);
+    cv._w=c; cv._h=Math.round(c*ratio);
+    cv.width=cv._w*dpr; cv.height=cv._h*dpr; cv.style.height=cv._h+'px';
+    cv.getContext('2d').setTransform(dpr,0,0,dpr,0,0);
+  }
+
+  /* ---------- визуализация с вкладками ---------- */
+  var cv=document.getElementById('cv'), cap=document.getElementById('cap');
+  var GROUPS=[
+    { color:'ok', cls:'k-ok', items:[
+      {e1:['A','B'],e2:['A','D'],dot:'A'},
+      {e1:['A','B'],e2:['A','A1'],dot:'A'},
+      {e1:['B','C'],e2:['C','C1'],dot:'C'},
+      {e1:['A1','B1'],e2:['B1','C1'],dot:'B1'}
+    ]},
+    { color:'brand', cls:'k-brand', items:[
+      {e1:['A','B'],e2:['C1','D1']},
+      {e1:['A','B'],e2:['C','D']},
+      {e1:['A','A1'],e2:['C','C1']},
+      {e1:['A','D'],e2:['B1','C1']}
+    ]},
+    { color:'warn', cls:'k-warn', items:[
+      {e1:['A','B'],e2:['C','C1']},
+      {e1:['A','B'],e2:['B1','C1']},
+      {e1:['A','A1'],e2:['B','C']},
+      {e1:['A1','B1'],e2:['B','C']}
+    ]},
+    { color:null, cls:null, items:[
+      {e:['A','B'],fi:0},
+      {e:['A1','B1'],fi:0},
+      {e:['A','A1'],fi:0},
+      {e:['C','C1'],fi:2}
+    ]},
+    { color:null, cls:null, items:[
+      {f1:0,f2:1},
+      {f1:2,f2:5},
+      {f1:0,f2:5},
+      {f1:4,f2:5}
+    ]}
+  ];
+  var gi=0, ii=0;
+
+  function capLines(it,kind){
+    var n1=lineName(it.e1[0],it.e1[1]), n2=lineName(it.e2[0],it.e2[1]);
+    if(kind==='cross'){
+      return '<b>'+n1+'</b> и <b>'+n2+'</b> — <b>пересекаются</b>: у них есть общая точка '+nm(it.dot)+', и ровно одна.';
+    }
+    if(kind==='par'){
+      var q=planeOfParallel(it.e1,it.e2);
+      return '<b>'+n1+' ∥ '+n2+'</b> — общих точек нет, и обе прямые лежат в плоскости '+nameOfQuad(q)+'. Оба условия параллельности выполнены.';
+    }
+    var w=skewWitness(it.e1,it.e2);
+    return '<b>'+n1+'</b> и <b>'+n2+'</b> — <b>скрещиваются</b>: '+n1+' лежит в плоскости '+faceName(w.face)+', а '+n2+' пересекает эту плоскость в точке '+nm(w.pt)+', которая на прямой '+n1+' не лежит.';
+  }
+
+  function renderViz(){
+    var g=GROUPS[gi], it=g.items[ii%g.items.length], st={}, cls, txt;
+    if(gi<3){
+      var kind=classifyLines(it.e1,it.e2);
+      st.lines=[{e:it.e1,color:g.color},{e:it.e2,color:g.color}];
+      st.markKeys={};
+      [it.e1[0],it.e1[1],it.e2[0],it.e2[1]].forEach(function(k){ st.markKeys[k]=g.color; });
+      if(kind==='cross') st.dots=[{k:it.dot,color:g.color}];
+      if(kind==='par'){
+        var q=planeOfParallel(it.e1,it.e2);
+        st.faces=[{f:{v:q},color:'brand',alpha:0.10}];
+      }
+      if(kind==='skew'){
+        var w=skewWitness(it.e1,it.e2);
+        st.faces=[{f:w.face,color:'warn',alpha:0.10}];
+        st.dots=[{k:w.pt,color:'warn'}];
+      }
+      cls=g.cls; txt=capLines(it,kind);
+    } else if(gi===3){
+      var f=FACES[it.fi], kind2=classifyLineFace(it.e,f), col, name=lineName(it.e[0],it.e[1]);
+      col = kind2==='cross' ? 'ok' : (kind2==='par' ? 'brand' : 'warn');
+      st.faces=[{f:f,color:col,alpha:0.14}];
+      st.lines=[{e:it.e,color:col}];
+      st.markKeys={}; st.markKeys[it.e[0]]=col; st.markKeys[it.e[1]]=col;
+      if(kind2==='cross'){
+        var pt=(V[it.e[0]][f.n]===f.val)?it.e[0]:it.e[1];
+        st.dots=[{k:pt,color:col}];
+        txt='Прямая <b>'+name+'</b> <b>пересекает</b> плоскость '+faceName(f)+' в точке '+nm(pt)+' — ровно одна общая точка.';
+        cls='k-ok';
+      } else if(kind2==='par'){
+        txt='Прямая <b>'+name+' ∥ '+faceName(f)+'</b> — общих точек ноль. Прямая идёт «вдоль» плоскости, но не в ней.';
+        cls='k-brand';
+      } else {
+        txt='Прямая <b>'+name+'</b> <b>лежит в плоскости</b> '+faceName(f)+' — общими являются все её точки.';
+        cls='k-warn';
+      }
+    } else {
+      var fa=FACES[it.f1], fb=FACES[it.f2], res=facesPair(fa,fb);
+      if(res==='par'){
+        st.faces=[{f:fa,color:'brand',alpha:0.16},{f:fb,color:'brand',alpha:0.16}];
+        txt='Плоскости <b>'+faceName(fa)+' ∥ '+faceName(fb)+'</b> — общих точек нет вообще.';
+        cls='k-brand';
+      } else {
+        st.faces=[{f:fa,color:'ok',alpha:0.13},{f:fb,color:'ok',alpha:0.2}];
+        st.lines=[{e:res.edge,color:'ok'}];
+        st.markKeys={}; res.edge.forEach(function(k){ st.markKeys[k]='ok'; });
+        txt='Плоскости <b>'+faceName(fa)+'</b> и <b>'+faceName(fb)+'</b> <b>пересекаются</b> по прямой '+lineName(res.edge[0],res.edge[1])+'. Есть общая точка — значит, есть и целая общая прямая.';
+        cls='k-ok';
+      }
+    }
+    cap.className='diag-cap '+cls;
+    cap.innerHTML=txt;
+    sizeCanvas(cv,0.62);
+    drawScene(cv,st);
+  }
+
+  document.getElementById('tabs').addEventListener('click',function(e){
+    var b=e.target.closest('button'); if(!b) return;
+    gi=+b.dataset.i; ii=0;
+    Array.prototype.forEach.call(this.querySelectorAll('button'),function(x){ x.setAttribute('aria-pressed', x===b?'true':'false'); });
+    renderViz();
+  });
+  document.getElementById('more').addEventListener('click',function(){ ii++; renderViz(); });
+
+  /* ---------- тренажёр ---------- */
+  var taskEl=document.getElementById('trTask'), optsEl=document.getElementById('trOpts'),
+      resEl=document.getElementById('trResult'), trCv=document.getElementById('trCv');
+  var cur=null, answered=false;
+  function ri(a,b){ return Math.floor(Math.random()*(b-a+1))+a; }
+
+  function buildLinesTask(){
+    var e1,e2,guard=0;
+    do{ e1=EDGES[ri(0,11)]; e2=EDGES[ri(0,11)]; guard++; }
+    while((e1===e2||guard>60)&&guard<80);
+    if(e1===e2) e2=EDGES[(EDGES.indexOf(e1)+5)%12];
+    var kind=classifyLines(e1,e2);
+    var n1=lineName(e1[0],e1[1]), n2=lineName(e2[0],e2[1]);
+    var st={lines:[{e:e1,color:'ink'},{e:e2,color:'ink'}],markKeys:{}};
+    [e1[0],e1[1],e2[0],e2[1]].forEach(function(k){ st.markKeys[k]='ink'; });
+    var sol,color;
+    if(kind==='cross'){
+      color='ok';
+      sol='Шаг 1. Общая точка есть — это вершина <span class="mono">'+nm(commonVertex(e1,e2))+'</span>, оба ребра из неё выходят.<br>'+
+          'Шаг 2. Больше общих точек у двух различных прямых быть не может.<br>'+
+          '<b>Ответ: '+n1+' и '+n2+' пересекаются</b> в точке '+nm(commonVertex(e1,e2))+'.';
+    } else if(kind==='par'){
+      color='brand';
+      var q=planeOfParallel(e1,e2);
+      sol='Шаг 1. Общих точек нет: у рёбер '+n1+' и '+n2+' нет общей вершины.<br>'+
+          'Шаг 2. Есть ли общая плоскость? Да — плоскость '+nameOfQuad(q)+' содержит обе прямые целиком.<br>'+
+          'Шаг 3. Ноль общих точек плюс общая плоскость — это определение параллельности.<br>'+
+          '<b>Ответ: '+n1+' ∥ '+n2+'</b>.';
+    } else {
+      color='warn';
+      var w=skewWitness(e1,e2);
+      sol='Шаг 1. Общих точек нет: общей вершины у рёбер '+n1+' и '+n2+' нет.<br>'+
+          'Шаг 2. Есть ли общая плоскость? Берём плоскость '+faceName(w.face)+' — в ней целиком лежит прямая '+n1+'.<br>'+
+          'Шаг 3. Прямая '+n2+' пересекает эту плоскость в точке <span class="mono">'+nm(w.pt)+'</span>, и эта точка на прямой '+n1+' не лежит. Сработал признак скрещивающихся прямых.<br>'+
+          '<b>Ответ: '+n1+' и '+n2+' скрещиваются</b>.';
+    }
+    return {
+      task:'Куб ABCDA₁B₁C₁D₁. Как расположены прямые <b>'+n1+'</b> и <b>'+n2+'</b>?',
+      opts:[['Пересекаются','cross'],['Параллельны','par'],['Скрещиваются','skew']],
+      ans:kind, sol:sol, st:st, color:color,
+      reveal:function(s){
+        s.lines.forEach(function(l){ l.color=color; });
+        Object.keys(s.markKeys).forEach(function(k){ s.markKeys[k]=color; });
+        if(kind==='cross') s.dots=[{k:commonVertex(e1,e2),color:color}];
+        if(kind==='par') s.faces=[{f:{v:planeOfParallel(e1,e2)},color:'brand',alpha:0.10}];
+        if(kind==='skew'){ s.faces=[{f:skewWitness(e1,e2).face,color:'warn',alpha:0.10}]; s.dots=[{k:skewWitness(e1,e2).pt,color:'warn'}]; }
+      }
+    };
+  }
+
+  function buildLineFaceTask(){
+    var e=EDGES[ri(0,11)], f=FACES[ri(0,5)];
+    var kind=classifyLineFace(e,f), n=lineName(e[0],e[1]), fn=faceName(f);
+    var st={faces:[{f:f,color:'ink',alpha:0.09}],lines:[{e:e,color:'ink'}],markKeys:{}};
+    st.markKeys[e[0]]='ink'; st.markKeys[e[1]]='ink';
+    var sol,color,pt=null;
+    if(kind==='in'){
+      color='warn';
+      sol='Шаг 1. Смотрю на концы прямой: обе точки '+nm(e[0])+' и '+nm(e[1])+' — вершины грани '+fn+'.<br>'+
+          'Шаг 2. Если две точки прямой лежат в плоскости, то и вся прямая лежит в этой плоскости: общими будут все её точки.<br>'+
+          '<b>Ответ: прямая '+n+' лежит в плоскости '+fn+'</b>.';
+    } else if(kind==='cross'){
+      color='ok';
+      pt=(V[e[0]][f.n]===f.val)?e[0]:e[1];
+      sol='Шаг 1. Один конец прямой — точка '+nm(pt)+' — лежит в плоскости '+fn+', а второй нет.<br>'+
+          'Шаг 2. Значит прямая протыкает плоскость, и общая точка ровно одна.<br>'+
+          '<b>Ответ: прямая '+n+' пересекает плоскость '+fn+'</b> в точке '+nm(pt)+'.';
+    } else {
+      color='brand';
+      sol='Шаг 1. Ни один конец прямой '+n+' не лежит в плоскости '+fn+' — общих точек ноль.<br>'+
+          'Шаг 2. Ноль общих точек у прямой и плоскости — это и есть параллельность.<br>'+
+          '<b>Ответ: '+n+' ∥ '+fn+'</b>.';
+    }
+    return {
+      task:'Куб ABCDA₁B₁C₁D₁. Как расположены прямая <b>'+n+'</b> и плоскость <b>'+fn+'</b>?',
+      opts:[['Лежит в плоскости','in'],['Пересекает','cross'],['Параллельна','par']],
+      ans:kind, sol:sol, st:st, color:color,
+      reveal:function(s){
+        s.faces[0].color=color; s.faces[0].alpha=0.14;
+        s.lines[0].color=color;
+        Object.keys(s.markKeys).forEach(function(k){ s.markKeys[k]=color; });
+        if(pt) s.dots=[{k:pt,color:color}];
+      }
+    };
+  }
+
+  function buildFacesTask(){
+    var i1=ri(0,5), i2=ri(0,5), guard=0;
+    while(i2===i1 && guard++<20) i2=ri(0,5);
+    if(i2===i1) i2=(i1+1)%6;
+    var fa=FACES[i1], fb=FACES[i2], res=facesPair(fa,fb);
+    var an=faceName(fa), bn=faceName(fb);
+    var st={faces:[{f:fa,color:'ink',alpha:0.08},{f:fb,color:'ink',alpha:0.14}]};
+    var kind, sol, color;
+    if(res==='par'){
+      kind='par'; color='brand';
+      sol='Шаг 1. Ищу общую вершину у граней '+an+' и '+bn+' — её нет, это противоположные грани куба.<br>'+
+          'Шаг 2. Значит общих точек нет вообще.<br>'+
+          '<b>Ответ: '+an+' ∥ '+bn+'</b>.';
+    } else {
+      kind='cross'; color='ok';
+      var en=lineName(res.edge[0],res.edge[1]);
+      sol='Шаг 1. У граней '+an+' и '+bn+' есть общие вершины '+nm(res.edge[0])+' и '+nm(res.edge[1])+' — это соседние грани.<br>'+
+          'Шаг 2. Если у двух плоскостей есть общая точка, они пересекаются по целой прямой. Здесь эта прямая — общее ребро '+en+'.<br>'+
+          '<b>Ответ: плоскости пересекаются по прямой '+en+'</b>.';
+    }
+    return {
+      task:'Куб ABCDA₁B₁C₁D₁. Как расположены плоскости <b>'+an+'</b> и <b>'+bn+'</b>?',
+      opts:[['Пересекаются по прямой','cross'],['Параллельны','par']],
+      ans:kind, sol:sol, st:st, color:color,
+      reveal:function(s){
+        s.faces[0].color=color; s.faces[1].color=color;
+        s.faces[0].alpha=0.13; s.faces[1].alpha=0.2;
+        if(kind==='cross'){
+          s.lines=[{e:res.edge,color:color}];
+          s.markKeys={}; res.edge.forEach(function(k){ s.markKeys[k]=color; });
+        }
+      }
+    };
+  }
+
+  function generate(){
+    var r=Math.random();
+    cur = r<0.52 ? buildLinesTask() : (r<0.80 ? buildLineFaceTask() : buildFacesTask());
+    answered=false;
+    taskEl.innerHTML=cur.task;
+    resEl.innerHTML='';
+    optsEl.innerHTML='';
+    cur.opts.forEach(function(o){
+      var b=document.createElement('button');
+      b.type='button'; b.textContent=o[0]; b.dataset.k=o[1];
+      optsEl.appendChild(b);
+    });
+    sizeCanvas(trCv,0.56);
+    drawScene(trCv,cur.st);
+  }
+
+  function showSolution(){
+    if(!cur) return;
+    cur.reveal(cur.st);
+    sizeCanvas(trCv,0.56);
+    drawScene(trCv,cur.st);
+    return '<div class="sol">'+cur.sol+'</div>';
+  }
+
+  optsEl.addEventListener('click',function(e){
+    var b=e.target.closest('button'); if(!b||answered) return;
+    answered=true;
+    var good = b.dataset.k===cur.ans;
+    Array.prototype.forEach.call(optsEl.querySelectorAll('button'),function(x){
+      x.disabled=true;
+      if(x.dataset.k===cur.ans) x.className='sel-ok';
+      else if(x===b) x.className='sel-bad';
+    });
+    resEl.innerHTML=(good?'<span class="ok">✓ Верно!</span>':'<span class="bad">✗ Пока не то — смотри разбор.</span>')+showSolution();
+  });
+  document.getElementById('trShow').addEventListener('click',function(){
+    if(!cur) return;
+    answered=true;
+    Array.prototype.forEach.call(optsEl.querySelectorAll('button'),function(x){
+      x.disabled=true; if(x.dataset.k===cur.ans) x.className='sel-ok';
+    });
+    resEl.innerHTML=showSolution();
+  });
+  document.getElementById('trNew').addEventListener('click',function(){ generate(); this.focus(); });
+
+  window.addEventListener('resize',function(){ renderViz(); if(cur){ sizeCanvas(trCv,0.56); drawScene(trCv,cur.st); } });
+
+  renderViz();
+  generate();   /* стартовая задача генерируется тем же кодом — состояние и разбор всегда совпадают, без автофокуса */
+})();
+</script>
+<!--LESSON-NAV-BOT--><nav class="lnav lnav-bot"><a class="prev" href="./geo9-dvizhenie-zadachi.html"><span class="dir">← Предыдущая</span><span class="ttl">Применение движений к решению задач</span></a><a class="to-cat" href="./catalog.html">📚 <span>Все темы</span></a><a class="next" href="./geo9-stereo-mnogogranniki.html"><span class="dir">Следующая →</span><span class="ttl">Многогранники: призма и пирамида</span></a></nav><!--/LESSON-NAV-BOT-->

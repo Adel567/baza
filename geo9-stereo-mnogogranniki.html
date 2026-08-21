@@ -1,0 +1,657 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Многогранники: призма и пирамида — геометрия 9 класс</title>
+<style>
+  :root{
+    --paper:#F6F7F9;
+    --card:#FFFFFF;
+    --ink:#1B2333;
+    --muted:#5A6478;
+    --line:#E2E5EC;
+    --brand:#2E5AAC;        /* призма */
+    --brand-soft:#E4EBF7;
+    --sec:#E27C2C;          /* пирамида */
+    --sec-soft:#FBEEDF;
+    --rad:#159A8A;          /* высота / элементы */
+    --rad-soft:#DEF3F0;
+    --ok:#1E8E5A;
+    --no:#C0455B;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper)}
+  .wrap{
+    max-width:760px;margin:0 auto;
+    padding:clamp(1.4rem,4vw,3rem) clamp(1.1rem,4vw,2rem) 4rem;
+    background:var(--paper);color:var(--ink);
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    font-size:17px;line-height:1.62;-webkit-font-smoothing:antialiased;
+  }
+  .eyebrow{font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--brand);font-weight:600;margin:0 0 .5rem}
+  h1{font-family:Georgia,"Times New Roman",serif;font-size:clamp(1.9rem,6.4vw,2.7rem);line-height:1.06;margin:0;font-weight:700;letter-spacing:-.01em;text-wrap:balance}
+  .lede{font-size:1.08rem;color:var(--muted);margin:.7rem 0 0;max-width:60ch;text-wrap:pretty}
+  h2{font-family:Georgia,serif;font-size:1.32rem;font-weight:700;margin:0 0 .1rem;letter-spacing:-.005em;text-wrap:balance}
+  section{margin-top:2.6rem}
+  .kicker{font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:600;margin:0 0 .8rem;display:flex;align-items:center;gap:.6rem}
+  .kicker::before{content:"";width:1.4rem;height:2px;background:var(--brand);border-radius:2px}
+  p{margin:.65rem 0}
+  strong{font-weight:650}
+  sup{font-size:.72em}
+  .math{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-weight:600;font-variant-numeric:tabular-nums}
+  .pw{color:var(--brand);font-weight:700}      /* призма */
+  .yw{color:var(--sec);font-weight:700}        /* пирамида */
+  .rw{color:var(--rad);font-weight:700}        /* высота, элементы */
+
+  .lead-in{background:var(--brand-soft);border-radius:12px;padding:1.05rem 1.25rem;font-size:1rem}
+  .lead-in p{margin:.4rem 0}
+  .lead-in b{color:var(--brand)}
+
+  .recall{background:var(--rad-soft);border-radius:12px;padding:1rem 1.15rem;font-size:.96rem;margin-top:1rem}
+  .recall p{margin:.3rem 0}
+  .recall b{color:var(--rad)}
+
+  .hero-rule{margin-top:1.2rem;background:var(--ink);color:#fff;border-radius:14px;padding:1.5rem 1.4rem;text-align:center}
+  .hero-rule .lbl{font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:#9aa6c9;margin:0 0 .7rem}
+  .hero-rule .eq{font-family:ui-monospace,"SF Mono",Menlo,monospace;font-size:clamp(1.25rem,5.2vw,1.9rem);font-weight:700;line-height:1.45}
+  .hero-rule .eq .p{color:#8fb2e6} .hero-rule .eq .y{color:#f0a45e} .hero-rule .eq .r{color:#7fdccf}
+  .hero-rule .note{font-size:.86rem;color:#9aa6c9;margin:.9rem 0 0}
+  .hero-split{display:flex;flex-direction:column;gap:1rem;margin-top:1.2rem}
+  @media(min-width:560px){.hero-split{flex-direction:row}}
+  .hero-split .hero-rule{margin-top:0;flex:1}
+
+  .note{border-left:4px solid var(--brand);background:var(--brand-soft);border-radius:0 10px 10px 0;padding:.8rem 1.1rem;margin-top:1rem;font-size:.97rem}
+  .note b{color:var(--brand)}
+  .note.warm{border-left-color:var(--sec);background:var(--sec-soft)}
+  .note.warm b{color:var(--sec)}
+
+  /* Таблица счёта элементов */
+  .tbl-wrap{overflow-x:auto;margin-top:1rem;border:1px solid var(--line);border-radius:12px;background:var(--card)}
+  table{border-collapse:collapse;width:100%;min-width:430px;font-size:.94rem}
+  th,td{padding:.55rem .8rem;text-align:center;border-bottom:1px solid var(--line)}
+  th{font-size:.76rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:700}
+  td:first-child,th:first-child{text-align:left}
+  tbody tr:last-child td{border-bottom:none}
+  td.num{font-family:ui-monospace,Menlo,monospace;font-weight:700;font-variant-numeric:tabular-nums}
+  tr.pr td.num{color:var(--brand)} tr.py td.num{color:var(--sec)}
+
+  /* Визуализация */
+  .diagram{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.15rem;margin-top:1rem}
+  .diagram canvas{width:100%;height:auto;display:block;border-radius:8px}
+  .dctl{display:flex;flex-wrap:wrap;gap:.45rem;margin-top:.9rem;align-items:center}
+  .dctl button{font:inherit;font-size:.85rem;font-weight:650;cursor:pointer;border:1px solid var(--line);background:#fff;color:var(--ink);border-radius:999px;padding:.34rem .8rem}
+  .dctl button[aria-pressed="true"]{background:var(--brand);border-color:var(--brand);color:#fff}
+  .dctl button.warm[aria-pressed="true"]{background:var(--sec);border-color:var(--sec)}
+  .dctl button:focus-visible{outline:3px solid var(--brand);outline-offset:2px}
+  .sliders{margin-top:.8rem}
+  .sliders label{display:flex;align-items:center;gap:.6rem;font-weight:700;font-family:ui-monospace,Menlo,monospace;color:var(--rad);font-size:.9rem}
+  .sliders input[type=range]{flex:1;accent-color:var(--rad)}
+  .sliders input[type=range]:focus-visible{outline:3px solid var(--brand);outline-offset:3px}
+  .sliders .sval{min-width:2.5ch;text-align:right;color:var(--ink)}
+  .diag-eq{text-align:center;font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:.95rem;margin:.9rem 0 0;line-height:1.8}
+  .diag-eq .p{color:var(--brand)} .diag-eq .y{color:var(--sec)} .diag-eq .r{color:var(--rad)}
+
+  /* Разбор «думаю вслух» */
+  .worked{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:1.15rem 1.3rem;margin-top:1rem}
+  .worked .task{font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1rem;margin:0 0 1rem;padding-bottom:.8rem;border-bottom:1px solid var(--line)}
+  ol.steps{margin:0;padding:0;list-style:none;counter-reset:s;display:flex;flex-direction:column;gap:.7rem}
+  ol.steps li{position:relative;padding-left:2.1rem;counter-increment:s;font-size:.96rem}
+  ol.steps li::before{content:counter(s);position:absolute;left:0;top:-.05rem;width:1.5rem;height:1.5rem;background:var(--brand);color:#fff;border-radius:50%;font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:.8rem;display:flex;align-items:center;justify-content:center}
+  .worked.warm ol.steps li::before{background:var(--sec)}
+  ol.steps li .why{color:var(--muted);font-size:.88rem}
+  .verdict{margin-top:1rem;padding:.7rem 1rem;background:var(--brand-soft);border-radius:10px;font-weight:650;color:var(--brand);font-family:ui-monospace,Menlo,monospace}
+  .worked.warm .verdict{background:var(--sec-soft);color:var(--sec)}
+
+  /* Тренажёр */
+  .trainer{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:1.2rem 1.3rem;margin-top:1rem}
+  .tr-task{font-size:clamp(1rem,4vw,1.12rem);text-align:center;padding:1rem;background:var(--brand-soft);border-radius:10px;font-weight:600;line-height:1.5}
+  .tr-task b{font-family:ui-monospace,Menlo,monospace;color:var(--ink)}
+  .tr-ctl{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:1rem;align-items:center;justify-content:center}
+  .tr-ctl input{flex:1;min-width:120px;max-width:190px;font:inherit;padding:.5rem .7rem;border:1px solid var(--line);border-radius:9px;text-align:center;background:#fff;color:var(--ink)}
+  .tr-ctl button{font:inherit;font-weight:700;font-size:.9rem;cursor:pointer;border:none;border-radius:9px;padding:.55rem .95rem;color:#fff;background:var(--brand)}
+  .tr-ctl button.sec{background:var(--sec)}
+  .tr-ctl button.ghost{background:transparent;color:var(--brand);border:1px solid var(--brand)}
+  .tr-ctl button:focus-visible,.tr-ctl input:focus-visible{outline:3px solid var(--brand);outline-offset:2px}
+  .tr-hint{font-size:.85rem;color:var(--muted);text-align:center;margin:.7rem 0 0}
+  .tr-result{margin-top:.9rem;font-size:.96rem;min-height:1.2rem;text-align:center}
+  .tr-result .ok{color:var(--ok);font-weight:700} .tr-result .bad{color:var(--no);font-weight:700}
+  .tr-result .sol{margin-top:.6rem;padding:.8rem 1rem;background:#FCFDFE;border:1px solid var(--line);border-radius:10px;font-family:ui-monospace,Menlo,monospace;font-size:.9rem;line-height:1.85;text-align:left;overflow-x:auto}
+
+  /* Практика */
+  details{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:.9rem 1.1rem;margin-top:.7rem}
+  details[open]{border-color:var(--brand)}
+  summary{cursor:pointer;font-weight:600;list-style:none;display:flex;justify-content:space-between;gap:1rem;align-items:center}
+  summary::-webkit-details-marker{display:none}
+  summary::after{content:"ответ";font-size:.8rem;color:var(--brand);font-weight:700;white-space:nowrap}
+  details[open] summary::after{content:"скрыть"}
+  summary:focus-visible{outline:3px solid var(--brand);outline-offset:3px;border-radius:6px}
+  .ans{margin-top:.75rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.95rem;color:var(--muted)}
+  .ans b{color:var(--ink)}
+  .lvl{font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:700;margin:1.4rem 0 .3rem}
+  .drill{display:flex;flex-direction:column;gap:.2rem}
+
+  /* Ловушки */
+  ul.traps{list-style:none;margin:1rem 0 0;padding:0;display:flex;flex-direction:column;gap:.7rem}
+  ul.traps li{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:.85rem 1.05rem;padding-left:2.5rem;position:relative;font-size:.96rem}
+  ul.traps li::before{content:"!";position:absolute;left:.95rem;top:.8rem;width:1.1rem;height:1.1rem;background:var(--sec);color:#fff;border-radius:50%;font-weight:700;font-size:.8rem;display:flex;align-items:center;justify-content:center}
+  ul.traps b{font-weight:700}
+
+  .selfcheck{background:var(--rad-soft);border-radius:12px;padding:1.1rem 1.25rem;margin-top:1rem}
+  .selfcheck ol{margin:.4rem 0 0;padding-left:1.2rem}
+  .selfcheck li{margin:.35rem 0}
+
+  .wrapup{background:var(--brand);color:#fff;border-radius:16px;padding:1.4rem 1.5rem;margin-top:2.6rem}
+  .wrapup h2{color:#fff;margin:0 0 .5rem}
+  .wrapup p{color:#DEE7F5;margin:.4rem 0;font-size:1rem}
+  .wrapup .big-rule{font-size:1.05rem;font-weight:800;color:#fff;margin:.6rem 0;font-family:ui-monospace,Menlo,monospace;line-height:1.6}
+  .wrapup .next{font-size:.95rem;color:#C6D5EE;margin-top:1rem;padding-top:1rem;border-top:1px solid rgba(255,255,255,.2)}
+  .wrapup .next b{color:#fff}
+
+  @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<style>
+.oge-tip{display:flex;gap:.8rem;align-items:flex-start;background:#FFF8E7;border:1px solid #F0D98A;border-left:4px solid #E0A315;border-radius:10px;padding:.85rem 1.05rem;margin:1.5rem 0}
+.oge-tip .b{font-size:.72rem;font-weight:800;letter-spacing:.03em;color:#8A6A15;white-space:nowrap;text-transform:uppercase;padding-top:.15rem}
+.oge-tip .x{font-size:.95rem;line-height:1.5}
+</style>
+
+<!--LESSON-NAV-TOP--><style>.lnav{--lnav-accent:#3D5AF1}.lnav a{text-decoration:none;font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif}.lnav-top{max-width:820px;margin:0 auto;padding:.75rem clamp(1rem,4vw,1.5rem) .1rem}.lnav-top a{display:inline-flex;align-items:center;gap:.35rem;color:var(--lnav-accent);font-weight:600;font-size:.9rem}.lnav-top a:hover{text-decoration:underline}.lnav-bot{max-width:820px;margin:2.6rem auto 3rem;padding:1.1rem clamp(1rem,4vw,1.5rem) 0;border-top:1px solid #E4E8EF;display:flex;align-items:stretch;gap:.55rem}.lnav-bot a{min-width:0;display:flex;flex-direction:column;justify-content:center;gap:.15rem;border:1px solid #E4E8EF;border-radius:12px;padding:.65rem .85rem;color:#182233;background:#fff;transition:border-color .1s,transform .08s}.lnav-bot a:hover{border-color:var(--lnav-accent);transform:translateY(-1px)}.lnav-bot .prev,.lnav-bot .next{flex:1 1 0}.lnav-bot .next{text-align:right}.lnav-bot .dir{font-size:.72rem;color:#8A93A6;font-weight:600}.lnav-bot .ttl{font-size:.9rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.lnav-bot .to-cat{flex:0 0 auto;flex-direction:row;align-items:center;justify-content:center;color:var(--lnav-accent);font-weight:700;font-size:.85rem;white-space:nowrap}@media(max-width:420px){.lnav-bot .to-cat span{display:none}.lnav-bot .to-cat{padding:.65rem .7rem}}</style><nav class="lnav lnav-top"><a href="./catalog.html">← Все темы</a></nav><!--/LESSON-NAV-TOP-->
+<div class="wrap">
+
+  <header>
+    <p class="eyebrow">Геометрия · 9 класс · ОГЭ</p>
+    <h1>Многогранники: призма и пирамида</h1>
+    <p class="lede">Тело из плоских стенок. Учимся отличать призму от пирамиды и без запинки считать вершины, рёбра и грани — с самопроверкой по формуле Эйлера.</p>
+  </header>
+
+  <div class="lead-in" style="margin-top:1.6rem">
+    <p><b>Где встречается.</b> Всё вокруг нас в пространстве имеет форму. Спичечный коробок, кирпич, аквариум, картонная упаковка сока — это <span class="pw">призмы</span> (точнее, параллелепипеды). Крыша башни, египетская пирамида, остриё карандаша — это <span class="yw">пирамиды</span>. Чтобы посчитать, сколько краски уйдёт на стенки коробки, сколько воды войдёт в бак или сколько картона нужно на упаковку, надо сначала научиться <b>распознавать тело и называть его элементы</b>. Без этого формулы площади и объёма просто некуда подставлять.</p>
+    <p><b>Развенчаем миф.</b> «Многогранник — это что-то круглое и сложное». Нет. «Много-гранник» буквально значит «много граней (плоских стенок)». Главное свойство: <b>все его стенки — плоские многоугольники</b>. Как только появляется хоть одна круглая, изогнутая поверхность — это уже не многогранник, а тело вращения (цилиндр, конус, шар).</p>
+  </div>
+
+  <section>
+    <p class="kicker">Что вспомнить</p>
+    <h2>Опора: плоскости и многоугольники</h2>
+    <div class="recall">
+      <p>· <b>Плоскость</b> — бесконечная ровная «поверхность стола». Две плоскости могут быть <b>параллельны</b> (нигде не пересекаются) — именно так расположены основания призмы.</p>
+      <p>· <b>Перпендикуляр к плоскости</b> — отрезок, идущий к ней «строго вниз», под прямым углом. Это понадобится для высоты.</p>
+      <p>· <b>Многоугольник</b> — плоская фигура: треугольник, четырёхугольник, пятиугольник… У <span class="rw">n</span>-угольника ровно <span class="rw">n</span> сторон и <span class="rw">n</span> вершин. Это число <span class="rw">n</span> — ключ ко всему подсчёту в теме.</p>
+      <p>· <b>Параллелограмм</b> — четырёхугольник, у которого противоположные стороны параллельны. Прямоугольник — его частный случай.</p>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Суть темы</p>
+    <h2>Три слова, которые нельзя путать</h2>
+    <p><strong>Многогранник</strong> — это пространственное тело, поверхность которого составлена из плоских многоугольников. И у него ровно три вида элементов:</p>
+    <div class="hero-rule">
+      <p class="lbl">Элементы многогранника</p>
+      <div class="eq"><span class="p">ГРАНЬ</span> — стенка · <span class="y">РЕБРО</span> — палочка · <span class="r">ВЕРШИНА</span> — точка</div>
+      <p class="note">Грань — плоский многоугольник · ребро — сторона грани (отрезок) · вершина — точка, где сходятся рёбра</p>
+    </div>
+    <p>Проще всего запомнить через ощущения: <b>грань</b> можно закрасить (это стенка), по <b>ребру</b> можно провести пальцем как по палочке, <b>вершиной</b> можно уколоться. Именно поэтому считать их надо <em>по очереди</em>: сначала все «стенки», потом все «палочки», потом все «точки». Пытаешься считать всё сразу — обязательно собьёшься.</p>
+
+    <p>Среди многогранников у нас два героя.</p>
+    <div class="hero-split">
+      <div class="hero-rule">
+        <p class="lbl">Призма</p>
+        <div class="eq"><span class="p">два основания</span></div>
+        <p class="note">Многоугольник, «вытянутый в столбик». Два равных параллельных основания, боковые грани — параллелограммы. Образ: стопка одинаковых монет, брусок.</p>
+      </div>
+      <div class="hero-rule">
+        <p class="lbl">Пирамида</p>
+        <div class="eq"><span class="y">одно основание + точка</span></div>
+        <p class="note">Многоугольник, «собранный в макушку». Одно основание, боковые грани — треугольники с общей вершиной. Образ: палатка, остриё карандаша.</p>
+      </div>
+    </div>
+    <p><b>Смысл различия в одну фразу:</b> у призмы оснований <span class="pw">два</span> (и они равны), у пирамиды основание <span class="yw">одно</span>, а наверху — точка. Спроси себя: «есть ли макушка-точка?» Есть — пирамида, нет — призма.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Ядро темы</p>
+    <h2>Определения и высота</h2>
+
+    <p><strong class="pw">Призма.</strong> Многогранник, у которого два основания — равные многоугольники, лежащие в параллельных плоскостях, а боковые грани — параллелограммы. Призма называется <b>прямой</b>, если боковые рёбра перпендикулярны основаниям — тогда боковые грани становятся прямоугольниками. Называют призму по её основанию: треугольная, четырёхугольная, шестиугольная.</p>
+    <ul>
+      <li><b>Параллелепипед</b> — это призма, в основании которой лежит параллелограмм. Его частный случай — прямоугольный параллелепипед, обычная «коробка»; а если все рёбра равны — куб. То есть коробка и куб <em>тоже призмы</em>.</li>
+      <li><b>Высота призмы</b> — расстояние между плоскостями оснований. У прямой призмы это просто длина бокового ребра.</li>
+    </ul>
+
+    <p><strong class="yw">Пирамида.</strong> Многогранник, у которого одна грань (основание) — многоугольник, а все остальные грани (боковые) — треугольники с общей вершиной. Эту общую точку так и называют — <b>вершина пирамиды</b>. Пирамиду тоже называют по основанию: треугольная (её ещё зовут тетраэдром), четырёхугольная и так далее.</p>
+    <div class="note warm">
+      <p><b>Высота пирамиды</b> — это перпендикуляр, опущенный из вершины пирамиды на плоскость основания (точнее, его длина). Ключевое слово — <em>перпендикуляр</em>: высота идёт строго вертикально вниз к основанию, а <b>не</b> вдоль боковой грани. На чертеже её рисуют вертикальной штриховой линией от макушки к основанию, с прямым углом внизу.</p>
+    </div>
+
+    <p>Ещё один инструмент — не для вычислений, а для <strong>самопроверки</strong>. Для любого выпуклого многогранника верна <b>формула Эйлера</b>:</p>
+    <div class="hero-rule">
+      <p class="lbl">Формула Эйлера · самопроверка счёта</p>
+      <div class="eq"><span class="r">В</span> − <span class="y">Р</span> + <span class="p">Г</span> = 2</div>
+      <p class="note"><span class="r">В</span> — число вершин · <span class="y">Р</span> — число рёбер · <span class="p">Г</span> — число граней</p>
+    </div>
+    <p>Как этим пользоваться: посчитал все три числа — подставь. Получилось <span class="math">2</span> — почти наверняка всё верно. Не получилось <span class="math">2</span> — где-то ошибка, возвращайся и пересчитывай. Это не «ещё одна формула для зубрёжки», а страховка от глупой описки.</p>
+  </section>
+
+  <div class="oge-tip"><div class="b">🎯 В ОГЭ</div><div class="x"><b>Задания 13–17</b> (геометрическая часть) любят проверять, узнаёшь ли ты тело и его элементы: сколько граней, рёбер, вершин, где высота. Дальше на этом фундаменте считают площади и объёмы — если элементы названы неверно, дальше всё поедет.</div></div>
+
+  <section>
+    <p class="kicker">Думаю вслух</p>
+    <h2>Эталонный разбор</h2>
+    <p>Смотри, как рассуждать по шагам — с проговариванием <em>почему</em> на каждом.</p>
+
+    <div class="worked">
+      <p class="task">Сколько вершин, рёбер и граней у треугольной призмы?</p>
+      <ol class="steps">
+        <li>Считаю <b>вершины</b>. Основания — два треугольника, у каждого по 3 вершины: <span class="math">3 + 3 = 6</span>. <span class="why">(основания не имеют общих точек, вершины не совпадают — поэтому складываем, а не берём одну тройку)</span></li>
+        <li>Считаю <b>грани</b>. Два основания-треугольника плюс боковые грани; боковых столько, сколько сторон у основания, то есть 3. Итого <span class="math">2 + 3 = 5</span>. <span class="why">(каждая сторона основания «тянет» за собой ровно одну боковую грань)</span></li>
+        <li>Считаю <b>рёбра</b>. В каждом основании по 3 ребра: <span class="math">3 + 3 = 6</span>. Плюс боковые рёбра, соединяющие основания, — их 3. Итого <span class="math">6 + 3 = 9</span>. <span class="why">(боковых рёбер столько же, сколько вершин у основания: каждая нижняя вершина «поднимается» к своей верхней)</span></li>
+        <li>Проверяю по Эйлеру: <span class="math">В − Р + Г = 6 − 9 + 5 = 2</span>. Сошлось. <span class="why">(значит, нигде не сбился)</span></li>
+      </ol>
+      <div class="verdict">Ответ: 6 вершин, 9 рёбер, 5 граней</div>
+    </div>
+
+    <div class="worked warm" style="margin-top:.8rem">
+      <p class="task">Сколько вершин, рёбер и граней у четырёхугольной пирамиды?</p>
+      <ol class="steps">
+        <li><b>Вершины</b>: 4 вершины основания плюс 1 вершина пирамиды наверху: <span class="math">4 + 1 = 5</span>. <span class="why">(макушка — тоже вершина, её легко забыть)</span></li>
+        <li><b>Грани</b>: 1 основание плюс 4 боковых треугольника: <span class="math">1 + 4 = 5</span>. <span class="why">(боковых граней столько же, сколько сторон у основания — каждая сторона и макушка задают треугольник)</span></li>
+        <li><b>Рёбра</b>: 4 ребра основания плюс 4 боковых ребра (от каждой вершины основания к макушке): <span class="math">4 + 4 = 8</span>. <span class="why">(поэтому у n-угольной пирамиды рёбер ровно 2n)</span></li>
+        <li>Проверяю по Эйлеру: <span class="math">В − Р + Г = 5 − 8 + 5 = 2</span>. Верно. <span class="why">(страховка сработала)</span></li>
+      </ol>
+      <div class="verdict">Ответ: 5 вершин, 8 рёбер, 5 граней</div>
+    </div>
+
+    <div class="worked" style="margin-top:.8rem">
+      <p class="task">Реши сам: сколько граней, рёбер и вершин у шестиугольной призмы?</p>
+      <ol class="steps">
+        <li>Не подглядывай — пройди тот же путь: сначала вершины, потом грани, потом рёбра, потом проверка Эйлером.</li>
+      </ol>
+      <details style="margin-top:.9rem"><summary>Сверить ответ</summary><div class="ans">8 граней (2 основания + 6 боковых), 18 рёбер (6 + 6 + 6), 12 вершин (6 + 6). Проверка: <span class="math">12 − 18 + 8 = 2</span>. <b>Сошлось.</b></div></details>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Увидь глазами</p>
+    <h2>Чертёж: подсвети элементы</h2>
+    <p>Переключай тело и число сторон основания, а кнопками подсвечивай элементы. Невидимые рёбра нарисованы штриховой линией — так их и чертят в тетради. Обрати внимание, как <span class="rw">высота пирамиды</span> идёт от макушки <em>вертикально вниз</em>, а не по боковой грани.</p>
+    <div class="diagram">
+      <canvas id="solid" width="640" height="470" aria-label="Чертёж призмы и пирамиды с подсветкой оснований, боковых рёбер, вершин и высоты"></canvas>
+      <div class="dctl" role="group" aria-label="Выбор тела">
+        <button id="bPrism" type="button" aria-pressed="true">Призма</button>
+        <button id="bPyr" type="button" class="warm" aria-pressed="false">Пирамида</button>
+      </div>
+      <div class="sliders">
+        <label>сторон в основании n <input id="sn" type="range" min="3" max="8" step="1" value="5"> <span id="vn" class="sval">5</span></label>
+      </div>
+      <div class="dctl" role="group" aria-label="Подсветка элементов">
+        <button class="hl" data-h="base" type="button" aria-pressed="true">Основание</button>
+        <button class="hl" data-h="lat" type="button" aria-pressed="false">Боковые рёбра</button>
+        <button class="hl" data-h="vert" type="button" aria-pressed="false">Вершины</button>
+        <button class="hl" data-h="height" type="button" aria-pressed="false">Высота</button>
+        <button class="hl" data-h="none" type="button" aria-pressed="false">Убрать</button>
+      </div>
+      <p class="diag-eq" id="diagEq"></p>
+    </div>
+    <p style="font-size:.9rem;color:var(--muted)">Цвет-код: <span class="pw">основания</span> · <span class="yw">боковые рёбра и грани</span> · <span class="rw">высота и вершины</span>. Крути ползунок и смотри, как растут числа: у призмы каждая новая сторона основания добавляет сразу 2 вершины, 3 ребра и 1 грань; у пирамиды — 1 вершину, 2 ребра и 1 грань.</p>
+
+    <p>Тот же счёт удобно свести в таблицу. Заполни глазами столбцы — закономерность видно сразу.</p>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>Тело</th><th>Вершины В</th><th>Рёбра Р</th><th>Грани Г</th><th>В − Р + Г</th></tr></thead>
+        <tbody>
+          <tr class="pr"><td>Треугольная призма</td><td class="num">6</td><td class="num">9</td><td class="num">5</td><td class="num">2</td></tr>
+          <tr class="pr"><td>Четырёхугольная призма</td><td class="num">8</td><td class="num">12</td><td class="num">6</td><td class="num">2</td></tr>
+          <tr class="pr"><td>Пятиугольная призма</td><td class="num">10</td><td class="num">15</td><td class="num">7</td><td class="num">2</td></tr>
+          <tr class="pr"><td>Шестиугольная призма</td><td class="num">12</td><td class="num">18</td><td class="num">8</td><td class="num">2</td></tr>
+          <tr class="py"><td>Треугольная пирамида</td><td class="num">4</td><td class="num">6</td><td class="num">4</td><td class="num">2</td></tr>
+          <tr class="py"><td>Четырёхугольная пирамида</td><td class="num">5</td><td class="num">8</td><td class="num">5</td><td class="num">2</td></tr>
+          <tr class="py"><td>Пятиугольная пирамида</td><td class="num">6</td><td class="num">10</td><td class="num">6</td><td class="num">2</td></tr>
+          <tr class="py"><td>Шестиугольная пирамида</td><td class="num">7</td><td class="num">12</td><td class="num">7</td><td class="num">2</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p style="font-size:.95rem"><b>Что видно из таблицы.</b> У пирамиды рёбер всегда ровно <span class="math">2n</span> (n сторон основания + n боковых), а вершин и граней поровну. У призмы всё утраивается по рёбрам: <span class="math">3n</span>. И последний столбец всюду <span class="math">2</span> — Эйлер работает.</p>
+
+    <div class="note">
+      <p><b>Проверь руками.</b> Возьми спичечный коробок (призма) и склей из бумаги пирамиду. Пальцем посчитай грани, проведи по рёбрам, ткни в вершины — так три понятия перестанут путаться. А ещё разверни пирамиду в плоскую фигуру: получится основание и треугольники-лепестки вокруг него. Сразу видно, <em>почему</em> боковых граней столько же, сколько сторон основания.</p>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Тренажёр · бесконечные задачи</p>
+    <h2>Считай элементы и проверяйся</h2>
+    <p>Четыре вида задач: посчитать вершины / рёбра / грани призмы, то же для пирамиды, обратная задача (по числу рёбер найти основание) и проверка Эйлером. Ответ — одно целое число.</p>
+    <div class="trainer">
+      <div class="tr-task" id="trTask">—</div>
+      <div class="tr-ctl">
+        <button id="trNew" type="button">Новая</button>
+        <input id="trAns" type="text" inputmode="numeric" placeholder="число" aria-label="Ответ — целое число">
+        <button id="trCheck" type="button" class="sec">Проверить</button>
+        <button id="trShow" type="button" class="ghost">Решение</button>
+      </div>
+      <p class="tr-hint">Все ответы — целые числа. Считай по порядку: сначала основание, потом бока — и проверяй себя Эйлером.</p>
+      <div id="trResult" class="tr-result"></div>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Практика</p>
+    <h2>По нарастанию сложности</h2>
+
+    <p class="lvl">Понимание</p>
+    <div class="drill">
+      <details><summary>1) Что из перечисленного призма, а что пирамида: спичечный коробок, палатка-шалаш, гранёный карандаш, остриё башни?</summary><div class="ans">Призмы: <b>спичечный коробок</b> (это параллелепипед — частный случай призмы) и <b>гранёный карандаш</b> (шестиугольная призма). Пирамиды: <b>палатка-шалаш</b> и <b>остриё башни</b> — у них есть макушка-точка.</div></details>
+      <details><summary>2) Назови на чертеже четырёхугольной пирамиды: основание, боковую грань, вершину пирамиды, высоту.</summary><div class="ans"><b>Основание</b> — нижний четырёхугольник. <b>Боковая грань</b> — любой из четырёх треугольников. <b>Вершина пирамиды</b> — точка-макушка, где сходятся все боковые грани. <b>Высота</b> — перпендикуляр от макушки к плоскости основания (штриховая вертикальная линия). Включи подсветку в чертеже выше и сверься.</div></details>
+      <details><summary>3) Чем грань отличается от ребра, а ребро — от вершины?</summary><div class="ans"><b>Грань</b> — плоская стенка (многоугольник), её можно закрасить. <b>Ребро</b> — отрезок, сторона грани, по нему можно провести пальцем. <b>Вершина</b> — точка-уголок, ей можно уколоться.</div></details>
+      <details><summary>4) Является ли куб призмой?</summary><div class="ans"><b>Да.</b> Куб — прямоугольный параллелепипед, а параллелепипед — это призма, в основании которой параллелограмм. Так что и коробка, и куб — призмы.</div></details>
+    </div>
+
+    <p class="lvl">Применение</p>
+    <div class="drill">
+      <details><summary>5) У пятиугольной призмы посчитай число вершин, рёбер и граней.</summary><div class="ans">Вершины: <span class="math">5 + 5 = <b>10</b></span>. Рёбра: <span class="math">5 + 5 + 5 = <b>15</b></span> (два основания и 5 боковых). Грани: <span class="math">2 + 5 = <b>7</b></span>. Проверка: <span class="math">10 − 15 + 7 = 2</span>. ✓</div></details>
+      <details><summary>6) У пятиугольной пирамиды посчитай число вершин, рёбер и граней; проверь по формуле Эйлера.</summary><div class="ans">Вершины: <span class="math">5 + 1 = <b>6</b></span>. Рёбра: <span class="math">5 + 5 = <b>10</b></span>. Грани: <span class="math">1 + 5 = <b>6</b></span>. Проверка: <span class="math">6 − 10 + 6 = 2</span>. ✓</div></details>
+      <details><summary>7) Сколько рёбер у восьмиугольной призмы?</summary><div class="ans">У n-угольной призмы рёбер <span class="math">3n</span>: 8 рёбер нижнего основания, 8 верхнего и 8 боковых. <span class="math">3 · 8 = <b>24</b></span>.</div></details>
+      <details><summary>8) Сколько граней у семиугольной пирамиды?</summary><div class="ans">Одно основание плюс 7 боковых треугольников: <span class="math">1 + 7 = <b>8</b></span> граней. (Вершин тоже 8, рёбер 14; проверка: <span class="math">8 − 14 + 8 = 2</span>. ✓)</div></details>
+    </div>
+
+    <p class="lvl">Анализ</p>
+    <div class="drill">
+      <details><summary>9) Обратная задача: у некоторой пирамиды 10 рёбер. Какой многоугольник лежит в её основании?</summary><div class="ans">У n-угольной пирамиды рёбер <span class="math">2n</span>. Значит <span class="math">2n = 10</span>, откуда <span class="math">n = 5</span>: в основании лежит <b>пятиугольник</b>. Проверим: 5 рёбер основания + 5 боковых = 10. ✓</div></details>
+      <details><summary>10) Найди ошибку: «У треугольной пирамиды 4 грани, 6 рёбер и 5 вершин».</summary><div class="ans">Неверно посчитаны <b>вершины</b>. Грани и рёбра верны: <span class="math">1 + 3 = 4</span> грани и <span class="math">3 + 3 = 6</span> рёбер. А вершин <span class="math">3 + 1 = <b>4</b></span>: три у основания и одна макушка — пятой взяться неоткуда. Эйлер это ловит сразу: с пятёркой было бы <span class="math">5 − 6 + 4 = 3 ≠ 2</span>, а с четвёркой <span class="math">4 − 6 + 4 = 2</span>. ✓</div></details>
+      <details><summary>11) Что изменится: возьмём четырёхугольную призму и четырёхугольную пирамиду. У кого больше граней и на сколько? Откуда берётся разница?</summary><div class="ans">У призмы <span class="math">2 + 4 = 6</span> граней, у пирамиды <span class="math">1 + 4 = 5</span>. У <b>призмы на 1 грань больше</b>. Причина ровно одна: боковых граней у обоих по 4 (по числу сторон основания), но у призмы <b>два</b> основания, а у пирамиды одно — вместо второго основания там точка-вершина.</div></details>
+      <details><summary>12) Что изменится: у призмы и у пирамиды одно и то же основание — n-угольник. У кого больше рёбер и во сколько раз?</summary><div class="ans">У призмы <span class="math">3n</span> рёбер, у пирамиды <span class="math">2n</span>. У призмы больше — <b>в 1,5 раза</b>. Причина: у пирамиды нет второго основания, а значит нет и его n рёбер. Например при <span class="math">n = 6</span>: 18 против 12.</div></details>
+      <details><summary>13) Найди ошибку: «Высота пирамиды — это её боковое ребро, ведь оно идёт от вершины вниз».</summary><div class="ans">Боковое ребро идёт от вершины вниз <b>наклонно</b>, в вершину основания. А высота — это <b>перпендикуляр</b> к плоскости основания, он падает внутрь основания и образует с ним прямой угол. Их путают чаще всего; ещё высоту путают с высотой боковой грани (её называют апофемой) — это тоже не она.</div></details>
+      <details><summary>14) У многогранника 12 вершин и 8 граней. Сколько у него рёбер? Что это за тело может быть?</summary><div class="ans">Из <span class="math">В − Р + Г = 2</span> выражаем: <span class="math">Р = В + Г − 2 = 12 + 8 − 2 = <b>18</b></span>. Такие числа даёт <b>шестиугольная призма</b>: 12 вершин, 18 рёбер, 8 граней.</div></details>
+      <details><summary>15) Может ли у многогранника быть 5 граней и при этом быть пирамидой? А призмой?</summary><div class="ans">Пирамидой — <b>да</b>: <span class="math">1 + 4 = 5</span>, это четырёхугольная пирамида. Призмой — <b>да</b>: <span class="math">2 + 3 = 5</span>, это треугольная призма. Число граней само по себе тело не определяет — надо смотреть, одно основание или два.</div></details>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Осторожно</p>
+    <h2>Частые ошибки</h2>
+    <ul class="traps">
+      <li><b>Путают грани, рёбра и вершины.</b> Грань — плоская стенка (многоугольник), ребро — отрезок-сторона, вершина — точка-уголок. Как не путать: грань можно закрасить, по ребру провести пальцем, вершиной уколоться. Считай строго по очереди: все «стенки», потом все «палочки», потом все «точки».</li>
+      <li><b>Смешивают призму и пирамиду.</b> У призмы <b>два равных основания</b> и боковые грани-параллелограммы; у пирамиды <b>одно основание</b> и боковые грани-<b>треугольники</b>, сходящиеся в точке. Вопрос-фильтр: «есть ли макушка-точка?»</li>
+      <li><b>Неверно определяют высоту пирамиды.</b> Её путают с боковым ребром или с высотой боковой грани (апофемой). Высота — перпендикуляр от вершины <b>прямо вниз</b> к плоскости основания, а не наклонная по боку. На чертеже — вертикальная штриховая линия с прямым углом у основания.</li>
+      <li><b>Считают, что у пирамиды два основания</b> (по аналогии с призмой). Основание ровно одно, сверху — точка, а не вторая «крышка». Из-за этой ошибки граней насчитывают на одну больше.</li>
+      <li><b>Думают, что параллелепипед — это не призма.</b> Параллелепипед (в том числе обычная коробка и куб) — частный случай призмы, у которого в основании параллелограмм.</li>
+      <li><b>Забывают макушку при счёте вершин пирамиды.</b> Посчитали вершины основания и остановились. Вершина пирамиды — тоже вершина: у n-угольной пирамиды их <span class="math">n + 1</span>.</li>
+    </ul>
+  </section>
+
+  <section>
+    <p class="kicker">Проверка понимания</p>
+    <h2>Объясни своими словами</h2>
+    <div class="selfcheck">
+      <ol>
+        <li>Чем призма отличается от пирамиды — одним признаком?</li>
+        <li>Что такое высота пирамиды и откуда куда она проведена?</li>
+        <li>Сколько граней у четырёхугольной пирамиды?</li>
+        <li>Сколько рёбер у n-угольной пирамиды и почему именно столько?</li>
+      </ol>
+      <p style="font-size:.9rem;color:var(--muted);margin-top:.7rem">Ответы: у призмы два равных основания, у пирамиды одно основание и вершина-точка наверху · перпендикуляр от вершины пирамиды к плоскости основания · пять (одно основание и четыре боковых треугольника) · <span class="math">2n</span>: n рёбер основания плюс n боковых, по одному от каждой вершины основания к макушке. Отвечаешь не задумываясь — тему держишь.</p>
+    </div>
+  </section>
+
+  <div class="wrapup">
+    <h2>Запомни главное</h2>
+    <p class="big-rule">призма: В = 2n, Р = 3n, Г = n + 2<br>пирамида: В = n + 1, Р = 2n, Г = n + 1<br>проверка: В − Р + Г = 2</p>
+    <p>Многогранник — тело из плоских граней. У призмы два равных основания и боковые параллелограммы, у пирамиды — одно основание и боковые треугольники, сходящиеся в вершине. Высота пирамиды — перпендикуляр от макушки к плоскости основания, а не наклонное ребро.</p>
+    <p class="next">👉 Дальше — <b>объём многогранников</b>: когда тело узнано и элементы названы, можно считать, сколько внутрь войдёт воды или бетона.</p>
+  </div>
+
+</div>
+
+<script>
+/* ── Чертёж: призма и пирамида в проекции, подсветка элементов ── */
+(function(){
+  var cv=document.getElementById('solid'); if(!cv) return;
+  var ctx=cv.getContext('2d');
+  var sn=document.getElementById('sn'), vn=document.getElementById('vn'), eq=document.getElementById('diagEq');
+  var bPrism=document.getElementById('bPrism'), bPyr=document.getElementById('bPyr');
+  var hlBtns=[].slice.call(document.querySelectorAll('button.hl'));
+  var shape='prism', hl='base';
+  var W=640,H=470,dpr=1;
+  function css(v){ return getComputedStyle(document.documentElement).getPropertyValue(v).trim(); }
+  var NAMES={3:'треугольная',4:'четырёхугольная',5:'пятиугольная',6:'шестиугольная',7:'семиугольная',8:'восьмиугольная'};
+
+  function resize(){
+    var c=cv.clientWidth||640; dpr=Math.min(window.devicePixelRatio||1,2);
+    W=c; H=Math.round(c*0.74);
+    cv.width=W*dpr; cv.height=H*dpr; cv.style.height=H+'px';
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+  }
+
+  function ring(n,cx,cy,rx,ry){
+    var p=[],i,t;
+    for(i=0;i<n;i++){ t=-Math.PI/2 + 2*Math.PI*i/n; p.push({x:cx+rx*Math.cos(t), y:cy-ry*Math.sin(t), back:Math.sin(t)>0.0001}); }
+    return p;
+  }
+  function seg(a,b,dashed,color,width){
+    ctx.save();
+    ctx.setLineDash(dashed?[6,5]:[]);
+    ctx.strokeStyle=color; ctx.lineWidth=width; ctx.lineCap='round';
+    ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.lineTo(b.x,b.y); ctx.stroke();
+    ctx.restore();
+  }
+  function poly(p,color){
+    ctx.beginPath(); ctx.moveTo(p[0].x,p[0].y);
+    for(var i=1;i<p.length;i++) ctx.lineTo(p[i].x,p[i].y);
+    ctx.closePath(); ctx.fillStyle=color; ctx.fill();
+  }
+  function dot(p,color,r){ ctx.beginPath(); ctx.arc(p.x,p.y,r,0,Math.PI*2); ctx.fillStyle=color; ctx.fill(); }
+  function label(txt,x,y,color,size,italic){
+    ctx.font=(italic?'italic ':'')+'700 '+size+'px ui-monospace,Menlo,monospace';
+    ctx.textAlign='center'; ctx.textBaseline='middle';
+    var w=ctx.measureText(txt).width;
+    ctx.fillStyle='rgba(255,255,255,0.82)';
+    ctx.fillRect(x-w/2-4,y-size/2-3,w+8,size+6);
+    ctx.fillStyle=color; ctx.fillText(txt,x,y);
+  }
+  function extremes(p){
+    var mi=0,ma=0,i;
+    for(i=1;i<p.length;i++){ if(p[i].x<p[mi].x) mi=i; if(p[i].x>p[ma].x) ma=i; }
+    return {mi:mi,ma:ma};
+  }
+
+  function draw(){
+    var n=+sn.value; vn.textContent=n;
+    var INK=css('--ink'), BR=css('--brand'), BRS=css('--brand-soft'), SC=css('--sec'), SCS=css('--sec-soft'), RD=css('--rad'), LN='#9AA3B4';
+    var cx=W/2, rx=Math.min(W*0.30,190), ry=rx*0.34;
+    var bodyH=Math.min(H*0.42,175);
+    var yBot=H*0.72, yTop=yBot-bodyH;
+    var fs=Math.max(11,Math.round(W*0.028));
+    ctx.clearRect(0,0,W,H);
+
+    var bot=ring(n,cx,yBot,rx,ry), i, ex=extremes(bot);
+
+    if(shape==='prism'){
+      var top=ring(n,cx,yTop,rx,ry);
+      /* заливки оснований */
+      poly(top, hl==='base'?BRS:'rgba(0,0,0,0.03)');
+      /* боковые рёбра */
+      for(i=0;i<n;i++){
+        var hidden = bot[i].back && i!==ex.mi && i!==ex.ma;
+        var col = (hl==='lat')?SC:LN, w=(hl==='lat')?3.2:2;
+        seg(bot[i],top[i],hidden,col,w);
+      }
+      /* рёбра оснований */
+      for(i=0;i<n;i++){
+        var j=(i+1)%n;
+        var hidB = bot[i].back && bot[j].back;
+        seg(bot[i],bot[j],hidB,(hl==='base')?BR:LN,(hl==='base')?3.2:2);
+        seg(top[i],top[j],false,(hl==='base')?BR:LN,(hl==='base')?3.2:2);
+      }
+      if(hl==='vert'){ for(i=0;i<n;i++){ dot(bot[i],RD,4.5); dot(top[i],RD,4.5); } }
+      if(hl==='height'){
+        var a={x:cx+rx*0.02,y:yBot}, b={x:cx+rx*0.02,y:yTop};
+        seg(a,b,true,RD,3);
+        ctx.save(); ctx.setLineDash([]); ctx.strokeStyle=RD; ctx.lineWidth=2;
+        ctx.strokeRect(a.x, a.y-13, 13, 13); ctx.restore();
+        label('h',(a.x+16),(yBot+yTop)/2,RD,fs,true);
+      }
+      if(hl==='base'){ label('основание',cx,yTop-ry-fs,BR,fs,false); label('основание',cx,yBot+ry+fs,BR,fs,false); }
+      if(hl==='lat'){ label('боковое ребро',cx+rx*0.72,(yBot+yTop)/2,SC,fs,false); }
+    } else {
+      var apex={x:cx, y:yTop-ry*0.6};
+      /* заливка основания */
+      poly(bot, hl==='base'?BRS:'rgba(0,0,0,0.03)');
+      /* боковые рёбра */
+      for(i=0;i<n;i++){
+        var hid = bot[i].back && i!==ex.mi && i!==ex.ma;
+        seg(bot[i],apex,hid,(hl==='lat')?SC:LN,(hl==='lat')?3.2:2);
+      }
+      /* рёбра основания */
+      for(i=0;i<n;i++){
+        var k=(i+1)%n;
+        var hb = bot[i].back && bot[k].back;
+        seg(bot[i],bot[k],hb,(hl==='base')?BR:LN,(hl==='base')?3.2:2);
+      }
+      if(hl==='vert'){ for(i=0;i<n;i++) dot(bot[i],RD,4.5); dot(apex,RD,5.5); label('вершина пирамиды',cx,apex.y-fs-4,RD,fs,false); }
+      if(hl==='height'){
+        seg(apex,{x:cx,y:yBot},true,RD,3);
+        ctx.save(); ctx.setLineDash([]); ctx.strokeStyle=RD; ctx.lineWidth=2;
+        ctx.strokeRect(cx, yBot-13, 13, 13); ctx.restore();
+        label('h',cx+18,(apex.y+yBot)/2,RD,fs,true);
+        label('прямой угол',cx+fs*3.4,yBot+fs+2,RD,Math.max(10,fs-2),false);
+      }
+      if(hl==='base'){ label('основание',cx,yBot+ry+fs,BR,fs,false); }
+      if(hl==='lat'){ label('боковое ребро',cx+rx*0.60,(apex.y+yBot)/2,SC,fs,false); }
+      dot(apex,(hl==='vert')?RD:INK,4);
+    }
+
+    /* числа под чертежом */
+    var V,R,G,name=NAMES[n]||(n+'-угольная');
+    if(shape==='prism'){ V=2*n; R=3*n; G=n+2; } else { V=n+1; R=2*n; G=n+1; }
+    var cls=(shape==='prism')?'p':'y';
+    eq.innerHTML='<span class="'+cls+'">'+name+' '+(shape==='prism'?'призма':'пирамида')+' (n = '+n+')</span><br>'+
+      'В = '+V+' · Р = '+R+' · Г = '+G+'<br>'+
+      '<span class="r">проверка: '+V+' − '+R+' + '+G+' = 2 ✓</span>';
+  }
+
+  function setShape(s){
+    shape=s;
+    bPrism.setAttribute('aria-pressed', s==='prism'?'true':'false');
+    bPyr.setAttribute('aria-pressed', s==='pyr'?'true':'false');
+    draw();
+  }
+  bPrism.addEventListener('click',function(){ setShape('prism'); });
+  bPyr.addEventListener('click',function(){ setShape('pyr'); });
+  hlBtns.forEach(function(b){
+    b.addEventListener('click',function(){
+      hl=b.getAttribute('data-h');
+      hlBtns.forEach(function(o){ o.setAttribute('aria-pressed', o===b && hl!=='none' ?'true':'false'); });
+      draw();
+    });
+  });
+  sn.addEventListener('input',draw);
+  window.addEventListener('resize',function(){ resize(); draw(); });
+  resize(); draw();
+})();
+</script>
+
+<script>
+/* ── Тренажёр-генератор: элементы призмы и пирамиды + формула Эйлера ── */
+(function(){
+  var taskEl=document.getElementById('trTask'), ansEl=document.getElementById('trAns'), resEl=document.getElementById('trResult');
+  if(!taskEl) return;
+  var cur=null;
+  var NAMES={3:'треугольной',4:'четырёхугольной',5:'пятиугольной',6:'шестиугольной',7:'семиугольной',8:'восьмиугольной',9:'девятиугольной',10:'десятиугольной',11:'одиннадцатиугольной',12:'двенадцатиугольной'};
+  var NAMESN={3:'треугольник',4:'четырёхугольник',5:'пятиугольник',6:'шестиугольник',7:'семиугольник',8:'восьмиугольник',9:'девятиугольник',10:'десятиугольник',11:'одиннадцатиугольник',12:'двенадцатиугольник'};
+  function ri(min,max){ return Math.floor(Math.random()*(max-min+1))+min; }
+  function m(s){ return (''+s).replace(/-/g,'−'); }  /* настоящий минус */
+  /* согласование числительных: 1 вершина, 2 вершины, 5 вершин */
+  function plur(k,one,few,many){
+    var a=Math.abs(k)%100, b=a%10;
+    if(a>10&&a<20) return k+' '+many;
+    if(b>1&&b<5) return k+' '+few;
+    if(b===1) return k+' '+one;
+    return k+' '+many;
+  }
+  function EDG(k){ return plur(k,'ребро','ребра','рёбер'); }
+  function VER(k){ return plur(k,'вершина','вершины','вершин'); }
+  function FAC(k){ return plur(k,'грань','грани','граней'); }
+
+  function build(){
+    var n=ri(3,10), pick=Math.random(), what, prism;
+
+    if(pick<0.30){                       /* призма: В / Р / Г */
+      what=ri(0,2); prism=true;
+      var V=2*n, R=3*n, G=n+2;
+      var q={0:['вершин',V],1:['рёбер',R],2:['граней',G]}[what];
+      return {ans:q[1],
+        q:'Сколько <b>'+q[0]+'</b> у '+NAMES[n]+' <b>призмы</b>?',
+        sol:'в основании '+NAMESN[n]+', значит n = '+n+'<br>'+
+            'вершины: n + n = '+n+' + '+n+' = '+V+'  (по одному основанию сверху и снизу)<br>'+
+            'рёбра: n + n + n = '+n+' + '+n+' + '+n+' = '+R+'  (два основания + боковые)<br>'+
+            'грани: 2 + n = 2 + '+n+' = '+G+'  (два основания + боковые)<br>'+
+            'проверка Эйлера: '+m(V+' - '+R+' + '+G+' = 2')+' ✓<br>'+
+            '<b>ответ: '+q[1]+'</b>'};
+    }
+    if(pick<0.60){                       /* пирамида: В / Р / Г */
+      what=ri(0,2); prism=false;
+      var V2=n+1, R2=2*n, G2=n+1;
+      var q2={0:['вершин',V2],1:['рёбер',R2],2:['граней',G2]}[what];
+      return {ans:q2[1],
+        q:'Сколько <b>'+q2[0]+'</b> у '+NAMES[n]+' <b>пирамиды</b>?',
+        sol:'в основании '+NAMESN[n]+', значит n = '+n+'<br>'+
+            'вершины: n + 1 = '+n+' + 1 = '+V2+'  (основание + макушка)<br>'+
+            'рёбра: n + n = '+n+' + '+n+' = '+R2+'  (основание + боковые к вершине)<br>'+
+            'грани: 1 + n = 1 + '+n+' = '+G2+'  (одно основание + боковые треугольники)<br>'+
+            'проверка Эйлера: '+m(V2+' - '+R2+' + '+G2+' = 2')+' ✓<br>'+
+            '<b>ответ: '+q2[1]+'</b>'};
+    }
+    if(pick<0.80){                       /* обратная задача */
+      if(Math.random()<0.5){
+        return {ans:n,
+          q:'У <b>пирамиды</b> ровно <b>'+EDG(2*n)+'</b>. Сколько сторон у многоугольника в основании?',
+          sol:'у n-угольной пирамиды рёбер 2n  (n у основания + n боковых)<br>'+
+              '2n = '+(2*n)+'  →  n = '+(2*n)+' : 2 = '+n+'<br>'+
+              'значит в основании '+NAMESN[n]+'<br>'+
+              '<b>ответ: '+n+'</b>'};
+      }
+      return {ans:n,
+        q:'У <b>призмы</b> ровно <b>'+EDG(3*n)+'</b>. Сколько сторон у многоугольника в основании?',
+        sol:'у n-угольной призмы рёбер 3n  (n снизу + n сверху + n боковых)<br>'+
+            '3n = '+(3*n)+'  →  n = '+(3*n)+' : 3 = '+n+'<br>'+
+            'значит в основании '+NAMESN[n]+'<br>'+
+            '<b>ответ: '+n+'</b>'};
+    }
+    /* Эйлер: по В и Г найти Р */
+    var isP=Math.random()<0.5;
+    var Ve=isP?2*n:n+1, Ge=isP?n+2:n+1, Re=Ve+Ge-2;
+    return {ans:Re,
+      q:'У выпуклого многогранника <b>'+VER(Ve)+'</b> и <b>'+FAC(Ge)+'</b>. Сколько у него рёбер?',
+      sol:'формула Эйлера: '+m('В - Р + Г = 2')+'<br>'+
+          'выражаю Р: Р = В + Г '+m('- 2')+'<br>'+
+          'Р = '+Ve+' + '+Ge+' '+m('- 2')+' = '+Re+'<br>'+
+          'сверка: '+m(Ve+' - '+Re+' + '+Ge+' = 2')+' ✓  (это '+NAMES[n].replace(/ой$/,'ая')+' '+(isP?'призма':'пирамида')+')<br>'+
+          '<b>ответ: '+Re+'</b>'};
+  }
+
+  function generate(){ cur=build(); taskEl.innerHTML=cur.q; resEl.innerHTML=''; ansEl.value=''; }
+  function solHTML(){ return '<div class="sol">'+cur.sol+'</div>'; }
+  function check(){
+    var raw=ansEl.value.trim().replace(',','.');
+    if(raw===''){ resEl.innerHTML='<span class="bad">Впиши число или нажми «Решение».</span>'; return; }
+    var got=parseFloat(raw);
+    if(!isNaN(got) && Math.abs(got-cur.ans)<0.001){ resEl.innerHTML='<span class="ok">✓ Верно! Это '+cur.ans+'.</span>'+solHTML(); }
+    else{ resEl.innerHTML='<span class="bad">✗ Пока не то — посмотри решение.</span>'+solHTML(); }
+  }
+  document.getElementById('trNew').addEventListener('click',function(){ generate(); ansEl.focus(); });
+  document.getElementById('trCheck').addEventListener('click',check);
+  document.getElementById('trShow').addEventListener('click',function(){ resEl.innerHTML=solHTML(); });
+  ansEl.addEventListener('keydown',function(e){ if(e.key==='Enter') check(); });
+
+  /* стартовая задача (без focus): рёбра треугольной призмы → 9 */
+  cur={ans:9,
+    q:'Сколько <b>рёбер</b> у треугольной <b>призмы</b>?',
+    sol:'в основании треугольник, значит n = 3<br>'+
+        'вершины: n + n = 3 + 3 = 6  (по одному основанию сверху и снизу)<br>'+
+        'рёбра: n + n + n = 3 + 3 + 3 = 9  (два основания + боковые)<br>'+
+        'грани: 2 + n = 2 + 3 = 5  (два основания + боковые)<br>'+
+        'проверка Эйлера: '+m('6 - 9 + 5 = 2')+' ✓<br>'+
+        '<b>ответ: 9</b>'};
+  taskEl.innerHTML=cur.q;
+})();
+</script>
+<!--LESSON-NAV-BOT--><nav class="lnav lnav-bot"><a class="prev" href="./geo9-stereo-pryamye-ploskosti.html"><span class="dir">← Предыдущая</span><span class="ttl">Прямые и плоскости в пространстве</span></a><a class="to-cat" href="./catalog.html">📚 <span>Все темы</span></a><a class="next" href="./geo9-stereo-tela-vrascheniya.html"><span class="dir">Следующая →</span><span class="ttl">Тела вращения: цилиндр, конус, шар</span></a></nav><!--/LESSON-NAV-BOT-->
