@@ -1,0 +1,505 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Равные треугольники и соответственные элементы (геометрия, 7 класс)</title>
+<style>
+  :root{
+    --paper:#F6F7F9; --card:#FFFFFF; --ink:#1D2530; --muted:#606B7A; --line:#E3E7EE;
+    --brand:#2E5AAC; --brand-soft:#E4EBF7;
+    --v1:#C23B3B; --v1-soft:#FAE6E6;   /* вершина A ↔ D */
+    --v2:#1E8E5A; --v2-soft:#E1F3EA;   /* вершина B ↔ E */
+    --v3:#2E5AAC; --v3-soft:#E4EBF7;   /* вершина C ↔ F */
+    --warn:#E27C2C; --warn-soft:#FBEEDF;
+    --ok:#1E8E5A; --no:#C23B3B;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper)}
+  .page{max-width:720px;margin:0 auto;padding:clamp(1.4rem,4vw,3rem) clamp(1.1rem,4vw,2rem) 4.5rem;
+    color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:17.5px;line-height:1.68;-webkit-font-smoothing:antialiased}
+  .mono{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-variant-numeric:tabular-nums;font-weight:600}
+
+  .hero{border-bottom:3px solid var(--brand);padding-bottom:1.4rem;margin-bottom:1.8rem}
+  .eyebrow{font-size:.74rem;letter-spacing:.15em;text-transform:uppercase;color:var(--brand);font-weight:700;margin:0 0 .55rem}
+  h1{font-size:clamp(1.75rem,5.4vw,2.6rem);line-height:1.06;margin:0;font-weight:800;letter-spacing:-.02em;text-wrap:balance}
+  .tagline{font-size:1.12rem;color:var(--muted);margin:.85rem 0 0;text-wrap:pretty}
+
+  section{margin-top:2.4rem}
+  h2{font-size:1.5rem;margin:0 0 .3rem;font-weight:780;letter-spacing:-.015em;text-wrap:balance}
+  h2 .em{color:var(--brand)}
+  h3{font-size:1.06rem;margin:1.4rem 0 .2rem;font-weight:750}
+  p{margin:.7rem 0}
+  strong{font-weight:680}
+  .c1{color:var(--v1);font-weight:800} .c2{color:var(--v2);font-weight:800} .c3{color:var(--v3);font-weight:800}
+
+  .lead-in{background:var(--brand-soft);border-radius:14px;padding:1.1rem 1.3rem;font-size:1.02rem}
+  .lead-in p{margin:.4rem 0}
+  .lead-in b{color:var(--brand)}
+
+  .recall{background:var(--card);border:1px dashed var(--line);border-radius:14px;padding:1rem 1.2rem;margin-top:1rem;font-size:.98rem}
+  .recall ul{margin:.5rem 0 0;padding-left:1.15rem;display:flex;flex-direction:column;gap:.35rem}
+
+  .formula-box{background:var(--ink);color:#fff;border-radius:14px;padding:1.3rem;text-align:center;margin-top:1rem}
+  .formula-box .eq{font-family:ui-monospace,Menlo,monospace;font-size:clamp(1.5rem,5.6vw,2.1rem);font-weight:700;letter-spacing:.02em}
+  .formula-box .eq .p1{color:#EE8E8E} .formula-box .eq .p2{color:#6FD3A6} .formula-box .eq .p3{color:#8FB2E6}
+  .formula-box .note{font-size:.9rem;color:#AEB8C6;margin:.7rem 0 0}
+
+  .note{border-left:4px solid var(--brand);background:var(--brand-soft);border-radius:0 10px 10px 0;padding:.8rem 1.1rem;margin-top:1rem;font-size:.98rem}
+  .note b{color:var(--brand)}
+  .note.w{border-left-color:var(--warn);background:var(--warn-soft)}
+  .note.w b{color:#9A5210}
+
+  .tbl{overflow-x:auto;margin-top:1rem;border:1px solid var(--line);border-radius:12px;background:var(--card)}
+  table{border-collapse:collapse;width:100%;font-size:.95rem}
+  th,td{padding:.55rem .8rem;text-align:left;border-bottom:1px solid var(--line);white-space:nowrap}
+  th{font-weight:750;background:#FAFBFD;font-size:.85rem;color:var(--muted)}
+  tr:last-child td{border-bottom:none}
+  td.m{font-family:ui-monospace,Menlo,monospace;font-weight:650}
+
+  /* Чертёж */
+  .diagram{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:1.2rem;margin-top:1rem}
+  .diagram canvas{width:100%;height:auto;display:block;border-radius:8px;background:#FCFDFE}
+  .ctl{display:flex;flex-wrap:wrap;gap:.7rem .9rem;align-items:center;margin-top:.9rem;font-size:.92rem}
+  .ctl label{display:flex;align-items:center;gap:.45rem;font-weight:650}
+  .ctl input[type=range]{flex:1;min-width:120px;accent-color:var(--brand)}
+  .ctl input[type=checkbox]{accent-color:var(--brand);width:1.05rem;height:1.05rem}
+  .ctl button{font:inherit;font-weight:700;font-size:.88rem;cursor:pointer;border:none;border-radius:9px;padding:.5rem .9rem;color:#fff;background:var(--brand)}
+  .ctl input:focus-visible,.ctl button:focus-visible{outline:3px solid var(--brand);outline-offset:2px}
+  .diag-eq{text-align:center;font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.05rem;margin:.9rem 0 0}
+  .diag-eq .p1{color:var(--v1)} .diag-eq .p2{color:var(--v2)} .diag-eq .p3{color:var(--v3)}
+  .cap{font-size:.9rem;color:var(--muted);margin-top:.6rem}
+
+  .walk{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.15rem 1.3rem;margin-top:1rem}
+  .walk .q{font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1rem;margin:0 0 .9rem;padding-bottom:.7rem;border-bottom:1px solid var(--line);white-space:normal}
+  .walk ol{margin:0;padding-left:1.2rem;display:flex;flex-direction:column;gap:.6rem}
+  .walk li{font-size:.96rem}
+  .walk .why{color:var(--muted);font-style:italic;font-size:.9rem;display:block;margin-top:.15rem}
+  .verdict{margin-top:1rem;padding:.7rem 1rem;background:var(--brand-soft);border-radius:10px;font-weight:650;color:var(--brand);font-family:ui-monospace,Menlo,monospace}
+
+  /* Тренажёр */
+  .trainer{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.2rem 1.3rem;margin-top:1rem}
+  .tr-task{font-size:clamp(1rem,3.8vw,1.12rem);text-align:center;padding:1rem;background:var(--brand-soft);border-radius:10px;font-weight:600;line-height:1.5}
+  .tr-task b{font-family:ui-monospace,Menlo,monospace;color:var(--ink)}
+  .tr-ctl{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:1rem;align-items:center;justify-content:center}
+  .tr-ctl input{flex:1;min-width:110px;max-width:180px;font:inherit;padding:.5rem .7rem;border:1px solid var(--line);border-radius:9px;text-align:center;background:#fff;color:var(--ink)}
+  .tr-ctl button{font:inherit;font-weight:700;font-size:.9rem;cursor:pointer;border:none;border-radius:9px;padding:.55rem .95rem;color:#fff;background:var(--brand)}
+  .tr-ctl button.sec{background:var(--warn)}
+  .tr-ctl button.ghost{background:transparent;color:var(--brand);border:1px solid var(--brand)}
+  .tr-ctl button:focus-visible,.tr-ctl input:focus-visible{outline:3px solid var(--brand);outline-offset:2px}
+  .tr-result{margin-top:.9rem;font-size:.96rem;min-height:1.2rem;text-align:center}
+  .tr-result .ok{color:var(--ok);font-weight:700} .tr-result .bad{color:var(--no);font-weight:700}
+  .tr-result .sol{margin-top:.6rem;padding:.8rem 1rem;background:#FCFDFE;border:1px solid var(--line);border-radius:10px;font-family:ui-monospace,Menlo,monospace;font-size:.9rem;line-height:1.8;text-align:left;overflow-x:auto}
+
+  details{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:.9rem 1.1rem;margin-top:.7rem}
+  details[open]{border-color:var(--brand)}
+  summary{cursor:pointer;font-weight:650;list-style:none;display:flex;justify-content:space-between;gap:1rem;align-items:center}
+  summary::-webkit-details-marker{display:none}
+  summary::after{content:"проверить";font-size:.8rem;color:var(--brand);font-weight:700;white-space:nowrap}
+  details[open] summary::after{content:"скрыть"}
+  summary:focus-visible{outline:3px solid var(--brand);outline-offset:3px;border-radius:6px}
+  .ans{margin-top:.75rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.96rem;color:var(--muted)}
+  .ans b{color:var(--ink)}
+  .drill{display:flex;flex-direction:column;gap:.2rem;margin-top:1rem}
+  .lvl{font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:700;margin:1.3rem 0 .3rem}
+
+  ul.traps{list-style:none;margin:1rem 0 0;padding:0;display:flex;flex-direction:column;gap:.7rem}
+  ul.traps li{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:.85rem 1.05rem;padding-left:2.5rem;position:relative;font-size:.97rem}
+  ul.traps li::before{content:"⚠";position:absolute;left:1rem;top:.85rem;color:var(--warn)}
+  ul.traps b{font-weight:700}
+
+  .selfcheck{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.1rem 1.3rem;margin-top:1rem}
+  .selfcheck ol{margin:.4rem 0 0;padding-left:1.2rem;display:flex;flex-direction:column;gap:.5rem;font-size:.98rem}
+
+  .wrapup{background:var(--brand);color:#fff;border-radius:16px;padding:1.4rem 1.5rem;margin-top:2.4rem}
+  .wrapup h2{color:#fff;margin:0 0 .5rem}
+  .wrapup p{color:#DEE7F5;margin:.4rem 0;font-size:1rem}
+  .wrapup .big-rule{font-size:clamp(1rem,4vw,1.2rem);font-weight:800;color:#fff;margin:.6rem 0;font-family:ui-monospace,Menlo,monospace}
+  .wrapup .next{font-size:.95rem;color:#C6D5EE;margin-top:1rem;padding-top:1rem;border-top:1px solid rgba(255,255,255,.2)}
+  .wrapup .next b{color:#fff}
+
+  @media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+
+<!--LESSON-NAV-TOP--><style>.lnav{--lnav-accent:#3D5AF1}.lnav a{text-decoration:none;font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif}.lnav-top{max-width:820px;margin:0 auto;padding:.75rem clamp(1rem,4vw,1.5rem) .1rem}.lnav-top a{display:inline-flex;align-items:center;gap:.35rem;color:var(--lnav-accent);font-weight:600;font-size:.9rem}.lnav-top a:hover{text-decoration:underline}.lnav-bot{max-width:820px;margin:2.6rem auto 3rem;padding:1.1rem clamp(1rem,4vw,1.5rem) 0;border-top:1px solid #E4E8EF;display:flex;align-items:stretch;gap:.55rem}.lnav-bot a{min-width:0;display:flex;flex-direction:column;justify-content:center;gap:.15rem;border:1px solid #E4E8EF;border-radius:12px;padding:.65rem .85rem;color:#182233;background:#fff;transition:border-color .1s,transform .08s}.lnav-bot a:hover{border-color:var(--lnav-accent);transform:translateY(-1px)}.lnav-bot .prev,.lnav-bot .next{flex:1 1 0}.lnav-bot .next{text-align:right}.lnav-bot .dir{font-size:.72rem;color:#8A93A6;font-weight:600}.lnav-bot .ttl{font-size:.9rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.lnav-bot .to-cat{flex:0 0 auto;flex-direction:row;align-items:center;justify-content:center;color:var(--lnav-accent);font-weight:700;font-size:.85rem;white-space:nowrap}@media(max-width:420px){.lnav-bot .to-cat span{display:none}.lnav-bot .to-cat{padding:.65rem .7rem}}</style><nav class="lnav lnav-top"><a href="./catalog.html">← Все темы</a></nav><!--/LESSON-NAV-TOP-->
+<div class="page">
+
+  <header class="hero">
+    <p class="eyebrow">Геометрия · 7 класс</p>
+    <h1>Равные треугольники и соответственные элементы</h1>
+    <p class="tagline">Две фигуры равны, если одну можно наложить на другую. Отсюда сразу все шесть равенств и правило, как записать их без ошибок.</p>
+  </header>
+
+  <div class="lead-in">
+    <p><b>Где встречается.</b> Деталь штампуют на станке, и все копии выходят одинаковыми: положи одну на другую, совпадут без зазоров. В геометрии так же. Две фигуры называют равными, если одну можно идеально наложить на другую.</p>
+    <p>На равных треугольниках держится почти вся планиметрия: признаки равенства, свойства равнобедренного треугольника, параллелограмм и всё, что идёт дальше. Не разберёшься, что чему соответствует, — ни одну теорему не докажешь.</p>
+  </div>
+
+  <div class="note w">
+    <p><b>Сразу ломаем главный миф:</b> «выглядят одинаково, значит равны». На глаз размер не оценишь: два треугольника могут казаться близнецами, а отличаться на пару миллиметров. Равенство — это строгое совпадение всех элементов, а не похожесть на картинке.</p>
+  </div>
+
+  <section>
+    <h2>Что нужно вспомнить</h2>
+    <div class="recall">
+      <p>Освежи в памяти две вещи, на них всё и держится:</p>
+      <ul>
+        <li><strong>Треугольник и его элементы.</strong> У треугольника три вершины, три стороны и три угла, итого шесть элементов. Треугольник с вершинами A, B и C записывают так: <span class="mono">△ABC</span>. Угол при вершине A обозначают <span class="mono">∠A</span>, а сторона <span class="mono">AB</span> соединяет вершины A и B.</li>
+        <li><strong>Сравнение наложением.</strong> Ты уже сравнивал отрезки, прикладывая один к другому: совпали, значит равны. С треугольниками приём тот же, только накладываешь целую фигуру.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section>
+    <h2>Суть: <span class="em">совместились, значит равны</span></h2>
+    <p>Словами так: два треугольника <strong>равны</strong>, если их можно совместить наложением. Передвинул, повернул, если надо — перевернул, и один точно лёг на другой. Без растяжения и сжатия.</p>
+    <p>При наложении вершина ложится на вершину, сторона на сторону, угол на угол. Те, что совпали, и называют <strong>соответственными</strong> (или соответствующими).</p>
+
+    <div class="formula-box">
+      <div class="eq">△<span class="p1">A</span><span class="p2">B</span><span class="p3">C</span> = △<span class="p1">D</span><span class="p2">E</span><span class="p3">F</span></div>
+      <div class="note"><span class="p1">A</span> соответствует <span class="p1">D</span> · <span class="p2">B</span> соответствует <span class="p2">E</span> · <span class="p3">C</span> соответствует <span class="p3">F</span></div>
+    </div>
+
+    <p>Отсюда главное: у равных треугольников <strong>соответственные стороны равны и соответственные углы равны</strong>, все шесть элементов совпадают попарно. Поэтому запись равенства не произвольна: порядок букв показывает, какая вершина какой соответствует.</p>
+  </section>
+
+  <section>
+    <h2>Определение и правило</h2>
+    <p><strong>Определение.</strong> Два треугольника называются равными, если они совмещаются наложением.</p>
+    <p><strong>Следствие, оно же главное правило.</strong> Если <span class="mono">△ABC = △DEF</span>, то соответственные элементы равны:</p>
+
+    <div class="tbl">
+      <table>
+        <tr><th>Соответствие вершин</th><th>Равные стороны</th><th>Равные углы</th></tr>
+        <tr><td class="m"><span class="c1">A ↔ D</span></td><td class="m">AB = DE</td><td class="m">∠A = ∠D</td></tr>
+        <tr><td class="m"><span class="c2">B ↔ E</span></td><td class="m">BC = EF</td><td class="m">∠B = ∠E</td></tr>
+        <tr><td class="m"><span class="c3">C ↔ F</span></td><td class="m">AC = DF</td><td class="m">∠C = ∠F</td></tr>
+      </table>
+    </div>
+
+    <p>Смотри, как получается строка со сторонами: берёшь пару букв из первого треугольника и те же <em>по номеру</em> буквы из второго. AB — это 1-я и 2-я буквы, значит ей соответствуют 1-я и 2-я буквы второго треугольника, то есть DE. И так с каждой стороной.</p>
+
+    <div class="note">
+      <p><b>Правило записи, самое главное.</b> Буквы в названиях двух равных треугольников ставят <strong>в порядке соответствия вершин</strong>: первая буква одного треугольника соответствует первой букве другого, вторая второй, третья третьей. Тогда все шесть равенств читаются прямо из записи <span class="mono">△ABC = △DEF</span>, а на чертёж можно и не смотреть.</p>
+    </div>
+
+    <h3>Обозначения, которые понадобятся</h3>
+    <ul>
+      <li><span class="mono">△ABC</span> — это треугольник с вершинами A, B, C.</li>
+      <li>Знак «=» между треугольниками читается «равен».</li>
+      <li><span class="mono">∠A</span> — угол треугольника при вершине A.</li>
+      <li>Сторона <span class="mono">AB</span> лежит против угла C, то есть против вершины, которой нет в её названии.</li>
+    </ul>
+
+    <div class="note w">
+      <p><b>Когда это не равенство.</b> Равенство — это совпадение треугольников <strong>одинакового размера</strong>. Если фигуры похожи по форме, а размер разный, это подобие. Его будешь изучать позже.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Увидь глазами: <span class="em">наложение</span></h2>
+    <p>Вот два равных треугольника. Второй просто лежит иначе: повёрнут, а с галочкой ещё и перевёрнут. Покрути ползунок и нажми «Наложить». Треугольник поедет на первый и ляжет точь-в-точь. Пунктирные стрелки показывают, какая вершина куда садится.</p>
+    <div class="diagram">
+      <canvas id="cv" width="640" height="330" aria-label="Два равных треугольника ABC и DEF: второй повёрнут, при наложении вершины A и D, B и E, C и F совмещаются"></canvas>
+      <div class="ctl">
+        <label for="rot">поворот</label>
+        <input id="rot" type="range" min="0" max="360" step="1" value="140" aria-label="Поворот второго треугольника">
+        <label for="flip"><input id="flip" type="checkbox"> перевернуть</label>
+        <button id="go" type="button">▶ Наложить</button>
+      </div>
+      <p class="diag-eq">△<span class="p1">A</span><span class="p2">B</span><span class="p3">C</span> = △<span class="p1">D</span><span class="p2">E</span><span class="p3">F</span></p>
+    </div>
+    <p class="cap">Смотри внимательно: по положению на листе сторона AB второго треугольника может выглядеть совсем другой стороной. Но соответствие задаёт не вид, а то, какие вершины совмещаются: <span class="c1">A→D</span>, <span class="c2">B→E</span>, <span class="c3">C→F</span>. Это и записано буквами.</p>
+
+    <div class="note">
+      <p><b>Сделай это руками.</b> Вырежи из бумаги два одинаковых треугольника (обведи один по второму, чтобы совпали точно) и подпиши вершины. Положи их рядом, повёрнутыми по-разному. Сначала <b>предскажи</b>: какая сторона второго равна стороне AB первого? Потом <b>проверь</b>: наложи один на другой, совмещая вершины, и посмотри, какая сторона совпала с AB на самом деле. И <b>объясни</b> себе, почему на глаз можно было промахнуться.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Эталонный разбор</h2>
+    <p>Разбираю вслух, шаг за шагом. Рассуждай так же.</p>
+    <div class="walk">
+      <p class="q">Дано: △MNK = △PQR. Известно: MN = 6 см, ∠N = 40°, KM = 9 см. Найти сторону PR и угол Q.</p>
+      <ol>
+        <li>Сначала устанавливаю соответствие вершин прямо по записи: <span class="mono">M ↔ P, N ↔ Q, K ↔ R</span>.
+          <span class="why">Почему: буквы стоят по порядку соответствия, первая к первой, вторая ко второй, третья к третьей.</span></li>
+        <li>Ищу ∠Q. Угол при вершине N соответствует углу при вершине Q, значит <span class="mono">∠Q = ∠N = 40°</span>.
+          <span class="why">Почему: соответственные углы равных треугольников равны.</span></li>
+        <li>Ищу PR. Сторона PR соединяет вершины P и R; им соответствуют M и K. Значит PR соответствует MK, и <span class="mono">PR = MK = 9 см</span>.
+          <span class="why">Почему: соответственные стороны равны. Слежу за буквами, а не за тем, какие стороны «похожи» на чертеже.</span></li>
+      </ol>
+      <div class="verdict">Ответ: PR = 9 см, ∠Q = 40°</div>
+    </div>
+
+    <div class="walk" style="margin-top:.8rem">
+      <p class="q">Теперь допиши сам. Дано: △ABC = △KLM, AB = 5 см, BC = 7 см, ∠B = 55°. Найти LM и ∠L.</p>
+      <ol>
+        <li>Соответствие: <span class="mono">A ↔ K, B ↔ L, C ↔ M</span>.</li>
+        <li>∠L соответствует ∠B, поэтому <span class="mono">∠L = 55°</span>.</li>
+        <li>Сторона LM соответствует стороне <span class="mono">___</span>, поэтому <span class="mono">LM = ___ см</span>.</li>
+      </ol>
+      <details style="margin-top:.9rem"><summary>Подсказка и ответ</summary><div class="ans">L ↔ B, M ↔ C, значит LM соответствует BC. Отсюда <b>LM = 7 см</b>, а <b>∠L = 55°</b>.</div></details>
+    </div>
+  </section>
+
+  <section>
+    <h2>Тренажёр · читаем равенство</h2>
+    <p>Заданий бесконечно, умение одно: по записи равенства находить соответственные элементы. Впиши ответ: букву (например <span class="mono">Q</span>), пару букв стороны (<span class="mono">PQ</span>) или число градусов. Не идёт — жми «Решение».</p>
+    <div class="trainer">
+      <div class="tr-task" id="trTask">Дано: △ABC = △DEF. Какая сторона равна стороне <b>AB</b>?</div>
+      <div class="tr-ctl">
+        <button id="trNew" type="button">🎲 Новое</button>
+        <input id="trAns" type="text" placeholder="ответ" aria-label="Ответ" autocomplete="off">
+        <button id="trCheck" type="button" class="sec">Проверить</button>
+        <button id="trShow" type="button" class="ghost">Решение</button>
+      </div>
+      <div id="trResult" class="tr-result"></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Проверь себя</h2>
+
+    <p class="lvl">Уровень 1 · понимание</p>
+    <div class="drill">
+      <details><summary>1) Дана запись △PQR = △STU. Назови вершину, соответствующую Q.</summary><div class="ans">Q стоит второй в первом треугольнике, значит ей соответствует вторая буква второго: <b>T</b>.</div></details>
+      <details><summary>2) Та же запись △PQR = △STU. Назови сторону, равную PR.</summary><div class="ans">P первая буква, R третья. Берём первую и третью буквы второго треугольника: <b>SU</b>. То есть PR = SU.</div></details>
+    </div>
+
+    <p class="lvl">Уровень 2 · применение</p>
+    <div class="drill">
+      <details><summary>3) △ABC = △DEF, DE = 4 см, EF = 6 см, ∠D = 90°. Найди AB, BC и ∠A.</summary><div class="ans">Соответствие: A ↔ D, B ↔ E, C ↔ F. Тогда AB соответствует DE, значит <b>AB = 4 см</b>; BC соответствует EF, значит <b>BC = 6 см</b>; ∠A соответствует ∠D, значит <b>∠A = 90°</b>.</div></details>
+      <details><summary>4) △XYZ = △ABC, XY = 8 см, ∠X = 70°, ∠Y = 60°. Найди AB и ∠C.</summary><div class="ans">AB соответствует XY, поэтому <b>AB = 8 см</b>. Дальше углы: ∠Z = 180° − 70° − 60° = 50°, а ∠C = ∠Z, значит <b>∠C = 50°</b>.</div></details>
+    </div>
+
+    <p class="lvl">Уровень 3 · анализ</p>
+    <div class="drill">
+      <details><summary>5) Найди ошибку. Ученик записал △ABC = △DEF и заключил, что AB = EF. В чём ошибка и какой стороне на самом деле равна AB?</summary><div class="ans">Он сопоставил стороны наугад, а не по порядку букв. AB — это первая и вторая буквы, поэтому ей соответствуют первая и вторая буквы второго треугольника: <b>AB = DE</b>. А EF (вторая и третья буквы) равна BC, тоже второй и третьей.</div></details>
+      <details><summary>6) Что изменится, если запись поменяли на △ABC = △FED? Изменятся ли равенства сторон и углов и какие теперь верны?</summary><div class="ans">Да, изменятся: соответствие вершин стало другим, A ↔ F, B ↔ E, C ↔ D. Отсюда стороны: <b>AB = FE, BC = ED, AC = FD</b>. Углы: <b>∠A = ∠F, ∠B = ∠E, ∠C = ∠D</b>. Уцелело только то, что связано с B и E, остальное переехало. Вот почему порядок букв нельзя ставить как попало.</div></details>
+      <details><summary>7) Обратная задача. В △ABC и △KLM известно: AB = KL, BC = LM, AC = KM, и все соответственные углы равны. Как правильно записать равенство?</summary><div class="ans">Смотрим, какие вершины соединяют равные стороны: из AB = KL видно, что A ↔ K и B ↔ L, из BC = LM видно, что C ↔ M. Значит запись такая: <b>△ABC = △KLM</b>, буквы строго по соответствию вершин.</div></details>
+    </div>
+  </section>
+
+  <section>
+    <h2>Ловушки</h2>
+    <ul class="traps">
+      <li><b>Нарушен порядок вершин при записи.</b> Пишут △ABC = △EDF, хотя соответствие другое, и из записи читаются неверные равенства. <em>Как избежать:</em> сначала выясни, какая вершина куда ложится при наложении, и только потом ставь буквы по соответствию.</li>
+      <li><b>Равенство «на глаз».</b> Раз похожи на чертеже, значит равны. <em>Как избежать:</em> равенство надо обосновать (совмещением или признаком), а не увидеть. Чертёж бывает неточным.</li>
+      <li><b>Путают равенство и подобие.</b> Думают, что увеличенная копия треугольника ему «равна». <em>Как избежать:</em> равные совмещаются, у них одинаковый размер; подобные одинаковы по форме, а размер может отличаться.</li>
+      <li><b>Сопоставляют стороны по виду.</b> Ищут похожую по длине или так же лежащую сторону вместо соответственной. <em>Как избежать:</em> сторону задаёт пара её вершин, поэтому ищи соответствие вершин.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Объясни своими словами</h2>
+    <div class="selfcheck">
+      <p>Закрой конспект и ответь вслух. Без запинки — тема твоя:</p>
+      <ol>
+        <li>Что значит, что два треугольника равны?</li>
+        <li>Из записи △ABC = △DEF: чему равна сторона BC и угол B?</li>
+        <li>Чем равенство треугольников отличается от того, что они просто «похожи на глаз»?</li>
+      </ol>
+      <details style="margin-top:.9rem"><summary>Сверить ответы</summary><div class="ans">
+        1) Их можно совместить наложением.<br>
+        2) BC = EF (вторая и третья буквы), ∠B = ∠E (вторая буква).<br>
+        3) Равенство — строгое совпадение всех шести элементов, и его надо обосновать. «Похожи на глаз» — это впечатление от чертежа, а чертёж врёт запросто.
+      </div></details>
+    </div>
+  </section>
+
+  <div class="wrapup">
+    <h2>Запомни главное</h2>
+    <p class="big-rule">△ABC = △DEF ⟹ AB = DE, BC = EF, AC = DF; ∠A = ∠D, ∠B = ∠E, ∠C = ∠F</p>
+    <p>Равные треугольники совмещаются наложением, а значит их соответственные стороны и углы попарно равны. Пиши равенство строго по порядку соответствия вершин, и все шесть равенств прочитаются прямо из букв.</p>
+    <p class="next">👉 Дальше <b>первый признак равенства треугольников</b>: как доказать равенство по трём элементам, не накладывая фигуры друг на друга.</p>
+  </div>
+
+</div>
+
+<script>
+(function(){
+  var cv=document.getElementById('cv'); if(!cv) return;
+  var ctx=cv.getContext('2d');
+  var rot=document.getElementById('rot'), flip=document.getElementById('flip'), go=document.getElementById('go');
+  var W=640,H=330,dpr=1,p=0,anim=null;
+  var COL=['#C23B3B','#1E8E5A','#2E5AAC'];
+  var N1=['A','B','C'], N2=['D','E','F'];
+  var L=[[0,0],[150,0],[40,105]];
+  var G=[(0+150+40)/3,(0+0+105)/3];
+  function reduced(){ return window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches; }
+  function resize(){
+    var c=cv.clientWidth||640; dpr=Math.min(window.devicePixelRatio||1,2);
+    W=c; H=Math.round(c*0.52);
+    cv.width=Math.round(W*dpr); cv.height=Math.round(H*dpr);
+    cv.style.height=H+'px'; ctx.setTransform(dpr,0,0,dpr,0,0);
+  }
+  function tri(center,theta,m,s){
+    return L.map(function(q){
+      var x=(q[0]-G[0])*s*m, y=(q[1]-G[1])*s;
+      var ct=Math.cos(theta), st=Math.sin(theta);
+      var rx=x*ct-y*st, ry=x*st+y*ct;
+      return [center[0]+rx, center[1]-ry];
+    });
+  }
+  function paint(pts,fill){
+    ctx.beginPath();
+    pts.forEach(function(q,i){ i?ctx.lineTo(q[0],q[1]):ctx.moveTo(q[0],q[1]); });
+    ctx.closePath();
+    ctx.fillStyle=fill; ctx.fill();
+    ctx.strokeStyle='#1D2530'; ctx.lineWidth=2; ctx.lineJoin='round'; ctx.stroke();
+  }
+  function marks(pts,names,fs){
+    var cx=(pts[0][0]+pts[1][0]+pts[2][0])/3, cy=(pts[0][1]+pts[1][1]+pts[2][1])/3;
+    pts.forEach(function(q,i){
+      ctx.beginPath(); ctx.arc(q[0],q[1],Math.max(3.2,fs*0.22),0,Math.PI*2);
+      ctx.fillStyle=COL[i]; ctx.fill();
+      var dx=q[0]-cx, dy=q[1]-cy, d=Math.hypot(dx,dy)||1, off=fs*1.05;
+      ctx.fillStyle=COL[i]; ctx.font='800 '+fs+'px system-ui,-apple-system,"Segoe UI",Roboto,sans-serif';
+      ctx.textAlign='center'; ctx.textBaseline='middle';
+      ctx.fillText(names[i], q[0]+dx/d*off, q[1]+dy/d*off);
+    });
+  }
+  function draw(){
+    var s=W/640; if(s>1) s=1;
+    var scale=s*0.95;
+    var fs=Math.max(11,Math.round(15*s+4));
+    var c1=[W*0.27,H*0.5], c2=[W*0.74,H*0.5];
+    var th=(+rot.value)*Math.PI/180;
+    var mirrored=flip.checked;
+    var theta=th*(1-p);
+    var m=mirrored?-Math.cos(Math.PI*p):1;
+    var center=[c2[0]+(c1[0]-c2[0])*p, c2[1]+(c1[1]-c2[1])*p];
+    var T1=tri(c1,0,1,scale);
+    var T2=tri(center,theta,m,scale);
+    ctx.clearRect(0,0,W,H);
+    // стрелки соответствия (пока треугольники ещё врозь)
+    if(p<0.06){
+      ctx.save(); ctx.setLineDash([5,5]); ctx.lineWidth=1.4;
+      for(var i=0;i<3;i++){
+        ctx.strokeStyle=COL[i]; ctx.globalAlpha=0.55;
+        ctx.beginPath(); ctx.moveTo(T1[i][0],T1[i][1]); ctx.lineTo(T2[i][0],T2[i][1]); ctx.stroke();
+      }
+      ctx.restore();
+    }
+    paint(T1,'rgba(255,255,255,0.96)');
+    marks(T1,N1,fs);
+    ctx.save(); ctx.globalAlpha=p>0.02?0.72:1;
+    paint(T2,'rgba(228,235,247,0.85)');
+    ctx.restore();
+    marks(T2,N2,fs);
+  }
+  function animate(){
+    if(anim) cancelAnimationFrame(anim);
+    if(reduced()){ p=(p>0.5)?0:1; draw(); return; }
+    var back=(p>0.5), t0=null, dur=1100;
+    function step(ts){
+      if(t0===null) t0=ts;
+      var k=Math.min(1,(ts-t0)/dur);
+      var e=k<0.5?2*k*k:1-Math.pow(-2*k+2,2)/2;
+      p=back?(1-e):e;
+      draw();
+      if(k<1) anim=requestAnimationFrame(step); else anim=null;
+    }
+    anim=requestAnimationFrame(step);
+  }
+  rot.addEventListener('input',function(){ p=0; if(anim){cancelAnimationFrame(anim);anim=null;} draw(); });
+  flip.addEventListener('change',function(){ p=0; if(anim){cancelAnimationFrame(anim);anim=null;} draw(); });
+  go.addEventListener('click',animate);
+  window.addEventListener('resize',function(){ resize(); draw(); });
+  resize(); draw();
+})();
+</script>
+
+<script>
+(function(){
+  var taskEl=document.getElementById('trTask'), ansEl=document.getElementById('trAns'), resEl=document.getElementById('trResult');
+  if(!taskEl) return;
+  var MINUS='−';
+  var POOL='ABCDEFKLMNPQRSTXYZ'.split('');
+  var CYR={ 'А':'A','В':'B','С':'C','Е':'E','К':'K','М':'M','Н':'H','Р':'P','Т':'T','Х':'X','У':'Y','О':'O' };
+  var cur=null;
+  function ri(a,b){ return Math.floor(Math.random()*(b-a+1))+a; }
+  function pick6(){
+    var p=POOL.slice(), out=[];
+    for(var i=0;i<6;i++){ out.push(p.splice(ri(0,p.length-1),1)[0]); }
+    return out;
+  }
+  function norm(s){
+    s=(s||'').toUpperCase().replace(/[\s∠°.,]/g,'');
+    var r='';
+    for(var i=0;i<s.length;i++){ r += (CYR[s[i]]||s[i]); }
+    return r;
+  }
+  function sameSide(a,b){
+    if(a.length!==2||b.length!==2) return a===b;
+    return a===b || a===b[1]+b[0];
+  }
+  function generate(focus){
+    var L=pick6(), T1=L.slice(0,3), T2=L.slice(3,6);
+    var rec='△'+T1.join('')+' = △'+T2.join('');
+    var k=ri(0,4), i=ri(0,2), j=(i+1)%3;
+    if(k===0){
+      cur={type:'vertex',T1:T1,T2:T2,rec:rec,i:i,ans:T2[i]};
+      taskEl.innerHTML='Дано: <b>'+rec+'</b>. Какая вершина соответствует вершине <b>'+T1[i]+'</b>?';
+    } else if(k===1){
+      cur={type:'side',T1:T1,T2:T2,rec:rec,i:i,j:j,ans:T2[i]+T2[j]};
+      taskEl.innerHTML='Дано: <b>'+rec+'</b>. Какая сторона равна стороне <b>'+T1[i]+T1[j]+'</b>?';
+    } else if(k===2){
+      var len=ri(2,19);
+      cur={type:'sideNum',T1:T1,T2:T2,rec:rec,i:i,j:j,len:len,ans:String(len)};
+      taskEl.innerHTML='Дано: <b>'+rec+'</b>, сторона <b>'+T1[i]+T1[j]+' = '+len+' см</b>. Найди <b>'+T2[i]+T2[j]+'</b> (в см).';
+    } else if(k===3){
+      var ang=ri(4,34)*5;
+      cur={type:'angleNum',T1:T1,T2:T2,rec:rec,i:i,ang:ang,ans:String(ang)};
+      taskEl.innerHTML='Дано: <b>'+rec+'</b>, <b>∠'+T1[i]+' = '+ang+'°</b>. Найди <b>∠'+T2[i]+'</b> (в градусах).';
+    } else {
+      var a1=ri(5,15)*5, a2=ri(5,15)*5;
+      while(a1+a2>=175){ a1=ri(5,15)*5; a2=ri(5,15)*5; }
+      var a3=180-a1-a2;
+      var i2=ri(0,2), j2=(i2+1)%3, k2=(i2+2)%3;
+      cur={type:'third',T1:T1,T2:T2,rec:rec,i:i2,j:j2,k:k2,a1:a1,a2:a2,a3:a3,ans:String(a3)};
+      taskEl.innerHTML='Дано: <b>'+rec+'</b>, <b>∠'+T1[i2]+' = '+a1+'°</b>, <b>∠'+T1[j2]+' = '+a2+'°</b>. Найди <b>∠'+T2[k2]+'</b> (в градусах).';
+    }
+    resEl.innerHTML=''; ansEl.value='';
+    if(focus) ansEl.focus();
+  }
+  function pairs(q){
+    return q.T1[0]+' ↔ '+q.T2[0]+', '+q.T1[1]+' ↔ '+q.T2[1]+', '+q.T1[2]+' ↔ '+q.T2[2];
+  }
+  function solHTML(){
+    var q=cur, h='<div class="sol">';
+    h+='Соответствие вершин по записи: '+pairs(q)+'<br>';
+    if(q.type==='vertex'){
+      h+=q.T1[q.i]+' стоит на '+(q.i+1)+'-м месте → берём '+(q.i+1)+'-ю букву второго треугольника.<br>Ответ: <b>'+q.ans+'</b>';
+    } else if(q.type==='side'){
+      h+='Сторона '+q.T1[q.i]+q.T1[q.j]+' соединяет вершины '+q.T1[q.i]+' и '+q.T1[q.j]+'; им соответствуют '+q.T2[q.i]+' и '+q.T2[q.j]+'.<br>Ответ: <b>'+q.ans+'</b>';
+    } else if(q.type==='sideNum'){
+      h+=q.T2[q.i]+q.T2[q.j]+' соответствует стороне '+q.T1[q.i]+q.T1[q.j]+', а соответственные стороны равны.<br>'+q.T2[q.i]+q.T2[q.j]+' = '+q.T1[q.i]+q.T1[q.j]+' = <b>'+q.len+' см</b>';
+    } else if(q.type==='angleNum'){
+      h+='∠'+q.T2[q.i]+' соответствует ∠'+q.T1[q.i]+', а соответственные углы равны.<br>∠'+q.T2[q.i]+' = ∠'+q.T1[q.i]+' = <b>'+q.ang+'°</b>';
+    } else {
+      h+='Сначала третий угол первого треугольника: ∠'+q.T1[q.k]+' = 180° '+MINUS+' '+q.a1+'° '+MINUS+' '+q.a2+'° = '+q.a3+'°.<br>';
+      h+='∠'+q.T2[q.k]+' соответствует ∠'+q.T1[q.k]+', значит ∠'+q.T2[q.k]+' = <b>'+q.a3+'°</b>';
+    }
+    return h+'</div>';
+  }
+  function check(){
+    var raw=ansEl.value.trim();
+    if(raw===''){ resEl.innerHTML='<span class="bad">Введи ответ или нажми «Решение».</span>'; return; }
+    var got=norm(raw), ok=false;
+    if(cur.type==='vertex'||cur.type==='side'){
+      ok=sameSide(got,norm(cur.ans));
+    } else {
+      var n=parseFloat(raw.replace(',','.').replace(/[^0-9.\-]/g,''));
+      ok=(!isNaN(n) && Math.abs(n-parseFloat(cur.ans))<0.001);
+    }
+    resEl.innerHTML=(ok?'<span class="ok">✓ Верно!</span>':'<span class="bad">✗ Пока не то — смотри разбор.</span>')+solHTML();
+  }
+  document.getElementById('trNew').addEventListener('click',function(){ generate(true); });
+  document.getElementById('trCheck').addEventListener('click',check);
+  document.getElementById('trShow').addEventListener('click',function(){ resEl.innerHTML=solHTML(); });
+  ansEl.addEventListener('keydown',function(e){ if(e.key==='Enter') check(); });
+  cur={type:'side',T1:['A','B','C'],T2:['D','E','F'],rec:'△ABC = △DEF',i:0,j:1,ans:'DE'};
+})();
+</script>
+<!--LESSON-NAV-BOT--><nav class="lnav lnav-bot"><a class="prev" href="./geo7-treugolnik.html"><span class="dir">← Предыдущая</span><span class="ttl">Треугольник: элементы и виды</span></a><a class="to-cat" href="./catalog.html">📚 <span>Все темы</span></a><a class="next" href="./geo7-priznak-ravenstva-1.html"><span class="dir">Следующая →</span><span class="ttl">Первый признак равенства треугольников (СУС)</span></a></nav><!--/LESSON-NAV-BOT-->

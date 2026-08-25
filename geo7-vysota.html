@@ -1,0 +1,549 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Высота треугольника, геометрия 7 класс</title>
+<style>
+  :root{
+    --paper:#F6F7F9; --card:#FFFFFF; --ink:#1D2530; --muted:#606B7A; --line:#E3E7EE;
+    --brand:#2E5AAC; --brand-soft:#E4EBF7;
+    --h:#E27C2C; --h-soft:#FBEEDF;      /* высота */
+    --in:#1E8E5A; --in-soft:#E1F2E9;    /* внутри */
+    --out:#C23B3B; --out-soft:#F8E5E5;  /* вне треугольника */
+    --side:#159A8A;
+    --ok:#1E8E5A; --no:#C23B3B;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper)}
+  .page{max-width:720px;margin:0 auto;padding:clamp(1.4rem,4vw,3rem) clamp(1.1rem,4vw,2rem) 4.5rem;
+    color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:17.5px;line-height:1.68;-webkit-font-smoothing:antialiased}
+  .mono{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-variant-numeric:tabular-nums;font-weight:600}
+  sub{font-size:.72em}
+
+  .hero{border-bottom:3px solid var(--brand);padding-bottom:1.4rem;margin-bottom:1.8rem}
+  .eyebrow{font-size:.74rem;letter-spacing:.15em;text-transform:uppercase;color:var(--brand);font-weight:700;margin:0 0 .55rem}
+  h1{font-size:clamp(1.9rem,6vw,2.8rem);line-height:1.05;margin:0;font-weight:800;letter-spacing:-.02em;text-wrap:balance}
+  .tagline{font-size:1.12rem;color:var(--muted);margin:.85rem 0 0;text-wrap:pretty}
+
+  section{margin-top:2.4rem}
+  h2{font-size:1.5rem;margin:0 0 .3rem;font-weight:780;letter-spacing:-.015em;text-wrap:balance}
+  h2 .em{color:var(--brand)}
+  p{margin:.7rem 0}
+  strong{font-weight:680}
+  .hw{color:var(--h);font-weight:800} .sw{color:var(--side);font-weight:800}
+
+  .lead-in{background:var(--brand-soft);border-radius:14px;padding:1.1rem 1.3rem;font-size:1.02rem}
+  .lead-in p{margin:.4rem 0}
+  .lead-in b{color:var(--brand)}
+
+  .recall{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1rem 1.2rem;margin-top:1rem}
+  .recall h3{margin:0 0 .5rem;font-size:1rem;letter-spacing:.02em;color:var(--muted);text-transform:uppercase;font-size:.78rem;font-weight:800}
+  .recall ul{margin:0;padding-left:1.2rem;display:flex;flex-direction:column;gap:.35rem;font-size:.97rem}
+
+  .def-box{background:var(--ink);color:#fff;border-radius:14px;padding:1.3rem;margin-top:1rem}
+  .def-box .lbl{font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:#8FB2E6;font-weight:800;margin:0 0 .6rem}
+  .def-box .txt{font-size:clamp(1.05rem,3.6vw,1.25rem);font-weight:700;line-height:1.45;margin:0}
+  .def-box .txt u{text-decoration-color:#F0A45E;text-decoration-thickness:3px;text-underline-offset:4px}
+  .def-box .note{font-size:.9rem;color:#AEB8C6;margin:.9rem 0 0;font-weight:400;line-height:1.6}
+
+  .note{border-left:4px solid var(--brand);background:var(--brand-soft);border-radius:0 10px 10px 0;padding:.8rem 1.1rem;margin-top:1rem;font-size:.98rem}
+  .note b{color:var(--brand)}
+
+  .tbl-wrap{overflow-x:auto;margin-top:1rem;border:1px solid var(--line);border-radius:12px;background:var(--card)}
+  table{border-collapse:collapse;width:100%;min-width:430px;font-size:.94rem}
+  th,td{text-align:left;padding:.7rem .9rem;border-bottom:1px solid var(--line);vertical-align:top}
+  thead th{font-size:.75rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+  tbody tr:last-child td{border-bottom:none}
+  td.tag{font-weight:700;white-space:nowrap}
+  .pill{display:inline-block;padding:.12rem .5rem;border-radius:999px;font-size:.8rem;font-weight:700}
+  .pill.in{background:var(--in-soft);color:var(--in)}
+  .pill.out{background:var(--out-soft);color:var(--out)}
+  .pill.side{background:var(--h-soft);color:var(--h)}
+
+  /* Диаграмма */
+  .diagram{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:1.2rem;margin-top:1rem}
+  .diagram canvas{width:100%;height:auto;display:block;border-radius:8px}
+  .picker{display:flex;flex-wrap:wrap;gap:.4rem;margin-bottom:.9rem}
+  .picker .plab{width:100%;font-size:.76rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:800;margin:.2rem 0 -.1rem}
+  .picker button{font:inherit;font-size:.86rem;font-weight:700;cursor:pointer;border:1px solid var(--line);background:#fff;color:var(--muted);
+    border-radius:999px;padding:.35rem .8rem;transition:background .12s,color .12s,border-color .12s}
+  .picker button[aria-pressed="true"]{background:var(--brand);border-color:var(--brand);color:#fff}
+  .picker button:focus-visible{outline:3px solid var(--brand);outline-offset:2px}
+  .cap{margin:.9rem 0 0;font-size:.95rem;padding:.75rem .95rem;border-radius:10px;background:var(--brand-soft)}
+  .cap.in{background:var(--in-soft)} .cap.out{background:var(--out-soft)} .cap.side{background:var(--h-soft)}
+  .cap b{font-weight:800}
+
+  .walk{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.15rem 1.3rem;margin-top:1rem}
+  .walk .q{font-weight:700;font-size:1.02rem;margin:0 0 .9rem;padding-bottom:.7rem;border-bottom:1px solid var(--line)}
+  .walk ol{margin:0;padding-left:1.2rem;display:flex;flex-direction:column;gap:.55rem}
+  .walk li{font-size:.95rem}
+  .walk .why{color:var(--muted);font-style:italic}
+  .verdict{margin-top:1rem;padding:.7rem 1rem;background:var(--brand-soft);border-radius:10px;font-weight:650;color:var(--brand)}
+
+  /* Тренажёр */
+  .trainer{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.2rem 1.3rem;margin-top:1rem}
+  .tr-task{font-size:clamp(1rem,4vw,1.1rem);text-align:center;padding:1rem;background:var(--brand-soft);border-radius:10px;font-weight:600}
+  .tr-task b{font-family:ui-monospace,Menlo,monospace}
+  .tr-opts{display:flex;flex-direction:column;gap:.45rem;margin-top:.9rem}
+  .tr-opts button{font:inherit;font-size:.93rem;text-align:left;cursor:pointer;border:1px solid var(--line);background:#fff;color:var(--ink);
+    border-radius:10px;padding:.6rem .85rem}
+  .tr-opts button:hover{border-color:var(--brand)}
+  .tr-opts button.pick-ok{border-color:var(--ok);background:var(--in-soft)}
+  .tr-opts button.pick-no{border-color:var(--no);background:var(--out-soft)}
+  .tr-ctl{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.9rem;justify-content:center}
+  .tr-ctl button{font:inherit;font-weight:700;font-size:.9rem;cursor:pointer;border:none;border-radius:9px;padding:.55rem .95rem;color:#fff;background:var(--brand)}
+  .tr-ctl button.ghost{background:transparent;color:var(--brand);border:1px solid var(--brand)}
+  .trainer button:focus-visible{outline:3px solid var(--brand);outline-offset:2px}
+  .tr-result{margin-top:.9rem;font-size:.96rem;min-height:1.2rem;text-align:center}
+  .tr-result .ok{color:var(--ok);font-weight:700} .tr-result .bad{color:var(--no);font-weight:700}
+  .tr-result .sol{margin-top:.6rem;padding:.8rem 1rem;background:#FCFDFE;border:1px solid var(--line);border-radius:10px;font-size:.92rem;line-height:1.7;text-align:left}
+
+  details{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:.9rem 1.1rem;margin-top:.7rem}
+  details[open]{border-color:var(--brand)}
+  summary{cursor:pointer;font-weight:650;list-style:none;display:flex;justify-content:space-between;gap:1rem;align-items:center}
+  summary::-webkit-details-marker{display:none}
+  summary::after{content:"проверить";font-size:.8rem;color:var(--brand);font-weight:700;white-space:nowrap}
+  details[open] summary::after{content:"скрыть"}
+  summary:focus-visible{outline:3px solid var(--brand);outline-offset:3px;border-radius:6px}
+  .ans{margin-top:.75rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.96rem;color:var(--muted)}
+  .ans b{color:var(--ink)}
+  .drill{display:flex;flex-direction:column;gap:.2rem;margin-top:1rem}
+  .lvl{font-size:.72rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:1.2rem 0 .1rem}
+
+  ul.traps{list-style:none;margin:1rem 0 0;padding:0;display:flex;flex-direction:column;gap:.7rem}
+  ul.traps li{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:.85rem 1.05rem;padding-left:2.5rem;position:relative;font-size:.97rem}
+  ul.traps li::before{content:"⚠";position:absolute;left:1rem;top:.85rem;color:var(--h)}
+  ul.traps b{font-weight:700}
+
+  .selfcheck{background:var(--card);border:1px dashed var(--brand);border-radius:14px;padding:1.1rem 1.3rem;margin-top:1rem}
+  .selfcheck ol{margin:.5rem 0 0;padding-left:1.2rem;display:flex;flex-direction:column;gap:.4rem;font-size:.97rem}
+
+  .wrapup{background:var(--brand);color:#fff;border-radius:16px;padding:1.4rem 1.5rem;margin-top:2.4rem}
+  .wrapup h2{color:#fff;margin:0 0 .5rem}
+  .wrapup p{color:#DEE7F5;margin:.4rem 0;font-size:1rem}
+  .wrapup .big-rule{font-size:1.1rem;font-weight:800;color:#fff;margin:.6rem 0;line-height:1.45}
+  .wrapup .next{font-size:.95rem;color:#C6D5EE;margin-top:1rem;padding-top:1rem;border-top:1px solid rgba(255,255,255,.2)}
+  .wrapup .next b{color:#fff}
+
+  @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<!--LESSON-NAV-TOP--><style>.lnav{--lnav-accent:#3D5AF1}.lnav a{text-decoration:none;font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif}.lnav-top{max-width:820px;margin:0 auto;padding:.75rem clamp(1rem,4vw,1.5rem) .1rem}.lnav-top a{display:inline-flex;align-items:center;gap:.35rem;color:var(--lnav-accent);font-weight:600;font-size:.9rem}.lnav-top a:hover{text-decoration:underline}.lnav-bot{max-width:820px;margin:2.6rem auto 3rem;padding:1.1rem clamp(1rem,4vw,1.5rem) 0;border-top:1px solid #E4E8EF;display:flex;align-items:stretch;gap:.55rem}.lnav-bot a{min-width:0;display:flex;flex-direction:column;justify-content:center;gap:.15rem;border:1px solid #E4E8EF;border-radius:12px;padding:.65rem .85rem;color:#182233;background:#fff;transition:border-color .1s,transform .08s}.lnav-bot a:hover{border-color:var(--lnav-accent);transform:translateY(-1px)}.lnav-bot .prev,.lnav-bot .next{flex:1 1 0}.lnav-bot .next{text-align:right}.lnav-bot .dir{font-size:.72rem;color:#8A93A6;font-weight:600}.lnav-bot .ttl{font-size:.9rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.lnav-bot .to-cat{flex:0 0 auto;flex-direction:row;align-items:center;justify-content:center;color:var(--lnav-accent);font-weight:700;font-size:.85rem;white-space:nowrap}@media(max-width:420px){.lnav-bot .to-cat span{display:none}.lnav-bot .to-cat{padding:.65rem .7rem}}</style><nav class="lnav lnav-top"><a href="./catalog.html">← Все темы</a></nav><!--/LESSON-NAV-TOP-->
+<div class="page">
+
+  <header class="hero">
+    <p class="eyebrow">Геометрия · 7 класс</p>
+    <h1>Высота треугольника</h1>
+    <p class="tagline">«Рост» треугольника: меряем его строго под прямым углом к выбранной стороне. И иногда он оказывается снаружи фигуры.</p>
+  </header>
+
+  <div class="lead-in">
+    <p><b>Зачем это нужно.</b> Без высоты не посчитать площадь треугольника: она равна половине произведения стороны на проведённую к ней высоту. Не доказать свойства равнобедренного треугольника. Не сделать нормальный чертёж в задачах на строительство, землемерие, кройку.</p>
+    <p><b>Главный миф, который надо сразу выкинуть.</b> «Высота всегда идёт сверху вниз, вертикально». Нет. Высота зависит от того, <strong>к какой стороне</strong> ты её проводишь, а не от того, как лист лежит у тебя на столе. Поверни чертёж, и высота повернётся вместе с ним.</p>
+  </div>
+
+  <section>
+    <h2>Что нужно вспомнить</h2>
+    <p>Тема стоит на том, что ты уже знаешь. Проверь себя за полминуты:</p>
+    <div class="recall">
+      <h3>Перед стартом</h3>
+      <ul>
+        <li><strong>Треугольник:</strong> три вершины (A, B, C) и три стороны. Сторону, лежащую напротив вершины, обозначают той же буквой, но маленькой: a = BC, b = AC, c = AB.</li>
+        <li><strong>Перпендикулярные прямые:</strong> две прямые перпендикулярны, если пересекаются под прямым углом (90°). Знак такого угла: маленький квадратик в точке пересечения.</li>
+        <li><strong>Кратчайшее расстояние от точки до прямой</strong> измеряют по перпендикуляру из точки к этой прямой. Любой другой отрезок будет длиннее.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section>
+    <h2>Суть: <span class="em">роняем перпендикуляр</span></h2>
+    <p>Возьми треугольник. Выбери одну его вершину. Из этой вершины «урони» отрезок на противоположную сторону так, чтобы он встретил её <strong>под прямым углом</strong>. Этот отрезок и есть высота.</p>
+    <p>Смысл вот в чём: высота показывает <strong>кратчайшее расстояние</strong> от вершины до противоположной стороны. Точнее, до прямой, на которой эта сторона лежит. А кратчайшее расстояние от точки до прямой всегда даёт перпендикуляр. Поэтому высота обязана быть перпендикуляром, иначе получится не «рост», а косой отрезок подлиннее.</p>
+    <p>В треугольнике три вершины, а значит, есть и <strong>три высоты</strong>, по одной к каждой стороне.</p>
+
+    <div class="def-box">
+      <p class="lbl">Определение</p>
+      <p class="txt">Высота треугольника: перпендикуляр, проведённый из вершины треугольника к <u>прямой, содержащей противоположную сторону</u>.</p>
+      <p class="note">Высоту обозначают буквой h. Высота из вершины A к стороне a записывается как h<sub>a</sub>. Точку, куда высота упала, называют <b style="color:#F0A45E">основанием высоты</b> и часто обозначают H. В основании обязательно ставят значок прямого угла, маленький квадратик.</p>
+    </div>
+
+    <div class="note">
+      <p><b>Вчитайся в подчёркнутое.</b> В определении сказано «к <strong>прямой</strong>, содержащей сторону», а не «к стороне». Разница огромная: сторона у нас короткий отрезок, а прямая тянется в обе стороны бесконечно. Поэтому основание высоты иногда оказывается <strong>за пределами</strong> самой стороны. Это не ошибка, а нормальная ситуация.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Три случая, <span class="em">и все законные</span></h2>
+    <p>Куда упадёт высота, зависит от углов треугольника. Случаев ровно три:</p>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>Треугольник</th><th>Где основания высот</th></tr></thead>
+        <tbody>
+          <tr><td class="tag">Остроугольный</td><td>Все три основания попадают <span class="pill in">на сами стороны</span>, так что все высоты лежат внутри треугольника.</td></tr>
+          <tr><td class="tag">Прямоугольный</td><td>Две высоты <span class="pill side">совпадают с катетами</span>: катеты уже перпендикулярны друг другу, ничего строить не надо. Третья идёт из вершины прямого угла внутрь.</td></tr>
+          <tr><td class="tag">Тупоугольный</td><td>Две высоты падают <span class="pill out">на продолжение стороны</span> и лежат вне треугольника: сторону приходится мысленно продлить.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>Ниже все три случая живьём, покрути сам.</p>
+  </section>
+
+  <section>
+    <h2>Покрути чертёж</h2>
+    <p>Выбери тип треугольника и вершину, из которой проводим высоту. <span class="hw">Оранжевым</span> нарисована сама высота, пунктиром — продолжение стороны, если его пришлось достраивать. Квадратик в основании H означает прямой угол.</p>
+    <div class="diagram">
+      <div class="picker" id="pickType">
+        <span class="plab">Треугольник</span>
+        <button type="button" data-t="0" aria-pressed="true">остроугольный</button>
+        <button type="button" data-t="1" aria-pressed="false">прямоугольный</button>
+        <button type="button" data-t="2" aria-pressed="false">тупоугольный</button>
+      </div>
+      <div class="picker" id="pickVert">
+        <span class="plab">Высота из вершины</span>
+        <button type="button" data-v="0" aria-pressed="true">A</button>
+        <button type="button" data-v="1" aria-pressed="false">B</button>
+        <button type="button" data-v="2" aria-pressed="false">C</button>
+      </div>
+      <canvas id="cv" width="640" height="480" aria-label="Чертёж треугольника с высотой из выбранной вершины"></canvas>
+      <p class="cap" id="cap"></p>
+    </div>
+    <p style="font-size:.9rem;color:var(--muted)">Перещёлкай все девять сочетаний. Сама высота везде ведёт себя одинаково: перпендикуляр из вершины к прямой напротив. Меняется только то, попадает она на кусок стороны или на её продолжение.</p>
+  </section>
+
+  <section>
+    <h2>Разбор: строим высоту шаг за шагом</h2>
+    <p>Дальше я проговариваю каждый шаг вслух и отвечаю на «почему».</p>
+
+    <div class="walk">
+      <p class="q">Пример 1. Дан остроугольный треугольник ABC. Построить высоту из вершины B.</p>
+      <ol>
+        <li><b>Шаг 1.</b> Находим сторону напротив B, это AC. <span class="why">Почему: высота всегда идёт к стороне, лежащей напротив выбранной вершины.</span></li>
+        <li><b>Шаг 2.</b> Из точки B опускаем на прямую AC перпендикуляр (по угольнику). <span class="why">Почему: высота по определению перпендикулярна стороне.</span></li>
+        <li><b>Шаг 3.</b> Точку пересечения с AC обозначаем H и ставим значок прямого угла. <span class="why">Почему: H и есть основание высоты, угол BHA = 90°.</span></li>
+        <li><b>Шаг 4.</b> Отрезок BH и есть высота h<sub>b</sub>. Треугольник остроугольный, поэтому H лежит на самом отрезке AC.</li>
+      </ol>
+      <div class="verdict">Итог: h<sub>b</sub> = BH, основание H лежит внутри стороны AC.</div>
+    </div>
+
+    <div class="walk" style="margin-top:.8rem">
+      <p class="q">Пример 2. В тупоугольном треугольнике MNK тупой угол при вершине N. Построить высоту из вершины M. Один шаг я пропустил, допиши его сам.</p>
+      <ol>
+        <li><b>Шаг 1.</b> Сторона, противоположная M, это NK.</li>
+        <li><b>Шаг 2.</b> Угол при N тупой, поэтому основание высоты не попадёт на сам отрезок NK. Что нужно сделать со стороной NK, прежде чем опускать перпендикуляр? <span class="why">Подумай сам, потом раскрой ответ ниже.</span></li>
+        <li><b>Шаг 3.</b> Из M опускаем перпендикуляр на полученную прямую и ставим значок прямого угла.</li>
+      </ol>
+      <details style="margin-top:.9rem"><summary>Ответ к шагу 2</summary>
+        <div class="ans">Продлить сторону NK за вершину N. Перпендикуляр из M упадёт именно на это продолжение, то есть <b>вне треугольника</b>. В определении не зря сказано «к прямой, содержащей сторону»: прямая NK продолжается за N, и высота встречается с ней там.</div>
+      </details>
+    </div>
+
+    <div class="walk" style="margin-top:.8rem">
+      <p class="q">Пример 3 (попробуй сам). В прямоугольном треугольнике с прямым углом C построили высоту из вершины A. На какую сторону она упала и совпадает ли с какой-нибудь стороной?</p>
+      <details><summary>Показать ответ</summary>
+        <div class="ans">Высота из A идёт к стороне BC (она напротив A). Угол C прямой, значит AC ⊥ CB. Отрезок AC уже перпендикулярен прямой BC, строить ничего не надо: <b>высота из A совпадает со стороной AC</b> (с катетом), а её основанием служит сама вершина C.</div>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <h2>Тренажёр · где окажется основание высоты</h2>
+    <p>Тебе дают углы треугольника и вершину. Определи, куда упадёт основание высоты из этой вершины. Сначала предскажи в уме, потом жми вариант.</p>
+    <div class="trainer">
+      <div class="tr-task" id="trTask">В треугольнике ABC углы: <b>A = 40°</b>, <b>B = 110°</b>, <b>C = 30°</b>. Куда упадёт основание высоты, проведённой из вершины <b>A</b>?</div>
+      <div class="tr-opts" id="trOpts">
+        <button type="button" data-k="in">На саму сторону, высота внутри треугольника</button>
+        <button type="button" data-k="out">На продолжение стороны, высота вне треугольника</button>
+        <button type="button" data-k="side">Строить нечего, высота совпадает со стороной</button>
+      </div>
+      <div class="tr-ctl">
+        <button id="trNew" type="button">🎲 Новая</button>
+        <button id="trShow" type="button" class="ghost">Решение</button>
+      </div>
+      <div id="trResult" class="tr-result"></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Проверь себя</h2>
+
+    <p class="lvl">Уровень 1 · понимание</p>
+    <div class="drill">
+      <details><summary>1) Сколько высот у треугольника?</summary><div class="ans">Три. У треугольника три вершины, и из каждой можно опустить перпендикуляр к противоположной стороне. Ответ: <b>3</b>.</div></details>
+      <details><summary>2) Под каким углом высота пересекает прямую, содержащую сторону?</summary><div class="ans">Под прямым, <b>90°</b>. Так и записано в определении: высота есть перпендикуляр. Поэтому в основании обязателен значок прямого угла.</div></details>
+      <details><summary>3) Высота перпендикулярна стороне или биссектрисе угла?</summary><div class="ans"><b>Стороне</b>. Точнее, прямой, содержащей противоположную сторону. Биссектриса тут вообще ни при чём.</div></details>
+    </div>
+
+    <p class="lvl">Уровень 2 · применение</p>
+    <div class="drill">
+      <details><summary>4) Начерти остроугольный треугольник и построй все три его высоты. Что заметишь?</summary><div class="ans">Каждая высота идёт перпендикуляром из вершины к противоположной стороне, все три основания лежат на самих сторонах. А сами высоты <b>пересекутся в одной точке внутри треугольника</b>.</div></details>
+      <details><summary>5) В прямоугольном треугольнике с прямым углом C проведи высоту из вершины B. Где она?</summary><div class="ans">Сторона напротив B, это AC. Угол C прямой, значит BC ⊥ CA, и <b>высота из B совпадает со стороной BC</b> (с катетом). Это второй из двух катетов-высот прямоугольного треугольника.</div></details>
+    </div>
+
+    <p class="lvl">Уровень 3 · анализ</p>
+    <div class="drill">
+      <details><summary>6) Что изменится, если треугольник тупоугольный: где окажутся основания высот и точка их пересечения?</summary><div class="ans">Две высоты, те, что проведены из вершин острых углов, упадут <b>на продолжения сторон, вне треугольника</b>: стороны придётся продлить. Третья, из вершины тупого угла, ляжет внутрь на сторону. Сами высоты (продлённые как прямые) по-прежнему пересекутся в одной точке, только уже <b>снаружи</b> треугольника.</div></details>
+      <details><summary>7) Найди ошибку: ученик провёл из вершины отрезок к середине противоположной стороны и назвал его высотой. В чём он не прав?</summary><div class="ans">Он построил <b>медиану</b>, а не высоту. Признак высоты один: прямой угол в основании, а не попадание в середину стороны. Отрезок в середину может оказаться косым, и тогда он уже не кратчайшее расстояние до стороны. Совпадают высота и медиана только в особом случае: в равнобедренном треугольнике, если вести их к основанию.</div></details>
+      <details><summary>8) Предскажи и объясни: тупоугольный треугольник, высота из вершины острого угла. Внутри или снаружи?</summary><div class="ans"><b>Снаружи.</b> Из вершины острого угла перпендикуляр просто не достанет до самого отрезка противоположной стороны, он пройдёт мимо. Поэтому сторону продлевают, и основание высоты садится на это продолжение, за пределами фигуры. Проверить легко угольником: приложи и посмотри, где встретится прямой угол.</div></details>
+    </div>
+  </section>
+
+  <section>
+    <h2>Ловушки</h2>
+    <ul class="traps">
+      <li><b>Путать высоту с медианой.</b> Высота перпендикулярна стороне, медиана идёт в её середину. Совпадают они только в равнобедренном треугольнике, когда высоту ведут к основанию. Проверка простая: у высоты в основании обязан стоять <strong>прямой угол</strong>, а не «попадание в середину».</li>
+      <li><b>Рисовать высоту внутри тупоугольного треугольника.</b> Если угол тупой, перпендикуляр из вершины острого угла не достанет до самой стороны. Сначала продли сторону, потом опускай перпендикуляр, и основание окажется снаружи.</li>
+      <li><b>Опускать перпендикуляр «на глаз».</b> Высота должна быть строго перпендикулярна именно прямой, содержащей сторону. Пользуйся угольником и проверяй прямой угол в основании, а не «похоже на прямой».</li>
+      <li><b>Думать, что высота всегда вертикальна.</b> Высота зависит от выбранной стороны, а не от ориентации листа. Повернул чертёж, значит и высота повернулась.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Объясни своими словами</h2>
+    <div class="selfcheck">
+      <p>Закрой урок и ответь вслух: себе, родителю или чат-боту. Застрял на вопросе, вернись к нужному разделу.</p>
+      <ol>
+        <li>Высота треугольника перпендикулярна стороне или биссектрисе угла?</li>
+        <li>В каком треугольнике основание высоты может оказаться вне фигуры? Почему так выходит?</li>
+        <li>Чем высота отличается от медианы? Когда они совпадают?</li>
+        <li>Почему в определении написано «к прямой, содержащей сторону», а не просто «к стороне»?</li>
+      </ol>
+    </div>
+  </section>
+
+  <div class="wrapup">
+    <h2>Запомни главное</h2>
+    <p class="big-rule">Высота треугольника: перпендикуляр из вершины к прямой, содержащей противоположную сторону.</p>
+    <p>Высот три, по одной к каждой стороне. В остроугольном они все внутри, в прямоугольном две совпадают с катетами, а в тупоугольном две падают на продолжение стороны и лежат вне треугольника. Признак высоты один: прямой угол в основании.</p>
+    <p class="next">👉 Дальше идут <b>свойства равнобедренного треугольника</b>: там высота, медиана и биссектриса, проведённые к основанию, вдруг оказываются одним и тем же отрезком.</p>
+  </div>
+
+</div>
+
+<script>
+(function(){
+  var cv=document.getElementById('cv'); if(!cv) return;
+  var ctx=cv.getContext('2d'), cap=document.getElementById('cap');
+  var W=640,H=480,dpr=1, type=0, vert=0;
+
+  // математические координаты (y вверх)
+  var TRI=[
+    {name:'остроугольный', P:[[0,0],[3.2,4.6],[6,0]]},
+    {name:'прямоугольный', P:[[0,0],[0,4.5],[6,0]]},   // прямой угол при A
+    {name:'тупоугольный',  P:[[0,0],[-1.5,2.6],[6,0]]} // тупой угол при A
+  ];
+  var NAMES=['A','B','C'];
+
+  function css(v){ return getComputedStyle(document.documentElement).getPropertyValue(v).trim(); }
+  function resize(){
+    var c=cv.clientWidth||640; dpr=Math.min(window.devicePixelRatio||1,2);
+    W=c; H=Math.round(c*0.72);
+    cv.width=W*dpr; cv.height=H*dpr; cv.style.height=H+'px'; ctx.setTransform(dpr,0,0,dpr,0,0);
+  }
+
+  function foot(V,P,Q){
+    var dx=Q[0]-P[0], dy=Q[1]-P[1], L2=dx*dx+dy*dy;
+    var t=((V[0]-P[0])*dx+(V[1]-P[1])*dy)/L2;
+    return {t:t, x:P[0]+t*dx, y:P[1]+t*dy};
+  }
+
+  function draw(){
+    var T=TRI[type], P=T.P;
+    var V=P[vert], i1=(vert+1)%3, i2=(vert+2)%3;
+    var Pt=P[i1], Qt=P[i2];
+    var F=foot(V,Pt,Qt);
+    var EPS=1e-6;
+    var kind = (F.t<-EPS||F.t>1+EPS) ? 'out' : ((Math.abs(F.t)<EPS||Math.abs(F.t-1)<EPS) ? 'side' : 'in');
+
+    // границы рисунка
+    var pts=[P[0],P[1],P[2],[F.x,F.y]];
+    var minx=Math.min.apply(null,pts.map(function(p){return p[0];}));
+    var maxx=Math.max.apply(null,pts.map(function(p){return p[0];}));
+    var miny=Math.min.apply(null,pts.map(function(p){return p[1];}));
+    var maxy=Math.max.apply(null,pts.map(function(p){return p[1];}));
+    var pad=42, sc=Math.min((W-pad*2)/Math.max(maxx-minx,0.1),(H-pad*2)/Math.max(maxy-miny,0.1));
+    var ox=(W-(maxx-minx)*sc)/2, oy=(H-(maxy-miny)*sc)/2;
+    function SX(x){ return ox+(x-minx)*sc; }
+    function SY(y){ return oy+(maxy-y)*sc; }
+
+    ctx.clearRect(0,0,W,H);
+    ctx.lineCap='round'; ctx.lineJoin='round';
+
+    // пунктирное продолжение стороны до основания высоты
+    if(kind==='out'){
+      var near = (F.t<0)?Pt:Qt;
+      ctx.save(); ctx.setLineDash([6,6]); ctx.strokeStyle='#9AA5B4'; ctx.lineWidth=1.6;
+      ctx.beginPath(); ctx.moveTo(SX(near[0]),SY(near[1])); ctx.lineTo(SX(F.x),SY(F.y)); ctx.stroke(); ctx.restore();
+    }
+
+    // треугольник
+    ctx.beginPath();
+    ctx.moveTo(SX(P[0][0]),SY(P[0][1]));
+    ctx.lineTo(SX(P[1][0]),SY(P[1][1]));
+    ctx.lineTo(SX(P[2][0]),SY(P[2][1]));
+    ctx.closePath();
+    ctx.fillStyle='rgba(46,90,172,0.06)'; ctx.fill();
+    ctx.strokeStyle=css('--ink'); ctx.lineWidth=2.2; ctx.stroke();
+
+    // противоположная сторона — цветом
+    ctx.beginPath(); ctx.moveTo(SX(Pt[0]),SY(Pt[1])); ctx.lineTo(SX(Qt[0]),SY(Qt[1]));
+    ctx.strokeStyle=css('--side'); ctx.lineWidth=3.4; ctx.stroke();
+
+    // высота
+    ctx.beginPath(); ctx.moveTo(SX(V[0]),SY(V[1])); ctx.lineTo(SX(F.x),SY(F.y));
+    ctx.strokeStyle=css('--h'); ctx.lineWidth=3.4; ctx.stroke();
+
+    // значок прямого угла в основании
+    var m=Math.min(16,sc*0.34);
+    var ux=(Qt[0]-Pt[0]), uy=(Qt[1]-Pt[1]), uL=Math.hypot(ux,uy); ux/=uL; uy/=uL;
+    var wx=(V[0]-F.x), wy=(V[1]-F.y), wL=Math.hypot(wx,wy);
+    if(wL>1e-9){
+      wx/=wL; wy/=wL;
+      var fx=SX(F.x), fy=SY(F.y);
+      var s=(F.t>0.5?-1:1);                       // вдоль стороны — в сторону самого отрезка
+      var ax=fx+ux*m*s, ay=fy-uy*m*s;             // точка на прямой стороны
+      var bx=fx+wx*m,   by=fy-wy*m;               // точка на высоте
+      ctx.beginPath();
+      ctx.moveTo(ax,ay);
+      ctx.lineTo(ax+wx*m, ay-wy*m);
+      ctx.lineTo(bx,by);
+      ctx.strokeStyle=css('--muted'); ctx.lineWidth=1.6; ctx.stroke();
+    }
+
+    // точки и подписи
+    var cxm=(P[0][0]+P[1][0]+P[2][0])/3, cym=(P[0][1]+P[1][1]+P[2][1])/3;
+    function dot(x,y,col){ ctx.beginPath(); ctx.arc(SX(x),SY(y),4.5,0,6.2832); ctx.fillStyle=col; ctx.fill(); }
+    function lab(x,y,txt,col,away){
+      var dx=x-cxm, dy=y-cym, L=Math.hypot(dx,dy)||1;
+      ctx.fillStyle=col; ctx.font='700 '+Math.max(13,Math.min(19,sc*0.32))+'px system-ui,-apple-system,sans-serif';
+      ctx.textAlign='center'; ctx.textBaseline='middle';
+      ctx.fillText(txt, SX(x)+dx/L*away, SY(y)-dy/L*away);
+    }
+    for(var i=0;i<3;i++){ dot(P[i][0],P[i][1], i===vert?css('--h'):css('--ink')); }
+    for(var j=0;j<3;j++){ lab(P[j][0],P[j][1],NAMES[j], j===vert?css('--h'):css('--ink'), 20); }
+    if(kind!=='side'){
+      dot(F.x,F.y,css('--h'));
+      lab(F.x,F.y,'H',css('--h'),22);
+    }
+    // подпись высоты
+    var mx=(SX(V[0])+SX(F.x))/2, my=(SY(V[1])+SY(F.y))/2;
+    ctx.fillStyle=css('--h'); ctx.font='700 '+Math.max(12,Math.min(17,sc*0.28))+'px system-ui,-apple-system,sans-serif';
+    ctx.textAlign='center'; ctx.textBaseline='middle';
+    if(kind!=='side') ctx.fillText('h', mx+16, my);
+
+    // подпись под чертежом
+    var sideName=NAMES[Math.min(i1,i2)]+NAMES[Math.max(i1,i2)];
+    var txt;
+    if(kind==='in'){
+      txt='<b>Внутри.</b> Основание H лежит на самом отрезке '+sideName+', вся высота внутри треугольника.';
+    } else if(kind==='out'){
+      txt='<b>Снаружи.</b> Сторону '+sideName+' пришлось продлить (пунктир): основание H село на продолжение, высота вышла за треугольник.';
+    } else {
+      txt='<b>Совпала со стороной.</b> Тут строить нечего: сторона из вершины '+NAMES[vert]+' уже перпендикулярна прямой '+sideName+', она и есть высота, а её основание — сама вершина.';
+    }
+    cap.className='cap '+kind;
+    cap.innerHTML='Треугольник '+T.name+', высота из вершины '+NAMES[vert]+' к стороне '+sideName+'. '+txt;
+  }
+
+  function bind(id, attr, setter){
+    var box=document.getElementById(id);
+    box.addEventListener('click',function(e){
+      var b=e.target.closest('button'); if(!b) return;
+      setter(+b.getAttribute(attr));
+      Array.prototype.forEach.call(box.querySelectorAll('button'),function(x){ x.setAttribute('aria-pressed', x===b?'true':'false'); });
+      draw();
+    });
+  }
+  bind('pickType','data-t',function(v){ type=v; });
+  bind('pickVert','data-v',function(v){ vert=v; });
+  window.addEventListener('resize',function(){ resize(); draw(); });
+  resize(); draw();
+})();
+</script>
+
+<script>
+(function(){
+  var taskEl=document.getElementById('trTask'), optsEl=document.getElementById('trOpts'), resEl=document.getElementById('trResult');
+  if(!taskEl) return;
+  var MINUS='−';                                   // настоящий минус, не ASCII-дефис
+  function fixMinus(s){ return s.replace(/(^|[\s(=+])-(?=\d)/g, '$1'+MINUS); }
+  var V=['A','B','C'];
+  var cur=null;
+
+  function ri(min,max){ return Math.floor(Math.random()*(max-min+1))+min; }
+  function shuffle(a){ for(var i=a.length-1;i>0;i--){ var j=ri(0,i); var t=a[i]; a[i]=a[j]; a[j]=t; } return a; }
+
+  function makeAngles(){
+    var kind=ri(0,2), ang;
+    if(kind===0){                       // остроугольный
+      for(;;){ var x=ri(50,85), y=ri(50,85), z=180-x-y; if(z>=50&&z<=85){ ang=[x,y,z]; break; } }
+    } else if(kind===1){                // прямоугольный
+      var a=ri(20,70); ang=[90,a,90-a];
+    } else {                            // тупоугольный
+      var o=ri(95,140), rest=180-o, p=ri(15,rest-15); ang=[o,p,rest-p];
+    }
+    return {kind:kind, ang:shuffle(ang)};
+  }
+
+  function verdict(ang, v){
+    var a=ang[v];
+    if(a===90) return 'in';                 // высота из вершины прямого угла — внутрь, на гипотенузу
+    var hasRight = ang.indexOf(90)>=0;
+    if(hasRight) return 'side';             // высота из острой вершины совпадает с катетом
+    var hasObtuse = ang.some(function(x){ return x>90; });
+    if(!hasObtuse) return 'in';             // остроугольный
+    return a>90 ? 'in' : 'out';             // тупоугольный: из тупой вершины внутрь, из острой — наружу
+  }
+
+  function opposite(v){ var o=[0,1,2].filter(function(i){ return i!==v; }); return V[o[0]]+V[o[1]]; }
+
+  function generate(){
+    var g=makeAngles(), v=ri(0,2);
+    cur={ang:g.ang, v:v, key:verdict(g.ang,v)};
+    render();
+  }
+  function render(){
+    taskEl.innerHTML='В треугольнике ABC углы: <b>A = '+cur.ang[0]+'°</b>, <b>B = '+cur.ang[1]+'°</b>, <b>C = '+cur.ang[2]+'°</b>. '+
+      'Куда упадёт основание высоты, проведённой из вершины <b>'+V[cur.v]+'</b>?';
+    resEl.innerHTML='';
+    Array.prototype.forEach.call(optsEl.querySelectorAll('button'),function(b){ b.className=''; });
+  }
+  function typeWord(ang){
+    if(ang.indexOf(90)>=0) return 'прямоугольный';
+    return ang.some(function(x){ return x>90; }) ? 'тупоугольный' : 'остроугольный';
+  }
+  function solHTML(){
+    var ang=cur.ang, v=cur.v, side=opposite(v), tw=typeWord(ang), h='<div class="sol">';
+    h+='Сумма углов сходится: '+ang[0]+'° + '+ang[1]+'° + '+ang[2]+'° = 180°. ';
+    h+='Наибольший угол — '+Math.max(ang[0],ang[1],ang[2])+'°, значит треугольник <b>'+tw+'</b>.<br>';
+    h+='Высота из вершины '+V[v]+' идёт к прямой, содержащей сторону '+side+'.<br>';
+    if(cur.key==='in'){
+      if(ang[v]===90) h+='Вершина '+V[v]+' — это вершина прямого угла, сторона '+side+' — гипотенуза. Перпендикуляр из '+V[v]+' падает на саму гипотенузу, <b>внутрь треугольника</b>.';
+      else if(ang[v]>90) h+='Вершина '+V[v]+' — вершина тупого угла ('+ang[v]+'°). Именно эта высота в тупоугольном треугольнике ложится <b>на саму сторону</b>, внутрь.';
+      else h+='Треугольник остроугольный, поэтому все три основания высот попадают на сами стороны: основание <b>внутри стороны '+side+'</b>.';
+    } else if(cur.key==='out'){
+      h+='Угол при '+V[v]+' острый ('+ang[v]+'°), а тупой угол ('+Math.max(ang[0],ang[1],ang[2])+'°) — при другой вершине. Перпендикуляр из '+V[v]+' до самого отрезка '+side+' не достанет: сторону надо продлить, и основание сядет <b>на продолжение, вне треугольника</b>.';
+    } else {
+      var rv=V[ang.indexOf(90)];
+      h+='Угол при вершине '+rv+' прямой, поэтому стороны, выходящие из '+rv+' — катеты — уже перпендикулярны друг другу. Сторона, идущая из '+V[v]+' в '+rv+', перпендикулярна прямой '+side+', значит <b>она и есть высота</b>: строить ничего не нужно, основание — сама вершина '+rv+'.';
+    }
+    h+='</div>';
+    return fixMinus(h);
+  }
+  optsEl.addEventListener('click',function(e){
+    var b=e.target.closest('button'); if(!b||!cur) return;
+    var k=b.getAttribute('data-k');
+    Array.prototype.forEach.call(optsEl.querySelectorAll('button'),function(x){ x.className=''; });
+    if(k===cur.key){ b.className='pick-ok'; resEl.innerHTML='<span class="ok">✓ Верно!</span>'+solHTML(); }
+    else{
+      b.className='pick-no';
+      var right=optsEl.querySelector('[data-k="'+cur.key+'"]'); if(right) right.className='pick-ok';
+      resEl.innerHTML='<span class="bad">✗ Не то — смотри разбор.</span>'+solHTML();
+    }
+  });
+  document.getElementById('trNew').addEventListener('click',generate);
+  document.getElementById('trShow').addEventListener('click',function(){ resEl.innerHTML=solHTML(); });
+
+  // стартовая задача: тупоугольный, высота из острой вершины A → наружу
+  cur={ang:[40,110,30], v:0, key:'out'};
+})();
+</script>
+<!--LESSON-NAV-BOT--><nav class="lnav lnav-bot"><a class="prev" href="./geo7-bissektrisa.html"><span class="dir">← Предыдущая</span><span class="ttl">Биссектриса треугольника</span></a><a class="to-cat" href="./catalog.html">📚 <span>Все темы</span></a><a class="next" href="./geo7-ravnobedrennyj-treugolnik.html"><span class="dir">Следующая →</span><span class="ttl">Равнобедренный и равносторонний треугольник</span></a></nav><!--/LESSON-NAV-BOT-->

@@ -1,0 +1,509 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Сравнение и измерение отрезков, геометрия 7 класс</title>
+<style>
+  :root{
+    --paper:#F6F7F9; --card:#FFFFFF; --ink:#1D2530; --muted:#606B7A; --line:#E3E7EE;
+    --brand:#2E5AAC; --brand-soft:#E4EBF7;
+    --p1:#E27C2C; --p1-soft:#FBEEDF;    /* часть AC */
+    --p2:#159A8A; --p2-soft:#DEF3F0;    /* часть CB */
+    --wh:#2E5AAC; --wh-soft:#E4EBF7;    /* целое AB */
+    --ok:#1E8E5A; --no:#C23B3B;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper)}
+  .page{max-width:720px;margin:0 auto;padding:clamp(1.4rem,4vw,3rem) clamp(1.1rem,4vw,2rem) 4.5rem;
+    color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:17.5px;line-height:1.68;-webkit-font-smoothing:antialiased}
+  .mono{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-variant-numeric:tabular-nums;font-weight:600}
+
+  .hero{border-bottom:3px solid var(--brand);padding-bottom:1.4rem;margin-bottom:1.8rem}
+  .eyebrow{font-size:.74rem;letter-spacing:.15em;text-transform:uppercase;color:var(--brand);font-weight:700;margin:0 0 .55rem}
+  h1{font-size:clamp(1.9rem,6vw,2.8rem);line-height:1.05;margin:0;font-weight:800;letter-spacing:-.02em;text-wrap:balance}
+  .tagline{font-size:1.12rem;color:var(--muted);margin:.85rem 0 0;text-wrap:pretty}
+
+  section{margin-top:2.4rem}
+  h2{font-size:1.5rem;margin:0 0 .3rem;font-weight:780;letter-spacing:-.015em;text-wrap:balance}
+  h2 .em{color:var(--brand)}
+  h3{font-size:1.08rem;margin:1.4rem 0 .2rem;font-weight:750}
+  p{margin:.7rem 0}
+  strong{font-weight:680}
+  .p1w{color:var(--p1);font-weight:800} .p2w{color:var(--p2);font-weight:800} .whw{color:var(--wh);font-weight:800}
+
+  .lead-in{background:var(--brand-soft);border-radius:14px;padding:1.1rem 1.3rem;font-size:1.02rem}
+  .lead-in p{margin:.4rem 0}
+  .lead-in b{color:var(--brand)}
+
+  .formula-box{background:var(--ink);color:#fff;border-radius:14px;padding:1.3rem;text-align:center;margin-top:1rem}
+  .formula-box .eq{font-family:ui-monospace,Menlo,monospace;font-size:clamp(1.5rem,5.5vw,2.1rem);font-weight:700}
+  .formula-box .eq .w{color:#8FB2E6} .formula-box .eq .a{color:#F0A45E} .formula-box .eq .b{color:#6FD3C6}
+  .formula-box .note{font-size:.9rem;color:#AEB8C6;margin:.7rem 0 0}
+
+  .note{border-left:4px solid var(--brand);background:var(--brand-soft);border-radius:0 10px 10px 0;padding:.8rem 1.1rem;margin-top:1rem;font-size:.98rem}
+  .note b{color:var(--brand)}
+  .note p{margin:.35rem 0}
+
+  .recall{background:var(--card);border:1px dashed var(--line);border-radius:14px;padding:1rem 1.2rem;margin-top:1rem}
+  .recall ul{margin:.4rem 0 0;padding-left:1.2rem;display:flex;flex-direction:column;gap:.35rem;font-size:.97rem}
+
+  /* Диаграммы */
+  .diagram{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:1.2rem;margin-top:1rem}
+  .diagram canvas{width:100%;height:auto;display:block;border-radius:8px}
+  .sliders{display:grid;gap:.6rem;margin-top:.9rem}
+  .sliders label{display:flex;align-items:center;gap:.5rem;font-weight:700;font-family:ui-monospace,Menlo,monospace;font-size:.92rem}
+  .sliders input[type=range]{flex:1;min-width:0;accent-color:var(--brand)}
+  .sliders input[type=range]:focus-visible{outline:3px solid var(--brand);outline-offset:3px}
+  .sliders .sval{min-width:4.5ch;text-align:right}
+  .diag-eq{text-align:center;font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:clamp(.95rem,3.6vw,1.1rem);margin:.9rem 0 0}
+  .diag-eq .a{color:var(--p1)} .diag-eq .b{color:var(--p2)} .diag-eq .w{color:var(--wh)}
+  .diag-btn{font:inherit;font-weight:700;font-size:.9rem;cursor:pointer;border:1px solid var(--brand);background:transparent;color:var(--brand);border-radius:9px;padding:.5rem .9rem;margin-top:.9rem}
+  .diag-btn:focus-visible{outline:3px solid var(--brand);outline-offset:2px}
+  .cap{font-size:.9rem;color:var(--muted)}
+
+  .walk{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.15rem 1.3rem;margin-top:1rem}
+  .walk .q{font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1rem;margin:0 0 .9rem;padding-bottom:.7rem;border-bottom:1px solid var(--line);line-height:1.5}
+  .walk ol{margin:0;padding-left:1.2rem;display:flex;flex-direction:column;gap:.55rem}
+  .walk li{font-size:.95rem}
+  .walk .why{color:var(--muted);font-style:italic}
+  .verdict{margin-top:1rem;padding:.7rem 1rem;background:var(--brand-soft);border-radius:10px;font-weight:650;color:var(--brand);font-family:ui-monospace,Menlo,monospace}
+
+  /* Тренажёр */
+  .trainer{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.2rem 1.3rem;margin-top:1rem}
+  .tr-task{font-size:clamp(1rem,4vw,1.1rem);text-align:center;padding:1rem;background:var(--brand-soft);border-radius:10px;font-weight:600;line-height:1.55}
+  .tr-task b{font-family:ui-monospace,Menlo,monospace;color:var(--ink)}
+  .tr-ctl{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:1rem;align-items:center;justify-content:center}
+  .tr-ctl input{flex:1;min-width:110px;max-width:180px;font:inherit;padding:.5rem .7rem;border:1px solid var(--line);border-radius:9px;text-align:center;background:#fff;color:var(--ink)}
+  .tr-ctl button{font:inherit;font-weight:700;font-size:.9rem;cursor:pointer;border:none;border-radius:9px;padding:.55rem .95rem;color:#fff;background:var(--brand)}
+  .tr-ctl button.sec{background:var(--p1)}
+  .tr-ctl button.ghost{background:transparent;color:var(--brand);border:1px solid var(--brand)}
+  .tr-ctl button:focus-visible,.tr-ctl input:focus-visible{outline:3px solid var(--brand);outline-offset:2px}
+  .tr-result{margin-top:.9rem;font-size:.96rem;min-height:1.2rem;text-align:center}
+  .tr-result .ok{color:var(--ok);font-weight:700} .tr-result .bad{color:var(--no);font-weight:700}
+  .tr-result .sol{margin-top:.6rem;padding:.8rem 1rem;background:#FCFDFE;border:1px solid var(--line);border-radius:10px;font-family:ui-monospace,Menlo,monospace;font-size:.9rem;line-height:1.8;text-align:left;overflow-x:auto}
+
+  details{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:.9rem 1.1rem;margin-top:.7rem}
+  details[open]{border-color:var(--brand)}
+  summary{cursor:pointer;font-weight:650;list-style:none;display:flex;justify-content:space-between;gap:1rem;align-items:center}
+  summary::-webkit-details-marker{display:none}
+  summary::after{content:"проверить";font-size:.8rem;color:var(--brand);font-weight:700;white-space:nowrap}
+  details[open] summary::after{content:"скрыть"}
+  summary:focus-visible{outline:3px solid var(--brand);outline-offset:3px;border-radius:6px}
+  .ans{margin-top:.75rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.96rem;color:var(--muted)}
+  .ans b{color:var(--ink)}
+  .drill{display:flex;flex-direction:column;gap:.2rem;margin-top:1rem}
+  .lvl{font-size:.74rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:700;margin:1.3rem 0 .3rem}
+
+  .tablewrap{overflow-x:auto;margin-top:1rem;border:1px solid var(--line);border-radius:11px;background:var(--card)}
+  table{border-collapse:collapse;width:100%;font-size:.95rem}
+  th,td{padding:.6rem .85rem;text-align:left;border-bottom:1px solid var(--line);white-space:nowrap}
+  th{font-weight:700;background:#FAFBFD}
+  tr:last-child td{border-bottom:none}
+
+  ul.traps{list-style:none;margin:1rem 0 0;padding:0;display:flex;flex-direction:column;gap:.7rem}
+  ul.traps li{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:.85rem 1.05rem;padding-left:2.5rem;position:relative;font-size:.97rem}
+  ul.traps li::before{content:"⚠";position:absolute;left:1rem;top:.85rem;color:var(--p1)}
+  ul.traps b{font-weight:700}
+
+  .wrapup{background:var(--brand);color:#fff;border-radius:16px;padding:1.4rem 1.5rem;margin-top:2.4rem}
+  .wrapup h2{color:#fff;margin:0 0 .5rem}
+  .wrapup p{color:#DEE7F5;margin:.4rem 0;font-size:1rem}
+  .wrapup .big-rule{font-size:1.2rem;font-weight:800;color:#fff;margin:.6rem 0;font-family:ui-monospace,Menlo,monospace}
+  .wrapup .next{font-size:.95rem;color:#C6D5EE;margin-top:1rem;padding-top:1rem;border-top:1px solid rgba(255,255,255,.2)}
+  .wrapup .next b{color:#fff}
+
+  @media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+
+<!--LESSON-NAV-TOP--><style>.lnav{--lnav-accent:#3D5AF1}.lnav a{text-decoration:none;font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif}.lnav-top{max-width:820px;margin:0 auto;padding:.75rem clamp(1rem,4vw,1.5rem) .1rem}.lnav-top a{display:inline-flex;align-items:center;gap:.35rem;color:var(--lnav-accent);font-weight:600;font-size:.9rem}.lnav-top a:hover{text-decoration:underline}.lnav-bot{max-width:820px;margin:2.6rem auto 3rem;padding:1.1rem clamp(1rem,4vw,1.5rem) 0;border-top:1px solid #E4E8EF;display:flex;align-items:stretch;gap:.55rem}.lnav-bot a{min-width:0;display:flex;flex-direction:column;justify-content:center;gap:.15rem;border:1px solid #E4E8EF;border-radius:12px;padding:.65rem .85rem;color:#182233;background:#fff;transition:border-color .1s,transform .08s}.lnav-bot a:hover{border-color:var(--lnav-accent);transform:translateY(-1px)}.lnav-bot .prev,.lnav-bot .next{flex:1 1 0}.lnav-bot .next{text-align:right}.lnav-bot .dir{font-size:.72rem;color:#8A93A6;font-weight:600}.lnav-bot .ttl{font-size:.9rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.lnav-bot .to-cat{flex:0 0 auto;flex-direction:row;align-items:center;justify-content:center;color:var(--lnav-accent);font-weight:700;font-size:.85rem;white-space:nowrap}@media(max-width:420px){.lnav-bot .to-cat span{display:none}.lnav-bot .to-cat{padding:.65rem .7rem}}</style><nav class="lnav lnav-top"><a href="./catalog.html">← Все темы</a></nav><!--/LESSON-NAV-TOP-->
+<div class="page">
+
+  <header class="hero">
+    <p class="eyebrow">Геометрия · 7 класс</p>
+    <h1>Сравнение и измерение отрезков</h1>
+    <p class="tagline">Отрезок — самая простая фигура, которую можно измерить. С него начинается всё: длина, расстояние, периметр, равенство фигур.</p>
+  </header>
+
+  <div class="lead-in">
+    <p><b>Где встречается.</b> Везде, где есть длина: раскрой ткани, разметка доски перед распилом, расстояние на карте, рост человека. Строитель, который «на глаз» решил, что две планки одинаковые, рискует получить кривую раму. Поэтому отрезки сравнивают точно, а не приблизительно.</p>
+    <p>В геометрии без этого дальше не пройти: ни треугольник построить, ни доказать, что два треугольника равны. Равенство сторон и есть равенство отрезков.</p>
+  </div>
+
+  <section>
+    <h2>Главный миф: <span class="em">«какой выглядит длиннее, тот и длиннее»</span></h2>
+    <p>Глаз обмануть легко. Наклон, фон, стрелки на концах — и ты уверенно тычешь не в тот отрезок. Поэтому в геометрии сравнивают <strong>не на глаз</strong>, а двумя честными способами: измерением или наложением. Ниже сам увидишь, как глаз промахивается.</p>
+  </section>
+
+  <section>
+    <h2>Что нужно вспомнить</h2>
+    <div class="recall">
+      <ul>
+        <li><strong>Точка, прямая, отрезок.</strong> Отрезок — это часть прямой между двумя точками, а сами точки называют концами. Обозначаем двумя буквами: <span class="mono">AB</span>.</li>
+        <li><strong>Точка «лежит между».</strong> Если точка <span class="mono">C</span> стоит на отрезке <span class="mono">AB</span> между его концами, она делит его на две части. Это понадобится в главном правиле темы.</li>
+        <li><strong>Натуральные числа и десятичные дроби.</strong> Складывать и вычитать длины ты уже умеешь, на этом вся арифметика темы и держится.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section>
+    <h2>Ядро темы</h2>
+
+    <h3>Что значит «измерить отрезок»</h3>
+    <p><strong>Измерить отрезок</strong> значит узнать, сколько раз в нём укладывается выбранная единица длины (миллиметр, сантиметр). Результат называют <strong>длиной отрезка</strong>: это положительное число с единицей измерения.</p>
+    <p>Запись хитрая, но привыкаешь быстро: <span class="mono">AB</span> — это и сам отрезок, и его длина. Что именно имеется в виду, видно из контекста: «проведи <span class="mono">AB</span>» про фигуру, «<span class="mono">AB = 5</span> см» про длину.</p>
+
+    <h3>Что значит «сравнить отрезки»</h3>
+    <p>Сравнить два отрезка значит выяснить, равны они или один длиннее. Способа два:</p>
+    <div class="tablewrap">
+      <table>
+        <tr><th>Способ</th><th>Как делаем</th><th>Вывод</th></tr>
+        <tr><td><b>Измерением</b></td><td>Измерили оба, получили два числа</td><td>Сравниваем числа</td></tr>
+        <tr><td><b>Наложением</b></td><td>Совмещаем конец первого с концом второго так, чтобы отрезки легли на один луч</td><td>Вторые концы совпали → равны; один «не достал» → он короче</td></tr>
+      </table>
+    </div>
+    <div class="note">
+      <p><b>Главное тут вот что.</b> <strong>Равные отрезки — это отрезки одинаковой длины</strong>, а вовсе не отрезки, лежащие в одном месте. Два равных отрезка могут торчать в разных углах чертежа и быть повёрнуты по-разному, и всё равно они равны.</p>
+    </div>
+    <p>Обозначения знакомые: <span class="mono">AB = CD</span> — отрезки равны, <span class="mono">AB &gt; CD</span> — <span class="mono">AB</span> длиннее, <span class="mono">AB &lt; CD</span> — короче.</p>
+
+    <h3>Главное свойство: целое равно сумме частей</h3>
+    <p>Если точка <span class="mono">C</span> лежит <strong>между</strong> точками <span class="mono">A</span> и <span class="mono">B</span>, то длина всего отрезка равна сумме длин его частей:</p>
+    <div class="formula-box">
+      <div class="eq"><span class="w">AB</span> = <span class="a">AC</span> + <span class="b">CB</span></div>
+      <div class="note"><span class="w">AB</span> — целое · <span class="a">AC</span> и <span class="b">CB</span> — части, на которые точка C разбила отрезок</div>
+    </div>
+    <p>Из этого же равенства находят любую часть, если известно целое: <span class="mono">CB = AB − AC</span>.</p>
+    <div class="note">
+      <p><b>Когда это работает.</b> Только если точка <span class="mono">C</span> лежит <strong>между</strong> <span class="mono">A</span> и <span class="mono">B</span>, то есть на самом отрезке. Если <span class="mono">C</span> оказалась вне отрезка, складывать так нельзя, формула будет другой.</p>
+      <p><b>Единицы.</b> Складывать и сравнивать можно только длины в одинаковых единицах: <span class="mono">5 см = 50 мм</span>. Длина всегда положительна и не зависит от того, с какого конца мерить: <span class="mono">AB = BA</span>.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Увидь глазами: <span class="em">целое и части</span></h2>
+    <p>Отрезок <span class="mono">AB</span> лежит на линейке концом <span class="mono">A</span> в нуле. Двигай точку <span class="mono">C</span> и следи: части меняются, а их <strong>сумма</strong> стоит на месте.</p>
+    <div class="diagram">
+      <canvas id="cvParts" width="640" height="300" aria-label="Отрезок AB на линейке, точка C делит его на части AC и CB"></canvas>
+      <div class="sliders">
+        <label for="sc">точка C <span id="vc" class="sval">3 см</span><input id="sc" type="range" min="5" max="75" step="5" value="30" aria-label="Положение точки C на отрезке"></label>
+      </div>
+      <p class="diag-eq" id="eqParts"></p>
+    </div>
+    <p class="cap">Оранжевая часть — это <span class="p1w">AC</span>, бирюзовая — <span class="p2w">CB</span>, синяя полоса снизу — целое <span class="whw">AB</span>. Сколько отнял один кусок, столько добавил другой: целое не меняется.</p>
+
+    <h3>А теперь наложение</h3>
+    <p>Тут два отрезка: верхний лежит ровно, нижний наклонён. Сначала <strong>предскажи</strong> глазами, какой длиннее. Потом жми кнопку: отрезки лягут на один луч левыми концами, как при настоящем наложении, и правые концы всё покажут.</p>
+    <div class="diagram">
+      <canvas id="cvOver" width="640" height="260" aria-label="Сравнение двух отрезков наложением"></canvas>
+      <div class="sliders">
+        <label for="so">длина CD <span id="vo" class="sval">6 см</span><input id="so" type="range" min="30" max="90" step="5" value="60" aria-label="Длина отрезка CD"></label>
+      </div>
+      <button id="btnOver" class="diag-btn" type="button">Наложить отрезки</button>
+      <p class="diag-eq" id="eqOver"></p>
+    </div>
+    <p class="cap">Наклонный отрезок почти всегда «кажется» длиннее. Это и есть обман глаза. Наложение спорит с ощущением и выигрывает.</p>
+  </section>
+
+  <section>
+    <h2>Разбираем вместе</h2>
+
+    <div class="walk">
+      <p class="q">Точка C лежит между A и B. AC = 3,5 см, CB = 4 см. Найди AB.</p>
+      <ol>
+        <li>Точка <span class="mono">C</span> лежит между <span class="mono">A</span> и <span class="mono">B</span> → значит, отрезок <span class="mono">AB</span> состоит из двух частей: <span class="mono">AC</span> и <span class="mono">CB</span>. <span class="why">Почему: условие свойства о сумме частей выполнено, а без него складывать нельзя.</span></li>
+        <li>По свойству длины: <span class="mono">AB = AC + CB</span>. <span class="why">Почему: целое равно сумме своих частей.</span></li>
+        <li>Подставляем: <span class="mono">AB = 3,5 + 4 = 7,5</span> (см). <span class="why">Почему: единицы одинаковые (см), поэтому просто складываем числа.</span></li>
+      </ol>
+      <div class="verdict">Ответ: AB = 7,5 см</div>
+    </div>
+
+    <div class="walk" style="margin-top:.8rem">
+      <p class="q">Точка M лежит между K и L. KL = 12 см, KM = 5 см. Найди ML.</p>
+      <p style="margin-top:0">Тут известно <strong>целое</strong> и одна часть, значит вторую ищем вычитанием. Последний шаг я оставил тебе.</p>
+      <ol>
+        <li>Точка <span class="mono">M</span> между <span class="mono">K</span> и <span class="mono">L</span>, значит <span class="mono">KL = KM + ML</span>.</li>
+        <li>Отсюда <span class="mono">ML = KL − KM</span>.</li>
+        <li><span class="mono">ML = 12 − 5 = ____</span> (см) &nbsp;← <span class="why">впиши число и единицы.</span></li>
+      </ol>
+      <details style="margin-top:.9rem"><summary>Сверить свой ответ</summary><div class="ans"><span class="mono">ML = 12 − 5 = 7</span>. Ответ: <b>ML = 7 см</b>.</div></details>
+    </div>
+
+    <div class="walk" style="margin-top:.8rem">
+      <p class="q">На прямой отмечены подряд точки P, Q, R (Q между P и R). PQ = 2,8 см, QR = 3,2 см. Найди PR и сравни отрезки PQ и QR.</p>
+      <p style="margin-top:0">Эта задача целиком твоя. Реши, потом раскрой.</p>
+      <details style="margin-top:.5rem"><summary>Показать ответ</summary><div class="ans"><span class="mono">PR = 2,8 + 3,2 = 6</span> см. Сравнение: <span class="mono">2,8 &lt; 3,2</span>, значит <b>PQ &lt; QR</b>.</div></details>
+    </div>
+  </section>
+
+  <section>
+    <h2>Тренажёр · целое и части</h2>
+    <p>Задачи по теме не кончаются. Прочитай условие, реши в уме или на бумаге, впиши ответ числом (десятичную часть через запятую). Попалась задача с подвохом и ответа нет? Так и пиши: «нет».</p>
+    <div class="trainer">
+      <div class="tr-task" id="trTask">Точка <b>C</b> лежит между <b>A</b> и <b>B</b>. <b>AC = 3,5 см</b>, <b>CB = 4 см</b>. Найди <b>AB</b> (в см).</div>
+      <div class="tr-ctl">
+        <button id="trNew" type="button">🎲 Новая</button>
+        <input id="trAns" type="text" placeholder="ответ" aria-label="Ответ">
+        <button id="trCheck" type="button" class="sec">Проверить</button>
+        <button id="trShow" type="button" class="ghost">Решение</button>
+      </div>
+      <div id="trResult" class="tr-result"></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Проверь себя</h2>
+
+    <p class="lvl">Уровень 1 · понимание</p>
+    <div class="drill">
+      <details><summary>1) Прочитай словами запись AB = CD.</summary><div class="ans">«Отрезок <span class="mono">AB</span> равен отрезку <span class="mono">CD</span>», то есть <b>их длины одинаковые</b>.</div></details>
+      <details><summary>2) Каким способом сравнить два отрезка без линейки с делениями?</summary><div class="ans"><b>Наложением</b>: совместить концы так, чтобы отрезки легли на один луч, и посмотреть на вторые концы.</div></details>
+      <details><summary>3) Верно ли, что отрезок AB и отрезок BA разные по длине?</summary><div class="ans">Нет. <span class="mono">AB = BA</span>: длина не зависит от того, с какого конца мерить.</div></details>
+    </div>
+
+    <p class="lvl">Уровень 2 · применение</p>
+    <div class="drill">
+      <details><summary>4) C лежит между A и B. AB = 15 см, AC = 9 см. Найди CB.</summary><div class="ans">Известно целое и часть → вычитаем: <span class="mono">CB = AB − AC = 15 − 9 = 6</span>. Ответ <b>6 см</b>.</div></details>
+      <details><summary>5) Что длиннее: отрезок 4 см или отрезок 38 мм?</summary><div class="ans">Сначала к одной единице: <span class="mono">4 см = 40 мм</span>. Теперь видно: <span class="mono">40 &gt; 38</span>. Длиннее <b>первый отрезок (4 см)</b>.</div></details>
+    </div>
+
+    <p class="lvl">Уровень 3 · анализ</p>
+    <div class="drill">
+      <details><summary>6) Найди ошибку. Ученик написал: «C лежит между A и B, AC = 10, AB = 6, значит CB = AC − AB = 4».</summary><div class="ans">Ошибка в самих данных, а не только в формуле. Если <span class="mono">C</span> лежит между <span class="mono">A</span> и <span class="mono">B</span>, то <span class="mono">AC</span> — это <b>часть</b> отрезка <span class="mono">AB</span>, и больше целого она быть не может. А тут <span class="mono">10 &gt; 6</span>, значит <b>данные противоречивы</b>: такого расположения точек не бывает.</div></details>
+      <details><summary>7) Обратная задача. AB = 10 см, CB = 6 см, C между A и B. Найди AC и объясни, как разместить точки на прямой.</summary><div class="ans"><span class="mono">AC = AB − CB = 10 − 6 = 4</span>. Ответ <b>AC = 4 см</b>. На прямой: ставим <span class="mono">A</span>, отмеряем 4 см и получаем <span class="mono">C</span>, от неё ещё 6 см и получаем <span class="mono">B</span>. Всего от <span class="mono">A</span> до <span class="mono">B</span> получится 10 см.</div></details>
+      <details><summary>8) Что изменится, если точка C лежит не между A и B, а за точкой B?</summary><div class="ans">Формулу <span class="mono">AB = AC + CB</span> писать <b>нельзя</b>: условие «C между A и B» не выполнено. Теперь между <span class="mono">A</span> и <span class="mono">C</span> лежит точка <span class="mono">B</span>, поэтому целым становится <span class="mono">AC</span>: <span class="mono">AC = AB + BC</span>.</div></details>
+    </div>
+  </section>
+
+  <section>
+    <h2>Ловушки</h2>
+    <ul class="traps">
+      <li><b>Равенство отрезков не значит «в одном месте».</b> <span class="mono">AB = CD</span> говорит только про длину. Равные отрезки бывают в разных частях чертежа и под разными углами. Проверяй равенство измерением или наложением, а не по положению на картинке.</li>
+      <li><b>Складываешь части? Сначала спроси: точка лежит между?</b> Если средняя точка не между концами, формула <span class="mono">AB = AC + CB</span> не работает. Сделай эскиз, отметь порядок точек и только потом пиши равенство.</li>
+      <li><b>Длина не зависит от направления.</b> «От A к B одно, от B к A другое» — нет: <span class="mono">AB = BA</span>. Длина это число, направления у неё нет.</li>
+      <li><b>Не сравнивай на глаз.</b> Решать по картинке, какой отрезок длиннее, — верный способ проиграть: наклон и стрелки на концах обманывают. Измеряй линейкой или прикладывай.</li>
+      <li><b>Не путай единицы.</b> «5 см и 30 мм» — совсем не «5 и 30». Перед сравнением приведи к одной единице: <span class="mono">5 см = 50 мм</span>.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Объясни своими словами</h2>
+    <p>Закрой урок и ответь вслух: себе, родителю или чат-боту. Сказал связно — тема твоя.</p>
+    <div class="drill">
+      <details><summary>Что значит «два отрезка равны»?</summary><div class="ans">У них <b>одинаковая длина</b>; при наложении они совмещаются.</div></details>
+      <details><summary>Точка C лежит между A и B. Как связаны AB, AC и CB?</summary><div class="ans"><span class="mono">AB = AC + CB</span>, целое равно сумме частей.</div></details>
+      <details><summary>Чему равно AB, если BA = 7 см?</summary><div class="ans">Тоже <b>7 см</b>: длина не зависит от направления измерения.</div></details>
+    </div>
+  </section>
+
+  <div class="wrapup">
+    <h2>Запомни главное</h2>
+    <p class="big-rule">AB = AC + CB &nbsp;(если C между A и B)</p>
+    <p>Длину отрезка измеряют единицами длины. Равные отрезки — это отрезки одинаковой длины, а не отрезки в одном месте. Точка лежит между концами — целое равно сумме частей.</p>
+    <p class="next">👉 Дальше идут <b>середина отрезка</b> (частный случай, когда части равны) и <b>первый признак равенства треугольников</b>, где равенство отрезков станет рабочим инструментом доказательства.</p>
+  </div>
+
+</div>
+
+<script>
+/* ── Диаграмма 1: целое и части на линейке ─────────────────────── */
+(function(){
+  var cv=document.getElementById('cvParts'); if(!cv) return;
+  var ctx=cv.getContext('2d'), sc=document.getElementById('sc'),
+      vc=document.getElementById('vc'), eq=document.getElementById('eqParts');
+  var TOTAL=80;                       /* AB = 8 см, всё считаем в миллиметрах */
+  var W=640,H=300,dpr=1;
+  function css(v){ return getComputedStyle(document.documentElement).getPropertyValue(v).trim(); }
+  function fmt(mm){ var s=(mm/10).toFixed(1); if(s.slice(-2)==='.0') s=s.slice(0,-2); return s.replace('.',','); }
+  function resize(){ var c=cv.clientWidth||640; dpr=Math.min(window.devicePixelRatio||1,2);
+    W=c; H=Math.round(Math.max(230,Math.min(300,c*0.47)));
+    cv.width=W*dpr; cv.height=H*dpr; cv.style.height=H+'px'; ctx.setTransform(dpr,0,0,dpr,0,0); }
+  function draw(){
+    var c=+sc.value; vc.textContent=fmt(c)+' см';
+    var pad=Math.max(16,W*0.05), k=(W-2*pad)/100;      /* линейка 0..10 см */
+    function X(mm){ return pad+mm*k; }
+    var fs=Math.max(10,Math.min(14,W*0.023));
+    ctx.clearRect(0,0,W,H);
+    /* линейка */
+    var yR=H*0.30;
+    ctx.strokeStyle=css('--muted'); ctx.lineWidth=1;
+    ctx.beginPath(); ctx.moveTo(X(0),yR); ctx.lineTo(X(100),yR); ctx.stroke();
+    ctx.font=fs+'px ui-monospace,Menlo,monospace'; ctx.textAlign='center'; ctx.textBaseline='alphabetic';
+    for(var i=0;i<=100;i+=5){
+      var big=(i%10===0);
+      ctx.beginPath(); ctx.moveTo(X(i),yR); ctx.lineTo(X(i),yR-(big?10:5)); ctx.stroke();
+      if(big){ ctx.fillStyle=css('--muted'); ctx.fillText(i/10,X(i),yR-14); }
+    }
+    /* отрезок AB на линейке */
+    ctx.strokeStyle=css('--ink'); ctx.lineWidth=4; ctx.lineCap='round';
+    ctx.beginPath(); ctx.moveTo(X(0),yR+14); ctx.lineTo(X(TOTAL),yR+14); ctx.stroke();
+    ctx.lineWidth=1;
+    [[0,'A',css('--ink')],[c,'C',css('--p1')],[TOTAL,'B',css('--ink')]].forEach(function(p){
+      ctx.beginPath(); ctx.arc(X(p[0]),yR+14,4.5,0,6.284); ctx.fillStyle=p[2]; ctx.fill();
+      ctx.fillStyle=p[2]; ctx.font='700 '+(fs+2)+'px ui-monospace,Menlo,monospace';
+      ctx.fillText(p[1],X(p[0]),yR+14+fs+16);
+    });
+    /* бар-модель */
+    var yB=H*0.62, hB=Math.max(20,H*0.10);
+    function bar(x1,x2,y,fill,stroke,txt){
+      ctx.fillStyle=fill; ctx.strokeStyle=stroke; ctx.lineWidth=1.5;
+      ctx.beginPath(); ctx.rect(X(x1),y,X(x2)-X(x1),hB); ctx.fill(); ctx.stroke();
+      ctx.fillStyle=stroke; ctx.font='700 '+fs+'px ui-monospace,Menlo,monospace';
+      ctx.textAlign='center'; ctx.textBaseline='middle';
+      var wBar=X(x2)-X(x1);
+      if(ctx.measureText(txt).width+10<=wBar) ctx.fillText(txt,(X(x1)+X(x2))/2,y+hB/2);
+      ctx.textBaseline='alphabetic';
+    }
+    bar(0,c,yB,css('--p1-soft'),css('--p1'),'AC = '+fmt(c));
+    bar(c,TOTAL,yB,css('--p2-soft'),css('--p2'),'CB = '+fmt(TOTAL-c));
+    bar(0,TOTAL,yB+hB+12,css('--wh-soft'),css('--wh'),'AB = '+fmt(TOTAL));
+    eq.innerHTML='<span class="w">AB</span> = <span class="a">AC</span> + <span class="b">CB</span> &nbsp;→&nbsp; '+
+      '<span class="w">'+fmt(TOTAL)+'</span> = <span class="a">'+fmt(c)+'</span> + <span class="b">'+fmt(TOTAL-c)+'</span> (см)';
+  }
+  sc.addEventListener('input',draw);
+  window.addEventListener('resize',function(){ resize(); draw(); });
+  resize(); draw();
+})();
+</script>
+
+<script>
+/* ── Диаграмма 2: сравнение наложением ─────────────────────────── */
+(function(){
+  var cv=document.getElementById('cvOver'); if(!cv) return;
+  var ctx=cv.getContext('2d'), so=document.getElementById('so'),
+      vo=document.getElementById('vo'), eq=document.getElementById('eqOver'),
+      btn=document.getElementById('btnOver');
+  var AB=60, overlay=false;                 /* AB = 6 см, всё в миллиметрах */
+  var W=640,H=260,dpr=1;
+  function css(v){ return getComputedStyle(document.documentElement).getPropertyValue(v).trim(); }
+  function fmt(mm){ var s=(mm/10).toFixed(1); if(s.slice(-2)==='.0') s=s.slice(0,-2); return s.replace('.',','); }
+  function resize(){ var c=cv.clientWidth||640; dpr=Math.min(window.devicePixelRatio||1,2);
+    W=c; H=Math.round(Math.max(200,Math.min(260,c*0.40)));
+    cv.width=W*dpr; cv.height=H*dpr; cv.style.height=H+'px'; ctx.setTransform(dpr,0,0,dpr,0,0); }
+  function seg(x1,y1,x2,y2,col,n1,n2){
+    ctx.strokeStyle=col; ctx.lineWidth=4; ctx.lineCap='round';
+    ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(x2,y2); ctx.stroke();
+    ctx.fillStyle=col; ctx.lineWidth=1;
+    ctx.beginPath(); ctx.arc(x1,y1,4.5,0,6.284); ctx.fill();
+    ctx.beginPath(); ctx.arc(x2,y2,4.5,0,6.284); ctx.fill();
+    var fs=Math.max(11,Math.min(15,W*0.024));
+    ctx.font='700 '+(fs+1)+'px ui-monospace,Menlo,monospace'; ctx.textAlign='center';
+    ctx.fillText(n1,x1,y1-11); ctx.fillText(n2,x2,y2-11);
+  }
+  function draw(){
+    var CD=+so.value; vo.textContent=fmt(CD)+' см';
+    var pad=Math.max(20,W*0.07), k=(W-2*pad)/100;
+    var fs=Math.max(11,Math.min(15,W*0.024));
+    ctx.clearRect(0,0,W,H);
+    if(!overlay){
+      /* врозь: AB ровно, CD наклонён */
+      seg(pad,H*0.32,pad+AB*k,H*0.32,css('--wh'),'A','B');
+      var x0=pad+18, y0=H*0.86, ang=-0.42;
+      seg(x0,y0,x0+CD*k*Math.cos(ang),y0+CD*k*Math.sin(ang),css('--p1'),'C','D');
+      ctx.fillStyle=css('--muted'); ctx.font=fs+'px system-ui,sans-serif'; ctx.textAlign='left';
+      ctx.fillText('какой длиннее?',pad,H*0.55);
+      eq.innerHTML='Реши глазами, потом проверь наложением.';
+    } else {
+      /* наложение: левые концы в одной точке, оба на одном луче */
+      var yA=H*0.34, yC=H*0.70;
+      ctx.strokeStyle=css('--line'); ctx.lineWidth=1; ctx.setLineDash([4,4]);
+      ctx.beginPath(); ctx.moveTo(pad,yA-20); ctx.lineTo(pad,yC+20); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(pad+AB*k,yA); ctx.lineTo(pad+AB*k,yC+20); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(pad+CD*k,yC); ctx.lineTo(pad+CD*k,yA-20); ctx.stroke();
+      ctx.setLineDash([]);
+      seg(pad,yA,pad+AB*k,yA,css('--wh'),'A','B');
+      seg(pad,yC,pad+CD*k,yC,css('--p1'),'C','D');
+      var sign = (CD===AB)?'=':(CD>AB?'<':'>');
+      var word = (CD===AB)?'отрезки равны':(CD>AB?'CD длиннее':'AB длиннее');
+      eq.innerHTML='AB = '+fmt(AB)+' см '+sign+' CD = '+fmt(CD)+' см &nbsp;→&nbsp; '+word;
+    }
+  }
+  btn.addEventListener('click',function(){ overlay=!overlay;
+    btn.textContent = overlay ? 'Развести обратно' : 'Наложить отрезки'; draw(); });
+  so.addEventListener('input',draw);
+  window.addEventListener('resize',function(){ resize(); draw(); });
+  resize(); draw();
+})();
+</script>
+
+<script>
+/* ── Тренажёр ──────────────────────────────────────────────────── */
+(function(){
+  var taskEl=document.getElementById('trTask'), ansEl=document.getElementById('trAns'), resEl=document.getElementById('trResult');
+  if(!taskEl) return;
+  var MIN='−';                                  /* настоящий минус U+2212 */
+  function ri(a,b){ return Math.floor(Math.random()*(b-a+1))+a; }
+  function fmt(mm){ var s=(mm/10).toFixed(1); if(s.slice(-2)==='.0') s=s.slice(0,-2); return s.replace('.',','); }
+  var cur=null;
+
+  function generate(){
+    var r=Math.random(), t, a, b, w, cm, mm;
+    if(r<0.28){                                       /* целое по двум частям */
+      a=ri(2,18)*5; b=ri(2,18)*5;
+      cur={type:'sum',a:a,b:b,ans:a+b};
+      taskEl.innerHTML='Точка <b>C</b> лежит между <b>A</b> и <b>B</b>. <b>AC = '+fmt(a)+' см</b>, <b>CB = '+fmt(b)+' см</b>. Найди <b>AB</b> (в см).';
+    } else if(r<0.56){                                /* часть по целому и части */
+      w=ri(6,24)*5; a=ri(1,(w/5)-1)*5;
+      cur={type:'diff',w:w,a:a,ans:w-a};
+      taskEl.innerHTML='Точка <b>C</b> лежит между <b>A</b> и <b>B</b>. <b>AB = '+fmt(w)+' см</b>, <b>AC = '+fmt(a)+' см</b>. Найди <b>CB</b> (в см).';
+    } else if(r<0.72){                                /* точка вне отрезка */
+      a=ri(2,16)*5; b=ri(2,16)*5;
+      cur={type:'out',a:a,b:b,ans:a+b};
+      taskEl.innerHTML='На прямой точки идут в порядке <b>A</b>, <b>B</b>, <b>C</b> — точка <b>B</b> лежит между <b>A</b> и <b>C</b>. <b>AB = '+fmt(a)+' см</b>, <b>BC = '+fmt(b)+' см</b>. Найди <b>AC</b> (в см).';
+    } else if(r<0.90){                                /* единицы измерения */
+      cm=ri(2,9); mm=cm*10+[-7,-5,-3,-2,0,2,3,5,7][ri(0,8)];
+      cur={type:'unit',cm:cm,mm:mm,ans:Math.max(cm*10,mm)};
+      taskEl.innerHTML='Первый отрезок <b>'+cm+' см</b>, второй <b>'+mm+' мм</b>. Переведи к одной единице и впиши <b>бо́льшую длину в миллиметрах</b> (если отрезки равны — впиши эту длину).';
+    } else {                                          /* краевой случай: данных не бывает */
+      w=ri(4,12)*5; a=w+ri(1,10)*5;
+      cur={type:'bad',w:w,a:a,ans:null};
+      taskEl.innerHTML='Точка <b>C</b> лежит между <b>A</b> и <b>B</b>. <b>AC = '+fmt(a)+' см</b>, <b>AB = '+fmt(w)+' см</b>. Найди <b>CB</b>.';
+    }
+    resEl.innerHTML=''; ansEl.value='';
+  }
+
+  function solHTML(){
+    var q=cur, h='<div class="sol">';
+    if(q.type==='sum'){
+      h+='C между A и B → AB = AC + CB<br>';
+      h+='AB = '+fmt(q.a)+' + '+fmt(q.b)+' = <b>'+fmt(q.ans)+'</b> см';
+    } else if(q.type==='diff'){
+      h+='C между A и B → AB = AC + CB<br>';
+      h+='CB = AB '+MIN+' AC = '+fmt(q.w)+' '+MIN+' '+fmt(q.a)+' = <b>'+fmt(q.ans)+'</b> см';
+    } else if(q.type==='out'){
+      h+='Между A и C лежит B → целое здесь AC<br>';
+      h+='AC = AB + BC = '+fmt(q.a)+' + '+fmt(q.b)+' = <b>'+fmt(q.ans)+'</b> см';
+    } else if(q.type==='unit'){
+      h+=q.cm+' см = '+(q.cm*10)+' мм<br>';
+      h+='Сравниваем: '+(q.cm*10)+' и '+q.mm+' мм<br>';
+      h+=(q.cm*10===q.mm ? 'Длины равны → <b>'+q.ans+'</b> мм'
+                         : 'Больше <b>'+q.ans+'</b> мм — это '+(q.cm*10>q.mm?'первый':'второй')+' отрезок');
+    } else {
+      h+='Если C лежит между A и B, то AC — часть отрезка AB.<br>';
+      h+='Часть не может быть больше целого, а тут '+fmt(q.a)+' > '+fmt(q.w)+'.<br>';
+      h+='Данные противоречивы → <b>такого расположения точек нет</b>';
+    }
+    return h+'</div>';
+  }
+
+  function check(){
+    var raw=ansEl.value.trim();
+    if(raw===''){ resEl.innerHTML='<span class="bad">Впиши ответ или нажми «Решение».</span>'; return; }
+    var good;
+    if(cur.type==='bad'){
+      good=/нет|невозм|противореч|не бывает/i.test(raw);
+    } else {
+      var got=parseFloat(raw.replace(',','.').replace(/\s/g,''));
+      var right=(cur.type==='unit')?cur.ans:cur.ans/10;
+      good=(!isNaN(got) && Math.abs(got-right)<0.001);
+    }
+    resEl.innerHTML=(good?'<span class="ok">✓ Верно!</span>':'<span class="bad">✗ Пока не то — посмотри решение.</span>')+solHTML();
+  }
+
+  document.getElementById('trNew').addEventListener('click',function(){ generate(); ansEl.focus(); });
+  document.getElementById('trCheck').addEventListener('click',check);
+  document.getElementById('trShow').addEventListener('click',function(){ resEl.innerHTML=solHTML(); });
+  ansEl.addEventListener('keydown',function(e){ if(e.key==='Enter') check(); });
+  cur={type:'sum',a:35,b:40,ans:75};                  /* совпадает со стартовым условием */
+})();
+</script>
+<!--LESSON-NAV-BOT--><nav class="lnav lnav-bot"><a class="prev" href="./geo7-luch-ugol.html"><span class="dir">← Предыдущая</span><span class="ttl">Луч и угол</span></a><a class="to-cat" href="./catalog.html">📚 <span>Все темы</span></a><a class="next" href="./geo7-izmerenie-uglov.html"><span class="dir">Следующая →</span><span class="ttl">Измерение углов, градусная мера</span></a></nav><!--/LESSON-NAV-BOT-->

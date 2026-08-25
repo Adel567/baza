@@ -1,0 +1,657 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Треугольник: элементы и виды, геометрия 7 класс</title>
+<style>
+  :root{
+    --paper:#F6F7F9; --card:#FFFFFF; --ink:#1D2530; --muted:#606B7A; --line:#E3E7EE;
+    --brand:#2E5AAC; --brand-soft:#E4EBF7;
+    --v1:#E27C2C; --v1-soft:#FBEEDF;   /* вершина / сторона a */
+    --v2:#159A8A; --v2-soft:#DEF3F0;   /* вершина / сторона b */
+    --v3:#7A4FBF; --v3-soft:#EEE7FA;   /* вершина / сторона c */
+    --ok:#1E8E5A; --no:#C23B3B;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper)}
+  .page{max-width:720px;margin:0 auto;padding:clamp(1.4rem,4vw,3rem) clamp(1.1rem,4vw,2rem) 4.5rem;
+    color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:17.5px;line-height:1.68;-webkit-font-smoothing:antialiased}
+  .mono{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-variant-numeric:tabular-nums;font-weight:600}
+
+  .hero{border-bottom:3px solid var(--brand);padding-bottom:1.4rem;margin-bottom:1.8rem}
+  .eyebrow{font-size:.74rem;letter-spacing:.15em;text-transform:uppercase;color:var(--brand);font-weight:700;margin:0 0 .55rem}
+  h1{font-size:clamp(1.9rem,6vw,2.8rem);line-height:1.05;margin:0;font-weight:800;letter-spacing:-.02em;text-wrap:balance}
+  .tagline{font-size:1.12rem;color:var(--muted);margin:.85rem 0 0;text-wrap:pretty}
+
+  section{margin-top:2.4rem}
+  h2{font-size:1.5rem;margin:0 0 .3rem;font-weight:780;letter-spacing:-.015em;text-wrap:balance}
+  h2 .em{color:var(--brand)}
+  h3{font-size:1.05rem;margin:1.4rem 0 .2rem;font-weight:750}
+  p{margin:.7rem 0}
+  strong{font-weight:680}
+  .w1{color:var(--v1);font-weight:800} .w2{color:var(--v2);font-weight:800} .w3{color:var(--v3);font-weight:800}
+
+  .lead-in{background:var(--brand-soft);border-radius:14px;padding:1.1rem 1.3rem;font-size:1.02rem}
+  .lead-in p{margin:.4rem 0}
+  .lead-in b{color:var(--brand)}
+
+  .formula-box{background:var(--ink);color:#fff;border-radius:14px;padding:1.3rem;text-align:center;margin-top:1rem}
+  .formula-box .eq{font-family:ui-monospace,Menlo,monospace;font-size:clamp(1.4rem,5.2vw,2rem);font-weight:700}
+  .formula-box .eq .a{color:#F0A45E} .formula-box .eq .b{color:#6FD3C6} .formula-box .eq .c{color:#B79BE8}
+  .formula-box .note{font-size:.9rem;color:#AEB8C6;margin:.7rem 0 0}
+
+  .note{border-left:4px solid var(--brand);background:var(--brand-soft);border-radius:0 10px 10px 0;padding:.8rem 1.1rem;margin-top:1rem;font-size:.98rem}
+  .note b{color:var(--brand)}
+  .note p{margin:.35rem 0}
+
+  .parts{display:grid;gap:.6rem;margin-top:1rem}
+  @media(min-width:560px){.parts{grid-template-columns:repeat(3,1fr)}}
+  .part{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:.9rem 1rem}
+  .part .n{font-family:ui-monospace,Menlo,monospace;font-weight:800;font-size:1.35rem;line-height:1}
+  .part .t{font-weight:700;margin-top:.35rem}
+  .part .d{font-size:.88rem;color:var(--muted);margin-top:.2rem;line-height:1.45}
+  .part.p1{border-top:3px solid var(--v1)} .part.p1 .n{color:var(--v1)}
+  .part.p2{border-top:3px solid var(--v2)} .part.p2 .n{color:var(--v2)}
+  .part.p3{border-top:3px solid var(--v3)} .part.p3 .n{color:var(--v3)}
+
+  .tablewrap{overflow-x:auto;margin-top:1rem;border:1px solid var(--line);border-radius:12px;background:var(--card)}
+  table{border-collapse:collapse;width:100%;min-width:440px;font-size:.95rem}
+  th,td{text-align:left;padding:.7rem .9rem;border-bottom:1px solid var(--line);vertical-align:top}
+  thead th{background:#F0F3F8;font-weight:750;font-size:.85rem;letter-spacing:.02em;color:var(--muted);text-transform:uppercase}
+  tbody tr:last-child td{border-bottom:none}
+  td b{font-weight:750}
+  .cap{font-size:.88rem;color:var(--muted);margin-top:.5rem}
+
+  /* Чертёж */
+  .diagram{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:1.2rem;margin-top:1rem}
+  .diagram canvas{width:100%;height:auto;display:block;border-radius:8px;touch-action:none;cursor:grab}
+  .dctl{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:.9rem;align-items:center}
+  .dctl .lab{font-size:.88rem;color:var(--muted);margin-right:.2rem}
+  .dctl button{font:inherit;font-size:.88rem;font-weight:700;cursor:pointer;border:1px solid var(--line);background:#fff;color:var(--ink);border-radius:9px;padding:.4rem .75rem}
+  .dctl button[aria-pressed="true"]{border-color:var(--brand);background:var(--brand-soft);color:var(--brand)}
+  .dctl button:focus-visible{outline:3px solid var(--brand);outline-offset:2px}
+  .dinfo{margin-top:.9rem;background:#FCFDFE;border:1px solid var(--line);border-radius:10px;padding:.8rem 1rem;font-size:.95rem;line-height:1.7}
+  .dinfo .k{color:var(--muted)}
+  .dinfo .val{font-family:ui-monospace,Menlo,monospace;font-weight:700}
+  .dinfo .warn{color:var(--no);font-weight:700}
+
+  .walk{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.15rem 1.3rem;margin-top:1rem}
+  .walk .q{font-weight:700;font-size:1.02rem;margin:0 0 .9rem;padding-bottom:.7rem;border-bottom:1px solid var(--line)}
+  .walk ol{margin:0;padding-left:1.2rem;display:flex;flex-direction:column;gap:.55rem}
+  .walk li{font-size:.95rem}
+  .verdict{margin-top:1rem;padding:.7rem 1rem;background:var(--brand-soft);border-radius:10px;font-weight:650;color:var(--brand);font-family:ui-monospace,Menlo,monospace}
+
+  /* Тренажёр */
+  .trainer{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.2rem 1.3rem;margin-top:1rem}
+  .tr-task{font-size:clamp(1rem,4vw,1.12rem);text-align:center;padding:1rem;background:var(--brand-soft);border-radius:10px;font-weight:600;line-height:1.55}
+  .tr-task b{font-family:ui-monospace,Menlo,monospace;color:var(--ink)}
+  .tr-ctl{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:1rem;align-items:center;justify-content:center}
+  .tr-ctl input{flex:1;min-width:120px;max-width:210px;font:inherit;padding:.5rem .7rem;border:1px solid var(--line);border-radius:9px;text-align:center;background:#fff;color:var(--ink)}
+  .tr-ctl button{font:inherit;font-weight:700;font-size:.9rem;cursor:pointer;border:none;border-radius:9px;padding:.55rem .95rem;color:#fff;background:var(--brand)}
+  .tr-ctl button.sec{background:var(--v1)}
+  .tr-ctl button.ghost{background:transparent;color:var(--brand);border:1px solid var(--brand)}
+  .tr-ctl button:focus-visible,.tr-ctl input:focus-visible{outline:3px solid var(--brand);outline-offset:2px}
+  .tr-result{margin-top:.9rem;font-size:.96rem;min-height:1.2rem;text-align:center}
+  .tr-result .ok{color:var(--ok);font-weight:700} .tr-result .bad{color:var(--no);font-weight:700}
+  .tr-result .sol{margin-top:.6rem;padding:.8rem 1rem;background:#FCFDFE;border:1px solid var(--line);border-radius:10px;font-family:ui-monospace,Menlo,monospace;font-size:.9rem;line-height:1.8;text-align:left}
+  .tr-hint{font-size:.85rem;color:var(--muted);text-align:center;margin-top:.6rem}
+
+  details{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:.9rem 1.1rem;margin-top:.7rem}
+  details[open]{border-color:var(--brand)}
+  summary{cursor:pointer;font-weight:650;list-style:none;display:flex;justify-content:space-between;gap:1rem;align-items:center}
+  summary::-webkit-details-marker{display:none}
+  summary::after{content:"проверить";font-size:.8rem;color:var(--brand);font-weight:700;white-space:nowrap}
+  details[open] summary::after{content:"скрыть"}
+  summary:focus-visible{outline:3px solid var(--brand);outline-offset:3px;border-radius:6px}
+  .ans{margin-top:.75rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.96rem;color:var(--muted)}
+  .ans b{color:var(--ink)}
+  .drill{display:flex;flex-direction:column;gap:.2rem;margin-top:1rem}
+  .lvl{font-size:.74rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:700;margin:1.3rem 0 .3rem}
+
+  ul.traps{list-style:none;margin:1rem 0 0;padding:0;display:flex;flex-direction:column;gap:.7rem}
+  ul.traps li{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:.85rem 1.05rem;padding-left:2.5rem;position:relative;font-size:.97rem}
+  ul.traps li::before{content:"⚠";position:absolute;left:1rem;top:.85rem;color:var(--v1)}
+  ul.traps b{font-weight:700}
+
+  .selfcheck{background:var(--card);border:1px dashed var(--brand);border-radius:14px;padding:1.1rem 1.3rem;margin-top:1rem}
+  .selfcheck ol{margin:.4rem 0 0;padding-left:1.2rem}
+  .selfcheck li{margin:.35rem 0}
+
+  .wrapup{background:var(--brand);color:#fff;border-radius:16px;padding:1.4rem 1.5rem;margin-top:2.4rem}
+  .wrapup h2{color:#fff;margin:0 0 .5rem}
+  .wrapup p{color:#DEE7F5;margin:.4rem 0;font-size:1rem}
+  .wrapup .big-rule{font-size:1.12rem;font-weight:800;color:#fff;margin:.6rem 0;font-family:ui-monospace,Menlo,monospace}
+  .wrapup .next{font-size:.95rem;color:#C6D5EE;margin-top:1rem;padding-top:1rem;border-top:1px solid rgba(255,255,255,.2)}
+  .wrapup .next b{color:#fff}
+
+  @media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+<!--LESSON-NAV-TOP--><style>.lnav{--lnav-accent:#3D5AF1}.lnav a{text-decoration:none;font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif}.lnav-top{max-width:820px;margin:0 auto;padding:.75rem clamp(1rem,4vw,1.5rem) .1rem}.lnav-top a{display:inline-flex;align-items:center;gap:.35rem;color:var(--lnav-accent);font-weight:600;font-size:.9rem}.lnav-top a:hover{text-decoration:underline}.lnav-bot{max-width:820px;margin:2.6rem auto 3rem;padding:1.1rem clamp(1rem,4vw,1.5rem) 0;border-top:1px solid #E4E8EF;display:flex;align-items:stretch;gap:.55rem}.lnav-bot a{min-width:0;display:flex;flex-direction:column;justify-content:center;gap:.15rem;border:1px solid #E4E8EF;border-radius:12px;padding:.65rem .85rem;color:#182233;background:#fff;transition:border-color .1s,transform .08s}.lnav-bot a:hover{border-color:var(--lnav-accent);transform:translateY(-1px)}.lnav-bot .prev,.lnav-bot .next{flex:1 1 0}.lnav-bot .next{text-align:right}.lnav-bot .dir{font-size:.72rem;color:#8A93A6;font-weight:600}.lnav-bot .ttl{font-size:.9rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.lnav-bot .to-cat{flex:0 0 auto;flex-direction:row;align-items:center;justify-content:center;color:var(--lnav-accent);font-weight:700;font-size:.85rem;white-space:nowrap}@media(max-width:420px){.lnav-bot .to-cat span{display:none}.lnav-bot .to-cat{padding:.65rem .7rem}}</style><nav class="lnav lnav-top"><a href="./catalog.html">← Все темы</a></nav><!--/LESSON-NAV-TOP-->
+<div class="page">
+
+  <header class="hero">
+    <p class="eyebrow">Геометрия · 7 класс</p>
+    <h1>Треугольник: элементы и виды</h1>
+    <p class="tagline">Три точки, три отрезка, три угла. На этом кирпичике держится вся геометрия, которую ты будешь учить дальше.</p>
+  </header>
+
+  <div class="lead-in">
+    <p><b>Где встречается.</b> Треугольник это самая жёсткая фигура из всех: форму не изменишь, пока не поменяешь длины сторон. Четырёхугольник ты рукой перекосишь, а треугольник не поддастся. Поэтому из треугольников собирают стропила крыш, фермы мостов, опоры башен, каркасы велосипедных рам.</p>
+    <p>А в самой геометрии из треугольников собираются все остальные многоугольники. Почти вся планиметрия 7-9 классов держится на нём: признаки равенства, теорема Пифагора, тригонометрия.</p>
+  </div>
+
+  <section>
+    <h2>Что нужно помнить <span class="em">до начала</span></h2>
+    <p>Тема опирается всего на пару вещей из прошлых уроков, освежи их в голове:</p>
+    <div class="note">
+      <p><b>Точка, прямая, отрезок.</b> Отрезок это кусок прямой между двумя точками, и у него есть длина. Точки обозначают большими латинскими буквами, а отрезок двумя буквами его концов: <span class="mono">AB</span>.</p>
+      <p><b>Луч и угол.</b> Угол это два луча из одной точки, а сама точка называется вершиной угла. Углы бывают острые (меньше 90°), прямой (ровно 90°) и тупые (больше 90°).</p>
+    </div>
+    <p>Всё. Понятны эти слова, значит идём дальше.</p>
+  </section>
+
+  <section>
+    <h2>Что такое треугольник <span class="em">по-честному</span></h2>
+    <p>Обычно говорят: «треугольник это три палочки». Звучит понятно, но определением такая фраза не является, и ошибка в ней спрятана. Возьми три точки, поставь их <strong>на одной прямой</strong> и соедини отрезками. Никакого треугольника не выйдет: фигура схлопнется в отрезок. Из-за этого в определении есть отдельная оговорка.</p>
+
+    <div class="formula-box">
+      <div class="eq">Треугольник = 3 точки, <span class="c">не лежащие на одной прямой</span>,<br>+ 3 отрезка, попарно их соединяющих</div>
+      <div class="note">Три точки это <span class="a">вершины</span> · три отрезка это <span class="b">стороны</span> · в каждой вершине получается <span class="c">угол</span></div>
+    </div>
+
+    <p>Считаем элементы: вершин ровно три, сторон ровно три, углов тоже три, по одному в каждой вершине, между двумя выходящими из неё сторонами. Отсюда и название: <strong>тре-угольник</strong>.</p>
+
+    <div class="parts">
+      <div class="part p1"><div class="n">3</div><div class="t">вершины</div><div class="d">точки A, B, C, большие латинские буквы</div></div>
+      <div class="part p2"><div class="n">3</div><div class="t">стороны</div><div class="d">отрезки AB, BC, CA, по две буквы</div></div>
+      <div class="part p3"><div class="n">3</div><div class="t">угла</div><div class="d">∠A, ∠B, ∠C, по одному на вершину</div></div>
+    </div>
+
+    <p>Треугольник с вершинами A, B, C записывают коротко: <span class="mono">△ABC</span>.</p>
+
+    <p>Главная мысль темы вот в чём: <strong>треугольник полностью задаётся своими элементами</strong>. Знаешь стороны и углы, значит знаешь фигуру целиком, больше о ней спрашивать нечего. Поэтому дальше изучение треугольников сводится к одному: как связаны между собой его стороны и углы.</p>
+  </section>
+
+  <section>
+    <h2>Обозначения и правило <span class="em">противолежания</span></h2>
+    <p>Три вида обозначений легко перепутать, поэтому запомни так: <strong>вершина это одна буква</strong> (она же точка), <strong>сторона это две буквы</strong> (отрезок, у него два конца), <strong>угол это значок ∠ и буква вершины</strong> (или три буквы, где вершина в середине).</p>
+
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Элемент</th><th>Как обозначают в △ABC</th><th>Пример записи</th></tr></thead>
+        <tbody>
+          <tr><td><b>Вершины</b></td><td>большие латинские буквы</td><td class="mono">A, B, C</td></tr>
+          <tr><td><b>Стороны</b></td><td>две буквы концов; часто ещё малыми буквами: <span class="mono">a</span> лежит против A, <span class="mono">b</span> против B, <span class="mono">c</span> против C</td><td class="mono">AB, BC, CA</td></tr>
+          <tr><td><b>Углы</b></td><td>∠ и буква вершины (или три буквы, вершина в середине)</td><td class="mono">∠A или ∠BAC</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Какая сторона «против» какой вершины</h3>
+    <p>Здесь ошибаются чаще всего, поэтому разберёмся медленно.</p>
+    <div class="note">
+      <p><b>Правило.</b> Сторона и угол называются <strong>противолежащими</strong>, если угол НЕ касается этой стороны, то есть вершина угла не является её концом.</p>
+    </div>
+    <p>Смотри, как это работает в <span class="mono">△ABC</span>. Возьмём вершину A. Из неё выходят две стороны: <span class="mono">AB</span> и <span class="mono">AC</span>, буква A в их записи есть, значит они A касаются. Такие стороны называются <strong>прилежащими</strong> к углу ∠A. Остаётся одна-единственная сторона, в которой буквы A нет: <span class="mono">BC</span>. Вот она и лежит против угла ∠A.</p>
+    <p>Отсюда простой способ не ошибаться: <strong>вычеркни букву вершины</strong>, и две оставшиеся буквы дадут противолежащую сторону. Против A → BC, против B → AC, против C → AB.</p>
+  </section>
+
+  <section>
+    <h2>Периметр</h2>
+    <p>Периметр это длина всей границы фигуры, то есть сумма длин её сторон. Сторон у треугольника три, значит и слагаемых три:</p>
+    <div class="formula-box">
+      <div class="eq">P = <span class="a">AB</span> + <span class="b">BC</span> + <span class="c">CA</span></div>
+      <div class="note">или короче: P = a + b + c</div>
+    </div>
+    <p>Меряется периметр в <strong>единицах длины</strong> (мм, см, м), ведь мы складываем длины. И ещё: длины сторон всегда положительны, стороны нулевой или отрицательной длины не бывает.</p>
+  </section>
+
+  <section>
+    <h2>Два разных деления: <span class="em">по сторонам и по углам</span></h2>
+    <p>Треугольники делят на виды двумя независимыми способами. Разберись с этим сразу, иначе будет каша: у одного треугольника есть <strong>и</strong> вид по сторонам, <strong>и</strong> вид по углам, сразу оба.</p>
+
+    <h3>По сторонам</h3>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Вид</th><th>Признак</th><th>Что ещё важно</th></tr></thead>
+        <tbody>
+          <tr><td><b>Разносторонний</b></td><td>все три стороны разной длины</td><td>-</td></tr>
+          <tr><td><b>Равнобедренный</b></td><td>две стороны равны</td><td>эти две стороны <b>боковые</b>, третья <b>основание</b></td></tr>
+          <tr><td><b>Равносторонний</b></td><td>все три стороны равны</td><td>это <b>частный случай равнобедренного</b></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="cap">Последняя строчка не придирка. Если все три стороны равны, то условие «две стороны равны» тоже выполнено, причём трижды. Поэтому равносторонний это равнобедренный, только самый ровный.</p>
+
+    <h3>По углам</h3>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Вид</th><th>Признак</th></tr></thead>
+        <tbody>
+          <tr><td><b>Остроугольный</b></td><td>все три угла острые (меньше 90°)</td></tr>
+          <tr><td><b>Прямоугольный</b></td><td>есть один прямой угол (90°)</td></tr>
+          <tr><td><b>Тупоугольный</b></td><td>есть один тупой угол (больше 90°)</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="cap">Обрати внимание на слово «все» в первой строчке и «один» в остальных: чтобы треугольник был остроугольным, острыми должны быть <b>все три</b> угла, а вот прямого или тупого угла хватает и одного.</p>
+
+    <div class="note">
+      <p><b>Запомни:</b> у любого треугольника не может быть двух прямых или двух тупых углов сразу.</p>
+    </div>
+
+    <p>А раз это два независимых деления, спокойно бывают комбинации: прямоугольный равнобедренный, тупоугольный разносторонний и так далее. «Равносторонний или прямоугольный» вопрос кривой: это как спросить «он высокий или рыжий».</p>
+  </section>
+
+  <section>
+    <h2>Разбор, где я <span class="em">думаю вслух</span></h2>
+    <div class="walk">
+      <p class="q">В △MNK стороны равны: MN = 5 см, NK = 5 см, MK = 8 см. Назови вид по сторонам, найди периметр и назови сторону, противолежащую вершине N.</p>
+      <ol>
+        <li><b>Сравниваю стороны.</b> MN = NK = 5 см, а MK = 8 см. Две стороны равны, значит треугольник <b>равнобедренный</b> (ровно по определению: равнобедренный тот, у которого две стороны равны). Боковые здесь MN и NK, основание MK.</li>
+        <li><b>Считаю периметр.</b> Складываю все стороны, ведь периметр и есть сумма их длин: <span class="mono">P = 5 + 5 + 8 = 18 (см)</span>. Единицы не теряю, ответ в сантиметрах.</li>
+        <li><b>Ищу сторону против N.</b> Противолежащая это та, что не касается N. Из N выходят MN и NK, буква N в них есть, значит они прилежащие. Остаётся <span class="mono">MK</span>, в ней N нет. Это и есть ответ.</li>
+      </ol>
+      <div class="verdict">Ответ: равнобедренный; P = 18 см; против N лежит MK</div>
+    </div>
+
+    <div class="walk" style="margin-top:.8rem">
+      <p class="q">В △ABC: AB = 7 см, BC = 7 см, AC = 7 см. Определи вид по сторонам и найди периметр.</p>
+      <p style="margin:.2rem 0 .6rem;color:var(--muted);font-size:.93rem">Попробуй сначала сам, потом раскрой.</p>
+      <details><summary>Вид по сторонам</summary><div class="ans">Все три стороны равны, значит треугольник <b>равносторонний</b> (и заодно равнобедренный, ведь «две стороны равны» тут тоже выполняется).</div></details>
+      <details><summary>Периметр</summary><div class="ans"><span class="mono">P = 7 + 7 + 7 = 21 (см)</span>. Можно и умножением: <span class="mono">7 · 3 = 21</span>. Ответ <b>21 см</b>.</div></details>
+    </div>
+
+    <div class="walk" style="margin-top:.8rem">
+      <p class="q">В △PQR один угол равен 90°, а именно ∠P = 90°. Какой это треугольник по углам? Какая сторона противолежит прямому углу?</p>
+      <details><summary>Показать решение</summary><div class="ans">Есть угол 90°, значит по углам треугольник <b>прямоугольный</b>. Против ∠P лежит сторона без буквы P: вычёркиваем P из PQR, остаётся <b>QR</b>.</div></details>
+    </div>
+  </section>
+
+  <section>
+    <h2>Чертёж, который <span class="em">можно двигать</span></h2>
+    <p>Тяни вершины мышкой или пальцем и смотри, как меняются вид по сторонам и вид по углам. Две подписи внизу меняются <strong>независимо друг от друга</strong>. Вот тебе те самые два разных деления в работе.</p>
+    <p>И проверь заодно главное условие из определения: попробуй поставить все три вершины <strong>на одну прямую</strong>. Что произойдёт с фигурой?</p>
+
+    <div class="diagram">
+      <canvas id="tri" width="640" height="440" aria-label="Интерактивный чертёж треугольника ABC с подвижными вершинами"></canvas>
+      <div class="dctl">
+        <span class="lab">Подсветить противолежащую сторону:</span>
+        <button type="button" class="opp" data-v="0" aria-pressed="false">против A</button>
+        <button type="button" class="opp" data-v="1" aria-pressed="false">против B</button>
+        <button type="button" class="opp" data-v="2" aria-pressed="false">против C</button>
+        <button type="button" id="triReset">↺ сброс</button>
+      </div>
+      <div class="dinfo" id="triInfo"></div>
+    </div>
+    <p class="cap">Длины на чертеже даны в клетках. Где длина не целая, там она записана корнем: считать его в 7 классе не нужно, важно только, равны стороны или нет.</p>
+  </section>
+
+  <section>
+    <h2>Тренажёр · <span class="em">элементы, виды, периметр</span></h2>
+    <p>Задания тут не кончаются. Реши, впиши ответ, проверь себя. Не пошло, открывай пошаговое решение.</p>
+    <div class="trainer">
+      <div class="tr-task" id="trTask">Загружаю задание…</div>
+      <div class="tr-ctl">
+        <button id="trNew" type="button">🎲 Новое</button>
+        <input id="trAns" type="text" placeholder="ответ" aria-label="Ответ">
+        <button id="trCheck" type="button" class="sec">Проверить</button>
+        <button id="trShow" type="button" class="ghost">Решение</button>
+      </div>
+      <div id="trResult" class="tr-result"></div>
+      <p class="tr-hint">Числовой ответ пиши цифрами (без «см»), сторону двумя буквами (например <b>BC</b>), вид одним словом.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Проверь себя</h2>
+
+    <p class="lvl">Уровень 1 · узнать и назвать</p>
+    <div class="drill">
+      <details><summary>1) Сколько у треугольника вершин, сторон и углов?</summary><div class="ans">По <b>три</b> каждого: 3 вершины, 3 стороны, 3 угла. Именно поэтому фигура и называется тре-угольник.</div></details>
+      <details><summary>2) В △ABC назови все стороны и все углы.</summary><div class="ans">Стороны: <span class="mono">AB, BC, CA</span>. Углы: <span class="mono">∠A, ∠B, ∠C</span> (их же можно записать как ∠BAC, ∠ABC, ∠BCA, вершина в середине).</div></details>
+      <details><summary>3) Прочитай запись △DEF: назови его вершины.</summary><div class="ans">Вершины это <b>D, E и F</b>. Каждая буква в записи это точка-вершина.</div></details>
+    </div>
+
+    <p class="lvl">Уровень 2 · применить правило</p>
+    <div class="drill">
+      <details><summary>4) Стороны треугольника 6 см, 6 см и 10 см. Определи вид по сторонам и найди периметр.</summary><div class="ans">Две стороны равны (6 и 6), значит треугольник <b>равнобедренный</b>: боковые по 6 см, основание 10 см. <span class="mono">P = 6 + 6 + 10 = 22 (см)</span>.</div></details>
+      <details><summary>5) Периметр равностороннего треугольника 24 см. Найди длину одной стороны.</summary><div class="ans">У равностороннего все три стороны равны, значит периметр это одна сторона, взятая 3 раза: <span class="mono">24 : 3 = 8 (см)</span>. Ответ <b>8 см</b>.</div></details>
+      <details><summary>6) В △ABC ∠A = 100°. Какой это треугольник по углам?</summary><div class="ans">100° больше 90°, то есть угол тупой. Есть тупой угол, значит треугольник <b>тупоугольный</b>. Про остальные два угла спрашивать не нужно: двух тупых углов быть не может, так что этот один всё и решает.</div></details>
+    </div>
+
+    <p class="lvl">Уровень 3 · подумать глубже</p>
+    <div class="drill">
+      <details><summary>7) Что изменится в виде треугольника по сторонам, если в равнобедренном треугольнике основание сделать равным боковой стороне?</summary><div class="ans">Тогда все три стороны станут равны, и треугольник станет <b>равносторонним</b>. Равнобедренным он при этом быть не перестал, ведь равносторонний это частный случай равнобедренного.</div></details>
+      <details><summary>8) Обратная задача: периметр треугольника 30 см, две стороны равны 12 см и 9 см. Найди третью сторону.</summary><div class="ans">Периметр это сумма трёх сторон, значит третья = периметр минус две известные: <span class="mono">30 − 12 − 9 = 9 (см)</span>. Ответ <b>9 см</b>. И бонус: вышло 9, 9 и 12, то есть треугольник равнобедренный.</div></details>
+      <details><summary>9) Найди ошибку: «У треугольника углы 90°, 90° и 0°, значит это прямоугольный треугольник».</summary><div class="ans">Так не бывает сразу по двум причинам. Во-первых, у треугольника <b>не может быть двух прямых углов</b>. Во-вторых, угла в 0° у треугольника вообще нет: если бы он был, две стороны легли бы друг на друга, три вершины оказались бы на одной прямой, и треугольник схлопнулся бы в отрезок. А по определению три точки треугольника на одной прямой лежать не должны.</div></details>
+    </div>
+  </section>
+
+  <section>
+    <h2>Ловушки</h2>
+    <ul class="traps">
+      <li><b>Путают противолежащую сторону.</b> Говорят, что против вершины A лежит AB. Но AB касается A! Противолежащая сторона вершины НЕ касается: вычеркни букву вершины, и против A остаётся <span class="mono">BC</span>.</li>
+      <li><b>Путают названия элементов.</b> Пишут «сторона A» или «угол AB». Держи в голове: вершина это точка, <b>одна</b> буква; сторона это отрезок, <b>две</b> буквы; угол это ∠ плюс буква вершины (или <b>три</b> буквы).</li>
+      <li><b>Смешивают две классификации.</b> Говорят «равносторонний или прямоугольный», как будто это одна шкала. Это два разных деления, и они работают одновременно: бывает, например, прямоугольный равнобедренный треугольник.</li>
+      <li><b>Считают, что равнобедренный точно не равносторонний.</b> Наоборот: равносторонний это частный случай равнобедренного, у него условие «две стороны равны» выполнено даже трижды.</li>
+      <li><b>Думают, что любые три точки дают треугольник.</b> Точки на одной прямой, значит треугольника нет: фигура вырождается в отрезок. Это часть определения, а не мелкая оговорка.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Объясни своими словами</h2>
+    <div class="selfcheck">
+      <p>Закрой урок и ответь вслух: себе, родителю или чат-боту. Объяснил без запинки, значит тема взята.</p>
+      <ol>
+        <li>Сколько у треугольника элементов каждого вида: вершин, сторон, углов?</li>
+        <li>В △KLM какая сторона противолежит вершине L? Почему именно она?</li>
+        <li>Может ли треугольник быть одновременно прямоугольным и равнобедренным?</li>
+      </ol>
+      <details style="margin-top:.9rem"><summary>Сверить ответы</summary><div class="ans">
+        1) По три: 3 вершины, 3 стороны, 3 угла.<br>
+        2) Вычёркиваем L из KLM, остаётся <b>KM</b>. Она не касается вершины L, значит противолежит ей.<br>
+        3) <b>Да.</b> Вид по углам и вид по сторонам друг от друга не зависят, поэтому треугольник спокойно бывает и прямоугольным, и равнобедренным сразу.
+      </div></details>
+    </div>
+  </section>
+
+  <div class="wrapup">
+    <h2>Запомни главное</h2>
+    <p class="big-rule">3 вершины · 3 стороны · 3 угла · P = a + b + c</p>
+    <p>Треугольник задаётся тремя вершинами, не лежащими на одной прямой, тремя сторонами и тремя углами. Противолежащая сторона это та, что не касается вершины: вычеркни её букву. А делят треугольники по двум независимым признакам: по сторонам (разносторонний / равнобедренный / равносторонний) и по углам (остро- / прямо- / тупоугольный).</p>
+    <p class="next">👉 Дальше у тебя <b>первый признак равенства треугольников</b> (как по паре сторон и углу между ними доказать, что два треугольника одинаковые) и <b>равнобедренный треугольник</b> (какие особые свойства даёт равенство двух сторон).</p>
+  </div>
+
+</div>
+
+<script>
+/* Интерактивный чертёж: вершины на целочисленной сетке, поэтому все проверки точные */
+(function(){
+  var cv=document.getElementById('tri'); if(!cv) return;
+  var ctx=cv.getContext('2d'), info=document.getElementById('triInfo');
+  var GW=14, GH=9;                        // сетка в клетках
+  var START=[[2,1],[10,1],[6,7]];
+  var P=START.map(function(p){return p.slice();});
+  var NAMES=['A','B','C'];
+  var COL=['--v1','--v2','--v3'];
+  var opp=-1, drag=-1, W=640, H=440, sc=1, ox=0, oy=0, dpr=1;
+
+  function css(v){ return getComputedStyle(document.documentElement).getPropertyValue(v).trim(); }
+  function SX(x){ return ox+x*sc; }
+  function SY(y){ return oy+(GH-y)*sc; }
+
+  function resize(){
+    var c=cv.clientWidth||640; dpr=Math.min(window.devicePixelRatio||1,2);
+    W=c; H=Math.round(c*0.70);
+    cv.width=W*dpr; cv.height=H*dpr; cv.style.height=H+'px';
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+    var pad=26;
+    sc=Math.min((W-pad*2)/GW,(H-pad*2)/GH);
+    ox=(W-GW*sc)/2; oy=(H-GH*sc)/2;
+  }
+
+  function d2(i,j){ var dx=P[i][0]-P[j][0], dy=P[i][1]-P[j][1]; return dx*dx+dy*dy; }
+  function cross(){ return (P[1][0]-P[0][0])*(P[2][1]-P[0][1])-(P[1][1]-P[0][1])*(P[2][0]-P[0][0]); }
+  function dot(v,i,j){ return (P[i][0]-P[v][0])*(P[j][0]-P[v][0])+(P[i][1]-P[v][1])*(P[j][1]-P[v][1]); }
+  function lenTxt(q){ var r=Math.sqrt(q); return (r===Math.round(r))?String(r):'√'+q; }
+
+  function byAngles(){
+    var deg=false, right=false;
+    for(var v=0;v<3;v++){
+      var i=(v+1)%3, j=(v+2)%3, d=dot(v,i,j);
+      if(d===0) right=true; else if(d<0) deg=true;
+    }
+    if(right) return 'прямоугольный';
+    if(deg) return 'тупоугольный';
+    return 'остроугольный';
+  }
+  function bySides(){
+    var a=d2(1,2), b=d2(0,2), c=d2(0,1);
+    if(a===b&&b===c) return 'равносторонний';
+    if(a===b||b===c||a===c) return 'равнобедренный';
+    return 'разносторонний';
+  }
+
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    // сетка
+    ctx.strokeStyle='#EDF0F5'; ctx.lineWidth=1;
+    for(var x=0;x<=GW;x++){ ctx.beginPath(); ctx.moveTo(SX(x),SY(0)); ctx.lineTo(SX(x),SY(GH)); ctx.stroke(); }
+    for(var y=0;y<=GH;y++){ ctx.beginPath(); ctx.moveTo(SX(0),SY(y)); ctx.lineTo(SX(GW),SY(y)); ctx.stroke(); }
+
+    var flat=(cross()===0);
+    var fs=Math.max(12,Math.round(sc*0.52));
+
+    // заливка треугольника
+    if(!flat){
+      ctx.beginPath();
+      ctx.moveTo(SX(P[0][0]),SY(P[0][1]));
+      ctx.lineTo(SX(P[1][0]),SY(P[1][1]));
+      ctx.lineTo(SX(P[2][0]),SY(P[2][1]));
+      ctx.closePath();
+      ctx.fillStyle='rgba(46,90,172,0.07)'; ctx.fill();
+    }
+
+    // стороны: сторона против вершины v соединяет две другие
+    for(var v=0;v<3;v++){
+      var i=(v+1)%3, j=(v+2)%3;
+      var hot=(opp===v);
+      ctx.beginPath();
+      ctx.moveTo(SX(P[i][0]),SY(P[i][1]));
+      ctx.lineTo(SX(P[j][0]),SY(P[j][1]));
+      ctx.strokeStyle=hot?css(COL[v]):(flat?css('--no'):css('--ink'));
+      ctx.lineWidth=hot?5:2.2;
+      ctx.stroke();
+      // подпись стороны
+      var mx=(SX(P[i][0])+SX(P[j][0]))/2, my=(SY(P[i][1])+SY(P[j][1]))/2;
+      var gx=(SX(P[0][0])+SX(P[1][0])+SX(P[2][0]))/3, gy=(SY(P[0][1])+SY(P[1][1])+SY(P[2][1]))/3;
+      var dx=mx-gx, dy=my-gy, L=Math.hypot(dx,dy)||1;
+      var lx=mx+dx/L*fs*0.95, ly=my+dy/L*fs*0.95;
+      ctx.font='700 '+fs+'px ui-monospace,Menlo,monospace';
+      ctx.textAlign='center'; ctx.textBaseline='middle';
+      ctx.fillStyle=hot?css(COL[v]):css('--muted');
+      ctx.fillText(NAMES[i]+NAMES[j]+' = '+lenTxt(d2(i,j)),lx,ly);
+    }
+
+    // вершины
+    for(var v2=0;v2<3;v2++){
+      var px=SX(P[v2][0]), py=SY(P[v2][1]);
+      ctx.beginPath(); ctx.arc(px,py,Math.max(6,sc*0.20),0,Math.PI*2);
+      ctx.fillStyle=css(COL[v2]); ctx.fill();
+      ctx.strokeStyle='#fff'; ctx.lineWidth=2; ctx.stroke();
+      var gx2=(SX(P[0][0])+SX(P[1][0])+SX(P[2][0]))/3, gy2=(SY(P[0][1])+SY(P[1][1])+SY(P[2][1]))/3;
+      var ax=px-gx2, ay=py-gy2, AL=Math.hypot(ax,ay)||1;
+      ctx.font='800 '+(fs+2)+'px system-ui,sans-serif';
+      ctx.fillStyle=css(COL[v2]); ctx.textAlign='center'; ctx.textBaseline='middle';
+      ctx.fillText(NAMES[v2],px+ax/AL*fs*1.25,py+ay/AL*fs*1.25);
+    }
+
+    // информация
+    var pSum=Math.sqrt(d2(1,2))+Math.sqrt(d2(0,2))+Math.sqrt(d2(0,1));
+    var exact=(Math.abs(pSum-Math.round(pSum))<1e-9);
+    if(flat){
+      info.innerHTML='<span class="warn">Треугольника нет!</span> Все три вершины оказались на одной прямой — фигура схлопнулась в отрезок. Именно это и запрещает определение.';
+    }else{
+      var h='<div><span class="k">Стороны:</span> <span class="val">'+
+        'BC = '+lenTxt(d2(1,2))+', CA = '+lenTxt(d2(0,2))+', AB = '+lenTxt(d2(0,1))+'</span></div>';
+      h+='<div><span class="k">Периметр:</span> <span class="val">P '+(exact?'=':'≈')+' '+
+        (exact?Math.round(pSum):Math.round(pSum*100)/100)+' кл.</span></div>';
+      h+='<div><span class="k">Вид по сторонам:</span> <b>'+bySides()+'</b></div>';
+      h+='<div><span class="k">Вид по углам:</span> <b>'+byAngles()+'</b></div>';
+      if(opp>=0){
+        var i2=(opp+1)%3, j2=(opp+2)%3;
+        h+='<div style="margin-top:.4rem;color:'+css(COL[opp])+';font-weight:700">Против вершины '+NAMES[opp]+
+           ' лежит сторона '+NAMES[i2]+NAMES[j2]+' — в её записи буквы '+NAMES[opp]+' нет.</div>';
+      }
+      info.innerHTML=h;
+    }
+  }
+
+  function pos(e){
+    var r=cv.getBoundingClientRect();
+    return [(e.clientX-r.left-ox)/sc, GH-(e.clientY-r.top-oy)/sc];
+  }
+  cv.addEventListener('pointerdown',function(e){
+    var p=pos(e), best=-1, bd=1e9;
+    for(var v=0;v<3;v++){ var d=Math.hypot(p[0]-P[v][0],p[1]-P[v][1]); if(d<bd){bd=d;best=v;} }
+    if(bd<1.2){ drag=best; cv.setPointerCapture(e.pointerId); cv.style.cursor='grabbing'; }
+  });
+  cv.addEventListener('pointermove',function(e){
+    if(drag<0) return;
+    e.preventDefault();
+    var p=pos(e);
+    var nx=Math.max(0,Math.min(GW,Math.round(p[0])));
+    var ny=Math.max(0,Math.min(GH,Math.round(p[1])));
+    for(var v=0;v<3;v++){ if(v!==drag && P[v][0]===nx && P[v][1]===ny) return; } // вершины не склеиваем
+    if(P[drag][0]!==nx||P[drag][1]!==ny){ P[drag]=[nx,ny]; draw(); }
+  });
+  function endDrag(){ drag=-1; cv.style.cursor='grab'; }
+  cv.addEventListener('pointerup',endDrag);
+  cv.addEventListener('pointercancel',endDrag);
+
+  Array.prototype.forEach.call(document.querySelectorAll('.opp'),function(b){
+    b.addEventListener('click',function(){
+      var v=+b.getAttribute('data-v');
+      opp=(opp===v)?-1:v;
+      Array.prototype.forEach.call(document.querySelectorAll('.opp'),function(o){
+        o.setAttribute('aria-pressed', (+o.getAttribute('data-v')===opp)?'true':'false');
+      });
+      draw();
+    });
+  });
+  document.getElementById('triReset').addEventListener('click',function(){
+    P=START.map(function(p){return p.slice();}); draw();
+  });
+  window.addEventListener('resize',function(){ resize(); draw(); });
+  resize(); draw();
+})();
+</script>
+
+<script>
+/* Тренажёр-генератор */
+(function(){
+  var taskEl=document.getElementById('trTask'), ansEl=document.getElementById('trAns'), resEl=document.getElementById('trResult');
+  if(!taskEl) return;
+  var MINUS='−';
+  var cur=null;
+  var TRI=[['A','B','C'],['M','N','K'],['P','Q','R'],['D','E','F'],['K','L','M'],['X','Y','Z']];
+  function ri(a,b){ return Math.floor(Math.random()*(b-a+1))+a; }
+  function pick(arr){ return arr[ri(0,arr.length-1)]; }
+  function shuffle(a){ for(var i=a.length-1;i>0;i--){ var j=ri(0,i), t=a[i]; a[i]=a[j]; a[j]=t; } return a; }
+  function norm(s){ return s.toLowerCase().replace(/ё/g,'е').replace(/[\s.,;!?]/g,''); }
+
+  function sidesKind(x,y,z){
+    if(x===y&&y===z) return 'равносторонний';
+    if(x===y||y===z||x===z) return 'равнобедренный';
+    return 'разносторонний';
+  }
+  // тройка целых сторон, для которой треугольник существует
+  function makeTriple(mode){
+    for(var it=0;it<400;it++){
+      var a,b,c;
+      if(mode==='eq'){ a=b=c=ri(3,15); }
+      else if(mode==='iso'){ var s=ri(4,14); var base=ri(2,2*s-1); a=s;b=s;c=base; }
+      else { a=ri(3,17); b=ri(3,17); c=ri(3,17); if(a===b||b===c||a===c) continue; }
+      if(a+b>c&&a+c>b&&b+c>a) return [a,b,c];
+    }
+    return [3,4,5];
+  }
+
+  function generate(){
+    var r=Math.random(), t=pick(TRI);
+    if(r<0.22){                                   // периметр по трём сторонам
+      var m=pick(['eq','iso','sc','sc']);
+      var s=makeTriple(m);
+      cur={type:'perim',s:s,ans:s[0]+s[1]+s[2]};
+      taskEl.innerHTML='Стороны треугольника <b>'+s[0]+'</b> см, <b>'+s[1]+'</b> см и <b>'+s[2]+'</b> см. Найди периметр (в см).';
+    } else if(r<0.42){                            // третья сторона по периметру
+      var s2=makeTriple(pick(['iso','sc']));
+      shuffle(s2);
+      cur={type:'third',s:s2,P:s2[0]+s2[1]+s2[2],ans:s2[2]};
+      taskEl.innerHTML='Периметр треугольника <b>'+cur.P+'</b> см, две его стороны равны <b>'+s2[0]+'</b> см и <b>'+s2[1]+'</b> см. Найди третью сторону (в см).';
+    } else if(r<0.55){                            // сторона равностороннего по периметру
+      var side=ri(3,20), Pq=side*3;
+      cur={type:'eqside',side:side,P:Pq,ans:side};
+      taskEl.innerHTML='Периметр равностороннего треугольника <b>'+Pq+'</b> см. Найди длину одной стороны (в см).';
+    } else if(r<0.75){                            // противолежащая сторона
+      var v=ri(0,2), i=(v+1)%3, j=(v+2)%3;
+      cur={type:'opp',t:t,v:v,ans:t[i]+t[j]};
+      taskEl.innerHTML='В △'+t.join('')+' назови сторону, противолежащую вершине <b>'+t[v]+'</b>.';
+    } else if(r<0.9){                             // вид по сторонам
+      var s3=makeTriple(pick(['eq','iso','sc']));
+      cur={type:'kindS',s:s3,ans:sidesKind(s3[0],s3[1],s3[2])};
+      taskEl.innerHTML='Стороны треугольника <b>'+s3[0]+'</b>, <b>'+s3[1]+'</b> и <b>'+s3[2]+'</b> см. Какой это треугольник <b>по сторонам</b>? (одно слово)';
+    } else {                                      // вид по углам
+      var ang = (Math.random()<0.4) ? 90 : ri(91,170);
+      var vv=ri(0,2);
+      cur={type:'kindA',t:t,v:vv,ang:ang,ans:(ang===90?'прямоугольный':'тупоугольный')};
+      taskEl.innerHTML='В △'+t.join('')+' угол ∠'+t[vv]+' = <b>'+ang+'°</b>. Какой это треугольник <b>по углам</b>? (одно слово)';
+    }
+    resEl.innerHTML=''; ansEl.value='';
+  }
+
+  function solHTML(){
+    var q=cur, h='<div class="sol">';
+    if(q.type==='perim'){
+      h+='Периметр — сумма длин всех сторон.<br>';
+      h+='P = '+q.s[0]+' + '+q.s[1]+' + '+q.s[2]+' = <b>'+q.ans+'</b> см<br>';
+      h+='Кстати, по сторонам он '+sidesKind(q.s[0],q.s[1],q.s[2])+'.';
+    } else if(q.type==='third'){
+      h+='P = a + b + c, значит третья сторона = P '+MINUS+' две известные.<br>';
+      h+='c = '+q.P+' '+MINUS+' '+q.s[0]+' '+MINUS+' '+q.s[1]+' = <b>'+q.ans+'</b> см<br>';
+      h+='Проверка: '+q.s[0]+' + '+q.s[1]+' + '+q.ans+' = '+q.P+' ✓';
+    } else if(q.type==='eqside'){
+      h+='У равностороннего все три стороны равны, значит периметр = сторона · 3.<br>';
+      h+='сторона = '+q.P+' : 3 = <b>'+q.side+'</b> см';
+    } else if(q.type==='opp'){
+      var i=(q.v+1)%3, j=(q.v+2)%3;
+      h+='Противолежащая сторона не касается вершины '+q.t[q.v]+'.<br>';
+      h+='Из '+q.t[q.v]+' выходят стороны '+q.t[q.v]+q.t[i]+' и '+q.t[q.v]+q.t[j]+' — они прилежащие.<br>';
+      h+='Вычёркиваем букву '+q.t[q.v]+' из '+q.t.join('')+' → остаётся <b>'+q.ans+'</b>.';
+    } else if(q.type==='kindS'){
+      var s=q.s.slice().sort(function(a,b){return a-b;});
+      h+='Сравниваем стороны: '+s[0]+', '+s[1]+', '+s[2]+'.<br>';
+      if(q.ans==='равносторонний') h+='Все три равны → <b>равносторонний</b> (он же частный случай равнобедренного).';
+      else if(q.ans==='равнобедренный') h+='Две стороны равны, третья другая → <b>равнобедренный</b>.';
+      else h+='Все три разные → <b>разносторонний</b>.';
+    } else {
+      if(q.ang===90) h+='Угол ровно 90° — прямой. Есть прямой угол → <b>прямоугольный</b>.';
+      else h+='Угол '+q.ang+'° больше 90° — тупой. Есть тупой угол → <b>тупоугольный</b>.<br>Двух тупых углов быть не может, так что одного хватает.';
+    }
+    return h+'</div>';
+  }
+
+  function isRight(raw){
+    var q=cur;
+    if(q.type==='opp'){
+      var v=raw.toUpperCase().replace(/[^A-Z]/g,'');
+      return v===q.ans || v===q.ans.charAt(1)+q.ans.charAt(0);
+    }
+    if(q.type==='kindS'||q.type==='kindA'){
+      var w=norm(raw);
+      if(w===norm(q.ans)) return true;
+      if(q.type==='kindS'&&q.ans==='равносторонний'&&w==='равнобедренный') return 'part';
+      return false;
+    }
+    var n=parseFloat(raw.replace(',','.'));
+    return !isNaN(n)&&Math.abs(n-q.ans)<1e-9;
+  }
+
+  function check(){
+    var raw=ansEl.value.trim();
+    if(raw===''){ resEl.innerHTML='<span class="bad">Введи ответ или нажми «Решение».</span>'; return; }
+    var v=isRight(raw);
+    if(v==='part'){ resEl.innerHTML='<span class="bad">Почти: он и правда равнобедренный, но здесь равны ВСЕ три стороны — нужен более точный ответ.</span>'+solHTML(); }
+    else if(v){ resEl.innerHTML='<span class="ok">✓ Верно!</span>'+solHTML(); }
+    else{ resEl.innerHTML='<span class="bad">✗ Пока не то — глянь решение.</span>'+solHTML(); }
+  }
+
+  document.getElementById('trNew').addEventListener('click',function(){ generate(); ansEl.focus(); });
+  document.getElementById('trCheck').addEventListener('click',check);
+  document.getElementById('trShow').addEventListener('click',function(){ resEl.innerHTML=solHTML(); });
+  ansEl.addEventListener('keydown',function(e){ if(e.key==='Enter') check(); });
+  generate();   // первичная генерация без фокуса
+})();
+</script>
+<!--LESSON-NAV-BOT--><nav class="lnav lnav-bot"><a class="prev" href="./geo7-perpendikulyarnye-pryamye.html"><span class="dir">← Предыдущая</span><span class="ttl">Перпендикулярные прямые</span></a><a class="to-cat" href="./catalog.html">📚 <span>Все темы</span></a><a class="next" href="./geo7-ravnye-treugolniki.html"><span class="dir">Следующая →</span><span class="ttl">Равные треугольники и соответственные элементы</span></a></nav><!--/LESSON-NAV-BOT-->

@@ -1,0 +1,550 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Измерение углов, градусная мера (геометрия, 7 класс)</title>
+<style>
+  :root{
+    --paper:#F6F7F9; --card:#FFFFFF; --ink:#1D2530; --muted:#606B7A; --line:#E3E7EE;
+    --brand:#2E5AAC; --brand-soft:#E4EBF7;
+    --p1:#E27C2C; --p1-soft:#FBEEDF;    /* первая часть угла */
+    --p2:#159A8A; --p2-soft:#DEF3F0;    /* вторая часть угла */
+    --wh:#2E5AAC;  --wh-soft:#E4EBF7;   /* весь угол */
+    --ok:#1E8E5A; --no:#C23B3B;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper)}
+  .page{max-width:720px;margin:0 auto;padding:clamp(1.4rem,4vw,3rem) clamp(1.1rem,4vw,2rem) 4.5rem;
+    color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:17.5px;line-height:1.68;-webkit-font-smoothing:antialiased}
+  .mono{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-variant-numeric:tabular-nums;font-weight:600}
+
+  .hero{border-bottom:3px solid var(--brand);padding-bottom:1.4rem;margin-bottom:1.8rem}
+  .eyebrow{font-size:.74rem;letter-spacing:.15em;text-transform:uppercase;color:var(--brand);font-weight:700;margin:0 0 .55rem}
+  h1{font-size:clamp(1.9rem,6vw,2.8rem);line-height:1.05;margin:0;font-weight:800;letter-spacing:-.02em;text-wrap:balance}
+  .tagline{font-size:1.12rem;color:var(--muted);margin:.85rem 0 0;text-wrap:pretty}
+
+  section{margin-top:2.4rem}
+  h2{font-size:1.5rem;margin:0 0 .3rem;font-weight:780;letter-spacing:-.015em;text-wrap:balance}
+  h2 .em{color:var(--brand)}
+  p{margin:.7rem 0}
+  strong{font-weight:680}
+  .p1w{color:var(--p1);font-weight:800} .p2w{color:var(--p2);font-weight:800} .whw{color:var(--wh);font-weight:800}
+
+  .lead-in{background:var(--brand-soft);border-radius:14px;padding:1.1rem 1.3rem;font-size:1.02rem}
+  .lead-in p{margin:.4rem 0}
+  .lead-in b{color:var(--brand)}
+
+  .recall{background:var(--card);border:1px dashed var(--line);border-radius:14px;padding:1rem 1.25rem;margin-top:1rem}
+  .recall h3{margin:0 0 .4rem;font-size:1rem;letter-spacing:.02em;color:var(--brand)}
+  .recall ul{margin:.4rem 0 0;padding-left:1.15rem;font-size:.97rem}
+  .recall li{margin:.25rem 0}
+
+  .formula-box{background:var(--ink);color:#fff;border-radius:14px;padding:1.3rem;text-align:center;margin-top:1rem}
+  .formula-box .eq{font-family:ui-monospace,Menlo,monospace;font-size:clamp(1.25rem,5vw,1.9rem);font-weight:700;line-height:1.35}
+  .formula-box .eq .a{color:#F0A45E} .formula-box .eq .b{color:#6FD3C6} .formula-box .eq .c{color:#8FB2E6}
+  .formula-box .note{font-size:.9rem;color:#AEB8C6;margin:.7rem 0 0}
+
+  .note{border-left:4px solid var(--brand);background:var(--brand-soft);border-radius:0 10px 10px 0;padding:.8rem 1.1rem;margin-top:1rem;font-size:.98rem}
+  .note b{color:var(--brand)}
+
+  .tablewrap{overflow-x:auto;margin-top:1rem;border:1px solid var(--line);border-radius:12px;background:var(--card)}
+  table{border-collapse:collapse;width:100%;min-width:340px;font-size:.95rem}
+  th,td{padding:.6rem .85rem;text-align:left;border-bottom:1px solid var(--line)}
+  th{font-size:.78rem;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);font-weight:700}
+  tr:last-child td{border-bottom:none}
+  td.deg{font-family:ui-monospace,Menlo,monospace;font-weight:700;color:var(--brand);white-space:nowrap}
+
+  .steps{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.1rem 1.3rem;margin-top:1rem;counter-reset:st}
+  .steps h3{margin:0 0 .6rem;font-size:1rem;color:var(--brand)}
+  .steps ol{margin:0;padding-left:1.2rem;display:flex;flex-direction:column;gap:.45rem}
+  .steps li{font-size:.97rem}
+
+  /* Диаграммы */
+  .diagram{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:1.2rem;margin-top:1rem}
+  .diagram canvas{width:100%;height:auto;display:block;border-radius:8px}
+  .sliders{display:grid;gap:.6rem;margin-top:.9rem}
+  @media(min-width:520px){.sliders.two{grid-template-columns:1fr 1fr}}
+  .sliders label{display:flex;align-items:center;gap:.5rem;font-weight:700;font-family:ui-monospace,Menlo,monospace;font-size:.9rem}
+  .sliders label.la{color:var(--p1)} .sliders label.lb{color:var(--p2)} .sliders label.lw{color:var(--wh)}
+  .sliders input[type=range]{flex:1;min-width:80px}
+  .sliders input.ra{accent-color:var(--p1)} .sliders input.rb{accent-color:var(--p2)} .sliders input.rw{accent-color:var(--wh)}
+  .sliders input[type=range]:focus-visible{outline:3px solid var(--brand);outline-offset:3px}
+  .sliders .sval{min-width:4ch;text-align:right}
+  .diag-eq{text-align:center;font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:clamp(.95rem,3.6vw,1.1rem);margin:.9rem 0 0}
+  .diag-eq .a{color:var(--p1)} .diag-eq .b{color:var(--p2)} .diag-eq .c{color:var(--wh)}
+  .readout{margin:.9rem 0 0;display:flex;flex-wrap:wrap;gap:.5rem;justify-content:center;font-family:ui-monospace,Menlo,monospace;font-size:.88rem;font-weight:700}
+  .readout span{padding:.4rem .7rem;border-radius:9px}
+  .readout .good{background:#E1F3E9;color:var(--ok)}
+  .readout .trap{background:#FBE7E7;color:var(--no)}
+
+  .walk{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.15rem 1.3rem;margin-top:1rem}
+  .walk .q{font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1rem;margin:0 0 .9rem;padding-bottom:.7rem;border-bottom:1px solid var(--line)}
+  .walk ol{margin:0;padding-left:1.2rem;display:flex;flex-direction:column;gap:.5rem}
+  .walk li{font-size:.95rem}
+  .walk b{font-weight:700}
+  .walk .why{color:var(--muted);font-style:italic}
+  .verdict{margin-top:1rem;padding:.7rem 1rem;background:var(--brand-soft);border-radius:10px;font-weight:650;color:var(--brand);font-family:ui-monospace,Menlo,monospace}
+
+  /* Тренажёр */
+  .trainer{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.2rem 1.3rem;margin-top:1rem}
+  .tr-task{font-size:clamp(1rem,4vw,1.12rem);text-align:center;padding:1rem;background:var(--brand-soft);border-radius:10px;font-weight:600;line-height:1.5}
+  .tr-task b{font-family:ui-monospace,Menlo,monospace;color:var(--ink)}
+  .tr-ctl{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:1rem;align-items:center;justify-content:center}
+  .tr-ctl input{flex:1;min-width:110px;max-width:180px;font:inherit;padding:.5rem .7rem;border:1px solid var(--line);border-radius:9px;text-align:center;background:#fff;color:var(--ink)}
+  .tr-ctl button{font:inherit;font-weight:700;font-size:.9rem;cursor:pointer;border:none;border-radius:9px;padding:.55rem .95rem;color:#fff;background:var(--brand)}
+  .tr-ctl button.sec{background:var(--p1)}
+  .tr-ctl button.ghost{background:transparent;color:var(--brand);border:1px solid var(--brand)}
+  .tr-ctl button:focus-visible,.tr-ctl input:focus-visible{outline:3px solid var(--brand);outline-offset:2px}
+  .tr-result{margin-top:.9rem;font-size:.96rem;min-height:1.2rem;text-align:center}
+  .tr-result .ok{color:var(--ok);font-weight:700} .tr-result .bad{color:var(--no);font-weight:700}
+  .tr-result .sol{margin-top:.6rem;padding:.8rem 1rem;background:#FCFDFE;border:1px solid var(--line);border-radius:10px;font-family:ui-monospace,Menlo,monospace;font-size:.9rem;line-height:1.8;text-align:left;overflow-x:auto}
+
+  details{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:.9rem 1.1rem;margin-top:.7rem}
+  details[open]{border-color:var(--brand)}
+  summary{cursor:pointer;font-weight:650;list-style:none;display:flex;justify-content:space-between;gap:1rem;align-items:center}
+  summary::-webkit-details-marker{display:none}
+  summary::after{content:"проверить";font-size:.8rem;color:var(--brand);font-weight:700;white-space:nowrap}
+  details[open] summary::after{content:"скрыть"}
+  summary:focus-visible{outline:3px solid var(--brand);outline-offset:3px;border-radius:6px}
+  .ans{margin-top:.75rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.96rem;color:var(--muted)}
+  .ans b{color:var(--ink)}
+  .drill{display:flex;flex-direction:column;gap:.2rem;margin-top:1rem}
+  .lvl{font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:700;margin:1.1rem 0 .2rem}
+
+  ul.traps{list-style:none;margin:1rem 0 0;padding:0;display:flex;flex-direction:column;gap:.7rem}
+  ul.traps li{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:.85rem 1.05rem;padding-left:2.5rem;position:relative;font-size:.97rem}
+  ul.traps li::before{content:"⚠";position:absolute;left:1rem;top:.85rem;color:var(--p1)}
+  ul.traps b{font-weight:700}
+  ul.traps .fix{display:block;margin-top:.35rem;color:var(--muted);font-size:.92rem}
+
+  .selfcheck{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--p2);border-radius:0 12px 12px 0;padding:1rem 1.25rem;margin-top:1rem}
+  .selfcheck ol{margin:.4rem 0 0;padding-left:1.2rem}
+  .selfcheck li{margin:.35rem 0;font-size:.97rem}
+
+  .wrapup{background:var(--brand);color:#fff;border-radius:16px;padding:1.4rem 1.5rem;margin-top:2.4rem}
+  .wrapup h2{color:#fff;margin:0 0 .5rem}
+  .wrapup p{color:#DEE7F5;margin:.4rem 0;font-size:1rem}
+  .wrapup .big-rule{font-size:clamp(1rem,4.2vw,1.2rem);font-weight:800;color:#fff;margin:.6rem 0;font-family:ui-monospace,Menlo,monospace}
+  .wrapup .next{font-size:.95rem;color:#C6D5EE;margin-top:1rem;padding-top:1rem;border-top:1px solid rgba(255,255,255,.2)}
+  .wrapup .next b{color:#fff}
+
+  @media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+<!--LESSON-NAV-TOP--><style>.lnav{--lnav-accent:#3D5AF1}.lnav a{text-decoration:none;font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif}.lnav-top{max-width:820px;margin:0 auto;padding:.75rem clamp(1rem,4vw,1.5rem) .1rem}.lnav-top a{display:inline-flex;align-items:center;gap:.35rem;color:var(--lnav-accent);font-weight:600;font-size:.9rem}.lnav-top a:hover{text-decoration:underline}.lnav-bot{max-width:820px;margin:2.6rem auto 3rem;padding:1.1rem clamp(1rem,4vw,1.5rem) 0;border-top:1px solid #E4E8EF;display:flex;align-items:stretch;gap:.55rem}.lnav-bot a{min-width:0;display:flex;flex-direction:column;justify-content:center;gap:.15rem;border:1px solid #E4E8EF;border-radius:12px;padding:.65rem .85rem;color:#182233;background:#fff;transition:border-color .1s,transform .08s}.lnav-bot a:hover{border-color:var(--lnav-accent);transform:translateY(-1px)}.lnav-bot .prev,.lnav-bot .next{flex:1 1 0}.lnav-bot .next{text-align:right}.lnav-bot .dir{font-size:.72rem;color:#8A93A6;font-weight:600}.lnav-bot .ttl{font-size:.9rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.lnav-bot .to-cat{flex:0 0 auto;flex-direction:row;align-items:center;justify-content:center;color:var(--lnav-accent);font-weight:700;font-size:.85rem;white-space:nowrap}@media(max-width:420px){.lnav-bot .to-cat span{display:none}.lnav-bot .to-cat{padding:.65rem .7rem}}</style><nav class="lnav lnav-top"><a href="./catalog.html">← Все темы</a></nav><!--/LESSON-NAV-TOP-->
+<div class="page">
+
+  <header class="hero">
+    <p class="eyebrow">Геометрия · 7 класс</p>
+    <h1>Измерение углов. Градусная мера</h1>
+    <p class="tagline">Величина угла — это его раскрытие, а не длина палочек. Учимся мерить её числом, а не на глаз.</p>
+  </header>
+
+  <div class="lead-in">
+    <p><b>Зачем это нужно.</b> Пока углы сравниваются «на глаз», ты не построишь чертёж по условию и не докажешь теорему. И не скажешь, под каким углом наклонена крыша или повернулся руль. Нужна единица измерения — <b>градус</b>.</p>
+    <p><b>Где встречается.</b> Разметка деталей и мебели, компас и навигация (азимут — это угол), наклон пандуса, развороты в спорте («поворот на 180°»). Дальше в математике: треугольники, параллельные прямые, тригонометрия.</p>
+  </div>
+
+  <div class="note">
+    <p><b>Миф, который ломаем сразу:</b> «угол тем больше, чем длиннее его стороны». <strong>Неверно</strong>. Величина угла зависит только от того, насколько широко раскрыты лучи. Продли стороны хоть до стены, угол останется тем же.</p>
+  </div>
+
+  <section>
+    <h2>Что вспомнить перед стартом</h2>
+    <div class="recall">
+      <h3>Быстрая разминка</h3>
+      <ul>
+        <li><strong>Луч</strong> — часть прямой: начало есть, конца нет. <strong>Угол</strong> — два луча из одной точки. Эта точка называется <strong>вершиной</strong>, а сами лучи — <strong>сторонами</strong>.</li>
+        <li>Угол с вершиной B записывают так: <span class="mono">∠ABC</span>. Вершина в записи всегда стоит <strong>посередине</strong>.</li>
+        <li>Считать придётся только плюсом и минусом, на них вся тема и держится.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section>
+    <h2>Суть: <span class="em">измерить</span> — значит посчитать градусы</h2>
+    <p>Измерить угол — значит узнать, сколько раз в нём укладывается единичный угол. Этот единичный угол и есть градус.</p>
+    <p>Берут <strong>развёрнутый</strong> угол (его стороны образуют прямую) и делят на 180 равных частей. Одна такая часть и есть <strong>1 градус</strong>, пишут <span class="mono">1°</span>.</p>
+
+    <div class="formula-box">
+      <div class="eq"><span class="c">1°</span> = <span class="a">1/180</span> развёрнутого угла</div>
+      <div class="note">Развёрнутый угол = 180° · прямой угол = 90° · полный оборот вокруг точки = 360°</div>
+    </div>
+
+    <p>Запись <span class="mono">∠ABC = 60°</span> читается «угол ABC равен шестидесяти градусам». Градусная мера показывает, <strong>насколько широко открыт</strong> угол: узкий острый — мало градусов, широкий тупой — много.</p>
+
+    <div class="tablewrap">
+      <table>
+        <tr><th>Угол</th><th>Градусов</th><th>Как узнать</th></tr>
+        <tr><td>Прямой</td><td class="deg">90°</td><td>половина развёрнутого</td></tr>
+        <tr><td>Развёрнутый</td><td class="deg">180°</td><td>стороны лежат на одной прямой</td></tr>
+        <tr><td>Полный оборот</td><td class="deg">360°</td><td>два развёрнутых</td></tr>
+      </table>
+    </div>
+
+    <div class="note">
+      <p><b>Диапазон:</b> в 7 классе величина угла лежит от 0° (лучи совпали) до 180° (развёрнутый). Вышло 200°? Значит где-то ошибка. Градус ещё делят на минуты (<span class="mono">1° = 60′</span>), но нам пока хватит и градусов.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Главное правило: <span class="em">целое = сумма частей</span></h2>
+    <p>Вторая причина, ради которой нужна градусная мера: углы можно складывать. Если луч <strong>BD проходит внутри</strong> угла ABC, он разбивает его на два угла, и мера всего угла равна сумме мер частей:</p>
+
+    <div class="formula-box">
+      <div class="eq"><span class="c">∠ABC</span> = <span class="a">∠ABD</span> + <span class="b">∠DBC</span></div>
+      <div class="note">часть + часть = целое · работает <b>только</b> если луч BD действительно внутри угла</div>
+    </div>
+
+    <p>Отсюда же и обратный ход: знаешь целое и одну часть, вторую получаешь вычитанием, <span class="mono">∠DBC = ∠ABC − ∠ABD</span>.</p>
+  </section>
+
+  <section>
+    <h2>Транспортир: <span class="em">как им пользоваться</span></h2>
+    <div class="steps">
+      <h3>Три шага, всегда в этом порядке</h3>
+      <ol>
+        <li><strong>Центр транспортира</strong> (метка в середине его нижнего края) совмести с <strong>вершиной</strong> угла.</li>
+        <li>Один из лучей подведи под отметку <strong>0</strong> на шкале.</li>
+        <li>Посмотри, по какой шкале, внешней или внутренней, идёт отсчёт <strong>от твоего нуля</strong>. Дальше найди, где эту шкалу пересекает второй луч. Это и есть ответ.</li>
+      </ol>
+    </div>
+
+    <p>Ниже живой транспортир. Двигай ползунок «раскрытие» и следи: одно число даёт правильная шкала, другое — та, с которой её вечно путают. Вторым ползунком меняй длину сторон.</p>
+
+    <div class="diagram">
+      <canvas id="prot" width="640" height="400" aria-label="Транспортир, приложенный к углу: две шкалы отсчёта и величина угла"></canvas>
+      <div class="sliders two">
+        <label class="lw">раскрытие <span id="vA" class="sval">40°</span><input id="sA" class="rw" type="range" min="5" max="180" step="5" value="40" aria-label="Раскрытие угла в градусах"></label>
+        <label class="la">длина сторон <span id="vL" class="sval">1.0</span><input id="sL" class="ra" type="range" min="55" max="135" step="5" value="100" aria-label="Длина сторон угла"></label>
+      </div>
+      <p class="readout">
+        <span class="good" id="rdGood">верно: 40°</span>
+        <span class="trap" id="rdTrap">не та шкала: 140°</span>
+      </p>
+      <p class="diag-eq" id="protEq"></p>
+    </div>
+    <p style="font-size:.9rem;color:var(--muted)">Заметил? Ползунок длины растягивает стороны, а зелёное число стоит на месте. Вот тебе и доказательство: длина сторон на величину угла не влияет.</p>
+  </section>
+
+  <section>
+    <h2>Наглядно: <span class="em">часть + часть = целое</span></h2>
+    <p>Тот же чертёж, только внутри угла появился луч BD. Задай весь угол ABC и подвигай внутренний луч: сумма двух цветных кусков всегда даёт синее число.</p>
+    <div class="diagram">
+      <canvas id="parts" width="640" height="400" aria-label="Угол ABC, разбитый внутренним лучом BD на два угла"></canvas>
+      <div class="sliders two">
+        <label class="lw">весь ∠ABC <span id="vW" class="sval">120°</span><input id="sW" class="rw" type="range" min="30" max="180" step="10" value="120" aria-label="Величина всего угла ABC"></label>
+        <label class="la">∠ABD <span id="vP" class="sval">70°</span><input id="sP" class="ra" type="range" min="10" max="170" step="10" value="70" aria-label="Величина части ABD"></label>
+      </div>
+      <p class="diag-eq" id="partsEq"></p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Разбираем вместе</h2>
+
+    <div class="walk">
+      <p class="q">Луч BD проходит внутри угла ABC. Известно: ∠ABD = 35°, ∠DBC = 50°. Найди ∠ABC.</p>
+      <ol>
+        <li>Луч BD лежит <b>внутри</b> угла, значит он режет ∠ABC на две части. <span class="why">Почему это важно: свойство работает, только когда луч и правда внутри.</span></li>
+        <li>По свойству: <span class="mono">∠ABC = ∠ABD + ∠DBC</span>. <span class="why">Почему: мера целого равна сумме мер частей.</span></li>
+        <li><span class="mono">∠ABC = 35° + 50° = 85°</span>.</li>
+        <li>Прикидываю, похоже ли на правду: 85° меньше 90°, угол острый. Обе части небольшие, всё сходится. ✓</li>
+      </ol>
+      <div class="verdict">Ответ: ∠ABC = 85°</div>
+    </div>
+
+    <div class="walk" style="margin-top:.8rem">
+      <p class="q">∠MON = 120°. Луч OK проходит внутри угла, ∠MOK = 70°. Найди ∠KON.</p>
+      <ol>
+        <li>Целое известно, одна часть тоже. Ищем вторую, значит работаем <b>вычитанием</b>.</li>
+        <li>По свойству: <span class="mono">∠MON = ∠MOK + ∠KON</span>, отсюда <span class="mono">∠KON = ∠MON − ∠MOK</span>.</li>
+        <li>Подставляю и считаю сам: <span class="mono">∠KON = 120° − 70° = ?</span></li>
+      </ol>
+      <div class="verdict">Должно получиться 50°</div>
+    </div>
+
+    <div class="walk" style="margin-top:.8rem">
+      <p class="q">Луч OP делит прямой угол ∠AOB = 90° на два угла так, что ∠AOP в 2 раза больше ∠POB. Найди оба угла.</p>
+      <ol>
+        <li>Сначала попробуй сам: назови меньший угол одной «долей», тогда больший — две такие же доли, а всего их три.</li>
+        <li>Три доли складываются в прямой угол, то есть в 90°. Одна доля: <span class="mono">90° : 3 = 30°</span>.</li>
+        <li>Значит <span class="mono">∠POB = 30°</span>, а <span class="mono">∠AOP = 2 · 30° = 60°</span>.</li>
+        <li>Проверка: <span class="mono">30° + 60° = 90°</span>, с условием сходится. ✓</li>
+      </ol>
+      <div class="verdict">Ответ: ∠POB = 30°, ∠AOP = 60°</div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Тренажёр · части и целое</h2>
+    <p>Задачи на градусную меру, сколько выдержишь. Впиши ответ числом (градусы, без значка), жми «Проверить» и смотри разбор.</p>
+    <div class="trainer">
+      <div class="tr-task" id="trTask">Луч BD проходит внутри угла ABC. ∠ABD = <b>40°</b>, ∠DBC = <b>25°</b>. Найди ∠ABC.</div>
+      <div class="tr-ctl">
+        <button id="trNew" type="button">🎲 Новая</button>
+        <input id="trAns" type="text" inputmode="numeric" placeholder="ответ в °" aria-label="Ответ в градусах">
+        <button id="trCheck" type="button" class="sec">Проверить</button>
+        <button id="trShow" type="button" class="ghost">Решение</button>
+      </div>
+      <div id="trResult" class="tr-result"></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Проверь себя</h2>
+
+    <p class="lvl">Понимание</p>
+    <div class="drill">
+      <details><summary>1) Прочитай запись ∠CDE = 38°: назови вершину и величину. Острый угол или тупой?</summary><div class="ans">Вершина — точка <b>D</b>, в записи она всегда посередине. Величина <b>38°</b>. 38° меньше 90°, значит угол <b>острый</b>.</div></details>
+      <details><summary>2) Сколько градусов в развёрнутом угле? А в прямом?</summary><div class="ans">Развёрнутый <b>180°</b>, прямой <b>90°</b>, ровно половина от него.</div></details>
+    </div>
+
+    <p class="lvl">Применение</p>
+    <div class="drill">
+      <details><summary>3) Луч BK проходит внутри угла ∠ABC = 110°, при этом ∠ABK = 65°. Найди ∠KBC.</summary><div class="ans"><span class="mono">∠KBC = ∠ABC − ∠ABK = 110° − 65° = 45°</span>. Ответ <b>45°</b>. Проверка: 65° + 45° = 110° ✓</div></details>
+      <details><summary>4) Луч проходит внутри угла ∠ABC и делит его на ∠ABD = 40° и ∠DBC = 25°. Чему равен ∠ABC?</summary><div class="ans">Целое равно сумме частей: <span class="mono">40° + 25° = 65°</span>. Ответ <b>65°</b>.</div></details>
+    </div>
+
+    <p class="lvl">Анализ</p>
+    <div class="drill">
+      <details><summary>5) Что изменится, если стороны угла в 40° продлить в два раза?</summary><div class="ans"><b>Ничего не изменится</b>, угол так и останется 40°. Величина угла — это раскрытость лучей. Лучи вообще бесконечные, на чертеже мы рисуем только кусочек.</div></details>
+      <details><summary>6) Найди ошибку: ученик измерил угол и получил 150°, хотя на чертеже угол явно острый. В чём дело?</summary><div class="ans">Он снял число <b>не с той шкалы</b> и получил дополнение до 180°. Настоящий ответ <span class="mono">180° − 150° = 30°</span>. Спасает проверка на глаз: острый угол больше 90° быть не может.</div></details>
+      <details><summary>7) Обратная задача: угол ∠ABC разбит лучом BD на две равные части, и ∠ABD = 27°. Чему равен весь угол?</summary><div class="ans">Части равные, значит <span class="mono">∠DBC = 27°</span> тоже. Тогда <span class="mono">∠ABC = 27° + 27° = 54°</span>. Ответ <b>54°</b>.</div></details>
+    </div>
+  </section>
+
+  <section>
+    <h2>Ловушки</h2>
+    <ul class="traps">
+      <li><b>Читают не ту дугу транспортира.</b> На нём две шкалы: 0…180 и 180…0. Из-за этого вместо 30° получается 150°, то самое «дополнение до 180°».
+        <span class="fix">Как не попасться: отсчитывай от того нуля, под которым лежит первый луч, и проверяй результат на глаз. Острый угол не может выйти больше 90°.</span></li>
+      <li><b>Не различают внутреннюю и внешнюю дугу.</b> Число берут с соседней строки шкалы и промахиваются.
+        <span class="fix">Как не попасться: веди взгляд по дуге именно от своего нуля до второго луча, не перепрыгивая на другую строчку.</span></li>
+      <li><b>Прикладывают к нулю не тот луч или не совмещают вершину с центром.</b> Тогда измеряется что угодно, только не твой угол.
+        <span class="fix">Как не попасться: сначала центр транспортира точно на вершину, и только потом луч на 0.</span></li>
+      <li><b>Думают, что длинные стороны = больший угол.</b>
+        <span class="fix">Как не попасться: мера угла — это раскрытость лучей, длина сторон тут не в счёт.</span></li>
+      <li><b>Складывают части, когда луч лежит вне угла.</b> Правило <span class="mono">∠ABC = ∠ABD + ∠DBC</span> верно, только если BD внутри угла.
+        <span class="fix">Как не попасться: перед сложением убедись по чертежу, что внутренний луч действительно внутри.</span></li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Объясни своими словами</h2>
+    <div class="selfcheck">
+      <p>Закрой урок и ответь вслух: себе, другу или голосовому помощнику. Объяснил без запинки — тема взята.</p>
+      <ol>
+        <li>Сколько градусов в развёрнутом угле? А в прямом? Откуда вообще взялось число 180?</li>
+        <li>Луч проходит внутри угла ∠ABC и делит его на ∠ABD = 40° и ∠DBC = 25°. Чему равен ∠ABC и почему их можно складывать?</li>
+        <li>Влияет ли длина сторон угла на его градусную меру? Объясни, как ты это докажешь на транспортире.</li>
+      </ol>
+    </div>
+  </section>
+
+  <div class="wrapup">
+    <h2>Запомни главное</h2>
+    <p class="big-rule">1° = 1/180 развёрнутого угла<br>∠ABC = ∠ABD + ∠DBC</p>
+    <p>Измерить угол — значит транспортиром определить его раскрытость в градусах. Мера целого равна сумме мер частей. Прямой 90°, развёрнутый 180°, полный оборот 360°. А длина сторон не значит ничего.</p>
+    <p class="next">👉 Дальше <b>виды углов</b> (острый, прямой, тупой, развёрнутый: теперь ты различаешь их по числу градусов) и <b>смежные углы</b>, где правило «часть + часть = целое» превращается в сумму 180°.</p>
+  </div>
+
+</div>
+
+<script>
+(function(){
+  var cv=document.getElementById('prot'); if(!cv) return;
+  var ctx=cv.getContext('2d'), sA=document.getElementById('sA'), sL=document.getElementById('sL');
+  var vA=document.getElementById('vA'), vL=document.getElementById('vL');
+  var rdG=document.getElementById('rdGood'), rdT=document.getElementById('rdTrap'), eq=document.getElementById('protEq');
+  var W=640,H=400,dpr=1;
+  function css(v){ return getComputedStyle(document.documentElement).getPropertyValue(v).trim(); }
+  function resize(){ var c=cv.clientWidth||640; dpr=Math.min(window.devicePixelRatio||1,2);
+    W=c; H=Math.round(c*0.64);
+    cv.width=W*dpr; cv.height=H*dpr; cv.style.height=H+'px'; ctx.setTransform(dpr,0,0,dpr,0,0); }
+  function draw(){
+    var a=+sA.value, Lf=(+sL.value)/100;
+    vA.textContent=a+'°'; vL.textContent=(Math.round(Lf*10)/10).toFixed(1);
+    var R=W*0.34, cx=W/2, cy=H-34;
+    var rad=function(d){ return d*Math.PI/180; };
+    var PX=function(d,r){ return cx+r*Math.cos(rad(d)); };
+    var PY=function(d,r){ return cy-r*Math.sin(rad(d)); };
+    ctx.clearRect(0,0,W,H);
+    // тело транспортира
+    ctx.beginPath(); ctx.moveTo(cx+R,cy); ctx.arc(cx,cy,R,0,Math.PI,true); ctx.closePath();
+    ctx.fillStyle='#F2F5FA'; ctx.fill(); ctx.strokeStyle=css('--line'); ctx.lineWidth=1.4; ctx.stroke();
+    // штрихи
+    for(var d=0; d<=180; d+=5){
+      var big=(d%30===0), mid=(d%10===0);
+      var r1=R, r2=R-(big?R*0.13:(mid?R*0.09:R*0.05));
+      ctx.beginPath(); ctx.moveTo(PX(d,r1),PY(d,r1)); ctx.lineTo(PX(d,r2),PY(d,r2));
+      ctx.strokeStyle=big?'#8A93A6':'#C3CBD8'; ctx.lineWidth=big?1.4:1; ctx.stroke();
+    }
+    var fs=Math.max(8,Math.round(R*0.105));
+    ctx.textAlign='center'; ctx.textBaseline='middle';
+    for(var d2=0; d2<=180; d2+=30){
+      // внешняя шкала: 0 справа
+      ctx.font='700 '+fs+'px ui-monospace,Menlo,monospace';
+      ctx.fillStyle=css('--ok'); ctx.fillText(String(d2), PX(d2,R*0.80), PY(d2,R*0.80));
+      // внутренняя шкала: 0 слева
+      ctx.fillStyle='#C23B3B'; ctx.fillText(String(180-d2), PX(d2,R*0.62), PY(d2,R*0.62));
+    }
+    // сектор угла
+    ctx.beginPath(); ctx.moveTo(cx,cy); ctx.arc(cx,cy,R*0.40,0,-rad(a),true); ctx.closePath();
+    ctx.fillStyle=css('--wh-soft'); ctx.fill();
+    ctx.beginPath(); ctx.arc(cx,cy,R*0.40,0,-rad(a),true);
+    ctx.strokeStyle=css('--wh'); ctx.lineWidth=1.6; ctx.stroke();
+    // лучи
+    var L=R*Lf;
+    function ray(d,col){ ctx.beginPath(); ctx.moveTo(cx,cy); ctx.lineTo(PX(d,L),PY(d,L));
+      ctx.strokeStyle=col; ctx.lineWidth=3; ctx.lineCap='round'; ctx.stroke(); }
+    ray(0,css('--p1')); ray(a,css('--wh'));
+    // вершина
+    ctx.beginPath(); ctx.arc(cx,cy,4,0,Math.PI*2); ctx.fillStyle=css('--ink'); ctx.fill();
+    ctx.font='700 '+Math.max(10,fs)+'px system-ui,sans-serif'; ctx.fillStyle=css('--ink');
+    ctx.fillText('B', cx, cy+20);
+    // подпись величины
+    ctx.font='800 '+Math.max(12,Math.round(R*0.16))+'px ui-monospace,Menlo,monospace';
+    ctx.fillStyle=css('--wh');
+    var mid2=a/2, mr=R*0.53;
+    ctx.fillText(a+'°', PX(mid2,mr), PY(mid2,mr));
+    rdG.textContent='верно: '+a+'°';
+    rdT.textContent='не та шкала: '+(180-a)+'°';
+    eq.innerHTML='луч на нуле → читаю <span class="c">'+a+'°</span> · длина сторон ×'+(Math.round(Lf*10)/10).toFixed(1)+' — величина та же';
+  }
+  [sA,sL].forEach(function(s){ s.addEventListener('input',draw); });
+  window.addEventListener('resize',function(){ resize(); draw(); });
+  resize(); draw();
+})();
+</script>
+
+<script>
+(function(){
+  var cv=document.getElementById('parts'); if(!cv) return;
+  var ctx=cv.getContext('2d'), sW=document.getElementById('sW'), sP=document.getElementById('sP');
+  var vW=document.getElementById('vW'), vP=document.getElementById('vP'), eq=document.getElementById('partsEq');
+  var W=640,H=400,dpr=1;
+  function css(v){ return getComputedStyle(document.documentElement).getPropertyValue(v).trim(); }
+  function resize(){ var c=cv.clientWidth||640; dpr=Math.min(window.devicePixelRatio||1,2);
+    W=c; H=Math.round(c*0.60);
+    cv.width=W*dpr; cv.height=H*dpr; cv.style.height=H+'px'; ctx.setTransform(dpr,0,0,dpr,0,0); }
+  function draw(){
+    var whole=+sW.value;
+    sP.max=whole-10;
+    var p1=+sP.value; if(p1>whole-10){ p1=whole-10; sP.value=p1; }
+    var p2=whole-p1;
+    vW.textContent=whole+'°'; vP.textContent=p1+'°';
+    var R=W*0.36, cx=W/2, cy=H-30;
+    var rad=function(d){ return d*Math.PI/180; };
+    var PX=function(d,r){ return cx+r*Math.cos(rad(d)); };
+    var PY=function(d,r){ return cy-r*Math.sin(rad(d)); };
+    ctx.clearRect(0,0,W,H);
+    function sector(from,to,fill){ ctx.beginPath(); ctx.moveTo(cx,cy);
+      ctx.arc(cx,cy,R*0.62,-rad(from),-rad(to),true); ctx.closePath(); ctx.fillStyle=fill; ctx.fill(); }
+    sector(0,p1,css('--p1-soft'));
+    sector(p1,whole,css('--p2-soft'));
+    function ray(d,col,w,name){ ctx.beginPath(); ctx.moveTo(cx,cy); ctx.lineTo(PX(d,R),PY(d,R));
+      ctx.strokeStyle=col; ctx.lineWidth=w; ctx.lineCap='round'; ctx.stroke();
+      ctx.font='700 '+Math.max(11,Math.round(R*0.12))+'px system-ui,sans-serif'; ctx.fillStyle=col;
+      ctx.textAlign='center'; ctx.textBaseline='middle';
+      ctx.fillText(name, PX(d,R+Math.max(13,R*0.10)), PY(d,R+Math.max(13,R*0.10))); }
+    ray(0,css('--ink'),3,'A');
+    ray(whole,css('--ink'),3,'C');
+    ray(p1,css('--p1'),3,'D');
+    // дуги частей
+    function arcLabel(from,to,r,col,txt){
+      ctx.beginPath(); ctx.arc(cx,cy,r,-rad(from),-rad(to),true);
+      ctx.strokeStyle=col; ctx.lineWidth=2; ctx.stroke();
+      var m=(from+to)/2;
+      ctx.font='800 '+Math.max(11,Math.round(R*0.13))+'px ui-monospace,Menlo,monospace';
+      ctx.fillStyle=col; ctx.fillText(txt, PX(m,r*0.78), PY(m,r*0.78));
+    }
+    arcLabel(0,p1,R*0.42,css('--p1'),p1+'°');
+    arcLabel(p1,whole,R*0.42,css('--p2'),p2+'°');
+    // вершина
+    ctx.beginPath(); ctx.arc(cx,cy,4,0,Math.PI*2); ctx.fillStyle=css('--ink'); ctx.fill();
+    ctx.font='700 '+Math.max(11,Math.round(R*0.12))+'px system-ui,sans-serif';
+    ctx.fillStyle=css('--ink'); ctx.fillText('B', cx, cy+18);
+    eq.innerHTML='<span class="c">∠ABC</span> = <span class="a">∠ABD</span> + <span class="b">∠DBC</span> &nbsp;→&nbsp; <span class="c">'+whole+'°</span> = <span class="a">'+p1+'°</span> + <span class="b">'+p2+'°</span>';
+  }
+  [sW,sP].forEach(function(s){ s.addEventListener('input',draw); });
+  window.addEventListener('resize',function(){ resize(); draw(); });
+  resize(); draw();
+})();
+</script>
+
+<script>
+(function(){
+  var taskEl=document.getElementById('trTask'), ansEl=document.getElementById('trAns'), resEl=document.getElementById('trResult');
+  if(!taskEl) return;
+  var M='−', D='°', ANG='∠';           // настоящий минус, градус, знак угла
+  var cur=null;
+  function ri(min,max){ return Math.floor(Math.random()*(max-min+1))+min; }
+  function generate(){
+    var r=Math.random(), p1,p2,whole,x,k,base;
+    if(r<0.26){                                        // часть + часть = целое
+      p1=5*ri(3,20);
+      p2=5*ri(3,Math.floor((180-p1)/5));
+      cur={t:'sum',p1:p1,p2:p2,ans:p1+p2};
+      taskEl.innerHTML='Луч BD проходит внутри угла ABC. '+ANG+'ABD = <b>'+p1+D+'</b>, '+ANG+'DBC = <b>'+p2+D+'</b>. Найди '+ANG+'ABC.';
+    } else if(r<0.52){                                 // целое − часть
+      whole=5*ri(8,36);
+      p1=5*ri(2,whole/5-2);
+      cur={t:'dif',whole:whole,p1:p1,ans:whole-p1};
+      taskEl.innerHTML='Луч OK проходит внутри угла MON, '+ANG+'MON = <b>'+whole+D+'</b>, '+ANG+'MOK = <b>'+p1+D+'</b>. Найди '+ANG+'KON.';
+    } else if(r<0.70){                                 // две равные части
+      x=5*ri(3,17);
+      cur={t:'half',x:x,ans:2*x};
+      taskEl.innerHTML='Луч BD разбивает угол ABC на <b>две равные части</b>, и '+ANG+'ABD = <b>'+x+D+'</b>. Чему равен весь '+ANG+'ABC?';
+    } else if(r<0.86){                                 // отношение частей
+      k=ri(2,3);
+      base=(k===2)?5*ri(2,12):5*ri(2,9);
+      whole=base*(k+1);
+      cur={t:'ratio',k:k,base:base,whole:whole,ans:base};
+      taskEl.innerHTML='Луч OP делит угол '+ANG+'AOB = <b>'+whole+D+'</b> на два угла так, что '+ANG+'AOP в <b>'+k+' раза</b> больше '+ANG+'POB. Найди <b>меньший</b> угол '+ANG+'POB.';
+    } else {                                           // ловушка транспортира
+      var sharp=Math.random()<0.5;
+      x=sharp? 5*ri(1,17) : 5*ri(19,35);
+      cur={t:'scale',x:x,sharp:sharp,ans:x};
+      taskEl.innerHTML='На чертеже угол явно <b>'+(sharp?'острый':'тупой')+'</b>. Одна шкала транспортира показывает <b>'+(180-x)+D+'</b>, другая — <b>'+x+D+'</b>. Сколько градусов в угле?';
+    }
+    resEl.innerHTML=''; ansEl.value='';
+  }
+  function solHTML(){
+    var q=cur, h='<div class="sol">';
+    if(q.t==='sum'){
+      h+=ANG+'ABC = '+ANG+'ABD + '+ANG+'DBC<br>';
+      h+=ANG+'ABC = '+q.p1+D+' + '+q.p2+D+' = <b>'+q.ans+D+'</b><br>';
+      h+='целое = сумма частей, луч внутри угла — правило работает';
+    } else if(q.t==='dif'){
+      h+=ANG+'MON = '+ANG+'MOK + '+ANG+'KON &nbsp;'+String.fromCharCode(8594)+'&nbsp; '+ANG+'KON = '+ANG+'MON '+M+' '+ANG+'MOK<br>';
+      h+=ANG+'KON = '+q.whole+D+' '+M+' '+q.p1+D+' = <b>'+q.ans+D+'</b><br>';
+      h+='проверка: '+q.p1+D+' + '+q.ans+D+' = '+q.whole+D+' ✓';
+    } else if(q.t==='half'){
+      h+='части равные '+String.fromCharCode(8594)+' '+ANG+'DBC = '+ANG+'ABD = '+q.x+D+'<br>';
+      h+=ANG+'ABC = '+q.x+D+' + '+q.x+D+' = <b>'+q.ans+D+'</b>';
+    } else if(q.t==='ratio'){
+      h+='меньший угол — 1 доля, больший — '+q.k+' доли, всего '+(q.k+1)+' доли<br>';
+      h+='1 доля = '+q.whole+D+' : '+(q.k+1)+' = <b>'+q.base+D+'</b> ('+ANG+'POB)<br>';
+      h+=ANG+'AOP = '+q.k+' · '+q.base+D+' = '+(q.k*q.base)+D+', проверка: '+q.base+D+' + '+(q.k*q.base)+D+' = '+q.whole+D+' ✓';
+    } else {
+      h+='угол '+(q.sharp?'острый':'тупой')+' '+String.fromCharCode(8594)+' он '+(q.sharp?'меньше':'больше')+' 90'+D+'<br>';
+      h+='числа шкал: '+(180-q.x)+D+' и '+q.x+D+', они дают в сумме 180'+D+'<br>';
+      h+='подходит только <b>'+q.ans+D+'</b>, второе — отсчёт по другой шкале';
+    }
+    return h+'</div>';
+  }
+  function check(){
+    var raw=ansEl.value.trim();
+    if(raw===''){ resEl.innerHTML='<span class="bad">Введи ответ или нажми «Решение».</span>'; return; }
+    var got=parseFloat(raw.replace(/[°∠\s]/g,'').replace(',','.'));
+    if(!isNaN(got) && Math.abs(got-cur.ans)<0.01){ resEl.innerHTML='<span class="ok">✓ Верно!</span>'+solHTML(); }
+    else{ resEl.innerHTML='<span class="bad">✗ Пока не то — глянь решение.</span>'+solHTML(); }
+  }
+  document.getElementById('trNew').addEventListener('click',function(){ generate(); ansEl.focus(); });
+  document.getElementById('trCheck').addEventListener('click',check);
+  document.getElementById('trShow').addEventListener('click',function(){ resEl.innerHTML=solHTML(); });
+  ansEl.addEventListener('keydown',function(e){ if(e.key==='Enter') check(); });
+  cur={t:'sum',p1:40,p2:25,ans:65};                    // seed = то, что показано в разметке
+})();
+</script>
+<!--LESSON-NAV-BOT--><nav class="lnav lnav-bot"><a class="prev" href="./geo7-sravnenie-otrezkov.html"><span class="dir">← Предыдущая</span><span class="ttl">Сравнение и измерение отрезков</span></a><a class="to-cat" href="./catalog.html">📚 <span>Все темы</span></a><a class="next" href="./geo7-smezhnye-ugly.html"><span class="dir">Следующая →</span><span class="ttl">Смежные углы</span></a></nav><!--/LESSON-NAV-BOT-->

@@ -1,0 +1,576 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Медиана треугольника — геометрия 7 класс</title>
+<style>
+  :root{
+    --paper:#F6F7F9; --card:#FFFFFF; --ink:#1D2530; --muted:#606B7A; --line:#E3E7EE;
+    --brand:#2E5AAC; --brand-soft:#E4EBF7;
+    --med:#2E5AAC; --med-soft:#E4EBF7;   /* медиана */
+    --bis:#E27C2C; --bis-soft:#FBEEDF;   /* биссектриса */
+    --hei:#159A8A; --hei-soft:#DEF3F0;   /* высота */
+    --ok:#1E8E5A; --no:#C23B3B;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper)}
+  .page{max-width:720px;margin:0 auto;padding:clamp(1.4rem,4vw,3rem) clamp(1.1rem,4vw,2rem) 4.5rem;
+    color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:17.5px;line-height:1.68;-webkit-font-smoothing:antialiased}
+  .mono{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-variant-numeric:tabular-nums;font-weight:600}
+
+  .hero{border-bottom:3px solid var(--brand);padding-bottom:1.4rem;margin-bottom:1.8rem}
+  .eyebrow{font-size:.74rem;letter-spacing:.15em;text-transform:uppercase;color:var(--brand);font-weight:700;margin:0 0 .55rem}
+  h1{font-size:clamp(1.9rem,6vw,2.8rem);line-height:1.05;margin:0;font-weight:800;letter-spacing:-.02em;text-wrap:balance}
+  .tagline{font-size:1.12rem;color:var(--muted);margin:.85rem 0 0;text-wrap:pretty}
+
+  section{margin-top:2.4rem}
+  h2{font-size:1.5rem;margin:0 0 .3rem;font-weight:780;letter-spacing:-.015em;text-wrap:balance}
+  h2 .em{color:var(--brand)}
+  p{margin:.7rem 0}
+  strong{font-weight:680}
+  .mw{color:var(--med);font-weight:800} .bw{color:var(--bis);font-weight:800} .hw{color:var(--hei);font-weight:800}
+
+  .lead-in{background:var(--brand-soft);border-radius:14px;padding:1.1rem 1.3rem;font-size:1.02rem}
+  .lead-in p{margin:.4rem 0}
+  .lead-in b{color:var(--brand)}
+
+  .formula-box{background:var(--ink);color:#fff;border-radius:14px;padding:1.3rem;text-align:center;margin-top:1rem}
+  .formula-box .eq{font-family:ui-monospace,Menlo,monospace;font-size:clamp(1.4rem,5vw,2rem);font-weight:700}
+  .formula-box .eq .m{color:#8FB2E6}
+  .formula-box .note{font-size:.9rem;color:#AEB8C6;margin:.7rem 0 0;line-height:1.6}
+
+  .note{border-left:4px solid var(--brand);background:var(--brand-soft);border-radius:0 10px 10px 0;padding:.8rem 1.1rem;margin-top:1rem;font-size:.98rem}
+  .note b{color:var(--brand)}
+  .recall{border-left-color:var(--hei);background:var(--hei-soft)}
+  .recall b{color:var(--hei)}
+
+  .cards{display:grid;gap:.7rem;margin-top:1rem}
+  @media(min-width:560px){.cards{grid-template-columns:1fr 1fr 1fr}}
+  .cards .c{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:.85rem 1rem;font-size:.95rem}
+  .cards .c .t{font-weight:800;font-size:.95rem;margin-bottom:.25rem}
+  .cards .c.m{border-top:3px solid var(--med)} .cards .c.m .t{color:var(--med)}
+  .cards .c.b{border-top:3px solid var(--bis)} .cards .c.b .t{color:var(--bis)}
+  .cards .c.h{border-top:3px solid var(--hei)} .cards .c.h .t{color:var(--hei)}
+
+  /* Чертёж */
+  .diagram{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:1.2rem;margin-top:1rem}
+  .diagram canvas{width:100%;height:auto;display:block;border-radius:8px}
+  .ctrl-row{display:flex;flex-wrap:wrap;gap:.45rem;margin-top:.9rem;align-items:center}
+  .ctrl-row .lbl{font-size:.8rem;color:var(--muted);font-weight:700;flex-basis:100%;margin-bottom:-.15rem}
+  .chip{font:inherit;font-size:.85rem;font-weight:700;cursor:pointer;border:1px solid var(--line);background:#fff;color:var(--muted);
+    border-radius:999px;padding:.35rem .8rem}
+  .chip[aria-pressed="true"]{background:var(--brand);border-color:var(--brand);color:#fff}
+  .chip.m[aria-pressed="true"]{background:var(--med);border-color:var(--med)}
+  .chip.b[aria-pressed="true"]{background:var(--bis);border-color:var(--bis)}
+  .chip.h[aria-pressed="true"]{background:var(--hei);border-color:var(--hei)}
+  .chip:focus-visible{outline:3px solid var(--brand);outline-offset:2px}
+  .diag-cap{font-size:.9rem;color:var(--muted);margin:.9rem 0 0;min-height:2.6em}
+
+  .walk{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.15rem 1.3rem;margin-top:1rem}
+  .walk .q{font-weight:700;font-size:1.02rem;margin:0 0 .9rem;padding-bottom:.7rem;border-bottom:1px solid var(--line)}
+  .walk ol{margin:0;padding-left:1.2rem;display:flex;flex-direction:column;gap:.5rem}
+  .walk li{font-size:.95rem}
+  .walk b{font-weight:700}
+  .verdict{margin-top:1rem;padding:.7rem 1rem;background:var(--brand-soft);border-radius:10px;font-weight:650;color:var(--brand);font-family:ui-monospace,Menlo,monospace}
+
+  /* Тренажёр */
+  .trainer{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.2rem 1.3rem;margin-top:1rem}
+  .tr-task{font-size:clamp(1rem,4vw,1.12rem);text-align:center;padding:1rem;background:var(--brand-soft);border-radius:10px;font-weight:600;line-height:1.55}
+  .tr-task b{font-family:ui-monospace,Menlo,monospace;color:var(--ink)}
+  .tr-ctl{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:1rem;align-items:center;justify-content:center}
+  .tr-ctl input{flex:1;min-width:110px;max-width:180px;font:inherit;padding:.5rem .7rem;border:1px solid var(--line);border-radius:9px;text-align:center;background:#fff;color:var(--ink)}
+  .tr-ctl button{font:inherit;font-weight:700;font-size:.9rem;cursor:pointer;border:none;border-radius:9px;padding:.55rem .95rem;color:#fff;background:var(--brand)}
+  .tr-ctl button.sec{background:var(--bis)}
+  .tr-ctl button.ghost{background:transparent;color:var(--brand);border:1px solid var(--brand)}
+  .tr-ctl button:focus-visible,.tr-ctl input:focus-visible{outline:3px solid var(--brand);outline-offset:2px}
+  .tr-result{margin-top:.9rem;font-size:.96rem;min-height:1.2rem;text-align:center}
+  .tr-result .ok{color:var(--ok);font-weight:700} .tr-result .bad{color:var(--no);font-weight:700}
+  .tr-result .sol{margin-top:.6rem;padding:.8rem 1rem;background:#FCFDFE;border:1px solid var(--line);border-radius:10px;font-size:.92rem;line-height:1.8;text-align:left}
+
+  details{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:.9rem 1.1rem;margin-top:.7rem}
+  details[open]{border-color:var(--brand)}
+  summary{cursor:pointer;font-weight:650;list-style:none;display:flex;justify-content:space-between;gap:1rem;align-items:center}
+  summary::-webkit-details-marker{display:none}
+  summary::after{content:"проверить";font-size:.8rem;color:var(--brand);font-weight:700;white-space:nowrap}
+  details[open] summary::after{content:"скрыть"}
+  summary:focus-visible{outline:3px solid var(--brand);outline-offset:3px;border-radius:6px}
+  .ans{margin-top:.75rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.96rem;color:var(--muted)}
+  .ans b{color:var(--ink)}
+  .drill{display:flex;flex-direction:column;gap:.2rem;margin-top:1rem}
+  .lvl{font-size:.74rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:700;margin:1.3rem 0 .1rem}
+
+  .tbl-wrap{overflow-x:auto;margin-top:1rem;border:1px solid var(--line);border-radius:12px;background:var(--card)}
+  table{border-collapse:collapse;width:100%;font-size:.94rem;min-width:420px}
+  th,td{padding:.6rem .8rem;text-align:left;border-bottom:1px solid var(--line)}
+  th{font-weight:750;background:#FAFBFC}
+  tr:last-child td{border-bottom:none}
+  td.k{font-weight:750}
+
+  ul.traps{list-style:none;margin:1rem 0 0;padding:0;display:flex;flex-direction:column;gap:.7rem}
+  ul.traps li{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:.85rem 1.05rem;padding-left:2.5rem;position:relative;font-size:.97rem}
+  ul.traps li::before{content:"⚠";position:absolute;left:1rem;top:.85rem;color:var(--bis)}
+  ul.traps b{font-weight:700}
+
+  .selfcheck{background:var(--card);border:1px dashed var(--brand);border-radius:14px;padding:1.1rem 1.3rem;margin-top:1rem}
+  .selfcheck ol{margin:.5rem 0 0;padding-left:1.2rem}
+  .selfcheck li{margin:.35rem 0;font-size:.97rem}
+
+  .wrapup{background:var(--brand);color:#fff;border-radius:16px;padding:1.4rem 1.5rem;margin-top:2.4rem}
+  .wrapup h2{color:#fff;margin:0 0 .5rem}
+  .wrapup p{color:#DEE7F5;margin:.4rem 0;font-size:1rem}
+  .wrapup .big-rule{font-size:1.1rem;font-weight:800;color:#fff;margin:.6rem 0;line-height:1.5}
+  .wrapup .next{font-size:.95rem;color:#C6D5EE;margin-top:1rem;padding-top:1rem;border-top:1px solid rgba(255,255,255,.2)}
+  .wrapup .next b{color:#fff}
+
+  @media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+<!--LESSON-NAV-TOP--><style>.lnav{--lnav-accent:#3D5AF1}.lnav a{text-decoration:none;font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif}.lnav-top{max-width:820px;margin:0 auto;padding:.75rem clamp(1rem,4vw,1.5rem) .1rem}.lnav-top a{display:inline-flex;align-items:center;gap:.35rem;color:var(--lnav-accent);font-weight:600;font-size:.9rem}.lnav-top a:hover{text-decoration:underline}.lnav-bot{max-width:820px;margin:2.6rem auto 3rem;padding:1.1rem clamp(1rem,4vw,1.5rem) 0;border-top:1px solid #E4E8EF;display:flex;align-items:stretch;gap:.55rem}.lnav-bot a{min-width:0;display:flex;flex-direction:column;justify-content:center;gap:.15rem;border:1px solid #E4E8EF;border-radius:12px;padding:.65rem .85rem;color:#182233;background:#fff;transition:border-color .1s,transform .08s}.lnav-bot a:hover{border-color:var(--lnav-accent);transform:translateY(-1px)}.lnav-bot .prev,.lnav-bot .next{flex:1 1 0}.lnav-bot .next{text-align:right}.lnav-bot .dir{font-size:.72rem;color:#8A93A6;font-weight:600}.lnav-bot .ttl{font-size:.9rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.lnav-bot .to-cat{flex:0 0 auto;flex-direction:row;align-items:center;justify-content:center;color:var(--lnav-accent);font-weight:700;font-size:.85rem;white-space:nowrap}@media(max-width:420px){.lnav-bot .to-cat span{display:none}.lnav-bot .to-cat{padding:.65rem .7rem}}</style><nav class="lnav lnav-top"><a href="./catalog.html">← Все темы</a></nav><!--/LESSON-NAV-TOP-->
+<div class="page">
+
+  <header class="hero">
+    <p class="eyebrow">Геометрия · 7 класс</p>
+    <h1>Медиана треугольника</h1>
+    <p class="tagline">Отрезок из вершины ровно в середину противоположной стороны. Звучит просто, а путают медиану с биссектрисой чаще всего именно здесь.</p>
+  </header>
+
+  <div class="lead-in">
+    <p><b>Зачем это нужно.</b> Медиана — одна из трёх главных «линий» треугольника, вместе с биссектрисой и высотой. Без неё не разберёшься в свойствах равнобедренного треугольника, не докажешь равенство треугольников, не решишь задачи на построение.</p>
+    <p><b>Житейский смысл.</b> Медиана делит сторону пополам, то есть она про равновесие. Вырежи треугольник из плотного картона и проведи все три медианы: они пересекутся в одной точке. Это центр тяжести, в нём треугольник балансирует на кончике карандаша. В 7 классе мы это ещё не считаем, но в голове держать полезно.</p>
+    <p><b>И сразу убираем главный миф:</b> «медиана делит угол пополам». Нет. Угол пополам делит <b>биссектриса</b>. Медиана делит пополам <b>сторону</b>.</p>
+  </div>
+
+  <section>
+    <h2>Что нужно вспомнить</h2>
+    <p>Тема стоит всего на двух вещах, которые ты уже знаешь.</p>
+    <div class="note recall">
+      <p><b>1. Треугольник.</b> У него три вершины и три стороны. Для каждой вершины есть <strong>противолежащая сторона</strong>, та единственная, которая эту вершину не содержит. Проверь на пальцах: в треугольнике ABC для вершины A это BC, для B это AC, для C это AB.</p>
+      <p><b>2. Середина отрезка.</b> Точка, которая делит отрезок на две <strong>равные</strong> части. Если M — середина BC, то BM = MC. И наоборот: BM = MC, значит M и есть середина.</p>
+    </div>
+    <p>Определение медианы склеено ровно из этих двух понятий: берём вершину, находим её противолежащую сторону, ставим на ней середину и соединяем.</p>
+  </section>
+
+  <section>
+    <h2>Определение</h2>
+    <p><strong>Медиана треугольника</strong> — это отрезок, соединяющий вершину треугольника с серединой противолежащей стороны.</p>
+    <div class="formula-box">
+      <div class="eq">M — середина BC &nbsp;⟹&nbsp; <span class="m">AM</span> — медиана</div>
+      <div class="note">В треугольнике ABC берём вершину A · противолежащая сторона BC · середина BC это точка M, значит BM = MC · отрезок AM и есть медиана из вершины A</div>
+    </div>
+    <p>В определении ровно два ключевых слова, и оба обязательны:</p>
+    <ul>
+      <li><strong>из вершины</strong> — один конец медианы обязательно лежит в углу треугольника;</li>
+      <li><strong>в середину стороны</strong> — второй конец делит противоположную сторону на две равные части.</li>
+    </ul>
+    <p>У каждой вершины своя медиана, поэтому в треугольнике их ровно <strong>три</strong>. Не одна и не бесконечно много: три вершины, три медианы.</p>
+    <div class="note">
+      <p><b>Чего не забыть:</b></p>
+      <p>· Медиана всегда <strong>попадает внутрь</strong> треугольника, в отличие от высоты, которая может выйти за его пределы.</p>
+      <p>· Медиана делит пополам <strong>сторону</strong>, а не угол: равны BM и MC, а вот углы при вершине A, вообще говоря, <strong>не</strong> равны.</p>
+      <p>· Медиана <strong>не обязана</strong> быть перпендикулярна стороне. Прямой угол в точке M бывает только в особых случаях, например в равнобедренном треугольнике, если медиана проведена к основанию.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Чертёж: <span class="em">медиана, биссектриса и высота</span></h2>
+    <p>Из одной вершины можно провести все три линии. Включай их по очереди и смотри: обычно это <strong>три разных отрезка</strong>. Двойные чёрточки на стороне означают, что части равны.</p>
+    <div class="diagram">
+      <canvas id="cv" width="640" height="480" aria-label="Треугольник с медианой, биссектрисой и высотой из выбранной вершины"></canvas>
+      <div class="ctrl-row">
+        <span class="lbl">Провести из вершины:</span>
+        <button class="chip vx" type="button" data-v="0" aria-pressed="true">A</button>
+        <button class="chip vx" type="button" data-v="1" aria-pressed="false">B</button>
+        <button class="chip vx" type="button" data-v="2" aria-pressed="false">C</button>
+      </div>
+      <div class="ctrl-row">
+        <span class="lbl">Показать линии:</span>
+        <button class="chip m" id="tgM" type="button" aria-pressed="true">медиана</button>
+        <button class="chip b" id="tgB" type="button" aria-pressed="false">биссектриса</button>
+        <button class="chip h" id="tgH" type="button" aria-pressed="false">высота</button>
+      </div>
+      <div class="ctrl-row">
+        <span class="lbl">Форма треугольника:</span>
+        <button class="chip tx" type="button" data-t="0" aria-pressed="true">обычный</button>
+        <button class="chip tx" type="button" data-t="1" aria-pressed="false">тупоугольный</button>
+        <button class="chip tx" type="button" data-t="2" aria-pressed="false">равнобедренный</button>
+      </div>
+      <p class="diag-cap" id="cap"></p>
+    </div>
+
+    <p><strong>Предскажи → проверь → объясни.</strong> Перед тем как нажимать «тупоугольный»: как думаешь, медиана выйдет за пределы треугольника или останется внутри? Скажи ответ вслух, потом переключи и посмотри. Медиана <strong>всегда внутри</strong>, а вот высота к длинной стороне вполне может уйти наружу.</p>
+
+    <div class="cards">
+      <div class="c m"><div class="t">Медиана</div>приходит в <b>середину</b> противоположной стороны</div>
+      <div class="c b"><div class="t">Биссектриса</div>делит <b>угол</b> пополам</div>
+      <div class="c h"><div class="t">Высота</div>падает на сторону под <b>прямым углом</b></div>
+    </div>
+    <p style="font-size:.9rem;color:var(--muted)">Способ не запутаться: смотри, <em>куда приходит</em> отрезок. В середину стороны? Медиана. Делит угол пополам? Биссектриса. Под прямым углом? Высота.</p>
+
+    <p>И вопрос на подумать: а может медиана совпасть с биссектрисой и высотой <em>одновременно</em>? Включи все три линии, переключись на равнобедренный треугольник и выбери вершину между равными сторонами. Да, может. Про это будет следующий урок.</p>
+  </section>
+
+  <section>
+    <h2>Разбираем вместе</h2>
+
+    <div class="walk">
+      <p class="q">Пример 1. В треугольнике ABC сторона BC = 12 см. Проведена медиана AM к стороне BC. Найди длины отрезков BM и MC.</p>
+      <ol>
+        <li>M — это середина BC, <b>потому что</b> медиана по определению идёт в середину противоположной стороны. Больше про точку M ничего знать и не надо: всё сказано словом «медиана».</li>
+        <li>Значит, M делит BC на две <b>равные</b> части: BM = MC.</li>
+        <li>Вся сторона BC = 12 см, <b>поэтому</b> каждая половина равна 12 : 2 = 6 см.</li>
+        <li>Проверка смысла: 6 + 6 = 12, обе части вместе дают всю сторону. ✓</li>
+      </ol>
+      <div class="verdict">Ответ: BM = MC = 6 см</div>
+    </div>
+
+    <div class="walk">
+      <p class="q">Пример 2. В треугольнике PQR медиана проведена из вершины Q. К какой стороне она проведена и где её второй конец?</p>
+      <ol>
+        <li>Сначала ответь сам, потом читай дальше.</li>
+        <li>Из вершины Q медиана идёт к противолежащей стороне. Противолежащая для Q — это сторона <b>PR</b>: только в ней нет буквы Q.</li>
+        <li>Значит, медиана идёт из Q в середину PR. Обозначим середину PR буквой N.</li>
+        <li>Тогда медиана — это отрезок Q<b>N</b>, и при этом PN = <b>NR</b>.</li>
+      </ol>
+      <div class="verdict">Ответ: медиана QN к стороне PR, PN = NR</div>
+    </div>
+
+    <div class="walk">
+      <p class="q">Пример 3 (реши сам). В треугольнике ABC медиана BK проведена к стороне AC, причём AC = 9 см. Чему равны AK и KC?</p>
+      <details><summary>Показать ответ</summary><div class="ans">K — середина AC, значит AK = KC = 9 : 2 = <b>4,5 см</b>. Половина не обязана быть целым числом, и это нормально.</div></details>
+    </div>
+  </section>
+
+  <section>
+    <h2>Тренажёр · медиана и половинки</h2>
+    <p>Задания каждый раз новые. Числа пиши без единиц измерения, десятичную часть через запятую или точку. Спрашивают сторону — отвечай двумя буквами, спрашивают «да / нет» — отвечай словом.</p>
+    <div class="trainer">
+      <div class="tr-task" id="trTask">В треугольнике ABC сторона BC = <b>12</b> см. Проведена медиана из вершины A в точку M. Чему равен BM?</div>
+      <div class="tr-ctl">
+        <button id="trNew" type="button">🎲 Новая</button>
+        <input id="trAns" type="text" placeholder="ответ" aria-label="Ответ" autocomplete="off">
+        <button id="trCheck" type="button" class="sec">Проверить</button>
+        <button id="trShow" type="button" class="ghost">Решение</button>
+      </div>
+      <div id="trResult" class="tr-result"></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Проверь себя</h2>
+
+    <p class="lvl">Уровень 1 · узнать и назвать</p>
+    <div class="drill">
+      <details><summary>1) Закончи фразу: «Медиана соединяет вершину треугольника с … противоположной стороны».</summary><div class="ans">…с <b>серединой</b> противоположной стороны.</div></details>
+      <details><summary>2) Сколько медиан у одного треугольника?</summary><div class="ans"><b>Три.</b> Из каждой вершины выходит ровно одна медиана, а вершин три.</div></details>
+      <details><summary>3) Отрезок выходит из вершины и приходит в середину противоположной стороны. Как он называется?</summary><div class="ans">Это <b>медиана</b>. Признак простой: конец отрезка попал именно в середину стороны.</div></details>
+    </div>
+
+    <p class="lvl">Уровень 2 · применить правило</p>
+    <div class="drill">
+      <details><summary>4) В треугольнике сторона MN = 14 см, к ней проведена медиана из противоположной вершины. На какие два отрезка она делит сторону MN?</summary><div class="ans">Медиана приходит в середину MN, значит части равны: 14 : 2 = 7. Ответ: <b>на два отрезка по 7 см</b>.</div></details>
+      <details><summary>5) В треугольнике DEF из вершины D проведена медиана. Назови сторону, к которой она проведена, и запиши равенство для её частей.</summary><div class="ans">Противолежащая для D — сторона <b>EF</b>, буквы D в ней нет. Обозначим середину EF, скажем, точкой K: тогда медиана — это DK, и <b>EK = KF</b>.</div></details>
+    </div>
+
+    <p class="lvl">Уровень 3 · анализ</p>
+    <div class="drill">
+      <details><summary>6) Найди ошибку. Ученик пишет: «Медиана из вершины A делит угол A пополам, значит, два получившихся угла равны». В чём он не прав?</summary><div class="ans">Он перепутал медиану с биссектрисой. Медиана делит пополам <b>сторону</b> (BM = MC), а не угол. Углы, на которые медиана разбивает угол A, в обычном треугольнике <b>не равны</b>. Пополам угол делит биссектриса.</div></details>
+      <details><summary>7) Обратная задача. Медиана делит сторону на отрезки 5 см и 5 см. Какова длина всей стороны? А может ли медиана делить сторону на 5 см и 7 см?</summary><div class="ans">Вся сторона — это сумма частей: 5 + 5 = <b>10 см</b>. На 5 см и 7 см медиана делить <b>не может</b>: части медианы всегда равны, а 5 ≠ 7. Если части разные, перед тобой не медиана.</div></details>
+      <details><summary>8) Что изменится, если из той же вершины провести не медиану, а высоту? Будет ли её второй конец обязательно совпадать с серединой стороны?</summary><div class="ans"><b>Нет, не обязательно.</b> Высота приходит на сторону под прямым углом, и точка, куда она падает, в обычном треугольнике не совпадает с серединой. Больше того, у тупоугольного треугольника высота вообще может выйти за пределы треугольника, а медиана всегда остаётся внутри. Совпадут они только в особом случае: в равнобедренном треугольнике при медиане к основанию.</div></details>
+    </div>
+  </section>
+
+  <section>
+    <h2>Ловушки</h2>
+    <ul class="traps">
+      <li><b>«Медиана делит угол пополам».</b> Это путаница с биссектрисой. Запомни: медиана делит <b>сторону</b>, биссектриса делит <b>угол</b>. Проверяй себя по концу отрезка: попал в середину стороны, значит медиана.</li>
+      <li><b>«Медиана идёт в середину угла».</b> У угла нет «середины» в смысле точки на стороне. Медиана всегда приходит в точку на <b>противоположной стороне</b>, причём ровно в её середину.</li>
+      <li><b>«Медиана всегда перпендикулярна стороне».</b> Нет. Прямой угол появляется только в особых случаях, например когда медиана проведена к основанию равнобедренного треугольника. В обычном треугольнике медиана наклонена к стороне.</li>
+      <li><b>Путают медиану, биссектрису и высоту.</b> Смотри, куда приходит отрезок: в середину стороны, значит медиана; делит угол пополам, значит биссектриса; падает под прямым углом, значит высота.</li>
+      <li><b>Проводят медиану «к своей» стороне.</b> Медиана идёт из вершины к <b>противолежащей</b> стороне, той, что эту вершину не содержит. А не к той, которая из этой вершины выходит.</li>
+    </ul>
+
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>Линия из вершины A</th><th>Что делит пополам</th><th>Куда приходит на BC</th></tr></thead>
+        <tbody>
+          <tr><td class="k mw">Медиана</td><td>сторону BC</td><td>ровно в середину: BM = MC</td></tr>
+          <tr><td class="k bw">Биссектриса</td><td>угол A</td><td>в точку, где угол разделён поровну</td></tr>
+          <tr><td class="k hw">Высота</td><td>ничего не делит пополам</td><td>под прямым углом; может выйти за треугольник</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2>Объясни своими словами</h2>
+    <p>Самая честная проверка: закрой урок и ответь вслух себе, родителям или голосовому помощнику. Объяснил без запинки, значит тема твоя.</p>
+    <div class="selfcheck">
+      <ol>
+        <li>Медиана соединяет вершину с чем именно: с серединой стороны или с серединой угла?</li>
+        <li>Сколько медиан можно провести в треугольнике и почему именно столько?</li>
+        <li>Обязательно ли медиана перпендикулярна стороне?</li>
+      </ol>
+    </div>
+  </section>
+
+  <div class="wrapup">
+    <h2>Запомни главное</h2>
+    <p class="big-rule">Медиана — отрезок из вершины в середину противоположной стороны. Таких отрезков в треугольнике ровно три.</p>
+    <p>Если M — середина BC, то BM = MC, и AM — медиана из вершины A. Медиана всегда внутри треугольника, делит пополам сторону (а не угол) и перпендикулярной быть не обязана.</p>
+    <p class="next">👉 Дальше <b>свойства равнобедренного треугольника</b>. Там выяснится, когда медиана, биссектриса и высота оказываются одним и тем же отрезком.</p>
+  </div>
+
+</div>
+
+<script>
+(function(){
+  var cv=document.getElementById('cv'); if(!cv) return;
+  var ctx=cv.getContext('2d'), cap=document.getElementById('cap');
+  var W=640,H=480,dpr=1;
+  var state={v:0,t:0,med:true,bis:false,hei:false};
+  var TRI=[
+    [[2.2,5.2],[0.4,0.6],[7.6,1.0]],   /* обычный */
+    [[7.2,4.2],[0.5,0.8],[4.0,0.8]],   /* тупоугольный */
+    [[4.0,5.4],[1.2,0.8],[6.8,0.8]]    /* равнобедренный: AB = AC */
+  ];
+  var NAMES=['A','B','C'];
+  function css(v){ return getComputedStyle(document.documentElement).getPropertyValue(v).trim(); }
+  function sub(p,q){ return [p[0]-q[0],p[1]-q[1]]; }
+  function add(p,q){ return [p[0]+q[0],p[1]+q[1]]; }
+  function mul(p,k){ return [p[0]*k,p[1]*k]; }
+  function len(p){ return Math.sqrt(p[0]*p[0]+p[1]*p[1]); }
+  function mid(p,q){ return [(p[0]+q[0])/2,(p[1]+q[1])/2]; }
+
+  function resize(){
+    var c=cv.clientWidth||640;
+    dpr=Math.min(window.devicePixelRatio||1,2);
+    W=c; H=Math.round(c*0.78);
+    cv.width=W*dpr; cv.height=H*dpr; cv.style.height=H+'px';
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+  }
+
+  function draw(){
+    var tri=TRI[state.t];
+    var V=tri[state.v];
+    var oi=[0,1,2].filter(function(i){ return i!==state.v; });
+    var P=tri[oi[0]], Q=tri[oi[1]];
+    var d=sub(Q,P), dd=d[0]*d[0]+d[1]*d[1];
+
+    var Fm=mid(P,Q);
+    var t=((V[0]-P[0])*d[0]+(V[1]-P[1])*d[1])/dd;
+    var Fh=add(P,mul(d,t));
+    var lp=len(sub(V,P)), lq=len(sub(V,Q));
+    var Fb=add(P,mul(d,lp/(lp+lq)));
+
+    var pts=tri.concat([Fm,Fb]);
+    if(state.hei) pts=pts.concat([Fh]);
+    var minx=Math.min.apply(null,pts.map(function(p){return p[0];}));
+    var maxx=Math.max.apply(null,pts.map(function(p){return p[0];}));
+    var miny=Math.min.apply(null,pts.map(function(p){return p[1];}));
+    var maxy=Math.max.apply(null,pts.map(function(p){return p[1];}));
+    var pad=44, sc=Math.min((W-pad*2)/(maxx-minx||1),(H-pad*2)/(maxy-miny||1));
+    var ox=(W-(maxx-minx)*sc)/2, oy=(H-(maxy-miny)*sc)/2;
+    function SX(x){ return ox+(x-minx)*sc; }
+    function SY(y){ return oy+(maxy-y)*sc; }
+    function S(p){ return [SX(p[0]),SY(p[1])]; }
+    function line(p,q,col,w,dash){
+      var a=S(p), b=S(q);
+      ctx.save(); ctx.setLineDash(dash||[]); ctx.strokeStyle=col; ctx.lineWidth=w; ctx.lineCap='round';
+      ctx.beginPath(); ctx.moveTo(a[0],a[1]); ctx.lineTo(b[0],b[1]); ctx.stroke(); ctx.restore();
+    }
+    function dot(p,col,r){ var a=S(p); ctx.fillStyle=col; ctx.beginPath(); ctx.arc(a[0],a[1],r||4.5,0,6.2832); ctx.fill(); }
+    function text(p,txt,col,dx,dy,size){
+      var a=S(p); ctx.fillStyle=col;
+      ctx.font='700 '+(size||15)+'px system-ui,-apple-system,Segoe UI,sans-serif';
+      ctx.textAlign='center'; ctx.textBaseline='middle';
+      ctx.fillText(txt,a[0]+(dx||0),a[1]+(dy||0));
+    }
+    /* двойные чёрточки поперёк отрезка XY посередине — знак равенства частей */
+    function ticks(X,Y,col){
+      var a=S(X), b=S(Y);
+      var vx=b[0]-a[0], vy=b[1]-a[1], L=Math.sqrt(vx*vx+vy*vy)||1;
+      var ux=vx/L, uy=vy/L, nx=-uy, ny=ux, h=8;
+      ctx.save(); ctx.strokeStyle=col; ctx.lineWidth=2.2; ctx.lineCap='round';
+      [-4,4].forEach(function(off){
+        var cx=a[0]+ux*(L/2+off), cy=a[1]+uy*(L/2+off);
+        ctx.beginPath(); ctx.moveTo(cx-nx*h,cy-ny*h); ctx.lineTo(cx+nx*h,cy+ny*h); ctx.stroke();
+      });
+      ctx.restore();
+    }
+
+    ctx.clearRect(0,0,W,H);
+
+    /* сам треугольник */
+    ctx.beginPath();
+    tri.forEach(function(p,i){ var a=S(p); i?ctx.lineTo(a[0],a[1]):ctx.moveTo(a[0],a[1]); });
+    ctx.closePath();
+    ctx.fillStyle='#FBFCFE'; ctx.fill();
+    ctx.strokeStyle=css('--ink'); ctx.lineWidth=2.2; ctx.stroke();
+
+    /* высота — первой, чтобы медиана рисовалась поверх */
+    if(state.hei){
+      var outside=(t<0||t>1);
+      if(outside){
+        var Near = (t<0)?P:Q;
+        line(Near,Fh,css('--muted'),1.4,[5,5]);
+      }
+      line(V,Fh,css('--hei'),2.6,[]);
+      /* значок прямого угла в основании высоты */
+      var s=12, ux2=d[0]/Math.sqrt(dd), uy2=d[1]/Math.sqrt(dd);
+      var hv=sub(V,Fh), hl=len(hv)||1, hx=hv[0]/hl, hy=hv[1]/hl;
+      var f=S(Fh), sgn=(t>0.5)?-1:1;
+      var p1=[f[0]+ux2*s*sgn, f[1]-uy2*s*sgn];
+      var p2=[f[0]+hx*s, f[1]-hy*s];
+      ctx.save(); ctx.strokeStyle=css('--hei'); ctx.lineWidth=1.6;
+      ctx.beginPath(); ctx.moveTo(p1[0],p1[1]); ctx.lineTo(p1[0]+p2[0]-f[0],p1[1]+p2[1]-f[1]); ctx.lineTo(p2[0],p2[1]); ctx.stroke(); ctx.restore();
+      dot(Fh,css('--hei'),4);
+      text(Fh,'H',css('--hei'),18,20,14);
+    }
+    if(state.bis){
+      line(V,Fb,css('--bis'),2.6,[]);
+      dot(Fb,css('--bis'),4);
+      text(Fb,'L',css('--bis'),-18,20,14);
+    }
+    if(state.med){
+      line(V,Fm,css('--med'),3,[]);
+      dot(Fm,css('--med'),5);
+      text(Fm,'M',css('--med'),0,20,14);
+      ticks(P,Fm,css('--med'));
+      ticks(Fm,Q,css('--med'));
+    }
+
+    /* вершины */
+    var cx0=(tri[0][0]+tri[1][0]+tri[2][0])/3, cy0=(tri[0][1]+tri[1][1]+tri[2][1])/3;
+    tri.forEach(function(p,i){
+      dot(p,css('--ink'),4.5);
+      var ddx=p[0]-cx0, ddy=p[1]-cy0, L=Math.sqrt(ddx*ddx+ddy*ddy)||1;
+      text(p,NAMES[i],i===state.v?css('--med'):css('--ink'),ddx/L*19,-ddy/L*19,17);
+    });
+
+    /* подпись */
+    var vn=NAMES[state.v], pn=NAMES[oi[0]], qn=NAMES[oi[1]];
+    var parts=[];
+    if(state.med) parts.push('<span class="mw">'+vn+'M</span> — медиана: M — середина '+pn+qn+', то есть '+pn+'M = M'+qn+'.');
+    if(state.bis) parts.push('<span class="bw">'+vn+'L</span> — биссектриса: делит угол '+vn+' пополам.');
+    if(state.hei) parts.push('<span class="hw">'+vn+'H</span> — высота: приходит на '+pn+qn+' под прямым углом'+((t<0||t>1)?' — и её основание вышло за пределы треугольника (пунктир — продолжение стороны)':'')+'.');
+    if(!parts.length) parts.push('Включи хотя бы одну линию кнопками выше.');
+    if(state.med&&state.bis&&state.hei&&state.t===2&&state.v===0) parts.push('<b>Все три совпали</b> — это равнобедренный треугольник, и линия проведена к основанию.');
+    cap.innerHTML=parts.join('<br>');
+  }
+
+  function bindGroup(sel,key){
+    var btns=Array.prototype.slice.call(document.querySelectorAll(sel));
+    btns.forEach(function(b){
+      b.addEventListener('click',function(){
+        btns.forEach(function(x){ x.setAttribute('aria-pressed','false'); });
+        b.setAttribute('aria-pressed','true');
+        state[key]=+b.getAttribute(key==='v'?'data-v':'data-t');
+        draw();
+      });
+    });
+  }
+  function bindToggle(id,key){
+    var b=document.getElementById(id);
+    b.addEventListener('click',function(){
+      state[key]=!state[key];
+      b.setAttribute('aria-pressed',state[key]?'true':'false');
+      draw();
+    });
+  }
+  bindGroup('.chip.vx','v'); bindGroup('.chip.tx','t');
+  bindToggle('tgM','med'); bindToggle('tgB','bis'); bindToggle('tgH','hei');
+  window.addEventListener('resize',function(){ resize(); draw(); });
+  resize(); draw();
+})();
+</script>
+
+<script>
+(function(){
+  var taskEl=document.getElementById('trTask'), ansEl=document.getElementById('trAns'), resEl=document.getElementById('trResult');
+  if(!taskEl) return;
+  var MINUS='−';
+  function fmt(x){
+    var s=(Math.round(x*100)/100).toString().replace('.',',');
+    return s.replace(/-/g,MINUS);
+  }
+  var SETS=[['A','B','C'],['P','Q','R'],['D','E','F'],['K','L','M'],['M','N','P'],['X','Y','Z']];
+  var MIDL=['M','N','K','T','O','S'];
+  function ri(a,b){ return Math.floor(Math.random()*(b-a+1))+a; }
+  function pick(arr){ return arr[ri(0,arr.length-1)]; }
+  var cur=null;
+
+  function generate(){
+    var L=pick(SETS), i=ri(0,2);
+    var v=L[i], o=[0,1,2].filter(function(k){return k!==i;}).map(function(k){return L[k];});
+    var p=o[0], q=o[1], mp=pick(MIDL.filter(function(x){ return L.indexOf(x)<0; }));
+    var r=Math.random();
+
+    if(r<0.34){                     /* сторона → половина */
+      var side=(Math.random()<0.75)? ri(3,15)*2 : ri(7,25);   /* иногда нечётная → ответ с ,5 */
+      cur={type:'half',side:side,ans:side/2,p:p,q:q,mp:mp,v:v};
+      taskEl.innerHTML='В треугольнике '+L.join('')+' сторона '+p+q+' = <b>'+side+'</b> см. Из вершины '+v+' проведена медиана в точку '+mp+'. Чему равен '+p+mp+'?';
+    } else if(r<0.60){              /* половина → вся сторона (обратная) */
+      var h=(Math.random()<0.7)? ri(2,20) : ri(3,15)+0.5;
+      cur={type:'whole',h:h,ans:h*2,p:p,q:q,mp:mp,v:v};
+      taskEl.innerHTML='Медиана из вершины '+v+' делит сторону '+p+q+' точкой '+mp+' так, что '+p+mp+' = <b>'+fmt(h)+'</b> см. Чему равна вся сторона '+p+q+'?';
+    } else if(r<0.82){              /* к какой стороне */
+      cur={type:'side',ans:p+q,alt:q+p,v:v,p:p,q:q};
+      taskEl.innerHTML='В треугольнике '+L.join('')+' медиана проведена из вершины <b>'+v+'</b>. К какой стороне она проведена? <span style="font-size:.85em;color:#606B7A">(запиши двумя буквами)</span>';
+    } else {                        /* краевой: возможно ли такое деление */
+      var a=ri(2,14), same=Math.random()<0.4, b=same?a:a+ri(1,6);
+      cur={type:'yesno',a:a,b:b,ans:same?'да':'нет',p:p,q:q,v:v};
+      taskEl.innerHTML='Может ли медиана делить сторону '+p+q+' на отрезки <b>'+a+'</b> см и <b>'+b+'</b> см? <span style="font-size:.85em;color:#606B7A">(да / нет)</span>';
+    }
+    resEl.innerHTML=''; ansEl.value='';
+  }
+
+  function solHTML(){
+    var c=cur, h='<div class="sol">';
+    if(c.type==='half'){
+      h+='Медиана приходит в <b>середину</b> противоположной стороны, значит '+c.mp+' — середина '+c.p+c.q+'.<br>';
+      h+='Поэтому '+c.p+c.mp+' = '+c.mp+c.q+' = '+c.side+' : 2 = <b>'+fmt(c.ans)+'</b> см.<br>';
+      h+='Проверка: '+fmt(c.ans)+' + '+fmt(c.ans)+' = '+c.side+'. ✓';
+    } else if(c.type==='whole'){
+      h+='Обе части, на которые медиана делит сторону, равны: '+c.p+c.mp+' = '+c.mp+c.q+' = '+fmt(c.h)+' см.<br>';
+      h+='Вся сторона — сумма частей: '+fmt(c.h)+' + '+fmt(c.h)+' = <b>'+fmt(c.ans)+'</b> см.';
+    } else if(c.type==='side'){
+      h+='Медиана идёт из вершины к <b>противолежащей</b> стороне — той, которая эту вершину не содержит.<br>';
+      h+='Буква '+c.v+' не входит в сторону '+c.ans+', значит медиана проведена к стороне <b>'+c.ans+'</b>.';
+    } else {
+      if(c.ans==='да'){
+        h+='Части, на которые медиана делит сторону, всегда равны. Здесь '+c.a+' = '+c.b+', так что деление возможно: <b>да</b>.<br>';
+        h+='Вся сторона тогда равна '+c.a+' + '+c.b+' = '+(c.a+c.b)+' см.';
+      } else {
+        h+='Медиана приходит в середину стороны, поэтому обе части обязаны быть равными.<br>';
+        h+='Здесь '+c.a+' ≠ '+c.b+', равенства нет — значит, <b>нет</b>: такой отрезок медианой быть не может.';
+      }
+    }
+    return h+'</div>';
+  }
+
+  function check(){
+    var raw=ansEl.value.trim();
+    if(raw===''){ resEl.innerHTML='<span class="bad">Введи ответ или нажми «Решение».</span>'; return; }
+    var good=false;
+    if(cur.type==='side'){
+      var s=raw.toUpperCase().replace(/[^A-ZА-Я]/g,'');
+      good=(s===cur.ans.toUpperCase()||s===cur.alt.toUpperCase());
+    } else if(cur.type==='yesno'){
+      var w=raw.toLowerCase().replace(/[^а-яa-z]/g,'');
+      good=(w===cur.ans)||(cur.ans==='да'&&(w==='yes'||w==='можетда'||w==='может'))||(cur.ans==='нет'&&(w==='no'||w==='неможет'));
+    } else {
+      var n=parseFloat(raw.replace(',','.').replace(/[^0-9.\-−]/g,'').replace('−','-'));
+      good=(!isNaN(n)&&Math.abs(n-cur.ans)<0.005);
+    }
+    resEl.innerHTML=(good?'<span class="ok">✓ Верно!</span>':'<span class="bad">✗ Пока не то — смотри разбор.</span>')+solHTML();
+  }
+
+  document.getElementById('trNew').addEventListener('click',function(){ generate(); ansEl.focus(); });
+  document.getElementById('trCheck').addEventListener('click',check);
+  document.getElementById('trShow').addEventListener('click',function(){ resEl.innerHTML=solHTML(); });
+  ansEl.addEventListener('keydown',function(e){ if(e.key==='Enter') check(); });
+
+  /* стартовая задача совпадает с тем, что показано в разметке; фокус НЕ ставим */
+  cur={type:'half',side:12,ans:6,p:'B',q:'C',mp:'M',v:'A'};
+})();
+</script>
+<!--LESSON-NAV-BOT--><nav class="lnav lnav-bot"><a class="prev" href="./geo7-priznak-ravenstva-3.html"><span class="dir">← Предыдущая</span><span class="ttl">Третий признак равенства треугольников (ССС)</span></a><a class="to-cat" href="./catalog.html">📚 <span>Все темы</span></a><a class="next" href="./geo7-bissektrisa.html"><span class="dir">Следующая →</span><span class="ttl">Биссектриса треугольника</span></a></nav><!--/LESSON-NAV-BOT-->

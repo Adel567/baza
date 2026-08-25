@@ -1,0 +1,459 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Биссектриса треугольника — геометрия 7 класс</title>
+<style>
+  :root{
+    --paper:#F6F7F9; --card:#FFFFFF; --ink:#1D2530; --muted:#606B7A; --line:#E3E7EE;
+    --brand:#2E5AAC; --brand-soft:#E4EBF7;
+    --bis:#2E5AAC; --bis-soft:#E4EBF7;   /* биссектриса */
+    --med:#E27C2C; --med-soft:#FBEEDF;   /* медиана */
+    --hei:#159A8A; --hei-soft:#DEF3F0;   /* высота */
+    --ok:#1E8E5A; --no:#C23B3B;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper)}
+  .page{max-width:720px;margin:0 auto;padding:clamp(1.4rem,4vw,3rem) clamp(1.1rem,4vw,2rem) 4.5rem;
+    color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:17.5px;line-height:1.68;-webkit-font-smoothing:antialiased}
+  .mono{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-variant-numeric:tabular-nums;font-weight:600}
+
+  .hero{border-bottom:3px solid var(--brand);padding-bottom:1.4rem;margin-bottom:1.8rem}
+  .eyebrow{font-size:.74rem;letter-spacing:.15em;text-transform:uppercase;color:var(--brand);font-weight:700;margin:0 0 .55rem}
+  h1{font-size:clamp(1.9rem,6vw,2.8rem);line-height:1.05;margin:0;font-weight:800;letter-spacing:-.02em;text-wrap:balance}
+  .tagline{font-size:1.12rem;color:var(--muted);margin:.85rem 0 0;text-wrap:pretty}
+
+  section{margin-top:2.4rem}
+  h2{font-size:1.5rem;margin:0 0 .3rem;font-weight:780;letter-spacing:-.015em;text-wrap:balance}
+  h2 .em{color:var(--brand)}
+  p{margin:.7rem 0}
+  strong{font-weight:680}
+  .bisw{color:var(--bis);font-weight:800} .medw{color:var(--med);font-weight:800} .heiw{color:var(--hei);font-weight:800}
+
+  .lead-in{background:var(--brand-soft);border-radius:14px;padding:1.1rem 1.3rem;font-size:1.02rem}
+  .lead-in p{margin:.4rem 0}
+  .lead-in b{color:var(--brand)}
+
+  .formula-box{background:var(--ink);color:#fff;border-radius:14px;padding:1.3rem;text-align:center;margin-top:1rem}
+  .formula-box .eq{font-family:ui-monospace,Menlo,monospace;font-size:clamp(1.15rem,4.6vw,1.7rem);font-weight:700;line-height:1.35}
+  .formula-box .eq .h{color:#8FB2E6}
+  .formula-box .note{font-size:.9rem;color:#AEB8C6;margin:.7rem 0 0;line-height:1.6}
+
+  .note{border-left:4px solid var(--brand);background:var(--brand-soft);border-radius:0 10px 10px 0;padding:.8rem 1.1rem;margin-top:1rem;font-size:.98rem}
+  .note b{color:var(--brand)}
+  .note.warn{border-left-color:var(--med);background:var(--med-soft)}
+  .note.warn b{color:#A8560F}
+
+  /* Диаграмма */
+  .diagram{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:1.2rem;margin-top:1rem}
+  .diagram canvas{width:100%;height:auto;display:block;border-radius:8px}
+  .sliders{display:grid;gap:.6rem;margin-top:.9rem}
+  .sliders label{display:flex;align-items:center;gap:.5rem;font-weight:700;font-family:ui-monospace,Menlo,monospace;font-size:.9rem}
+  .sliders input[type=range]{flex:1;accent-color:var(--brand)}
+  .sliders input[type=range]:focus-visible{outline:3px solid var(--brand);outline-offset:3px}
+  .toggles{display:flex;flex-wrap:wrap;gap:.45rem;margin-top:.8rem}
+  .toggles button{font:inherit;font-size:.85rem;font-weight:700;cursor:pointer;border-radius:999px;padding:.4rem .85rem;border:1.5px solid var(--line);background:#fff;color:var(--muted)}
+  .toggles button:focus-visible{outline:3px solid var(--brand);outline-offset:2px}
+  .toggles button.on[data-l="bis"]{background:var(--bis-soft);border-color:var(--bis);color:var(--bis)}
+  .toggles button.on[data-l="med"]{background:var(--med-soft);border-color:var(--med);color:#A8560F}
+  .toggles button.on[data-l="hei"]{background:var(--hei-soft);border-color:var(--hei);color:#0C6B60}
+  .diag-read{margin:.9rem 0 0;font-family:ui-monospace,Menlo,monospace;font-size:.92rem;line-height:1.9}
+  .diag-read .k{color:var(--muted)}
+  .diag-msg{margin:.5rem 0 0;font-size:.9rem;color:var(--muted);min-height:1.2rem}
+
+  .walk{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.15rem 1.3rem;margin-top:1rem}
+  .walk .q{font-weight:700;font-size:1.02rem;margin:0 0 .9rem;padding-bottom:.7rem;border-bottom:1px solid var(--line)}
+  .walk ol{margin:0;padding-left:1.2rem;display:flex;flex-direction:column;gap:.5rem}
+  .walk li{font-size:.95rem}
+  .verdict{margin-top:1rem;padding:.7rem 1rem;background:var(--brand-soft);border-radius:10px;font-weight:650;color:var(--brand);font-family:ui-monospace,Menlo,monospace}
+
+  .tbl-wrap{overflow-x:auto;margin-top:1rem;border:1px solid var(--line);border-radius:12px;background:var(--card)}
+  table{border-collapse:collapse;width:100%;min-width:440px;font-size:.93rem}
+  th,td{text-align:left;padding:.7rem .9rem;border-bottom:1px solid var(--line);vertical-align:top}
+  th{font-weight:750;background:#FBFCFD}
+  tr:last-child td{border-bottom:none}
+  td.l1{color:var(--bis);font-weight:750} td.l2{color:var(--med);font-weight:750} td.l3{color:var(--hei);font-weight:750}
+
+  /* Тренажёр */
+  .trainer{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.2rem 1.3rem;margin-top:1rem}
+  .tr-task{font-size:clamp(1rem,4vw,1.12rem);text-align:center;padding:1rem;background:var(--brand-soft);border-radius:10px;font-weight:600;line-height:1.5}
+  .tr-task b{font-family:ui-monospace,Menlo,monospace;color:var(--ink)}
+  .tr-ctl{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:1rem;align-items:center;justify-content:center}
+  .tr-ctl input{flex:1;min-width:110px;max-width:180px;font:inherit;padding:.5rem .7rem;border:1px solid var(--line);border-radius:9px;text-align:center;background:#fff;color:var(--ink)}
+  .tr-ctl button{font:inherit;font-weight:700;font-size:.9rem;cursor:pointer;border:none;border-radius:9px;padding:.55rem .95rem;color:#fff;background:var(--brand)}
+  .tr-ctl button.sec{background:var(--med)}
+  .tr-ctl button.ghost{background:transparent;color:var(--brand);border:1px solid var(--brand)}
+  .tr-ctl button:focus-visible,.tr-ctl input:focus-visible{outline:3px solid var(--brand);outline-offset:2px}
+  .tr-result{margin-top:.9rem;font-size:.96rem;min-height:1.2rem;text-align:center}
+  .tr-result .ok{color:var(--ok);font-weight:700} .tr-result .bad{color:var(--no);font-weight:700}
+  .tr-result .sol{margin-top:.6rem;padding:.8rem 1rem;background:#FCFDFE;border:1px solid var(--line);border-radius:10px;font-family:ui-monospace,Menlo,monospace;font-size:.9rem;line-height:1.8;text-align:left;overflow-x:auto}
+  .tr-hint{font-size:.85rem;color:var(--muted);text-align:center;margin:.7rem 0 0}
+
+  details{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:.9rem 1.1rem;margin-top:.7rem}
+  details[open]{border-color:var(--brand)}
+  summary{cursor:pointer;font-weight:650;list-style:none;display:flex;justify-content:space-between;gap:1rem;align-items:center}
+  summary::-webkit-details-marker{display:none}
+  summary::after{content:"проверить";font-size:.8rem;color:var(--brand);font-weight:700;white-space:nowrap}
+  details[open] summary::after{content:"скрыть"}
+  summary:focus-visible{outline:3px solid var(--brand);outline-offset:3px;border-radius:6px}
+  .ans{margin-top:.75rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.96rem;color:var(--muted)}
+  .ans b{color:var(--ink)}
+  .drill{display:flex;flex-direction:column;gap:.2rem;margin-top:1rem}
+
+  ul.traps{list-style:none;margin:1rem 0 0;padding:0;display:flex;flex-direction:column;gap:.7rem}
+  ul.traps li{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:.85rem 1.05rem;padding-left:2.5rem;position:relative;font-size:.97rem}
+  ul.traps li::before{content:"⚠";position:absolute;left:1rem;top:.85rem;color:var(--med)}
+  ul.traps b{font-weight:700}
+
+  .wrapup{background:var(--brand);color:#fff;border-radius:16px;padding:1.4rem 1.5rem;margin-top:2.4rem}
+  .wrapup h2{color:#fff;margin:0 0 .5rem}
+  .wrapup p{color:#DEE7F5;margin:.4rem 0;font-size:1rem}
+  .wrapup .big-rule{font-size:clamp(1rem,4vw,1.2rem);font-weight:800;color:#fff;margin:.6rem 0;font-family:ui-monospace,Menlo,monospace}
+  .wrapup .next{font-size:.95rem;color:#C6D5EE;margin-top:1rem;padding-top:1rem;border-top:1px solid rgba(255,255,255,.2)}
+  .wrapup .next b{color:#fff}
+
+  @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<!--LESSON-NAV-TOP--><style>.lnav{--lnav-accent:#3D5AF1}.lnav a{text-decoration:none;font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif}.lnav-top{max-width:820px;margin:0 auto;padding:.75rem clamp(1rem,4vw,1.5rem) .1rem}.lnav-top a{display:inline-flex;align-items:center;gap:.35rem;color:var(--lnav-accent);font-weight:600;font-size:.9rem}.lnav-top a:hover{text-decoration:underline}.lnav-bot{max-width:820px;margin:2.6rem auto 3rem;padding:1.1rem clamp(1rem,4vw,1.5rem) 0;border-top:1px solid #E4E8EF;display:flex;align-items:stretch;gap:.55rem}.lnav-bot a{min-width:0;display:flex;flex-direction:column;justify-content:center;gap:.15rem;border:1px solid #E4E8EF;border-radius:12px;padding:.65rem .85rem;color:#182233;background:#fff;transition:border-color .1s,transform .08s}.lnav-bot a:hover{border-color:var(--lnav-accent);transform:translateY(-1px)}.lnav-bot .prev,.lnav-bot .next{flex:1 1 0}.lnav-bot .next{text-align:right}.lnav-bot .dir{font-size:.72rem;color:#8A93A6;font-weight:600}.lnav-bot .ttl{font-size:.9rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.lnav-bot .to-cat{flex:0 0 auto;flex-direction:row;align-items:center;justify-content:center;color:var(--lnav-accent);font-weight:700;font-size:.85rem;white-space:nowrap}@media(max-width:420px){.lnav-bot .to-cat span{display:none}.lnav-bot .to-cat{padding:.65rem .7rem}}</style><nav class="lnav lnav-top"><a href="./catalog.html">← Все темы</a></nav><!--/LESSON-NAV-TOP-->
+<div class="page">
+
+  <header class="hero">
+    <p class="eyebrow">Геометрия · 7 класс</p>
+    <h1>Биссектриса треугольника</h1>
+    <p class="tagline">Линия, которая честно режет угол пополам. Именно угол, а не сторону.</p>
+  </header>
+
+  <div class="lead-in">
+    <p><b>Само слово всё объясняет.</b> «Биссектриса» пришла из латыни: <i>bi</i> — «дважды», <i>sectio</i> — «разрез». Линия, которая разрезает угол на две равные части.</p>
+    <p><b>Зачем тебе это.</b> На биссектрисе дальше держатся свойства равнобедренного треугольника. В 8 классе узнаешь, что три биссектрисы треугольника пересекаются в одной точке, в центре вписанной окружности. А на практике биссектриса работает как «линия равного расстояния»: любая её точка одинаково удалена от двух сторон угла. Так ищут место, равноудалённое от двух дорог или двух стен.</p>
+  </div>
+
+  <section>
+    <h2>Сначала — <span class="em">главный миф</span></h2>
+    <p>Почти каждый, кто впервые слышит слово «биссектриса», говорит так: «это линия из вершины в середину противоположной стороны».</p>
+    <p><strong>Нет.</strong> Из вершины в середину стороны идёт <span class="medw">медиана</span>. Биссектриса делит пополам <strong>УГОЛ</strong>, а не сторону. Запомни сразу: вся тема стоит на этом одном различии.</p>
+    <div class="note warn">
+      <p><b>Контрольный вопрос себе:</b> «что я сейчас режу пополам, угол или сторону?» Угол → биссектриса. Сторона → медиана.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Что надо помнить с прошлых тем</h2>
+    <p>Вспоминать почти нечего, и это хорошая новость. Нужны две вещи:</p>
+    <p>1) <strong>Треугольник</strong>: три вершины, три стороны, три угла. У каждой вершины свой угол.<br>
+       2) <strong>Углы меряют в градусах</strong> транспортиром, и делить их пополам можно как обычные числа: 70° пополам это 35°.</p>
+    <p>Всё. Умеешь делить число на 2 — умеешь считать половину угла.</p>
+  </section>
+
+  <section>
+    <h2>Как она устроена</h2>
+    <p>Возьмём угол треугольника, например при вершине <span class="mono">A</span>. Из этой вершины проводим луч, который разделит угол <span class="mono">A</span> на два <strong>равных</strong> угла. Тянем луч дальше, пока он не упрётся в противоположную сторону <span class="mono">BC</span>. Точку встречи назовём <span class="mono">M</span>.</p>
+    <p>Отрезок от вершины <span class="mono">A</span> до точки <span class="mono">M</span> и есть биссектриса треугольника.</p>
+
+    <div class="formula-box">
+      <div class="eq">∠BAM = ∠MAC = <span class="h">∠A : 2</span></div>
+      <div class="note">A — вершина, из которой проводим · BC — противоположная сторона · M — точка на стороне BC · AM — сама биссектриса</div>
+    </div>
+
+    <p><strong>Определение.</strong> Биссектриса треугольника — это отрезок биссектрисы угла треугольника, соединяющий вершину угла с точкой на противоположной стороне.</p>
+    <p>Главный смысл: биссектриса работает с <strong>углом</strong> и честно делит его на две одинаковые половинки. А куда луч попадёт на противоположную сторону, заранее неизвестно: середина это или нет, зависит от треугольника. В обычном (разностороннем) треугольнике биссектриса в середину стороны <strong>не</strong> попадает.</p>
+    <p>И ещё: углов в треугольнике три, значит и биссектрис <strong>три</strong>, по одной из каждой вершины.</p>
+
+    <div class="note">
+      <p><b>Что ещё про неё знать:</b></p>
+      <p>· биссектриса всегда лежит <strong>внутри</strong> треугольника, в отличие от высоты: та в тупоугольном треугольнике может вылезти наружу;<br>
+         · точка <span class="mono">M</span> лежит <strong>на</strong> стороне, между <span class="mono">B</span> и <span class="mono">C</span>, а не на её продолжении;<br>
+         · длину биссектрисы меряют в тех же единицах, что и стороны (см, мм), а углы в градусах.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Эталонный разбор — <span class="em">думаю вслух</span></h2>
+    <div class="walk">
+      <p class="q">В треугольнике ABC угол A = 70°. Из вершины A провели биссектрису AM. Найди угол BAM.</p>
+      <ol>
+        <li><span class="mono">AM</span> — биссектриса угла <span class="mono">A</span>. <b>Почему это важно:</b> она делит именно угол <span class="mono">A</span> на две равные части. Не сторону <span class="mono">BC</span>, а угол.</li>
+        <li>Значит <span class="mono">∠BAM = ∠MAC</span>, и вместе эти два кусочка дают весь угол <span class="mono">A</span>.</li>
+        <li>Два одинаковых кусочка складываются в 70° → каждый вдвое меньше: <span class="mono">∠BAM = ∠A : 2 = 70° : 2 = 35°</span>.</li>
+      </ol>
+      <div class="verdict">Ответ: ∠BAM = 35°</div>
+    </div>
+
+    <div class="walk" style="margin-top:.8rem">
+      <p class="q">Допиши сам: в треугольнике DEF угол D = 96°, DK — биссектриса угла D. Найди угол KDF.</p>
+      <ol>
+        <li><span class="mono">DK</span> — биссектриса, значит делит угол <span class="mono">D</span> пополам.</li>
+        <li><span class="mono">∠KDF = ∠D : 2 = 96° : 2 = ?</span> — досчитай сам, прежде чем открывать.</li>
+      </ol>
+      <details style="margin-top:.9rem"><summary>Проверить вычисление</summary><div class="ans"><span class="mono">96 : 2 = 48</span>. Значит <b>∠KDF = 48°</b>. Заметь: буквы поменялись (D, K, F вместо A, M, C), а действие то же, делим угол при вершине пополам.</div></details>
+    </div>
+
+    <div class="walk" style="margin-top:.8rem">
+      <p class="q">Теперь полностью сам: в треугольнике ABC угол B = 54°, BL — биссектриса этого угла. Чему равен угол LBC?</p>
+      <details><summary>Ответ</summary><div class="ans"><span class="mono">∠LBC = 54° : 2 = 27°</span>. Ответ <b>27°</b>.</div></details>
+    </div>
+  </section>
+
+  <section>
+    <h2>Увидь глазами — <span class="em">три разные линии</span></h2>
+    <p>Вот треугольник <span class="mono">ABC</span>. Двигай ползунок: вершина <span class="mono">A</span> поедет вбок, треугольник будет меняться. Кнопками включай и выключай линии из вершины <span class="mono">A</span>.</p>
+    <p><strong>Сначала предскажи, потом проверь:</strong> как думаешь, биссектриса попадёт точно в середину стороны <span class="mono">BC</span>? Включи её вместе с медианой и посмотри на числа <span class="mono">BM</span> и <span class="mono">MC</span> под чертежом.</p>
+
+    <div class="diagram">
+      <canvas id="cv" width="640" height="460" aria-label="Треугольник ABC с биссектрисой, медианой и высотой из вершины A"></canvas>
+      <div class="sliders">
+        <label for="sx">вершина A ◀▶ <input id="sx" type="range" min="5" max="95" step="1" value="22"></label>
+      </div>
+      <div class="toggles">
+        <button type="button" data-l="bis" class="on">биссектриса AM</button>
+        <button type="button" data-l="med">медиана</button>
+        <button type="button" data-l="hei">высота</button>
+      </div>
+      <p class="diag-read" id="read"></p>
+      <p class="diag-msg" id="msg"></p>
+    </div>
+
+    <p>Что тут видно:</p>
+    <p>· два половинных угла при вершине <span class="mono">A</span> <strong>всегда равны</strong>, как бы ты ни двигал ползунок. Это и есть работа биссектрисы;<br>
+       · а вот куски <span class="mono">BM</span> и <span class="mono">MC</span> почти всегда <strong>разные</strong>. Биссектриса не обещала делить сторону пополам и не делает этого;<br>
+       · поставь ползунок ровно посередине: треугольник станет равнобедренным, и все три линии сольются в одну. Тот самый красивый факт, который ждёт тебя в теме про равнобедренный треугольник.</p>
+
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>Линия из вершины</th><th>Что делает</th><th>Как узнать на чертеже</th></tr></thead>
+        <tbody>
+          <tr><td class="l1">Биссектриса</td><td>делит УГОЛ пополам</td><td>два равных угла при вершине</td></tr>
+          <tr><td class="l2">Медиана</td><td>идёт в середину стороны</td><td>два равных куска стороны</td></tr>
+          <tr><td class="l3">Высота</td><td>перпендикуляр к стороне</td><td>значок прямого угла 90°</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p style="font-size:.9rem;color:var(--muted)">Не заучивай три слова вслепую, смотри, чем они отличаются на картинке. Биссектриса про равные углы, медиана про равные куски стороны, высота про прямой угол.</p>
+  </section>
+
+  <section>
+    <h2>Тренажёр · половинки угла</h2>
+    <p>Жми «Новая» сколько хочешь, задачи не кончатся. Ответ вводи числом, без слова «градусов». Если ответ выходит с половинкой, пиши через запятую: например <span class="mono">27,5</span>.</p>
+    <div class="trainer">
+      <div class="tr-task" id="trTask">В треугольнике ABC угол A = <b>70°</b>, AM — биссектриса. Найди угол BAM.</div>
+      <div class="tr-ctl">
+        <button id="trNew" type="button">🎲 Новая</button>
+        <input id="trAns" type="text" inputmode="decimal" placeholder="ответ в °" aria-label="Ответ в градусах">
+        <button id="trCheck" type="button" class="sec">Проверить</button>
+        <button id="trShow" type="button" class="ghost">Решение</button>
+      </div>
+      <div id="trResult" class="tr-result"></div>
+      <p class="tr-hint">Задачи двух видов: дан весь угол, найди половинку; дана половинка, найди весь угол. Смотри внимательно, о чём спрашивают.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Проверь себя</h2>
+    <p>Сначала решай сам, потом раскрывай. Задачи идут от простого к «подумать».</p>
+    <div class="drill">
+      <details><summary>1) На чертеже из вершины проведён отрезок, который делит угол на два равных. Как он называется? И что он делит пополам, сторону или угол?</summary><div class="ans">Это <b>биссектриса</b>. Делит она пополам <b>угол</b>, а не сторону. Сторону пополам делит медиана.</div></details>
+
+      <details><summary>2) Угол при вершине C равен 88°. Проведена биссектриса CN. Найди угол NCB.</summary><div class="ans"><span class="mono">∠NCB = 88° : 2 = 44°</span>. Ответ <b>44°</b>.</div></details>
+
+      <details><summary>3) Что изменится, если… Угол A увеличили с 60° до 80°. Как изменится угол BAM, половина угла A?</summary><div class="ans">Половина всегда вдвое меньше целого. Было <span class="mono">60 : 2 = 30°</span>, стало <span class="mono">80 : 2 = 40°</span>. Половинка выросла на <b>10°</b>, ровно на половину той прибавки (20°), которую получил весь угол.</div></details>
+
+      <details><summary>4) Найди ошибку. Ученик написал: «Биссектриса AM делит сторону BC пополам, значит BM = MC». Где он ошибся и когда такое равенство вообще бывает верным?</summary><div class="ans">Ошибка в самом главном: биссектриса делит пополам <b>угол</b>, а не сторону. В разностороннем треугольнике <span class="mono">BM ≠ MC</span>, ты сам это видел на чертеже выше. Равенство <span class="mono">BM = MC</span> даёт <b>медиана</b>. Совпадают они только в равнобедренном треугольнике, для угла при вершине между равными сторонами.</div></details>
+
+      <details><summary>5) Обратная задача. Известно, что угол BAM = 25°, и AM — биссектриса угла A. Чему равен весь угол A?</summary><div class="ans">Тут действие обратное: не делим, а <b>умножаем</b>. Весь угол состоит из двух таких половинок: <span class="mono">∠A = 25° · 2 = 50°</span>. Ответ <b>50°</b>.</div></details>
+    </div>
+  </section>
+
+  <section>
+    <h2>Ловушки</h2>
+    <ul class="traps">
+      <li><b>Путать биссектрису и медиану.</b> «Биссектриса делит сторону пополам», так думают чаще всего, и это неверно. Пополам делится УГОЛ. Сторону пополам делит медиана. Спрашивай себя: что режем, угол или сторону?</li>
+      <li><b>Путать с серединным перпендикуляром.</b> Серединный перпендикуляр строится к стороне: через её середину и под прямым углом, а через вершину проходить не обязан. Биссектриса всегда идёт <b>из вершины</b>. Так и различай: биссектриса начинается в вершине угла, серединный перпендикуляр у середины стороны.</li>
+      <li><b>Путать с высотой.</b> Высота, это перпендикуляр к противоположной стороне, там угол 90°. Биссектриса делит угол пополам и прямой угол со стороной почти никогда не образует (кроме особых случаев в равнобедренном треугольнике). Высота про прямой угол со стороной, биссектриса про равные половинки угла при вершине.</li>
+      <li><b>Думать, что биссектриса всегда совпадает с медианой.</b> Это верно только в равнобедренном треугольнике и только для угла при вершине между равными сторонами. В обычном треугольнике это две разные линии.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Объясни своими словами</h2>
+    <p>Закрой урок и ответь вслух: себе, родителям или голосовым сообщением другу:</p>
+    <p>1) Биссектриса треугольника делит пополам сторону или угол?<br>
+       2) Из какой точки треугольника всегда выходит биссектриса?<br>
+       3) Угол треугольника равен 50°. Чему равен каждый из углов, на которые его делит биссектриса?</p>
+    <details><summary>Сверить ответы</summary><div class="ans">1) <b>Угол</b>. 2) Из <b>вершины</b> угла, и идёт до противоположной стороны. 3) <span class="mono">50° : 2 = 25°</span>, каждый по <b>25°</b>.</div></details>
+  </section>
+
+  <div class="wrapup">
+    <h2>Запомни главное</h2>
+    <p class="big-rule">∠BAM = ∠MAC = ∠A : 2</p>
+    <p>Биссектриса треугольника — это отрезок из вершины до противоположной стороны, который делит угол при этой вершине ровно пополам. Углов три, значит и биссектрис три. Сторону она пополам не делит, это работа медианы.</p>
+    <p class="next">👉 Дальше: <b>свойства равнобедренного треугольника</b> (там биссектриса, медиана и высота к основанию сливаются в один отрезок) и <b>построение биссектрисы</b> циркулем и линейкой.</p>
+  </div>
+
+</div>
+
+<script>
+(function(){
+  var cv=document.getElementById('cv'); if(!cv) return;
+  var ctx=cv.getContext('2d'), sx=document.getElementById('sx');
+  var readEl=document.getElementById('read'), msgEl=document.getElementById('msg');
+  var show={bis:true,med:false,hei:false};
+  var W=640,H=460,dpr=1;
+  function css(v){ return getComputedStyle(document.documentElement).getPropertyValue(v).trim(); }
+  function resize(){ var c=cv.clientWidth||640; dpr=Math.min(window.devicePixelRatio||1,2);
+    W=c; H=Math.round(c*0.72); cv.width=W*dpr; cv.height=H*dpr; cv.style.height=H+'px'; ctx.setTransform(dpr,0,0,dpr,0,0); }
+  function fmt(x){ var r=Math.round(x*10)/10; return String(r).replace('.',','); }
+
+  function draw(){
+    var t=+sx.value/100;                 // положение A по горизонтали
+    var pad=Math.max(28,W*0.09), top=Math.max(26,W*0.06);
+    var by=H-pad, bx=pad, cx2=W-pad;     // B и C на нижней линии
+    var ax=bx+(cx2-bx)*t, ay=top;
+    var A=[ax,ay], B=[bx,by], C=[cx2,by];
+
+    // векторы из A
+    var ub=[B[0]-A[0],B[1]-A[1]], uc=[C[0]-A[0],C[1]-A[1]];
+    var lb=Math.hypot(ub[0],ub[1]), lc=Math.hypot(uc[0],uc[1]);
+    var nb=[ub[0]/lb,ub[1]/lb], nc=[uc[0]/lc,uc[1]/lc];
+    var d=[nb[0]+nc[0],nb[1]+nc[1]];
+    var s=(by-A[1])/d[1];                // до линии BC
+    var M=[A[0]+d[0]*s, by];             // основание биссектрисы
+    var N=[(bx+cx2)/2, by];              // середина BC — основание медианы
+    var Hf=[A[0], by];                   // основание высоты
+
+    var cosA=(ub[0]*uc[0]+ub[1]*uc[1])/(lb*lc);
+    var angA=Math.acos(Math.max(-1,Math.min(1,cosA)))*180/Math.PI;
+
+    ctx.clearRect(0,0,W,H);
+    ctx.lineCap='round'; ctx.lineJoin='round';
+
+    // сторона BC подложкой
+    ctx.strokeStyle=css('--line'); ctx.lineWidth=1;
+    ctx.beginPath(); ctx.moveTo(0,by); ctx.lineTo(W,by); ctx.stroke();
+
+    // треугольник
+    ctx.beginPath(); ctx.moveTo(A[0],A[1]); ctx.lineTo(B[0],B[1]); ctx.lineTo(C[0],C[1]); ctx.closePath();
+    ctx.fillStyle='#FFFFFF'; ctx.fill();
+    ctx.strokeStyle=css('--ink'); ctx.lineWidth=2.2; ctx.stroke();
+
+    // дуги половинных углов
+    if(show.bis){
+      var r=Math.min(lb,lc)*0.30, r2=r*0.80;
+      var aB=Math.atan2(ub[1],ub[0]), aC=Math.atan2(uc[1],uc[0]), aM=Math.atan2(d[1],d[0]);
+      ctx.strokeStyle=css('--bis'); ctx.lineWidth=1.8;
+      ctx.beginPath(); ctx.arc(A[0],A[1],r,aB,aM); ctx.stroke();
+      ctx.beginPath(); ctx.arc(A[0],A[1],r2,aM,aC); ctx.stroke();
+      // подписи половинок
+      var half=angA/2;
+      ctx.fillStyle=css('--bis'); ctx.font='700 '+Math.max(10,W*0.026)+'px ui-monospace,Menlo,monospace';
+      ctx.textAlign='center'; ctx.textBaseline='middle';
+      var m1=(aB+aM)/2, m2=(aM+aC)/2, rl=r*1.32;
+      ctx.fillText(fmt(half)+'°', A[0]+Math.cos(m1)*rl, A[1]+Math.sin(m1)*rl);
+      ctx.fillText(fmt(half)+'°', A[0]+Math.cos(m2)*rl, A[1]+Math.sin(m2)*rl);
+    }
+
+    function line(P,Q,col,dash,lab){
+      ctx.save(); ctx.setLineDash(dash||[]); ctx.strokeStyle=col; ctx.lineWidth=2.6;
+      ctx.beginPath(); ctx.moveTo(P[0],P[1]); ctx.lineTo(Q[0],Q[1]); ctx.stroke(); ctx.restore();
+      ctx.fillStyle=col; ctx.beginPath(); ctx.arc(Q[0],Q[1],4,0,6.2832); ctx.fill();
+      if(lab){ ctx.fillStyle=col; ctx.font='700 '+Math.max(11,W*0.028)+'px system-ui,sans-serif';
+        ctx.textAlign='center'; ctx.textBaseline='top'; ctx.fillText(lab,Q[0],Q[1]+9); }
+    }
+    if(show.hei){
+      line(A,Hf,css('--hei'),[6,5],'высота');
+      var q=Math.max(8,W*0.022);
+      ctx.strokeStyle=css('--hei'); ctx.lineWidth=1.6;
+      ctx.beginPath(); ctx.moveTo(Hf[0]+q,by); ctx.lineTo(Hf[0]+q,by-q); ctx.lineTo(Hf[0],by-q); ctx.stroke();
+    }
+    if(show.med){
+      line(A,N,css('--med'),[6,5],'медиана');
+      // штрихи равных кусков BN и NC
+      ctx.strokeStyle=css('--med'); ctx.lineWidth=2;
+      [[ (bx+N[0])/2 ],[ (N[0]+cx2)/2 ]].forEach(function(p){
+        ctx.beginPath(); ctx.moveTo(p[0],by-6); ctx.lineTo(p[0],by+6); ctx.stroke(); });
+    }
+    if(show.bis) line(A,M,css('--bis'),[],'M');
+
+    // вершины
+    ctx.font='700 '+Math.max(12,W*0.032)+'px system-ui,sans-serif'; ctx.fillStyle=css('--ink');
+    ctx.textAlign='center'; ctx.textBaseline='bottom'; ctx.fillText('A',A[0],A[1]-7);
+    ctx.textBaseline='top'; ctx.textAlign='right'; ctx.fillText('B',B[0]-4,B[1]+7);
+    ctx.textAlign='left'; ctx.fillText('C',C[0]+4,C[1]+7);
+    [A,B,C].forEach(function(P){ ctx.fillStyle=css('--ink'); ctx.beginPath(); ctx.arc(P[0],P[1],3.5,0,6.2832); ctx.fill(); });
+
+    // числа под чертежом
+    var BM=(M[0]-bx)/(cx2-bx)*10, MC=10-BM;   // условные единицы: BC = 10
+    var out='<span class="k">∠A =</span> '+fmt(angA)+'°  <span class="k">→ половинки по</span> '+fmt(angA/2)+'°';
+    if(show.med||show.bis) out+='<br><span class="k">BM =</span> '+fmt(BM)+'  <span class="k">MC =</span> '+fmt(MC)+'  <span class="k">(вся сторона BC = 10)</span>';
+    readEl.innerHTML=out;
+
+    var diff=Math.abs(BM-MC);
+    if(diff<0.15) msgEl.textContent='Треугольник равнобедренный: BM = MC, и биссектриса, медиана и высота слились в одну линию.';
+    else msgEl.textContent='Половинки угла равны, а куски стороны BM и MC — разные. Биссектриса делит угол, а не сторону.';
+  }
+
+  Array.prototype.forEach.call(document.querySelectorAll('.toggles button'),function(b){
+    b.addEventListener('click',function(){ var k=b.getAttribute('data-l'); show[k]=!show[k]; b.classList.toggle('on',show[k]); draw(); });
+  });
+  sx.addEventListener('input',draw);
+  window.addEventListener('resize',function(){ resize(); draw(); });
+  resize(); draw();
+})();
+</script>
+
+<script>
+(function(){
+  var taskEl=document.getElementById('trTask'), ansEl=document.getElementById('trAns'), resEl=document.getElementById('trResult');
+  if(!taskEl) return;
+  var MINUS='−';   /* настоящий минус U+2212 для числовых выражений */
+  var DASH='—';    /* тире в тексте — не путать с минусом */
+  var sets=[['ABC','A','M','BAM','MAC'],['DEF','D','K','EDK','KDF'],['ABC','B','L','ABL','LBC'],['MNK','N','P','MNP','PNK'],['ABC','C','N','ACN','NCB']];
+  var cur=null;
+  function ri(min,max){ return Math.floor(Math.random()*(max-min+1))+min; }
+  function num(x){ var r=Math.round(x*10)/10; return String(r).replace('.',','); }
+
+  function generate(){
+    var s=sets[ri(0,sets.length-1)];
+    var half, whole, r=Math.random();
+    if(Math.random()<0.2){ whole=ri(15,89)*2+1; half=whole/2; }   // краевой случай: половинка с ,5
+    else { whole=ri(8,89)*2; half=whole/2; }
+    if(r<0.6){
+      cur={mode:'half',s:s,whole:whole,half:half,ans:half};
+      taskEl.innerHTML='В треугольнике '+s[0]+' угол '+s[1]+' = <b>'+num(whole)+'°</b>, '+s[1]+s[2]+' — биссектриса. Найди угол '+s[3]+'.';
+    } else {
+      cur={mode:'whole',s:s,whole:whole,half:half,ans:whole};
+      taskEl.innerHTML='В треугольнике '+s[0]+' отрезок '+s[1]+s[2]+' — биссектриса угла '+s[1]+', и угол '+s[4]+' = <b>'+num(half)+'°</b>. Найди весь угол '+s[1]+'.';
+    }
+    resEl.innerHTML=''; ansEl.value='';
+  }
+  function solHTML(){
+    var q=cur, s=q.s, h='<div class="sol">';
+    if(q.mode==='half'){
+      h+=s[1]+s[2]+' '+DASH+' биссектриса → делит угол '+s[1]+' пополам<br>';
+      h+='∠'+s[3]+' = ∠'+s[4]+' = ∠'+s[1]+' : 2<br>';
+      h+='∠'+s[3]+' = '+num(q.whole)+'° : 2 = <b>'+num(q.half)+'°</b>';
+    } else {
+      h+=s[1]+s[2]+' '+DASH+' биссектриса → весь угол состоит из двух одинаковых половинок<br>';
+      h+='∠'+s[1]+' = ∠'+s[4]+' · 2<br>';
+      h+='∠'+s[1]+' = '+num(q.half)+'° · 2 = <b>'+num(q.whole)+'°</b>';
+    }
+    return h+'</div>';
+  }
+  function check(){
+    var raw=ansEl.value.trim();
+    if(raw===''){ resEl.innerHTML='<span class="bad">Введи ответ или нажми «Решение».</span>'; return; }
+    var got=parseFloat(raw.replace(/[°\s]/g,'').replace(',','.'));
+    if(!isNaN(got) && Math.abs(got-cur.ans)<0.05){ resEl.innerHTML='<span class="ok">✓ Верно!</span>'+solHTML(); }
+    else if(!isNaN(got) && cur.mode==='half' && Math.abs(got-cur.whole)<0.05){
+      resEl.innerHTML='<span class="bad">✗ Это весь угол, а спрашивают половинку.</span>'+solHTML(); }
+    else if(!isNaN(got) && cur.mode==='whole' && Math.abs(got-cur.half)<0.05){
+      resEl.innerHTML='<span class="bad">✗ Тут дана половинка, а найти надо весь угол — умножай, а не дели.</span>'+solHTML(); }
+    else { resEl.innerHTML='<span class="bad">✗ Пока не то — глянь решение.</span>'+solHTML(); }
+  }
+  document.getElementById('trNew').addEventListener('click',function(){ generate(); ansEl.focus(); });
+  document.getElementById('trCheck').addEventListener('click',check);
+  document.getElementById('trShow').addEventListener('click',function(){ resEl.innerHTML=solHTML(); });
+  ansEl.addEventListener('keydown',function(e){ if(e.key==='Enter') check(); });
+  cur={mode:'half',s:sets[0],whole:70,half:35,ans:35};
+})();
+</script>
+<!--LESSON-NAV-BOT--><nav class="lnav lnav-bot"><a class="prev" href="./geo7-mediana.html"><span class="dir">← Предыдущая</span><span class="ttl">Медиана треугольника</span></a><a class="to-cat" href="./catalog.html">📚 <span>Все темы</span></a><a class="next" href="./geo7-vysota.html"><span class="dir">Следующая →</span><span class="ttl">Высота треугольника</span></a></nav><!--/LESSON-NAV-BOT-->

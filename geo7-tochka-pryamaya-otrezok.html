@@ -1,0 +1,449 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Точка, прямая, отрезок: геометрия 7 класс</title>
+<style>
+  :root{
+    --paper:#F6F7F9; --card:#FFFFFF; --ink:#1D2530; --muted:#606B7A; --line:#E3E7EE;
+    --brand:#2E5AAC; --brand-soft:#E4EBF7;
+    --pt:#7A4FB5;  --pt-soft:#EEE6F8;   /* точка */
+    --ln:#2E5AAC;  --ln-soft:#E4EBF7;   /* прямая */
+    --sg:#E27C2C;  --sg-soft:#FBEEDF;   /* отрезок */
+    --ok:#1E8E5A; --no:#C23B3B;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper)}
+  .page{max-width:720px;margin:0 auto;padding:clamp(1.4rem,4vw,3rem) clamp(1.1rem,4vw,2rem) 4.5rem;
+    color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:17.5px;line-height:1.68;-webkit-font-smoothing:antialiased}
+  .mono{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-variant-numeric:tabular-nums;font-weight:600}
+
+  .hero{border-bottom:3px solid var(--brand);padding-bottom:1.4rem;margin-bottom:1.8rem}
+  .eyebrow{font-size:.74rem;letter-spacing:.15em;text-transform:uppercase;color:var(--brand);font-weight:700;margin:0 0 .55rem}
+  h1{font-size:clamp(1.9rem,6vw,2.8rem);line-height:1.05;margin:0;font-weight:800;letter-spacing:-.02em;text-wrap:balance}
+  .tagline{font-size:1.12rem;color:var(--muted);margin:.85rem 0 0;text-wrap:pretty}
+
+  section{margin-top:2.4rem}
+  h2{font-size:1.5rem;margin:0 0 .3rem;font-weight:780;letter-spacing:-.015em;text-wrap:balance}
+  h2 .em{color:var(--brand)}
+  p{margin:.7rem 0}
+  strong{font-weight:680}
+  .ptw{color:var(--pt);font-weight:800} .lnw{color:var(--ln);font-weight:800} .sgw{color:var(--sg);font-weight:800}
+
+  .lead-in{background:var(--brand-soft);border-radius:14px;padding:1.1rem 1.3rem;font-size:1.02rem}
+  .lead-in p{margin:.4rem 0}
+  .lead-in b{color:var(--brand)}
+
+  .formula-box{background:var(--ink);color:#fff;border-radius:14px;padding:1.3rem;text-align:center;margin-top:1rem}
+  .formula-box .eq{font-family:ui-monospace,Menlo,monospace;font-size:clamp(1.15rem,4.6vw,1.6rem);font-weight:700;line-height:1.35}
+  .formula-box .note{font-size:.9rem;color:#AEB8C6;margin:.7rem 0 0}
+
+  .note{border-left:4px solid var(--brand);background:var(--brand-soft);border-radius:0 10px 10px 0;padding:.8rem 1.1rem;margin-top:1rem;font-size:.98rem}
+  .note b{color:var(--brand)}
+  .note p{margin:.35rem 0}
+
+  /* карточки трёх объектов */
+  .cards{display:grid;gap:.7rem;margin-top:1rem}
+  @media(min-width:560px){.cards{grid-template-columns:repeat(3,1fr)}}
+  .cards .c{background:var(--card);border:1px solid var(--line);border-radius:13px;padding:.9rem 1rem;border-top:4px solid var(--line)}
+  .cards .c.p{border-top-color:var(--pt)} .cards .c.l{border-top-color:var(--ln)} .cards .c.s{border-top-color:var(--sg)}
+  .cards .c h3{margin:0 0 .35rem;font-size:1.05rem}
+  .cards .c.p h3{color:var(--pt)} .cards .c.l h3{color:var(--ln)} .cards .c.s h3{color:var(--sg)}
+  .cards .c p{margin:.25rem 0;font-size:.93rem;line-height:1.5}
+
+  .tablewrap{overflow-x:auto;margin-top:1rem;border:1px solid var(--line);border-radius:12px;background:var(--card)}
+  table{border-collapse:collapse;width:100%;min-width:460px;font-size:.94rem}
+  th,td{padding:.6rem .8rem;text-align:left;border-bottom:1px solid var(--line)}
+  th{background:var(--brand-soft);color:var(--brand);font-weight:700;font-size:.85rem}
+  tr:last-child td{border-bottom:none}
+  td.mono{font-family:ui-monospace,Menlo,monospace}
+
+  /* Диаграмма */
+  .diagram{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:1.2rem;margin-top:1rem}
+  .diagram canvas{width:100%;height:auto;display:block;border-radius:8px}
+  .ctl{display:grid;gap:.7rem;margin-top:.9rem}
+  @media(min-width:520px){.ctl{grid-template-columns:1fr auto;align-items:center}}
+  .ctl label.rng{display:flex;align-items:center;gap:.5rem;font-weight:700;font-family:ui-monospace,Menlo,monospace;font-size:.9rem;color:var(--muted)}
+  .ctl input[type=range]{flex:1;accent-color:var(--brand);min-width:120px}
+  .ctl label.chk{display:flex;align-items:center;gap:.5rem;font-weight:700;font-size:.92rem;color:var(--ln);cursor:pointer}
+  .ctl input[type=checkbox]{width:1.15rem;height:1.15rem;accent-color:var(--ln)}
+  .ctl input:focus-visible{outline:3px solid var(--brand);outline-offset:2px}
+  .cap{font-size:.9rem;color:var(--muted);margin:.9rem 0 0}
+
+  .walk{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.15rem 1.3rem;margin-top:1rem}
+  .walk .q{font-weight:700;font-size:1.02rem;margin:0 0 .9rem;padding-bottom:.7rem;border-bottom:1px solid var(--line)}
+  .walk svg{display:block;width:100%;height:auto;max-width:420px;margin:0 auto .9rem}
+  .walk ol{margin:0;padding-left:1.2rem;display:flex;flex-direction:column;gap:.5rem}
+  .walk li{font-size:.95rem}
+  .walk b{font-weight:700}
+  .verdict{margin-top:1rem;padding:.7rem 1rem;background:var(--brand-soft);border-radius:10px;font-weight:650;color:var(--brand);font-family:ui-monospace,Menlo,monospace}
+
+  /* Тренажёр */
+  .trainer{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.2rem 1.3rem;margin-top:1rem}
+  .tr-task{font-size:clamp(1rem,4vw,1.12rem);text-align:center;padding:1rem;background:var(--brand-soft);border-radius:10px;font-weight:600;line-height:1.5}
+  .tr-task b{font-family:ui-monospace,Menlo,monospace;color:var(--ink)}
+  .tr-pic{margin:.9rem auto 0;display:block;width:100%;height:auto;max-width:420px}
+  .tr-ctl{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:1rem;align-items:center;justify-content:center}
+  .tr-ctl input{flex:1;min-width:110px;max-width:180px;font:inherit;padding:.5rem .7rem;border:1px solid var(--line);border-radius:9px;text-align:center;background:#fff;color:var(--ink)}
+  .tr-ctl button{font:inherit;font-weight:700;font-size:.9rem;cursor:pointer;border:none;border-radius:9px;padding:.55rem .95rem;color:#fff;background:var(--brand)}
+  .tr-ctl button.sec{background:var(--sg)}
+  .tr-ctl button.ghost{background:transparent;color:var(--brand);border:1px solid var(--brand)}
+  .tr-ctl button:focus-visible,.tr-ctl input:focus-visible{outline:3px solid var(--brand);outline-offset:2px}
+  .tr-result{margin-top:.9rem;font-size:.96rem;min-height:1.2rem;text-align:center}
+  .tr-result .ok{color:var(--ok);font-weight:700} .tr-result .bad{color:var(--no);font-weight:700}
+  .tr-result .sol{margin-top:.6rem;padding:.8rem 1rem;background:#FCFDFE;border:1px solid var(--line);border-radius:10px;font-family:ui-monospace,Menlo,monospace;font-size:.9rem;line-height:1.8;text-align:left;overflow-x:auto}
+
+  details{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:.9rem 1.1rem;margin-top:.7rem}
+  details[open]{border-color:var(--brand)}
+  summary{cursor:pointer;font-weight:650;list-style:none;display:flex;justify-content:space-between;gap:1rem;align-items:center}
+  summary::-webkit-details-marker{display:none}
+  summary::after{content:"проверить";font-size:.8rem;color:var(--brand);font-weight:700;white-space:nowrap}
+  details[open] summary::after{content:"скрыть"}
+  summary:focus-visible{outline:3px solid var(--brand);outline-offset:3px;border-radius:6px}
+  .ans{margin-top:.75rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.96rem;color:var(--muted)}
+  .ans b{color:var(--ink)}
+  .drill{display:flex;flex-direction:column;gap:.2rem;margin-top:1rem}
+
+  ul.traps{list-style:none;margin:1rem 0 0;padding:0;display:flex;flex-direction:column;gap:.7rem}
+  ul.traps li{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:.85rem 1.05rem;padding-left:2.5rem;position:relative;font-size:.97rem}
+  ul.traps li::before{content:"⚠";position:absolute;left:1rem;top:.85rem;color:var(--sg)}
+  ul.traps b{font-weight:700}
+
+  ol.selfcheck{margin:1rem 0 0;padding-left:1.3rem;display:flex;flex-direction:column;gap:.45rem}
+  ol.selfcheck li{font-size:.98rem}
+
+  .wrapup{background:var(--brand);color:#fff;border-radius:16px;padding:1.4rem 1.5rem;margin-top:2.4rem}
+  .wrapup h2{color:#fff;margin:0 0 .5rem}
+  .wrapup p{color:#DEE7F5;margin:.4rem 0;font-size:1rem}
+  .wrapup .big-rule{font-size:1.05rem;font-weight:800;color:#fff;margin:.6rem 0;font-family:ui-monospace,Menlo,monospace;line-height:1.45}
+  .wrapup .next{font-size:.95rem;color:#C6D5EE;margin-top:1rem;padding-top:1rem;border-top:1px solid rgba(255,255,255,.2)}
+  .wrapup .next b{color:#fff}
+
+  @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<!--LESSON-NAV-TOP--><style>.lnav{--lnav-accent:#3D5AF1}.lnav a{text-decoration:none;font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif}.lnav-top{max-width:820px;margin:0 auto;padding:.75rem clamp(1rem,4vw,1.5rem) .1rem}.lnav-top a{display:inline-flex;align-items:center;gap:.35rem;color:var(--lnav-accent);font-weight:600;font-size:.9rem}.lnav-top a:hover{text-decoration:underline}.lnav-bot{max-width:820px;margin:2.6rem auto 3rem;padding:1.1rem clamp(1rem,4vw,1.5rem) 0;border-top:1px solid #E4E8EF;display:flex;align-items:stretch;gap:.55rem}.lnav-bot a{min-width:0;display:flex;flex-direction:column;justify-content:center;gap:.15rem;border:1px solid #E4E8EF;border-radius:12px;padding:.65rem .85rem;color:#182233;background:#fff;transition:border-color .1s,transform .08s}.lnav-bot a:hover{border-color:var(--lnav-accent);transform:translateY(-1px)}.lnav-bot .prev,.lnav-bot .next{flex:1 1 0}.lnav-bot .next{text-align:right}.lnav-bot .dir{font-size:.72rem;color:#8A93A6;font-weight:600}.lnav-bot .ttl{font-size:.9rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.lnav-bot .to-cat{flex:0 0 auto;flex-direction:row;align-items:center;justify-content:center;color:var(--lnav-accent);font-weight:700;font-size:.85rem;white-space:nowrap}@media(max-width:420px){.lnav-bot .to-cat span{display:none}.lnav-bot .to-cat{padding:.65rem .7rem}}</style><nav class="lnav lnav-top"><a href="./catalog.html">← Все темы</a></nav><!--/LESSON-NAV-TOP-->
+<div class="page">
+
+  <header class="hero">
+    <p class="eyebrow">Геометрия · 7 класс</p>
+    <h1>Точка, прямая, отрезок</h1>
+    <p class="tagline">Алфавит геометрии. Три кирпичика, из которых потом собирается всё остальное.</p>
+  </header>
+
+  <div class="lead-in">
+    <p><b>Зачем это нужно.</b> С этой темы начинается вся школьная геометрия. Из точки, прямой и отрезка потом собираются лучи, углы, треугольники, окружности, любой чертёж. Пропустишь их, и дальше застрянешь: как измерить отрезок, как обозначить фигуру, как прочитать чужой чертёж.</p>
+    <p>Вокруг тебя этого полно: натянутая нить, край линейки, луч лазерной указки, траектория полёта, линии на карте и в строительных чертежах. Строитель «бьёт» прямую линию шнуром между двумя гвоздями и тем самым пользуется главным свойством прямой.</p>
+  </div>
+
+  <section>
+    <h2>Сначала разрушим <span class="em">главный миф</span></h2>
+    <p>Почти все думают, что «прямая» и «линия, которую я провёл карандашом», это одно и то же. Нет.</p>
+    <p>Нарисованный штрих где-то начинается и где-то кончается, а раз так, это <span class="sgw">отрезок</span>. Настоящая <span class="lnw">прямая</span> бесконечна в обе стороны: целиком её не нарисовать, сколько бумаги ни бери. Рисуем кусочек, а дальше продолжаем его в голове.</p>
+    <div class="note"><p><b>Держи в голове:</b> на бумаге у тебя всегда отрезок. Прямая живёт в воображении: тот же отрезок, продлённый в обе стороны навсегда.</p></div>
+  </section>
+
+  <section>
+    <h2>Три главных объекта</h2>
+    <p><span class="ptw">Точка</span> и <span class="lnw">прямая</span> — самые простые понятия геометрии, исходные. Их не определяют через что-то более простое, потому что проще уже ничего нет. О них договариваются на уровне наглядного образа.</p>
+    <div class="cards">
+      <div class="c p">
+        <h3>Точка</h3>
+        <p>«Место без размеров»: ни длины, ни ширины.</p>
+        <p>Обозначают <b>заглавной</b> латинской буквой: <span class="mono">A</span>, <span class="mono">B</span>, <span class="mono">M</span>.</p>
+        <p>Рисуют жирной точкой или крестиком.</p>
+      </div>
+      <div class="c l">
+        <h3>Прямая</h3>
+        <p>Линия без толщины, которая нигде не искривляется и тянется в обе стороны без конца.</p>
+        <p>Обозначают <b>строчной</b> буквой (<span class="mono">a</span>, <span class="mono">b</span>) или двумя своими точками: прямая <span class="mono">AB</span>.</p>
+      </div>
+      <div class="c s">
+        <h3>Отрезок</h3>
+        <p>Кусочек прямой между двумя её точками, вместе с самими этими точками.</p>
+        <p>Точки <span class="mono">A</span> и <span class="mono">B</span> — это <b>концы</b> отрезка. Запись: <span class="mono">AB</span>, а <span class="mono">BA</span> означает тот же самый отрезок.</p>
+      </div>
+    </div>
+    <p>Если строго: отрезок <span class="mono">AB</span> — часть прямой из точек <span class="mono">A</span>, <span class="mono">B</span> и всех точек прямой, которые лежат <strong>между</strong> ними.</p>
+  </section>
+
+  <section>
+    <h2>Главное свойство прямой: <span class="em">аксиома</span></h2>
+    <div class="formula-box">
+      <div class="eq">Через две различные точки<br>проходит прямая, и притом только одна</div>
+      <div class="note">точки должны быть разными; через одну точку прямых можно провести сколько угодно</div>
+    </div>
+    <p>Смысл такой: чтобы задать прямую, хватит <strong>двух</strong> точек. Дальше она определена однозначно, второй такой же не будет. Этим и пользуется строитель со шнуром: вбил два гвоздя, и линия между ними единственная.</p>
+    <div class="note"><p><b>Проверь рукой.</b> Поставь на листе две точки, приложи к ним линейку и попробуй её повернуть, не отрывая ни от одной из точек. Не выйдет: положение только одно.</p></div>
+  </section>
+
+  <section>
+    <h2>Длина: что можно измерить, а что нет</h2>
+    <p>У <span class="lnw">прямой</span> длины нет вообще, она бесконечна. У <span class="sgw">отрезка</span> длина есть всегда: конечная и неотрицательная.</p>
+    <p><strong>Длина отрезка</strong> — это расстояние между его концами. Меряют в единицах длины (мм, см, дм, м), а пишут так: <span class="mono">AB = 5</span> см.</p>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Объект</th><th>Начало / конец</th><th>Длину можно измерить?</th><th>Как обозначают</th></tr></thead>
+        <tbody>
+          <tr><td><b style="color:var(--ln)">Прямая</b></td><td>нет, бесконечна с обеих сторон</td><td>нет</td><td class="mono">a или AB</td></tr>
+          <tr><td><b style="color:var(--sg)">Отрезок</b></td><td>два конца A и B</td><td>да</td><td class="mono">AB</td></tr>
+          <tr><td><b style="color:var(--pt)">Точка</b></td><td>нет размеров</td><td>-</td><td class="mono">A</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2>Увидь глазами: <span class="em">отрезок и прямая</span></h2>
+    <p>Оранжевым нарисован <span class="sgw">отрезок AB</span>, то есть то, что реально помещается на бумаге. Включи галочку, и он продлится пунктиром со стрелками в обе стороны: выйдет <span class="lnw">прямая</span>. Ползунком поверни картинку: горизонтально, наклонно, вертикально. Прямая всё та же, меняется только то, как она легла на лист.</p>
+    <div class="diagram">
+      <canvas id="cv" width="640" height="360" aria-label="Отрезок AB и его продолжение до прямой"></canvas>
+      <div class="ctl">
+        <label class="rng">наклон <input id="rot" type="range" min="0" max="90" step="1" value="0"><span id="rotv" class="mono" style="min-width:4ch;text-align:right">0°</span></label>
+        <label class="chk"><input id="ext" type="checkbox"> продлить до прямой</label>
+      </div>
+      <p class="cap" id="cap"></p>
+    </div>
+    <p style="font-size:.9rem;color:var(--muted)">Заметь: сам отрезок при повороте не меняется, два конца <span class="mono">A</span> и <span class="mono">B</span> как были, так и остались. А прямая и с галочкой в картинку не влезает, стрелки как раз и значат «дальше без конца».</p>
+  </section>
+
+  <section>
+    <h2>Эталонный разбор: думаю вслух</h2>
+    <div class="walk">
+      <p class="q">На прямой отмечены по порядку точки A, B, C. Известно, что AB = 4 см, BC = 3 см. Найди длину отрезка AC.</p>
+      <svg viewBox="0 0 420 90" role="img" aria-label="Точки A, B, C на прямой: AB равно 4 см, BC равно 3 см">
+        <line x1="20" y1="55" x2="400" y2="55" stroke="#C7CFDB" stroke-width="2" stroke-dasharray="6 6"/>
+        <line x1="60" y1="55" x2="360" y2="55" stroke="#E27C2C" stroke-width="4"/>
+        <circle cx="60" cy="55" r="5" fill="#7A4FB5"/><circle cx="231" cy="55" r="5" fill="#7A4FB5"/><circle cx="360" cy="55" r="5" fill="#7A4FB5"/>
+        <text x="60" y="80" text-anchor="middle" font-family="ui-monospace,Menlo,monospace" font-size="16" font-weight="700" fill="#1D2530">A</text>
+        <text x="231" y="80" text-anchor="middle" font-family="ui-monospace,Menlo,monospace" font-size="16" font-weight="700" fill="#1D2530">B</text>
+        <text x="360" y="80" text-anchor="middle" font-family="ui-monospace,Menlo,monospace" font-size="16" font-weight="700" fill="#1D2530">C</text>
+        <text x="145" y="35" text-anchor="middle" font-family="ui-monospace,Menlo,monospace" font-size="14" font-weight="700" fill="#E27C2C">4 см</text>
+        <text x="295" y="35" text-anchor="middle" font-family="ui-monospace,Menlo,monospace" font-size="14" font-weight="700" fill="#E27C2C">3 см</text>
+      </svg>
+      <ol>
+        <li><b>Читаю условие.</b> Точки идут <b>по порядку</b> A, B, C, значит, B лежит <b>между</b> A и C. «По порядку» тут ключевое: без него непонятно, как точки стоят.</li>
+        <li><b>Понимаю картинку.</b> Раз B между A и C, то отрезок AC состоит из двух кусков: AB и BC. Целое собирается из частей.</li>
+        <li><b>Записываю:</b> <span class="mono">AC = AB + BC</span>, длины частей складываются.</li>
+        <li><b>Подставляю:</b> <span class="mono">AC = 4 + 3 = 7</span> (см).</li>
+        <li><b>Проверяю смысл.</b> Целое (7) больше каждой части (4 и 3), так и должно быть. ✓</li>
+      </ol>
+      <div class="verdict">Ответ: AC = 7 см</div>
+    </div>
+
+    <div class="walk" style="margin-top:.8rem">
+      <p class="q">На прямой по порядку отмечены точки K, L, M. KM = 10 см, LM = 6 см. Найди KL.</p>
+      <ol>
+        <li>Порядок K, L, M, значит, L между K и M. Целое здесь <b>KM</b>, а KL и LM — его части.</li>
+        <li>Известно целое (10) и одна часть (6), ищем вторую часть → <b>вычитаем</b>.</li>
+        <li><span class="mono">KL = KM − LM = 10 − 6 = 4</span> (см).</li>
+      </ol>
+      <div class="verdict">Ответ: KL = 4 см</div>
+    </div>
+
+    <div class="walk" style="margin-top:.8rem">
+      <p class="q">Допиши пропущенный шаг: сколько прямых можно провести через две различные точки M и N? А через одну точку M?</p>
+      <ol>
+        <li>Через две различные точки, по аксиоме о прямой, можно провести __________ прямую. <i>(впиши число и слово)</i></li>
+        <li>Через одну точку M можно провести прямых __________. <i>(сколько?)</i></li>
+      </ol>
+      <details><summary>Сверить ответ</summary><div class="ans">Через две точки — <b>ровно одну</b>. Через одну точку — <b>сколько угодно, бесконечно много</b>: линейку вокруг одной точки крути как хочешь.</div></details>
+    </div>
+  </section>
+
+  <section>
+    <h2>Тренажёр · части и целое на прямой</h2>
+    <p>Каждый раз новая задача про три точки на прямой. Реши сам, впиши число в сантиметрах (без «см») и проверь себя. Застрял — жми «Решение».</p>
+    <div class="trainer">
+      <div class="tr-task" id="trTask">На прямой по порядку отмечены точки <b>A</b>, <b>B</b>, <b>C</b>. Известно: <b>AB = 4</b> см, <b>BC = 3</b> см. Найди <b>AC</b>.</div>
+      <svg class="tr-pic" id="trPic" viewBox="0 0 420 90" role="img" aria-label="Чертёж к задаче"></svg>
+      <div class="tr-ctl">
+        <button id="trNew" type="button">🎲 Новая</button>
+        <input id="trAns" type="text" inputmode="decimal" placeholder="ответ" aria-label="Ответ">
+        <button id="trCheck" type="button" class="sec">Проверить</button>
+        <button id="trShow" type="button" class="ghost">Решение</button>
+      </div>
+      <div id="trResult" class="tr-result"></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Проверь себя</h2>
+    <div class="drill">
+      <details><summary>1) Назови, что на чертеже бесконечно, а что имеет концы.</summary><div class="ans">Бесконечна <b>прямая</b>: ни начала, ни конца. Концы есть у <b>отрезка</b>, это две точки, между которыми он заключён. У точки нет ни того, ни другого, у неё вообще нет размеров.</div></details>
+      <details><summary>2) Прочитай запись «AB» двумя способами и объясни, чем они отличаются.</summary><div class="ans">Это может быть <b>прямая AB</b>, бесконечная линия через точки A и B. А может быть <b>отрезок AB</b>, только кусок между A и B вместе с концами. Разница: у прямой нет ни концов, ни длины, у отрезка есть и то, и другое.</div></details>
+      <details><summary>3) На прямой по порядку отмечены P, Q, R; PQ = 5 см, QR = 8 см. Найди PR.</summary><div class="ans">Q лежит между P и R, значит части складываются: <span class="mono">PR = PQ + QR = 5 + 8 = 13</span>. Ответ <b>13 см</b>.</div></details>
+      <details><summary>4) Что изменится, если две точки совпали: сколько прямых через них теперь можно провести?</summary><div class="ans">Бесконечно много: точка-то фактически одна, а через одну точку прямых сколько угодно. Аксиома потому и требует, чтобы точки были <b>различными</b>, иначе единственности нет.</div></details>
+      <details><summary>5) Найди ошибку: ученик написал «прямую AB можно измерить, её длина 7 см».</summary><div class="ans">Прямая <b>бесконечна</b>, длины у неё нет, измерить её нельзя. Измеряют только <b>отрезок AB</b>. Ученик перепутал прямую с отрезком: померил линейкой то, что нарисовано на бумаге, а нарисован там отрезок.</div></details>
+      <details><summary>6) Обратная задача: AC = 12 см, точка B лежит между A и C, BC = 5 см. Найди AB.</summary><div class="ans">Здесь целое это AC, а части AB и BC. Ищем часть, значит вычитаем: <span class="mono">AB = AC − BC = 12 − 5 = 7</span>. Ответ <b>7 см</b>.</div></details>
+    </div>
+  </section>
+
+  <section>
+    <h2>Ловушки</h2>
+    <ul class="traps">
+      <li><b>Путать прямую и отрезок.</b> Нарисованная линия — всегда отрезок, а не «прямая целиком». Прямую мы только представляем продолженной в обе стороны без конца. Длина бывает лишь у отрезка.</li>
+      <li><b>«Через две точки можно провести несколько прямых».</b> Нет: ровно одну. Приложи линейку к двум точкам и попробуй повернуть, не отрываясь от обеих. Не выйдет.</li>
+      <li><b>Неверное обозначение.</b> Точка — <b>заглавная</b> буква (<span class="mono">A</span>), прямая — строчная (<span class="mono">a</span>) или две точки. Отрезок задаётся <b>двумя</b> концами: <span class="mono">AB</span>. Одной буквой его не обозначают.</li>
+      <li><b>«Точка имеет размер».</b> Жирная клякса на чертеже — лишь изображение точки. У самой точки размеров нет.</li>
+      <li><b>Считать AB и BA разными отрезками.</b> Это один и тот же отрезок: порядок букв не важен.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Объясни своими словами</h2>
+    <p>Закрой урок и ответь вслух: себе, другу или чат-боту. Объяснил без запинки — тема твоя.</p>
+    <ol class="selfcheck">
+      <li>Чем прямая отличается от отрезка?</li>
+      <li>Сколько прямых проходит через две различные точки?</li>
+      <li>Как обозначают точку, прямую и отрезок?</li>
+    </ol>
+    <details><summary>Сверить с эталоном</summary><div class="ans">
+      1) У прямой нет концов и нет длины, у отрезка есть и концы, и длина.<br>
+      2) Ровно одна.<br>
+      3) Точку заглавной буквой, прямую строчной буквой или двумя своими точками, отрезок двумя заглавными буквами-концами.
+    </div></details>
+  </section>
+
+  <div class="wrapup">
+    <h2>Запомни главное</h2>
+    <p class="big-rule">через две точки — ровно одна прямая<br>отрезок = часть прямой между двумя концами</p>
+    <p>Точка и прямая — основные понятия геометрии, их не определяют. Через две различные точки проходит ровно одна прямая. Отрезок — часть прямой между двумя концами, и его длину можно измерить.</p>
+    <p class="next">👉 Дальше <b>луч и угол</b> (что будет, если у линии обрубить только один конец) и <b>сравнение отрезков</b> (как понять, какой из двух длиннее, и что такое середина отрезка).</p>
+  </div>
+
+</div>
+
+<script>
+(function(){
+  var cv=document.getElementById('cv'); if(!cv) return;
+  var ctx=cv.getContext('2d'), rot=document.getElementById('rot'), rotv=document.getElementById('rotv'),
+      ext=document.getElementById('ext'), cap=document.getElementById('cap');
+  var W=640,H=360,dpr=1;
+  function css(v){ return getComputedStyle(document.documentElement).getPropertyValue(v).trim(); }
+  function resize(){ var c=cv.clientWidth||640; dpr=Math.min(window.devicePixelRatio||1,2);
+    W=c; H=Math.round(c*0.56); cv.width=W*dpr; cv.height=H*dpr; cv.style.height=H+'px'; ctx.setTransform(dpr,0,0,dpr,0,0); }
+  function arrow(x,y,ux,uy,col){
+    var s=9; ctx.beginPath(); ctx.moveTo(x,y);
+    ctx.lineTo(x-ux*s*1.7-uy*s*0.75, y-uy*s*1.7+ux*s*0.75);
+    ctx.lineTo(x-ux*s*1.7+uy*s*0.75, y-uy*s*1.7-ux*s*0.75);
+    ctx.closePath(); ctx.fillStyle=col; ctx.fill();
+  }
+  function draw(){
+    var deg=+rot.value, on=ext.checked;
+    rotv.textContent=deg+'°';
+    var t=-deg*Math.PI/180;               // поворот против часовой на экране
+    var ux=Math.cos(t), uy=Math.sin(t);
+    var cx=W/2, cy=H/2;
+    var half=Math.min(W,H)*0.26;          // половина отрезка
+    var far=Math.min(W,H)*0.44;           // докуда тянем продолжение
+    var Ax=cx-ux*half, Ay=cy-uy*half, Bx=cx+ux*half, By=cy+uy*half;
+    ctx.clearRect(0,0,W,H);
+    // продолжение — прямая
+    if(on){
+      ctx.save(); ctx.setLineDash([7,7]); ctx.lineWidth=3; ctx.strokeStyle=css('--ln');
+      ctx.beginPath(); ctx.moveTo(Ax,Ay); ctx.lineTo(cx-ux*far,cy-uy*far);
+      ctx.moveTo(Bx,By); ctx.lineTo(cx+ux*far,cy+uy*far); ctx.stroke(); ctx.restore();
+      arrow(cx+ux*far, cy+uy*far, ux, uy, css('--ln'));
+      arrow(cx-ux*far, cy-uy*far, -ux, -uy, css('--ln'));
+    }
+    // отрезок
+    ctx.lineWidth=5; ctx.lineCap='round'; ctx.strokeStyle=css('--sg');
+    ctx.beginPath(); ctx.moveTo(Ax,Ay); ctx.lineTo(Bx,By); ctx.stroke();
+    // концы
+    [[Ax,Ay,'A'],[Bx,By,'B']].forEach(function(p){
+      ctx.beginPath(); ctx.arc(p[0],p[1],6,0,6.2832); ctx.fillStyle=css('--pt'); ctx.fill();
+      ctx.font='700 15px ui-monospace,Menlo,monospace'; ctx.fillStyle=css('--ink');
+      ctx.textAlign='center'; ctx.textBaseline='middle';
+      ctx.fillText(p[2], p[0]+uy*20, p[1]-ux*20);
+    });
+    // подпись отрезка вдоль
+    ctx.font='700 14px ui-monospace,Menlo,monospace'; ctx.fillStyle=css('--sg');
+    ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.fillText('отрезок AB', cx-uy*24, cy+ux*24);
+    cap.innerHTML = on
+      ? 'Пунктир со стрелками — это <b style="color:var(--ln)">прямая AB</b>: она уходит за край картинки и не кончается никогда. Оранжевый кусок внутри — по-прежнему отрезок.'
+      : 'Сейчас нарисован только <b style="color:var(--sg)">отрезок AB</b>: он начинается в A и кончается в B, его длину можно измерить линейкой.';
+  }
+  rot.addEventListener('input',draw);
+  ext.addEventListener('change',draw);
+  window.addEventListener('resize',function(){ resize(); draw(); });
+  resize(); draw();
+})();
+</script>
+
+<script>
+(function(){
+  var taskEl=document.getElementById('trTask'), ansEl=document.getElementById('trAns'),
+      resEl=document.getElementById('trResult'), picEl=document.getElementById('trPic');
+  if(!taskEl) return;
+  var MINUS='−';
+  var TRIPLES=[['A','B','C'],['K','L','M'],['P','Q','R'],['M','N','K'],['A','B','D'],['X','Y','Z'],['D','E','F']];
+  var cur=null;
+  function ri(min,max){ return Math.floor(Math.random()*(max-min+1))+min; }
+  function pic(t,l1,l2,lab1,lab2,labWhole){
+    var x1=60, x3=360, xm=x1+Math.round((x3-x1)*l1/(l1+l2));
+    var s='<line x1="20" y1="52" x2="400" y2="52" stroke="#C7CFDB" stroke-width="2" stroke-dasharray="6 6"/>'+
+      '<line x1="'+x1+'" y1="52" x2="'+x3+'" y2="52" stroke="#E27C2C" stroke-width="4"/>';
+    [[x1,t[0]],[xm,t[1]],[x3,t[2]]].forEach(function(p){
+      s+='<circle cx="'+p[0]+'" cy="52" r="5" fill="#7A4FB5"/>'+
+         '<text x="'+p[0]+'" y="78" text-anchor="middle" font-family="ui-monospace,Menlo,monospace" font-size="16" font-weight="700" fill="#1D2530">'+p[1]+'</text>';
+    });
+    s+='<text x="'+((x1+xm)/2)+'" y="34" text-anchor="middle" font-family="ui-monospace,Menlo,monospace" font-size="13" font-weight="700" fill="#E27C2C">'+lab1+'</text>';
+    s+='<text x="'+((xm+x3)/2)+'" y="34" text-anchor="middle" font-family="ui-monospace,Menlo,monospace" font-size="13" font-weight="700" fill="#E27C2C">'+lab2+'</text>';
+    if(labWhole) s+='<text x="'+((x1+x3)/2)+'" y="16" text-anchor="middle" font-family="ui-monospace,Menlo,monospace" font-size="13" font-weight="700" fill="#2E5AAC">'+labWhole+'</text>';
+    picEl.innerHTML=s;
+  }
+  function render(){
+    var q=cur, t=q.t, A=t[0], B=t[1], C=t[2];
+    var head='На прямой по порядку отмечены точки <b>'+A+'</b>, <b>'+B+'</b>, <b>'+C+'</b>. ';
+    if(q.kind==='whole'){
+      taskEl.innerHTML=head+'Известно: <b>'+A+B+' = '+q.p1+'</b> см, <b>'+B+C+' = '+q.p2+'</b> см. Найди <b>'+A+C+'</b>.';
+      pic(t,q.p1,q.p2,q.p1+' см',q.p2+' см','? см');
+    } else if(q.kind==='first'){
+      taskEl.innerHTML=head+'Известно: <b>'+A+C+' = '+q.w+'</b> см, <b>'+B+C+' = '+q.p2+'</b> см. Найди <b>'+A+B+'</b>.';
+      pic(t,q.p1,q.p2,'? см',q.p2+' см',q.w+' см');
+    } else {
+      taskEl.innerHTML=head+'Известно: <b>'+A+C+' = '+q.w+'</b> см, <b>'+A+B+' = '+q.p1+'</b> см. Найди <b>'+B+C+'</b>.';
+      pic(t,q.p1,q.p2,q.p1+' см','? см',q.w+' см');
+    }
+    resEl.innerHTML=''; ansEl.value='';
+  }
+  function generate(){
+    var t=TRIPLES[ri(0,TRIPLES.length-1)];
+    var p1=ri(2,12), p2=ri(2,12);
+    var kinds=['whole','first','second'], kind=kinds[ri(0,2)];
+    cur={t:t,kind:kind,p1:p1,p2:p2,w:p1+p2};
+    cur.ans = kind==='whole' ? cur.w : (kind==='first' ? p1 : p2);
+    render();
+  }
+  function solHTML(){
+    var q=cur, A=q.t[0], B=q.t[1], C=q.t[2], h='<div class="sol">';
+    h+='Точки идут по порядку → '+B+' лежит между '+A+' и '+C+'.<br>';
+    if(q.kind==='whole'){
+      h+='Целое = сумма частей: '+A+C+' = '+A+B+' + '+B+C+'<br>';
+      h+=A+C+' = '+q.p1+' + '+q.p2+' = <b>'+q.w+'</b> (см)';
+    } else if(q.kind==='first'){
+      h+='Ищем часть → из целого вычитаем известную часть:<br>';
+      h+=A+B+' = '+A+C+' '+MINUS+' '+B+C+' = '+q.w+' '+MINUS+' '+q.p2+' = <b>'+q.p1+'</b> (см)';
+    } else {
+      h+='Ищем часть → из целого вычитаем известную часть:<br>';
+      h+=B+C+' = '+A+C+' '+MINUS+' '+A+B+' = '+q.w+' '+MINUS+' '+q.p1+' = <b>'+q.p2+'</b> (см)';
+    }
+    return h+'</div>';
+  }
+  function check(){
+    var raw=ansEl.value.trim();
+    if(raw===''){ resEl.innerHTML='<span class="bad">Введи ответ или нажми «Решение».</span>'; return; }
+    var got=parseFloat(raw.replace(',','.').replace(/−/g,'-').replace(/[^0-9.\-]/g,''));
+    if(!isNaN(got) && Math.abs(got-cur.ans)<0.01){ resEl.innerHTML='<span class="ok">✓ Верно!</span>'+solHTML(); }
+    else{ resEl.innerHTML='<span class="bad">✗ Пока не то — глянь решение.</span>'+solHTML(); }
+  }
+  document.getElementById('trNew').addEventListener('click',function(){ generate(); ansEl.focus(); });
+  document.getElementById('trCheck').addEventListener('click',check);
+  document.getElementById('trShow').addEventListener('click',function(){ resEl.innerHTML=solHTML(); });
+  ansEl.addEventListener('keydown',function(e){ if(e.key==='Enter') check(); });
+  cur={t:['A','B','C'],kind:'whole',p1:4,p2:3,w:7,ans:7};
+  pic(cur.t,4,3,'4 см','3 см','? см');
+})();
+</script>
+<!--LESSON-NAV-BOT--><nav class="lnav lnav-bot"><a class="prev" href="./alg7-moda-mediana.html"><span class="dir">← Предыдущая</span><span class="ttl">Мода и медиана</span></a><a class="to-cat" href="./catalog.html">📚 <span>Все темы</span></a><a class="next" href="./geo7-luch-ugol.html"><span class="dir">Следующая →</span><span class="ttl">Луч и угол</span></a></nav><!--/LESSON-NAV-BOT-->

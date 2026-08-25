@@ -1,0 +1,491 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Луч и угол. Геометрия 7 класс</title>
+<style>
+  :root{
+    --paper:#F6F7F9; --card:#FFFFFF; --ink:#1D2530; --muted:#606B7A; --line:#E3E7EE;
+    --brand:#2E5AAC; --brand-soft:#E4EBF7;
+    --ray:#E27C2C; --ray-soft:#FBEEDF;      /* луч */
+    --vert:#159A8A; --vert-soft:#DEF3F0;    /* вершина */
+    --arc:#8B4FBF; --arc-soft:#F0E7FA;      /* раствор угла */
+    --ok:#1E8E5A; --no:#C23B3B;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper)}
+  .page{max-width:720px;margin:0 auto;padding:clamp(1.4rem,4vw,3rem) clamp(1.1rem,4vw,2rem) 4.5rem;
+    color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:17.5px;line-height:1.68;-webkit-font-smoothing:antialiased}
+  .mono{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-variant-numeric:tabular-nums;font-weight:600}
+
+  .hero{border-bottom:3px solid var(--brand);padding-bottom:1.4rem;margin-bottom:1.8rem}
+  .eyebrow{font-size:.74rem;letter-spacing:.15em;text-transform:uppercase;color:var(--brand);font-weight:700;margin:0 0 .55rem}
+  h1{font-size:clamp(1.9rem,6vw,2.8rem);line-height:1.05;margin:0;font-weight:800;letter-spacing:-.02em;text-wrap:balance}
+  .tagline{font-size:1.12rem;color:var(--muted);margin:.85rem 0 0;text-wrap:pretty}
+
+  section{margin-top:2.4rem}
+  h2{font-size:1.5rem;margin:0 0 .3rem;font-weight:780;letter-spacing:-.015em;text-wrap:balance}
+  h2 .em{color:var(--brand)}
+  h3{font-size:1.08rem;margin:1.4rem 0 .2rem;font-weight:750}
+  p{margin:.7rem 0}
+  strong{font-weight:680}
+  .rw{color:var(--ray);font-weight:800} .vw{color:var(--vert);font-weight:800} .aw{color:var(--arc);font-weight:800}
+
+  .lead-in{background:var(--brand-soft);border-radius:14px;padding:1.1rem 1.3rem;font-size:1.02rem}
+  .lead-in p{margin:.4rem 0}
+  .lead-in b{color:var(--brand)}
+
+  .recall{border:1px dashed var(--line);background:var(--card);border-radius:14px;padding:1rem 1.2rem;margin-top:1rem}
+  .recall p{margin:.35rem 0;font-size:.98rem}
+  .recall .t{font-weight:750;font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:.5rem}
+
+  .formula-box{background:var(--ink);color:#fff;border-radius:14px;padding:1.3rem;text-align:center;margin-top:1rem}
+  .formula-box .eq{font-family:ui-monospace,Menlo,monospace;font-size:clamp(1.5rem,5.5vw,2.1rem);font-weight:700}
+  .formula-box .eq .v{color:#6FD3C6} .formula-box .eq .s{color:#F0A45E}
+  .formula-box .note{font-size:.9rem;color:#AEB8C6;margin:.7rem 0 0;line-height:1.6}
+
+  .note{border-left:4px solid var(--brand);background:var(--brand-soft);border-radius:0 10px 10px 0;padding:.8rem 1.1rem;margin-top:1rem;font-size:.98rem}
+  .note b{color:var(--brand)}
+  .note p{margin:.35rem 0}
+
+  .tblwrap{overflow-x:auto;margin-top:1rem;border:1px solid var(--line);border-radius:12px;background:var(--card)}
+  table{border-collapse:collapse;width:100%;min-width:420px;font-size:.96rem}
+  th,td{padding:.65rem .85rem;text-align:left;border-bottom:1px solid var(--line)}
+  th{background:#FAFBFD;font-weight:750;font-size:.85rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+  tr:last-child td{border-bottom:none}
+
+  /* Чертежи */
+  .diagram{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:1.2rem;margin-top:1rem}
+  .diagram canvas{width:100%;height:auto;display:block;border-radius:8px}
+  .sliders{display:grid;gap:.7rem;margin-top:.9rem}
+  .sliders label{display:flex;align-items:center;gap:.6rem;font-weight:700;font-size:.92rem}
+  .sliders label.l1{color:var(--arc)} .sliders label.l2{color:var(--ray)}
+  .sliders .cap{min-width:9.5ch}
+  .sliders input[type=range]{flex:1;min-width:80px}
+  .sliders input.r1{accent-color:var(--arc)} .sliders input.r2{accent-color:var(--ray)}
+  .sliders input[type=range]:focus-visible{outline:3px solid var(--brand);outline-offset:3px}
+  .diag-msg{text-align:center;font-weight:700;font-size:1rem;margin:.9rem 0 0;padding:.6rem .8rem;border-radius:10px;background:var(--brand-soft);color:var(--brand);min-height:1.2rem}
+  .cap-under{font-size:.9rem;color:var(--muted);margin-top:.5rem}
+
+  .walk{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.15rem 1.3rem;margin-top:1rem}
+  .walk .q{font-weight:700;font-size:1.02rem;margin:0 0 .9rem;padding-bottom:.7rem;border-bottom:1px solid var(--line)}
+  .walk ol{margin:0;padding-left:1.2rem;display:flex;flex-direction:column;gap:.55rem}
+  .walk li{font-size:.96rem}
+  .walk .why{color:var(--muted);font-style:italic}
+  .verdict{margin-top:1rem;padding:.7rem 1rem;background:var(--brand-soft);border-radius:10px;font-weight:650;color:var(--brand);font-family:ui-monospace,Menlo,monospace}
+
+  /* Тренажёр */
+  .trainer{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.2rem 1.3rem;margin-top:1rem}
+  .tr-task{font-size:clamp(1rem,4vw,1.12rem);text-align:center;padding:1rem;background:var(--brand-soft);border-radius:10px;font-weight:600;line-height:1.55}
+  .tr-task b{font-family:ui-monospace,Menlo,monospace;color:var(--ink)}
+  .tr-ctl{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:1rem;align-items:center;justify-content:center}
+  .tr-ctl input{flex:1;min-width:110px;max-width:200px;font:inherit;padding:.5rem .7rem;border:1px solid var(--line);border-radius:9px;text-align:center;background:#fff;color:var(--ink)}
+  .tr-ctl button{font:inherit;font-weight:700;font-size:.9rem;cursor:pointer;border:none;border-radius:9px;padding:.55rem .95rem;color:#fff;background:var(--brand)}
+  .tr-ctl button.sec{background:var(--ray)}
+  .tr-ctl button.ghost{background:transparent;color:var(--brand);border:1px solid var(--brand)}
+  .tr-ctl button:focus-visible,.tr-ctl input:focus-visible{outline:3px solid var(--brand);outline-offset:2px}
+  .tr-result{margin-top:.9rem;font-size:.96rem;min-height:1.2rem;text-align:center}
+  .tr-result .ok{color:var(--ok);font-weight:700} .tr-result .bad{color:var(--no);font-weight:700}
+  .tr-result .sol{margin-top:.6rem;padding:.8rem 1rem;background:#FCFDFE;border:1px solid var(--line);border-radius:10px;font-size:.92rem;line-height:1.75;text-align:left}
+  .tr-result .sol b{font-family:ui-monospace,Menlo,monospace}
+
+  details{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:.9rem 1.1rem;margin-top:.7rem}
+  details[open]{border-color:var(--brand)}
+  summary{cursor:pointer;font-weight:650;list-style:none;display:flex;justify-content:space-between;gap:1rem;align-items:center}
+  summary::-webkit-details-marker{display:none}
+  summary::after{content:"проверить";font-size:.8rem;color:var(--brand);font-weight:700;white-space:nowrap}
+  details[open] summary::after{content:"скрыть"}
+  summary:focus-visible{outline:3px solid var(--brand);outline-offset:3px;border-radius:6px}
+  .ans{margin-top:.75rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.96rem;color:var(--muted)}
+  .ans b{color:var(--ink)}
+  .drill{display:flex;flex-direction:column;gap:.2rem;margin-top:1rem}
+  .lvl{font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:750;margin:1.3rem 0 .2rem}
+
+  ul.traps{list-style:none;margin:1rem 0 0;padding:0;display:flex;flex-direction:column;gap:.7rem}
+  ul.traps li{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:.85rem 1.05rem;padding-left:2.5rem;position:relative;font-size:.97rem}
+  ul.traps li::before{content:"⚠";position:absolute;left:1rem;top:.85rem;color:var(--ray)}
+  ul.traps b{font-weight:700}
+  ul.traps .fix{display:block;margin-top:.35rem;color:var(--muted);font-size:.93rem}
+
+  .selfcheck{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.1rem 1.3rem;margin-top:1rem}
+  .selfcheck ol{margin:.3rem 0 0;padding-left:1.2rem;display:flex;flex-direction:column;gap:.45rem}
+
+  .wrapup{background:var(--brand);color:#fff;border-radius:16px;padding:1.4rem 1.5rem;margin-top:2.4rem}
+  .wrapup h2{color:#fff;margin:0 0 .5rem}
+  .wrapup p{color:#DEE7F5;margin:.4rem 0;font-size:1rem}
+  .wrapup .big-rule{font-size:1.1rem;font-weight:800;color:#fff;margin:.6rem 0;line-height:1.5}
+  .wrapup .next{font-size:.95rem;color:#C6D5EE;margin-top:1rem;padding-top:1rem;border-top:1px solid rgba(255,255,255,.2)}
+  .wrapup .next b{color:#fff}
+
+  @media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+<!--LESSON-NAV-TOP--><style>.lnav{--lnav-accent:#3D5AF1}.lnav a{text-decoration:none;font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif}.lnav-top{max-width:820px;margin:0 auto;padding:.75rem clamp(1rem,4vw,1.5rem) .1rem}.lnav-top a{display:inline-flex;align-items:center;gap:.35rem;color:var(--lnav-accent);font-weight:600;font-size:.9rem}.lnav-top a:hover{text-decoration:underline}.lnav-bot{max-width:820px;margin:2.6rem auto 3rem;padding:1.1rem clamp(1rem,4vw,1.5rem) 0;border-top:1px solid #E4E8EF;display:flex;align-items:stretch;gap:.55rem}.lnav-bot a{min-width:0;display:flex;flex-direction:column;justify-content:center;gap:.15rem;border:1px solid #E4E8EF;border-radius:12px;padding:.65rem .85rem;color:#182233;background:#fff;transition:border-color .1s,transform .08s}.lnav-bot a:hover{border-color:var(--lnav-accent);transform:translateY(-1px)}.lnav-bot .prev,.lnav-bot .next{flex:1 1 0}.lnav-bot .next{text-align:right}.lnav-bot .dir{font-size:.72rem;color:#8A93A6;font-weight:600}.lnav-bot .ttl{font-size:.9rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.lnav-bot .to-cat{flex:0 0 auto;flex-direction:row;align-items:center;justify-content:center;color:var(--lnav-accent);font-weight:700;font-size:.85rem;white-space:nowrap}@media(max-width:420px){.lnav-bot .to-cat span{display:none}.lnav-bot .to-cat{padding:.65rem .7rem}}</style><nav class="lnav lnav-top"><a href="./catalog.html">← Все темы</a></nav><!--/LESSON-NAV-TOP-->
+<div class="page">
+
+  <header class="hero">
+    <p class="eyebrow">Геометрия · 7 класс</p>
+    <h1>Луч и угол</h1>
+    <p class="tagline">Два кирпичика, из которых собрана вся геометрия 7 класса. Разберём, что такое луч, что такое угол и почему длина нарисованных сторон на угол не влияет.</p>
+  </header>
+
+  <div class="lead-in">
+    <p><b>Где это встречается.</b> Возьми фонарик: свет выходит из одной точки и уходит в одну сторону «без конца». Вот тебе луч. Стрелки часов образуют угол. Дверь поворачивается на какой-то угол, лестница стоит под наклоном, дороги на перекрёстке сходятся под углом.</p>
+    <p><b>Зачем это тебе.</b> Не разберёшься с углом — не измеришь его транспортиром, не поймёшь смежные и вертикальные углы, не дойдёшь до треугольников и суммы их углов. Всё это стоит на теме, которую ты читаешь прямо сейчас.</p>
+  </div>
+
+  <section>
+    <h2>Сначала вспомни: <span class="em">точка, прямая, отрезок</span></h2>
+    <div class="recall">
+      <p class="t">Быстро освежи в голове</p>
+      <p>· <strong>Прямая</strong> бесконечна в обе стороны, концов у неё нет вообще.</p>
+      <p>· <strong>Отрезок</strong> — кусок прямой, ограниченный с двух сторон: у него <strong>два конца</strong>.</p>
+      <p>· <strong>Точка</strong> — ею мы отмечаем места на прямой и подписываем буквами.</p>
+      <p style="margin-top:.6rem">Луч встанет ровно между прямой и отрезком. Держи в голове один вопрос: <b>сколько у фигуры концов?</b> По нему всё и различаем.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Что такое луч</h2>
+    <p>Возьми прямую и поставь на ней точку. Она делит прямую на две части, на две полупрямые. <strong>Полупрямая вместе с этой точкой и называется лучом.</strong></p>
+    <p>То есть <span class="rw">луч</span> — это часть прямой: <strong>начинается в одной точке</strong> и тянется <strong>бесконечно в одну сторону</strong>. У прямой концов нет, у отрезка их два, у луча ровно один, его <strong>начало</strong>.</p>
+
+    <div class="tblwrap">
+      <table>
+        <thead><tr><th>Фигура</th><th>Сколько концов</th><th>Как далеко тянется</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Прямая</strong></td><td>0</td><td>бесконечно в обе стороны</td></tr>
+          <tr><td><strong>Луч</strong></td><td>1 (начало)</td><td>бесконечно в одну сторону</td></tr>
+          <tr><td><strong>Отрезок</strong></td><td>2</td><td>никуда, он ограничен</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="diagram">
+      <canvas id="cmp" width="640" height="330" aria-label="Сравнение луча, отрезка и прямой"></canvas>
+      <p class="cap-under">Стрелка на конце означает «дальше бесконечно». У луча она одна, у прямой две, у отрезка ни одной.</p>
+    </div>
+
+    <div class="formula-box">
+      <div class="eq">луч <span class="v">O</span><span class="s">A</span></div>
+      <div class="note"><span class="v">O</span> — начало луча, пишем <b>первой</b> · <span class="s">A</span> — любая другая точка на луче</div>
+    </div>
+    <div class="note">
+      <p><b>Порядок букв важен.</b> «Луч <span class="mono">OA</span>» и «луч <span class="mono">AO</span>» — разные лучи. Начинаются в разных точках и уходят в разные стороны. Первая буква всегда говорит, где луч <strong>начинается</strong>.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Что такое угол</h2>
+    <p><span class="aw">Угол</span> — это фигура из <strong>двух лучей, которые выходят из одной общей точки</strong>.</p>
+    <p>Общую точку называют <span class="vw">вершиной</span> угла, а сами лучи — <span class="rw">сторонами</span>. Больше в угле ничего нет: вершина и две стороны.</p>
+
+    <div class="formula-box">
+      <div class="eq">∠<span class="s">A</span><span class="v">B</span><span class="s">C</span></div>
+      <div class="note">Буква <b>в середине</b> (<span class="v">B</span>) — это <b>всегда вершина</b><br><span class="s">A</span> и <span class="s">C</span> — точки на сторонах угла</div>
+    </div>
+
+    <p>Если в вершине только один угол, запись можно сократить до одной буквы вершины: <span class="mono">∠B</span>.</p>
+
+    <div class="note">
+      <p><b>Главный смысл темы.</b> Угол — это не «уголок» и не «галочка» на картинке. Угол показывает, <strong>насколько один луч повёрнут относительно другого</strong>, то есть насколько разведены стороны. Это разведение называют <strong>раствором</strong>.</p>
+      <p>Отсюда главное: размер угла зависит <strong>только</strong> от того, как расположены стороны, и <strong>не зависит</strong> от того, как далеко мы дочертили лучи. Лучи-то всё равно бесконечные, мы рисуем от них кусочек.</p>
+    </div>
+
+    <h3>Развёрнутый угол</h3>
+    <p>Особый случай: два луча смотрят в противоположные стороны и вместе образуют прямую. Такой угол называют <strong>развёрнутым</strong>. Скажешь: это же обычная прямая, какой тут угол? А такой: два луча с общим началом на месте, определение выполняется, значит перед тобой <strong>полноценный угол</strong>.</p>
+
+    <div class="note">
+      <p><b>Про измерение.</b> Пока угол для нас — сама фигура. Насколько он большой, измеряют транспортиром в градусах (°), это градусная мера, тема следующего урока. Сейчас задача другая: научиться <strong>различать, называть и обозначать</strong> углы.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Потрогай руками: <span class="em">от чего зависит угол</span></h2>
+    <p>Вот подвижная модель угла: две «стрелки», скреплённые в вершине <span class="vw">B</span>. Первый ползунок разводит стороны, второй меняет только их длину.</p>
+    <p><strong>Сначала предскажи</strong>, потом проверь: что будет с углом, если стороны сделать вдвое длиннее, а раствор не трогать?</p>
+    <div class="diagram">
+      <canvas id="ang" width="640" height="420" aria-label="Подвижная модель угла: раствор сторон и их длина"></canvas>
+      <div class="sliders">
+        <label class="l1"><span class="cap">раствор</span><input id="sSpread" class="r1" type="range" min="10" max="180" step="1" value="55" aria-label="Раствор сторон угла"></label>
+        <label class="l2"><span class="cap">длина сторон</span><input id="sLen" class="r2" type="range" min="35" max="100" step="1" value="60" aria-label="Длина нарисованных сторон"></label>
+      </div>
+      <p class="diag-msg" id="angMsg">Двигай ползунки и смотри на фиолетовую дугу раствора.</p>
+    </div>
+    <p class="cap-under">Фиолетовая дуга и есть тот самый раствор, настоящая характеристика угла. Двигаешь второй ползунок: стороны стали длиннее или короче, а дуга ровно такая же. Значит и угол тот же.</p>
+  </section>
+
+  <section>
+    <h2>Разбираем вместе</h2>
+    <p>Разбираю по шагам и на каждом говорю, что делаю и почему.</p>
+
+    <div class="walk">
+      <p class="q">Пример 1. Дан угол с вершиной в точке M. На одной его стороне отмечена точка P, на другой точка K. Назови угол правильно.</p>
+      <ol>
+        <li><b>Шаг 1.</b> Находим вершину. Это точка, где сходятся стороны, то есть <span class="mono">M</span>. <span class="why">Почему это важно: вершину в записи ставят в середину.</span></li>
+        <li><b>Шаг 2.</b> Берём по одной точке с каждой стороны: <span class="mono">P</span> и <span class="mono">K</span>. <span class="why">Почему: по краям записи стоят точки со сторон.</span></li>
+        <li><b>Шаг 3.</b> Записываем: <span class="mono">∠PMK</span>. Можно и <span class="mono">∠KMP</span>, вершина <span class="mono">M</span> всё равно в середине. <span class="why">Почему: порядок крайних букв свободный, лишь бы вершина стояла посередине.</span></li>
+      </ol>
+      <div class="verdict">Ответ: ∠PMK</div>
+    </div>
+
+    <div class="walk" style="margin-top:.8rem">
+      <p class="q">Пример 2 (допиши шаг сам). На прямой отмечены точка O и точка A. Запиши луч, который начинается в точке O и проходит через A.</p>
+      <ol>
+        <li><b>Шаг 1.</b> Начало луча — точка <span class="mono">O</span>.</li>
+        <li><b>Шаг 2.</b> _______________ (запиши обозначение луча; первой идёт начало).</li>
+      </ol>
+      <details style="margin-top:.9rem"><summary>Сверить свой шаг 2</summary><div class="ans">Луч <b>OA</b>. Начало <span class="mono">O</span> идёт первым, вторая буква — любая другая точка луча.</div></details>
+    </div>
+
+    <div class="walk" style="margin-top:.8rem">
+      <p class="q">Пример 3 (реши сам). Дан угол ∠DEF. Какая точка тут вершина, а какие лежат на сторонах?</p>
+      <details><summary>Показать ответ</summary><div class="ans">Вершина — точка <b>E</b>, она стоит в середине записи. Точки <b>D</b> и <b>F</b> лежат на сторонах угла.</div></details>
+    </div>
+  </section>
+
+  <section>
+    <h2>Тренажёр · <span class="em">лучи и обозначения углов</span></h2>
+    <p>Заданий тут бесконечно. Впиши ответ и проверь себя, а застрял — открывай решение. Буквы можно писать без знака ∠.</p>
+    <div class="trainer">
+      <div class="tr-task" id="trTask">Дан угол ∠XYZ. Назови его вершину.</div>
+      <div class="tr-ctl">
+        <button id="trNew" type="button">🎲 Новое</button>
+        <input id="trAns" type="text" placeholder="ответ" aria-label="Ответ" autocomplete="off">
+        <button id="trCheck" type="button" class="sec">Проверить</button>
+        <button id="trShow" type="button" class="ghost">Решение</button>
+      </div>
+      <div id="trResult" class="tr-result"></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Проверь себя</h2>
+
+    <p class="lvl">Понимание</p>
+    <div class="drill">
+      <details><summary>1) Сколько концов у луча, у отрезка и у прямой? Что есть у луча, чего нет у прямой?</summary><div class="ans">У луча <b>один</b> конец, у отрезка <b>два</b>, у прямой <b>ни одного</b>. У луча есть <b>начало</b>, та самая точка, от которой он идёт. У прямой начала нет, она бесконечна в обе стороны.</div></details>
+      <details><summary>2) Прочитай запись ∠XYZ: назови вершину и стороны.</summary><div class="ans">Вершина — <b>Y</b>, средняя буква. Стороны — лучи <b>YX</b> и <b>YZ</b>, оба начинаются в вершине <span class="mono">Y</span>.</div></details>
+    </div>
+
+    <p class="lvl">Применение</p>
+    <div class="drill">
+      <details><summary>3) Начерти луч CB. Где его начало? Можно ли продолжить его в сторону точки C за её пределы?</summary><div class="ans">Начало луча — точка <b>C</b>, в записи она первая. Луч идёт от <span class="mono">C</span> через <span class="mono">B</span> и дальше бесконечно. Продолжить его <b>за точку C нельзя</b>: там луч кончается, это его начало.</div></details>
+      <details><summary>4) Начерти два луча с общим началом в точке T, проходящие через точки A и B. Запиши получившийся угол двумя способами.</summary><div class="ans">Получился угол с вершиной <span class="mono">T</span>, стороны — лучи <span class="mono">TA</span> и <span class="mono">TB</span>. Записать можно <b>∠ATB</b> или <b>∠BTA</b>: вершина <span class="mono">T</span> в обоих вариантах посередине.</div></details>
+    </div>
+
+    <p class="lvl">Анализ</p>
+    <div class="drill">
+      <details><summary>5) Что изменится, если… Два угла нарисованы с одинаковым раствором сторон, но у первого стороны длиннее. Какой угол больше?</summary><div class="ans">Углы <b>равны</b>. Величину угла задаёт только раствор сторон, то есть насколько один луч повёрнут относительно другого. Стороны угла — лучи, они и так бесконечные, а мы дочерчиваем от них кусок покороче или подлиннее. На сам угол это не влияет.</div></details>
+      <details><summary>6) Найди ошибку: ученик записал угол с вершиной B как ∠BAC. В чём ошибка и как правильно?</summary><div class="ans">Вершину поставили <b>с краю</b>. В записи <span class="mono">∠BAC</span> средняя буква <span class="mono">A</span>, значит записан угол с вершиной <span class="mono">A</span>, а не <span class="mono">B</span>. Правильно: <b>∠ABC</b> или <b>∠CBA</b>, вершина <span class="mono">B</span> в середине.</div></details>
+      <details><summary>7) Обратная задача: дан угол ∠KOM. Восстанови по записи, где вершина и какие лучи будут сторонами, и начерти его.</summary><div class="ans">Средняя буква <span class="mono">O</span>, значит вершина — точка <b>O</b>. Стороны — лучи <b>OK</b> и <b>OM</b>: оба начинаются в вершине <span class="mono">O</span>, поэтому <span class="mono">O</span> в их записи первая. Чертёж: ставим точку <span class="mono">O</span>, из неё проводим два луча, на одном отмечаем <span class="mono">K</span>, на другом <span class="mono">M</span>.</div></details>
+    </div>
+  </section>
+
+  <section>
+    <h2>Ловушки</h2>
+    <ul class="traps">
+      <li><b>Путать луч и отрезок.</b> У отрезка два конца, он ограничен; у луча только начало, дальше он тянется бесконечно.
+        <span class="fix">Как не попасться: спроси себя «сколько у фигуры концов?». Один конец — луч, два — отрезок.</span></li>
+      <li><b>Думать, что угол зависит от длины сторон.</b> Длинные стороны не делают угол «больше».
+        <span class="fix">Как не попасться: мысленно укороти или удлини стороны. Раствор не изменился, значит и угол тот же.</span></li>
+      <li><b>Ставить вершину с краю в записи ∠ABC.</b> Тогда получается запись совсем другого угла.
+        <span class="fix">Как не попасться: запомни намертво — <b>средняя буква всегда вершина</b>. В ∠ABC вершина B.</span></li>
+      <li><b>Считать развёрнутый угол «не углом».</b> Видят прямую и говорят «угла нет».
+        <span class="fix">Как не попасться: развёрнутый угол — это два луча с общим началом, просто направленные противоположно. Определение выполняется, значит это угол.</span></li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Объясни своими словами</h2>
+    <div class="selfcheck">
+      <p>Закрой урок и ответь вслух: себе, родителю или голосовому помощнику. Объяснил без запинки — тема взята.</p>
+      <ol>
+        <li>Чем луч отличается от отрезка и от прямой?</li>
+        <li>В записи ∠PQR: какая точка вершина, а какие лежат на сторонах?</li>
+        <li>Зависит ли величина угла от длины нарисованных сторон? Почему?</li>
+      </ol>
+    </div>
+  </section>
+
+  <div class="wrapup">
+    <h2>Запомни главное</h2>
+    <p class="big-rule">Угол — фигура из двух лучей с общим началом, оно же вершина. Его «размер» задаёт раствор сторон, а не их длина. В записи ∠ABC вершина всегда в середине.</p>
+    <p>Луч — часть прямой с одним началом, уходит бесконечно в одну сторону. В записи <span class="mono">OA</span> первой стоит начало <span class="mono">O</span>.</p>
+    <p class="next">👉 Дальше: <b>измерение углов</b> (транспортир и градусная мера) и <b>виды углов</b> (острый, прямой, тупой, развёрнутый). Обе темы держатся ровно на том, что ты разобрал здесь.</p>
+  </div>
+
+</div>
+
+<script>
+(function(){
+  var cv=document.getElementById('cmp'); if(!cv) return;
+  var ctx=cv.getContext('2d'), W=640, H=330, dpr=1;
+  function css(v){ return getComputedStyle(document.documentElement).getPropertyValue(v).trim(); }
+  function resize(){ var c=cv.clientWidth||640; dpr=Math.min(window.devicePixelRatio||1,2);
+    W=c; H=Math.round(Math.max(250, c*0.52)); cv.width=W*dpr; cv.height=H*dpr; cv.style.height=H+'px';
+    ctx.setTransform(dpr,0,0,dpr,0,0); }
+  function arrow(x,y,dir){ ctx.beginPath(); ctx.moveTo(x,y); ctx.lineTo(x-9*dir,y-5); ctx.lineTo(x-9*dir,y+5); ctx.closePath(); ctx.fill(); }
+  function dot(x,y,col,txt,side){
+    ctx.fillStyle=col; ctx.beginPath(); ctx.arc(x,y,4.5,0,Math.PI*2); ctx.fill();
+    if(txt){ ctx.fillStyle=css('--ink'); ctx.font='700 13px ui-monospace,Menlo,monospace'; ctx.textAlign='center'; ctx.textBaseline='bottom'; ctx.fillText(txt,x+(side||0),y-9); }
+  }
+  function row(y,title,x1,x2,arrLeft,arrRight,pA,pB,nA,nB){
+    var col=css('--ink');
+    ctx.fillStyle=css('--muted'); ctx.font='700 12px system-ui,sans-serif'; ctx.textAlign='left'; ctx.textBaseline='middle';
+    ctx.fillText(title, 12, y-26);
+    ctx.strokeStyle=col; ctx.lineWidth=2.4; ctx.beginPath(); ctx.moveTo(x1,y); ctx.lineTo(x2,y); ctx.stroke();
+    ctx.fillStyle=col;
+    if(arrRight) arrow(x2,y,1);
+    if(arrLeft) arrow(x1,y,-1);
+    if(pA!=null) dot(pA,y,css('--vert'),nA);
+    if(pB!=null) dot(pB,y,css('--ray'),nB);
+  }
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    var L=Math.max(14, W*0.06), R=W-Math.max(14, W*0.06);
+    var y1=H*0.24, y2=H*0.56, y3=H*0.87;
+    // луч: начало O слева, стрелка справа
+    row(y1,'ЛУЧ OA — один конец', L, R, false, true, L, L+(R-L)*0.42, 'O', 'A');
+    // отрезок: два конца
+    row(y2,'ОТРЕЗОК AB — два конца', L+(R-L)*0.16, L+(R-L)*0.7, false, false, L+(R-L)*0.16, L+(R-L)*0.7, 'A', 'B');
+    // прямая: стрелки в обе стороны
+    row(y3,'ПРЯМАЯ — концов нет', L, R, true, true, null, null);
+  }
+  window.addEventListener('resize',function(){ resize(); draw(); });
+  resize(); draw();
+})();
+</script>
+
+<script>
+(function(){
+  var cv=document.getElementById('ang'); if(!cv) return;
+  var ctx=cv.getContext('2d');
+  var sS=document.getElementById('sSpread'), sL=document.getElementById('sLen'), msg=document.getElementById('angMsg');
+  var W=640,H=420,dpr=1,last='';
+  function css(v){ return getComputedStyle(document.documentElement).getPropertyValue(v).trim(); }
+  function resize(){ var c=cv.clientWidth||640; dpr=Math.min(window.devicePixelRatio||1,2);
+    W=c; H=Math.round(Math.max(300, c*0.66)); cv.width=W*dpr; cv.height=H*dpr; cv.style.height=H+'px';
+    ctx.setTransform(dpr,0,0,dpr,0,0); }
+  function draw(){
+    var spread=+sS.value;                     // разведение сторон
+    var lenPct=+sL.value/100;
+    var vx=W*0.5, vy=H*0.78;                  // вершина
+    var maxLen=Math.min(W*0.44, vy-34);
+    var len=maxLen*lenPct;
+    var half=spread/2;
+    var a1=(-90-half)*Math.PI/180, a2=(-90+half)*Math.PI/180;
+    var p1=[vx+Math.cos(a1)*len, vy+Math.sin(a1)*len];
+    var p2=[vx+Math.cos(a2)*len, vy+Math.sin(a2)*len];
+    ctx.clearRect(0,0,W,H);
+    // дуга раствора — фиксированного радиуса, не зависит от длины сторон
+    var ar=Math.min(52, maxLen*0.45);
+    ctx.beginPath(); ctx.moveTo(vx,vy); ctx.arc(vx,vy,ar,a1,a2); ctx.closePath();
+    ctx.fillStyle=css('--arc-soft'); ctx.fill();
+    ctx.beginPath(); ctx.arc(vx,vy,ar,a1,a2); ctx.strokeStyle=css('--arc'); ctx.lineWidth=2.4; ctx.stroke();
+    // стороны — лучи
+    ctx.strokeStyle=css('--ray'); ctx.lineWidth=4; ctx.lineCap='round';
+    [p1,p2].forEach(function(p){ ctx.beginPath(); ctx.moveTo(vx,vy); ctx.lineTo(p[0],p[1]); ctx.stroke(); });
+    // стрелки на концах сторон (лучи бесконечны)
+    [[p1,a1],[p2,a2]].forEach(function(pr){
+      var p=pr[0], a=pr[1];
+      ctx.save(); ctx.translate(p[0],p[1]); ctx.rotate(a);
+      ctx.fillStyle=css('--ray'); ctx.beginPath(); ctx.moveTo(4,0); ctx.lineTo(-9,-6); ctx.lineTo(-9,6); ctx.closePath(); ctx.fill();
+      ctx.restore();
+    });
+    // вершина
+    ctx.fillStyle=css('--vert'); ctx.beginPath(); ctx.arc(vx,vy,6.5,0,Math.PI*2); ctx.fill();
+    // подписи
+    ctx.font='700 15px ui-monospace,Menlo,monospace'; ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.fillStyle=css('--vert'); ctx.fillText('B', vx, vy+22);
+    ctx.fillStyle=css('--ink');
+    ctx.fillText('A', p1[0]+Math.cos(a1)*20, p1[1]+Math.sin(a1)*20);
+    ctx.fillText('C', p2[0]+Math.cos(a2)*20, p2[1]+Math.sin(a2)*20);
+    ctx.fillStyle=css('--arc'); ctx.font='700 13px system-ui,sans-serif';
+    ctx.fillText('раствор', vx, vy-ar-14);
+    // подпись сверху
+    ctx.fillStyle=css('--muted'); ctx.font='600 13px system-ui,sans-serif'; ctx.textAlign='left'; ctx.textBaseline='top';
+    ctx.fillText('∠ABC : вершина B, стороны — лучи BA и BC', 10, 10);
+    // сообщение
+    if(spread>=179){
+      msg.textContent='Стороны образуют прямую — это развёрнутый угол. И это всё ещё угол!';
+    } else if(last==='len'){
+      msg.textContent='Ты менял только длину сторон — дуга раствора та же, угол не изменился.';
+    } else if(last==='spread'){
+      msg.textContent='Ты менял раствор — вот теперь угол действительно другой.';
+    }
+  }
+  sS.addEventListener('input',function(){ last='spread'; draw(); });
+  sL.addEventListener('input',function(){ last='len'; draw(); });
+  window.addEventListener('resize',function(){ resize(); draw(); });
+  resize(); draw();
+})();
+</script>
+
+<script>
+(function(){
+  var taskEl=document.getElementById('trTask'), ansEl=document.getElementById('trAns'), resEl=document.getElementById('trResult');
+  if(!taskEl) return;
+  var LET='ABCDEFKLMNOPQRSTXYZ'.split('');
+  var CYR={'А':'A','В':'B','С':'C','Е':'E','К':'K','М':'M','О':'O','Р':'P','Т':'T','Х':'X','У':'Y','Н':'H','Ѕ':'S'};
+  var cur=null;
+  function ri(min,max){ return Math.floor(Math.random()*(max-min+1))+min; }
+  function pick(n){ var pool=LET.slice(), out=[]; for(var i=0;i<n;i++){ out.push(pool.splice(ri(0,pool.length-1),1)[0]); } return out; }
+  function norm(s){
+    s=(s||'').toUpperCase().replace(/[∠\s.,;:!"'«»()\-]/g,'');
+    var r=''; for(var i=0;i<s.length;i++){ var ch=s[i]; r+=(CYR[ch]||ch); }
+    return r;
+  }
+  function normRu(s){ return (s||'').toLowerCase().replace(/ё/g,'е').replace(/[^а-я0-9]/g,''); }
+
+  function generate(){
+    var t=ri(1,6), p;
+    if(t===1){ p=pick(3); cur={t:1,p:p}; taskEl.innerHTML='Дан угол <b>∠'+p.join('')+'</b>. Назови его вершину.'; }
+    else if(t===2){ p=pick(3); cur={t:2,p:p}; taskEl.innerHTML='Вершина угла — точка <b>'+p[1]+'</b>. На одной его стороне отмечена точка <b>'+p[0]+'</b>, на другой — <b>'+p[2]+'</b>. Запиши этот угол.'; }
+    else if(t===3){ p=pick(2); cur={t:3,p:p}; taskEl.innerHTML='Луч начинается в точке <b>'+p[0]+'</b> и проходит через точку <b>'+p[1]+'</b>. Запиши обозначение этого луча.'; }
+    else if(t===4){ var kinds=['луч','отрезок','прямая']; var k=kinds[ri(0,2)]; cur={t:4,k:k}; taskEl.innerHTML='Сколько концов у фигуры «<b>'+k+'</b>»? Ответь числом.'; }
+    else if(t===5){ p=pick(3); cur={t:5,p:p}; taskEl.innerHTML='Найди ошибку. Вершина угла — точка <b>'+p[1]+'</b>, на сторонах отмечены <b>'+p[0]+'</b> и <b>'+p[2]+'</b>, а ученик записал <b>∠'+p[1]+p[0]+p[2]+'</b>. Запиши верное обозначение.'; }
+    else { var k2=ri(2,4); cur={t:6,k:k2}; taskEl.innerHTML='У двух углов стороны разведены одинаково, но у первого нарисованные стороны в <b>'+k2+'</b> раза длиннее. Какой угол больше? (напиши «первый», «второй» или «равны»)'; }
+    resEl.innerHTML=''; ansEl.value='';
+  }
+
+  function solHTML(){
+    var q=cur, h='<div class="sol">';
+    if(q.t===1){ h+='В записи ∠'+q.p.join('')+' средняя буква — это вершина.<br>Вершина: <b>'+q.p[1]+'</b>. Стороны — лучи <b>'+q.p[1]+q.p[0]+'</b> и <b>'+q.p[1]+q.p[2]+'</b>.'; }
+    else if(q.t===2){ h+='Вершину ставим в середину, по краям — точки со сторон.<br>Ответ: <b>∠'+q.p[0]+q.p[1]+q.p[2]+'</b> (или <b>∠'+q.p[2]+q.p[1]+q.p[0]+'</b> — вершина '+q.p[1]+' всё равно посередине).'; }
+    else if(q.t===3){ h+='Первой пишут начало луча, второй — любую другую его точку.<br>Ответ: луч <b>'+q.p[0]+q.p[1]+'</b>. Запись '+q.p[1]+q.p[0]+' означала бы другой луч — с началом в '+q.p[1]+'.'; }
+    else if(q.t===4){ var m={'луч':['1','у луча ровно один конец — его начало, дальше он идёт бесконечно'],'отрезок':['2','отрезок ограничен с двух сторон'],'прямая':['0','прямая бесконечна в обе стороны, концов у неё нет']};
+      h+='Ответ: <b>'+m[q.k][0]+'</b> — '+m[q.k][1]+'.'; }
+    else if(q.t===5){ h+='В записи ∠'+q.p[1]+q.p[0]+q.p[2]+' средняя буква — '+q.p[0]+', значит записан угол с вершиной '+q.p[0]+', а не '+q.p[1]+'. Вершину поставили с краю.<br>Верно: <b>∠'+q.p[0]+q.p[1]+q.p[2]+'</b> (или <b>∠'+q.p[2]+q.p[1]+q.p[0]+'</b>).'; }
+    else { h+='Углы <b>равны</b>. Величина угла — это раствор сторон, то есть насколько один луч повёрнут относительно другого. Длина нарисованных сторон на угол не влияет: стороны — лучи, они и так бесконечные.'; }
+    return h+'</div>';
+  }
+
+  function correct(raw){
+    var q=cur;
+    if(q.t===1) return norm(raw)===q.p[1];
+    if(q.t===2||q.t===5) return norm(raw)===(q.p[0]+q.p[1]+q.p[2]) || norm(raw)===(q.p[2]+q.p[1]+q.p[0]);
+    if(q.t===3) return norm(raw)===(q.p[0]+q.p[1]);
+    if(q.t===4){ var need={'луч':1,'отрезок':2,'прямая':0}[q.k];
+      var n=parseInt(String(raw).replace(/[^0-9]/g,''),10);
+      if(!isNaN(n)) return n===need;
+      var w=normRu(raw); if(need===1) return w==='один'||w==='одинконец';
+      if(need===2) return w==='два'||w==='дваконца'; return w==='ноль'||w==='нетконцов'||w==='нет'; }
+    var t=normRu(raw);
+    return t.indexOf('равн')>=0 || t.indexOf('одинак')>=0 || t==='никакой' || t==='ниодин';
+  }
+
+  function check(){
+    var raw=ansEl.value.trim();
+    if(raw===''){ resEl.innerHTML='<span class="bad">Введи ответ или нажми «Решение».</span>'; return; }
+    if(correct(raw)) resEl.innerHTML='<span class="ok">✓ Верно!</span>'+solHTML();
+    else resEl.innerHTML='<span class="bad">✗ Пока не то — глянь решение.</span>'+solHTML();
+  }
+
+  document.getElementById('trNew').addEventListener('click',function(){ generate(); ansEl.focus(); });
+  document.getElementById('trCheck').addEventListener('click',check);
+  document.getElementById('trShow').addEventListener('click',function(){ resEl.innerHTML=solHTML(); });
+  ansEl.addEventListener('keydown',function(e){ if(e.key==='Enter') check(); });
+  cur={t:1,p:['X','Y','Z']};   // стартовое состояние совпадает с показанным заданием
+})();
+</script>
+<!--LESSON-NAV-BOT--><nav class="lnav lnav-bot"><a class="prev" href="./geo7-tochka-pryamaya-otrezok.html"><span class="dir">← Предыдущая</span><span class="ttl">Точка, прямая, отрезок</span></a><a class="to-cat" href="./catalog.html">📚 <span>Все темы</span></a><a class="next" href="./geo7-sravnenie-otrezkov.html"><span class="dir">Следующая →</span><span class="ttl">Сравнение и измерение отрезков</span></a></nav><!--/LESSON-NAV-BOT-->
