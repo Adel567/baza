@@ -1,0 +1,726 @@
+<!doctype html>
+<!-- humanized: humanizer-ru, 2026-08-28, тире возвращено -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Округление десятичных дробей — 5 класс</title>
+<style>
+  :root{
+    --paper:#FBF9F5;
+    --card:#FFFFFF;
+    --ink:#26202E;
+    --muted:#6B6473;
+    --line:#E7E2E8;
+    --brand:#1E6F7E;
+    --brand-soft:#E2F0F2;
+    --brand-line:#B9DCE1;
+    --down:#3A5AA0;        /* цифры 0–4: оставляем как есть */
+    --down-soft:#E5EBF6;
+    --down-line:#C6D3EC;
+    --up:#CF5A34;          /* цифры 5–9: прибавляем 1 */
+    --up-soft:#FBEADF;
+    --up-line:#F0CDB8;
+    --ok:#2E8B57;
+    --no:#C23B3B;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper)}
+  .page{
+    max-width:720px;margin:0 auto;
+    padding:clamp(1.4rem,4vw,3rem) clamp(1.1rem,4vw,2rem) 4.5rem;
+    color:var(--ink);
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    font-size:17.5px;line-height:1.68;-webkit-font-smoothing:antialiased;
+  }
+  .mono{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-variant-numeric:tabular-nums;font-weight:600}
+
+  .hero{border-bottom:3px solid var(--brand);padding-bottom:1.4rem;margin-bottom:1.8rem}
+  .eyebrow{font-size:.74rem;letter-spacing:.15em;text-transform:uppercase;color:var(--brand);font-weight:700;margin:0 0 .55rem}
+  h1{font-size:clamp(2rem,6.5vw,3rem);line-height:1.03;margin:0;font-weight:800;letter-spacing:-.02em;text-wrap:balance}
+  .tagline{font-size:1.12rem;color:var(--muted);margin:.85rem 0 0;text-wrap:pretty}
+
+  section{margin-top:2.4rem}
+  h2{font-size:1.5rem;margin:0 0 .3rem;font-weight:780;letter-spacing:-.015em;text-wrap:balance}
+  h2 .em{color:var(--brand)}
+  h3{font-size:1.1rem;margin:1.4rem 0 .2rem;font-weight:760}
+  p{margin:.7rem 0}
+  strong{font-weight:680}
+
+  .lead-in{background:var(--brand-soft);border-radius:14px;padding:1.1rem 1.3rem;font-size:1.02rem}
+  .lead-in p{margin:.4rem 0}
+  .lead-in b{color:var(--brand)}
+
+  /* Жизненные примеры */
+  .cases{display:grid;gap:.7rem;margin-top:1rem}
+  @media(min-width:620px){.cases{grid-template-columns:repeat(3,1fr)}}
+  .case{background:var(--card);border:1px solid var(--line);border-radius:13px;padding:.9rem 1.05rem}
+  .case .ic{font-size:1.3rem;line-height:1}
+  .case .t{font-weight:700;margin:.35rem 0 .2rem;font-size:.98rem}
+  .case .x{font-size:.9rem;color:var(--muted);margin:0}
+  .case .x .mono{color:var(--ink)}
+
+  .myth{border-left:4px solid var(--up);background:var(--up-soft);border-radius:0 10px 10px 0;padding:.85rem 1.1rem;margin-top:1.2rem;font-size:.98rem}
+  .myth b{color:var(--up)}
+
+  /* Разминка-пререквизиты */
+  .warm{background:var(--card);border:1px dashed var(--brand-line);border-radius:14px;padding:1rem 1.2rem;margin-top:1rem}
+  .warm ul{margin:.4rem 0 0;padding-left:1.2rem}
+  .warm li{margin:.35rem 0;font-size:.97rem}
+
+  /* Разрядная линейка */
+  .places{display:flex;gap:.4rem;align-items:flex-end;flex-wrap:wrap;margin-top:1rem}
+  .pl{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:.5rem .7rem;text-align:center;min-width:4.6rem}
+  .pl .dg{font-family:ui-monospace,Menlo,monospace;font-weight:800;font-size:1.5rem}
+  .pl .nm{font-size:.72rem;color:var(--muted);letter-spacing:.02em}
+  .pl.acc{border-color:var(--brand-line);background:var(--brand-soft)}
+  .pl.acc .nm{color:var(--brand);font-weight:700}
+  .pl.sep{border:none;background:none;min-width:0;padding:.5rem .1rem}
+
+  /* Ядро — шаги правила */
+  .steps{counter-reset:st;list-style:none;margin:1rem 0 0;padding:0;display:flex;flex-direction:column;gap:.6rem}
+  .steps li{counter-increment:st;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:.85rem 1.05rem .85rem 3rem;position:relative;font-size:.99rem}
+  .steps li::before{content:counter(st);position:absolute;left:.85rem;top:.85rem;width:1.5rem;height:1.5rem;border-radius:50%;background:var(--brand);color:#fff;font-weight:800;font-size:.85rem;display:flex;align-items:center;justify-content:center}
+
+  .fork{display:grid;gap:.9rem;margin-top:1rem}
+  @media(min-width:600px){.fork{grid-template-columns:1fr 1fr}}
+  .path{border-radius:16px;padding:1.1rem 1.2rem;border:2px solid}
+  .path.d{background:var(--down-soft);border-color:var(--down-line)}
+  .path.u{background:var(--up-soft);border-color:var(--up-line)}
+  .path .cap{font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;font-weight:700;margin:0}
+  .path.d .cap{color:var(--down)} .path.u .cap{color:var(--up)}
+  .path h3{margin:.2rem 0 .5rem;font-size:1.25rem;font-weight:800}
+  .path p{margin:.3rem 0;font-size:.95rem}
+  .digits{display:flex;gap:.35rem;flex-wrap:wrap;margin:.45rem 0}
+  .digits span{font-family:ui-monospace,Menlo,monospace;font-weight:800;background:#fff;border:1px solid var(--line);border-radius:7px;padding:.12rem .55rem;font-size:1.05rem}
+  .path.d .digits span{color:var(--down)} .path.u .digits span{color:var(--up)}
+
+  .note{border-left:4px solid var(--brand);background:var(--brand-soft);border-radius:0 10px 10px 0;padding:.8rem 1.1rem;margin-top:1rem;font-size:.98rem}
+  .note b{color:var(--brand)}
+  .note p{margin:.35rem 0}
+
+  /* Разбор «думаю вслух» */
+  .walk{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.15rem 1.3rem;margin-top:1rem}
+  .walk .q{font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.08rem;margin:0 0 .9rem;padding-bottom:.7rem;border-bottom:1px solid var(--line)}
+  .walk ol{margin:0;padding-left:1.25rem;display:flex;flex-direction:column;gap:.55rem}
+  .walk li{font-size:.98rem}
+  .walk .why{display:block;font-size:.87rem;color:var(--muted);margin-top:.15rem}
+  .verdict{margin-top:1rem;padding:.75rem 1rem;background:var(--brand-soft);border-radius:10px;font-weight:650;color:var(--brand);font-size:1.02rem}
+  .keep{color:var(--down);font-weight:800}
+  .drop{color:var(--up);font-weight:800}
+  .cut{color:var(--muted);text-decoration:line-through}
+
+  /* Наглядность — числовая прямая */
+  .viz{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:1.15rem 1.2rem;margin-top:1rem}
+  .viz canvas{display:block;width:100%;height:auto}
+  .viz .ctl{display:flex;align-items:center;gap:.8rem;margin-top:.9rem;flex-wrap:wrap}
+  .viz input[type=range]{flex:1 1 220px;min-width:180px;accent-color:var(--brand)}
+  .viz input[type=range]:focus-visible{outline:2px solid var(--brand);outline-offset:3px}
+  .viz .val{font-family:ui-monospace,Menlo,monospace;font-weight:800;font-size:1.15rem;min-width:4.2rem}
+  .viz .say{margin-top:.85rem;background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:.75rem .95rem;font-size:.96rem}
+  .viz .say b{color:var(--brand)}
+
+  /* Тренажёр */
+  .trainer{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:1.3rem 1.3rem 1.2rem;margin-top:1rem}
+  .tr-task{text-align:center;margin:.1rem 0 .2rem}
+  .tr-task .lbl{font-size:.8rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:700}
+  .tr-num{font-family:ui-monospace,Menlo,monospace;font-weight:800;font-size:clamp(2rem,9vw,2.8rem);letter-spacing:.02em;margin:.2rem 0 .1rem}
+  .tr-to{font-size:1.02rem;color:var(--brand);font-weight:700}
+  .tr-in{display:flex;gap:.5rem;justify-content:center;align-items:center;margin:1.1rem 0;flex-wrap:wrap}
+  .tr-in .eq{font-family:ui-monospace,Menlo,monospace;font-weight:800;font-size:1.4rem;color:var(--muted)}
+  .tr-in input{font:inherit;font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.2rem;width:8.5rem;text-align:center;padding:.5rem .6rem;border:2px solid var(--line);border-radius:11px;background:var(--paper);color:var(--ink)}
+  .tr-in input:focus-visible{outline:2px solid var(--brand);outline-offset:2px;border-color:var(--brand-line)}
+  .tr-btns{display:flex;gap:.5rem;flex-wrap:wrap;justify-content:center}
+  .tr-btns button{font:inherit;font-weight:700;font-size:.92rem;border-radius:10px;padding:.55rem 1.1rem;cursor:pointer;border:1px solid transparent}
+  .tr-btns .go{background:var(--brand);color:#fff}
+  .tr-btns .sh{background:var(--paper);border:1px solid var(--line);color:var(--ink)}
+  .tr-btns .nw{background:var(--brand-soft);color:var(--brand)}
+  .tr-btns button:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+  .tr-res{margin-top:1.1rem;font-size:.97rem}
+  .tr-res .head{font-weight:700;padding:.6rem .9rem;border-radius:9px;margin-bottom:.7rem}
+  .tr-res .head.ok{background:#E7F4EC;color:var(--ok)}
+  .tr-res .head.no{background:#FBEAEA;color:var(--no)}
+  .tr-res .head.warn{background:var(--up-soft);color:var(--up)}
+  .tr-res .head.info{background:var(--brand-soft);color:var(--brand)}
+  .tr-sol{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:.85rem 1rem}
+  .tr-sol .row{margin:.35rem 0;font-size:.94rem}
+  .tr-sol .row .mono{font-size:1rem}
+  .tr-sol .fin{margin-top:.6rem;padding-top:.55rem;border-top:1px dashed var(--line);font-weight:700}
+
+  /* Практика */
+  .drill{display:flex;flex-direction:column;gap:.7rem;margin-top:1rem}
+  .lvl{font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--brand);font-weight:800;margin:1.4rem 0 .2rem}
+  details{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:.9rem 1.1rem}
+  details[open]{border-color:var(--brand-line)}
+  summary{cursor:pointer;font-weight:650;list-style:none;display:flex;justify-content:space-between;gap:1rem;align-items:center}
+  summary::-webkit-details-marker{display:none}
+  summary:focus-visible{outline:2px solid var(--brand);outline-offset:3px;border-radius:6px}
+  summary .q{font-size:1rem}
+  summary::after{content:"проверить";font-size:.8rem;color:var(--brand);font-weight:700;white-space:nowrap}
+  details[open] summary::after{content:"скрыть"}
+  .ans{margin-top:.75rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.96rem;color:var(--muted)}
+  .ans b{color:var(--ink)}
+
+  /* Ловушки */
+  ul.traps{list-style:none;margin:1rem 0 0;padding:0;display:flex;flex-direction:column;gap:.7rem}
+  ul.traps li{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:.85rem 1.05rem;padding-left:2.5rem;position:relative;font-size:.97rem}
+  ul.traps li::before{content:"⚠";position:absolute;left:1rem;top:.85rem;color:var(--up);font-size:1.05rem}
+  ul.traps b{font-weight:700}
+  ul.traps .fix{display:block;margin-top:.3rem;color:var(--muted);font-size:.92rem}
+  ul.traps .fix b{color:var(--ok)}
+
+  .tblwrap{overflow-x:auto;margin-top:1rem}
+  table{border-collapse:collapse;width:100%;min-width:420px;font-size:.96rem}
+  th,td{border:1px solid var(--line);padding:.6rem .75rem;text-align:left}
+  thead th{background:#F5F7F8;font-weight:700}
+  td.d{font-family:ui-monospace,Menlo,monospace;font-weight:800;text-align:center}
+
+  .selfcheck{background:var(--card);border:1px solid var(--brand-line);border-radius:14px;padding:1.1rem 1.25rem;margin-top:1rem}
+  .selfcheck ol{margin:.3rem 0 0;padding-left:1.25rem}
+  .selfcheck li{margin:.4rem 0;font-size:.98rem}
+
+  .wrapup{background:var(--brand);color:#fff;border-radius:16px;padding:1.4rem 1.5rem;margin-top:2.4rem}
+  .wrapup h2{color:#fff;margin:0 0 .5rem}
+  .wrapup p{color:#E3F0F2;margin:.4rem 0;font-size:1rem}
+  .wrapup .big-rule{font-size:1.08rem;font-weight:700;color:#fff;margin:.6rem 0}
+  .wrapup .next{font-size:.95rem;color:#C7E2E6;margin-top:1rem;padding-top:1rem;border-top:1px solid rgba(255,255,255,.22)}
+
+  .oge-tip{display:flex;gap:.8rem;align-items:flex-start;background:#FFF8E7;border:1px solid #F0D98A;border-left:4px solid #E0A315;border-radius:10px;padding:.85rem 1.05rem;margin:1.5rem 0}
+  .oge-tip .b{font-size:.72rem;font-weight:800;letter-spacing:.03em;color:#8A6A15;white-space:nowrap;text-transform:uppercase;padding-top:.15rem}
+  .oge-tip .x{font-size:.95rem;line-height:1.5}
+
+  @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<!--LESSON-NAV-TOP--><style>.lnav{--lnav-accent:#3D5AF1}.lnav a{text-decoration:none;font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif}.lnav-top{max-width:820px;margin:0 auto;padding:.75rem clamp(1rem,4vw,1.5rem) .1rem}.lnav-top a{display:inline-flex;align-items:center;gap:.35rem;color:var(--lnav-accent);font-weight:600;font-size:.9rem}.lnav-top a:hover{text-decoration:underline}.lnav-bot{max-width:820px;margin:2.6rem auto 3rem;padding:1.1rem clamp(1rem,4vw,1.5rem) 0;border-top:1px solid #E4E8EF;display:flex;align-items:stretch;gap:.55rem}.lnav-bot a{min-width:0;display:flex;flex-direction:column;justify-content:center;gap:.15rem;border:1px solid #E4E8EF;border-radius:12px;padding:.65rem .85rem;color:#182233;background:#fff;transition:border-color .1s,transform .08s}.lnav-bot a:hover{border-color:var(--lnav-accent);transform:translateY(-1px)}.lnav-bot .prev,.lnav-bot .next{flex:1 1 0}.lnav-bot .next{text-align:right}.lnav-bot .dir{font-size:.72rem;color:#8A93A6;font-weight:600}.lnav-bot .ttl{font-size:.9rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.lnav-bot .to-cat{flex:0 0 auto;flex-direction:row;align-items:center;justify-content:center;color:var(--lnav-accent);font-weight:700;font-size:.85rem;white-space:nowrap}@media(max-width:420px){.lnav-bot .to-cat span{display:none}.lnav-bot .to-cat{padding:.65rem .7rem}}</style><nav class="lnav lnav-top"><a href="./catalog.html">← Все темы</a></nav><!--/LESSON-NAV-TOP-->
+<div class="page">
+
+  <header class="hero">
+    <p class="eyebrow">Математика · 5 класс</p>
+    <h1>Округление<br>десятичных дробей</h1>
+    <p class="tagline">Как поменять дробь с длинным хвостом на <em>ближайшее</em> удобное число и не потерять смысл.</p>
+  </header>
+
+  <div class="lead-in">
+    <p><b>Зачем это уметь.</b> В жизни числа с длинным хвостом после запятой почти не нужны, а иногда их и записать целиком невозможно.</p>
+    <p>Округляем ради двух вещей: чтобы ответ был <strong>удобным и понятным</strong> и чтобы можно было быстро <strong>прикинуть</strong> результат в уме.</p>
+  </div>
+
+  <div class="cases">
+    <div class="case">
+      <div class="ic">🧾</div>
+      <p class="t">Чек в магазине</p>
+      <p class="x">0,375 кг колбасы по 489,90 р. за кг — это <span class="mono">183,7125 р.</span> Но в чеке будет <span class="mono">183,71 р.</span>: меньше копейки не бывает.</p>
+    </div>
+    <div class="case">
+      <div class="ic">⏱</div>
+      <p class="t">Табло на стадионе</p>
+      <p class="x">Секундомер показал <span class="mono">12,734</span> с, а на табло напишут <span class="mono">12,7</span> с — округлили до десятых.</p>
+    </div>
+    <div class="case">
+      <div class="ic">🌦</div>
+      <p class="t">Прогноз погоды</p>
+      <p class="x">«Завтра около 18°» — это округление, никакой не точный замер.</p>
+    </div>
+  </div>
+
+  <div class="myth">
+    <p><b>Главный миф, который надо сломать.</b> Многие думают: «округлить — значит стереть лишние цифры». Так не работает.</p>
+    <p>Если первая отбрасываемая цифра <strong>5 или больше</strong>, последнюю оставляемую цифру <strong>увеличивают на 1</strong>. А стереть хвост — это грубое отбрасывание, и ответ выходит дальше от истины.</p>
+  </div>
+
+  <section>
+    <h2>Что нужно вспомнить <span class="em">перед стартом</span></h2>
+    <p>Тема простая, но опирается на то, что ты уже проходил. Прогони в голове за минуту:</p>
+    <div class="warm">
+      <ul>
+        <li><strong>Разряды после запятой.</strong> Первая цифра после запятой — десятые, вторая — сотые, третья — тысячные. Умеешь читать <span class="mono">3,28</span> как «три целых двадцать восемь сотых»? Отлично.</li>
+        <li><strong>Сравнение десятичных дробей.</strong> Ты уже видишь, какая дробь больше, а какая меньше. Пригодится сразу: округлить — значит выбрать <em>ближайшего</em> из двух соседей.</li>
+        <li><strong>Округление натуральных чисел.</strong> Правило «смотрим на следующую цифру» знакомо тебе по целым числам. Здесь оно то же, только справа от запятой.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section>
+    <h2>Суть: выбираем <span class="em">ближайшего соседа</span></h2>
+    <p>Округлить десятичную дробь до какого-то разряда — значит заменить её <strong>ближайшим</strong> числом, у которого после нужного разряда уже ничего нет (или стоят нули).</p>
+    <p>Проще всего представить это на картинке. На числовой прямой твоя дробь лежит между двумя «круглыми» соседями, и ты выбираешь того, к которому она <strong>ближе</strong>.</p>
+    <p>Возьмём <span class="mono">3,28</span> и округлим до десятых. Соседи — <span class="mono">3,2</span> и <span class="mono">3,3</span>. До 3,3 ближе: <span class="mono">0,02</span> против <span class="mono">0,08</span>. Значит <span class="mono">3,28 ≈ 3,3</span>.</p>
+    <div class="note">
+      <p><b>Знак ≈</b> читается «приблизительно равно». Он честно предупреждает: число мы заменили близким, но не тем же самым. Обычное «=» тут ставить нельзя.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Наглядно: <span class="em">подвигай точку сам</span></h2>
+    <p>Ниже кусок числовой прямой между <span class="mono">3,2</span> и <span class="mono">3,3</span>. Двигай ползунок и смотри, к какому соседу точка ближе. Сначала <strong>скажи ответ вслух</strong>, потом проверяй.</p>
+    <div class="viz">
+      <canvas id="nl" width="680" height="190" role="img" aria-label="Числовая прямая от 3,2 до 3,3 с подвижной точкой"></canvas>
+      <div class="ctl">
+        <span class="val mono" id="nlVal">3,28</span>
+        <input type="range" id="nlRange" min="320" max="330" step="1" value="328" aria-label="Значение числа от 3,20 до 3,30">
+      </div>
+      <div class="say" id="nlSay"></div>
+    </div>
+    <div class="note">
+      <p><b>Вопрос-ловушка.</b> А где на прямой <span class="mono">3,25</span>? Ровно посередине, оба соседа одинаково далеко. Куда его округлять?</p>
+      <p>Договорились так: <strong>ровно 5 — округляем вверх</strong>. Поставь ползунок на 3,25 и посмотри, что скажет прямая.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Ядро: <span class="em">правило округления</span></h2>
+    <p>Всё правило укладывается в четыре шага. Это порядок действий, а не заклинание:</p>
+    <ol class="steps">
+      <li>Найди <strong>разряд, до которого округляешь</strong>. Десятые — первая цифра после запятой, сотые — вторая, тысячные — третья.</li>
+      <li>Посмотри на <strong>первую цифру сразу за этим разрядом</strong>. Ты её отбросишь, и она же всё решает.</li>
+      <li>Прими решение по этой цифре (см. развилку ниже).</li>
+      <li>Все цифры <strong>после</strong> разряда округления отбрось.</li>
+    </ol>
+
+    <div class="fork">
+      <div class="path d">
+        <p class="cap">Если следующая цифра —</p>
+        <div class="digits"><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span></div>
+        <h3>Оставляем как есть</h3>
+        <p>Оставляемую цифру <strong>не меняем</strong>. Это округление вниз.</p>
+        <p><span class="mono">4,649 ≈ 4,6</span> (до десятых): следующая цифра 4.</p>
+      </div>
+      <div class="path u">
+        <p class="cap">Если следующая цифра —</p>
+        <div class="digits"><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span></div>
+        <h3>Прибавляем 1</h3>
+        <p>Оставляемую цифру <strong>увеличиваем на 1</strong>. Это округление вверх.</p>
+        <p><span class="mono">7,48 ≈ 7,5</span> (до десятых): следующая цифра 8.</p>
+      </div>
+    </div>
+
+    <h3>Где какой разряд</h3>
+    <p>Возьмём число <span class="mono">6,473</span> и разложим его по разрядам:</p>
+    <div class="places">
+      <div class="pl"><div class="dg">6</div><div class="nm">целые</div></div>
+      <div class="pl sep"><div class="dg">,</div><div class="nm">&nbsp;</div></div>
+      <div class="pl acc"><div class="dg">4</div><div class="nm">десятые</div></div>
+      <div class="pl acc"><div class="dg">7</div><div class="nm">сотые</div></div>
+      <div class="pl acc"><div class="dg">3</div><div class="nm">тысячные</div></div>
+    </div>
+
+    <div class="note">
+      <p><b>Уточнение 1: перенос.</b> При округлении вверх девятка может «переполниться». <span class="mono">2,97</span> до десятых даёт <span class="mono">3,0</span>: 9 стала десяткой, и единица перешла в целые.</p>
+      <p><b>Уточнение 2: нули в конце не лишние.</b> <span class="mono">7,396</span> до сотых — это <span class="mono">7,40</span>, а не 7,4. Округляли до сотых, значит в разряде сотых обязана стоять цифра, пусть даже ноль.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Разбор-эталон: <span class="em">думаю вслух</span></h2>
+    <p>Смотри, как рассуждать по шагам. Пояснения «почему» не пролистывай: они и превращают правило в понимание.</p>
+    <div class="walk">
+      <p class="q">Округлить 6,473 до десятых</p>
+      <ol>
+        <li>Округляем до <strong>десятых</strong> → оставляем цифру <span class="keep">4</span>.
+          <span class="why">Почему: десятые — это первая цифра после запятой.</span></li>
+        <li>Смотрю на следующую цифру — это <span class="drop">7</span>.
+          <span class="why">Почему: именно она решает, в какую сторону округлять.</span></li>
+        <li>7 больше 4 → округляю вверх: <span class="keep">4</span> увеличиваю на 1, получаю <strong>5</strong>.
+          <span class="why">Почему: цифры 5–9 дают округление вверх.</span></li>
+        <li>Всё, что стоит после десятых, отбрасываю: 6,4<span class="cut">73</span>.</li>
+      </ol>
+      <div class="verdict">Ответ: 6,473 ≈ 6,5</div>
+    </div>
+
+    <h3>Теперь с пропущенным шагом — допиши сам</h3>
+    <p>Прочитай рассуждение и вставь пропущенное в уме. Потом раскрой проверку.</p>
+    <div class="walk">
+      <p class="q">Округлить 12,816 до сотых</p>
+      <ol>
+        <li>Округляем до <strong>сотых</strong> → оставляем цифру <span class="keep">1</span> (это сотые).</li>
+        <li>Смотрю на следующую цифру — это <strong>____</strong> .</li>
+        <li>Эта цифра <strong>____</strong> (больше или меньше 5), значит округляю <strong>____</strong> .</li>
+        <li>Получаю: 12,816 ≈ <strong>____</strong> .</li>
+      </ol>
+      <div class="drill" style="margin-top:1rem">
+        <details>
+          <summary><span class="q">Проверить себя</span></summary>
+          <div class="ans">Следующая цифра — <b>6</b>. Она не меньше 5, значит округляем <b>вверх</b>: сотые <span class="mono">1</span> → <span class="mono">2</span>. Ответ: <b>12,816 ≈ 12,82</b>.</div>
+        </details>
+      </div>
+    </div>
+
+    <h3>А это реши полностью сам</h3>
+    <div class="drill">
+      <details>
+        <summary><span class="q">Округли <span class="mono">0,0549</span> до тысячных.</span></summary>
+        <div class="ans">Тысячные — третья цифра после запятой, это <span class="mono">4</span>. Следующая цифра — <span class="mono">9</span>, она не меньше 5 → округляем вверх: 4 → 5. Ответ: <b>0,0549 ≈ 0,055</b>.</div>
+      </details>
+    </div>
+  </section>
+
+  <div class="oge-tip"><div class="b">🎯 В ОГЭ</div><div class="x"><b>Задание 6</b> и практические задания 1–5. Там в условии часто пишут «округли ответ до десятых» или «до целых» — и неверное округление обнуляет весь правильно решённый пример.</div></div>
+
+  <section>
+    <h2>Тренажёр — <span class="em">бесконечная практика</span></h2>
+    <p>Каждый раз новое задание. Впиши ответ (запятую можно писать точкой) и проверь себя. Не вышло — жми «Показать решение» и разбирай по шагам.</p>
+    <p style="font-size:.93rem;color:var(--muted)">Помни про нули: если округляем до сотых, после запятой должно остаться ровно две цифры.</p>
+    <div class="trainer">
+      <div class="tr-task">
+        <div class="lbl">Округли число</div>
+        <div class="tr-num mono" id="trNum">6,473</div>
+        <div class="tr-to" id="trTo">до десятых</div>
+      </div>
+      <div class="tr-in">
+        <span class="eq">≈</span>
+        <input type="text" id="trAns" inputmode="decimal" autocomplete="off" spellcheck="false" aria-label="Твой ответ">
+      </div>
+      <div class="tr-btns">
+        <button class="go" id="trCheck" type="button">Проверить</button>
+        <button class="sh" id="trShow" type="button">Показать решение</button>
+        <button class="nw" id="trNew" type="button">🎲 Новое задание</button>
+      </div>
+      <div class="tr-res" id="trRes"></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Практика <span class="em">по нарастанию</span></h2>
+    <p>Реши сам, потом раскрой ответ. Не подглядывай раньше времени: возня с задачей и есть учёба 🙂</p>
+
+    <p class="lvl">Уровень 1 · понимание</p>
+    <div class="drill">
+      <details>
+        <summary><span class="q">1) До какого разряда округлено число, если <span class="mono">4,7382 ≈ 4,74</span>?</span></summary>
+        <div class="ans">В ответе после запятой осталось две цифры → округляли до <b>сотых</b>.</div>
+      </details>
+      <details>
+        <summary><span class="q">2) Какая цифра «решает» округление числа <span class="mono">9,261</span> до десятых?</span></summary>
+        <div class="ans">Десятые — это 2. Решает цифра, стоящая сразу за ней: <b>6</b>. (И раз 6 не меньше 5, ответ будет 9,3.)</div>
+      </details>
+    </div>
+
+    <p class="lvl">Уровень 2 · применение</p>
+    <div class="drill">
+      <details>
+        <summary><span class="q">3) Округли до десятых: <span class="mono">3,14 ; 8,95 ; 0,72</span></span></summary>
+        <div class="ans"><b>3,1</b> (следующая цифра 4 → вниз); <b>9,0</b> (следующая 5 → вверх, 9 переполняется и даёт перенос в целые); <b>0,7</b> (следующая 2 → вниз).</div>
+      </details>
+      <details>
+        <summary><span class="q">4) Округли до сотых: <span class="mono">5,738 ; 2,205 ; 14,996</span></span></summary>
+        <div class="ans"><b>5,74</b> (следующая 8 → вверх); <b>2,21</b> (следующая 5 → вверх, 0 становится 1); <b>15,00</b> (следующая 6 → вверх, 99 переполняется: получаем ровно 15, но нули в сотых оставляем).</div>
+      </details>
+    </div>
+
+    <p class="lvl">Уровень 3 · анализ</p>
+    <div class="drill">
+      <details>
+        <summary><span class="q">5) Найди ошибку: ученик записал <span class="mono">7,48 ≈ 7,4</span> (до десятых). Где ошибка?</span></summary>
+        <div class="ans">Он просто <b>стёр хвост</b> вместо округления. Следующая после десятых цифра — 8, а она не меньше 5, значит надо было округлять вверх. Правильно: <b>7,48 ≈ 7,5</b>.</div>
+      </details>
+      <details>
+        <summary><span class="q">6) Что изменится, если <span class="mono">2,96</span> округлять до десятых, а не до целых?</span></summary>
+        <div class="ans">До десятых получится <b>3,0</b> — из-за переноса девятки. До целых получится <b>3</b>. В обоих случаях число «перескакивает» через целое, но запись ответа разная: до десятых цифра в разряде десятых обязана стоять, поэтому пишем 3,0.</div>
+      </details>
+      <details>
+        <summary><span class="q">7) Обратная задача: придумай число с тремя знаками после запятой, которое при округлении до сотых даёт <span class="mono">5,30</span>.</span></summary>
+        <div class="ans">Например, <b>5,297</b> (следующая цифра 7 → вверх: 29 → 30) или <b>5,304</b> (следующая цифра 4 → вниз, сотые остаются 0). Подходит целая пачка чисел, попробуй объяснить какая.</div>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <h2>Ловушки — <span class="em">не попадись</span></h2>
+    <ul class="traps">
+      <li><b>Округляют по неверному разряду.</b> Просят до сотых, а смотрят на десятые.
+        <span class="fix"><b>Как избежать:</b> сначала пальцем отметь нужный разряд и только потом смотри на следующую цифру.</span></li>
+      <li><b>Отбрасывают цифры вместо округления.</b> <span class="mono">6,48</span> «до десятых» пишут как 6,4, просто стерев хвост.
+        <span class="fix"><b>Лечится так:</b> отброшенная цифра 5 и больше — последнюю оставляемую увеличиваем на 1.</span></li>
+      <li><b>Путают десятые и сотые.</b> Думают, что сотые — это первая цифра после запятой.
+        <span class="fix"><b>Проверка:</b> десятые — 1-я, сотые — 2-я, тысячные — 3-я. Считай позиции по порядку.</span></li>
+      <li><b>Теряют нужный ноль.</b> <span class="mono">7,396</span> до сотых пишут 7,4 вместо 7,40.
+        <span class="fix"><b>Пересчитай знаки:</b> после запятой их должно остаться ровно столько, до какого разряда округляли.</span></li>
+      <li><b>Округляют «по цепочке».</b> Чтобы округлить <span class="mono">4,649</span> до десятых, сначала округляют до сотых (4,65), а потом до десятых (4,7). Так нельзя.
+        <span class="fix"><b>Запомни:</b> смотрим только на <b>одну</b> цифру сразу за разрядом, здесь на 4. Правильно: 4,649 ≈ 4,6.</span></li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Шпаргалка</h2>
+    <div class="tblwrap">
+      <table>
+        <thead><tr><th>Число</th><th>Округляем до…</th><th>Решающая цифра</th><th>Ответ</th></tr></thead>
+        <tbody>
+          <tr><td class="d">6,473</td><td>десятых</td><td class="d">7 → вверх</td><td class="d">6,5</td></tr>
+          <tr><td class="d">4,649</td><td>десятых</td><td class="d">4 → вниз</td><td class="d">4,6</td></tr>
+          <tr><td class="d">2,97</td><td>десятых</td><td class="d">7 → вверх</td><td class="d">3,0</td></tr>
+          <tr><td class="d">12,816</td><td>сотых</td><td class="d">6 → вверх</td><td class="d">12,82</td></tr>
+          <tr><td class="d">7,396</td><td>сотых</td><td class="d">6 → вверх</td><td class="d">7,40</td></tr>
+          <tr><td class="d">0,0549</td><td>тысячных</td><td class="d">9 → вверх</td><td class="d">0,055</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2>Проверь понимание <span class="em">своими словами</span></h2>
+    <p>Закрой урок и ответь вслух: себе, другу или голосовому помощнику. Объяснил — значит понял.</p>
+    <div class="selfcheck">
+      <ol>
+        <li>Округли <span class="mono">5,67</span> до десятых.</li>
+        <li>Какая цифра решает округление числа <span class="mono">0,8043</span> до сотых и какой получится ответ?</li>
+        <li>Почему <span class="mono">2,98</span> при округлении до десятых даёт <span class="mono">3,0</span>, а не 2,10?</li>
+      </ol>
+      <div class="drill" style="margin-top:1rem">
+        <details>
+          <summary><span class="q">Сверить ответы</span></summary>
+          <div class="ans">
+            1) <b>5,7</b> — следующая после десятых цифра 7, округляем вверх.<br>
+            2) Решает цифра <b>4</b> (третья после запятой). Она меньше 5, значит сотые не меняются: <b>0,8043 ≈ 0,80</b> — и ноль в сотых оставляем.<br>
+            3) При округлении вверх 9 превращается в 10: единица переходит в целые, в десятых остаётся 0. Поэтому <b>2,98 ≈ 3,0</b>. Записи «2,10» здесь взяться неоткуда — переносится всегда в разряд <em>слева</em>.
+          </div>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <div class="wrapup">
+    <h2>Запомни главное</h2>
+    <p class="big-rule">Оставь нужный разряд → посмотри на следующую цифру →<br>0–4 не меняй, 5–9 прибавь единицу → остальное отбрось.</p>
+    <p>И держи в голове числовую прямую: ты выбираешь <strong>ближайшего соседа</strong>, только и всего.</p>
+    <p class="next">👉 Дальше <strong>проценты</strong>. Там округление вылезет почти в каждой задаче: «сколько это примерно рублей» — вопрос номер один, и ответ почти всегда придётся округлить.</p>
+  </div>
+
+</div>
+
+<script>
+(function(){
+  /* ---------- общее ---------- */
+  var MINUS = '−';
+  function fx(s){ return String(s).replace(/-/g, MINUS); }
+  function ri(a,b){ return Math.floor(Math.random()*(b-a+1))+a; }
+
+  /* ---------- числовая прямая ---------- */
+  var cv=document.getElementById('nl'), rg=document.getElementById('nlRange'),
+      vl=document.getElementById('nlVal'), sy=document.getElementById('nlSay');
+  var ctx=cv.getContext('2d');
+
+  function fmt2(v){ return fx(v.toFixed(2).replace('.', ',')); }
+  function fmt1(v){ return fx(v.toFixed(1).replace('.', ',')); }
+
+  function drawLine(){
+    var cssW = cv.clientWidth || 680;
+    var cssH = Math.round(cssW * 190 / 680);
+    if(cssH < 130) cssH = 130;
+    var dpr = window.devicePixelRatio || 1;
+    cv.width = Math.round(cssW*dpr);
+    cv.height = Math.round(cssH*dpr);
+    cv.style.height = cssH + 'px';
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+    ctx.clearRect(0,0,cssW,cssH);
+
+    var padL = 34, padR = 34;
+    var x0 = padL, x1 = cssW - padR;
+    var y = Math.round(cssH*0.62);
+    var n = +rg.value;                       /* 320 .. 330 */
+    var v = n/100;
+    function X(val){ return x0 + (Math.round(val*100)-320)/10*(x1-x0); }
+
+    /* ось */
+    ctx.strokeStyle='#26202E'; ctx.lineWidth=2; ctx.lineCap='round';
+    ctx.beginPath(); ctx.moveTo(x0,y); ctx.lineTo(x1,y); ctx.stroke();
+
+    /* деления сотых */
+    ctx.font='600 11px ui-monospace, Menlo, monospace';
+    ctx.textAlign='center';
+    for(var i=0;i<=10;i++){
+      var val = 3.2 + i/100, px = X(val), big = (i===0||i===10);
+      ctx.strokeStyle = big ? '#26202E' : '#B9B2BE';
+      ctx.lineWidth = big ? 2.5 : 1.2;
+      ctx.beginPath(); ctx.moveTo(px, y-(big?13:7)); ctx.lineTo(px, y+(big?13:7)); ctx.stroke();
+    }
+
+    /* середина 3,25 */
+    var xm = X(3.25);
+    ctx.save(); ctx.setLineDash([4,4]); ctx.strokeStyle='#B9B2BE'; ctx.lineWidth=1.2;
+    ctx.beginPath(); ctx.moveTo(xm, y-30); ctx.lineTo(xm, y+16); ctx.stroke(); ctx.restore();
+    ctx.fillStyle='#6B6473'; ctx.font='600 11px ui-monospace, Menlo, monospace';
+    ctx.fillText('середина 3,25', xm, y-36);
+
+    /* подписи соседей */
+    ctx.fillStyle='#26202E'; ctx.font='800 15px ui-monospace, Menlo, monospace';
+    ctx.fillText('3,2', X(3.2), y+34);
+    ctx.fillText('3,3', X(3.3), y+34);
+
+    /* точка */
+    var near = (n - 320) < (330 - n) ? 3.2 : 3.3;   /* ровно середина -> вверх */
+    var col = near===3.3 ? '#CF5A34' : '#3A5AA0';
+    var xp = X(v);
+    ctx.strokeStyle=col; ctx.lineWidth=2.5; ctx.setLineDash([]);
+    ctx.beginPath(); ctx.moveTo(xp, y); ctx.lineTo(X(near), y); ctx.stroke();
+    /* стрелка */
+    var dir = X(near) > xp ? 1 : (X(near) < xp ? -1 : 0);
+    if(dir!==0){
+      var xa = X(near);
+      ctx.beginPath(); ctx.moveTo(xa, y); ctx.lineTo(xa-dir*8, y-6); ctx.lineTo(xa-dir*8, y+6); ctx.closePath();
+      ctx.fillStyle=col; ctx.fill();
+    }
+    ctx.beginPath(); ctx.arc(xp, y, 7, 0, Math.PI*2);
+    ctx.fillStyle=col; ctx.fill();
+    ctx.strokeStyle='#fff'; ctx.lineWidth=2; ctx.stroke();
+
+    /* подпись точки сверху */
+    ctx.fillStyle=col; ctx.font='800 15px ui-monospace, Menlo, monospace';
+    ctx.textAlign='center';
+    var lx = Math.min(Math.max(xp, x0+18), x1-18);
+    ctx.fillText(fmt2(v), lx, y-52);
+    ctx.strokeStyle=col; ctx.lineWidth=1.2;
+    ctx.beginPath(); ctx.moveTo(xp, y-46); ctx.lineTo(xp, y-14); ctx.stroke();
+  }
+
+  function sayLine(){
+    var n=+rg.value, v=n/100;
+    var dl = n-320, dr = 330-n;
+    var dLeft = dl/100, dRight = dr/100;
+    var near = dl < dr ? 3.2 : 3.3;
+    var html='';
+    if(dl===dr){
+      html = 'Число <b>'+fmt2(v)+'</b> стоит ровно посередине: до 3,2 и до 3,3 одинаково — по '+fmt2(dLeft)+'. '+
+             'По правилу «ровно 5 — округляем вверх» берём <b>3,3</b>: '+fmt2(v)+' ≈ 3,3.';
+    } else if(dl===0 || dr===0){
+      html = 'Число <b>'+fmt2(v)+'</b> уже стоит точно в узле. Округлять нечего: '+fmt2(v)+' ≈ '+fmt1(near)+'.';
+    } else {
+      html = 'До 3,2 расстояние '+fmt2(dLeft)+', до 3,3 — '+fmt2(dRight)+'. '+
+             'Ближе <b>'+fmt1(near)+'</b>, значит '+fmt2(v)+' ≈ <b>'+fmt1(near)+'</b>. '+
+             'Проверь по правилу: следующая после десятых цифра — '+String(rg.value).slice(-1)+'.';
+    }
+    sy.innerHTML = html;
+  }
+
+  function updLine(){ vl.textContent = fmt2((+rg.value)/100); drawLine(); sayLine(); }
+  rg.addEventListener('input', updLine);
+  window.addEventListener('resize', function(){ drawLine(); });
+  updLine();
+
+  /* ---------- тренажёр ---------- */
+  var NAMES = {1:{to:'до десятых', gen:'десятых', one:'десятые'},
+               2:{to:'до сотых',   gen:'сотых',   one:'сотые'},
+               3:{to:'до тысячных',gen:'тысячных',one:'тысячные'}};
+
+  var numEl=document.getElementById('trNum'), toEl=document.getElementById('trTo'),
+      inEl=document.getElementById('trAns'), resEl=document.getElementById('trRes');
+  var T=null;
+
+  function locked(){ return resEl.getAttribute('data-done')==='1'; }
+
+  function make(seed){
+    var k, ip, frac;
+    if(seed){ k=seed.k; ip=seed.ip; frac=seed.frac.slice(); }
+    else{
+      k = ri(1,3);
+      var m = k + ri(1,2);
+      ip = ri(0,24);
+      frac = [];
+      for(var i=0;i<m;i++) frac.push(ri(0,9));
+      var mode = ri(1,7);
+      if(mode===1){ frac[k]=5; }                                  /* ровно 5 */
+      else if(mode===2){ frac[k-1]=9; frac[k]=ri(5,9); }           /* перенос */
+      else if(mode===3){ frac[k]=ri(0,4); }                        /* уверенно вниз */
+      else if(mode===4 && k>=2){ frac[k-2]=ri(1,8); frac[k-1]=9; frac[k]=ri(5,9); } /* ноль в конце */
+      else if(mode===5 && k===1 && ip>0){ frac[0]=9; frac[1]=ri(5,9); }             /* перенос в целые */
+    }
+    var res = roundIt(ip, frac, k);
+    var exact = String(ip) + ',' + frac.join('');
+    var ansStr = String(res.ip) + ',' + res.frac.join('');
+    var alt = ansStr.replace(/0+$/,'').replace(/,$/,'');
+    return {k:k, ip:ip, frac:frac, exact:exact, ans:ansStr, alt:alt,
+            keep:res.frac, decider:frac[k], carried:res.carried, newIp:res.ip};
+  }
+
+  function roundIt(ip, frac, k){
+    var keep = frac.slice(0,k);
+    var carry = frac[k] >= 5 ? 1 : 0;
+    var carried = false;
+    for(var i=k-1;i>=0 && carry;i--){
+      var v = keep[i] + carry;
+      keep[i] = v % 10;
+      carry = v >= 10 ? 1 : 0;
+      if(carry) carried = true;
+    }
+    return {ip: ip + carry, frac: keep, carried: carried || carry===1};
+  }
+
+  function norm(s){
+    return String(s).trim().replace(/\s/g,'').replace(/\./g,',').replace(/,$/,'');
+  }
+
+  function solution(){
+    var k=T.k, N=NAMES[k];
+    var kept = T.frac.slice(0,k).join('');
+    var dropped = T.frac.slice(k).join('');
+    var up = T.decider >= 5;
+    var h='<div class="tr-sol">';
+    h+='<div class="row">1. Округляем '+N.to+' → после запятой оставляем '+k+' '+(k===1?'цифру':'цифры')+': '+
+       '<span class="mono">'+fx(T.ip)+',<span class="keep">'+kept+'</span><span class="cut">'+dropped+'</span></span></div>';
+    h+='<div class="row">2. Первая отброшенная цифра — <span class="drop mono">'+T.decider+'</span>.</div>';
+    if(up){
+      h+='<div class="row">3. '+T.decider+' не меньше 5 → округляем <b>вверх</b>: прибавляем 1 к разряду «'+N.one+'».</div>';
+      if(T.carried){
+        h+='<div class="row">4. Тут случился <b>перенос</b>: девятка переполнилась и единица ушла в разряд слева. Получаем <span class="mono">'+fx(T.newIp)+','+T.keep.join('')+'</span>.</div>';
+      } else {
+        h+='<div class="row">4. Было <span class="mono">'+T.frac[k-1]+'</span> → стало <span class="mono">'+T.keep[k-1]+'</span>.</div>';
+      }
+    } else {
+      h+='<div class="row">3. '+T.decider+' меньше 5 → округляем <b>вниз</b>: оставляемые цифры не меняем.</div>';
+      h+='<div class="row">4. Просто отбрасываем хвост <span class="mono cut">'+dropped+'</span>.</div>';
+    }
+    if(/0$/.test(T.keep.join('')) ){
+      h+='<div class="row">5. Ноль в конце <b>не убираем</b> — мы округляли '+N.to+', значит после запятой должно остаться ровно '+k+' '+(k===1?'цифра':'цифры')+'.</div>';
+    }
+    h+='<div class="fin">Ответ: <span class="mono">'+fx(T.exact)+' ≈ '+fx(T.ans)+'</span></div>';
+    return h+'</div>';
+  }
+
+  function render(){
+    numEl.textContent = fx(T.exact);
+    toEl.textContent = NAMES[T.k].to;
+    inEl.value = '';
+    resEl.innerHTML = '';
+    resEl.removeAttribute('data-done');
+  }
+
+  function newTask(focus){
+    T = make(null);
+    render();
+    if(focus) inEl.focus();
+  }
+
+  function check(){
+    if(locked()) return;
+    var u = norm(inEl.value);
+    if(u === ''){
+      resEl.innerHTML = '<div class="head info">Сначала впиши ответ в поле.</div>';
+      return;
+    }
+    resEl.setAttribute('data-done','1');
+    if(u === T.ans){
+      resEl.innerHTML = '<div class="head ok">✓ Верно! '+fx(T.exact)+' ≈ '+fx(T.ans)+'</div>' + solution();
+    } else if(u === T.alt && T.alt !== T.ans){
+      resEl.innerHTML = '<div class="head warn">Почти! Число выбрано правильно, но потерян ноль: надо записать '+
+        fx(T.ans)+' — мы округляли '+NAMES[T.k].to+'.</div>' + solution();
+    } else {
+      resEl.innerHTML = '<div class="head no">Не совсем. Разбери решение по шагам.</div>' + solution();
+    }
+  }
+
+  function show(){
+    if(locked()) return;
+    resEl.setAttribute('data-done','1');
+    resEl.innerHTML = '<div class="head info">Разбор задания:</div>' + solution();
+  }
+
+  document.getElementById('trCheck').addEventListener('click', check);
+  document.getElementById('trShow').addEventListener('click', show);
+  document.getElementById('trNew').addEventListener('click', function(){ newTask(true); });
+  inEl.addEventListener('keydown', function(e){ if(e.key==='Enter'){ e.preventDefault(); check(); } });
+
+  /* стартовое задание = разобранный эталон 6,473 до десятых */
+  T = make({k:1, ip:6, frac:[4,7,3]});
+  render();
+})();
+</script>
+<!--LESSON-NAV-BOT--><nav class="lnav lnav-bot"><a class="prev" href="./m5-delenie-desyatichnyh.html"><span class="dir">← Предыдущая</span><span class="ttl">Деление десятичных дробей</span></a><a class="to-cat" href="./catalog.html">📚 <span>Все темы</span></a><a class="next" href="./m5-procenty-vvedenie.html"><span class="dir">Следующая →</span><span class="ttl">Понятие процента</span></a></nav><!--/LESSON-NAV-BOT-->

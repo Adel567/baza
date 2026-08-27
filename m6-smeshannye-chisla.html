@@ -1,0 +1,720 @@
+<!doctype html>
+<!-- humanized: humanizer-ru, 2026-08-28, тире возвращено -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Действия со смешанными числами — математика 6 класс</title>
+<style>
+  :root{
+    --paper:#F6F8FB; --card:#FFFFFF; --ink:#1B2430; --muted:#5C6879; --line:#E3E8EF;
+    --brand:#2F6BD8; --brand-soft:#E8F0FE;      /* синий — первое число, целые */
+    --fill:#E4862A; --fill-soft:#FDF0E1;        /* оранжевый — второе число, дробные части */
+    --ok:#1E8E5A; --ok-soft:#E6F5EE;
+    --no:#C23B3B;
+    --empty:#EDF1F6;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper)}
+  .page{max-width:720px;margin:0 auto;padding:clamp(1.4rem,4vw,3rem) clamp(1.1rem,4vw,2rem) 4.5rem;
+    color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:17.5px;line-height:1.68;-webkit-font-smoothing:antialiased}
+  .mono{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-variant-numeric:tabular-nums;font-weight:600}
+
+  .hero{border-bottom:3px solid var(--brand);padding-bottom:1.4rem;margin-bottom:1.8rem}
+  .eyebrow{font-size:.74rem;letter-spacing:.15em;text-transform:uppercase;color:var(--brand);font-weight:700;margin:0 0 .55rem}
+  h1{font-size:clamp(1.9rem,6vw,2.8rem);line-height:1.05;margin:0;font-weight:800;letter-spacing:-.02em;text-wrap:balance}
+  .tagline{font-size:1.12rem;color:var(--muted);margin:.85rem 0 0;text-wrap:pretty}
+
+  section{margin-top:2.4rem}
+  h2{font-size:1.5rem;margin:0 0 .3rem;font-weight:780;letter-spacing:-.015em;text-wrap:balance}
+  h2 .em{color:var(--brand)}
+  h3{font-size:1.1rem;margin:1.4rem 0 .2rem;font-weight:750}
+  p{margin:.7rem 0}
+  strong{font-weight:680}
+  .pw{color:var(--brand);font-weight:800} .fw{color:var(--fill);font-weight:800}
+
+  .lead-in{background:var(--brand-soft);border-radius:14px;padding:1.1rem 1.3rem;font-size:1.02rem}
+  .lead-in p{margin:.4rem 0}
+  .lead-in b{color:var(--brand)}
+  .chips{display:flex;flex-wrap:wrap;gap:.45rem;margin:.7rem 0 0}
+  .chips span{background:#fff;border:1px solid var(--line);border-radius:20px;padding:.28rem .8rem;font-size:.9rem;font-weight:600}
+
+  .recall{background:var(--card);border:1px dashed var(--brand);border-radius:14px;padding:1rem 1.2rem;margin-top:1rem}
+  .recall h3{margin:0 0 .3rem;font-size:1rem;color:var(--brand)}
+  .recall ul{margin:.4rem 0 0;padding-left:1.15rem}
+  .recall li{margin:.25rem 0;font-size:.97rem}
+
+  .formula-box{background:var(--ink);color:#fff;border-radius:14px;padding:1.3rem;text-align:center;margin-top:1rem}
+  .formula-box .eq{font-family:ui-monospace,Menlo,monospace;font-size:clamp(1.25rem,5.2vw,1.85rem);font-weight:700;line-height:1.5}
+  .formula-box .eq .p{color:#9CC0FF} .formula-box .eq .f{color:#F5B978}
+  .formula-box .note{font-size:.9rem;color:#AEB8C6;margin:.7rem 0 0}
+
+  .note{border-left:4px solid var(--brand);background:var(--brand-soft);border-radius:0 10px 10px 0;padding:.8rem 1.1rem;margin-top:1rem;font-size:.98rem}
+  .note b{color:var(--brand)}
+  .note.warn{border-left-color:var(--fill);background:var(--fill-soft)} .note.warn b{color:#A65C10}
+
+  .split{display:grid;gap:.9rem;margin-top:1rem}
+  @media(min-width:560px){.split{grid-template-columns:1fr 1fr}}
+  .card2{border:2px solid var(--line);border-radius:16px;padding:1.1rem 1.2rem;background:var(--card)}
+  .card2 h3{margin:.1rem 0 .4rem;font-size:1.08rem;font-weight:800}
+  .card2 .big{font-family:ui-monospace,Menlo,monospace;font-weight:800;font-size:1.28rem;color:var(--brand)}
+  .card2 p{margin:.25rem 0;font-size:.95rem}
+  .card2.o{border-color:#F3D6AE} .card2.o .big{color:var(--fill)}
+
+  .tblwrap{overflow-x:auto;margin-top:1rem;border:1px solid var(--line);border-radius:12px;background:var(--card)}
+  table{border-collapse:collapse;width:100%;min-width:420px;font-size:.95rem}
+  th,td{padding:.6rem .8rem;text-align:left;border-bottom:1px solid var(--line)}
+  th{background:var(--brand-soft);font-weight:700;font-size:.88rem}
+  tr:last-child td{border-bottom:none}
+
+  /* Визуализация — бар-модель */
+  .viz{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:1.2rem;margin-top:1rem}
+  .viz canvas{width:100%;height:auto;display:block;border-radius:8px}
+  .viz .row{display:flex;align-items:center;gap:.6rem;margin-top:.85rem;font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:.95rem}
+  .viz .row .lab{min-width:8.5ch}
+  .viz .row .lab.a{color:var(--brand)} .viz .row .lab.b{color:var(--fill)}
+  .viz input[type=range]{flex:1;min-width:90px;accent-color:var(--brand)}
+  .viz input#sB{accent-color:var(--fill)}
+  .dchips{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:.9rem;align-items:center}
+  .dchips .cap{font-size:.88rem;color:var(--muted);font-weight:600;margin-right:.2rem}
+  .dchips button{font:inherit;font-weight:700;font-size:.85rem;cursor:pointer;border:1px solid var(--line);background:var(--paper);color:var(--ink);border-radius:20px;padding:.3rem .8rem}
+  .dchips button.on{background:var(--brand);color:#fff;border-color:var(--brand)}
+  .opsw{display:flex;gap:.4rem;margin-top:.9rem}
+  .opsw button{font:inherit;font-weight:800;font-size:1rem;cursor:pointer;border:1px solid var(--line);background:var(--paper);color:var(--muted);border-radius:10px;padding:.3rem 1.1rem}
+  .opsw button.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+  .viz .readout{text-align:center;font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:clamp(1rem,4.4vw,1.18rem);margin:1rem 0 0;line-height:1.6}
+  .viz .readout .p{color:var(--brand)} .viz .readout .f{color:var(--fill)} .viz .readout .r{color:var(--ok)}
+  .viz .cap2{text-align:center;font-size:.9rem;color:var(--muted);margin:.5rem 0 0;min-height:2.6em}
+
+  .walk{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.15rem 1.3rem;margin-top:1rem}
+  .walk .q{font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.05rem;margin:0 0 .9rem;padding-bottom:.7rem;border-bottom:1px solid var(--line)}
+  .walk ol{margin:0;padding-left:1.2rem;display:flex;flex-direction:column;gap:.55rem}
+  .walk li{font-size:.96rem}
+  .walk b{font-weight:700}
+  .walk .why{color:var(--muted);font-size:.9rem}
+  .verdict{margin-top:1rem;padding:.7rem 1rem;background:var(--ok-soft);border-radius:10px;font-weight:650;color:var(--ok);font-family:ui-monospace,Menlo,monospace}
+
+  /* Тренажёр */
+  .trainer{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.2rem 1.3rem;margin-top:1rem}
+  .tabs{display:flex;gap:.4rem;margin-bottom:.9rem;flex-wrap:wrap}
+  .tabs button{font:inherit;font-weight:700;font-size:.82rem;cursor:pointer;border:1px solid var(--line);background:var(--paper);color:var(--muted);border-radius:20px;padding:.35rem .85rem}
+  .tabs button.on{background:var(--brand);color:#fff;border-color:var(--brand)}
+  .tr-task{font-family:ui-monospace,Menlo,monospace;font-weight:800;font-size:clamp(1.05rem,4.5vw,1.35rem);text-align:center;padding:1rem;background:var(--brand-soft);border-radius:10px;color:var(--ink)}
+  .tr-hint{font-size:.85rem;color:var(--muted);text-align:center;margin:.5rem 0 0}
+  .tr-ctl{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.9rem;align-items:center}
+  .tr-ctl button{font:inherit;font-weight:700;font-size:.9rem;cursor:pointer;border:none;border-radius:9px;padding:.55rem .95rem;color:#fff;background:var(--brand)}
+  .tr-ctl button.sec{background:var(--fill)}
+  .tr-ctl button.ghost{background:transparent;color:var(--brand);border:1px solid var(--brand)}
+  .tr-ctl input{flex:1;min-width:130px;font:inherit;padding:.5rem .7rem;border:1px solid var(--line);border-radius:9px;background:#fff;color:var(--ink)}
+  .tr-ctl button:focus-visible,.tr-ctl input:focus-visible{outline:3px solid var(--brand);outline-offset:2px}
+  .tr-result{margin-top:.9rem;font-size:.96rem;min-height:1.2rem}
+  .tr-result .ok{color:var(--ok);font-weight:700} .tr-result .bad{color:var(--no);font-weight:700}
+  .tr-result .warn{color:#A65C10;font-weight:700}
+  .tr-result .sol{margin-top:.6rem;padding:.8rem 1rem;background:#FAFCFF;border:1px solid var(--line);border-radius:10px;font-family:ui-monospace,Menlo,monospace;font-size:.9rem;line-height:1.85;overflow-x:auto}
+
+  details{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:.9rem 1.1rem;margin-top:.7rem}
+  details[open]{border-color:var(--brand)}
+  summary{cursor:pointer;font-weight:650;list-style:none;display:flex;justify-content:space-between;gap:1rem;align-items:center}
+  summary::-webkit-details-marker{display:none}
+  summary::after{content:"ответ";font-size:.8rem;color:var(--brand);font-weight:700;white-space:nowrap}
+  details[open] summary::after{content:"скрыть"}
+  .ans{margin-top:.75rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.96rem;color:var(--muted)}
+  .ans b{color:var(--ink)}
+  .drill{display:flex;flex-direction:column;gap:.2rem;margin-top:1rem}
+  .lvl{font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:700;margin:1.3rem 0 .3rem}
+
+  ul.traps{list-style:none;margin:1rem 0 0;padding:0;display:flex;flex-direction:column;gap:.7rem}
+  ul.traps li{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:.85rem 1.05rem;padding-left:2.5rem;position:relative;font-size:.97rem}
+  ul.traps li::before{content:"⚠";position:absolute;left:1rem;top:.85rem;color:var(--fill)}
+  ul.traps b{font-weight:700}
+
+  .wrapup{background:var(--brand);color:#fff;border-radius:16px;padding:1.4rem 1.5rem;margin-top:2.4rem}
+  .wrapup h2{color:#fff;margin:0 0 .5rem}
+  .wrapup p{color:#DCE8FB;margin:.4rem 0;font-size:1rem}
+  .wrapup .big-rule{font-size:1.08rem;font-weight:700;color:#fff;margin:.6rem 0;font-family:ui-monospace,Menlo,monospace}
+  .wrapup .next{font-size:.95rem;color:#C9DCF8;margin-top:1rem;padding-top:1rem;border-top:1px solid rgba(255,255,255,.25)}
+  .wrapup .next b{color:#fff}
+
+  .dchips button:focus-visible,.opsw button:focus-visible,.tabs button:focus-visible,
+  .viz input[type=range]:focus-visible,summary:focus-visible{outline:3px solid var(--brand);outline-offset:2px;border-radius:8px}
+
+  @media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+<!--LESSON-NAV-TOP--><style>.lnav{--lnav-accent:#3D5AF1}.lnav a{text-decoration:none;font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif}.lnav-top{max-width:820px;margin:0 auto;padding:.75rem clamp(1rem,4vw,1.5rem) .1rem}.lnav-top a{display:inline-flex;align-items:center;gap:.35rem;color:var(--lnav-accent);font-weight:600;font-size:.9rem}.lnav-top a:hover{text-decoration:underline}.lnav-bot{max-width:820px;margin:2.6rem auto 3rem;padding:1.1rem clamp(1rem,4vw,1.5rem) 0;border-top:1px solid #E4E8EF;display:flex;align-items:stretch;gap:.55rem}.lnav-bot a{min-width:0;display:flex;flex-direction:column;justify-content:center;gap:.15rem;border:1px solid #E4E8EF;border-radius:12px;padding:.65rem .85rem;color:#182233;background:#fff;transition:border-color .1s,transform .08s}.lnav-bot a:hover{border-color:var(--lnav-accent);transform:translateY(-1px)}.lnav-bot .prev,.lnav-bot .next{flex:1 1 0}.lnav-bot .next{text-align:right}.lnav-bot .dir{font-size:.72rem;color:#8A93A6;font-weight:600}.lnav-bot .ttl{font-size:.9rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.lnav-bot .to-cat{flex:0 0 auto;flex-direction:row;align-items:center;justify-content:center;color:var(--lnav-accent);font-weight:700;font-size:.85rem;white-space:nowrap}@media(max-width:420px){.lnav-bot .to-cat span{display:none}.lnav-bot .to-cat{padding:.65rem .7rem}}</style><nav class="lnav lnav-top"><a href="./catalog.html">← Все темы</a></nav><!--/LESSON-NAV-TOP-->
+<div class="page">
+
+  <header class="hero">
+    <p class="eyebrow">Математика · 6 класс · дроби</p>
+    <h1>Действия со смешанными числами</h1>
+    <p class="tagline">Полтора часа, три с половиной килограмма, два с четвертью метра. Между целой частью и дробью прячется невидимый плюс, и как только ты его разглядишь, складывать и вычитать такие числа станет легко.</p>
+  </header>
+
+  <div class="lead-in">
+    <p><b>Где встречается.</b> Смешанные числа — это числа вида «целое + дробь»: <span class="mono">2 1/2</span> (два с половиной), <span class="mono">1 1/2</span> часа, <span class="mono">3 3/4</span> кг муки в рецепте, <span class="mono">2 2/5</span> метра ткани, рост <span class="mono">1 3/4</span> м.</p>
+    <p>Стоит тебе сложить или вычесть что-нибудь «с остатком», и без действий со смешанными числами уже никуда.</p>
+    <div class="chips"><span>1 1/2 часа</span><span>3 3/4 кг</span><span>2 2/5 м</span><span>рост 1 3/4 м</span></div>
+  </div>
+
+  <div class="note warn">
+    <p><b>Сразу разрушим главный миф.</b> Многие читают <span class="mono">2 1/2</span> как «2 умножить на 1/2». Мимо! Между целой и дробной частью стоит невидимый <b>плюс</b>:</p>
+    <p class="mono" style="font-size:1.15rem;text-align:center;margin:.6rem 0 .2rem">2 1/2 = 2 + 1/2</p>
+    <p>Усвой это первым делом, иначе дальше посыплется всё.</p>
+  </div>
+
+  <section>
+    <h2>Что надо <span class="em">вспомнить перед стартом</span></h2>
+    <div class="recall">
+      <h3>Быстрая проверка себя</h3>
+      <ul>
+        <li>Дробь <span class="mono">b/c</span> называется <b>правильной</b>, если числитель меньше знаменателя (<span class="mono">b &lt; c</span>). Числитель больше или равен знаменателю — дробь <b>неправильная</b>.</li>
+        <li>Складывать и вычитать дроби можно только при <b>одинаковом знаменателе</b>: складываем числители, знаменатель не трогаем.</li>
+        <li>Знаменатели разные — сначала приводим к <b>общему знаменателю</b>.</li>
+        <li>Дробь в ответе принято <b>сокращать</b>: <span class="mono">2/4 = 1/2</span>.</li>
+      </ul>
+    </div>
+    <p>Какой-то из пунктов плывёт? Вернись к теме сложения и вычитания дробей, иначе смешанные числа пойдут туго.</p>
+  </section>
+
+  <section>
+    <h2>Суть простыми словами</h2>
+    <p><strong>Смешанное число — это сумма целого числа и правильной дроби</strong>, записанная рядом, без знака «+».</p>
+    <p>Словами: <em>целая часть показывает, сколько целых единиц, а дробная — какая ещё доля единицы добавлена сверху.</em> Символьно запись <span class="mono">a b/c</span> означает <span class="mono">a + b/c</span>, где <span class="pw">a</span> — целая часть, <span class="fw">b/c</span> — правильная дробь (<span class="mono">b &lt; c</span>).</p>
+    <p>Складывать и вычитать такие числа можно <strong>двумя путями</strong>:</p>
+    <div class="split">
+      <div class="card2">
+        <h3>Путь 1 — по частям</h3>
+        <div class="big">целые + целые<br>дробные + дробные</div>
+        <p>Работаем <strong>отдельно</strong> с целыми и отдельно с дробными частями. Быстро, но надо помнить про переход и занятие единицы.</p>
+      </div>
+      <div class="card2 o">
+        <h3>Путь 2 — через неправильные дроби</h3>
+        <div class="big">a b/c → (a·c + b)/c</div>
+        <p>Сначала <strong>переводим</strong> оба числа в неправильные дроби, дальше считаем как с обычными дробями. Действия становятся однотипными.</p>
+      </div>
+    </div>
+    <p>Перевод в неправильную дробь — ключевой навык: он делает любое действие однотипным и убирает всю путаницу с занятием единицы. С него и начнём.</p>
+  </section>
+
+  <section>
+    <h2>Правила, которые <span class="em">надо знать</span></h2>
+
+    <h3>Перевод смешанного числа в неправильную дробь</h3>
+    <div class="formula-box">
+      <div class="eq"><span class="p">a b/c</span> = <span class="f">(a·c + b) / c</span></div>
+      <div class="note">знаменатель прежний; в числителе «целое умножить на знаменатель плюс числитель»</div>
+    </div>
+    <p class="mono" style="text-align:center">2 3/5 = (2·5 + 3)/5 = 13/5</p>
+
+    <h3>Перевод неправильной дроби в смешанное число</h3>
+    <p>Делим числитель на знаменатель <strong>с остатком</strong>: неполное частное даёт целую часть, остаток — числитель дробной части, знаменатель остаётся прежним.</p>
+    <p class="mono" style="text-align:center">13/5 = 13 : 5 = 2 (остаток 3) &nbsp;→&nbsp; 13/5 = 2 3/5</p>
+
+    <h3>Сложение смешанных чисел</h3>
+    <p>Отдельно складываем целые части, отдельно дробные. Дробная сумма получилась <strong>неправильной дробью</strong> (то есть не меньше единицы)? Выделяем из неё целое и прибавляем к целым.</p>
+
+    <h3>Вычитание смешанных чисел</h3>
+    <p>Отдельно вычитаем целые, отдельно дробные. Если дробная часть уменьшаемого <strong>меньше</strong> дробной части вычитаемого, занимаем 1 у целой части. Занятая единица превращается в <span class="mono">c/c</span> и прибавляется к дробной части.</p>
+
+    <div class="note">
+      <p><b>Условия и обозначения.</b> Перед сложением и вычитанием у дробных частей должен быть <b>общий знаменатель</b>. Здесь <span class="mono">a, b, c</span> натуральные, <span class="mono">c ≠ 0</span>, дробь <span class="mono">b/c</span> правильная (<span class="mono">b &lt; c</span>). Ответ записывают смешанным числом с <b>несократимой</b> дробной частью.</p>
+    </div>
+
+    <div class="tblwrap">
+      <table>
+        <tr><th>Запись</th><th>Что означает</th><th>Пример</th></tr>
+        <tr><td class="mono">a</td><td>целая часть</td><td class="mono">в 2 3/5 это 2</td></tr>
+        <tr><td class="mono">b/c</td><td>правильная дробная часть</td><td class="mono">в 2 3/5 это 3/5</td></tr>
+        <tr><td class="mono">a b/c</td><td>смешанное число = a + b/c</td><td class="mono">2 3/5 = 2 + 3/5</td></tr>
+        <tr><td class="mono">(a·c+b)/c</td><td>то же число неправильной дробью</td><td class="mono">2 3/5 = 13/5</td></tr>
+        <tr><td class="mono">1 = c/c</td><td>занятая единица</td><td class="mono">1 = 3/3 = 4/4</td></tr>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2>Разбор по шагам <span class="em">«думаю вслух»</span></h2>
+
+    <p><strong>Пример 1. Сложение с переходом.</strong> Считаем <span class="mono">2 3/4 + 1 1/2</span>.</p>
+    <div class="walk">
+      <p class="q">2 3/4 + 1 1/2 = ?</p>
+      <ol>
+        <li>Приводим дробные части к общему знаменателю 4: <span class="mono">1/2 = 2/4</span>. <span class="why">Почему: складывать дроби можно только с одинаковым знаменателем.</span></li>
+        <li>Складываем целые: <span class="mono">2 + 1 = 3</span>. <span class="why">Почему: целые части складываются как обычные числа.</span></li>
+        <li>Складываем дробные: <span class="mono">3/4 + 2/4 = 5/4</span>. <span class="why">Почему: при общем знаменателе складываем числители, знаменатель не меняем.</span></li>
+        <li><span class="mono">5/4</span> — дробь неправильная, выделяем целое: <span class="mono">5/4 = 1 1/4</span>. <span class="why">Почему: дробная часть ответа обязана быть правильной.</span></li>
+        <li>Прибавляем это целое к целым: <span class="mono">3 + 1 1/4 = 4 1/4</span>.</li>
+      </ol>
+      <div class="verdict">Ответ: 2 3/4 + 1 1/2 = 4 1/4</div>
+    </div>
+
+    <p><strong>Пример 2. Вычитание с занятием единицы.</strong> Считаем <span class="mono">5 1/3 − 2 2/3</span>. Часть рассуждения оставлена тебе, проговори её вслух.</p>
+    <div class="walk">
+      <p class="q">5 1/3 − 2 2/3 = ?</p>
+      <ol>
+        <li>Дробные части уже с общим знаменателем 3, приводить нечего.</li>
+        <li>Пробуем в лоб: целые <span class="mono">5 − 2 = 3</span>, дробные <span class="mono">1/3 − 2/3</span> не выходят, ведь <span class="mono">1/3 &lt; 2/3</span>. <span class="why">Значит, нужен манёвр.</span></li>
+        <li>Занимаем единицу у целой части: <span class="mono">5 1/3 = 4 + 1 + 1/3 = 4 4/3</span>. <span class="why">Проговори сам: почему 1 = 3/3 и откуда взялось 4/3?</span></li>
+        <li>Теперь вычитание идёт спокойно: <span class="mono">4 4/3 − 2 2/3</span>: целые <span class="mono">4 − 2 = 2</span>, дробные <span class="mono">4/3 − 2/3 = 2/3</span>.</li>
+      </ol>
+      <div class="verdict">Ответ: 5 1/3 − 2 2/3 = 2 2/3</div>
+    </div>
+
+    <p><strong>Пример 3. Теперь сам.</strong> Вычисли <span class="mono">3 2/5 + 1 4/5</span> и только потом раскрывай ответ.</p>
+    <details><summary>Проверить ответ</summary>
+      <div class="ans">Целые: <span class="mono">3 + 1 = 4</span>. Дробные: <span class="mono">2/5 + 4/5 = 6/5 = 1 1/5</span>. Итого <span class="mono">4 + 1 1/5</span> = <b>5 1/5</b>.</div></details>
+  </section>
+
+  <section>
+    <h2>Посмотри <span class="em">своими глазами</span></h2>
+    <p>Любое смешанное число рисуется полосками: <strong>целые части</strong> — это полные прямоугольники, а <strong>дробь</strong> — закрашенный кусочек ещё одного. Двигай ползунки и следи за дробными частями: как только они соберутся в целый прямоугольник, это и есть переход. А при вычитании видно, в какой момент целое приходится разменивать.</p>
+    <div class="viz">
+      <canvas id="bars" width="560" height="300" aria-label="Бар-модель: два смешанных числа полосками и результат действия"></canvas>
+      <div class="opsw" role="group" aria-label="Действие">
+        <button type="button" id="opPlus" class="on">+</button>
+        <button type="button" id="opMinus">−</button>
+      </div>
+      <div class="dchips">
+        <span class="cap">знаменатель:</span>
+        <button type="button" data-d="2">2</button>
+        <button type="button" data-d="3">3</button>
+        <button type="button" data-d="4" class="on">4</button>
+        <button type="button" data-d="5">5</button>
+        <button type="button" data-d="6">6</button>
+        <button type="button" data-d="8">8</button>
+      </div>
+      <div class="row"><span class="lab a" id="labA">A = 2 3/4</span><input id="sA" type="range" min="0" max="16" step="1" value="11" aria-label="Первое число"></div>
+      <div class="row"><span class="lab b" id="labB">B = 1 2/4</span><input id="sB" type="range" min="0" max="16" step="1" value="6" aria-label="Второе число"></div>
+      <p class="readout" id="vizOut"></p>
+      <p class="cap2" id="vizCap"></p>
+    </div>
+    <p><strong>Числовая прямая — тот же сюжет с другой стороны.</strong> Отметь <span class="mono">2 3/4</span> и отступи вправо на <span class="mono">1 1/2</span>, попадёшь ровно в <span class="mono">4 1/4</span>. А на <span class="mono">5 1/3 − 2 2/3</span> сразу видно: прыгнуть назад на <span class="mono">2 2/3</span> не получится, пока не разменяешь целое.</p>
+    <div class="note"><p><b>Предскажи → проверь → объясни.</b> Как думаешь, <span class="mono">3 3/4 + 1 1/4</span> даст ровно 5 или нет? Сначала предположи, потом посчитай, а потом объясни словами, почему дробные части собрались в целое.</p>
+    <details style="margin-top:.6rem"><summary>Разбор</summary><div class="ans">Целые: <span class="mono">3 + 1 = 4</span>. Дробные: <span class="mono">3/4 + 1/4 = 4/4 = 1</span>. Целый прямоугольник собрался полностью, значит ответ <b>ровно 5</b>.</div></details></div>
+  </section>
+
+  <section>
+    <h2>Тренажёр · решай сколько хочешь</h2>
+    <p>Выбери тип задания, жми «Новое» и решай. Смешанное число пиши через пробел: <span class="mono">2 3/5</span>. Дробь через слэш: <span class="mono">13/5</span>. Целое число просто числом: <span class="mono">4</span>.</p>
+    <div class="trainer">
+      <div class="tabs">
+        <button id="tabImp" class="on" type="button">→ неправильная дробь</button>
+        <button id="tabMix" type="button">→ смешанное число</button>
+        <button id="tabCalc" type="button">сложение и вычитание</button>
+      </div>
+      <div class="tr-task" id="trTask">2 3/5 = ?</div>
+      <p class="tr-hint" id="trHint">запиши неправильной дробью</p>
+      <div class="tr-ctl">
+        <button id="trNew" type="button">🎲 Новое</button>
+        <input id="trAns" type="text" inputmode="text" placeholder="твой ответ" aria-label="Ответ">
+        <button id="trCheck" type="button" class="sec">Проверить</button>
+        <button id="trShow" type="button" class="ghost">Решение</button>
+      </div>
+      <div id="trResult" class="tr-result"></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Практика <span class="em">по нарастанию</span></h2>
+
+    <p class="lvl">Уровень 1 · понимание</p>
+    <div class="drill">
+      <details><summary>1) Прочитай число 4 2/7 словами. Как записать его в виде суммы?</summary>
+        <div class="ans">«Четыре целых две седьмых». В виде суммы: <span class="mono">4 2/7 = <b>4 + 2/7</b></span>.</div></details>
+      <details><summary>2) Чему равна целая часть числа 7 3/8? А дробная?</summary>
+        <div class="ans">Целая часть <b>7</b>, дробная <b>3/8</b>.</div></details>
+    </div>
+
+    <p class="lvl">Уровень 2 · применение</p>
+    <div class="drill">
+      <details><summary>3) Вычисли: 1 1/6 + 2 1/6</summary>
+        <div class="ans">Целые: <span class="mono">1 + 2 = 3</span>. Дробные: <span class="mono">1/6 + 1/6 = 2/6 = 1/3</span>. Ответ: <b>3 1/3</b>.</div></details>
+      <details><summary>4) Вычисли: 4 5/8 − 1 3/8</summary>
+        <div class="ans">Целые: <span class="mono">4 − 1 = 3</span>. Дробные: <span class="mono">5/8 − 3/8 = 2/8 = 1/4</span>. Занимать единицу не пришлось. Ответ: <b>3 1/4</b>.</div></details>
+      <details><summary>5) Переведи 19/4 в смешанное число.</summary>
+        <div class="ans"><span class="mono">19 : 4 = 4</span> (остаток 3), значит <span class="mono">19/4 = <b>4 3/4</b></span>.</div></details>
+      <details><summary>6) Переведи 3 1/7 в неправильную дробь.</summary>
+        <div class="ans"><span class="mono">(3·7 + 1)/7 = 22/7</span>. Ответ: <b>22/7</b>.</div></details>
+    </div>
+
+    <p class="lvl">Уровень 3 · анализ</p>
+    <div class="drill">
+      <details><summary>7) Что изменится, если… В примере 6 1/4 − 2 3/4 нужно ли занимать единицу? Почему?</summary>
+        <div class="ans"><b>Да, нужно.</b> Дробная часть уменьшаемого <span class="mono">1/4</span> меньше дробной части вычитаемого <span class="mono">3/4</span>, в лоб вычесть не выйдет. Занимаем: <span class="mono">6 1/4 = 5 5/4</span>. Тогда <span class="mono">5 5/4 − 2 3/4</span>: целые <span class="mono">5 − 2 = 3</span>, дробные <span class="mono">5/4 − 3/4 = 2/4 = 1/2</span>. Ответ: <b>3 1/2</b>.</div></details>
+      <details><summary>8) Найди ошибку. Ученик написал: 3 1/2 + 1 1/2 = 4 2/4 = 4 1/2. Где он ошибся и каков верный ответ?</summary>
+        <div class="ans">Складывая дроби, он сложил и числители, и знаменатели: <span class="mono">1/2 + 1/2</span> дало у него <span class="mono">2/4</span>. Знаменатель при сложении <b>не складывают</b>: <span class="mono">1/2 + 1/2 = 2/2 = 1</span>. Значит <span class="mono">3 + 1 = 4</span>, плюс ещё целое из дробных частей. Верный ответ: <b>5</b>.</div></details>
+      <details><summary>9) Обратная задача. Из некоторого числа вычли 1 2/3 и получилось 2 1/3. Какое число было?</summary>
+        <div class="ans">Чтобы найти уменьшаемое, прибавь к разности вычитаемое: <span class="mono">2 1/3 + 1 2/3</span>. Целые: <span class="mono">2 + 1 = 3</span>. Дробные: <span class="mono">1/3 + 2/3 = 3/3 = 1</span>. Итого <span class="mono">3 + 1</span> = <b>4</b>.</div></details>
+    </div>
+  </section>
+
+  <section>
+    <h2>Ловушки</h2>
+    <ul class="traps">
+      <li><b>Не занимают единицу при вычитании.</b> Видят <span class="mono">5 1/4 − 2 3/4</span>, пишут «3 минус что-то» и теряются. Правило: верхняя дробь меньше нижней — займи 1 у целого, превратив её в <span class="mono">c/c</span>. Здесь <span class="mono">1 = 4/4</span>, и <span class="mono">1/4</span> становится <span class="mono">5/4</span>.</li>
+      <li><b>Складывают целые с дробными вперемешку.</b> Скажем, <span class="mono">2 1/3 + 1/4</span> считают как <span class="mono">2 + 1 + 3 + 4</span>. Надо иначе: целое держим отдельно, а дроби приводим к общему знаменателю.</li>
+      <li><b>Неверный перевод в неправильную дробь.</b> Пишут <span class="mono">2 3/5 = 23/5</span>, просто приписав цифры, вместо <span class="mono">(2·5+3)/5 = 13/5</span>. Порядок всегда один: целое умножь на знаменатель, потом прибавь числитель.</li>
+      <li><b>Забывают общий знаменатель у дробных частей.</b> Складывают <span class="mono">1/2 + 1/3</span> и получают <span class="mono">2/5</span>. Сначала общий знаменатель, только потом сложение.</li>
+      <li><b>Оставляют неправильную дробь в ответе.</b> Получив <span class="mono">3 5/4</span>, не выделяют целое. Дробная часть ответа всегда правильная: <span class="mono">3 5/4 = 4 1/4</span>.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Проверь, что понял</h2>
+    <p>Ответь на три вопроса своими словами, вслух или письменно. Объясняешь без подглядываний — тема твоя.</p>
+    <div class="drill">
+      <details><summary>1) Что означает запись 4 2/9 — это сумма или произведение?</summary>
+        <div class="ans">Это <b>сумма</b>: <span class="mono">4 2/9 = 4 + 2/9</span>. Между целой и дробной частью стоит невидимый плюс, а не знак умножения.</div></details>
+      <details><summary>2) Когда при вычитании смешанных чисел нужно «занимать» единицу?</summary>
+        <div class="ans">Когда дробная часть уменьшаемого <b>меньше</b> дробной части вычитаемого (после приведения к общему знаменателю). Тогда берём 1 у целой части и превращаем её в <span class="mono">c/c</span>.</div></details>
+      <details><summary>3) Как перевести 3 2/5 в неправильную дробь?</summary>
+        <div class="ans"><span class="mono">(3·5 + 2)/5 = <b>17/5</b></span>: целое умножаем на знаменатель, прибавляем числитель, знаменатель оставляем прежним.</div></details>
+    </div>
+  </section>
+
+  <div class="wrapup">
+    <h2>Запомни главное</h2>
+    <p class="big-rule">a b/c = a + b/c = (a·c + b)/c</p>
+    <p>Смешанное число — это <strong style="color:#fff">целое плюс правильная дробь</strong>. Складывая и вычитая, работай с целыми и дробными частями отдельно (приведя дроби к общему знаменателю) либо переведи всё в неправильные дроби и считай как с обычными дробями. В ответе дробная часть всегда правильная и несократимая.</p>
+    <p class="next">👉 Дальше <b>умножение дробей</b>. Навык перевода в неправильную дробь пригодится сразу: смешанные числа перемножают, только сперва превратив их в неправильные дроби.</p>
+  </div>
+
+</div>
+
+<script>
+/* Визуализация: бар-модель смешанных чисел */
+(function(){
+  var canvas=document.getElementById('bars'); if(!canvas) return;
+  var ctx=canvas.getContext('2d');
+  var sA=document.getElementById('sA'), sB=document.getElementById('sB');
+  var labA=document.getElementById('labA'), labB=document.getElementById('labB');
+  var out=document.getElementById('vizOut'), cap=document.getElementById('vizCap');
+  var opPlus=document.getElementById('opPlus'), opMinus=document.getElementById('opMinus');
+  var MINUS='−';
+  var W=560, H=300, MAXU=8, d=4, op='+';
+
+  function css(v){ return getComputedStyle(document.documentElement).getPropertyValue(v).trim(); }
+  function setup(){
+    var dpr=Math.min(window.devicePixelRatio||1,2);
+    canvas.width=W*dpr; canvas.height=H*dpr;
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+  }
+  function gcd(a,b){ while(b){ var t=a%b; a=b; b=t; } return a; }
+  function mixStr(units,den){
+    var w=Math.floor(units/den), n=units%den;
+    if(n===0) return ''+w;
+    if(w===0) return n+'/'+den;
+    return w+' '+n+'/'+den;
+  }
+  function reducedStr(units,den){
+    var w=Math.floor(units/den), n=units%den;
+    if(n===0) return null;
+    var g=gcd(n,den); if(g===1) return null;
+    var rn=n/g, rd=den/g;
+    return (w===0? rn+'/'+rd : w+' '+rn+'/'+rd);
+  }
+  /* одна полоска: units четвертинок (в долях 1/den), рисуем от x,y */
+  function drawBar(x,y,units,den,color,barH,unitW){
+    var full=Math.floor(units/den), rest=units%den;
+    var total=full+(rest>0?1:0);
+    for(var i=0;i<total;i++){
+      var bx=x+i*(unitW+4);
+      /* фон единицы */
+      ctx.fillStyle=css('--empty');
+      ctx.fillRect(bx,y,unitW,barH);
+      var part = (i<full)? den : rest;
+      ctx.fillStyle=color;
+      ctx.fillRect(bx,y,unitW*part/den,barH);
+      /* деления на доли */
+      ctx.strokeStyle='#FFFFFF'; ctx.lineWidth=1;
+      for(var k=1;k<den;k++){
+        var lx=bx+unitW*k/den;
+        ctx.beginPath(); ctx.moveTo(lx,y); ctx.lineTo(lx,y+barH); ctx.stroke();
+      }
+      ctx.strokeStyle=css('--line'); ctx.lineWidth=1.5;
+      ctx.strokeRect(bx+.5,y+.5,unitW-1,barH-1);
+    }
+    if(total===0){
+      ctx.fillStyle=css('--muted'); ctx.font='13px system-ui,sans-serif'; ctx.textAlign='left';
+      ctx.fillText('0', x, y+barH/2+5);
+    }
+  }
+  function draw(){
+    var ua=parseInt(sA.value,10), ub=parseInt(sB.value,10);
+    ctx.clearRect(0,0,W,H);
+    var pad=8, unitW=(W-pad*2-4*(MAXU-1))/MAXU, barH=40, gapY=52;
+    var y0=26;
+    ctx.textAlign='left'; ctx.font='700 13px ui-monospace,Menlo,monospace';
+
+    ctx.fillStyle=css('--brand');
+    ctx.fillText('A = '+mixStr(ua,d), pad, y0-8);
+    drawBar(pad,y0,ua,d,css('--brand'),barH,unitW);
+
+    var y1=y0+gapY+14;
+    ctx.fillStyle=css('--fill');
+    ctx.fillText((op==='+'?'+ ':MINUS+' ')+'B = '+mixStr(ub,d), pad, y1-8);
+    drawBar(pad,y1,ub,d,css('--fill'),barH,unitW);
+
+    /* разделительная линия */
+    var yl=y1+barH+18;
+    ctx.strokeStyle=css('--line'); ctx.lineWidth=2;
+    ctx.beginPath(); ctx.moveTo(pad,yl); ctx.lineTo(W-pad,yl); ctx.stroke();
+
+    var y2=yl+30;
+    var res = (op==='+') ? ua+ub : ua-ub;
+    if(res<0){
+      ctx.fillStyle=css('--no'); ctx.font='700 14px system-ui,sans-serif';
+      ctx.fillText('Из меньшего числа большее пока не вычитаем', pad, y2+barH/2);
+      out.innerHTML='<span class="p">'+mixStr(ua,d)+'</span> '+MINUS+' <span class="f">'+mixStr(ub,d)+'</span> = ?';
+      cap.textContent='Возьми первое число побольше — в 6 классе результат должен быть неотрицательным.';
+      labA.textContent='A = '+mixStr(ua,d); labB.textContent='B = '+mixStr(ub,d);
+      return;
+    }
+    ctx.fillStyle=css('--ok'); ctx.font='700 13px ui-monospace,Menlo,monospace';
+    ctx.fillText('= '+mixStr(res,d), pad, y2-8);
+    drawBar(pad,y2,res,d,css('--ok'),barH,unitW);
+
+    labA.textContent='A = '+mixStr(ua,d); labB.textContent='B = '+mixStr(ub,d);
+    var red=reducedStr(res,d);
+    out.innerHTML='<span class="p">'+mixStr(ua,d)+'</span> '+(op==='+'?'+':MINUS)+' <span class="f">'+mixStr(ub,d)+'</span> = <span class="r">'+mixStr(res,d)+'</span>'+(red?' = <span class="r">'+red+'</span>':'');
+
+    var na=ua%d, nb=ub%d, txt;
+    if(op==='+'){
+      if(na+nb>=d && na+nb>0) txt='Дробные части дали '+(na+nb)+'/'+d+' — это не меньше целого, поэтому из них выделяется единица и уходит к целым. Это и есть «переход».';
+      else txt='Дробные части дали '+(na+nb)+'/'+d+' — меньше целого, переход не нужен: целые к целым, дробные к дробным.';
+    } else {
+      if(na<nb) txt='Дробная часть A ('+na+'/'+d+') меньше дробной части B ('+nb+'/'+d+') — приходится «занять» единицу у целых: 1 = '+d+'/'+d+'.';
+      else txt='Дробная часть A ('+na+'/'+d+') не меньше дробной части B ('+nb+'/'+d+') — занимать единицу не нужно, вычитаем по частям.';
+    }
+    cap.textContent=txt;
+  }
+  function setDen(nd){
+    var oldD=d, ua=parseInt(sA.value,10), ub=parseInt(sB.value,10);
+    var va=ua/oldD, vb=ub/oldD;
+    d=nd;
+    sA.max=4*d; sB.max=4*d;
+    sA.value=Math.round(va*d); sB.value=Math.round(vb*d);
+    Array.prototype.forEach.call(document.querySelectorAll('.dchips button'),function(b){
+      b.className = (parseInt(b.getAttribute('data-d'),10)===d)?'on':'';
+    });
+    draw();
+  }
+  Array.prototype.forEach.call(document.querySelectorAll('.dchips button'),function(b){
+    b.addEventListener('click',function(){ setDen(parseInt(b.getAttribute('data-d'),10)); });
+  });
+  opPlus.addEventListener('click',function(){ op='+'; opPlus.className='on'; opMinus.className=''; draw(); });
+  opMinus.addEventListener('click',function(){ op='-'; opMinus.className='on'; opPlus.className=''; draw(); });
+  sA.addEventListener('input',draw); sB.addEventListener('input',draw);
+  setup(); draw();
+})();
+</script>
+
+<script>
+/* Тренажёр: перевод и действия со смешанными числами */
+(function(){
+  var taskEl=document.getElementById('trTask'), hintEl=document.getElementById('trHint');
+  var ansEl=document.getElementById('trAns'), resEl=document.getElementById('trResult');
+  if(!taskEl) return;
+  var tabImp=document.getElementById('tabImp'), tabMix=document.getElementById('tabMix'), tabCalc=document.getElementById('tabCalc');
+  var MINUS='−';
+  var mode='imp', cur=null;
+
+  function ri(min,max){ return Math.floor(Math.random()*(max-min+1))+min; }
+  function gcd(a,b){ a=Math.abs(a); b=Math.abs(b); while(b){ var t=a%b; a=b; b=t; } return a||1; }
+  function lcm(a,b){ return a/gcd(a,b)*b; }
+  function mixOf(n,den){ return {w:Math.floor(n/den), n:n%den, d:den}; }
+  function mixStr(n,den){
+    var w=Math.floor(n/den), r=n%den;
+    if(r===0) return ''+w;
+    if(w===0) return r+'/'+den;
+    return w+' '+r+'/'+den;
+  }
+  function reduceStr(n,den){
+    var w=Math.floor(n/den), r=n%den;
+    if(r===0) return ''+w;
+    var g=gcd(r,den);
+    var rn=r/g, rd=den/g;
+    if(rd===1) return ''+(w+rn);
+    return (w===0? rn+'/'+rd : w+' '+rn+'/'+rd);
+  }
+  function needsReduce(n,den){ var r=n%den; return r!==0 && gcd(r,den)>1; }
+
+  /* ---- генерация ---- */
+  function genImp(){
+    var c=ri(2,9), a=ri(1,6), b=ri(1,c-1);
+    return {a:a,b:b,c:c, val:a*c+b};
+  }
+  function genMix(){
+    var c=ri(2,9), a=ri(1,6), b;
+    if(Math.random()<0.15) b=0;              /* краевой случай: делится нацело */
+    else b=ri(1,c-1);
+    return {c:c, num:a*c+b, a:a, b:b};
+  }
+  var DENPAIRS=[[2,4],[2,6],[2,8],[3,6],[3,9],[4,8],[5,10],[2,3],[3,4],[2,5],[4,6],[6,8]];
+  function genCalc(){
+    var op = Math.random()<0.5 ? '+' : '-';
+    for(var t=0;t<400;t++){
+      var d1,d2;
+      if(Math.random()<0.55){ d1=d2=ri(2,9); }
+      else { var pr=DENPAIRS[ri(0,DENPAIRS.length-1)]; if(Math.random()<0.5){ d1=pr[0]; d2=pr[1]; } else { d1=pr[1]; d2=pr[0]; } }
+      var a1=ri(1,6), b1=ri(1,d1-1), a2=ri(1,5), b2=ri(1,d2-1);
+      var D=lcm(d1,d2);
+      var n1=a1*D+b1*(D/d1), n2=a2*D+b2*(D/d2);
+      if(op==='-'){
+        if(n1-n2<=0) continue;
+        if(n1-n2>=8*D) continue;
+      } else {
+        if(n1+n2>=12*D) continue;
+      }
+      return {op:op, a1:a1,b1:b1,d1:d1, a2:a2,b2:b2,d2:d2, D:D, n1:n1, n2:n2,
+              res: op==='+' ? n1+n2 : n1-n2};
+    }
+    return {op:'+', a1:2,b1:3,d1:4, a2:1,b2:1,d2:2, D:4, n1:11, n2:6, res:17};
+  }
+
+  /* ---- разбор ответа ---- */
+  function parseAns(raw){
+    var s=raw.trim().replace(/−/g,'-').replace(/\s+/g,' ');
+    var m;
+    m=s.match(/^(\d+)\s+(\d+)\s*\/\s*(\d+)$/);
+    if(m){ var d=+m[3]; if(d===0) return null; return {num:(+m[1])*d + (+m[2]), den:d, form:'mixed', whole:+m[1], frac:+m[2]}; }
+    m=s.match(/^(\d+)\s*\/\s*(\d+)$/);
+    if(m){ var d2=+m[2]; if(d2===0) return null; return {num:+m[1], den:d2, form:'frac'}; }
+    m=s.match(/^(\d+)$/);
+    if(m){ return {num:+m[1], den:1, form:'int'}; }
+    return null;
+  }
+  function eqVal(p, num, den){ return p.num*den === num*p.den; }
+
+  /* ---- задание ---- */
+  function render(){
+    if(mode==='imp'){
+      taskEl.textContent = cur.a+' '+cur.b+'/'+cur.c+' = ?';
+      hintEl.textContent = 'запиши неправильной дробью';
+    } else if(mode==='mix'){
+      taskEl.textContent = cur.num+'/'+cur.c+' = ?';
+      hintEl.textContent = 'запиши смешанным числом (или целым, если делится нацело)';
+    } else {
+      var sign = cur.op==='+' ? '+' : MINUS;
+      taskEl.textContent = cur.a1+' '+cur.b1+'/'+cur.d1+'  '+sign+'  '+cur.a2+' '+cur.b2+'/'+cur.d2+' = ?';
+      hintEl.textContent = 'ответ — смешанное число с несократимой дробью';
+    }
+  }
+  function generate(focus){
+    if(mode==='imp') cur=genImp();
+    else if(mode==='mix') cur=genMix();
+    else cur=genCalc();
+    render();
+    resEl.innerHTML=''; ansEl.value='';
+    if(focus) ansEl.focus();
+  }
+
+  /* ---- решение ---- */
+  function solImp(){
+    var h='<div class="sol">';
+    h+='целое умножаем на знаменатель и прибавляем числитель<br>';
+    h+=cur.a+' '+cur.b+'/'+cur.c+' = ('+cur.a+'·'+cur.c+' + '+cur.b+')/'+cur.c+'<br>';
+    h+='= ('+(cur.a*cur.c)+' + '+cur.b+')/'+cur.c+' = <b>'+cur.val+'/'+cur.c+'</b>';
+    return h+'</div>';
+  }
+  function solMix(){
+    var q=Math.floor(cur.num/cur.c), r=cur.num%cur.c;
+    var h='<div class="sol">';
+    h+='делим числитель на знаменатель с остатком<br>';
+    h+=cur.num+' : '+cur.c+' = '+q+(r===0?' (без остатка)':' (остаток '+r+')')+'<br>';
+    if(r===0) h+='остатка нет, дробной части не будет<br>'+cur.num+'/'+cur.c+' = <b>'+q+'</b>';
+    else h+='частное — целая часть, остаток — числитель<br>'+cur.num+'/'+cur.c+' = <b>'+q+' '+r+'/'+cur.c+'</b>';
+    return h+'</div>';
+  }
+  function solCalc(){
+    var D=cur.D, sign=cur.op==='+'?'+':MINUS;
+    var k1=D/cur.d1, k2=D/cur.d2;
+    var f1=cur.b1*k1, f2=cur.b2*k2;
+    var h='<div class="sol">';
+    if(cur.d1!==D || cur.d2!==D){
+      h+='общий знаменатель: '+D+'<br>';
+      if(cur.d1!==D) h+=cur.b1+'/'+cur.d1+' = '+f1+'/'+D+'&nbsp;&nbsp;';
+      if(cur.d2!==D) h+=cur.b2+'/'+cur.d2+' = '+f2+'/'+D;
+      h+='<br>';
+    }
+    if(cur.op==='+'){
+      h+='целые: '+cur.a1+' + '+cur.a2+' = '+(cur.a1+cur.a2)+'<br>';
+      h+='дробные: '+f1+'/'+D+' + '+f2+'/'+D+' = '+(f1+f2)+'/'+D+'<br>';
+      if(f1+f2>=D){
+        var carry=Math.floor((f1+f2)/D);
+        h+=(f1+f2)+'/'+D+' = '+mixStr(f1+f2,D)+' — выделяем целое<br>';
+        h+='целых становится '+(cur.a1+cur.a2)+' + '+carry+' = '+(cur.a1+cur.a2+carry)+'<br>';
+      }
+    } else {
+      h+='целые: '+cur.a1+' '+MINUS+' '+cur.a2+' = '+(cur.a1-cur.a2)+'<br>';
+      if(f1<f2){
+        h+='дробная часть первого меньше: '+f1+'/'+D+' &lt; '+f2+'/'+D+' — занимаем 1 у целого<br>';
+        h+='1 = '+D+'/'+D+', поэтому '+cur.a1+' '+f1+'/'+D+' = '+(cur.a1-1)+' '+(f1+D)+'/'+D+'<br>';
+        h+='целые: '+(cur.a1-1)+' '+MINUS+' '+cur.a2+' = '+(cur.a1-1-cur.a2)+'<br>';
+        h+='дробные: '+(f1+D)+'/'+D+' '+MINUS+' '+f2+'/'+D+' = '+(f1+D-f2)+'/'+D+'<br>';
+      } else {
+        h+='дробные: '+f1+'/'+D+' '+MINUS+' '+f2+'/'+D+' = '+(f1-f2)+'/'+D+' — занимать не нужно<br>';
+      }
+    }
+    var plain=mixStr(cur.res,D), red=reduceStr(cur.res,D);
+    h+='получилось '+plain;
+    if(red!==plain) h+=', сокращаем дробную часть';
+    h+='<br>ответ: <b>'+red+'</b>';
+    return h+'</div>';
+  }
+  function solHTML(){
+    if(mode==='imp') return solImp();
+    if(mode==='mix') return solMix();
+    return solCalc();
+  }
+
+  /* ---- проверка ---- */
+  function check(){
+    var p=parseAns(ansEl.value);
+    if(ansEl.value.trim()===''){ resEl.innerHTML='<span class="bad">Введи ответ или нажми «Решение».</span>'; return; }
+    if(!p){ resEl.innerHTML='<span class="bad">Не понял запись. Пиши так: 2 3/5, или 13/5, или 4.</span>'; return; }
+    var num, den;
+    if(mode==='imp'){ num=cur.val; den=cur.c; }
+    else if(mode==='mix'){ num=cur.num; den=cur.c; }
+    else { num=cur.res; den=cur.D; }
+
+    if(!eqVal(p,num,den)){ resEl.innerHTML='<span class="bad">✗ Пока не то — посмотри решение.</span>'+solHTML(); return; }
+
+    /* значение верное — проверяем форму записи */
+    if(mode==='imp' && p.form!=='frac'){
+      resEl.innerHTML='<span class="warn">Значение верное, но здесь нужна именно неправильная дробь вида '+num+'/'+den+'.</span>'+solHTML(); return;
+    }
+    if(mode==='mix' && p.form==='frac'){
+      resEl.innerHTML='<span class="warn">Значение верное, но ответ надо записать смешанным числом (или целым).</span>'+solHTML(); return;
+    }
+    if(mode==='calc'){
+      if(p.form==='frac' && p.num>=p.den){
+        resEl.innerHTML='<span class="warn">Значение верное, но ответ записывают смешанным числом — выдели целую часть.</span>'+solHTML(); return;
+      }
+      if(p.form==='mixed' && (p.frac>=p.den || gcd(p.frac,p.den)>1)){
+        var why = p.frac>=p.den ? 'дробная часть ответа должна быть правильной' : 'дробную часть надо сократить';
+        resEl.innerHTML='<span class="warn">Значение верное, но '+why+'.</span>'+solHTML(); return;
+      }
+    }
+    resEl.innerHTML='<span class="ok">✓ Верно!</span>'+solHTML();
+  }
+
+  function setMode(m){
+    mode=m;
+    tabImp.className = m==='imp'?'on':'';
+    tabMix.className = m==='mix'?'on':'';
+    tabCalc.className = m==='calc'?'on':'';
+    generate(true);
+  }
+  tabImp.addEventListener('click',function(){ setMode('imp'); });
+  tabMix.addEventListener('click',function(){ setMode('mix'); });
+  tabCalc.addEventListener('click',function(){ setMode('calc'); });
+  document.getElementById('trNew').addEventListener('click',function(){ generate(true); });
+  document.getElementById('trCheck').addEventListener('click',check);
+  document.getElementById('trShow').addEventListener('click',function(){ resEl.innerHTML=solHTML(); });
+  ansEl.addEventListener('keydown',function(e){ if(e.key==='Enter') check(); });
+
+  /* стартовое состояние — та же задача, что в разметке, без автофокуса */
+  cur={a:2,b:3,c:5,val:13};
+  render();
+})();
+</script>
+<!--LESSON-NAV-BOT--><nav class="lnav lnav-bot"><a class="prev" href="./m6-slozhenie-vychitanie-drobej.html"><span class="dir">← Предыдущая</span><span class="ttl">Сложение и вычитание дробей</span></a><a class="to-cat" href="./catalog.html">📚 <span>Все темы</span></a><a class="next" href="./m6-umnozhenie-drobej.html"><span class="dir">Следующая →</span><span class="ttl">Умножение обыкновенных дробей</span></a></nav><!--/LESSON-NAV-BOT-->

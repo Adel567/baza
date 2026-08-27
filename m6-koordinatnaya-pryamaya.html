@@ -1,0 +1,678 @@
+<!doctype html>
+<!-- humanized: humanizer-ru, 2026-08-28, тире возвращено -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Координатная прямая — математика 6 класс</title>
+<style>
+  :root{
+    --paper:#F6F7FB; --card:#FFFFFF; --ink:#1B2033; --muted:#5E667E; --line:#E3E7F0;
+    --brand:#3D5AF1; --brand-soft:#E8ECFE;      /* синий — сама прямая */
+    --pos:#1E8E5A; --pos-soft:#E3F4EC;          /* вправо, плюс */
+    --neg:#C23B3B; --neg-soft:#FBE9E9;          /* влево, минус */
+    --zero:#E0A315; --zero-soft:#FFF6E2;        /* ноль, начало отсчёта */
+    --ok:#1E8E5A; --no:#C23B3B;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper)}
+  .page{max-width:760px;margin:0 auto;padding:clamp(1.4rem,4vw,3rem) clamp(1.1rem,4vw,2rem) 4.5rem;
+    color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:17.5px;line-height:1.68;-webkit-font-smoothing:antialiased}
+  .mono{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-variant-numeric:tabular-nums;font-weight:600}
+
+  .hero{border-bottom:3px solid var(--brand);padding-bottom:1.4rem;margin-bottom:1.8rem}
+  .eyebrow{font-size:.74rem;letter-spacing:.15em;text-transform:uppercase;color:var(--brand);font-weight:700;margin:0 0 .55rem}
+  h1{font-size:clamp(1.9rem,6vw,2.8rem);line-height:1.05;margin:0;font-weight:800;letter-spacing:-.02em;text-wrap:balance}
+  .tagline{font-size:1.12rem;color:var(--muted);margin:.85rem 0 0;text-wrap:pretty}
+
+  section{margin-top:2.4rem}
+  h2{font-size:1.5rem;margin:0 0 .3rem;font-weight:780;letter-spacing:-.015em;text-wrap:balance}
+  h2 .em{color:var(--brand)}
+  p{margin:.7rem 0}
+  strong{font-weight:680}
+  .nw{color:var(--neg);font-weight:800} .pw{color:var(--pos);font-weight:800} .zw{color:var(--zero);font-weight:800}
+  .bw{color:var(--brand);font-weight:800}
+
+  .lead-in{background:var(--brand-soft);border-radius:14px;padding:1.1rem 1.3rem;font-size:1.02rem}
+  .lead-in p{margin:.4rem 0}
+  .lead-in b{color:var(--brand)}
+  .chips{display:flex;flex-wrap:wrap;gap:.45rem;margin:.7rem 0 0}
+  .chips span{background:#fff;border:1px solid var(--line);border-radius:20px;padding:.28rem .8rem;font-size:.9rem;font-weight:600}
+
+  .warmup{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.05rem 1.2rem;margin-top:1rem}
+  .warmup h3{margin:0 0 .5rem;font-size:1rem;font-weight:800;color:var(--muted);letter-spacing:.02em;text-transform:uppercase;font-size:.78rem}
+
+  .def-box{background:var(--ink);color:#fff;border-radius:14px;padding:1.3rem;margin-top:1rem}
+  .def-box .t{font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:#9AA6C8;font-weight:700;margin:0 0 .5rem}
+  .def-box .d{font-size:clamp(1.02rem,3.6vw,1.16rem);line-height:1.5;margin:0}
+  .def-box .d b{color:#A9BAFF}
+
+  .three{display:grid;gap:.8rem;margin-top:1rem}
+  @media(min-width:620px){.three{grid-template-columns:repeat(3,1fr)}}
+  .card2{border:2px solid var(--line);border-radius:16px;padding:1rem 1.1rem;background:var(--card)}
+  .card2 .n{font-family:ui-monospace,Menlo,monospace;font-weight:800;font-size:.8rem;color:var(--muted)}
+  .card2 h3{margin:.15rem 0 .35rem;font-size:1.03rem;font-weight:800}
+  .card2 p{margin:.2rem 0;font-size:.94rem;color:var(--muted)}
+  .card2.z{border-color:#F3DEAE} .card2.z h3{color:var(--zero)}
+  .card2.b{border-color:#C7D2FC} .card2.b h3{color:var(--brand)}
+  .card2.g{border-color:#BFE3D2} .card2.g h3{color:var(--pos)}
+
+  .rules{display:grid;gap:.7rem;margin-top:1rem}
+  @media(min-width:620px){.rules{grid-template-columns:1fr 1fr 1fr}}
+  .rule{border-radius:14px;padding:.9rem 1.05rem;font-size:.95rem}
+  .rule b{display:block;font-family:ui-monospace,Menlo,monospace;font-size:1.05rem;margin-bottom:.25rem}
+  .rule.p{background:var(--pos-soft);color:#15603D} .rule.p b{color:var(--pos)}
+  .rule.n{background:var(--neg-soft);color:#8B2A2A} .rule.n b{color:var(--neg)}
+  .rule.f{background:var(--brand-soft);color:#26327F} .rule.f b{color:var(--brand)}
+
+  .note{border-left:4px solid var(--brand);background:var(--brand-soft);border-radius:0 10px 10px 0;padding:.8rem 1.1rem;margin-top:1rem;font-size:.98rem}
+  .note b{color:var(--brand)}
+  .note.warn{border-left-color:var(--neg);background:var(--neg-soft)}
+  .note.warn b{color:var(--neg)}
+
+  .walk{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.15rem 1.3rem;margin-top:1rem}
+  .walk .q{font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.02rem;margin:0 0 .9rem;padding-bottom:.7rem;border-bottom:1px solid var(--line)}
+  .walk ol{margin:0;padding-left:1.2rem;display:flex;flex-direction:column;gap:.55rem}
+  .walk li{font-size:.96rem}
+  .walk .why{color:var(--muted);font-size:.9rem}
+  .verdict{margin-top:1rem;padding:.7rem 1rem;background:var(--brand-soft);border-radius:10px;font-weight:650;color:var(--brand);font-family:ui-monospace,Menlo,monospace}
+
+  /* Визуализация — координатная прямая */
+  .viz{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:1.1rem;margin-top:1rem}
+  .viz canvas{width:100%;height:auto;display:block}
+  .viz .row{display:flex;align-items:center;gap:.7rem;margin-top:.9rem}
+  .viz input[type=range]{flex:1;min-width:120px;accent-color:var(--brand)}
+  .viz .pval{min-width:6.5ch;text-align:right;font-family:ui-monospace,Menlo,monospace;font-weight:800;color:var(--brand)}
+  .presets{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:.8rem;justify-content:center}
+  .presets button,.unit button{font:inherit;font-weight:700;font-size:.85rem;cursor:pointer;border:1px solid var(--line);background:var(--paper);color:var(--ink);border-radius:20px;padding:.35rem .85rem}
+  .presets button:hover,.unit button:hover{border-color:var(--brand);color:var(--brand)}
+  .unit{display:flex;flex-wrap:wrap;gap:.4rem;align-items:center;margin-top:.9rem;padding-top:.9rem;border-top:1px dashed var(--line);font-size:.9rem;color:var(--muted)}
+  .unit button.on{background:var(--brand);color:#fff;border-color:var(--brand)}
+  .viz .readout{text-align:center;font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.08rem;margin:.9rem 0 0}
+  .viz .cap{text-align:center;font-size:.88rem;color:var(--muted);margin:.45rem 0 0}
+
+  /* Тренажёр */
+  .trainer{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.2rem 1.3rem;margin-top:1rem}
+  .tabs{display:flex;gap:.4rem;margin-bottom:.9rem;flex-wrap:wrap}
+  .tabs button{font:inherit;font-weight:700;font-size:.82rem;cursor:pointer;border:1px solid var(--line);background:var(--paper);color:var(--muted);border-radius:20px;padding:.35rem .85rem}
+  .tabs button.on{background:var(--brand);color:#fff;border-color:var(--brand)}
+  .tr-task{font-family:ui-monospace,Menlo,monospace;font-weight:800;font-size:clamp(1rem,4vw,1.2rem);text-align:center;padding:1rem;background:var(--brand-soft);border-radius:10px;color:var(--ink);line-height:1.5}
+  #trCanvasWrap{margin-top:.7rem;display:none}
+  #trCanvasWrap canvas{width:100%;height:auto;display:block}
+  .tr-ctl{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.9rem;align-items:center}
+  .tr-ctl button{font:inherit;font-weight:700;font-size:.9rem;cursor:pointer;border:none;border-radius:9px;padding:.55rem .95rem;color:#fff;background:var(--brand)}
+  .tr-ctl button.sec{background:var(--pos)}
+  .tr-ctl button.ghost{background:transparent;color:var(--brand);border:1px solid var(--brand)}
+  .tr-ctl input{flex:1;min-width:130px;font:inherit;padding:.5rem .7rem;border:1px solid var(--line);border-radius:9px;background:#fff;color:var(--ink)}
+  .tr-result{margin-top:.9rem;font-size:.96rem;min-height:1.2rem}
+  .tr-result .ok{color:var(--ok);font-weight:700} .tr-result .bad{color:var(--no);font-weight:700}
+  .tr-result .sol{margin-top:.6rem;padding:.8rem 1rem;background:#FBFCFF;border:1px solid var(--line);border-radius:10px;font-family:ui-monospace,Menlo,monospace;font-size:.9rem;line-height:1.85}
+  .hint{font-size:.85rem;color:var(--muted);margin:.6rem 0 0}
+
+  details{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:.9rem 1.1rem;margin-top:.7rem}
+  details[open]{border-color:var(--brand)}
+  summary{cursor:pointer;font-weight:650;list-style:none;display:flex;justify-content:space-between;gap:1rem;align-items:center}
+  summary::-webkit-details-marker{display:none}
+  summary::after{content:"ответ";font-size:.8rem;color:var(--brand);font-weight:700;white-space:nowrap}
+  details[open] summary::after{content:"скрыть"}
+  .ans{margin-top:.75rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.96rem;color:var(--muted)}
+  .ans b{color:var(--ink)}
+  .drill{display:flex;flex-direction:column;gap:.2rem;margin-top:1rem}
+  .lvl{font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;font-weight:800;color:var(--muted);margin:1.4rem 0 .3rem}
+
+  .tw{overflow-x:auto;margin-top:1rem;border:1px solid var(--line);border-radius:12px;background:var(--card)}
+  table{border-collapse:collapse;width:100%;font-size:.95rem}
+  th,td{padding:.6rem .85rem;text-align:left;border-bottom:1px solid var(--line);white-space:nowrap}
+  th{font-size:.78rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:700}
+  tr:last-child td{border-bottom:none}
+  td.c{font-family:ui-monospace,Menlo,monospace;font-weight:700}
+
+  ul.traps{list-style:none;margin:1rem 0 0;padding:0;display:flex;flex-direction:column;gap:.7rem}
+  ul.traps li{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:.85rem 1.05rem;padding-left:2.5rem;position:relative;font-size:.97rem}
+  ul.traps li::before{content:"⚠";position:absolute;left:1rem;top:.85rem;color:var(--zero)}
+  ul.traps b{font-weight:700}
+  ul.traps .fix{display:block;margin-top:.3rem;color:var(--muted);font-size:.92rem}
+
+  .selfcheck{background:var(--card);border:2px dashed var(--brand);border-radius:14px;padding:1.1rem 1.25rem;margin-top:1rem}
+  .selfcheck ol{margin:.4rem 0 0;padding-left:1.2rem}
+  .selfcheck li{margin:.35rem 0}
+
+  .wrapup{background:var(--brand);color:#fff;border-radius:16px;padding:1.4rem 1.5rem;margin-top:2.4rem}
+  .wrapup h2{color:#fff;margin:0 0 .5rem}
+  .wrapup p{color:#DFE5FE;margin:.4rem 0;font-size:1rem}
+  .wrapup .big-rule{font-size:1.08rem;font-weight:700;color:#fff;margin:.6rem 0;font-family:ui-monospace,Menlo,monospace;line-height:1.5}
+  .wrapup .next{font-size:.95rem;color:#CDD7FC;margin-top:1rem;padding-top:1rem;border-top:1px solid rgba(255,255,255,.25)}
+  .wrapup .next b{color:#fff}
+
+  button:focus-visible,input:focus-visible,summary:focus-visible,a:focus-visible{outline:3px solid var(--brand);outline-offset:2px;border-radius:8px}
+  @media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+<!--LESSON-NAV-TOP--><style>.lnav{--lnav-accent:#3D5AF1}.lnav a{text-decoration:none;font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif}.lnav-top{max-width:820px;margin:0 auto;padding:.75rem clamp(1rem,4vw,1.5rem) .1rem}.lnav-top a{display:inline-flex;align-items:center;gap:.35rem;color:var(--lnav-accent);font-weight:600;font-size:.9rem}.lnav-top a:hover{text-decoration:underline}.lnav-bot{max-width:820px;margin:2.6rem auto 3rem;padding:1.1rem clamp(1rem,4vw,1.5rem) 0;border-top:1px solid #E4E8EF;display:flex;align-items:stretch;gap:.55rem}.lnav-bot a{min-width:0;display:flex;flex-direction:column;justify-content:center;gap:.15rem;border:1px solid #E4E8EF;border-radius:12px;padding:.65rem .85rem;color:#182233;background:#fff;transition:border-color .1s,transform .08s}.lnav-bot a:hover{border-color:var(--lnav-accent);transform:translateY(-1px)}.lnav-bot .prev,.lnav-bot .next{flex:1 1 0}.lnav-bot .next{text-align:right}.lnav-bot .dir{font-size:.72rem;color:#8A93A6;font-weight:600}.lnav-bot .ttl{font-size:.9rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.lnav-bot .to-cat{flex:0 0 auto;flex-direction:row;align-items:center;justify-content:center;color:var(--lnav-accent);font-weight:700;font-size:.85rem;white-space:nowrap}@media(max-width:420px){.lnav-bot .to-cat span{display:none}.lnav-bot .to-cat{padding:.65rem .7rem}}</style><nav class="lnav lnav-top"><a href="./catalog.html">← Все темы</a></nav><!--/LESSON-NAV-TOP-->
+<div class="page">
+
+  <header class="hero">
+    <p class="eyebrow">Математика · 6 класс · рациональные числа</p>
+    <h1>Координатная прямая</h1>
+    <p class="tagline">Линейка, на которой помещаются сразу все числа: и плюсовые, и минусовые, и дробные. Каждому числу — своя точка, каждой точке — своё число.</p>
+  </header>
+
+  <div class="lead-in">
+    <p><b>Ты это уже видел.</b> Термометр за окном (вверх — тепло, вниз — мороз), шкала уровня воды, кнопки этажей в лифте (выше нуля — этажи, ниже — подземная парковка), обычная линейка и измерительная лента.</p>
+    <p>Все они — <b>координатные прямые</b>, просто никто их так не называет. На такой прямой удобно <b>сравнивать</b> числа: кто правее, тот и больше. И сразу видно, что значит «противоположное число» и «модуль».</p>
+    <div class="chips"><span>термометр</span><span>уровень воды</span><span>этажи и парковка</span><span>линейка</span></div>
+  </div>
+
+  <div class="note warn">
+    <p><b>Разрушаем главный миф.</b> В жизни кажется: «чем больше цифра, тем больше число». С минусами это неправда. Число <span class="mono">−7</span> стоит <b>левее</b>, чем <span class="mono">−2</span>, значит <span class="mono">−7</span> <b>меньше</b> — хотя «семёрка ведь больше двойки». Координатная прямая показывает это одним взглядом, рассуждать вообще не приходится.</p>
+  </div>
+
+  <section>
+    <h2>Сначала вспомни</h2>
+    <p>Тема стоит на отрицательных числах. Проверь себя за полминуты: ответы приходят сразу — дальше пойдёт легко.</p>
+    <div class="drill">
+      <details><summary>Какие числа называют положительными, а какие отрицательными?</summary>
+        <div class="ans">Положительные — <b>больше нуля</b> (1; 2; 0,5). Отрицательные — <b>меньше нуля</b>, их пишут со знаком минус (<span class="mono">−1</span>; <span class="mono">−2</span>; <span class="mono">−0,5</span>). Сам <b>ноль</b> не относится ни к тем, ни к другим.</div></details>
+      <details><summary>Что такое противоположные числа?</summary>
+        <div class="ans">Это пара чисел, которые отличаются только знаком: <span class="mono">3</span> и <span class="mono">−3</span>. На прямой они окажутся по разные стороны от нуля, но на одинаковом расстоянии от него.</div></details>
+      <details><summary>Что показывает модуль числа?</summary>
+        <div class="ans">Сколько единиц в числе, если не смотреть на знак. У <span class="mono">−4</span> модуль равен <b>4</b>. Дальше это пригодится: модуль — это <b>сколько шагов</b> отложить, а знак — <b>в какую сторону</b>.</div></details>
+    </div>
+  </section>
+
+  <section>
+    <h2>Суть: превращаем прямую <span class="em">в линейку для чисел</span></h2>
+    <p>Возьми обычную прямую. Пока это просто линия, никаких чисел на ней нет. Чтобы она превратилась в измерительный прибор, надо договориться о <strong>трёх вещах</strong>:</p>
+    <div class="three">
+      <div class="card2 z"><div class="n">1</div><h3>Где ноль</h3><p>Выбираем точку, от которой считаем. Это <strong>начало отсчёта</strong>, его обозначают буквой <span class="mono">O</span>.</p></div>
+      <div class="card2 b"><div class="n">2</div><h3>Куда плюс</h3><p>Выбираем <strong>положительное направление</strong> — обычно вправо. Его отмечают стрелкой.</p></div>
+      <div class="card2 g"><div class="n">3</div><h3>Какой шаг</h3><p><strong>Единичный отрезок</strong> — расстояние, которое изображает число 1. Например, 1 клетка = 1.</p></div>
+    </div>
+    <p>Выбрал эти три вещи — и происходит главное: <strong>у каждой точки прямой появляется своё число</strong>, её координата, а у каждого числа — своя точка. Число и точка теперь одно и то же, просто записанное по-разному: одно значками, другое картинкой.</p>
+
+    <div class="def-box">
+      <p class="t">Определение</p>
+      <p class="d">Прямая, на которой выбраны <b>начало отсчёта</b> O, <b>положительное направление</b> и <b>единичный отрезок</b>, называется <b>координатной прямой</b> (её же называют числовой прямой).</p>
+    </div>
+
+    <div class="tw">
+      <table>
+        <tr><th>Обозначение</th><th>Что это</th></tr>
+        <tr><td class="c" style="color:var(--zero)">O</td><td>начало отсчёта, ему соответствует число 0</td></tr>
+        <tr><td class="c" style="color:var(--brand)">→</td><td>стрелка: положительное направление</td></tr>
+        <tr><td class="c" style="color:var(--pos)">справа от O</td><td>положительные числа</td></tr>
+        <tr><td class="c" style="color:var(--neg)">слева от O</td><td>отрицательные числа</td></tr>
+        <tr><td class="c">A(3)</td><td>«точка A с координатой 3»; координата — это число, которое соответствует точке</td></tr>
+      </table>
+    </div>
+    <div class="note"><p><b>Важно про единичный отрезок:</b> все единичные отрезки на одной прямой должны быть <b>одинаковой длины</b>. Иначе координаты начнут врать.</p></div>
+  </section>
+
+  <section>
+    <h2>Правило: <span class="em">как поставить число на прямую</span></h2>
+    <div class="rules">
+      <div class="rule p"><b>число &gt; 0</b>откладываем от нуля столько единичных отрезков <strong>вправо</strong></div>
+      <div class="rule n"><b>число &lt; 0</b>откладываем столько единичных отрезков <strong>влево</strong></div>
+      <div class="rule f"><b>число дробное</b>единичный отрезок делим на равные части — например, пополам, чтобы отметить половинки</div>
+    </div>
+    <p>Смотри, как это работает вместе: <strong>знак говорит, в какую сторону идти, а само число (без знака) — сколько шагов сделать</strong>. Для <span class="mono">−3</span>: минус → налево, тройка → три шага. Всё.</p>
+  </section>
+
+  <section>
+    <h2>Разбор по шагам <span class="em">«думаю вслух»</span></h2>
+    <p>Задание: отметить на координатной прямой точки <span class="mono">A(−3)</span>, <span class="mono">B(2)</span>, <span class="mono">C(0)</span>.</p>
+    <div class="walk">
+      <p class="q">A(−3), B(2), C(0) — где они стоят?</p>
+      <ol>
+        <li>Рисую прямую, ставлю ноль <span class="mono">O</span> и стрелку вправо, беру единичный отрезок = 1 клетка. <span class="why">Почему первым делом это: без нуля, направления и шага прямая ещё не координатная — на ней просто нечего отмечать.</span></li>
+        <li><b>C(0)</b>: это сам ноль, ставлю точку в <span class="mono">O</span>. <span class="why">Почему: координата 0 — это и есть начало отсчёта, никуда шагать не надо.</span></li>
+        <li><b>B(2)</b>: от нуля делаю 2 шага <span class="pw">вправо</span>. <span class="why">Почему: число положительное, значит иду в положительном направлении — туда, куда смотрит стрелка.</span></li>
+        <li><b>A(−3)</b>: от нуля делаю 3 шага <span class="nw">влево</span>. <span class="why">Почему: число отрицательное, значит иду в сторону, противоположную стрелке. Тройка говорит только про количество шагов.</span></li>
+      </ol>
+      <div class="verdict">Слева направо точки идут так: A(−3), C(0), B(2)</div>
+    </div>
+
+    <p>Второй пример — попробуй сам вставить пропущенный шаг. Найти координату точки <span class="mono">M</span>, если она стоит на 4 единичных отрезка <strong>левее</strong> нуля.</p>
+    <div class="walk">
+      <p class="q">M стоит на 4 шага левее нуля. M(?)</p>
+      <ol>
+        <li>Левее нуля — значит число будет <b>________</b> (какой знак?).</li>
+        <li>Шагов 4, поэтому модуль равен 4.</li>
+        <li>Ответ: <span class="mono">M(____)</span>.</li>
+      </ol>
+      <details><summary>Проверить себя</summary>
+        <div class="ans">Левее нуля — значит число <b>отрицательное</b>. Модуль 4, знак минус, поэтому <b><span class="mono">M(−4)</span></b>.</div></details>
+    </div>
+
+    <p>И третий — уже целиком твой. Отметь точку <span class="mono">K(1)</span> и точку <span class="mono">L</span>, которая стоит ровно посередине между нулём и <span class="mono">K</span>. Какая координата у <span class="mono">L</span>?</p>
+    <div class="drill">
+      <details><summary>Показать ответ</summary>
+        <div class="ans">L находится на <b>половине</b> единичного отрезка вправо от нуля, значит <b><span class="mono">L(0,5)</span></b> — это то же самое, что <span class="mono">1/2</span>.</div></details>
+    </div>
+  </section>
+
+  <section>
+    <h2>Подвигай точку <span class="em">своими руками</span></h2>
+    <p>Вот та самая прямая. Тяни ползунок: точка поедет по делениям, координата будет меняться следом. Следи сразу за двумя вещами — <strong>с какой стороны от нуля</strong> оказалась точка и <strong>сколько шагов</strong> она прошла.</p>
+    <div class="viz">
+      <canvas id="line" aria-label="Координатная прямая с подвижной точкой"></canvas>
+      <div class="row">
+        <span class="pval" id="pval">0</span>
+        <input id="slider" type="range" min="-12" max="12" step="1" value="0" aria-label="Координата точки">
+      </div>
+      <div class="presets">
+        <button type="button" data-v="-5">−5</button>
+        <button type="button" data-v="-3">−3</button>
+        <button type="button" data-v="-1.5">−1,5</button>
+        <button type="button" data-v="0">0</button>
+        <button type="button" data-v="0.5">0,5</button>
+        <button type="button" data-v="2">2</button>
+        <button type="button" data-v="4">4</button>
+      </div>
+      <p class="readout" id="readout"></p>
+      <p class="cap" id="cap"></p>
+      <div class="unit">
+        <span>Единичный отрезок:</span>
+        <button type="button" id="u1" class="on">1 клетка</button>
+        <button type="button" id="u2">2 клетки</button>
+        <span id="unitCap"></span>
+      </div>
+    </div>
+    <div class="note"><p><b>Обрати внимание на переключатель внизу.</b> Когда единичный отрезок становится 2 клетки, чертёж растягивается: до числа 1 теперь надо шагать дальше. Но <b>ноль остаётся на месте</b>: он начало отсчёта, а не деление шкалы. Тут спрятан ответ на задачу №6 из практики, так что сначала попробуй ответить сам.</p></div>
+    <p>Держи образ, который всё склеивает: координатная прямая — это <strong>термометр, положенный набок</strong>. Выше нуля становится правее, ниже нуля — левее.</p>
+  </section>
+
+  <section>
+    <h2>Тренажёр · задания не кончаются</h2>
+    <p>Типов заданий три: посчитать координату по шагам, прочитать её с чертежа, сравнить два числа по прямой. Жми «Новое», решай, потом проверяй. Минус пиши как обычный минус, дробную часть — через запятую или точку.</p>
+    <div class="trainer">
+      <div class="tabs">
+        <button id="tabSteps" class="on" type="button">шаги → координата</button>
+        <button id="tabRead" type="button">прочитать чертёж</button>
+        <button id="tabCmp" type="button">что левее</button>
+      </div>
+      <div class="tr-task" id="trTask">Точка стоит на 4 единичных отрезка влево от нуля. Какая у неё координата?</div>
+      <div id="trCanvasWrap"><canvas id="trLine" aria-label="Чертёж координатной прямой с отмеченной точкой"></canvas></div>
+      <div class="tr-ctl">
+        <button id="trNew" type="button">🎲 Новое</button>
+        <input id="trAns" type="text" inputmode="text" placeholder="твой ответ" aria-label="Ответ">
+        <button id="trCheck" type="button" class="sec">Проверить</button>
+        <button id="trShow" type="button" class="ghost">Решение</button>
+      </div>
+      <div id="trResult" class="tr-result"></div>
+      <p class="hint">Подсказка: сначала реши, <b>в какую сторону</b> от нуля, и только потом — <b>сколько шагов</b>.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Практика</h2>
+    <p>Задачи идут от простых к сложным. Сначала решай сам, ответ открывай только после того, как записал свой.</p>
+
+    <p class="lvl">Уровень 1 · прочитать и назвать</p>
+    <div class="drill">
+      <details><summary>1) На рисунке точка стоит на 5 шагов вправо от нуля. Какая у неё координата?</summary>
+        <div class="ans">Вправо — значит число положительное, шагов 5. Координата равна <b>5</b>.</div></details>
+      <details><summary>2) Прочитай запись D(−6): как называется число −6 для точки D?</summary>
+        <div class="ans">Число <span class="mono">−6</span> — это <b>координата точки D</b>. Читается запись так: «точка D с координатой −6».</div></details>
+    </div>
+
+    <p class="lvl">Уровень 2 · применить правило</p>
+    <div class="drill">
+      <details><summary>3) Отметь на одной прямой точки P(−2), Q(4), R(−5), S(0).</summary>
+        <div class="ans">P — 2 шага влево, Q — 4 шага вправо, R — 5 шагов влево, S — в самом начале отсчёта.<br>Слева направо на прямой они встанут так: <b><span class="mono">R(−5), P(−2), S(0), Q(4)</span></b>. Проверить себя можно на прямой в разделе выше — поставь ползунок на каждое из этих чисел.</div></details>
+      <details><summary>4) Отметь точку с координатой 1,5 (полтора единичных отрезка вправо).</summary>
+        <div class="ans">Число положительное — идём вправо. Целый шаг доводит до 1, а половинку отсчитываем от 1: делим следующий единичный отрезок пополам. Точка встанет <b>ровно посередине между 1 и 2</b>.</div></details>
+    </div>
+
+    <p class="lvl">Уровень 3 · анализ</p>
+    <div class="drill">
+      <details><summary>5) Найди ошибку: ученик отметил −4 правее нуля. В чём он неправ и где должна стоять точка?</summary>
+        <div class="ans">Он смотрел только на цифру 4 и забыл про знак. Минус означает <b>противоположное стрелке направление</b>, поэтому от нуля надо отсчитать 4 единичных отрезка <b>влево</b>. Справа от нуля стоит число 4, а не −4 — это два разных числа.</div></details>
+      <details><summary>6) Что изменится на чертеже, если единичный отрезок взять 2 клетки вместо 1? Сместится ли при этом сам ноль?</summary>
+        <div class="ans">Изменится <b>масштаб</b>: каждое число окажется вдвое дальше от нуля по клеткам, чертёж «растянется», и на тот же лист поместится меньше чисел. А вот <b>ноль не сместится</b> — он начало отсчёта, мы его выбрали и не трогали. Сами координаты точек тоже не меняются: число −3 как было −3, так и осталось, просто нарисовано дальше. Проверь переключателем в интерактивной прямой выше.</div></details>
+      <details><summary>7) Обратная задача: по чертежу запиши координаты отмеченных точек.</summary>
+        <div class="ans">Это ровно режим <b>«прочитать чертёж»</b> в тренажёре — там таких чертежей сколько угодно. Порядок действий всегда один: посмотри, с какой стороны от нуля точка (это даёт <b>знак</b>), потом сосчитай деления от нуля до неё (это даёт <b>число шагов</b>), а если точка встала между делениями — значит координата дробная.</div></details>
+    </div>
+  </section>
+
+  <section>
+    <h2>Ловушки</h2>
+    <ul class="traps">
+      <li><b>Неравномерные единичные отрезки.</b> Между 0 и 1 — одна клетка, а между 1 и 2 — вдруг три. Тогда координаты врут: точка стоит не там, где написано.
+        <span class="fix">Как избежать: сначала отметь все деления одинаковым шагом по клеткам и только потом подписывай числа.</span></li>
+      <li><b>Путают направление отрицательной полуоси.</b> Откладывают <span class="mono">−4</span> вправо, потому что «4 — это вправо».
+        <span class="fix">Как избежать: помни правило знака — минус всегда <b>влево</b> от нуля. Стрелка показывает только сторону плюса.</span></li>
+      <li><b>Неверно ставят дробные координаты.</b> Ставят <span class="mono">0,5</span> где-то рядом с единицей, «на глаз».
+        <span class="fix">Как избежать: раздели единичный отрезок на равные части. 0,5 — это ровно середина между 0 и 1, ни ближе, ни дальше.</span></li>
+      <li><b>«Чем больше цифра, тем больше число».</b> Отсюда вывод, что <span class="mono">−7</span> больше <span class="mono">−2</span>.
+        <span class="fix">Как избежать: на прямой больше то число, которое <b>правее</b>. −7 стоит левее, значит оно меньше.</span></li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Проверь, что понял</h2>
+    <p>Закрой урок и ответь вслух, будто объясняешь другу, который темы не знает. Запнулся — вернись именно к этому месту.</p>
+    <div class="selfcheck">
+      <ol>
+        <li>Из чего складывается координатная прямая — назови три обязательные вещи.</li>
+        <li>В какую сторону откладывают отрицательные числа и почему именно туда?</li>
+        <li>Точка стоит на 3 шага левее нуля. Какая у неё координата?</li>
+      </ol>
+    </div>
+    <div class="drill">
+      <details><summary>Сверить ответы</summary>
+        <div class="ans">1) <b>Начало отсчёта O</b> (это ноль), <b>положительное направление</b> (стрелка) и <b>единичный отрезок</b> (шаг, изображающий число 1).<br>
+        2) <b>Влево</b>, то есть в сторону, противоположную стрелке: стрелка задаёт направление плюса, значит минус идёт против неё.<br>
+        3) <b><span class="mono">−3</span></b>: левее нуля — знак минус, три шага — модуль 3.</div></details>
+    </div>
+    <p>А ещё сильнее работает проверка наоборот: придумай точку сам, поставь её на прямой и объясни, почему она встала именно туда. Объяснил без запинок — тема твоя.</p>
+  </section>
+
+  <div class="wrapup">
+    <h2>Запомни главное</h2>
+    <p class="big-rule">ноль + направление + единичный отрезок = координатная прямая</p>
+    <p>Каждому числу соответствует своя точка, а каждой точке — её координата. <strong style="color:#fff">Знак говорит, в какую сторону</strong> идти от нуля, <strong style="color:#fff">само число — сколько шагов</strong> сделать. Дробное число — значит единичный отрезок надо разделить на равные части.</p>
+    <p class="next">👉 Дальше прямая начнёт работать. Сначала — <b>сравнение рациональных чисел</b>: правило «кто правее, тот больше» превращается в готовый способ сравнивать любые числа с минусами и дробями. Потом из двух таких прямых соберут <b>координатную плоскость</b>, где точку задают уже двумя координатами и строят графики.</p>
+  </div>
+
+</div>
+
+<script>
+/* Общий рисовальщик координатной прямой */
+var CL = (function(){
+  function css(v){ return getComputedStyle(document.documentElement).getPropertyValue(v).trim(); }
+  function minus(s){ return String(s).replace(/-/g,'−'); }
+  function fmt(v){
+    var s = (Math.round(v*100)/100).toString().replace('.',',');
+    return minus(s);
+  }
+  /* opts: {min,max,unitCells,pt,label,showLabel,compact} */
+  function draw(canvas, opts){
+    var wrap = canvas.parentNode;
+    var W = Math.max(260, Math.round(wrap.clientWidth || 320));
+    var H = opts.compact ? 116 : 150;
+    var dpr = Math.min(window.devicePixelRatio||1, 2);
+    canvas.style.width = '100%';
+    canvas.width = Math.round(W*dpr); canvas.height = Math.round(H*dpr);
+    canvas.style.height = H + 'px';
+    var ctx = canvas.getContext('2d');
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+    ctx.clearRect(0,0,W,H);
+
+    var padL = 22, padR = 26;
+    var min = opts.min, max = opts.max;
+    var span = max - min;
+    var x = function(v){ return padL + (v-min)/span*(W-padL-padR); };
+    var y = opts.compact ? 62 : 78;
+
+    /* клетки: шаг сетки = 1/unitCells единиц */
+    var cellStep = 1/(opts.unitCells||1);
+    ctx.strokeStyle = '#EDF0F7'; ctx.lineWidth = 1;
+    for(var g=min; g<=max+1e-9; g+=cellStep){
+      var gx = x(g);
+      ctx.beginPath(); ctx.moveTo(Math.round(gx)+0.5, 12); ctx.lineTo(Math.round(gx)+0.5, H-10); ctx.stroke();
+    }
+
+    /* сама прямая */
+    ctx.strokeStyle = css('--ink'); ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.moveTo(padL-14, y); ctx.lineTo(W-8, y); ctx.stroke();
+    /* стрелка */
+    ctx.fillStyle = css('--ink');
+    ctx.beginPath(); ctx.moveTo(W-8,y); ctx.lineTo(W-20,y-5.5); ctx.lineTo(W-20,y+5.5); ctx.closePath(); ctx.fill();
+
+    /* половинные штрихи */
+    ctx.strokeStyle = '#AFB7CC'; ctx.lineWidth = 1;
+    for(var h=Math.ceil(min*2)/2; h<=max+1e-9; h+=0.5){
+      if(Math.abs(h-Math.round(h))<1e-9) continue;
+      ctx.beginPath(); ctx.moveTo(x(h), y-4); ctx.lineTo(x(h), y+4); ctx.stroke();
+    }
+
+    /* деления и подписи */
+    var pxPerUnit = (W-padL-padR)/span;
+    var everyOther = pxPerUnit < 26;
+    ctx.font = '600 13px ui-monospace, Menlo, monospace';
+    ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+    for(var n=Math.ceil(min); n<=max+1e-9; n++){
+      var nx = x(n);
+      ctx.strokeStyle = n===0 ? css('--zero') : css('--ink');
+      ctx.lineWidth = n===0 ? 2.5 : 1.6;
+      ctx.beginPath(); ctx.moveTo(nx, y-8); ctx.lineTo(nx, y+8); ctx.stroke();
+      if(!everyOther || n%2===0 || n===0){
+        ctx.fillStyle = n===0 ? css('--zero') : (n<0 ? css('--neg') : css('--pos'));
+        ctx.fillText(minus(String(n)), nx, y+12);
+      }
+    }
+    /* буква O — рядом с нулём над прямой (начало отсчёта) */
+    if(min<=0 && max>=0){
+      ctx.fillStyle = css('--zero');
+      ctx.font = 'italic 700 15px Georgia, "Times New Roman", serif';
+      ctx.textAlign = 'center'; ctx.textBaseline = 'alphabetic';
+      ctx.fillText('O', x(0)-12, y-11);
+    }
+
+    /* подписи сторон */
+    if(!opts.compact){
+      ctx.font = '700 11px system-ui, sans-serif';
+      ctx.textBaseline = 'alphabetic';
+      ctx.fillStyle = css('--neg'); ctx.textAlign='left';
+      ctx.fillText('отрицательные', padL-14, 20);
+      ctx.fillStyle = css('--pos'); ctx.textAlign='right';
+      ctx.fillText('положительные', W-10, 20);
+    }
+
+    /* точка */
+    if(opts.pt !== null && opts.pt !== undefined){
+      var p = opts.pt, px = x(p);
+      var col = p===0 ? css('--zero') : (p<0 ? css('--neg') : css('--pos'));
+      if(p!==0){
+        ctx.strokeStyle = col; ctx.lineWidth = 5; ctx.globalAlpha = .35;
+        ctx.beginPath(); ctx.moveTo(x(0), y); ctx.lineTo(px, y); ctx.stroke();
+        ctx.globalAlpha = 1;
+      }
+      ctx.fillStyle = col;
+      ctx.beginPath(); ctx.arc(px, y, 6.5, 0, Math.PI*2); ctx.fill();
+      ctx.strokeStyle = '#fff'; ctx.lineWidth = 2; ctx.stroke();
+      ctx.font = '800 14px ui-monospace, Menlo, monospace';
+      ctx.textAlign = 'center'; ctx.textBaseline = 'alphabetic';
+      ctx.fillStyle = col;
+      var txt = opts.showLabel===false ? (opts.label||'?') : (opts.label||'A')+'('+fmt(p)+')';
+      var tw = ctx.measureText(txt).width;
+      var lx = Math.min(Math.max(px, tw/2+4), W-tw/2-4);
+      ctx.fillText(txt, lx, y-22);
+    }
+  }
+  return {draw:draw, fmt:fmt, minus:minus};
+})();
+</script>
+
+<script>
+/* Интерактивная координатная прямая */
+(function(){
+  var canvas = document.getElementById('line'); if(!canvas) return;
+  var slider = document.getElementById('slider');
+  var pval = document.getElementById('pval'), readout = document.getElementById('readout'), cap = document.getElementById('cap');
+  var u1 = document.getElementById('u1'), u2 = document.getElementById('u2'), unitCap = document.getElementById('unitCap');
+  var unitCells = 1;           /* сколько клеток в единичном отрезке */
+  var value = 0;               /* координата точки, шаг 0,5 */
+
+  function limits(){ var m = 6/unitCells; return {min:-m, max:m}; }
+
+  function syncSlider(){
+    var L = limits();
+    slider.min = String(Math.round(L.min*2));
+    slider.max = String(Math.round(L.max*2));
+    slider.value = String(Math.round(value*2));
+  }
+  function word(n){
+    var a = Math.abs(n), i = Math.round(a);
+    if(Math.abs(a-i)>1e-9) return 'единичного отрезка';
+    if(i%100>=11 && i%100<=14) return 'единичных отрезков';
+    if(i%10===1) return 'единичный отрезок';
+    if(i%10>=2 && i%10<=4) return 'единичных отрезка';
+    return 'единичных отрезков';
+  }
+  function render(){
+    CL.draw(canvas, {min:limits().min, max:limits().max, unitCells:unitCells, pt:value, label:'A'});
+    pval.textContent = CL.fmt(value);
+    if(value===0){
+      readout.innerHTML = '<span style="color:var(--zero)">A(0)</span> — точка в начале отсчёта';
+      cap.textContent = 'Ноль не положительный и не отрицательный: шагать никуда не надо.';
+    } else {
+      var dir = value<0 ? 'влево' : 'вправо';
+      var col = value<0 ? 'var(--neg)' : 'var(--pos)';
+      readout.innerHTML = '<span style="color:'+col+'">A('+CL.fmt(value)+')</span> — '+CL.fmt(Math.abs(value))+' '+word(value)+' '+dir+' от нуля';
+      cap.textContent = value<0
+        ? 'Знак минус — идём против стрелки. Модуль ' + CL.fmt(Math.abs(value)) + ' — столько шагов.'
+        : 'Знак плюс — идём по стрелке. Число ' + CL.fmt(Math.abs(value)) + ' — столько шагов.';
+    }
+    unitCap.textContent = unitCells===1
+      ? 'На чертёж помещаются числа от −6 до 6.'
+      : 'Шкала растянулась: помещаются только числа от −3 до 3, но ноль остался на месте.';
+  }
+  function setUnit(u){
+    unitCells = u;
+    u1.className = u===1 ? 'on' : ''; u2.className = u===2 ? 'on' : '';
+    var L = limits();
+    if(value < L.min) value = L.min;
+    if(value > L.max) value = L.max;
+    syncSlider(); render();
+  }
+  slider.addEventListener('input', function(){ value = parseInt(slider.value,10)/2; render(); });
+  Array.prototype.forEach.call(document.querySelectorAll('.presets button'), function(b){
+    b.addEventListener('click', function(){
+      var v = parseFloat(b.getAttribute('data-v'));
+      var L = limits();
+      if(v<L.min) v=L.min; if(v>L.max) v=L.max;
+      value = v; syncSlider(); render();
+    });
+  });
+  u1.addEventListener('click', function(){ setUnit(1); });
+  u2.addEventListener('click', function(){ setUnit(2); });
+  window.addEventListener('resize', render);
+  syncSlider(); render();
+})();
+</script>
+
+<script>
+/* Тренажёр: координата по шагам · чтение чертежа · сравнение */
+(function(){
+  var taskEl = document.getElementById('trTask'), ansEl = document.getElementById('trAns'), resEl = document.getElementById('trResult');
+  if(!taskEl) return;
+  var wrap = document.getElementById('trCanvasWrap'), trCanvas = document.getElementById('trLine');
+  var tabSteps = document.getElementById('tabSteps'), tabRead = document.getElementById('tabRead'), tabCmp = document.getElementById('tabCmp');
+  var mode = 'steps';
+  var cur = {n:4, dir:-1, val:-4};
+
+  function ri(a,b){ return Math.floor(Math.random()*(b-a+1))+a; }
+  function fmt(v){ return CL.fmt(v); }
+  function word(n){
+    var a = Math.abs(n), i = Math.round(a);
+    if(Math.abs(a-i)>1e-9) return 'единичного отрезка';
+    if(i%100>=11 && i%100<=14) return 'единичных отрезков';
+    if(i%10===1) return 'единичный отрезок';
+    if(i%10>=2 && i%10<=4) return 'единичных отрезка';
+    return 'единичных отрезков';
+  }
+
+  function genSteps(){
+    var r = Math.random(), n, dir;
+    if(r < 0.10){ n = 0; dir = 1; }                       /* краевой случай: ноль шагов */
+    else if(r < 0.28){ n = ri(1,10) + 0.5; dir = Math.random()<0.5?-1:1; }  /* дробные */
+    else { n = ri(1,10); dir = Math.random()<0.5?-1:1; }
+    cur = {n:n, dir:dir, val: n===0 ? 0 : dir*n};
+    if(n===0){
+      taskEl.textContent = 'Точка стоит в самом начале отсчёта, в точке O. Какая у неё координата?';
+    } else {
+      taskEl.textContent = 'Точка стоит на ' + fmt(n) + ' ' + word(n) + ' ' + (dir<0?'влево':'вправо') + ' от нуля. Какая у неё координата?';
+    }
+  }
+  function genRead(){
+    var v;
+    do { v = ri(-12,12)/2; } while(false);
+    cur = {val:v};
+    taskEl.textContent = 'Запиши координату отмеченной точки M.';
+    drawTrainerLine();
+  }
+  function drawTrainerLine(){
+    CL.draw(trCanvas, {min:-6, max:6, unitCells:1, pt:cur.val, label:'M', showLabel:false, compact:true});
+  }
+  function genCmp(){
+    var a, b;
+    do {
+      a = ri(-9,9); b = ri(-9,9);
+      if(Math.random()<0.25){ a = a + 0.5; }
+      if(Math.random()<0.25){ b = b + 0.5; }
+    } while(Math.abs(a-b) < 1e-9);
+    cur = {a:a, b:b, val: Math.min(a,b)};
+    taskEl.textContent = 'Какое из чисел стоит левее на координатной прямой: ' + fmt(a) + ' или ' + fmt(b) + '? Запиши его.';
+  }
+  function generate(focus){
+    if(mode==='steps'){ wrap.style.display='none'; genSteps(); }
+    else if(mode==='read'){ wrap.style.display='block'; genRead(); }
+    else { wrap.style.display='none'; genCmp(); }
+    resEl.innerHTML = ''; ansEl.value = '';
+    if(focus) ansEl.focus();
+  }
+  function solHTML(){
+    var h = '<div class="sol">';
+    if(mode==='steps'){
+      if(cur.n===0){
+        h += 'точка стоит в начале отсчёта O<br>началу отсчёта соответствует число 0<br>ответ: <b>0</b>';
+      } else {
+        h += (cur.dir<0?'влево от нуля → знак минус':'вправо от нуля → знак плюс') + '<br>';
+        h += 'шагов ' + fmt(cur.n) + ' → модуль равен ' + fmt(cur.n) + '<br>';
+        h += 'ответ: <b>' + fmt(cur.val) + '</b>';
+      }
+    } else if(mode==='read'){
+      if(cur.val===0){
+        h += 'точка стоит в самом нуле, в начале отсчёта<br>ответ: <b>0</b>';
+      } else {
+        h += (cur.val<0?'точка левее нуля → число отрицательное':'точка правее нуля → число положительное') + '<br>';
+        h += 'от нуля до точки ' + fmt(Math.abs(cur.val)) + ' ' + word(cur.val) + '<br>';
+        h += 'ответ: <b>' + fmt(cur.val) + '</b>';
+      }
+    } else {
+      var a = cur.a, b = cur.b, small = cur.val, big = (a===small? b : a);
+      h += 'на прямой левее стоит то число, которое меньше<br>';
+      h += fmt(small) + ' левее, чем ' + fmt(big) + '<br>';
+      h += 'ответ: <b>' + fmt(small) + '</b>';
+    }
+    return h + '</div>';
+  }
+  function parseAns(s){
+    var t = String(s).replace(/\s+/g,'').replace(/−|–|—/g,'-').replace(',','.');
+    if(t==='') return NaN;
+    return parseFloat(t);
+  }
+  function check(){
+    var got = parseAns(ansEl.value);
+    if(ansEl.value.trim()===''){ resEl.innerHTML = '<span class="bad">Введи ответ или нажми «Решение».</span>'; return; }
+    if(isNaN(got)){ resEl.innerHTML = '<span class="bad">Это не похоже на число. Попробуй ещё раз.</span>'; return; }
+    if(Math.abs(got - cur.val) < 1e-6){
+      resEl.innerHTML = '<span class="ok">✓ Верно!</span>' + solHTML();
+    } else if(Math.abs(got + cur.val) < 1e-6 && cur.val !== 0 && mode !== 'cmp'){
+      resEl.innerHTML = '<span class="bad">✗ Число угадал, а знак — нет. Посмотри, с какой стороны от нуля точка.</span>' + solHTML();
+    } else {
+      resEl.innerHTML = '<span class="bad">✗ Пока не то — посмотри решение.</span>' + solHTML();
+    }
+  }
+  function setMode(m){
+    mode = m;
+    tabSteps.className = m==='steps' ? 'on' : '';
+    tabRead.className  = m==='read'  ? 'on' : '';
+    tabCmp.className   = m==='cmp'   ? 'on' : '';
+    generate(true);
+  }
+  tabSteps.addEventListener('click', function(){ setMode('steps'); });
+  tabRead.addEventListener('click',  function(){ setMode('read'); });
+  tabCmp.addEventListener('click',   function(){ setMode('cmp'); });
+  document.getElementById('trNew').addEventListener('click', function(){ generate(true); });
+  document.getElementById('trCheck').addEventListener('click', check);
+  document.getElementById('trShow').addEventListener('click', function(){ resEl.innerHTML = solHTML(); });
+  ansEl.addEventListener('keydown', function(e){ if(e.key==='Enter') check(); });
+  window.addEventListener('resize', function(){ if(mode==='read') drawTrainerLine(); });
+
+  /* стартовое состояние: та же задача, что в разметке, без автофокуса */
+  cur = {n:4, dir:-1, val:-4};
+  taskEl.textContent = 'Точка стоит на 4 единичных отрезка влево от нуля. Какая у неё координата?';
+})();
+</script>
+<!--LESSON-NAV-BOT--><nav class="lnav lnav-bot"><a class="prev" href="./m6-otricatelnye-chisla.html"><span class="dir">← Предыдущая</span><span class="ttl">Положительные и отрицательные числа</span></a><a class="to-cat" href="./catalog.html">📚 <span>Все темы</span></a><a class="next" href="./m6-protivopolozhnye.html"><span class="dir">Следующая →</span><span class="ttl">Противоположные числа</span></a></nav><!--/LESSON-NAV-BOT-->

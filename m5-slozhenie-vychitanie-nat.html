@@ -1,0 +1,728 @@
+<!doctype html>
+<!-- humanized: humanizer-ru, 2026-08-28, тире возвращено -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Сложение и вычитание натуральных чисел — 5 класс</title>
+<style>
+  :root{
+    --paper:#FBF9F5;
+    --card:#FFFFFF;
+    --ink:#26202E;
+    --muted:#6B6473;
+    --line:#E7E2E8;
+    --brand:#6A3EA1;
+    --brand-soft:#EFE7F6;
+    --add:#CF5A34;          /* сложение / перенос */
+    --add-soft:#FBEADF;
+    --add-line:#F0CDB8;
+    --sub:#3A5AA0;          /* вычитание / займ */
+    --sub-soft:#E5EBF6;
+    --sub-line:#C6D3EC;
+    --ok:#2E8B57;
+    --no:#C23B3B;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper)}
+  .page{
+    max-width:720px;margin:0 auto;
+    padding:clamp(1.4rem,4vw,3rem) clamp(1.1rem,4vw,2rem) 4.5rem;
+    color:var(--ink);
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    font-size:17.5px;line-height:1.68;-webkit-font-smoothing:antialiased;
+  }
+  .mono{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-variant-numeric:tabular-nums;font-weight:600}
+
+  .hero{border-bottom:3px solid var(--brand);padding-bottom:1.4rem;margin-bottom:1.8rem}
+  .eyebrow{font-size:.74rem;letter-spacing:.15em;text-transform:uppercase;color:var(--brand);font-weight:700;margin:0 0 .55rem}
+  h1{font-size:clamp(2rem,6.5vw,3rem);line-height:1.03;margin:0;font-weight:800;letter-spacing:-.02em;text-wrap:balance}
+  .tagline{font-size:1.12rem;color:var(--muted);margin:.85rem 0 0;text-wrap:pretty}
+
+  section{margin-top:2.4rem}
+  h2{font-size:1.5rem;margin:0 0 .3rem;font-weight:780;letter-spacing:-.015em;text-wrap:balance}
+  h2 .em{color:var(--brand)}
+  h3{font-size:1.12rem;margin:1.3rem 0 .2rem;font-weight:760}
+  p{margin:.7rem 0}
+  strong{font-weight:680}
+
+  .lead-in{background:var(--brand-soft);border-radius:14px;padding:1.1rem 1.3rem;font-size:1.02rem}
+  .lead-in p{margin:.4rem 0}
+  .lead-in b{color:var(--brand)}
+
+  /* Разминка — пререквизиты */
+  .warm{border:2px dashed var(--line);border-radius:14px;padding:1rem 1.25rem;margin-top:1rem;background:var(--card)}
+  .warm p.cap{margin:0 0 .3rem;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;font-weight:700;color:var(--brand)}
+  .warm ol{margin:.5rem 0 0;padding-left:1.25rem}
+  .warm li{margin:.3rem 0;font-size:.98rem}
+
+  /* Две карточки: сложение / вычитание */
+  .split{display:grid;gap:.9rem;margin-top:1rem}
+  @media(min-width:600px){.split{grid-template-columns:1fr 1fr}}
+  .path{border-radius:16px;padding:1.2rem 1.3rem;border:2px solid}
+  .path.add{background:var(--add-soft);border-color:var(--add-line)}
+  .path.sub{background:var(--sub-soft);border-color:var(--sub-line)}
+  .path .cap{font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;font-weight:700;margin:0}
+  .path.add .cap{color:var(--add)} .path.sub .cap{color:var(--sub)}
+  .path h3{margin:.2rem 0 .5rem;font-size:1.3rem;font-weight:800}
+  .path p{margin:.3rem 0;font-size:.97rem}
+  .path .who{font-weight:800;font-family:ui-monospace,Menlo,monospace}
+  .path.add .who{color:var(--add)} .path.sub .who{color:var(--sub)}
+
+  /* Плитки правил */
+  .rules{display:flex;flex-direction:column;gap:.7rem;margin-top:1rem}
+  .rule{display:flex;align-items:flex-start;gap:1rem;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:.85rem 1.05rem}
+  .rule .big{font-family:ui-monospace,Menlo,monospace;font-weight:800;font-size:1.5rem;flex:none;width:2.4rem;text-align:center;line-height:1.3}
+  .rule.a .big{color:var(--add)} .rule.s .big{color:var(--sub)}
+  .rule .txt{flex:1;min-width:0}
+  .rule .ex{font-size:.88rem;color:var(--muted);margin-top:.35rem}
+  .rule .ex .mono{color:var(--ink)}
+
+  .note{border-left:4px solid var(--brand);background:var(--brand-soft);border-radius:0 10px 10px 0;padding:.8rem 1.1rem;margin-top:1rem;font-size:.98rem}
+  .note b{color:var(--brand)}
+  .note p{margin:.35rem 0}
+
+  /* Столбик */
+  .stwrap{overflow-x:auto;padding:.2rem 0}
+  .stolb{display:inline-block;font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-variant-numeric:tabular-nums;font-weight:700;font-size:1.35rem;line-height:1.35;margin:.2rem 0}
+  .st-row{display:flex;justify-content:flex-end}
+  .st-cell{width:1.35em;text-align:center}
+  .st-sign{color:var(--muted)}
+  .st-mark{height:1.1em;font-size:.72em;font-weight:800;line-height:1.1em}
+  .st-mark .st-cell{color:var(--add)}
+  .st-borrow .st-cell{color:var(--sub)}
+  .st-line{border-top:2px solid var(--ink);margin:.18rem 0 .18rem auto;height:0}
+  .st-res .st-cell{color:var(--brand)}
+
+  /* Разбор по шагам */
+  .walk{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.15rem 1.3rem;margin-top:1rem}
+  .walk .q{font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.1rem;margin:0 0 .9rem;padding-bottom:.7rem;border-bottom:1px solid var(--line)}
+  .walk ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:.55rem}
+  .walk li{font-size:.98rem;display:flex;gap:.6rem;align-items:baseline}
+  .tag{font-size:.66rem;font-weight:700;padding:.08rem .42rem;border-radius:5px;flex:none;letter-spacing:.02em}
+  .tag.a{background:var(--add-soft);color:var(--add)} .tag.s{background:var(--sub-soft);color:var(--sub)}
+  .yes{color:var(--ok);font-weight:800} .no{color:var(--no);font-weight:800}
+  .verdict{margin-top:1rem;padding:.75rem 1rem;background:var(--brand-soft);border-radius:10px;font-weight:650;color:var(--brand);font-size:1rem}
+
+  /* Числовая прямая */
+  .viz{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:1.1rem 1.2rem 1.2rem;margin-top:1rem}
+  .viz canvas{width:100%;height:170px;display:block}
+  .viz .ctl{display:flex;flex-wrap:wrap;gap:.9rem 1.4rem;align-items:center;margin-top:.7rem}
+  .viz .ctl label{font-size:.92rem;color:var(--muted);display:flex;align-items:center;gap:.5rem;flex:1 1 200px}
+  .viz .ctl input[type=range]{flex:1;min-width:90px;accent-color:var(--brand)}
+  .viz .ctl input[type=range]:focus-visible{outline:2px solid var(--brand);outline-offset:3px}
+  .viz .val{font-family:ui-monospace,Menlo,monospace;font-weight:800;min-width:2ch;text-align:right;color:var(--ink)}
+  .viz .ops{display:flex;gap:.45rem}
+  .viz .ops button{font:inherit;font-weight:800;font-family:ui-monospace,Menlo,monospace;font-size:1.05rem;border:2px solid var(--line);background:var(--paper);color:var(--muted);border-radius:10px;padding:.32rem .95rem;cursor:pointer}
+  .viz .ops button:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+  .viz .ops button.on[data-op="+"]{border-color:var(--add);background:var(--add-soft);color:var(--add)}
+  .viz .ops button.on[data-op="-"]{border-color:var(--sub);background:var(--sub-soft);color:var(--sub)}
+  .viz .say{margin:.9rem 0 0;font-size:1.02rem;text-align:center;font-family:ui-monospace,Menlo,monospace;font-weight:700}
+
+  /* Таблица */
+  .tblwrap{overflow-x:auto;margin-top:1rem}
+  table{border-collapse:collapse;width:100%;min-width:440px;font-size:.96rem}
+  th,td{border:1px solid var(--line);padding:.6rem .75rem;text-align:left}
+  thead th{background:#F7F5F9;font-weight:700}
+  td.d{font-family:ui-monospace,Menlo,monospace;font-weight:800;text-align:center;white-space:nowrap}
+  td.d.a{color:var(--add);background:var(--add-soft)} td.d.s{color:var(--sub);background:var(--sub-soft)}
+
+  /* Практика */
+  .lvl{font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;font-weight:800;color:var(--brand);margin:1.6rem 0 .1rem}
+  .drill{display:flex;flex-direction:column;gap:.7rem;margin-top:.7rem}
+  details{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:.9rem 1.1rem}
+  details[open]{border-color:var(--brand)}
+  summary{cursor:pointer;font-weight:650;list-style:none;display:flex;justify-content:space-between;gap:1rem;align-items:center}
+  summary::-webkit-details-marker{display:none}
+  summary:focus-visible{outline:2px solid var(--brand);outline-offset:3px;border-radius:6px}
+  summary .q{font-size:1rem}
+  summary::after{content:"проверить";font-size:.8rem;color:var(--brand);font-weight:700;white-space:nowrap}
+  details[open] summary::after{content:"скрыть"}
+  .ans{margin-top:.75rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.96rem;color:var(--muted)}
+  .ans b{color:var(--ink)}
+  .ans p{margin:.4rem 0}
+
+  /* Ловушки */
+  ul.traps{list-style:none;margin:1rem 0 0;padding:0;display:flex;flex-direction:column;gap:.7rem}
+  ul.traps li{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:.85rem 1.05rem;padding-left:2.5rem;position:relative;font-size:.97rem}
+  ul.traps li::before{content:"⚠";position:absolute;left:1rem;top:.85rem;color:var(--add);font-size:1.05rem}
+  ul.traps b{font-weight:700}
+  ul.traps .fix{display:block;margin-top:.3rem;color:var(--muted);font-size:.93rem}
+  ul.traps .fix b{color:var(--ok)}
+
+  .selfcheck{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.1rem 1.3rem;margin-top:1rem}
+  .selfcheck ol{margin:.3rem 0 0;padding-left:1.25rem}
+  .selfcheck li{margin:.45rem 0}
+
+  .wrapup{background:var(--brand);color:#fff;border-radius:16px;padding:1.4rem 1.5rem;margin-top:2.4rem}
+  .wrapup h2{color:#fff;margin:0 0 .5rem}
+  .wrapup p{color:#EEE6F6;margin:.4rem 0;font-size:1rem}
+  .wrapup .big-rule{font-size:1.1rem;font-weight:700;color:#fff;margin:.6rem 0}
+  .wrapup .next{font-size:.95rem;color:#D9C9EC;margin-top:1rem;padding-top:1rem;border-top:1px solid rgba(255,255,255,.2)}
+
+  /* Тренажёр */
+  .trainer{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:1.3rem 1.3rem 1.2rem;margin-top:1rem}
+  .tr-task{text-align:center}
+  .tr-kind{font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;font-weight:800;margin:0 0 .5rem}
+  .tr-kind.add{color:var(--add)} .tr-kind.sub{color:var(--sub)}
+  .tr-expr{font-family:ui-monospace,Menlo,monospace;font-weight:800;font-size:clamp(1.5rem,7vw,2.3rem);letter-spacing:.02em;margin:.1rem 0 .3rem;color:var(--ink);word-break:break-word}
+  .tr-hint{text-align:center;color:var(--muted);font-size:.9rem;margin:0 0 1rem}
+  .tr-in{display:flex;gap:.5rem;justify-content:center;flex-wrap:wrap;margin-bottom:1rem}
+  .tr-in input{font:inherit;font-family:ui-monospace,Menlo,monospace;font-weight:800;font-size:1.2rem;text-align:center;width:min(100%,11rem);padding:.5rem .7rem;border:2px solid var(--line);border-radius:11px;background:var(--paper);color:var(--ink)}
+  .tr-in input:focus-visible{outline:2px solid var(--brand);outline-offset:2px;border-color:var(--brand)}
+  .tr-btns{display:flex;gap:.5rem;flex-wrap:wrap;justify-content:center}
+  .tr-btns button{font:inherit;font-weight:700;font-size:.92rem;border-radius:10px;padding:.55rem 1.1rem;cursor:pointer;border:1px solid transparent}
+  .tr-btns .go{background:var(--brand);color:#fff}
+  .tr-btns .sh{background:var(--paper);border:1px solid var(--line);color:var(--ink)}
+  .tr-btns .nw{background:var(--brand-soft);color:var(--brand)}
+  .tr-btns button:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+  .tr-res{margin-top:1.1rem;font-size:.97rem}
+  .tr-res .head{font-weight:700;padding:.6rem .9rem;border-radius:9px;margin-bottom:.7rem}
+  .tr-res .head.ok{background:#E7F4EC;color:var(--ok)}
+  .tr-res .head.no{background:#FBEAEA;color:var(--no)}
+  .tr-res .head.info{background:var(--brand-soft);color:var(--brand)}
+  .tr-sol{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:.85rem 1rem}
+  .tr-sol .row{margin:.32rem 0;font-size:.94rem}
+  .tr-sol .grp{font-weight:700;margin:.65rem 0 .35rem}
+  .tr-sol .grp:first-child{margin-top:0}
+  .tr-sol .grp.add{color:var(--add)} .tr-sol .grp.sub{color:var(--sub)}
+  .tr-sol .rz{font-weight:700}
+  .tr-sol .chk{margin-top:.6rem;padding-top:.55rem;border-top:1px dashed var(--line);color:var(--ok);font-weight:700;font-size:.93rem}
+
+  @media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+<!--LESSON-NAV-TOP--><style>.lnav{--lnav-accent:#3D5AF1}.lnav a{text-decoration:none;font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif}.lnav-top{max-width:820px;margin:0 auto;padding:.75rem clamp(1rem,4vw,1.5rem) .1rem}.lnav-top a{display:inline-flex;align-items:center;gap:.35rem;color:var(--lnav-accent);font-weight:600;font-size:.9rem}.lnav-top a:hover{text-decoration:underline}.lnav-bot{max-width:820px;margin:2.6rem auto 3rem;padding:1.1rem clamp(1rem,4vw,1.5rem) 0;border-top:1px solid #E4E8EF;display:flex;align-items:stretch;gap:.55rem}.lnav-bot a{min-width:0;display:flex;flex-direction:column;justify-content:center;gap:.15rem;border:1px solid #E4E8EF;border-radius:12px;padding:.65rem .85rem;color:#182233;background:#fff;transition:border-color .1s,transform .08s}.lnav-bot a:hover{border-color:var(--lnav-accent);transform:translateY(-1px)}.lnav-bot .prev,.lnav-bot .next{flex:1 1 0}.lnav-bot .next{text-align:right}.lnav-bot .dir{font-size:.72rem;color:#8A93A6;font-weight:600}.lnav-bot .ttl{font-size:.9rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.lnav-bot .to-cat{flex:0 0 auto;flex-direction:row;align-items:center;justify-content:center;color:var(--lnav-accent);font-weight:700;font-size:.85rem;white-space:nowrap}@media(max-width:420px){.lnav-bot .to-cat span{display:none}.lnav-bot .to-cat{padding:.65rem .7rem}}</style><nav class="lnav lnav-top"><a href="./catalog.html">← Все темы</a></nav><!--/LESSON-NAV-TOP-->
+<div class="page">
+
+  <header class="hero">
+    <p class="eyebrow">Математика · 5 класс</p>
+    <h1>Сложение и вычитание<br>натуральных чисел</h1>
+    <p class="tagline">Столбик, перенос и займ — как считать большие числа точно и <em>сразу проверять себя</em>.</p>
+  </header>
+
+  <div class="lead-in">
+    <p><b>Зачем это уметь.</b> Сложение и вычитание — самые частые действия в жизни. Ты считаешь сдачу в магазине, складываешь время в пути, узнаёшь, сколько осталось накопить на велосипед, прибавляешь к показанию счётчика воды новый расход.</p>
+    <p>В математике это фундамент: на нём держатся свойства сложения, порядок действий, уравнения и текстовые задачи «на части». Ошибёшься в переносе или займе — посыплется всё, что выше.</p>
+    <p><b>Главный миф:</b> «калькулятор всё посчитает, столбик не нужен». Но чтобы заметить, что калькулятор выдал бред (ты случайно нажал лишний ноль), нужно уметь прикинуть и проверить ответ самому. Столбик как раз и даёт этот контроль над числом.</p>
+  </div>
+
+  <section>
+    <h2>Сначала вспомни: <span class="em">разряды</span></h2>
+    <p>Всё дальнейшее держится на одной вещи из прошлой темы — на <strong>разрядах натурального числа</strong>. Прежде чем идти вперёд, ответь себе на три вопроса:</p>
+    <div class="warm">
+      <p class="cap">Разминка на 30 секунд</p>
+      <ol>
+        <li>Из каких разрядов состоит число <span class="mono">4 687</span>?</li>
+        <li>Какая цифра стоит в разряде десятков у числа <span class="mono">2 945</span>?</li>
+        <li>Сколько единиц «прячется» в одном десятке? А в одной сотне — сколько десятков?</li>
+      </ol>
+    </div>
+    <p>Ответил на третий вопрос «десять» и не задумался — ты готов. Весь столбик работает на этом обмене <span class="mono">10 единиц = 1 десяток</span> и работает весь столбик.</p>
+    <p class="mono" style="color:var(--muted);font-size:.95rem">4 687 = 4 тыс. + 6 сот. + 8 дес. + 7 ед.</p>
+  </section>
+
+  <section>
+    <h2>Два действия — <span class="em">и они связаны</span></h2>
+    <div class="split">
+      <div class="path add">
+        <p class="cap">Действие 1</p>
+        <h3>🟠 Сложение</h3>
+        <p>Это <strong>объединение</strong>: было несколько групп, соединили их в одну и смотрим, сколько стало всего.</p>
+        <p><span class="who">7 + 5 = 12</span></p>
+        <p>7 и 5 — <strong>слагаемые</strong>, 12 — <strong>сумма</strong>.</p>
+      </div>
+      <div class="path sub">
+        <p class="cap">Действие 2</p>
+        <h3>🔵 Вычитание</h3>
+        <p>Это «<strong>убрать</strong>» или «найти разницу»: было число, часть забрали (или сравниваем, на сколько одно больше другого).</p>
+        <p><span class="who">12 − 5 = 7</span></p>
+        <p>12 — <strong>уменьшаемое</strong>, 5 — <strong>вычитаемое</strong>, 7 — <strong>разность</strong>.</p>
+      </div>
+    </div>
+    <div class="note">
+      <p><b>Самое важное в теме.</b> Вычитание — действие, <strong>обратное</strong> сложению. Если <span class="mono">7 + 5 = 12</span>, то обязательно <span class="mono">12 − 5 = 7</span> и <span class="mono">12 − 7 = 5</span>.</p>
+      <p>Отсюда берётся суперспособность: <b>любой ответ можно проверить обратным действием</b>. Сумму проверяют вычитанием (сумма − слагаемое = другое слагаемое), разность — сложением (разность + вычитаемое = уменьшаемое).</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Ядро темы: <span class="em">правила столбика</span></h2>
+    <p>Многозначные числа складывают и вычитают <strong>столбиком, по разрядам</strong>. Записывают их одинаково — что для сложения, что для вычитания:</p>
+    <div class="rules">
+      <div class="rule">
+        <div class="big">▦</div>
+        <div class="txt">
+          <b>Разряд под разрядом.</b> Числа подписывают одно под другим так, чтобы единицы стояли под единицами, десятки — под десятками, сотни — под сотнями. Считаем <strong>справа налево</strong>, начиная с единиц.
+          <div class="ex">Выравнивай <b>по правому краю</b>, а не по левому.</div>
+        </div>
+      </div>
+      <div class="rule a">
+        <div class="big">+1</div>
+        <div class="txt">
+          <b>Сложение — перенос.</b> В каждом разряде складываем цифры. Если получилось <strong>10 или больше</strong> — записываем только цифру единиц этого результата, а единицу (перенос) прибавляем к следующему разряду слева.
+          <div class="ex">В разряде вышло <span class="mono">13</span> → пишем <span class="mono">3</span>, а <span class="mono">1</span> уходит влево.</div>
+        </div>
+      </div>
+      <div class="rule s">
+        <div class="big">−1</div>
+        <div class="txt">
+          <b>Вычитание — займ.</b> В каждом разряде из верхней цифры вычитаем нижнюю. Если верхняя <strong>меньше</strong> нижней — «занимаем» 1 у соседнего разряда слева (он становится на 1 меньше), а к нашей цифре прибавляем 10.
+          <div class="ex">Сверху <span class="mono">2</span>, снизу <span class="mono">8</span> → занимаем: <span class="mono">12 − 8 = 4</span>.</div>
+        </div>
+      </div>
+    </div>
+    <div class="note">
+      <p><b>Чего в 5 классе делать нельзя.</b> В натуральных числах <strong>нельзя вычесть большее из меньшего</strong>: у примера <span class="mono">5 − 8</span> ответа пока нет. Поэтому уменьшаемое не может быть меньше вычитаемого.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Разбор вслух: <span class="em">4 687 + 2 945</span></h2>
+    <p>Смотри, как тут рассуждают. Записываем столбиком, разряд под разрядом, и идём справа налево. Оранжевые единички сверху — это переносы.</p>
+    <div class="walk">
+      <div class="stwrap">
+        <div class="stolb">
+          <div class="st-row st-mark"><span class="st-cell"></span><span class="st-cell">1</span><span class="st-cell">1</span><span class="st-cell">1</span><span class="st-cell"></span></div>
+          <div class="st-row"><span class="st-cell st-sign"></span><span class="st-cell">4</span><span class="st-cell">6</span><span class="st-cell">8</span><span class="st-cell">7</span></div>
+          <div class="st-row"><span class="st-cell st-sign">+</span><span class="st-cell">2</span><span class="st-cell">9</span><span class="st-cell">4</span><span class="st-cell">5</span></div>
+          <div class="st-line" style="width:6.75em"></div>
+          <div class="st-row st-res"><span class="st-cell"></span><span class="st-cell">7</span><span class="st-cell">6</span><span class="st-cell">3</span><span class="st-cell">2</span></div>
+        </div>
+      </div>
+      <ul>
+        <li><span class="tag a">ед.</span><span><b>Единицы:</b> <span class="mono">7 + 5 = 12</span>. Пишу <b>2</b>, <b>перенос 1</b> в десятки — потому что 12 это 1 десяток и 2 единицы.</span></li>
+        <li><span class="tag a">дес.</span><span><b>Десятки:</b> <span class="mono">8 + 4 = 12</span>, плюс перенос 1 → <span class="mono">13</span>. Пишу <b>3</b>, <b>перенос 1</b> в сотни.</span></li>
+        <li><span class="tag a">сот.</span><span><b>Сотни:</b> <span class="mono">6 + 9 = 15</span>, плюс перенос 1 → <span class="mono">16</span>. Пишу <b>6</b>, <b>перенос 1</b> в тысячи.</span></li>
+        <li><span class="tag a">тыс.</span><span><b>Тысячи:</b> <span class="mono">4 + 2 = 6</span>, плюс перенос 1 → <span class="mono">7</span>. Пишу <b>7</b>.</span></li>
+      </ul>
+      <div class="verdict">Ответ: 7 632. Проверка обратным действием: 7 632 − 2 945 = 4 687 — совпало.</div>
+    </div>
+    <p>Заметь две вещи. Перенос <em>никогда</em> не пропадает, он всегда прибавляется к следующему разряду. И проверка отнимает секунды, зато ошибку ты находишь сам, а не узнаёшь о ней от учителя.</p>
+
+    <h3>Хитрый случай: займ через нули — 5 002 − 1 638</h3>
+    <p>А вот случай позлее. Попробуй закончить разбор сам: вместо прочерков поставь свои цифры.</p>
+    <div class="walk">
+      <div class="stwrap">
+        <div class="stolb">
+          <div class="st-row st-mark st-borrow"><span class="st-cell"></span><span class="st-cell">4</span><span class="st-cell">9</span><span class="st-cell">9</span><span class="st-cell">12</span></div>
+          <div class="st-row"><span class="st-cell st-sign"></span><span class="st-cell">5</span><span class="st-cell">0</span><span class="st-cell">0</span><span class="st-cell">2</span></div>
+          <div class="st-row"><span class="st-cell st-sign">−</span><span class="st-cell">1</span><span class="st-cell">6</span><span class="st-cell">3</span><span class="st-cell">8</span></div>
+          <div class="st-line" style="width:6.75em"></div>
+          <div class="st-row st-res"><span class="st-cell"></span><span class="st-cell">?</span><span class="st-cell">?</span><span class="st-cell">?</span><span class="st-cell">4</span></div>
+        </div>
+      </div>
+      <ul>
+        <li><span class="tag s">ед.</span><span><b>Единицы:</b> из 2 вычесть 8 нельзя, занимаем у десятков. Но в десятках 0 — занимать нечего, идём к сотням, там тоже 0... доходим до тысяч.</span></li>
+        <li><span class="tag s">займ</span><span>После займа из тысяч разряд тысяч стал <b>4</b>, сотни — <b>9</b>, десятки — <b>9</b>, единицы — <b>12</b>. Нули по дороге превратились в девятки.</span></li>
+        <li><span class="tag s">ед.</span><span><span class="mono">12 − 8 = 4</span></span></li>
+        <li><span class="tag s">дес.</span><span><span class="mono">9 − 3 = ___</span></span></li>
+        <li><span class="tag s">сот.</span><span><span class="mono">9 − 6 = ___</span></span></li>
+        <li><span class="tag s">тыс.</span><span><span class="mono">4 − 1 = ___</span></span></li>
+      </ul>
+      <div class="verdict">Собери ответ из получившихся цифр и проверь его сложением.</div>
+    </div>
+
+    <h3>Теперь совсем сам: 3 758 + 6 489</h3>
+    <p>Реши столбиком, а потом раскрой ответ.</p>
+    <div class="drill">
+      <details>
+        <summary><span class="q">Сколько получилось?</span></summary>
+        <div class="ans"><b>10 247</b>. Проверь себя обратным действием: <span class="mono">10 247 − 6 489 = 3 758</span>. И обрати внимание: сумма двух четырёхзначных чисел вышла пятизначной — последний перенос «создал» новый разряд.</div>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <h2>Наглядно: <span class="em">прыжки по числовой прямой</span></h2>
+    <p>Столбик — это техника. А смысл действий проще всего увидеть на числовой прямой: <strong>сложение — прыжок вправо</strong> на длину второго числа, <strong>вычитание — прыжок влево</strong>.</p>
+    <p>Подвигай ползунки и переключи знак. Смотри, как одно и то же движение «туда и обратно» показывает, что вычитание отменяет сложение.</p>
+    <div class="viz">
+      <canvas id="nl" aria-label="Числовая прямая с прыжком"></canvas>
+      <p class="say mono" id="nlSay">30 + 5 = 35</p>
+      <div class="ctl">
+        <label>Начало <input type="range" id="nlA" min="0" max="40" value="30" step="1"><span class="val mono" id="nlAv">30</span></label>
+        <label>Прыжок <input type="range" id="nlB" min="0" max="10" value="5" step="1"><span class="val mono" id="nlBv">5</span></label>
+        <div class="ops">
+          <button type="button" data-op="+" class="on">+</button>
+          <button type="button" data-op="-">−</button>
+        </div>
+      </div>
+    </div>
+    <p><b>Второе представление — разрядная модель.</b> Разложи число на разряды и складывай «по столбикам»: <span class="mono">4 687 = 4 тыс. + 6 сот. + 8 дес. + 7 ед.</span> Тогда сразу видно, откуда берётся перенос: как только в столбике набралось 10 единиц, они <strong>обмениваются на 1 десяток</strong> и переезжают влево.</p>
+    <div class="note">
+      <p><b>Приём «предскажи → посчитай → объясни».</b> Перед тем как считать <span class="mono">4 687 + 2 945</span>, спроси себя: ответ будет больше или меньше 7 000? Прикидка: примерно <span class="mono">4 700 + 2 900 ≈ 7 600</span> — значит больше. Потом посчитай столбиком и сравни с прикидкой. Это и есть привычка прикидывать ответ заранее. Именно она поможет поймать ошибку калькулятора.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Шпаргалка</h2>
+    <div class="tblwrap">
+      <table>
+        <thead><tr><th>Что</th><th>Как называются части</th><th>Как проверить</th></tr></thead>
+        <tbody>
+          <tr><td class="d a">7 + 5 = 12</td><td>7 и 5 — слагаемые, 12 — сумма</td><td>вычитанием: <span class="mono">12 − 5 = 7</span></td></tr>
+          <tr><td class="d s">12 − 5 = 7</td><td>12 — уменьшаемое, 5 — вычитаемое, 7 — разность</td><td>сложением: <span class="mono">7 + 5 = 12</span></td></tr>
+          <tr><td class="d a">перенос</td><td>в разряде вышло 10 или больше</td><td>пишем единицы, 1 — влево</td></tr>
+          <tr><td class="d s">займ</td><td>верхняя цифра меньше нижней</td><td>берём 10 у соседа слева</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2>Тренажёр — <span class="em">столбик без конца</span></h2>
+    <p>Примеры тренажёр придумывает сам: сложение с переносами и вычитание с займом, включая злые случаи с нулями. Посчитай в столбик на бумаге, введи ответ и проверь. Не уверен — жми «Показать разбор», там расписан каждый разряд.</p>
+    <div class="trainer">
+      <div class="tr-task">
+        <p class="tr-kind add" id="trKind">Сложение</p>
+        <div class="tr-expr" id="trExpr">3 486 + 2 758</div>
+      </div>
+      <p class="tr-hint">Введи ответ (пробелы можно не ставить)</p>
+      <div class="tr-in">
+        <input type="text" id="trIn" inputmode="numeric" autocomplete="off" placeholder="ответ">
+      </div>
+      <div class="tr-btns">
+        <button class="go" id="trCheck" type="button">Проверить</button>
+        <button class="sh" id="trShow" type="button">Показать разбор</button>
+        <button class="nw" id="trNew" type="button">🎲 Новый пример</button>
+      </div>
+      <div class="tr-res" id="trRes"></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Практика по нарастанию</h2>
+    <p>Решай сам, потом раскрывай ответ. Подглядывать раньше времени — обманывать себя 🙂</p>
+
+    <p class="lvl">Уровень 1 · понимание</p>
+    <div class="drill">
+      <details>
+        <summary><span class="q">1) В записи <span class="mono">12 − 5 = 7</span> назови уменьшаемое, вычитаемое и разность.</span></summary>
+        <div class="ans"><b>12</b> — уменьшаемое (то, что уменьшают), <b>5</b> — вычитаемое (то, что вычитают), <b>7</b> — разность (результат).</div>
+      </details>
+      <details>
+        <summary><span class="q">2) Прочитай вслух пример <span class="mono">4 687 + 2 945 = 7 632</span>, используя слова «слагаемое» и «сумма».</span></summary>
+        <div class="ans">Например так: «Первое слагаемое 4 687, второе слагаемое 2 945, сумма равна 7 632». Или: «Сумма чисел 4 687 и 2 945 равна 7 632».</div>
+      </details>
+    </div>
+
+    <p class="lvl">Уровень 2 · применение</p>
+    <div class="drill">
+      <details>
+        <summary><span class="q">3) Вычисли столбиком: <span class="mono">6 305 + 2 897</span>. Проверь обратным действием.</span></summary>
+        <div class="ans">
+          <p><b>9 202</b>.</p>
+          <p>Единицы: <span class="mono">5 + 7 = 12</span> → пишем 2, перенос 1. Десятки: <span class="mono">0 + 9 = 9</span>, плюс перенос 1 → 10 → пишем 0, перенос 1. Сотни: <span class="mono">3 + 8 = 11</span>, плюс перенос 1 → 12 → пишем 2, перенос 1. Тысячи: <span class="mono">6 + 2 = 8</span>, плюс перенос 1 → 9.</p>
+          <p>Проверка: <span class="mono">9 202 − 2 897 = 6 305</span> ✓</p>
+        </div>
+      </details>
+      <details>
+        <summary><span class="q">4) Вычисли столбиком: <span class="mono">8 100 − 3 456</span>. Проверь обратным действием.</span></summary>
+        <div class="ans">
+          <p><b>4 644</b>.</p>
+          <p>Единицы: из 0 вычесть 6 нельзя, в десятках тоже 0 — занимаем у сотен. Сотни стали 0, десятки 9, единицы 10. Единицы: <span class="mono">10 − 6 = 4</span>. Десятки: <span class="mono">9 − 5 = 4</span>. Сотни: там теперь 0, из 0 вычесть 4 нельзя — занимаем у тысяч: тысячи стали 7, сотни 10, <span class="mono">10 − 4 = 6</span>. Тысячи: <span class="mono">7 − 3 = 4</span>.</p>
+          <p>Проверка: <span class="mono">4 644 + 3 456 = 8 100</span> ✓</p>
+        </div>
+      </details>
+    </div>
+
+    <p class="lvl">Уровень 3 · анализ</p>
+    <div class="drill">
+      <details>
+        <summary><span class="q">5) Найди ошибку. Ученик записал <span class="mono">47 + 8 = 127</span>, прибавив 8 к разряду десятков. Где он ошибся и какой ответ верный?</span></summary>
+        <div class="ans">
+          <p>Он нарушил главное правило записи: <b>разряд должен стоять под разрядом</b>. Число 8 — это <b>единицы</b>, значит подписывать его надо под 7, а не под 4. Он же прибавил 8 к десяткам и получил 12 десятков — отсюда и вылезли лишние сто с чем-то.</p>
+          <p>Правильно: <span class="mono">7 + 8 = 15</span> → пишем 5, перенос 1; десятки: <span class="mono">4 + 1 = 5</span>. Ответ <b>55</b>.</p>
+        </div>
+      </details>
+      <details>
+        <summary><span class="q">6) Что изменится, если... В сумме <span class="mono">4 687 + 2 945 = 7 632</span> одно слагаемое увеличили на 100. Как изменится сумма и почему не надо пересчитывать всё заново?</span></summary>
+        <div class="ans">
+          <p>Сумма тоже увеличится на 100: станет <b>7 732</b>.</p>
+          <p>Почему: сложение — это объединение. Если в одну из групп добавили ещё 100 предметов, то и всего стало на 100 больше — остальные разряды при этом не трогали. Пересчитывать столбик заново незачем, достаточно прибавить 100 к готовому ответу.</p>
+        </div>
+      </details>
+      <details>
+        <summary><span class="q">7) Обратная задача. Уменьшаемое равно <span class="mono">9 000</span>, разность равна <span class="mono">3 271</span>. Найди вычитаемое.</span></summary>
+        <div class="ans">
+          <p><b>5 729</b>.</p>
+          <p>Рассуждение: уменьшаемое − вычитаемое = разность. Значит вычитаемое — это то, что нужно убрать из 9 000, чтобы осталось 3 271, то есть <span class="mono">9 000 − 3 271 = 5 729</span>.</p>
+          <p>Проверка: <span class="mono">9 000 − 5 729 = 3 271</span> ✓ (или сложением: <span class="mono">5 729 + 3 271 = 9 000</span>).</p>
+        </div>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <h2>Ловушки — не попадись</h2>
+    <ul class="traps">
+      <li><b>Вычитать меньшую цифру из большей «по привычке».</b> В примере <span class="mono">52 − 38</span> в разряде единиц видят 2 и 8 и пишут <span class="mono">8 − 2 = 6</span>. Так вычитание нельзя переворачивать!
+        <span class="fix"><b>Что делать:</b> если верхняя цифра меньше — <b>занимай</b> 10 у соседнего разряда, а числа местами не меняй.</span></li>
+      <li><b>Терять перенос при сложении.</b> Сложили <span class="mono">8 + 4 = 12</span>, записали 2, а единицу прибавить к следующему разряду забыли.
+        <span class="fix"><b>Спасение:</b> пиши маленькую единичку переноса карандашом над следующим разрядом. В уме её не держи, забудешь.</span></li>
+      <li><b>Криво выравнивать разряды.</b> Числа разной длины подписывают «по левому краю», и тогда сотни оказываются под десятками.
+        <span class="fix"><b>Лечится просто:</b> выравнивай <b>по правому краю</b>, единицы строго под единицами.</span></li>
+      <li><b>Путаться с займом через нули</b> (как в <span class="mono">5 002 − 1 638</span>). У соседа занять нечего, там 0 — и ученик застревает.
+        <span class="fix"><b>Держи в голове:</b> займ «переходит дальше», а нули по дороге превращаются в 9.</span></li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Проверь, что понял</h2>
+    <p>Ответь своими словами вслух, как будто объясняешь другу, который пропустил урок. Ответы спрятаны: сначала скажи сам.</p>
+    <div class="drill">
+      <details>
+        <summary><span class="q">Как проверить, что разность <span class="mono">9 000 − 3 271 = 5 729</span> найдена верно?</span></summary>
+        <div class="ans">Сложить разность с вычитаемым: <span class="mono">5 729 + 3 271 = 9 000</span>. Получили уменьшаемое — значит всё верно.</div>
+      </details>
+      <details>
+        <summary><span class="q">Что делать, если при вычитании верхняя цифра в разряде меньше нижней?</span></summary>
+        <div class="ans">Занять 10 у соседнего разряда слева (сосед при этом становится на 1 меньше).</div>
+      </details>
+      <details>
+        <summary><span class="q">Куда идёт перенос, если в разряде при сложении получилось 13?</span></summary>
+        <div class="ans">Цифру 3 записываем в этот разряд, а 1 переносим в следующий разряд влево.</div>
+      </details>
+    </div>
+    <div class="selfcheck">
+      <p><b>Мини-тест «объясни своими словами».</b> Скажи вслух три фразы:</p>
+      <ol>
+        <li>«Столбик записывают так, чтобы...»</li>
+        <li>«Перенос появляется, когда...»</li>
+        <li>«Займ нужен, когда...»</li>
+      </ol>
+      <p style="margin-bottom:0">Если все три фразы договариваются легко и без пауз — тема взята.</p>
+    </div>
+  </section>
+
+  <div class="wrapup">
+    <h2>Запомни главное</h2>
+    <p class="big-rule">Разряд под разрядом, справа налево.<br>Не хватает — занимай. Перебор — переноси.</p>
+    <p>И всегда проверяй обратным действием: сумму — вычитанием, разность — сложением. Пара секунд, а сколько глупых потерь снимает.</p>
+    <p class="next">👉 Дальше ты узнаешь <strong>свойства сложения</strong> (как переставлять и группировать слагаемые, чтобы считать быстрее и часто даже без столбика), разберёшь <strong>порядок действий</strong> в длинных выражениях и научишься решать <strong>текстовые задачи «на части»</strong> — там сложение и вычитание работают уже как инструмент.</p>
+  </div>
+
+</div>
+
+<script>
+(function(){
+  /* ---------- общие хелперы ---------- */
+  var MINUS='−';
+  function grp(n){ var s=String(n),o='',c=0; for(var i=s.length-1;i>=0;i--){ o=s[i]+o; if(++c%3===0&&i>0)o=' '+o; } return o; }
+  function ri(a,b){ return Math.floor(Math.random()*(b-a+1))+a; }
+  function digs(n,len){ var s=String(n); while(s.length<len)s='0'+s; return s.split('').map(Number).reverse(); } // [0]=единицы
+
+  /* ---------- числовая прямая ---------- */
+  (function(){
+    var cv=document.getElementById('nl'); if(!cv||!cv.getContext) return;
+    var ctx=cv.getContext('2d');
+    var aEl=document.getElementById('nlA'), bEl=document.getElementById('nlB');
+    var avEl=document.getElementById('nlAv'), bvEl=document.getElementById('nlBv');
+    var sayEl=document.getElementById('nlSay');
+    var ops=document.querySelectorAll('.viz .ops button');
+    var op='+';
+    var MAX=50, H=170;
+
+    function draw(){
+      var a=+aEl.value, b=+bEl.value;
+      if(op===MINUS||op==='-'){ if(b>a){ b=a; bEl.value=String(b); } }
+      avEl.textContent=a; bvEl.textContent=b;
+      var res = (op==='+') ? a+b : a-b;
+      sayEl.textContent = a+' '+(op==='+'?'+':MINUS)+' '+b+' = '+res;
+
+      var dpr=window.devicePixelRatio||1;
+      var w=cv.clientWidth||600;
+      cv.width=Math.round(w*dpr); cv.height=Math.round(H*dpr);
+      ctx.setTransform(dpr,0,0,dpr,0,0);
+      ctx.clearRect(0,0,w,H);
+
+      var padL=18, padR=18, y=118;
+      var span=w-padL-padR;
+      function X(v){ return padL + span*v/MAX; }
+
+      /* ось */
+      ctx.strokeStyle='#26202E'; ctx.lineWidth=1.6;
+      ctx.beginPath(); ctx.moveTo(padL,y); ctx.lineTo(w-padR+6,y); ctx.stroke();
+      /* стрелка */
+      ctx.beginPath(); ctx.moveTo(w-padR+6,y); ctx.lineTo(w-padR-1,y-4.5); ctx.lineTo(w-padR-1,y+4.5); ctx.closePath();
+      ctx.fillStyle='#26202E'; ctx.fill();
+
+      /* штрихи */
+      ctx.font='500 11px ui-monospace,Menlo,monospace';
+      ctx.textAlign='center'; ctx.textBaseline='top';
+      for(var v=0;v<=MAX;v++){
+        var x=X(v), big=(v%5===0);
+        ctx.strokeStyle= big?'#6B6473':'#D9D3DE';
+        ctx.lineWidth= big?1.4:1;
+        ctx.beginPath(); ctx.moveTo(x,y); ctx.lineTo(x, y+(big?8:4)); ctx.stroke();
+        if(v%10===0){ ctx.fillStyle='#6B6473'; ctx.fillText(String(v),x,y+11); }
+      }
+
+      /* дуга прыжка */
+      var x1=X(a), x2=X(res);
+      var col = (op==='+')?'#CF5A34':'#3A5AA0';
+      if(b>0){
+        var top=y-52;
+        ctx.strokeStyle=col; ctx.lineWidth=2.4;
+        ctx.beginPath();
+        ctx.moveTo(x1,y-4);
+        ctx.bezierCurveTo(x1,top, x2,top, x2,y-6);
+        ctx.stroke();
+        /* наконечник у конца дуги */
+        var dir=(x2>=x1)?1:-1;
+        ctx.beginPath();
+        ctx.moveTo(x2,y-2);
+        ctx.lineTo(x2-dir*7,y-12);
+        ctx.lineTo(x2+dir*3,y-13);
+        ctx.closePath(); ctx.fillStyle=col; ctx.fill();
+        /* подпись прыжка */
+        ctx.fillStyle=col; ctx.textAlign='center'; ctx.textBaseline='bottom';
+        ctx.font='700 13px ui-monospace,Menlo,monospace';
+        ctx.fillText((op==='+'?'+':MINUS)+b, (x1+x2)/2, top+4);
+      }
+
+      /* точки */
+      function dot(x,c){ ctx.beginPath(); ctx.arc(x,y,5,0,6.2832); ctx.fillStyle=c; ctx.fill(); ctx.strokeStyle='#fff'; ctx.lineWidth=1.6; ctx.stroke(); }
+      dot(x1,'#6B6473'); dot(x2,col);
+
+      ctx.textAlign='center'; ctx.textBaseline='top';
+      ctx.font='700 13px ui-monospace,Menlo,monospace';
+      ctx.fillStyle='#6B6473'; ctx.fillText(String(a),x1,y+24);
+      ctx.fillStyle=col; ctx.fillText(String(res),x2,y+40);
+    }
+
+    aEl.addEventListener('input',draw);
+    bEl.addEventListener('input',draw);
+    Array.prototype.forEach.call(ops,function(btn){
+      btn.addEventListener('click',function(){
+        op=btn.getAttribute('data-op')==='+'?'+':'-';
+        Array.prototype.forEach.call(ops,function(o){ o.classList.remove('on'); });
+        btn.classList.add('on');
+        draw();
+      });
+    });
+    window.addEventListener('resize',draw);
+    draw();
+  })();
+
+  /* ---------- тренажёр ---------- */
+  (function(){
+    var NAMES=['Единицы','Десятки','Сотни','Тысячи','Десятки тысяч'];
+    var NEXT=['десятки','сотни','тысячи','десятки тысяч','сотни тысяч'];
+    var task={a:3486,b:2758,op:'+'};
+    var kindEl=document.getElementById('trKind');
+    var exprEl=document.getElementById('trExpr');
+    var inEl=document.getElementById('trIn');
+    var resEl=document.getElementById('trRes');
+
+    function locked(){ return resEl.getAttribute('data-done')==='1'; }
+    function answer(){ return task.op==='+' ? task.a+task.b : task.a-task.b; }
+
+    function render(){
+      var plus=task.op==='+';
+      kindEl.textContent = plus?'Сложение':'Вычитание';
+      kindEl.className='tr-kind '+(plus?'add':'sub');
+      exprEl.textContent = grp(task.a)+' '+(plus?'+':MINUS)+' '+grp(task.b);
+      inEl.value=''; resEl.innerHTML=''; resEl.removeAttribute('data-done');
+    }
+
+    function make(){
+      var plus = Math.random()<0.5;
+      var a,b,r;
+      if(plus){
+        r=Math.random();
+        if(r<0.25){ a=ri(100,999); b=ri(100,999); }            /* трёхзначные */
+        else if(r<0.5){ a=ri(1000,9999); b=ri(100,999); }      /* разной длины */
+        else { a=ri(1000,9999); b=ri(1000,9999); }             /* четырёхзначные */
+        return {a:a,b:b,op:'+'};
+      }
+      r=Math.random();
+      if(r<0.3){                       /* краевой: круглое уменьшаемое, займ через нули */
+        a=ri(2,9)*1000 + (Math.random()<0.5?0:ri(0,9)*100);
+        b=ri(1000, a-1);
+      } else if(r<0.5){                /* трёхзначные */
+        a=ri(200,999); b=ri(100,a-1);
+      } else {
+        a=ri(1000,9999); b=ri(100, a-1);
+      }
+      if(b<1) b=1;
+      return {a:a,b:b,op:MINUS};
+    }
+
+    function addSolution(){
+      var res=task.a+task.b;
+      var len=Math.max(String(task.a).length,String(task.b).length);
+      var da=digs(task.a,len), db=digs(task.b,len);
+      var carry=0, h='<div class="tr-sol"><div class="grp add">Складываем по разрядам, справа налево:</div>';
+      for(var i=0;i<len;i++){
+        var s=da[i]+db[i], t=s+carry, out=t%10, nc=t>=10?1:0;
+        var row='<span class="rz">'+NAMES[i]+':</span> '+da[i]+' + '+db[i]+' = '+s;
+        if(carry) row+=', плюс перенос 1 → '+t;
+        row+='. Пишем '+out;
+        if(nc) row+=', переносим 1 в '+NEXT[i];
+        row+='.';
+        h+='<div class="row">'+row+'</div>';
+        carry=nc;
+      }
+      if(carry) h+='<div class="row"><span class="rz">'+NAMES[len]+':</span> остался перенос 1 — пишем 1.</div>';
+      h+='<div class="row" style="margin-top:.6rem"><b>Ответ: '+grp(res)+'</b></div>';
+      h+='<div class="chk">Проверка обратным действием: '+grp(res)+' '+MINUS+' '+grp(task.b)+' = '+grp(task.a)+'</div>';
+      return h+'</div>';
+    }
+
+    function subSolution(){
+      var res=task.a-task.b;
+      var len=String(task.a).length;
+      var da=digs(task.a,len), db=digs(task.b,len);
+      var borrow=0, h='<div class="tr-sol"><div class="grp sub">Вычитаем по разрядам, справа налево:</div>';
+      for(var i=0;i<len;i++){
+        var top=da[i]-borrow, pre='', nb=0;
+        if(borrow) pre='сосед отдал 1, наверху осталось '+top+'. ';
+        var row='<span class="rz">'+NAMES[i]+':</span> '+pre;
+        if(top<db[i]){
+          nb=1;
+          row+='из '+top+' вычесть '+db[i]+' нельзя — занимаем 10 у соседа слева: '+(top+10)+' '+MINUS+' '+db[i]+' = '+(top+10-db[i])+'.';
+        } else {
+          row+=top+' '+MINUS+' '+db[i]+' = '+(top-db[i])+'.';
+        }
+        h+='<div class="row">'+row+'</div>';
+        borrow=nb;
+      }
+      h+='<div class="row" style="margin-top:.6rem"><b>Ответ: '+grp(res)+'</b></div>';
+      h+='<div class="chk">Проверка обратным действием: '+grp(res)+' + '+grp(task.b)+' = '+grp(task.a)+'</div>';
+      return h+'</div>';
+    }
+
+    function solution(){ return task.op==='+' ? addSolution() : subSolution(); }
+
+    function check(){
+      if(locked()) return;
+      var raw=(inEl.value||'').replace(/[\s  ]/g,'');
+      if(!/^\d+$/.test(raw)){
+        resEl.innerHTML='<div class="head info">Введи ответ числом — только цифры.</div>';
+        return;
+      }
+      var ok = (+raw===answer());
+      resEl.setAttribute('data-done','1');
+      resEl.innerHTML=(ok
+        ? '<div class="head ok">✓ Верно! Ответ '+grp(answer())+'.</div>'
+        : '<div class="head no">Не сходится. Правильный ответ '+grp(answer())+' — сверься с разбором и найди, на каком разряде свернул не туда.</div>')+solution();
+    }
+    function show(){
+      if(locked()) return;
+      resEl.setAttribute('data-done','1');
+      resEl.innerHTML='<div class="head info">Разбор по разрядам:</div>'+solution();
+    }
+    function fresh(){
+      task=make(); render(); inEl.focus();
+    }
+
+    document.getElementById('trCheck').addEventListener('click',check);
+    document.getElementById('trShow').addEventListener('click',show);
+    document.getElementById('trNew').addEventListener('click',fresh);
+    inEl.addEventListener('keydown',function(e){ if(e.key==='Enter'){ e.preventDefault(); check(); } });
+
+    render(); /* стартовая задача — без автофокуса */
+  })();
+})();
+</script>
+<!--LESSON-NAV-BOT--><nav class="lnav lnav-bot"><a class="prev" href="./m5-naturalnye-chisla.html"><span class="dir">← Предыдущая</span><span class="ttl">Натуральные числа и десятичная система счисления</span></a><a class="to-cat" href="./catalog.html">📚 <span>Все темы</span></a><a class="next" href="./m5-priznaki-delimosti.html"><span class="dir">Следующая →</span><span class="ttl">Признаки делимости на 2, 3, 5, 9, 10</span></a></nav><!--/LESSON-NAV-BOT-->

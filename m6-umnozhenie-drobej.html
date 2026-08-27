@@ -1,0 +1,518 @@
+<!doctype html>
+<!-- humanized: humanizer-ru, 2026-08-28, тире возвращено -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Умножение обыкновенных дробей — математика 6 класс</title>
+<style>
+  :root{
+    --paper:#F7F6FB; --card:#FFFFFF; --ink:#211D2E; --muted:#645D74; --line:#E7E4F0;
+    --brand:#6C4FD8; --brand-soft:#ECE8FB;      /* фиолетовый — первая дробь */
+    --fill:#F2A03D; --fill-soft:#FCEEDB;        /* янтарный — вторая дробь */
+    --both:#3E8E7E;                              /* зелёный — область пересечения = ответ */
+    --whole:#EEF0F6;
+    --ok:#1E8E5A; --no:#C23B3B;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper)}
+  .page{max-width:720px;margin:0 auto;padding:clamp(1.4rem,4vw,3rem) clamp(1.1rem,4vw,2rem) 4.5rem;
+    color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:17.5px;line-height:1.68;-webkit-font-smoothing:antialiased}
+  .mono{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-variant-numeric:tabular-nums;font-weight:600}
+
+  .hero{border-bottom:3px solid var(--brand);padding-bottom:1.4rem;margin-bottom:1.8rem}
+  .eyebrow{font-size:.74rem;letter-spacing:.15em;text-transform:uppercase;color:var(--brand);font-weight:700;margin:0 0 .55rem}
+  h1{font-size:clamp(1.9rem,6vw,2.8rem);line-height:1.05;margin:0;font-weight:800;letter-spacing:-.02em;text-wrap:balance}
+  .tagline{font-size:1.12rem;color:var(--muted);margin:.85rem 0 0;text-wrap:pretty}
+
+  section{margin-top:2.4rem}
+  h2{font-size:1.5rem;margin:0 0 .3rem;font-weight:780;letter-spacing:-.015em;text-wrap:balance}
+  h2 .em{color:var(--brand)}
+  p{margin:.7rem 0}
+  strong{font-weight:680}
+  .pw{color:var(--brand);font-weight:800} .fw{color:var(--fill);font-weight:800} .bw{color:var(--both);font-weight:800}
+
+  .lead-in{background:var(--brand-soft);border-radius:14px;padding:1.1rem 1.3rem;font-size:1.02rem}
+  .lead-in p{margin:.4rem 0}
+  .lead-in b{color:var(--brand)}
+  .chips{display:flex;flex-wrap:wrap;gap:.45rem;margin:.7rem 0 0}
+  .chips span{background:#fff;border:1px solid var(--line);border-radius:20px;padding:.28rem .8rem;font-size:.9rem;font-weight:600}
+
+  .formula-box{background:var(--ink);color:#fff;border-radius:14px;padding:1.3rem;text-align:center;margin-top:1rem}
+  .formula-box .eq{font-family:ui-monospace,Menlo,monospace;font-size:clamp(1.25rem,5.4vw,1.9rem);font-weight:700}
+  .formula-box .eq .p{color:#B7A2F5} .formula-box .eq .f{color:#F3B36A}
+  .formula-box .note{font-size:.9rem;color:#B4AEC4;margin:.7rem 0 0;border:none;background:none;padding:0}
+
+  .note{border-left:4px solid var(--brand);background:var(--brand-soft);border-radius:0 10px 10px 0;padding:.8rem 1.1rem;margin-top:1rem;font-size:.98rem}
+  .note b{color:var(--brand)}
+  .note.warn{border-left-color:var(--fill);background:var(--fill-soft)}
+  .note.warn b{color:#A96A12}
+
+  .split{display:grid;gap:.9rem;margin-top:1rem}
+  @media(min-width:560px){.split{grid-template-columns:1fr 1fr}}
+  .card2{border:2px solid var(--line);border-radius:16px;padding:1.1rem 1.2rem;background:var(--card)}
+  .card2 h3{margin:.1rem 0 .4rem;font-size:1.08rem;font-weight:800}
+  .card2 .big{font-family:ui-monospace,Menlo,monospace;font-weight:800;font-size:1.28rem;color:var(--brand)}
+  .card2 p{margin:.25rem 0;font-size:.95rem}
+  .card2.o{border-color:#F3D6AE} .card2.o .big{color:var(--fill)}
+
+  .tblwrap{overflow-x:auto;margin-top:1rem;border:1px solid var(--line);border-radius:12px;background:var(--card)}
+  table{border-collapse:collapse;width:100%;font-size:.95rem}
+  th,td{padding:.6rem .85rem;text-align:left;border-bottom:1px solid var(--line)}
+  th{background:var(--brand-soft);font-weight:750;color:var(--brand);white-space:nowrap}
+  tr:last-child td{border-bottom:none}
+  td.m{font-family:ui-monospace,Menlo,monospace;font-weight:700;white-space:nowrap}
+
+  /* Визуализация — площадная модель */
+  .viz{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:1.2rem;margin-top:1rem}
+  .viz canvas{width:100%;max-width:340px;height:auto;display:block;margin:0 auto;border-radius:8px}
+  .viz .row{display:flex;align-items:center;gap:.6rem;margin-top:.75rem;font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:.92rem}
+  .viz .row .lab{min-width:10.5ch}
+  .viz .row.a .lab{color:var(--brand)} .viz .row.b .lab{color:var(--fill)}
+  .viz input[type=range]{flex:1;min-width:80px}
+  .viz .row.a input[type=range]{accent-color:var(--brand)}
+  .viz .row.b input[type=range]{accent-color:var(--fill)}
+  .viz .readout{text-align:center;font-family:ui-monospace,Menlo,monospace;font-weight:800;font-size:clamp(1rem,4.4vw,1.2rem);margin:1rem 0 0}
+  .viz .readout .p{color:var(--brand)} .viz .readout .f{color:var(--fill)} .viz .readout .b{color:var(--both)}
+  .viz .cap{text-align:center;font-size:.88rem;color:var(--muted);margin:.5rem 0 0}
+  .legend{display:flex;flex-wrap:wrap;gap:.8rem;justify-content:center;margin-top:.9rem;font-size:.85rem;color:var(--muted)}
+  .legend i{display:inline-block;width:.85rem;height:.85rem;border-radius:3px;margin-right:.35rem;vertical-align:-1px}
+
+  .walk{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.15rem 1.3rem;margin-top:1rem}
+  .walk .q{font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.02rem;margin:0 0 .9rem;padding-bottom:.7rem;border-bottom:1px solid var(--line)}
+  .walk ol{margin:0;padding-left:1.2rem;display:flex;flex-direction:column;gap:.55rem}
+  .walk li{font-size:.96rem}
+  .walk b{font-weight:700}
+  .walk .why{color:var(--muted);font-size:.9rem}
+  .verdict{margin-top:1rem;padding:.7rem 1rem;background:var(--brand-soft);border-radius:10px;font-weight:650;color:var(--brand);font-family:ui-monospace,Menlo,monospace}
+
+  /* Тренажёр */
+  .trainer{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.2rem 1.3rem;margin-top:1rem}
+  .tabs{display:flex;gap:.4rem;margin-bottom:.9rem;flex-wrap:wrap}
+  .tabs button{font:inherit;font-weight:700;font-size:.82rem;cursor:pointer;border:1px solid var(--line);background:var(--paper);color:var(--muted);border-radius:20px;padding:.35rem .85rem}
+  .tabs button.on{background:var(--brand);color:#fff;border-color:var(--brand)}
+  .tr-task{font-family:ui-monospace,Menlo,monospace;font-weight:800;font-size:clamp(1.05rem,4.5vw,1.35rem);text-align:center;padding:1rem;background:var(--brand-soft);border-radius:10px;color:var(--ink);overflow-x:auto}
+  .tr-ctl{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.9rem;align-items:center}
+  .tr-ctl button{font:inherit;font-weight:700;font-size:.9rem;cursor:pointer;border:none;border-radius:9px;padding:.55rem .95rem;color:#fff;background:var(--brand)}
+  .tr-ctl button.sec{background:var(--fill)}
+  .tr-ctl button.ghost{background:transparent;color:var(--brand);border:1px solid var(--brand)}
+  .tr-ctl input{flex:1;min-width:130px;font:inherit;padding:.5rem .7rem;border:1px solid var(--line);border-radius:9px;background:#fff;color:var(--ink)}
+  .tr-hint{font-size:.85rem;color:var(--muted);margin:.6rem 0 0}
+  .tr-result{margin-top:.9rem;font-size:.96rem;min-height:1.2rem}
+  .tr-result .ok{color:var(--ok);font-weight:700} .tr-result .bad{color:var(--no);font-weight:700}
+  .tr-result .sol{margin-top:.6rem;padding:.8rem 1rem;background:#FCFBFF;border:1px solid var(--line);border-radius:10px;font-family:ui-monospace,Menlo,monospace;font-size:.9rem;line-height:1.85;overflow-x:auto}
+
+  details{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:.9rem 1.1rem;margin-top:.7rem}
+  details[open]{border-color:var(--brand)}
+  summary{cursor:pointer;font-weight:650;list-style:none;display:flex;justify-content:space-between;gap:1rem;align-items:center}
+  summary::-webkit-details-marker{display:none}
+  summary::after{content:"ответ";font-size:.8rem;color:var(--brand);font-weight:700;white-space:nowrap}
+  details[open] summary::after{content:"скрыть"}
+  .ans{margin-top:.75rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.96rem;color:var(--muted)}
+  .ans b{color:var(--ink)}
+  .drill{display:flex;flex-direction:column;gap:.2rem;margin-top:1rem}
+  .lvl{font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:700;margin:1.4rem 0 .3rem}
+
+  ul.traps{list-style:none;margin:1rem 0 0;padding:0;display:flex;flex-direction:column;gap:.7rem}
+  ul.traps li{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:.85rem 1.05rem;padding-left:2.5rem;position:relative;font-size:.97rem}
+  ul.traps li::before{content:"⚠";position:absolute;left:1rem;top:.85rem;color:var(--fill)}
+  ul.traps b{font-weight:700}
+
+  .wrapup{background:var(--brand);color:#fff;border-radius:16px;padding:1.4rem 1.5rem;margin-top:2.4rem}
+  .wrapup h2{color:#fff;margin:0 0 .5rem}
+  .wrapup p{color:#E7E1FA;margin:.4rem 0;font-size:1rem}
+  .wrapup .big-rule{font-size:clamp(1rem,4.4vw,1.15rem);font-weight:700;color:#fff;margin:.6rem 0;font-family:ui-monospace,Menlo,monospace}
+  .wrapup .next{font-size:.95rem;color:#D6CCF5;margin-top:1rem;padding-top:1rem;border-top:1px solid rgba(255,255,255,.25)}
+  .wrapup .next b{color:#fff}
+
+  .tabs button:focus-visible,.viz input[type=range]:focus-visible,summary:focus-visible,
+  .tr-ctl button:focus-visible,.tr-ctl input:focus-visible{outline:3px solid var(--brand);outline-offset:2px;border-radius:8px}
+
+  @media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+<!--LESSON-NAV-TOP--><style>.lnav{--lnav-accent:#3D5AF1}.lnav a{text-decoration:none;font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif}.lnav-top{max-width:820px;margin:0 auto;padding:.75rem clamp(1rem,4vw,1.5rem) .1rem}.lnav-top a{display:inline-flex;align-items:center;gap:.35rem;color:var(--lnav-accent);font-weight:600;font-size:.9rem}.lnav-top a:hover{text-decoration:underline}.lnav-bot{max-width:820px;margin:2.6rem auto 3rem;padding:1.1rem clamp(1rem,4vw,1.5rem) 0;border-top:1px solid #E4E8EF;display:flex;align-items:stretch;gap:.55rem}.lnav-bot a{min-width:0;display:flex;flex-direction:column;justify-content:center;gap:.15rem;border:1px solid #E4E8EF;border-radius:12px;padding:.65rem .85rem;color:#182233;background:#fff;transition:border-color .1s,transform .08s}.lnav-bot a:hover{border-color:var(--lnav-accent);transform:translateY(-1px)}.lnav-bot .prev,.lnav-bot .next{flex:1 1 0}.lnav-bot .next{text-align:right}.lnav-bot .dir{font-size:.72rem;color:#8A93A6;font-weight:600}.lnav-bot .ttl{font-size:.9rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.lnav-bot .to-cat{flex:0 0 auto;flex-direction:row;align-items:center;justify-content:center;color:var(--lnav-accent);font-weight:700;font-size:.85rem;white-space:nowrap}@media(max-width:420px){.lnav-bot .to-cat span{display:none}.lnav-bot .to-cat{padding:.65rem .7rem}}</style><nav class="lnav lnav-top"><a href="./catalog.html">← Все темы</a></nav><!--/LESSON-NAV-TOP-->
+<div class="page">
+
+  <header class="hero">
+    <p class="eyebrow">Математика · 6 класс · дроби</p>
+    <h1>Умножение обыкновенных дробей</h1>
+    <p class="tagline">Самое доброе действие с дробями: никакого общего знаменателя. Умножил верх на верх, низ на низ, и готово. Сейчас разберёмся, почему это работает и как считать быстро.</p>
+  </header>
+
+  <div class="lead-in">
+    <p><b>Где встречается.</b> Умножение дробей — это про часть от части. Половина от половины пиццы даёт четверть. Три четверти от стакана, в котором две трети сока, — тоже дробь от дроби.</p>
+    <p>Пригодится, чтобы взять 2/3 от 3/4 стакана муки по рецепту, найти площадь участка со сторонами 1/2 м и 3/4 м, посчитать скидку в 1/5 от цены, найти 3/4 пути в задаче по физике.</p>
+    <div class="chips"><span>рецепты</span><span>площадь</span><span>скидки и проценты</span><span>доля пути</span></div>
+  </div>
+
+  <section>
+    <h2>Сначала разрушим <span class="em">один миф</span></h2>
+    <p>В начальной школе ты привык, что <strong>умножение увеличивает число</strong>. С дробями это правило ломается.</p>
+    <p>Смотри: <span class="mono">8 · 1/2 = 4</span>. Умножили, а стало <strong>меньше</strong>. Никакого сбоя тут нет: умножить на половину значит <strong>взять половину</strong>, то есть отрезать кусок. Ещё пример: <span class="mono">6 · 1/3 = 2</span>.</p>
+    <div class="note warn"><p><b>Запомни так:</b> умножаешь на дробь меньше единицы — берёшь её часть, и число уменьшается. Отличный способ проверить свой ответ на здравый смысл.</p></div>
+  </section>
+
+  <section>
+    <h2>Что надо вспомнить</h2>
+    <p>Тема стоит на двух вещах, которые ты уже проходил. Проверь себя за минуту, дальше пойдёт легче.</p>
+    <div class="split">
+      <div class="card2">
+        <h3>Сокращение дробей</h3>
+        <p>Числитель и знаменатель делим на одно и то же число, дробь от этого не меняется.</p>
+        <p class="mono">6/12 = 1/2 · 20/90 = 2/9</p>
+      </div>
+      <div class="card2 o">
+        <h3>Смешанные числа</h3>
+        <p>Смешанное число переводится в неправильную дробь: целую часть умножаем на знаменатель и прибавляем числитель.</p>
+        <p class="mono">1 целая 2/3 = (1·3+2)/3 = 5/3</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Правило <span class="em">целиком</span></h2>
+    <p>Чтобы умножить дробь на дробь, <strong>числитель умножаем на числитель</strong>, а <strong>знаменатель на знаменатель</strong>. Всё.</p>
+    <div class="formula-box">
+      <div class="eq"><span class="p">a</span>/<span class="f">b</span> · <span class="p">c</span>/<span class="f">d</span> = (<span class="p">a · c</span>) / (<span class="f">b · d</span>)</div>
+      <div class="note">верх на верх, низ на низ</div>
+    </div>
+    <p>Здесь <span class="mono">a</span> и <span class="mono">c</span> — числители (верхние числа), <span class="mono">b</span> и <span class="mono">d</span> — знаменатели (нижние). При этом <span class="mono">b ≠ 0</span> и <span class="mono">d ≠ 0</span>: на ноль делить нельзя, поэтому нулём знаменатель не бывает.</p>
+    <div class="note"><p><b>Общий знаменатель искать НЕ нужно.</b> Он работает на сложении и вычитании. Для умножения не нужен совсем. Да, умножать дроби проще, чем складывать.</p></div>
+    <p>Результат <span class="mono">(a·c)/(b·d)</span> в конце <strong>обязательно сокращают</strong> до несократимой дроби, иначе ответ недоделан.</p>
+
+    <h3 style="margin-top:1.6rem;font-size:1.12rem">Три случая, одно правило</h3>
+    <div class="tblwrap">
+      <table>
+        <tr><th>Что умножаем</th><th>Что делаем</th><th>Пример</th></tr>
+        <tr><td>дробь · дробь</td><td>сразу по правилу</td><td class="m">2/3 · 1/4 = 2/12 = 1/6</td></tr>
+        <tr><td>дробь · число</td><td>число — это дробь со знаменателем 1</td><td class="m">2/5 · 10 = 2/5 · 10/1 = 20/5 = 4</td></tr>
+        <tr><td>смешанные числа</td><td>сперва в неправильные дроби</td><td class="m">1 целая 2/3 = 5/3, потом умножаем</td></tr>
+      </table>
+    </div>
+    <p>Формулой второй случай выглядит так: <span class="mono">a/b · n = a/b · n/1 = (a·n)/b</span>.</p>
+    <div class="note warn"><p><b>Про смешанные числа особо.</b> Умножать отдельно целые части и отдельно дробные <b>нельзя</b>. Сначала каждое смешанное число переводим в неправильную дробь, и уже потом работаем по правилу.</p></div>
+
+    <h3 style="margin-top:1.6rem;font-size:1.12rem">Сокращение крест-накрест, до умножения</h3>
+    <p>Если у числителя одной дроби и знаменателя другой есть общий делитель, их можно сократить <strong>ещё до</strong> перемножения. Сокращать разрешено любой числитель с любым знаменателем, необязательно из «своей» дроби.</p>
+    <p>Зачем это надо? Чтобы не перемножать большие числа и не разгребать потом громоздкий ответ. Числа станут маленькими, и всё посчитается в уме.</p>
+  </section>
+
+  <section>
+    <h2>Разбор по шагам <span class="em">«думаю вслух»</span></h2>
+    <p>Считаем <span class="mono">4/9 · 3/8</span>. Смотри, как я рассуждаю: не просто считаю, а объясняю себе каждый шаг.</p>
+    <div class="walk">
+      <p class="q">4/9 · 3/8 = ?</p>
+      <ol>
+        <li>Вспоминаю правило: перемножить числители и знаменатели. Но сперва гляну, что можно сократить, чтобы не возиться с большими числами. <span class="why">Почему: 4·3 и 9·8 — это уже 12/72, и потом всё равно сокращать.</span></li>
+        <li>Сокращаю крест-накрест: <b>4</b> (числитель первой) и <b>8</b> (знаменатель второй) делятся на 4 → 4 становится 1, 8 становится 2. <span class="why">Почему можно: это множители в произведении, а множители сокращать разрешено.</span></li>
+        <li>Сокращаю <b>3</b> (числитель второй) и <b>9</b> (знаменатель первой) на 3 → 3 становится 1, 9 становится 3.</li>
+        <li>Осталось <span class="mono">1/3 · 1/2</span>. Перемножаю: <span class="mono">(1 · 1)/(3 · 2) = 1/6</span>.</li>
+      </ol>
+      <div class="verdict">Ответ: 4/9 · 3/8 = 1/6</div>
+      <p style="font-size:.92rem;color:var(--muted);margin:.8rem 0 0">Проверка на смысл: обе дроби меньше 1, и результат вышел меньше каждой из них. Всё сходится.</p>
+    </div>
+
+    <p>Теперь со смешанным числом. Считаем <span class="mono">1 целая 2/3 · 9/10</span>. Один шаг оставлю тебе.</p>
+    <div class="walk">
+      <p class="q">1 целая 2/3 · 9/10 = ?</p>
+      <ol>
+        <li>Перевожу смешанное в неправильную дробь: <span class="mono">1 целая 2/3 = (1 · 3 + 2)/3 = 5/3</span>.</li>
+        <li>Записываю произведение: <span class="mono">5/3 · 9/10</span>.</li>
+        <li>Твой шаг: сократи <b>5</b> и <b>10</b> на 5, а <b>9</b> и <b>3</b> на 3, и допиши результат.</li>
+      </ol>
+      <details style="margin-top:.9rem"><summary>Проверить свой шаг</summary>
+        <div class="ans">После сокращения остаётся <span class="mono">1/1 · 3/2 = 3/2 = <b>1 целая 1/2</b></span>.</div></details>
+    </div>
+
+    <p>А это целиком твоё. Реши сам, потом раскрой.</p>
+    <details><summary>Вычисли: 5/6 · 4/15</summary>
+      <div class="ans">Сократи 5 с 15 (на 5) и 4 с 6 (на 2): получится <span class="mono">1/3 · 2/5 = <b>2/9</b></span>.</div></details>
+  </section>
+
+  <section>
+    <h2>Посмотри <span class="em">своими глазами</span></h2>
+    <p>Откуда взялось такое правило? Разберём на квадрате. Квадрат у нас <strong>целое, то есть 1</strong>.</p>
+    <p>По горизонтали делим его на столбцы и закрашиваем <span class="pw">первую дробь</span>. По вертикали делим на строки и закрашиваем <span class="fw">вторую дробь</span>. Область, закрашенная <span class="bw">дважды</span>, и есть произведение.</p>
+    <div class="viz">
+      <canvas id="area" width="340" height="340" aria-label="Квадрат, разбитый на клетки: пересечение двух закрашенных полос показывает произведение дробей"></canvas>
+      <div class="legend">
+        <span><i style="background:#D9CDF7"></i>первая дробь</span>
+        <span><i style="background:#F8DDB8"></i>вторая дробь</span>
+        <span><i style="background:#3E8E7E"></i>произведение</span>
+      </div>
+      <div class="row a"><span class="lab" id="lab1">2/3</span><input id="n1" type="range" min="1" max="6" step="1" value="2" aria-label="Числитель первой дроби"><input id="d1" type="range" min="2" max="6" step="1" value="3" aria-label="Знаменатель первой дроби"></div>
+      <div class="row b"><span class="lab" id="lab2">3/4</span><input id="n2" type="range" min="1" max="6" step="1" value="3" aria-label="Числитель второй дроби"><input id="d2" type="range" min="2" max="6" step="1" value="4" aria-label="Знаменатель второй дроби"></div>
+      <p class="readout" id="vizOut"></p>
+      <p class="cap" id="vizCap"></p>
+    </div>
+    <p>Задай себе два вопроса на картинке <span class="mono">2/3 · 3/4</span>:</p>
+    <p>Сколько всего маленьких клеток вышло? <strong>12</strong>, а это <span class="mono">3 · 4</span>, произведение знаменателей. Сколько клеток закрашено дважды? <strong>6</strong>, а это <span class="mono">2 · 3</span>, произведение числителей. Вот откуда берётся правило «числитель на числитель, знаменатель на знаменатель»: <span class="mono">2/3 · 3/4 = 6/12 = 1/2</span>.</p>
+  </section>
+
+  <section>
+    <h2>Тренажёр · умножай сколько хочешь</h2>
+    <p>Выбери тип, жми «Новое» и решай. Ответ пиши дробью <span class="mono">a/b</span>, целым числом или смешанным через пробел: <span class="mono">1 1/2</span>. Ответ старайся давать сокращённым.</p>
+    <div class="trainer">
+      <div class="tabs">
+        <button id="tabFF" class="on" type="button">дробь · дробь</button>
+        <button id="tabFN" type="button">дробь · число</button>
+        <button id="tabMX" type="button">смешанные</button>
+      </div>
+      <div class="tr-task" id="trTask">4/9 · 3/8 = ?</div>
+      <div class="tr-ctl">
+        <button id="trNew" type="button">🎲 Новое</button>
+        <input id="trAns" type="text" inputmode="text" placeholder="например 1/6" aria-label="Ответ">
+        <button id="trCheck" type="button" class="sec">Проверить</button>
+        <button id="trShow" type="button" class="ghost">Решение</button>
+      </div>
+      <p class="tr-hint">Целый ответ пиши просто числом: <span class="mono">4</span>. Смешанный — <span class="mono">1 1/2</span>.</p>
+      <div id="trResult" class="tr-result"></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Проверь себя</h2>
+    <p class="lvl">Понимание</p>
+    <div class="drill">
+      <details><summary>1) Прочитай выражение 2/3 · 1/4 словами — «... от ...».</summary>
+        <div class="ans">«<b>Две трети от одной четверти</b>» или «одна четвёртая от двух третей»: умножение читается с любой стороны.</div></details>
+      <details><summary>2) Верно ли, что при умножении дробей нужно приводить их к общему знаменателю?</summary>
+        <div class="ans"><b>Нет.</b> Общий знаменатель нужен только для сложения и вычитания. При умножении просто перемножаем числители и знаменатели.</div></details>
+    </div>
+
+    <p class="lvl">Применение</p>
+    <div class="drill">
+      <details><summary>3) Вычисли: 3/7 · 14/9</summary>
+        <div class="ans">Сокращаем крест-накрест: 3 и 9 на 3, 14 и 7 на 7. Остаётся <span class="mono">1/1 · 2/3 = <b>2/3</b></span>.</div></details>
+      <details><summary>4) Вычисли: 2/5 · 10</summary>
+        <div class="ans">Число 10 — это <span class="mono">10/1</span>. Сокращаем 10 и 5 на 5: <span class="mono">2/1 · 2/1 = 4</span>. Ответ: <b>4</b>.</div></details>
+    </div>
+
+    <p class="lvl">Анализ</p>
+    <div class="drill">
+      <details><summary>5) Найди ошибку: ученик написал 2/3 · 1/2 = 3/5. В чём он неправ?</summary>
+        <div class="ans">Он сложил накрест: 2+1 сверху и 3+2 снизу. Так поступают при неправильно понятом сложении, а при умножении надо перемножать: <span class="mono">2/3 · 1/2 = (2·1)/(3·2) = 2/6 = <b>1/3</b></span>.</div></details>
+      <details><summary>6) Что изменится в ответе 3/4 · 2/3, если у первой дроби заменить числитель 3 на 6? Станет больше или меньше?</summary>
+        <div class="ans">Было <span class="mono">3/4 · 2/3 = 6/12 = 1/2</span>. Стало <span class="mono">6/4 · 2/3 = 12/12 = 1</span>. Ответ <b>стал больше</b>: числитель вырос вдвое, значит и произведение выросло вдвое.</div></details>
+      <details><summary>7) Обратная задача: на какую дробь надо умножить 4/5, чтобы получить 2/5?</summary>
+        <div class="ans">Числитель уменьшился вдвое, знаменатель не тронули, значит взяли половину. Ответ: на <b>1/2</b>. Проверка: <span class="mono">4/5 · 1/2 = 4/10 = 2/5</span>.</div></details>
+    </div>
+  </section>
+
+  <section>
+    <h2>Ловушки</h2>
+    <ul class="traps">
+      <li><b>Приводят к общему знаменателю, как при сложении.</b> Для умножения это лишняя работа, да ещё и неверная. Держи в голове разделение: общий знаменатель для «+» и «−», а для «·» просто числитель на числитель, знаменатель на знаменатель.</li>
+      <li><b>Умножают смешанные числа по частям.</b> Считают <span class="mono">1 целая 1/2 · 2 целых 1/3</span> как «целые отдельно, дробные отдельно». Так нельзя! Сначала переведи оба числа в неправильные дроби.</li>
+      <li><b>Не сокращают или сокращают криво.</b> Перемножают большие числа и путаются в вычислениях, а то и «сокращают» через сложение. Сокращай множители крест-накрест <b>до</b> умножения, тогда числа останутся маленькими.</li>
+      <li><b>«Умножение всегда увеличивает».</b> На дробь меньше 1 — уменьшает. Всегда проверяй ответ на смысл: <span class="mono">8 · 1/2 = 4</span>.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Объясни своими словами</h2>
+    <p>Закрой урок и ответь вслух: себе, другу или голосовому помощнику. Объяснил без запинки — тема твоя.</p>
+    <div class="drill">
+      <details><summary>Как умножить дробь на дробь — что делаем с числителями и что со знаменателями?</summary>
+        <div class="ans">Числитель умножаем на числитель, знаменатель на знаменатель. Общий знаменатель искать не нужно, а результат сокращаем.</div></details>
+      <details><summary>Что нужно сделать со смешанным числом перед умножением?</summary>
+        <div class="ans">Перевести его в неправильную дробь: целую часть умножить на знаменатель и прибавить числитель.</div></details>
+      <details><summary>Может ли произведение двух дробей быть меньше каждого из множителей? Приведи пример.</summary>
+        <div class="ans">Да. <span class="mono">1/2 · 1/3 = 1/6</span>, и это меньше и 1/2, и 1/3. Так выходит, когда обе дроби меньше единицы: мы берём часть от части.</div></details>
+    </div>
+  </section>
+
+  <div class="wrapup">
+    <h2>Запомни главное</h2>
+    <p class="big-rule">a/b · c/d = (a · c) / (b · d)</p>
+    <p>Чтобы умножить дроби, перемножают числители и знаменатели, предварительно сократив крест-накрест. Смешанные числа сперва переводят в неправильные дроби. Общий знаменатель для умножения не нужен.</p>
+    <p class="next">👉 Дальше <b>деление дробей</b> (окажется, что это то же умножение, только перевёрнутое) и <b>дробь от числа</b>: как находить часть от величины в задачах.</p>
+  </div>
+
+</div>
+
+<script>
+/* Визуализация: площадная модель произведения дробей */
+(function(){
+  var cv=document.getElementById('area'); if(!cv) return;
+  var ctx=cv.getContext('2d'), SIZE=340;
+  var n1=document.getElementById('n1'), d1=document.getElementById('d1');
+  var n2=document.getElementById('n2'), d2=document.getElementById('d2');
+  var lab1=document.getElementById('lab1'), lab2=document.getElementById('lab2');
+  var out=document.getElementById('vizOut'), cap=document.getElementById('vizCap');
+  var dpr=Math.min(window.devicePixelRatio||1,2);
+  cv.width=SIZE*dpr; cv.height=SIZE*dpr; ctx.setTransform(dpr,0,0,dpr,0,0);
+
+  function gcd(a,b){ a=Math.abs(a); b=Math.abs(b); while(b){ var t=a%b; a=b; b=t; } return a; }
+
+  function draw(){
+    var b=parseInt(d1.value,10), d=parseInt(d2.value,10);
+    // числитель не может быть больше знаменателя — держим дробь правильной
+    var a=Math.min(parseInt(n1.value,10),b), c=Math.min(parseInt(n2.value,10),d);
+    var pad=14, S=SIZE-pad*2, cw=S/b, ch=S/d;
+
+    ctx.clearRect(0,0,SIZE,SIZE);
+    ctx.fillStyle='#EEF0F6'; ctx.fillRect(pad,pad,S,S);
+    // первая дробь — столбцы слева
+    ctx.fillStyle='#D9CDF7'; ctx.fillRect(pad,pad,cw*a,S);
+    // вторая дробь — строки сверху
+    ctx.fillStyle='rgba(242,160,61,.42)'; ctx.fillRect(pad,pad,S,ch*c);
+    // пересечение
+    ctx.fillStyle='#3E8E7E'; ctx.fillRect(pad,pad,cw*a,ch*c);
+    // сетка
+    ctx.strokeStyle='rgba(33,29,46,.28)'; ctx.lineWidth=1;
+    var i;
+    for(i=1;i<b;i++){ ctx.beginPath(); ctx.moveTo(pad+cw*i,pad); ctx.lineTo(pad+cw*i,pad+S); ctx.stroke(); }
+    for(i=1;i<d;i++){ ctx.beginPath(); ctx.moveTo(pad,pad+ch*i); ctx.lineTo(pad+S,pad+ch*i); ctx.stroke(); }
+    // рамка целого
+    ctx.strokeStyle='#211D2E'; ctx.lineWidth=2.5; ctx.strokeRect(pad,pad,S,S);
+
+    lab1.textContent=a+'/'+b; lab2.textContent=c+'/'+d;
+    var num=a*c, den=b*d, g=gcd(num,den);
+    var shown=(den/g===1)?String(num/g):((num/g)+'/'+(den/g));
+    var tail=(g>1)?(' = <span class="b">'+shown+'</span>'):'';
+    out.innerHTML='<span class="p">'+a+'/'+b+'</span> · <span class="f">'+c+'/'+d+'</span> = <span class="b">'+num+'/'+den+'</span>'+tail;
+    cap.textContent='Всего клеток: '+b+' · '+d+' = '+den+'. Закрашено дважды: '+a+' · '+c+' = '+num+'.';
+  }
+  [n1,d1,n2,d2].forEach(function(el){ el.addEventListener('input',draw); });
+  draw();
+})();
+</script>
+
+<script>
+/* Тренажёр: умножение обыкновенных дробей */
+(function(){
+  var taskEl=document.getElementById('trTask'), ansEl=document.getElementById('trAns'), resEl=document.getElementById('trResult');
+  if(!taskEl) return;
+  var tabFF=document.getElementById('tabFF'), tabFN=document.getElementById('tabFN'), tabMX=document.getElementById('tabMX');
+  var MINUS='−';
+  function fix(s){ return String(s).replace(/-/g,MINUS); }   // настоящий минус в выводе
+  function ri(min,max){ return Math.floor(Math.random()*(max-min+1))+min; }
+  function gcd(a,b){ a=Math.abs(a); b=Math.abs(b); while(b){ var t=a%b; a=b; b=t; } return a; }
+  function fmt(num,den){                                     // красивая запись результата
+    var g=gcd(num,den); num/=g; den/=g;
+    if(den===1) return fix(num);
+    if(num>den){ var w=Math.floor(num/den); return mixedStr(w,num-w*den,den); }
+    return fix(num+'/'+den);
+  }
+  function tsel(w){ return (w%10===1 && w%100!==11) ? 'целая' : 'целых'; }
+  function mixedStr(w,n,d){ return fix(w+' '+tsel(w)+' '+n+'/'+d); }
+
+  var mode='ff', cur=null;
+
+  function rndFrac(maxDen){                    // несократимая правильная дробь
+    for(var i=0;i<80;i++){
+      var b=ri(2,maxDen), a=ri(1,b-1);
+      if(gcd(a,b)===1) return {n:a,d:b};
+    }
+    return {n:1,d:2};
+  }
+  function genFF(){
+    // ищем пару, где сокращение крест-накрест реально работает
+    for(var i=0;i<60;i++){
+      var f=rndFrac(12), g2=rndFrac(12);
+      if(i<45 && gcd(f.n,g2.d)===1 && gcd(g2.n,f.d)===1) continue;
+      return {a:f.n,b:f.d,c:g2.n,d:g2.d};
+    }
+    return {a:4,b:9,c:3,d:8};
+  }
+  function genFN(){
+    var f=rndFrac(10), n;
+    if(Math.random()<0.6) n=f.d*ri(1,5);       // ответ выйдет целым
+    else { for(var i=0;i<30;i++){ n=ri(2,9); if(gcd(n,f.d)>1) break; } }
+    return {a:f.n,b:f.d,c:n,d:1,isNum:true};
+  }
+  function genMX(){
+    var f=rndFrac(6), w=ri(1,3);
+    var a=w*f.d+f.n;                            // неправильная дробь первого числа
+    var g2;
+    for(var i=0;i<40;i++){ g2=rndFrac(10); if(gcd(a,g2.d)>1||gcd(g2.n,f.d)>1) break; }
+    return {a:a,b:f.d,c:g2.n,d:g2.d,mix:{w:w,n:f.n,d:f.d}};
+  }
+  function taskText(t){
+    var left = t.mix ? mixedStr(t.mix.w,t.mix.n,t.mix.d) : (t.a+'/'+t.b);
+    var right = t.isNum ? String(t.c) : (t.c+'/'+t.d);
+    return fix(left+' · '+right+' = ?');
+  }
+  function generate(focus){
+    cur = mode==='ff'?genFF() : (mode==='fn'?genFN() : genMX());
+    taskEl.textContent=taskText(cur);
+    resEl.innerHTML=''; ansEl.value='';
+    if(focus) ansEl.focus();
+  }
+  function solHTML(){
+    var t=cur, h='<div class="sol">';
+    if(t.mix){
+      h+='перевожу смешанное в неправильную дробь:<br>';
+      h+=fix(mixedStr(t.mix.w,t.mix.n,t.mix.d)+' = ('+t.mix.w+' · '+t.mix.d+' + '+t.mix.n+')/'+t.mix.d+' = '+t.a+'/'+t.b)+'<br>';
+    }
+    if(t.isNum) h+=fix(t.c+' = '+t.c+'/1')+'<br>';
+    var num=t.a*t.c, den=t.b*t.d;
+    var g1=gcd(t.a,t.d), g2=gcd(t.c,t.b);
+    if(g1>1||g2>1){
+      var a2=t.a/g1, d2=t.d/g1, c2=t.c/g2, b2=t.b/g2;
+      h+='сокращаю крест-накрест';
+      if(g1>1) h+=fix(': '+t.a+' и '+t.d+' на '+g1);
+      if(g2>1) h+=fix((g1>1?', ':': ')+t.c+' и '+t.b+' на '+g2);
+      h+='<br>'+fix(a2+'/'+b2+' · '+c2+'/'+d2)+'<br>';
+      h+=fix('('+a2+' · '+c2+')/('+b2+' · '+d2+') = '+(a2*c2)+'/'+(b2*d2))+'<br>';
+    } else {
+      h+=fix('('+t.a+' · '+t.c+')/('+t.b+' · '+t.d+') = '+num+'/'+den)+'<br>';
+    }
+    h+='Ответ: <b>'+fmt(num,den)+'</b>';
+    return h+'</div>';
+  }
+  function parseAns(raw){
+    raw=raw.trim().replace(/−/g,'-').replace(/,/g,'.').replace(/\s+/g,' ');
+    if(!raw) return null;
+    var m;
+    if((m=raw.match(/^(-?\d+)\s+(\d+)\s*\/\s*(\d+)$/))){        // смешанное: 1 1/2
+      var w=parseInt(m[1],10), n=parseInt(m[2],10), d=parseInt(m[3],10);
+      if(!d) return null;
+      var s=w<0?-1:1;
+      return {n:s*(Math.abs(w)*d+n), d:d, red:(gcd(n,d)===1&&n<d)};
+    }
+    if((m=raw.match(/^(-?\d+)\s*\/\s*(\d+)$/))){                // дробь
+      var n2=parseInt(m[1],10), d2=parseInt(m[2],10);
+      if(!d2) return null;
+      return {n:n2, d:d2, red:(gcd(n2,d2)===1)};
+    }
+    if((m=raw.match(/^-?\d+$/))) return {n:parseInt(raw,10), d:1, red:true};
+    if((m=raw.match(/^-?\d*\.\d+$/))){                          // на всякий случай десятичная
+      var v=parseFloat(raw);
+      return {n:Math.round(v*10000), d:10000, red:true};
+    }
+    return null;
+  }
+  function check(){
+    var got=parseAns(ansEl.value);
+    if(got===null){ resEl.innerHTML='<span class="bad">Не понял ответ. Пиши так: 1/6, или 4, или 1 1/2.</span>'; return; }
+    var num=cur.a*cur.c, den=cur.b*cur.d;
+    if(got.n*den===num*got.d){
+      var g=gcd(num,den);
+      var msg='<span class="ok">✓ Верно!</span>';
+      if(!got.red && (den/g)!==1) msg+=' <span style="color:var(--muted)">Только ответ надо сократить: '+fmt(num,den)+'.</span>';
+      resEl.innerHTML=msg+solHTML();
+    } else {
+      resEl.innerHTML='<span class="bad">✗ Пока не то — посмотри решение.</span>'+solHTML();
+    }
+  }
+  function setMode(m){
+    mode=m;
+    tabFF.className = m==='ff'?'on':'';
+    tabFN.className = m==='fn'?'on':'';
+    tabMX.className = m==='mx'?'on':'';
+    generate(true);
+  }
+  tabFF.addEventListener('click',function(){ setMode('ff'); });
+  tabFN.addEventListener('click',function(){ setMode('fn'); });
+  tabMX.addEventListener('click',function(){ setMode('mx'); });
+  document.getElementById('trNew').addEventListener('click',function(){ generate(true); });
+  document.getElementById('trCheck').addEventListener('click',check);
+  document.getElementById('trShow').addEventListener('click',function(){ resEl.innerHTML=solHTML(); });
+  ansEl.addEventListener('keydown',function(e){ if(e.key==='Enter') check(); });
+  // стартовая задача — та же, что разобрана в уроке; без автофокуса
+  cur={a:4,b:9,c:3,d:8};
+  taskEl.textContent=taskText(cur);
+})();
+</script>
+<!--LESSON-NAV-BOT--><nav class="lnav lnav-bot"><a class="prev" href="./m6-smeshannye-chisla.html"><span class="dir">← Предыдущая</span><span class="ttl">Действия со смешанными числами</span></a><a class="to-cat" href="./catalog.html">📚 <span>Все темы</span></a><a class="next" href="./m6-drob-ot-chisla.html"><span class="dir">Следующая →</span><span class="ttl">Нахождение дроби от числа и числа по его дроби</span></a></nav><!--/LESSON-NAV-BOT-->

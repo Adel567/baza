@@ -1,0 +1,525 @@
+<!doctype html>
+<!-- humanized: humanizer-ru, 2026-08-28, тире возвращено -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Приведение дробей к общему знаменателю — 5 класс</title>
+<style>
+  :root{
+    --paper:#FBF9F5;
+    --card:#FFFFFF;
+    --ink:#26202E;
+    --muted:#6B6473;
+    --line:#E7E2E8;
+    --brand:#2F6E5B;          /* основной акцент */
+    --brand-soft:#E3F0EA;
+    --brand-line:#BEDCD0;
+    --one:#C0562E;            /* первая дробь */
+    --one-soft:#FBE9E0;
+    --one-line:#F0C8B4;
+    --two:#3A5AA0;            /* вторая дробь */
+    --two-soft:#E5EBF6;
+    --two-line:#C6D3EC;
+    --ok:#2E8B57;
+    --no:#C23B3B;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper)}
+  .page{
+    max-width:720px;margin:0 auto;
+    padding:clamp(1.4rem,4vw,3rem) clamp(1.1rem,4vw,2rem) 4.5rem;
+    color:var(--ink);
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    font-size:17.5px;line-height:1.68;-webkit-font-smoothing:antialiased;
+  }
+  .mono{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-variant-numeric:tabular-nums;font-weight:600}
+
+  .hero{border-bottom:3px solid var(--brand);padding-bottom:1.4rem;margin-bottom:1.8rem}
+  .eyebrow{font-size:.74rem;letter-spacing:.15em;text-transform:uppercase;color:var(--brand);font-weight:700;margin:0 0 .55rem}
+  h1{font-size:clamp(1.9rem,6.2vw,2.9rem);line-height:1.05;margin:0;font-weight:800;letter-spacing:-.02em;text-wrap:balance}
+  .tagline{font-size:1.12rem;color:var(--muted);margin:.85rem 0 0;text-wrap:pretty}
+
+  section{margin-top:2.4rem}
+  h2{font-size:1.5rem;margin:0 0 .3rem;font-weight:780;letter-spacing:-.015em;text-wrap:balance}
+  h2 .em{color:var(--brand)}
+  h3{font-size:1.12rem;margin:1.4rem 0 .2rem;font-weight:760}
+  p{margin:.7rem 0}
+  strong{font-weight:680}
+
+  .lead-in{background:var(--brand-soft);border-radius:14px;padding:1.1rem 1.3rem;font-size:1.02rem}
+  .lead-in p{margin:.4rem 0}
+  .lead-in b{color:var(--brand)}
+
+  /* Дроби вёрсткой */
+  .fr{display:inline-flex;flex-direction:column;align-items:center;vertical-align:-0.55em;
+      font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-weight:700;line-height:1.12;margin:0 .12em}
+  .fr .n{padding:0 .28em}
+  .fr .d{padding:0 .28em;border-top:2px solid currentColor}
+  .fr.big{font-size:1.35em}
+  .fr.one{color:var(--one)} .fr.two{color:var(--two)} .fr.br{color:var(--brand)}
+
+  /* Напоминалка-пререквизиты */
+  .recall{display:grid;gap:.7rem;margin-top:1rem}
+  @media(min-width:600px){.recall{grid-template-columns:1fr 1fr}}
+  .recall .box{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:.9rem 1.1rem;font-size:.97rem}
+  .recall .box b{color:var(--brand)}
+  .recall .box p{margin:.25rem 0}
+
+  /* Плашка-правило */
+  .core{background:var(--card);border:2px solid var(--brand-line);border-radius:16px;padding:1.2rem 1.35rem;margin-top:1rem}
+  .core .cap{font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;font-weight:700;color:var(--brand);margin:0 0 .5rem}
+  .core ol{margin:.6rem 0 0;padding-left:1.3rem}
+  .core li{margin:.45rem 0}
+  .core li b{color:var(--brand)}
+  .formula{text-align:center;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:1.25rem;font-weight:700;
+           background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:.9rem .6rem;margin:.9rem 0 .2rem;overflow-x:auto}
+
+  .note{border-left:4px solid var(--brand);background:var(--brand-soft);border-radius:0 10px 10px 0;padding:.8rem 1.1rem;margin-top:1rem;font-size:.98rem}
+  .note b{color:var(--brand)}
+
+  /* Разбор по шагам */
+  .walk{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.15rem 1.3rem;margin-top:1rem}
+  .walk .q{font-weight:700;font-size:1.06rem;margin:0 0 .9rem;padding-bottom:.7rem;border-bottom:1px solid var(--line)}
+  .walk ol{list-style:none;margin:0;padding:0;counter-reset:st;display:flex;flex-direction:column;gap:.85rem}
+  .walk ol li{counter-increment:st;position:relative;padding-left:2.2rem;font-size:.99rem}
+  .walk ol li::before{content:counter(st);position:absolute;left:0;top:.1rem;width:1.6rem;height:1.6rem;border-radius:50%;
+     background:var(--brand-soft);color:var(--brand);font-weight:800;font-size:.85rem;display:flex;align-items:center;justify-content:center}
+  .why{display:block;color:var(--muted);font-size:.9rem;font-style:italic;margin-top:.15rem}
+  .verdict{margin-top:1.1rem;padding:.75rem 1rem;background:var(--brand-soft);border-radius:10px;font-weight:650;color:var(--brand);font-size:1rem}
+
+  /* Визуализация */
+  .viz{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:1.15rem 1.2rem;margin-top:1rem}
+  .viz canvas{width:100%;height:auto;display:block;border-radius:10px}
+  .viz .btns{display:flex;gap:.5rem;flex-wrap:wrap;justify-content:center;margin-top:1rem}
+  .viz .btns button{font:inherit;font-weight:700;font-size:.9rem;border-radius:10px;padding:.5rem 1rem;cursor:pointer;
+     border:1px solid var(--line);background:var(--paper);color:var(--ink)}
+  .viz .btns button.on{background:var(--brand);border-color:var(--brand);color:#fff}
+  .viz .btns button:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+  .viz .cap{text-align:center;color:var(--muted);font-size:.92rem;margin:.8rem 0 0;min-height:2.6em}
+
+  /* Таблицы */
+  .tblwrap{overflow-x:auto;margin-top:1rem}
+  table{border-collapse:collapse;width:100%;min-width:420px;font-size:.96rem}
+  th,td{border:1px solid var(--line);padding:.6rem .75rem;text-align:left}
+  thead th{background:#F4F7F5;font-weight:700}
+  td.c{text-align:center}
+
+  /* Практика */
+  .drill{display:flex;flex-direction:column;gap:.7rem;margin-top:1rem}
+  .lvl{font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;font-weight:800;color:var(--muted);margin:1.3rem 0 -.1rem}
+  details{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:.9rem 1.1rem}
+  details[open]{border-color:var(--brand)}
+  summary{cursor:pointer;font-weight:650;list-style:none;display:flex;justify-content:space-between;gap:1rem;align-items:center}
+  summary::-webkit-details-marker{display:none}
+  summary:focus-visible{outline:2px solid var(--brand);outline-offset:3px;border-radius:6px}
+  summary .q{font-size:1rem}
+  summary::after{content:"проверить";font-size:.8rem;color:var(--brand);font-weight:700;white-space:nowrap}
+  details[open] summary::after{content:"скрыть"}
+  .ans{margin-top:.75rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.96rem;color:var(--muted)}
+  .ans b{color:var(--ink)}
+
+  /* Ловушки */
+  ul.traps{list-style:none;margin:1rem 0 0;padding:0;display:flex;flex-direction:column;gap:.7rem}
+  ul.traps li{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:.85rem 1.05rem;padding-left:2.5rem;position:relative;font-size:.97rem}
+  ul.traps li::before{content:"⚠";position:absolute;left:1rem;top:.85rem;color:var(--one);font-size:1.05rem}
+  ul.traps b{font-weight:700}
+  .fix{display:block;margin-top:.3rem;color:var(--ok);font-size:.92rem}
+
+  .selfcheck{list-style:none;margin:1rem 0 0;padding:0;display:flex;flex-direction:column;gap:.6rem;counter-reset:sc}
+  .selfcheck li{counter-increment:sc;background:var(--card);border:1px solid var(--line);border-radius:11px;padding:.8rem 1.05rem .8rem 2.6rem;position:relative;font-size:.97rem}
+  .selfcheck li::before{content:counter(sc);position:absolute;left:.9rem;top:.85rem;font-weight:800;color:var(--brand)}
+
+  .wrapup{background:var(--brand);color:#fff;border-radius:16px;padding:1.4rem 1.5rem;margin-top:2.4rem}
+  .wrapup h2{color:#fff;margin:0 0 .5rem}
+  .wrapup p{color:#E2F0EA;margin:.4rem 0;font-size:1rem}
+  .wrapup .big-rule{font-size:1.08rem;font-weight:700;color:#fff;margin:.6rem 0}
+  .wrapup .next{font-size:.95rem;color:#C6E0D5;margin-top:1rem;padding-top:1rem;border-top:1px solid rgba(255,255,255,.22)}
+  .wrapup .fr{color:#fff}
+
+  /* Тренажёр */
+  .trainer{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:1.3rem 1.2rem 1.2rem;margin-top:1rem}
+  .tr-task{text-align:center;font-size:clamp(1.5rem,7vw,2.1rem);margin:.2rem 0 .1rem}
+  .tr-hint{text-align:center;color:var(--muted);font-size:.9rem;margin:.5rem 0 1.1rem}
+  .tr-fields{display:flex;flex-direction:column;gap:.7rem;max-width:420px;margin:0 auto}
+  .fld{display:flex;align-items:center;gap:.7rem;justify-content:space-between;background:var(--paper);border:1px solid var(--line);border-radius:11px;padding:.55rem .8rem}
+  .fld label{font-size:.95rem}
+  .fld input{font:inherit;font-family:ui-monospace,Menlo,Consolas,monospace;font-weight:700;font-size:1.05rem;
+     width:5.2rem;text-align:center;padding:.35rem .4rem;border:2px solid var(--line);border-radius:9px;background:#fff;color:var(--ink)}
+  .fld input:focus-visible{outline:2px solid var(--brand);outline-offset:1px;border-color:var(--brand)}
+  .fld.one input{border-color:var(--one-line)} .fld.two input{border-color:var(--two-line)}
+  .tr-btns{display:flex;gap:.5rem;flex-wrap:wrap;justify-content:center;margin-top:1.1rem}
+  .tr-btns button{font:inherit;font-weight:700;font-size:.92rem;border-radius:10px;padding:.55rem 1.1rem;cursor:pointer;border:1px solid transparent}
+  .tr-btns .go{background:var(--brand);color:#fff}
+  .tr-btns .sh{background:var(--paper);border:1px solid var(--line);color:var(--ink)}
+  .tr-btns .nw{background:var(--brand-soft);color:var(--brand)}
+  .tr-btns button:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+  .tr-res{margin-top:1.1rem;font-size:.97rem}
+  .tr-res .head{font-weight:700;padding:.6rem .9rem;border-radius:9px;margin-bottom:.7rem}
+  .tr-res .head.ok{background:#E7F4EC;color:var(--ok)}
+  .tr-res .head.no{background:#FBEAEA;color:var(--no)}
+  .tr-res .head.info{background:var(--brand-soft);color:var(--brand)}
+  .tr-sol{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:.85rem 1rem}
+  .tr-sol .row{margin:.35rem 0;font-size:.95rem}
+  .tr-sol .row b{color:var(--brand)}
+
+  .oge-tip{display:flex;gap:.8rem;align-items:flex-start;background:#FFF8E7;border:1px solid #F0D98A;border-left:4px solid #E0A315;border-radius:10px;padding:.85rem 1.05rem;margin:1.5rem 0}
+  .oge-tip .b{font-size:.72rem;font-weight:800;letter-spacing:.03em;color:#8A6A15;white-space:nowrap;text-transform:uppercase;padding-top:.15rem}
+  .oge-tip .x{font-size:.95rem;line-height:1.5}
+
+  @media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+<!--LESSON-NAV-TOP--><style>.lnav{--lnav-accent:#3D5AF1}.lnav a{text-decoration:none;font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif}.lnav-top{max-width:820px;margin:0 auto;padding:.75rem clamp(1rem,4vw,1.5rem) .1rem}.lnav-top a{display:inline-flex;align-items:center;gap:.35rem;color:var(--lnav-accent);font-weight:600;font-size:.9rem}.lnav-top a:hover{text-decoration:underline}.lnav-bot{max-width:820px;margin:2.6rem auto 3rem;padding:1.1rem clamp(1rem,4vw,1.5rem) 0;border-top:1px solid #E4E8EF;display:flex;align-items:stretch;gap:.55rem}.lnav-bot a{min-width:0;display:flex;flex-direction:column;justify-content:center;gap:.15rem;border:1px solid #E4E8EF;border-radius:12px;padding:.65rem .85rem;color:#182233;background:#fff;transition:border-color .1s,transform .08s}.lnav-bot a:hover{border-color:var(--lnav-accent);transform:translateY(-1px)}.lnav-bot .prev,.lnav-bot .next{flex:1 1 0}.lnav-bot .next{text-align:right}.lnav-bot .dir{font-size:.72rem;color:#8A93A6;font-weight:600}.lnav-bot .ttl{font-size:.9rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.lnav-bot .to-cat{flex:0 0 auto;flex-direction:row;align-items:center;justify-content:center;color:var(--lnav-accent);font-weight:700;font-size:.85rem;white-space:nowrap}@media(max-width:420px){.lnav-bot .to-cat span{display:none}.lnav-bot .to-cat{padding:.65rem .7rem}}</style><nav class="lnav lnav-top"><a href="./catalog.html">← Все темы</a></nav><!--/LESSON-NAV-TOP-->
+<div class="page">
+
+  <header class="hero">
+    <p class="eyebrow">Математика · 5 класс</p>
+    <h1>Приведение дробей<br>к общему знаменателю</h1>
+    <p class="tagline">Как переписать две разные дроби так, чтобы их наконец можно было честно сравнивать и складывать.</p>
+  </header>
+
+  <div class="lead-in">
+    <p><b>Зачем это уметь.</b> Представь: у тебя есть <span class="fr one"><span class="n">1</span><span class="d">2</span></span> одной пиццы и <span class="fr two"><span class="n">1</span><span class="d">3</span></span> другой. Сколько всего?</p>
+    <p>Сложить «в лоб» не получится: половинки и трети — <strong>куски разного размера</strong>. Чтобы их сравнить или сложить, обе пиццы надо нарезать на одинаковые кусочки. Вот это и называется <b>привести к общему знаменателю</b>.</p>
+    <p>Без этого дальше никак: ни сравнить дроби с разными знаменателями, ни сложить, ни вычесть. Приём ждёт тебя и в 6 классе, где идут все действия с дробями, и в процентах, и потом в алгебре.</p>
+  </div>
+
+  <section>
+    <h2>Сначала разрушим <span class="em">главный миф</span></h2>
+    <p>Рассуждают обычно так: «у какой дроби знаменатель больше, та дробь и больше». Звучит логично, а на деле <strong>неверно</strong>.</p>
+    <p>Смотри: <span class="fr one big"><span class="n">1</span><span class="d">2</span></span> больше, чем <span class="fr two big"><span class="n">1</span><span class="d">3</span></span> — хотя 2 меньше 3. Половина пиццы явно жирнее, чем треть.</p>
+    <p>Почему так? Знаменатель говорит, <em>на сколько кусков</em> разрезали. Больше кусков — каждый мельче. Вот и всё: по знаменателям сравнивать нельзя. А вот когда знаменатели <strong>одинаковые</strong> — всё честно: у кого числитель больше, та дробь и больше. Общий знаменатель как раз и приводит дроби к такому виду.</p>
+  </section>
+
+  <section>
+    <h2>Что нужно вспомнить</h2>
+    <p>Тема опирается на две вещи, которые ты уже проходил. Пробегись по ним глазами: дальше они всплывут в каждом примере.</p>
+    <div class="recall">
+      <div class="box">
+        <p><b>НОК — наименьшее общее кратное</b></p>
+        <p>Наименьшее число, которое делится и на одно, и на другое. Ищем перебором кратных: кратные 6 — это 6, 12, 18, <strong>24</strong>…; кратные 8 — это 8, 16, <strong>24</strong>… Первое общее и есть НОК(6, 8) = 24.</p>
+      </div>
+      <div class="box">
+        <p><b>Основное свойство дроби</b></p>
+        <p>Умножили числитель и знаменатель на одно и то же число (не ноль) — получили дробь, <strong>равную</strong> исходной. Отсюда и растёт весь приём этого урока.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Суть: дробь <span class="em">не меняется</span>, меняется её запись</h2>
+    <p><strong>Привести дроби к общему знаменателю</strong> — значит заменить каждую дробь на равную ей дробь так, чтобы у всех получился один и тот же знаменатель. Величина дробей при этом не трогается, меняется только «одёжка».</p>
+    <div class="formula">a / b = (a · k) / (b · k)</div>
+    <p>Например, <span class="fr br"><span class="n">1</span><span class="d">2</span></span> = <span class="fr br"><span class="n">2</span><span class="d">4</span></span> = <span class="fr br"><span class="n">3</span><span class="d">6</span></span> = <span class="fr br"><span class="n">5</span><span class="d">10</span></span> — это всё одна и та же половина, просто записанная по-разному. Половина пиццы не стала больше от того, что мы разрезали её на более мелкие куски.</p>
+    <p>Поэтому чтобы у <span class="fr one"><span class="n">1</span><span class="d">2</span></span> и <span class="fr two"><span class="n">1</span><span class="d">3</span></span> знаменатели совпали, обе превращаем в дроби со знаменателем 6: <span class="fr one"><span class="n">1</span><span class="d">2</span></span> = <span class="fr one"><span class="n">3</span><span class="d">6</span></span>, &nbsp;<span class="fr two"><span class="n">1</span><span class="d">3</span></span> = <span class="fr two"><span class="n">2</span><span class="d">6</span></span>.</p>
+  </section>
+
+  <section>
+    <h2>Правило целиком</h2>
+    <div class="core">
+      <p class="cap">Определения</p>
+      <p><strong>Общий знаменатель</strong> двух (или нескольких) дробей — это число, которое делится на каждый из исходных знаменателей.</p>
+      <p><strong>Наименьший общий знаменатель (НОЗ)</strong> — это НОК знаменателей. Он самый удобный: числа получаются мелкие.</p>
+      <p class="cap" style="margin-top:1.1rem">Как приводить — три шага</p>
+      <ol>
+        <li>Найти <b>НОК знаменателей</b> — это и будет новый общий знаменатель.</li>
+        <li>Для каждой дроби найти <b>дополнительный множитель</b>: новый знаменатель разделить на старый.</li>
+        <li>Умножить <b>и числитель, и знаменатель</b> дроби на этот дополнительный множитель.</li>
+      </ol>
+    </div>
+    <div class="note">
+      <p><b>Два слова про обозначения.</b> Числитель — верхнее число дроби, знаменатель — нижнее. Дополнительный множитель пишут карандашом наискосок над дробью, косой чёрточкой: так его не потеряешь.</p>
+      <p><b>Условие, без которого всё сломается.</b> Внутри одной дроби множитель для числителя и знаменателя <strong>один и тот же</strong>. А у разных дробей множители обычно разные, и это нормально.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Эталонный разбор — <span class="em">думаю вслух</span></h2>
+    <p>Задача: привести к общему знаменателю дроби <span class="fr one big"><span class="n">5</span><span class="d">6</span></span> и <span class="fr two big"><span class="n">7</span><span class="d">8</span></span>. Следи за каждым шагом.</p>
+    <div class="walk">
+      <p class="q">Привести к общему знаменателю 5/6 и 7/8</p>
+      <ol>
+        <li>Ищу НОК(6, 8). Кратные 6: 6, 12, 18, <strong>24</strong>… Кратные 8: 8, 16, <strong>24</strong>… Первое общее — 24. Значит <b>НОК = 24</b>, это и есть новый знаменатель.
+          <span class="why">Почему именно 24: это наименьшее число, которое делится и на 6, и на 8.</span></li>
+        <li>Дополнительный множитель для <span class="fr one"><span class="n">5</span><span class="d">6</span></span>: делю новый знаменатель на старый — <span class="mono">24 : 6 = 4</span>.
+          <span class="why">Почему делю: чтобы 6 превратилось в 24, его надо умножить на 4. Деление и находит это «на сколько».</span></li>
+        <li>Дополнительный множитель для <span class="fr two"><span class="n">7</span><span class="d">8</span></span>: <span class="mono">24 : 8 = 3</span>.
+          <span class="why">Видишь: множители разные (4 и 3) — так и должно быть, знаменатели-то были разные.</span></li>
+        <li>Умножаю числитель и знаменатель каждой дроби на её множитель:
+          <div style="margin-top:.4rem"><span class="fr one"><span class="n">5</span><span class="d">6</span></span> = <span class="fr one"><span class="n">5 · 4</span><span class="d">6 · 4</span></span> = <span class="fr one"><span class="n">20</span><span class="d">24</span></span>,&nbsp;&nbsp; <span class="fr two"><span class="n">7</span><span class="d">8</span></span> = <span class="fr two"><span class="n">7 · 3</span><span class="d">8 · 3</span></span> = <span class="fr two"><span class="n">21</span><span class="d">24</span></span></div>
+          <span class="why">Оба этажа умножаю сразу — иначе дробь изменится по величине, а нам этого нельзя.</span></li>
+      </ol>
+      <div class="verdict">Ответ: 20/24 и 21/24. Знаменатели совпали — теперь дроби можно сравнивать (21 &gt; 20, значит 7/8 больше) и складывать.</div>
+    </div>
+
+    <h3>Теперь допиши сам</h3>
+    <p>Алгоритм тот же, только один шаг я нарочно оставил пустым. Привести к общему знаменателю <span class="fr one"><span class="n">3</span><span class="d">4</span></span> и <span class="fr two"><span class="n">5</span><span class="d">6</span></span>:</p>
+    <div class="drill">
+      <details>
+        <summary><span class="q">НОК(4, 6) = 12. Множитель для 3/4: <span class="mono">12 : 4 = 3</span>, значит 3/4 = (3·3)/(4·3) = 9/12.<br>Множитель для 5/6: <span class="mono">12 : 6 = ?</span> Чему равна вторая дробь?</span></summary>
+        <div class="ans"><span class="mono">12 : 6 = 2</span>, значит <b>5/6 = (5·2)/(6·2) = 10/12</b>. Итого: <b>9/12</b> и <b>10/12</b>.</div>
+      </details>
+      <details>
+        <summary><span class="q">А теперь целиком сам: приведи к общему знаменателю <span class="fr one"><span class="n">2</span><span class="d">5</span></span> и <span class="fr two"><span class="n">1</span><span class="d">4</span></span>.</span></summary>
+        <div class="ans">НОК(5, 4) = <b>20</b>. Множители: <span class="mono">20 : 5 = 4</span> и <span class="mono">20 : 4 = 5</span>. Ответ: <b>2/5 = 8/20</b>, <b>1/4 = 5/20</b>.</div>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <h2>Посмотри <span class="em">глазами</span>: две пиццы становятся одинаковыми</h2>
+    <p>Вот два одинаковых батончика. Верхний разрезан на 2 части, закрашена <span class="fr one"><span class="n">1</span><span class="d">2</span></span>. Нижний разрезан на 3 части, закрашена <span class="fr two"><span class="n">1</span><span class="d">3</span></span>. Куски получились разного размера, сравнивать их неудобно.</p>
+    <p>Прежде чем жать кнопку, попробуй <strong>предсказать</strong>: на сколько равных частей надо разрезать оба батончика, чтобы кусочки совпали по размеру? Потом проверь себя.</p>
+    <div class="viz">
+      <canvas id="vizC" width="520" height="262" role="img" aria-label="Две полоски: половина и треть, которые делятся на шестые доли"></canvas>
+      <div class="btns">
+        <button type="button" id="vizA" class="on">Как есть: 1/2 и 1/3</button>
+        <button type="button" id="vizB">Разрезать оба на 6 частей</button>
+      </div>
+      <p class="cap" id="vizCap">Закрашенные куски разного размера: половина заметно крупнее трети. Складывать такие нельзя.</p>
+    </div>
+    <p>Разрезали оба на 6 — и всё сошлось: <span class="fr one"><span class="n">1</span><span class="d">2</span></span> это 3 клетки из 6, а <span class="fr two"><span class="n">1</span><span class="d">3</span></span> — 2 клетки из 6. Клетки теперь одинаковые, их можно честно сравнивать и складывать.</p>
+    <p>А почему именно 6? Потому что 6 — это НОК чисел 2 и 3: наименьшее число, на которое режутся оба батончика без остатка. Ровно то же самое ты делаешь в тетради, только цифрами.</p>
+  </section>
+
+  <section>
+    <h2>Тренажёр — <span class="em">бесконечная практика</span></h2>
+    <p>Пару дробей тренажёр выдаёт сам. Твоя работа — найти общий знаменатель (НОК) и оба новых числителя. Заполни три поля и нажми «Проверить». Застрял — есть «Показать решение», но сначала честно поборись.</p>
+    <div class="trainer">
+      <div class="tr-task" id="trTask"></div>
+      <p class="tr-hint">Приведи обе дроби к наименьшему общему знаменателю</p>
+      <div class="tr-fields">
+        <div class="fld"><label for="trD">Общий знаменатель (НОЗ)</label><input id="trD" type="text" inputmode="numeric" autocomplete="off"></div>
+        <div class="fld one"><label for="trN1">Новый числитель <span id="trL1"></span></label><input id="trN1" type="text" inputmode="numeric" autocomplete="off"></div>
+        <div class="fld two"><label for="trN2">Новый числитель <span id="trL2"></span></label><input id="trN2" type="text" inputmode="numeric" autocomplete="off"></div>
+      </div>
+      <div class="tr-btns">
+        <button class="go" id="trCheck" type="button">Проверить</button>
+        <button class="sh" id="trShow" type="button">Показать решение</button>
+        <button class="nw" id="trNew" type="button">🎲 Новая пара</button>
+      </div>
+      <div class="tr-res" id="trRes"></div>
+    </div>
+  </section>
+
+  <div class="oge-tip"><div class="b">🎯 В ОГЭ</div><div class="x"><b>Задание 6.</b> Там надо посчитать выражение с обыкновенными дробями — а любое сложение или вычитание дробей с разными знаменателями начинается ровно с того, что ты сейчас учишь.</div></div>
+
+  <section>
+    <h2>Проверь себя</h2>
+    <p>Задания идут по нарастанию: сначала понять, потом применить, потом как следует подумать. Решай сам, ответ раскрывай после.</p>
+
+    <p class="lvl">Уровень 1 — понимание</p>
+    <div class="drill">
+      <details>
+        <summary><span class="q">1) Дробь <span class="fr"><span class="n">3</span><span class="d">7</span></span> привели к знаменателю 21. На какое число умножили числитель и знаменатель?</span></summary>
+        <div class="ans">Смотрим на знаменатели: <span class="mono">21 : 7 = 3</span>. Значит умножили на <b>3</b> — и верх, и низ. Получилось <b>9/21</b>.</div>
+      </details>
+      <details>
+        <summary><span class="q">2) Изменилась ли величина дроби <span class="fr"><span class="n">1</span><span class="d">2</span></span>, когда мы записали её как <span class="fr"><span class="n">5</span><span class="d">10</span></span>?</span></summary>
+        <div class="ans"><b>Нет.</b> Это та же самая половина, просто нарезанная мельче. По основному свойству дроби умножение верха и низа на одно число величину не меняет.</div>
+      </details>
+    </div>
+
+    <p class="lvl">Уровень 2 — применение</p>
+    <div class="drill">
+      <details>
+        <summary><span class="q">3) Приведи к наименьшему общему знаменателю <span class="fr one"><span class="n">5</span><span class="d">12</span></span> и <span class="fr two"><span class="n">7</span><span class="d">18</span></span>. <span style="color:var(--muted);font-weight:400">(подсказка: НОК(12, 18) = 36)</span></span></summary>
+        <div class="ans">Множитель для 5/12: <span class="mono">36 : 12 = 3</span> → <b>5/12 = 15/36</b>.<br>Множитель для 7/18: <span class="mono">36 : 18 = 2</span> → <b>7/18 = 14/36</b>.<br>Ответ: <b>15/36</b> и <b>14/36</b>.</div>
+      </details>
+    </div>
+
+    <p class="lvl">Уровень 3 — анализ</p>
+    <div class="drill">
+      <details>
+        <summary><span class="q">4) <b>Найди ошибку.</b> Ученик записал: <span class="fr"><span class="n">1</span><span class="d">3</span></span> = <span class="fr"><span class="n">2</span><span class="d">6</span></span>, а дробь <span class="fr"><span class="n">1</span><span class="d">2</span></span> оставил как есть и сказал: «общий знаменатель — 6, готово». В чём недоработка?</span></summary>
+        <div class="ans">Он привёл только одну дробь. Вторую <b>тоже надо привести</b>: <span class="mono">6 : 2 = 3</span>, значит <b>1/2 = 3/6</b>. Пока знаменатели не совпали у <em>обеих</em> дробей, работа не закончена.</div>
+      </details>
+      <details>
+        <summary><span class="q">5) <b>Что изменится, если</b> для дробей со знаменателями 4 и 6 взять не НОК, а просто произведение <span class="mono">4 · 6 = 24</span>? Ответ получится верный?</span></summary>
+        <div class="ans"><b>Да, верный.</b> 24 тоже делится и на 4, и на 6, так что это законный общий знаменатель. Разница только в размере чисел: <b>3/4 = 18/24</b> и <b>5/6 = 20/24</b> вместо аккуратных 9/12 и 10/12. Числа крупнее, и потом дробь, возможно, придётся сокращать. Поэтому сначала всегда ищи НОК.</div>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <h2>Ловушки — не попадись</h2>
+    <ul class="traps">
+      <li><b>Умножают верх и низ на разные числа.</b> Дробь 1/2 приводят к 6 и получают 3/6 (верно), а соседнюю 1/3 ошибочно делают 1/6 — числитель забыли тронуть.
+        <span class="fix">✓ Что делать: множитель у верха и низа одной дроби один и тот же. Считай его как «новый знаменатель : старый знаменатель».</span></li>
+      <li><b>Берут произведение знаменателей вместо НОК.</b> Формально не ошибка, ответ выходит верный. Но числа получаются большими, и дробь потом приходится сокращать.
+        <span class="fix">✓ Привычка: сначала ищи НОК, произведение оставь как запасной вариант.</span></li>
+      <li><b>Забывают пересчитать числитель.</b> Пишут «5/6 = ?/24», меняют только знаменатель, а числитель так и оставляют 5.
+        <span class="fix">✓ Умножай на множитель <strong>обе</strong> части дроби сразу, одним движением.</span></li>
+      <li><b>Считают, что «больше знаменатель — больше дробь».</b> 1/3 не больше 1/2, хотя 3 &gt; 2.
+        <span class="fix">✓ Хочешь сравнить дроби — сначала приведи их к общему знаменателю и только потом смотри на числители.</span></li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Объясни своими словами</h2>
+    <p>Проверка на понимание: ответь вслух, не подглядывая. Говоришь складно — тема твоя.</p>
+    <ol class="selfcheck">
+      <li>Что такое наименьший общий знаменатель двух дробей? <span style="color:var(--muted)">(Это НОК их знаменателей.)</span></li>
+      <li>Как найти дополнительный множитель для дроби? <span style="color:var(--muted)">(Новый знаменатель разделить на старый.)</span></li>
+      <li>Меняется ли величина дроби, когда мы приводим её к новому знаменателю? <span style="color:var(--muted)">(Нет, дробь остаётся равной себе.)</span></li>
+    </ol>
+    <div class="note"><p><b>Приём посильнее.</b> Расскажи всё это кому-нибудь — родителям, другу или чат-боту — на примере пиццы, будто объясняешь с нуля. Место, где ты запнёшься, и есть твой пробел: возвращайся туда и перечитывай.</p></div>
+  </section>
+
+  <div class="wrapup">
+    <h2>Запомни главное</h2>
+    <p class="big-rule">НОК знаменателей → дополнительный множитель (новый знаменатель : старый) → умножить обе части дроби.</p>
+    <p>Привести дроби к общему знаменателю — значит переписать их с одним знаменателем, опираясь на основное свойство дроби. Сами дроби при этом не меняются, меняется только запись.</p>
+    <p class="next">👉 Дальше этот навык сразу пойдёт в работу: <strong>сравнение дробей</strong> (приведи к общему знаменателю и смотри на числители) и <strong>сложение дробей с разными знаменателями</strong> — там без общего знаменателя вообще ни шагу.</p>
+  </div>
+
+</div>
+
+<script>
+(function(){
+  /* ---------- общее ---------- */
+  var MINUS='−';
+  function fix(s){ return String(s).replace(/-/g, MINUS); }
+  function gcd(a,b){ while(b){ var t=a%b; a=b; b=t; } return a; }
+  function lcm(a,b){ return a/gcd(a,b)*b; }
+  function ri(a,b){ return Math.floor(Math.random()*(b-a+1))+a; }
+  function frHTML(n,d,cls){
+    return '<span class="fr '+(cls||'')+'"><span class="n">'+fix(n)+'</span><span class="d">'+fix(d)+'</span></span>';
+  }
+
+  /* ---------- визуализация: 1/2 и 1/3 -> шестые ---------- */
+  var cv=document.getElementById('vizC'), ctx=cv.getContext('2d');
+  var capEl=document.getElementById('vizCap');
+  var bA=document.getElementById('vizA'), bB=document.getElementById('vizB');
+  var COL={one:'#C0562E',oneS:'#F4CDBB',two:'#3A5AA0',twoS:'#C6D3EC',line:'#26202E',mut:'#6B6473',paper:'#FBF9F5'};
+
+  function bar(y,parts,filled,col,colS,label){
+    var x=96, w=cv.width-x-16, h=60;
+    ctx.fillStyle=COL.paper; ctx.fillRect(x,y,w,h);
+    var step=w/parts;
+    ctx.fillStyle=colS;
+    ctx.fillRect(x,y,step*filled,h);
+    ctx.strokeStyle=col; ctx.lineWidth=2;
+    for(var i=1;i<parts;i++){
+      ctx.beginPath(); ctx.moveTo(x+step*i,y); ctx.lineTo(x+step*i,y+h); ctx.stroke();
+    }
+    ctx.strokeStyle=col; ctx.lineWidth=3; ctx.strokeRect(x,y,w,h);
+    /* подпись слева: дробь */
+    ctx.fillStyle=col;
+    ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.font='700 28px ui-monospace, Menlo, monospace';
+    ctx.fillText(String(filled), 42, y+h/2-17);
+    ctx.fillText(String(parts),  42, y+h/2+19);
+    ctx.strokeStyle=col; ctx.lineWidth=2.5;
+    ctx.beginPath(); ctx.moveTo(20,y+h/2); ctx.lineTo(64,y+h/2); ctx.stroke();
+    ctx.fillStyle=COL.mut;
+    ctx.font='500 15px system-ui, sans-serif';
+    ctx.textAlign='left';
+    ctx.fillText(label, 20, y+h+20);
+  }
+
+  function draw(step){
+    ctx.clearRect(0,0,cv.width,cv.height);
+    if(step===0){
+      bar(26,2,1,COL.one,COL.oneS,'разрезан на 2 части, взята 1 — это половина');
+      bar(142,3,1,COL.two,COL.twoS,'разрезан на 3 части, взята 1 — это треть');
+    } else {
+      bar(26,6,3,COL.one,COL.oneS,'3 клетки из 6 — та же самая половина');
+      bar(142,6,2,COL.two,COL.twoS,'2 клетки из 6 — та же самая треть');
+    }
+  }
+  function setStep(step){
+    draw(step);
+    bA.classList.toggle('on', step===0);
+    bB.classList.toggle('on', step===1);
+    capEl.textContent = step===0
+      ? 'Закрашенные куски разного размера: половина заметно крупнее трети. Складывать такие нельзя.'
+      : 'Клетки стали одинаковыми: 1/2 — это 3 клетки из 6, 1/3 — это 2 клетки из 6. Общий знаменатель 6 = НОК(2, 3).';
+  }
+  bA.addEventListener('click',function(){ setStep(0); });
+  bB.addEventListener('click',function(){ setStep(1); });
+  setStep(0);
+
+  /* ---------- тренажёр ---------- */
+  var DEN=[2,3,4,5,6,8,9,10,12,15,18];
+  var taskEl=document.getElementById('trTask'), resEl=document.getElementById('trRes');
+  var iD=document.getElementById('trD'), i1=document.getElementById('trN1'), i2=document.getElementById('trN2');
+  var l1=document.getElementById('trL1'), l2=document.getElementById('trL2');
+  var T=null;
+
+  function makeTask(seed){
+    if(seed) return seed;
+    var d1,d2,L,tries=0;
+    do{
+      d1=DEN[ri(0,DEN.length-1)];
+      d2=DEN[ri(0,DEN.length-1)];
+      L=lcm(d1,d2);
+      tries++;
+    } while((d1===d2 || L>90) && tries<200);
+    if(d1===d2 || L>90){ d1=3; d2=4; L=12; }
+    return { d1:d1, d2:d2, n1:ri(1,d1-1), n2:ri(1,d2-1), L:L };
+  }
+  function render(){
+    var L=lcm(T.d1,T.d2);
+    T.L=L;
+    taskEl.innerHTML = frHTML(T.n1,T.d1,'one big') + '<span style="color:var(--muted);font-size:.6em;margin:0 .5em">и</span>' + frHTML(T.n2,T.d2,'two big');
+    l1.innerHTML = 'для ' + frHTML(T.n1,T.d1,'one');
+    l2.innerHTML = 'для ' + frHTML(T.n2,T.d2,'two');
+    iD.value=''; i1.value=''; i2.value='';
+    resEl.innerHTML=''; resEl.removeAttribute('data-done');
+  }
+  function solution(){
+    var L=T.L, k1=L/T.d1, k2=L/T.d2;
+    var h='<div class="tr-sol">';
+    h+='<div class="row"><b>Шаг 1.</b> Общий знаменатель — это НОК('+T.d1+', '+T.d2+') = <b>'+L+'</b>.</div>';
+    h+='<div class="row"><b>Шаг 2.</b> Дополнительные множители: '+L+' : '+T.d1+' = '+k1+' и '+L+' : '+T.d2+' = '+k2+'.</div>';
+    h+='<div class="row"><b>Шаг 3.</b> Умножаем обе части каждой дроби:</div>';
+    h+='<div class="row" style="margin-left:.2rem">'+frHTML(T.n1,T.d1,'one')+' = '+frHTML(T.n1+' · '+k1, T.d1+' · '+k1,'one')+' = '+frHTML(T.n1*k1,L,'one')+'</div>';
+    h+='<div class="row" style="margin-left:.2rem">'+frHTML(T.n2,T.d2,'two')+' = '+frHTML(T.n2+' · '+k2, T.d2+' · '+k2,'two')+' = '+frHTML(T.n2*k2,L,'two')+'</div>';
+    h+='<div class="row"><b>Ответ:</b> '+frHTML(T.n1*k1,L,'one')+' и '+frHTML(T.n2*k2,L,'two')+'.</div>';
+    return h+'</div>';
+  }
+  function num(el){ var v=el.value.replace(/\s+/g,'').replace(/,/g,'.'); return v===''?null:Number(v); }
+  function locked(){ return resEl.getAttribute('data-done')==='1'; }
+
+  function check(){
+    if(locked()) return;
+    var L=T.L, k1=L/T.d1, k2=L/T.d2;
+    var aD=num(iD), a1=num(i1), a2=num(i2);
+    if(aD===null || a1===null || a2===null){
+      resEl.innerHTML='<div class="head info">Заполни все три поля — и общий знаменатель, и оба числителя.</div>';
+      return;
+    }
+    var okD=(aD===L), ok1=(a1===T.n1*k1), ok2=(a2===T.n2*k2);
+    var ok=okD&&ok1&&ok2;
+    resEl.setAttribute('data-done','1');
+    var head;
+    if(ok){ head='<div class="head ok">✓ Верно! Знаменатели совпали, числители пересчитаны.</div>'; }
+    else if(!okD && aD>0 && aD%T.d1===0 && aD%T.d2===0){
+      head='<div class="head no">Знаменатель '+aD+' общий, он подошёл бы — но это не наименьший. НОК меньше, смотри разбор.</div>';
+    }
+    else if(okD && (!ok1||!ok2)){
+      head='<div class="head no">Знаменатель верный, а вот числитель пересчитан не до конца. Смотри разбор.</div>';
+    }
+    else { head='<div class="head no">Пока не сходится — сверься с разбором.</div>'; }
+    resEl.innerHTML = head + solution();
+  }
+  function show(){
+    if(locked()) return;
+    resEl.setAttribute('data-done','1');
+    resEl.innerHTML='<div class="head info">Разбор:</div>'+solution();
+  }
+  document.getElementById('trCheck').addEventListener('click',check);
+  document.getElementById('trShow').addEventListener('click',show);
+  document.getElementById('trNew').addEventListener('click',function(){
+    T=makeTask(); render(); iD.focus();
+  });
+  [iD,i1,i2].forEach(function(el){
+    el.addEventListener('keydown',function(e){ if(e.key==='Enter') check(); });
+  });
+
+  /* стартовая задача — фиксированная и валидная, без автофокуса */
+  T=makeTask({d1:6,d2:8,n1:5,n2:7,L:24});
+  render();
+})();
+</script>
+<!--LESSON-NAV-BOT--><nav class="lnav lnav-bot"><a class="prev" href="./m5-pravilnye-nepravilnye-drobi.html"><span class="dir">← Предыдущая</span><span class="ttl">Правильные и неправильные дроби, смешанные числа</span></a><a class="to-cat" href="./catalog.html">📚 <span>Все темы</span></a><a class="next" href="./m5-slozhenie-drobej-raz-znam.html"><span class="dir">Следующая →</span><span class="ttl">Сложение и вычитание дробей с разными знаменателями</span></a></nav><!--/LESSON-NAV-BOT-->

@@ -1,0 +1,692 @@
+<!doctype html>
+<!-- humanized: humanizer-ru, 2026-08-28, тире возвращено -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Изображение дробей на координатном луче — 5 класс</title>
+<style>
+  :root{
+    --paper:#FAF8F4;
+    --card:#FFFFFF;
+    --ink:#22282C;
+    --muted:#666E74;
+    --line:#E4E2DC;
+    --brand:#1F6E7B;          /* луч, основной акцент */
+    --brand-soft:#E5F1F2;
+    --brand-line:#BEDCDF;
+    --num:#C2622A;            /* числитель — сколько отсчитать */
+    --num-soft:#FBEBDF;
+    --num-line:#EFCDAF;
+    --den:#4A5CA8;            /* знаменатель — на сколько делить */
+    --den-soft:#E7EAF7;
+    --den-line:#C6CDEA;
+    --ok:#2E8B57;
+    --no:#C23B3B;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper)}
+  .page{
+    max-width:720px;margin:0 auto;
+    padding:clamp(1.4rem,4vw,3rem) clamp(1.1rem,4vw,2rem) 4.5rem;
+    color:var(--ink);
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    font-size:17.5px;line-height:1.68;-webkit-font-smoothing:antialiased;
+  }
+  .mono{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-variant-numeric:tabular-nums;font-weight:600}
+
+  .hero{border-bottom:3px solid var(--brand);padding-bottom:1.4rem;margin-bottom:1.8rem}
+  .eyebrow{font-size:.74rem;letter-spacing:.15em;text-transform:uppercase;color:var(--brand);font-weight:700;margin:0 0 .55rem}
+  h1{font-size:clamp(1.9rem,6.2vw,2.9rem);line-height:1.05;margin:0;font-weight:800;letter-spacing:-.02em;text-wrap:balance}
+  .tagline{font-size:1.12rem;color:var(--muted);margin:.85rem 0 0;text-wrap:pretty}
+
+  section{margin-top:2.4rem}
+  h2{font-size:1.5rem;margin:0 0 .3rem;font-weight:780;letter-spacing:-.015em;text-wrap:balance}
+  h2 .em{color:var(--brand)}
+  h3{font-size:1.1rem;margin:1.3rem 0 .3rem;font-weight:750}
+  p{margin:.7rem 0}
+  strong{font-weight:680}
+
+  .lead-in{background:var(--brand-soft);border-radius:14px;padding:1.1rem 1.3rem;font-size:1.02rem}
+  .lead-in p{margin:.4rem 0}
+  .lead-in b{color:var(--brand)}
+
+  /* Что вспомнить */
+  .recall{display:grid;gap:.8rem;margin-top:1rem}
+  @media(min-width:600px){.recall{grid-template-columns:1fr 1fr}}
+  .recall .r{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1rem 1.15rem}
+  .recall .cap{font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;font-weight:700;color:var(--muted);margin:0 0 .3rem}
+  .recall p{margin:.3rem 0;font-size:.97rem}
+
+  /* Дробь крупно */
+  .frac{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;line-height:1.12;font-family:ui-monospace,Menlo,Consolas,monospace;font-weight:700;margin:0 .12em}
+  .frac .t{padding:0 .25em}
+  .frac .b{padding:0 .25em;border-top:2px solid currentColor}
+  .frac.big{font-size:1.45rem}
+  .frac.huge{font-size:2.2rem}
+  .cnum{color:var(--num)} .cden{color:var(--den)}
+
+  /* Ядро — шаги */
+  .steps{counter-reset:s;list-style:none;margin:1rem 0 0;padding:0;display:flex;flex-direction:column;gap:.7rem}
+  .steps li{counter-increment:s;position:relative;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:.9rem 1.1rem .9rem 3.2rem;font-size:.99rem}
+  .steps li::before{content:counter(s);position:absolute;left:.85rem;top:.85rem;width:1.6rem;height:1.6rem;border-radius:50%;background:var(--brand);color:#fff;font-weight:800;font-size:.9rem;display:flex;align-items:center;justify-content:center}
+  .steps b{font-weight:700}
+
+  .note{border-left:4px solid var(--brand);background:var(--brand-soft);border-radius:0 10px 10px 0;padding:.8rem 1.1rem;margin-top:1rem;font-size:.98rem}
+  .note b{color:var(--brand)}
+  .note p{margin:.35rem 0}
+
+  .cond{list-style:none;margin:1rem 0 0;padding:0;display:flex;flex-direction:column;gap:.55rem}
+  .cond li{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:.75rem 1rem .75rem 2.4rem;position:relative;font-size:.97rem}
+  .cond li::before{content:"✓";position:absolute;left:.95rem;top:.72rem;color:var(--brand);font-weight:800}
+
+  /* Разбор по шагам */
+  .walk{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.15rem 1.3rem;margin-top:1rem}
+  .walk .q{font-weight:750;font-size:1.05rem;margin:0 0 .9rem;padding-bottom:.7rem;border-bottom:1px solid var(--line)}
+  .walk ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:.65rem}
+  .walk li{font-size:.98rem;display:flex;gap:.6rem;align-items:baseline}
+  .tag{font-size:.66rem;font-weight:700;padding:.1rem .45rem;border-radius:5px;flex:none;letter-spacing:.02em;text-transform:uppercase}
+  .tag.n{background:var(--num-soft);color:var(--num)}
+  .tag.d{background:var(--den-soft);color:var(--den)}
+  .tag.b{background:var(--brand-soft);color:var(--brand)}
+  .why{color:var(--muted);font-style:italic}
+  .verdict{margin-top:1rem;padding:.75rem 1rem;background:var(--brand-soft);border-radius:10px;font-weight:650;color:var(--brand);font-size:1rem}
+
+  /* Наглядность */
+  .viz{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:1.1rem 1.15rem 1.2rem;margin-top:1rem}
+  canvas{width:100%;display:block;touch-action:manipulation}
+  .ctrls{display:flex;flex-direction:column;gap:.85rem;margin-top:.9rem}
+  .ctrl{display:flex;align-items:center;gap:.8rem;flex-wrap:wrap}
+  .ctrl .lb{font-size:.9rem;font-weight:700;min-width:9.5rem}
+  .ctrl .lb.n{color:var(--num)} .ctrl .lb.d{color:var(--den)}
+  .ctrl input[type=range]{flex:1;min-width:150px;accent-color:var(--brand)}
+  .ctrl input[type=range]:focus-visible{outline:2px solid var(--brand);outline-offset:3px}
+  .ctrl .val{font-family:ui-monospace,Menlo,monospace;font-weight:800;font-size:1.05rem;min-width:1.8rem;text-align:center}
+  .ctrl .val.n{color:var(--num)} .ctrl .val.d{color:var(--den)}
+  .bar{display:flex;gap:2px;margin-top:1rem;border-radius:8px;overflow:hidden}
+  .bar i{flex:1;height:26px;background:var(--paper);border:1px solid var(--line);border-radius:4px;display:block}
+  .bar i.f{background:var(--num-soft);border-color:var(--num-line)}
+  .bar-cap{font-size:.86rem;color:var(--muted);margin:.4rem 0 0;text-align:center}
+  .viz-say{margin-top:.9rem;background:var(--brand-soft);border-radius:10px;padding:.7rem .95rem;font-size:.97rem}
+  .viz-say b{color:var(--brand)}
+
+  /* Практика */
+  .drill{display:flex;flex-direction:column;gap:.7rem;margin-top:1rem}
+  details{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:.9rem 1.1rem}
+  details[open]{border-color:var(--brand)}
+  summary{cursor:pointer;font-weight:650;list-style:none;display:flex;justify-content:space-between;gap:1rem;align-items:center}
+  summary::-webkit-details-marker{display:none}
+  summary:focus-visible{outline:2px solid var(--brand);outline-offset:3px;border-radius:6px}
+  summary .q{font-size:1rem}
+  summary::after{content:"проверить";font-size:.8rem;color:var(--brand);font-weight:700;white-space:nowrap}
+  details[open] summary::after{content:"скрыть"}
+  .ans{margin-top:.75rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.96rem;color:var(--muted)}
+  .ans b{color:var(--ink)}
+  .lvl{font-size:.66rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:.2rem}
+
+  /* Ловушки */
+  ul.traps{list-style:none;margin:1rem 0 0;padding:0;display:flex;flex-direction:column;gap:.7rem}
+  ul.traps li{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:.85rem 1.05rem;padding-left:2.5rem;position:relative;font-size:.97rem}
+  ul.traps li::before{content:"⚠";position:absolute;left:1rem;top:.85rem;color:var(--num);font-size:1.05rem}
+  ul.traps b{font-weight:700}
+  ul.traps .fix{display:block;margin-top:.3rem;color:var(--muted);font-size:.92rem}
+
+  /* Проверка понимания */
+  .selfcheck{background:var(--card);border:2px dashed var(--brand-line);border-radius:14px;padding:1.1rem 1.25rem;margin-top:1rem}
+  .selfcheck ol{margin:.6rem 0 0;padding-left:1.3rem}
+  .selfcheck li{margin:.4rem 0;font-size:.98rem}
+
+  .tblwrap{overflow-x:auto;margin-top:1rem}
+  table{border-collapse:collapse;width:100%;min-width:420px;font-size:.95rem}
+  th,td{border:1px solid var(--line);padding:.55rem .7rem;text-align:left}
+  thead th{background:#F4F2ED;font-weight:700}
+  td.c{text-align:center}
+
+  .wrapup{background:var(--brand);color:#fff;border-radius:16px;padding:1.4rem 1.5rem;margin-top:2.4rem}
+  .wrapup h2{color:#fff;margin:0 0 .5rem}
+  .wrapup p{color:#DCEEF0;margin:.4rem 0;font-size:1rem}
+  .wrapup .big-rule{font-size:1.08rem;font-weight:700;color:#fff;margin:.6rem 0}
+  .wrapup .next{font-size:.95rem;color:#C3E0E4;margin-top:1rem;padding-top:1rem;border-top:1px solid rgba(255,255,255,.22)}
+
+  /* Тренажёр */
+  .trainer{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:1.2rem 1.15rem 1.15rem;margin-top:1rem}
+  .tr-task{font-size:1.02rem;font-weight:650;text-align:center;margin:.1rem 0 .9rem}
+  .tr-task .frac{color:var(--ink)}
+  .tr-inputs{display:flex;gap:.6rem;align-items:center;justify-content:center;flex-wrap:wrap;margin-top:1rem}
+  .tr-inputs input{font:inherit;font-family:ui-monospace,Menlo,monospace;font-weight:700;width:4.2rem;text-align:center;padding:.45rem .3rem;border:2px solid var(--line);border-radius:10px;background:var(--paper);color:var(--ink)}
+  .tr-inputs input:focus-visible{outline:2px solid var(--brand);outline-offset:2px;border-color:var(--brand)}
+  .tr-inputs .sl{font-size:1.6rem;font-weight:700;color:var(--muted)}
+  .tr-inputs label{font-size:.8rem;color:var(--muted);display:flex;flex-direction:column;align-items:center;gap:.25rem}
+  .tr-opts{display:flex;gap:.5rem;flex-wrap:wrap;justify-content:center;margin-top:1rem}
+  .opt{font-family:ui-monospace,Menlo,monospace;font-weight:800;font-size:1.15rem;border:2px solid var(--line);background:var(--paper);border-radius:12px;padding:.45rem 1.05rem;cursor:pointer;color:var(--muted);position:relative}
+  .opt:hover{transform:translateY(-1px)}
+  .opt:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+  .opt.on{border-color:var(--brand);background:var(--brand-soft);color:var(--brand)}
+  .opt.good{border-color:var(--ok);background:#E7F4EC;color:var(--ok)}
+  .opt.bad{border-color:var(--no);background:#FBEAEA;color:var(--no)}
+  .tr-btns{display:flex;gap:.5rem;flex-wrap:wrap;justify-content:center;margin-top:1.1rem}
+  .tr-btns button{font:inherit;font-weight:700;font-size:.92rem;border-radius:10px;padding:.55rem 1.1rem;cursor:pointer;border:1px solid transparent}
+  .tr-btns .go{background:var(--brand);color:#fff}
+  .tr-btns .sh{background:var(--paper);border:1px solid var(--line);color:var(--ink)}
+  .tr-btns .nw{background:var(--brand-soft);color:var(--brand)}
+  .tr-btns button:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+  .tr-res{margin-top:1.1rem;font-size:.97rem}
+  .tr-res .head{font-weight:700;padding:.6rem .9rem;border-radius:9px;margin-bottom:.7rem}
+  .tr-res .head.ok{background:#E7F4EC;color:var(--ok)}
+  .tr-res .head.no{background:#FBEAEA;color:var(--no)}
+  .tr-res .head.info{background:var(--brand-soft);color:var(--brand)}
+  .tr-sol{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:.85rem 1rem}
+  .tr-sol .row{margin:.32rem 0;font-size:.94rem}
+  .tr-sol .row b{color:var(--ink)}
+
+  @media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+<!--LESSON-NAV-TOP--><style>.lnav{--lnav-accent:#3D5AF1}.lnav a{text-decoration:none;font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif}.lnav-top{max-width:820px;margin:0 auto;padding:.75rem clamp(1rem,4vw,1.5rem) .1rem}.lnav-top a{display:inline-flex;align-items:center;gap:.35rem;color:var(--lnav-accent);font-weight:600;font-size:.9rem}.lnav-top a:hover{text-decoration:underline}.lnav-bot{max-width:820px;margin:2.6rem auto 3rem;padding:1.1rem clamp(1rem,4vw,1.5rem) 0;border-top:1px solid #E4E8EF;display:flex;align-items:stretch;gap:.55rem}.lnav-bot a{min-width:0;display:flex;flex-direction:column;justify-content:center;gap:.15rem;border:1px solid #E4E8EF;border-radius:12px;padding:.65rem .85rem;color:#182233;background:#fff;transition:border-color .1s,transform .08s}.lnav-bot a:hover{border-color:var(--lnav-accent);transform:translateY(-1px)}.lnav-bot .prev,.lnav-bot .next{flex:1 1 0}.lnav-bot .next{text-align:right}.lnav-bot .dir{font-size:.72rem;color:#8A93A6;font-weight:600}.lnav-bot .ttl{font-size:.9rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.lnav-bot .to-cat{flex:0 0 auto;flex-direction:row;align-items:center;justify-content:center;color:var(--lnav-accent);font-weight:700;font-size:.85rem;white-space:nowrap}@media(max-width:420px){.lnav-bot .to-cat span{display:none}.lnav-bot .to-cat{padding:.65rem .7rem}}</style><nav class="lnav lnav-top"><a href="./catalog.html">← Все темы</a></nav><!--/LESSON-NAV-TOP-->
+<div class="page">
+
+  <header class="hero">
+    <p class="eyebrow">Математика · 5 класс</p>
+    <h1>Дроби на координатном луче</h1>
+    <p class="tagline">У каждой дроби есть своё <em>точное место</em> на луче. Научимся его находить — и заодно видеть, какая дробь больше.</p>
+  </header>
+
+  <div class="lead-in">
+    <p><b>Зачем это уметь.</b> Дробь часто держат в голове как «кусок пирога» или как две цифры через чёрточку. А дробь — это <strong>число</strong>, и у него, как у любого числа, есть своя точка на луче.</p>
+    <p>Такие шкалы вокруг тебя каждый день: линейка с миллиметрами, термометр, мерный стакан, спидометр, деления на циферблате. Отметка «<span class="mono">1/2</span> литра» на банке — это ровно та же дробь на луче.</p>
+    <p><b>Главный миф:</b> «дробь нарисовать нельзя, она же не целая». Ещё как можно: каждой дроби отвечает ровно одна точка. И как только ты умеешь ставить дроби на луч, сравнивать их становится проще простого: <strong>что левее, то меньше</strong>.</p>
+  </div>
+
+  <section>
+    <h2>Сначала вспомни <span class="em">две вещи</span></h2>
+    <p>Тема стоит на двух опорах. Шатаются — подтяни сначала их, иначе дальше будет туго.</p>
+    <div class="recall">
+      <div class="r">
+        <p class="cap">Опора 1</p>
+        <p><b>Что такое дробь.</b> В записи <span class="frac big"><span class="t cnum">3</span><span class="b cden">4</span></span> нижнее число (знаменатель) говорит, <b>на сколько равных долей</b> разделили целое, а верхнее (числитель) — <b>сколько таких долей взяли</b>.</p>
+      </div>
+      <div class="r">
+        <p class="cap">Опора 2</p>
+        <p><b>Что такое координатный луч.</b> Это луч с началом <span class="mono">O</span> (точка 0), выбранным <b>единичным отрезком</b> и направлением. Целые числа 0, 1, 2, 3 … стоят на нём через одинаковые единичные отрезки.</p>
+      </div>
+    </div>
+    <div class="note">
+      <p><b>Мостик между ними.</b> Целое, которое мы режем на доли, — это и есть <b>единичный отрезок</b>, кусочек от 0 до 1. Вот и вся связка.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Ядро: <span class="em">правило в три шага</span></h2>
+    <p>Чтобы отметить дробь <span class="frac big"><span class="t cnum">m</span><span class="b cden">n</span></span> на координатном луче:</p>
+    <ol class="steps">
+      <li>Раздели <b>каждый единичный отрезок</b> на <span class="cden"><b>n</b></span> равных частей (<span class="cden">n</span> — знаменатель). Одна такая часть равна <span class="frac"><span class="t">1</span><span class="b">n</span></span>.</li>
+      <li>От начала <span class="mono">O</span> (от нуля!) отсчитай вправо <span class="cnum"><b>m</b></span> таких частей (<span class="cnum">m</span> — числитель).</li>
+      <li>Поставь точку. Это и есть точка с координатой <span class="frac"><span class="t cnum">m</span><span class="b cden">n</span></span>.</li>
+    </ol>
+    <div class="note">
+      <p><b>Как это запомнить одной фразой.</b> <span class="cden">Знаменатель</span> говорит, <b>на сколько долей резать</b>. <span class="cnum">Числитель</span> говорит, <b>сколько долей отсчитать</b> вправо от нуля.</p>
+    </div>
+
+    <h3>Требования, которые нарушают чаще всего</h3>
+    <ul class="cond">
+      <li>Все доли должны быть <b>равными</b>. Резать «на глаз» нельзя: отметка уедет.</li>
+      <li>Между соседними целыми числами ровно <span class="cden">n</span> равных <b>частей</b> (а маленьких чёрточек-делений между ними получается <span class="mono">n − 1</span> — крайние чёрточки это сами целые числа).</li>
+      <li>Если дробь <b>правильная</b> (числитель меньше знаменателя) — точка лежит между 0 и 1.</li>
+      <li>Если дробь <b>неправильная</b> (числитель больше знаменателя или равен ему) — точка лежит правее 1 или попадает точно в целое число. Например, <span class="mono">4/4 = 1</span>, а <span class="mono">6/3 = 2</span>.</li>
+    </ul>
+    <p>Запись <span class="mono">A(3/4)</span> читается так: «точка <span class="mono">A</span> с координатой три четвёртых».</p>
+  </section>
+
+  <section>
+    <h2>Разбор вслух: <span class="em">отметим 3/5</span></h2>
+    <p>Смотри, как тут рассуждают, и главное — <em>почему</em> именно так.</p>
+    <div class="walk">
+      <p class="q">Отметить на координатном луче точку <span class="frac big"><span class="t cnum">3</span><span class="b cden">5</span></span></p>
+      <ul>
+        <li><span class="tag d">шаг 1</span><span>Знаменатель <b>5</b> → делю каждый единичный отрезок на <b>5</b> равных частей. <span class="why">Почему пять? Потому что доли тут пятые: знаменатель и есть число долей.</span></span></li>
+        <li><span class="tag n">шаг 2</span><span>Числитель <b>3</b> → от нуля отсчитываю <b>3</b> деления вправо. <span class="why">Почему три? Числитель показывает, сколько пятых мы берём.</span></span></li>
+        <li><span class="tag b">шаг 3</span><span>Ставлю точку на третьем делении. Она лежит <b>между 0 и 1</b>, чуть правее середины. <span class="why">Почему правее середины? Середина — это две с половиной пятых, а у нас целых три.</span></span></li>
+      </ul>
+      <div class="verdict">Ответ: 3/5 находится между 0 и 1, на третьем делении из пяти.</div>
+    </div>
+
+    <h3>А теперь дробь побольше единицы: 7/4</h3>
+    <p>Алгоритм тот же, только отсчёт уезжает дальше вправо.</p>
+    <div class="walk">
+      <p class="q">Отметить точку <span class="frac big"><span class="t cnum">7</span><span class="b cden">4</span></span></p>
+      <ul>
+        <li><span class="tag d">шаг 1</span><span>Знаменатель <b>4</b> → каждый единичный отрезок делю на <b>4</b> равные части.</span></li>
+        <li><span class="tag b">прикидка</span><span><b>7/4 больше единицы</b>. <span class="why">Почему? Потому что 4/4 — это ровно 1, а у нас числитель 7, то есть четвертей взяли больше.</span></span></li>
+        <li><span class="tag n">шаг 2</span><span>Отсчитываю от нуля <b>7</b> четвертей. Первые 4 из них дают целую единицу, остаётся ещё <b>3</b> четверти.</span></li>
+        <li><span class="tag b">шаг 3</span><span>Значит точка лежит <b>между 1 и 2</b>, на третьем делении после единицы.</span></li>
+      </ul>
+      <div class="verdict">Ответ: 7/4 — между 1 и 2, на третьем делении после единицы.</div>
+    </div>
+
+    <div class="note">
+      <p><b>Не читай дальше, пока не попробуешь сам.</b> Где стоит точка <span class="mono">5/6</span> — ближе к 0 или к 1? Сначала догадка, потом проверка.</p>
+      <p>Проверка: 5/6 лежит между 0 и 1, на пятом делении из шести — то есть <b>ближе к 1</b>, ведь до единицы остаётся всего одна шестая.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Покрути сам: <span class="em">дробь ↔ точка ↔ полоска</span></h2>
+    <p>Один и тот же смысл сразу в трёх видах: запись дроби, точка на луче, закрашенная часть полоски. Двигай ползунки и следи, что меняется.</p>
+    <div class="viz">
+      <canvas id="vizC" aria-label="Координатный луч с отмеченной дробью"></canvas>
+      <div class="ctrls">
+        <div class="ctrl">
+          <span class="lb d">Знаменатель n</span>
+          <input type="range" id="vizN" min="2" max="8" step="1" value="6" aria-label="Знаменатель">
+          <span class="val d" id="vizNv">6</span>
+        </div>
+        <div class="ctrl">
+          <span class="lb n">Числитель m</span>
+          <input type="range" id="vizM" min="0" max="12" step="1" value="5" aria-label="Числитель">
+          <span class="val n" id="vizMv">5</span>
+        </div>
+      </div>
+      <div class="bar" id="vizBar"></div>
+      <p class="bar-cap" id="vizBarCap">полоска = один единичный отрезок, поделённый на доли</p>
+      <div class="viz-say" id="vizSay"></div>
+    </div>
+    <p>Тут стоит поймать две вещи. Меняешь только знаменатель — меняется <b>густота делений</b>. А как только числитель дорастает до знаменателя, точка садится ровно на целое число.</p>
+  </section>
+
+  <section>
+    <h2>Тренажёр — <span class="em">бесконечная практика</span></h2>
+    <p>Задания тренажёр придумывает сам, и они не кончатся. Два типа вперемешку: <b>прочитать точку</b> на луче и <b>найти точку</b> по дроби. Реши, потом жми «Проверить». Не идёт — «Показать разбор».</p>
+    <div class="trainer">
+      <p class="tr-task" id="trTask">Какая дробь стоит в точке A?</p>
+      <canvas id="trC" aria-label="Координатный луч с заданием"></canvas>
+      <div id="trAnswer"></div>
+      <div class="tr-btns">
+        <button class="go" id="trCheck" type="button">Проверить</button>
+        <button class="sh" id="trShow" type="button">Показать разбор</button>
+        <button class="nw" id="trNew" type="button">🎲 Новое задание</button>
+      </div>
+      <div class="tr-res" id="trRes"></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Проверь себя</h2>
+    <p>Решай сам, потом раскрывай ответ. Задания идут по нарастанию, над последними придётся посидеть.</p>
+    <div class="drill">
+      <details>
+        <summary><span class="q"><span class="lvl">Понимание</span>1) На луче деления идут через <span class="mono">1/8</span>. Какое число стоит на третьем делении от нуля?</span></summary>
+        <div class="ans">Одна часть — это одна восьмая. Третье деление — это три восьмых. Ответ: <b>3/8</b>.</div>
+      </details>
+      <details>
+        <summary><span class="q"><span class="lvl">Применение</span>2) Начерти координатный луч с единичным отрезком в 6 клеток и отметь точки <span class="mono">1/6</span>, <span class="mono">4/6</span>, <span class="mono">5/6</span> и <span class="mono">7/6</span>.</span></summary>
+        <div class="ans">Единичный отрезок в 6 клеток делится на шестые доли идеально: <b>одна доля = одна клетка</b>. Значит 1/6 — первая клетка, 4/6 — четвёртая, 5/6 — пятая. А 7/6 больше единицы: 6/6 — это 1, остаётся ещё одна шестая, то есть <b>одна клетка правее единицы</b>.</div>
+      </details>
+      <details>
+        <summary><span class="q"><span class="lvl">Анализ · что изменится</span>3) Единичный отрезок взяли в 5 клеток вместо 6. Изменится ли <em>значение</em> дроби <span class="mono">1/6</span> или только её картинка?</span></summary>
+        <div class="ans"><b>Значение то же самое</b> — 1/6 остаётся 1/6, от масштаба рисунка число не меняется. Меняется только картинка: чертёж стал мельче. Зато есть засада на практике: 5 клеток на 6 равных долей поделить неудобно, доли придётся ставить на глаз. Поэтому единичный отрезок и выбирают так, чтобы клетки делились на знаменатель нацело.</div>
+      </details>
+      <details>
+        <summary><span class="q"><span class="lvl">Анализ · найди ошибку</span>4) Ученик разделил единичный отрезок на 4 части, но части вышли разной длины, и поставил точку <span class="mono">3/4</span>. Почему отметка неверна?</span></summary>
+        <div class="ans">Потому что нарушено главное требование: <b>доли обязаны быть равными</b>. Если куски разные, то «три куска из четырёх» уже не означают три четвёртых — точка уедет левее или правее настоящего места. Четырёх частей мало, они обязаны быть <b>четырьмя равными</b> частями.</div>
+      </details>
+      <details>
+        <summary><span class="q"><span class="lvl">Анализ · обратная задача</span>5) Единичный отрезок поделён на 8 частей, точка стоит ровно посередине между 0 и 1. Какая это дробь?</span></summary>
+        <div class="ans">Всего частей 8, середина — это половина из них, то есть 4 части. Ответ: <b>4/8</b>.</div>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <h2>Ловушки — не попадись</h2>
+    <ul class="traps">
+      <li><b>Доли «на глаз».</b> Деления получаются разной длины, и отметка врёт.
+        <span class="fix">Что делать: бери единичный отрезок в клетках, которые делятся на знаменатель нацело (для шестых — 6 клеток, для четвёртых — 4 клетки), и режь строго по клеткам.</span></li>
+      <li><b>Путаница «частей» и «чёрточек».</b> Чтобы получить пятые доли, нужно <b>5 равных частей</b> в каждом единичном отрезке — а чёрточек между целыми при этом всего 4.
+        <span class="fix">Считай именно ЧАСТИ — промежутки между чёрточками. Их должно быть столько, сколько в знаменателе.</span></li>
+      <li><b>«5/6 меньше 3/4, ведь 6 больше 4».</b> Знаменатель побольше не делает дробь поменьше.
+        <span class="fix">Отметь обе дроби на одном луче. Кто левее и ближе к нулю, тот и меньше.</span></li>
+      <li><b>Отсчёт не от нуля.</b> Начинают считать доли от единицы или вообще от края листа.
+        <span class="fix">Запомни: отсчёт долей всегда стартует от точки <span class="mono">O</span>, то есть от нуля.</span></li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Объясни своими словами</h2>
+    <p>Самая честная проверка — рассказать это вслух: другу, родителю или просто себе в стенку. Получается без запинок — тема твоя.</p>
+    <div class="selfcheck">
+      <p><b>Расскажи:</b> как ты ставишь дробь на координатный луч? Что делает знаменатель, что делает числитель? С какой точки начинается отсчёт?</p>
+      <p><b>Быстрые вопросы:</b></p>
+      <ol>
+        <li>Сколько равных частей надо отложить в единичном отрезке, чтобы отмечать дроби со знаменателем 7?</li>
+        <li>Между какими целыми числами лежит точка <span class="mono">9/8</span>?</li>
+        <li>Из двух дробей <span class="mono">2/5</span> и <span class="mono">4/5</span> какая стоит на луче левее и почему?</li>
+      </ol>
+      <details style="margin-top:.8rem">
+        <summary><span class="q">Ответы</span></summary>
+        <div class="ans">1) <b>7 частей</b> — столько же, сколько знаменатель. 2) Между <b>1 и 2</b>: 8/8 — это 1, остаётся ещё одна восьмая. 3) Левее <b>2/5</b>: доли одинаковые (пятые), но их взято меньше — 2 вместо 4, значит точка ближе к нулю, а число меньше.</div>
+      </details>
+    </div>
+    <div class="tblwrap">
+      <table>
+        <thead><tr><th>Дробь</th><th>Знаменатель говорит</th><th>Числитель говорит</th><th>Где точка</th></tr></thead>
+        <tbody>
+          <tr><td class="c mono">3/5</td><td>резать на 5 частей</td><td>отсчитать 3 части</td><td>между 0 и 1</td></tr>
+          <tr><td class="c mono">5/6</td><td>резать на 6 частей</td><td>отсчитать 5 частей</td><td>между 0 и 1, ближе к 1</td></tr>
+          <tr><td class="c mono">4/4</td><td>резать на 4 части</td><td>отсчитать 4 части</td><td>ровно в точке 1</td></tr>
+          <tr><td class="c mono">7/4</td><td>резать на 4 части</td><td>отсчитать 7 частей</td><td>между 1 и 2</td></tr>
+          <tr><td class="c mono">6/3</td><td>резать на 3 части</td><td>отсчитать 6 частей</td><td>ровно в точке 2</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <div class="wrapup">
+    <h2>Запомни главное</h2>
+    <p class="big-rule">Чтобы отметить дробь m/n на координатном луче: дели каждый единичный отрезок на n равных долей и отсчитывай m долей от нуля.</p>
+    <p>Знаменатель — на сколько резать. Числитель — сколько отсчитать. Доли — только равные, отсчёт — только от нуля.</p>
+    <p class="next">👉 Дальше это правило начнёт работать на тебя в теме <strong>«сравнение дробей»</strong>. Отметил обе на одном луче — и сразу видно, какая меньше: та, что левее, ближе к нулю.</p>
+  </div>
+
+</div>
+
+<script>
+(function(){
+  var MINUS = "−";
+  var CBRAND = "#1F6E7B", CNUM = "#C2622A", CINK = "#22282C", CMUT = "#666E74", CLINE = "#C8CDD0";
+
+  function fit(cv,h){
+    var dpr = window.devicePixelRatio || 1;
+    var w = cv.clientWidth || (cv.parentNode ? cv.parentNode.clientWidth : 320);
+    if(w < 200) w = 200;
+    cv.width = Math.round(w*dpr);
+    cv.height = Math.round(h*dpr);
+    cv.style.height = h + "px";
+    var ctx = cv.getContext("2d");
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+    ctx.clearRect(0,0,w,h);
+    return {ctx:ctx, w:w, h:h};
+  }
+
+  /* cfg: {n, units, marks:[{v:число, label:строка, color:строка}]} */
+  function drawRay(cv, cfg){
+    var H = 132;
+    var f = fit(cv,H), ctx = f.ctx, w = f.w;
+    var padL = 22, padR = 26;
+    var axisY = 78;
+    var unit = (w - padL - padR) / cfg.units;
+    var xOf = function(v){ return padL + v*unit; };
+
+    /* ось со стрелкой */
+    ctx.strokeStyle = CINK; ctx.fillStyle = CINK; ctx.lineWidth = 1.6;
+    ctx.beginPath(); ctx.moveTo(padL, axisY); ctx.lineTo(w-6, axisY); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(w-6, axisY); ctx.lineTo(w-15, axisY-5); ctx.lineTo(w-15, axisY+5); ctx.closePath(); ctx.fill();
+
+    /* мелкие деления */
+    ctx.strokeStyle = CLINE; ctx.lineWidth = 1.2;
+    var i,k,x;
+    for(i=0;i<cfg.units;i++){
+      for(k=1;k<cfg.n;k++){
+        x = xOf(i + k/cfg.n);
+        ctx.beginPath(); ctx.moveTo(x, axisY-6); ctx.lineTo(x, axisY+6); ctx.stroke();
+      }
+    }
+    /* целые числа */
+    ctx.strokeStyle = CINK; ctx.lineWidth = 2;
+    ctx.fillStyle = CINK;
+    ctx.font = "700 14px ui-monospace, Menlo, Consolas, monospace";
+    ctx.textAlign = "center"; ctx.textBaseline = "top";
+    for(i=0;i<=cfg.units;i++){
+      x = xOf(i);
+      ctx.beginPath(); ctx.moveTo(x, axisY-11); ctx.lineTo(x, axisY+11); ctx.stroke();
+      ctx.fillText(String(i), x, axisY+16);
+    }
+    /* подпись O у нуля */
+    ctx.fillStyle = CMUT;
+    ctx.font = "600 11px system-ui, sans-serif";
+    ctx.fillText("O", xOf(0), axisY+34);
+
+    /* точки */
+    (cfg.marks||[]).forEach(function(mk){
+      var c = mk.color || CNUM;
+      var mx = xOf(mk.v);
+      ctx.strokeStyle = c; ctx.lineWidth = 1.4;
+      ctx.setLineDash([3,3]);
+      ctx.beginPath(); ctx.moveTo(mx, axisY-8); ctx.lineTo(mx, axisY-30); ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.fillStyle = c;
+      ctx.beginPath(); ctx.arc(mx, axisY, 5.5, 0, Math.PI*2); ctx.fill();
+      if(mk.label){
+        ctx.font = "800 15px system-ui, sans-serif";
+        ctx.textBaseline = "bottom";
+        ctx.fillText(mk.label, mx, axisY-32);
+        ctx.textBaseline = "top";
+      }
+    });
+  }
+
+  function fracHTML(m,n,cls){
+    var c = cls ? (" " + cls) : "";
+    return '<span class="frac' + c + '"><span class="t">' + m + '</span><span class="b">' + n + '</span></span>';
+  }
+
+  /* ================= Наглядность: ползунки ================= */
+  var vizC = document.getElementById("vizC");
+  var vizN = document.getElementById("vizN"), vizM = document.getElementById("vizM");
+  var vizNv = document.getElementById("vizNv"), vizMv = document.getElementById("vizMv");
+  var vizBar = document.getElementById("vizBar"), vizBarCap = document.getElementById("vizBarCap");
+  var vizSay = document.getElementById("vizSay");
+
+  function vizRender(){
+    var n = +vizN.value;
+    vizM.max = String(2*n);
+    var m = +vizM.value;
+    if(m > 2*n){ m = 2*n; vizM.value = String(m); }
+    vizNv.textContent = n;
+    vizMv.textContent = m;
+
+    drawRay(vizC, {n:n, units:2, marks:[{v:m/n, label:m + "/" + n, color:CNUM}]});
+
+    /* полоска-модель: единичный отрезок из n долей */
+    var cells = "", filled = Math.min(m, n), j;
+    for(j=0;j<n;j++){ cells += '<i class="' + (j < filled ? "f" : "") + '"></i>'; }
+    vizBar.innerHTML = cells;
+    vizBarCap.textContent = m <= n
+      ? ("закрашено " + filled + " долей из " + n)
+      : ("целая полоска закрашена — это " + n + "/" + n + " = 1, и остаётся ещё " + (m-n) + " долей сверху");
+
+    var txt;
+    if(m === 0){
+      txt = "<b>0/" + n + " = 0</b> — точка стоит в самом начале, в точке O.";
+    } else if(m % n === 0){
+      txt = "<b>" + m + "/" + n + " = " + (m/n) + "</b> — точка попала ровно в целое число: " + m + " долей это " + (m/n) + " раз по " + n + "/" + n + ".";
+    } else {
+      var whole = Math.floor(m/n), rest = m - whole*n;
+      txt = "<b>" + m + "/" + n + "</b>: делим каждый единичный отрезок на <b>" + n + "</b> частей и отсчитываем <b>" + m + "</b> долей от нуля. ";
+      txt += "Точка лежит между <b>" + whole + "</b> и <b>" + (whole+1) + "</b>";
+      if(whole > 0){ txt += " (" + (whole*n) + " долей дают " + whole + ", остаётся ещё " + rest + ")"; }
+      txt += ", на " + rest + "-м делении из " + n + ".";
+      if(m < n){ txt += " Дробь правильная — точка не выходит за единицу."; }
+      else { txt += " Дробь неправильная — точка ушла правее единицы."; }
+    }
+    vizSay.innerHTML = txt;
+  }
+  vizN.addEventListener("input", vizRender);
+  vizM.addEventListener("input", vizRender);
+
+  /* ================= Тренажёр ================= */
+  var trC = document.getElementById("trC");
+  var trTask = document.getElementById("trTask");
+  var trAnswer = document.getElementById("trAnswer");
+  var trRes = document.getElementById("trRes");
+  var T = null;
+
+  function ri(a,b){ return Math.floor(Math.random()*(b-a+1))+a; }
+  function locked(){ return trRes.getAttribute("data-done") === "1"; }
+
+  function makeRead(n,m){
+    var units = (m > n) ? 2 : ((m === n) ? 2 : 1);
+    if(units === 1) units = 2;
+    return {type:"read", n:n, m:m, units:units, chosen:null};
+  }
+  function makeFind(n,m){
+    /* 4 варианта с тем же знаменателем, один верный */
+    var vals = [m], guard = 0;
+    while(vals.length < 4 && guard < 200){
+      guard++;
+      var cand = ri(1, 2*n);
+      if(vals.indexOf(cand) === -1) vals.push(cand);
+    }
+    /* перемешать */
+    var i,j,t;
+    for(i=vals.length-1;i>0;i--){ j = ri(0,i); t = vals[i]; vals[i] = vals[j]; vals[j] = t; }
+    return {type:"find", n:n, m:m, units:2, vals:vals, chosen:null};
+  }
+
+  function newTask(seed){
+    if(seed){
+      T = seed;
+    } else {
+      var n = ri(2,8);
+      var m = ri(1, 2*n);
+      T = (Math.random() < 0.5) ? makeRead(n,m) : makeFind(n,m);
+    }
+    trRes.innerHTML = "";
+    trRes.removeAttribute("data-done");
+    render();
+  }
+
+  var LETTERS = ["A","B","C","D"];
+
+  function render(){
+    if(T.type === "read"){
+      trTask.innerHTML = 'Какая дробь стоит в точке <b>A</b>? Сначала посчитай, на сколько частей поделён единичный отрезок.';
+      drawRay(trC, {n:T.n, units:T.units, marks:[{v:T.m/T.n, label:"A", color:CNUM}]});
+      trAnswer.innerHTML =
+        '<div class="tr-inputs">' +
+          '<label>числитель<input type="text" inputmode="numeric" id="trM" autocomplete="off"></label>' +
+          '<span class="sl">/</span>' +
+          '<label>знаменатель<input type="text" inputmode="numeric" id="trN" autocomplete="off"></label>' +
+        '</div>';
+      var inp = trAnswer.querySelectorAll("input");
+      Array.prototype.forEach.call(inp, function(el){
+        el.addEventListener("keydown", function(e){ if(e.key === "Enter") check(); });
+      });
+    } else {
+      trTask.innerHTML = 'В какой точке стоит дробь ' + fracHTML(T.m, T.n) + '?';
+      var marks = T.vals.map(function(v,i){
+        return {v: v/T.n, label: LETTERS[i], color: (T.chosen === i ? CBRAND : CNUM)};
+      });
+      drawRay(trC, {n:T.n, units:T.units, marks:marks});
+      var h = '<div class="tr-opts">';
+      T.vals.forEach(function(v,i){
+        h += '<button type="button" class="opt' + (T.chosen === i ? " on" : "") + '" data-i="' + i + '">' + LETTERS[i] + '</button>';
+      });
+      trAnswer.innerHTML = h + '</div>';
+      Array.prototype.forEach.call(trAnswer.querySelectorAll(".opt"), function(b){
+        b.addEventListener("click", function(){
+          if(locked()) return;
+          T.chosen = +b.getAttribute("data-i");
+          render();
+        });
+      });
+    }
+  }
+
+  function solution(){
+    var n = T.n, m = T.m;
+    var whole = Math.floor(m/n), rest = m - whole*n;
+    var h = '<div class="tr-sol">';
+    if(T.type === "read"){
+      h += '<div class="row">1) Считаем <b>части</b> между 0 и 1: их ' + n + ' (чёрточек внутри ' + n + " " + MINUS + ' 1 = ' + (n-1) + '). Значит одна доля — это <b>1/' + n + '</b>.</div>';
+      h += '<div class="row">2) Считаем доли от нуля до точки A: их <b>' + m + '</b>.</div>';
+      if(rest === 0){
+        h += '<div class="row">3) ' + m + ' долей по 1/' + n + ' складываются ровно в целое число: <b>' + m + '/' + n + ' = ' + (m/n) + '</b>.</div>';
+      } else if(whole > 0){
+        h += '<div class="row">3) Первые ' + (whole*n) + ' долей дают ' + whole + ', остаётся ещё ' + rest + ' — точка между ' + whole + ' и ' + (whole+1) + '.</div>';
+      }
+      h += '<div class="row"><b>Ответ: ' + m + '/' + n + '</b></div>';
+    } else {
+      h += '<div class="row">1) Знаменатель <b>' + n + '</b> → единичный отрезок поделён на ' + n + ' равных частей, одна доля = 1/' + n + '.</div>';
+      h += '<div class="row">2) Числитель <b>' + m + '</b> → отсчитываем ' + m + ' долей вправо от нуля.</div>';
+      if(rest === 0){
+        h += '<div class="row">3) ' + m + ' долей — это ровно ' + (m/n) + ': точка попадает в целое число.</div>';
+      } else if(whole > 0){
+        h += '<div class="row">3) ' + (whole*n) + ' долей дают ' + whole + ', остаётся ' + rest + ' — точка между ' + whole + ' и ' + (whole+1) + ', на ' + rest + '-м делении после ' + whole + '.</div>';
+      } else {
+        h += '<div class="row">3) Долей взято меньше, чем ' + n + ' — точка лежит между 0 и 1, на ' + m + '-м делении из ' + n + '.</div>';
+      }
+      var idx = T.vals.indexOf(m);
+      h += '<div class="row"><b>Ответ: точка ' + LETTERS[idx] + '</b> (' + m + '/' + n + ')</div>';
+    }
+    return h + '</div>';
+  }
+
+  function reveal(){
+    if(T.type === "find"){
+      var right = T.vals.indexOf(T.m);
+      Array.prototype.forEach.call(trAnswer.querySelectorAll(".opt"), function(b){
+        var i = +b.getAttribute("data-i");
+        b.classList.remove("on");
+        if(i === right) b.classList.add("good");
+        else if(T.chosen === i) b.classList.add("bad");
+      });
+    }
+    trRes.setAttribute("data-done","1");
+  }
+
+  function check(){
+    if(locked()) return;
+    var ok = false, head = "";
+    if(T.type === "read"){
+      var mv = trAnswer.querySelector("#trM").value.replace(/\s/g,"");
+      var nv = trAnswer.querySelector("#trN").value.replace(/\s/g,"");
+      if(!/^\d+$/.test(mv) || !/^\d+$/.test(nv) || +nv === 0){
+        trRes.innerHTML = '<div class="head info">Впиши числитель и знаменатель целыми числами.</div>';
+        return;
+      }
+      var a = +mv, b = +nv;
+      if(a === T.m && b === T.n){
+        ok = true;
+        head = '<div class="head ok">✓ Верно! Точка A = ' + T.m + '/' + T.n + '</div>';
+      } else if(a*T.n === T.m*b){
+        head = '<div class="head info">Почти: по значению совпало, но на этом луче доли — <b>' + T.n + '</b>-е, поэтому читаем точку как ' + T.m + '/' + T.n + '.</div>';
+      } else {
+        head = '<div class="head no">Не то. Пересчитай части между 0 и 1 — и доли от нуля до A.</div>';
+      }
+    } else {
+      if(T.chosen === null){
+        trRes.innerHTML = '<div class="head info">Сначала выбери точку: A, B, C или D.</div>';
+        return;
+      }
+      ok = (T.vals[T.chosen] === T.m);
+      head = ok
+        ? '<div class="head ok">✓ Верно!</div>'
+        : '<div class="head no">Не та точка. Смотри разбор ниже.</div>';
+    }
+    reveal();
+    trRes.innerHTML = head + solution();
+  }
+
+  function show(){
+    if(locked()) return;
+    reveal();
+    trRes.innerHTML = '<div class="head info">Разбор:</div>' + solution();
+  }
+
+  document.getElementById("trCheck").addEventListener("click", check);
+  document.getElementById("trShow").addEventListener("click", show);
+  document.getElementById("trNew").addEventListener("click", function(){
+    newTask();
+    var el = trAnswer.querySelector("#trM") || trAnswer.querySelector(".opt");
+    if(el) el.focus();
+  });
+
+  var rt;
+  window.addEventListener("resize", function(){
+    clearTimeout(rt);
+    rt = setTimeout(function(){ vizRender(); if(T) render(); }, 120);
+  });
+
+  vizRender();
+  newTask(makeRead(5,3));   /* стартовое задание совпадает с разбором 3/5 */
+})();
+</script>
+<!--LESSON-NAV-BOT--><nav class="lnav lnav-bot"><a class="prev" href="./m5-slozhenie-drobej-raz-znam.html"><span class="dir">← Предыдущая</span><span class="ttl">Сложение и вычитание дробей с разными знаменателями</span></a><a class="to-cat" href="./catalog.html">📚 <span>Все темы</span></a><a class="next" href="./m5-desyatichnye-drobi.html"><span class="dir">Следующая →</span><span class="ttl">Понятие десятичной дроби и разряды</span></a></nav><!--/LESSON-NAV-BOT-->
