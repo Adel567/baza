@@ -1,0 +1,612 @@
+<!doctype html>
+<!-- humanized: humanizer-ru, 2026-08-29, тире возвращено -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Раскрытие скобок — 6 класс</title>
+<style>
+  :root{
+    --paper:#FBF9F5;
+    --card:#FFFFFF;
+    --ink:#26202E;
+    --muted:#6B6473;
+    --line:#E7E2E8;
+    --brand:#2F5D8C;
+    --brand-soft:#E4EDF6;
+    --mult:#2F7D5B;        /* множитель распределяется */
+    --mult-soft:#E3F1EA;
+    --mult-line:#BFDECE;
+    --sign:#B4452E;        /* знак перед скобкой */
+    --sign-soft:#FBE9E4;
+    --sign-line:#F0C8BC;
+    --ok:#2E8B57;
+    --no:#C23B3B;
+    --amber:#E0A315;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper)}
+  .page{
+    max-width:720px;margin:0 auto;
+    padding:clamp(1.4rem,4vw,3rem) clamp(1.1rem,4vw,2rem) 4.5rem;
+    color:var(--ink);
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    font-size:17.5px;line-height:1.68;-webkit-font-smoothing:antialiased;
+  }
+  .mono{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-variant-numeric:tabular-nums;font-weight:600}
+
+  .hero{border-bottom:3px solid var(--brand);padding-bottom:1.4rem;margin-bottom:1.8rem}
+  .eyebrow{font-size:.74rem;letter-spacing:.15em;text-transform:uppercase;color:var(--brand);font-weight:700;margin:0 0 .55rem}
+  h1{font-size:clamp(2rem,6.5vw,3rem);line-height:1.03;margin:0;font-weight:800;letter-spacing:-.02em;text-wrap:balance}
+  .tagline{font-size:1.12rem;color:var(--muted);margin:.85rem 0 0;text-wrap:pretty}
+
+  section{margin-top:2.4rem}
+  h2{font-size:1.5rem;margin:0 0 .3rem;font-weight:780;letter-spacing:-.015em;text-wrap:balance}
+  h2 .em{color:var(--brand)}
+  h3{font-size:1.1rem;margin:1.4rem 0 .2rem;font-weight:750}
+  p{margin:.7rem 0}
+  strong{font-weight:680}
+
+  .lead-in{background:var(--brand-soft);border-radius:14px;padding:1.1rem 1.3rem;font-size:1.02rem}
+  .lead-in p{margin:.4rem 0}
+  .lead-in b{color:var(--brand)}
+
+  /* Освежить в памяти */
+  .recall{border:1px dashed var(--line);border-radius:14px;background:var(--card);padding:1rem 1.2rem;margin-top:1rem}
+  .recall p{margin:.35rem 0;font-size:.98rem}
+  .recall .cap{font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;font-weight:700;color:var(--muted);margin:0 0 .5rem}
+
+  /* Две опоры */
+  .split{display:grid;gap:.9rem;margin-top:1rem}
+  @media(min-width:620px){.split{grid-template-columns:1fr 1fr}}
+  .path{border-radius:16px;padding:1.2rem 1.3rem;border:2px solid}
+  .path.mult{background:var(--mult-soft);border-color:var(--mult-line)}
+  .path.sign{background:var(--sign-soft);border-color:var(--sign-line)}
+  .path .cap{font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;font-weight:700;margin:0}
+  .path.mult .cap{color:var(--mult)} .path.sign .cap{color:var(--sign)}
+  .path h3{margin:.2rem 0 .5rem;font-size:1.3rem;font-weight:800}
+  .path p{margin:.3rem 0;font-size:.97rem}
+  .path .f{font-family:ui-monospace,Menlo,monospace;font-weight:800;font-size:1.05rem;display:block;margin:.35rem 0}
+  .path.mult .f{color:var(--mult)} .path.sign .f{color:var(--sign)}
+
+  /* Формульные плитки */
+  .formulas{display:flex;flex-direction:column;gap:.55rem;margin-top:1rem}
+  .fml{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:.75rem 1.05rem;font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.05rem;overflow-x:auto;white-space:nowrap}
+  .fml .cm{font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-weight:500;font-size:.86rem;color:var(--muted);white-space:normal;display:block;margin-top:.25rem}
+  .fml.m{border-left:4px solid var(--mult)}
+  .fml.s{border-left:4px solid var(--sign)}
+
+  .note{border-left:4px solid var(--brand);background:var(--brand-soft);border-radius:0 10px 10px 0;padding:.8rem 1.1rem;margin-top:1rem;font-size:.98rem}
+  .note b{color:var(--brand)}
+  .note p{margin:.35rem 0}
+
+  /* Разбор по шагам */
+  .walk{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.15rem 1.3rem;margin-top:1rem}
+  .walk .q{font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.1rem;margin:0 0 .9rem;padding-bottom:.7rem;border-bottom:1px solid var(--line)}
+  .walk ol{margin:0;padding-left:1.25rem;display:flex;flex-direction:column;gap:.75rem}
+  .walk li{font-size:.98rem}
+  .walk li .why{display:block;color:var(--muted);font-size:.88rem;margin-top:.15rem}
+  .verdict{margin-top:1rem;padding:.75rem 1rem;background:var(--brand-soft);border-radius:10px;font-weight:650;color:var(--brand);font-size:1.02rem;font-family:ui-monospace,Menlo,monospace}
+
+  /* Визуализация */
+  .viz{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:1.15rem 1.2rem;margin-top:1rem}
+  .viz canvas{width:100%;height:auto;display:block;border-radius:10px}
+  .sliders{display:flex;flex-direction:column;gap:.6rem;margin-top:1rem}
+  .sl{display:flex;align-items:center;gap:.8rem;font-size:.95rem}
+  .sl label{flex:none;width:5.4rem;font-family:ui-monospace,Menlo,monospace;font-weight:700}
+  .sl input[type=range]{flex:1;min-width:0;accent-color:var(--brand)}
+  .sl input[type=range]:focus-visible{outline:2px solid var(--brand);outline-offset:3px}
+  .sl .val{flex:none;width:1.8rem;text-align:right;font-family:ui-monospace,Menlo,monospace;font-weight:800;color:var(--brand)}
+  .viz-eq{margin-top:.9rem;text-align:center;font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:clamp(.95rem,4vw,1.15rem);line-height:1.9;overflow-x:auto}
+  .viz-eq .a{color:var(--mult)} .viz-eq .b{color:var(--sign)}
+
+  /* Практика */
+  .drill{display:flex;flex-direction:column;gap:.7rem;margin-top:1rem}
+  details{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:.9rem 1.1rem}
+  details[open]{border-color:var(--brand)}
+  summary{cursor:pointer;font-weight:650;list-style:none;display:flex;justify-content:space-between;gap:1rem;align-items:center}
+  summary::-webkit-details-marker{display:none}
+  summary:focus-visible{outline:2px solid var(--brand);outline-offset:3px;border-radius:6px}
+  summary .q{font-size:1rem}
+  summary::after{content:"проверить";font-size:.8rem;color:var(--brand);font-weight:700;white-space:nowrap}
+  details[open] summary::after{content:"скрыть"}
+  .ans{margin-top:.75rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.96rem;color:var(--muted)}
+  .ans b{color:var(--ink)}
+  .lvl{font-size:.66rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--brand);background:var(--brand-soft);border-radius:5px;padding:.1rem .45rem;margin-right:.45rem;vertical-align:.1em}
+
+  /* Ловушки */
+  ul.traps{list-style:none;margin:1rem 0 0;padding:0;display:flex;flex-direction:column;gap:.7rem}
+  ul.traps li{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:.85rem 1.05rem;padding-left:2.5rem;position:relative;font-size:.97rem}
+  ul.traps li::before{content:"⚠";position:absolute;left:1rem;top:.85rem;color:var(--sign);font-size:1.05rem}
+  ul.traps b{font-weight:700}
+  .bad{color:var(--no);font-weight:700;font-family:ui-monospace,Menlo,monospace}
+  .good{color:var(--ok);font-weight:700;font-family:ui-monospace,Menlo,monospace}
+
+  .selfcheck{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.1rem 1.3rem;margin-top:1rem}
+  .selfcheck ol{margin:.3rem 0 0;padding-left:1.25rem}
+  .selfcheck li{margin:.45rem 0;font-size:.99rem}
+
+  .wrapup{background:var(--brand);color:#fff;border-radius:16px;padding:1.4rem 1.5rem;margin-top:2.4rem}
+  .wrapup h2{color:#fff;margin:0 0 .5rem}
+  .wrapup p{color:#E1EBF4;margin:.4rem 0;font-size:1rem}
+  .wrapup .big-rule{font-size:1.06rem;font-weight:700;color:#fff;margin:.6rem 0;font-family:ui-monospace,Menlo,monospace}
+  .wrapup .next{font-size:.95rem;color:#C8DAEA;margin-top:1rem;padding-top:1rem;border-top:1px solid rgba(255,255,255,.2)}
+
+  /* Тренажёр */
+  .trainer{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:1.3rem 1.3rem 1.2rem;margin-top:1rem}
+  .tr-task{font-family:ui-monospace,Menlo,monospace;font-weight:800;font-size:clamp(1.5rem,7.5vw,2.2rem);text-align:center;letter-spacing:.02em;margin:.1rem 0 .3rem;color:var(--ink);overflow-x:auto}
+  .tr-hint{text-align:center;color:var(--muted);font-size:.9rem;margin:0 0 1.1rem}
+  .tr-fields{display:flex;gap:.7rem;justify-content:center;flex-wrap:wrap;margin-bottom:1.1rem}
+  .fld{display:flex;flex-direction:column;gap:.3rem;align-items:center}
+  .fld span{font-size:.78rem;color:var(--muted);font-weight:600}
+  .fld input{width:6.5rem;font:inherit;font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.15rem;text-align:center;padding:.45rem .5rem;border:2px solid var(--line);border-radius:10px;background:var(--paper);color:var(--ink)}
+  .fld input:focus-visible{outline:2px solid var(--brand);outline-offset:2px;border-color:var(--brand)}
+  .tr-btns{display:flex;gap:.5rem;flex-wrap:wrap;justify-content:center}
+  .tr-btns button{font:inherit;font-weight:700;font-size:.92rem;border-radius:10px;padding:.55rem 1.1rem;cursor:pointer;border:1px solid transparent}
+  .tr-btns .go{background:var(--brand);color:#fff}
+  .tr-btns .sh{background:var(--paper);border:1px solid var(--line);color:var(--ink)}
+  .tr-btns .nw{background:var(--brand-soft);color:var(--brand)}
+  .tr-btns button:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+  .tr-res{margin-top:1.1rem;font-size:.97rem}
+  .tr-res .head{font-weight:700;padding:.6rem .9rem;border-radius:9px;margin-bottom:.7rem}
+  .tr-res .head.ok{background:#E7F4EC;color:var(--ok)}
+  .tr-res .head.no{background:#FBEAEA;color:var(--no)}
+  .tr-res .head.info{background:var(--brand-soft);color:var(--brand)}
+  .tr-sol{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:.85rem 1rem}
+  .tr-sol .row{margin:.35rem 0;font-size:.95rem}
+  .tr-sol .row .mono{color:var(--ink)}
+  .tr-sol .grp{font-weight:700;margin-top:.6rem;font-size:.9rem}
+  .tr-sol .grp:first-child{margin-top:0}
+  .tr-sol .grp.m{color:var(--mult)} .tr-sol .grp.s{color:var(--sign)}
+  .tr-sol .fin{margin-top:.7rem;padding-top:.6rem;border-top:1px dashed var(--line);font-family:ui-monospace,Menlo,monospace;font-weight:800;color:var(--brand);font-size:1.02rem}
+
+  .tr-counter{text-align:center;font-size:.82rem;color:var(--muted);margin-top:.8rem}
+
+  @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<!--LESSON-NAV-TOP--><style>.lnav{--lnav-accent:#3D5AF1}.lnav a{text-decoration:none;font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif}.lnav-top{max-width:820px;margin:0 auto;padding:.75rem clamp(1rem,4vw,1.5rem) .1rem}.lnav-top a{display:inline-flex;align-items:center;gap:.35rem;color:var(--lnav-accent);font-weight:600;font-size:.9rem}.lnav-top a:hover{text-decoration:underline}.lnav-bot{max-width:820px;margin:2.6rem auto 3rem;padding:1.1rem clamp(1rem,4vw,1.5rem) 0;border-top:1px solid #E4E8EF;display:flex;align-items:stretch;gap:.55rem}.lnav-bot a{min-width:0;display:flex;flex-direction:column;justify-content:center;gap:.15rem;border:1px solid #E4E8EF;border-radius:12px;padding:.65rem .85rem;color:#182233;background:#fff;transition:border-color .1s,transform .08s}.lnav-bot a:hover{border-color:var(--lnav-accent);transform:translateY(-1px)}.lnav-bot .prev,.lnav-bot .next{flex:1 1 0}.lnav-bot .next{text-align:right}.lnav-bot .dir{font-size:.72rem;color:#8A93A6;font-weight:600}.lnav-bot .ttl{font-size:.9rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.lnav-bot .to-cat{flex:0 0 auto;flex-direction:row;align-items:center;justify-content:center;color:var(--lnav-accent);font-weight:700;font-size:.85rem;white-space:nowrap}@media(max-width:420px){.lnav-bot .to-cat span{display:none}.lnav-bot .to-cat{padding:.65rem .7rem}}</style><nav class="lnav lnav-top"><a href="./catalog.html">← Все темы</a></nav><!--/LESSON-NAV-TOP-->
+<div class="page">
+
+  <header class="hero">
+    <p class="eyebrow">Математика · 6 класс</p>
+    <h1>Раскрытие скобок</h1>
+    <p class="tagline">Как переписать выражение без скобок — и не потерять по дороге ни одного знака.</p>
+  </header>
+
+  <div class="lead-in">
+    <p><b>Зачем это нужно.</b> Скобки мешают. Пока они на месте, запись вроде <span class="mono">3·(x + 4) − (x − 2)</span> остаётся клубком: похожие слагаемые сидят по разным скобкам, и сложить их нельзя. Убрал скобки — выражение сразу можно упрощать дальше.</p>
+    <p>Приём житейский. В каждой из <strong>3 коробок</strong> лежит «<span class="mono">x</span> яблок и ещё 4 яблока» — всего получается <span class="mono">3·x + 3·4</span>, множитель разошёлся по обоим слагаемым. В 7 классе, в уравнениях и формулах, ты будешь делать это по десять раз за урок.</p>
+  </div>
+
+  <section>
+    <h2>Сначала освежи <span class="em">две вещи</span></h2>
+    <div class="recall">
+      <p class="cap">Без этого дальше будет тяжело</p>
+      <p><strong>Правило знаков при умножении.</strong> Минус на минус даёт плюс, минус на плюс даёт минус. От него зависит знак каждого слагаемого в скобке.</p>
+      <p><strong>Буквенное выражение.</strong> Буква <span class="mono">x</span> — это число, которое мы пока не знаем. Обращаться с ней можно как с числом: умножать, складывать, менять знак.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Главная мысль: скобка — <span class="em">один объект</span></h2>
+    <p>Раскрыть скобки — значит записать <strong>то же самое</strong> выражение, но без скобок, не изменив его значения. Ничего не прибавляем и не убавляем: просто переписываем по-другому.</p>
+    <p>Держи в голове одно: <strong>скобка — это один объект.</strong> Умножаем её на что-то или вычитаем — действие достаётся <strong>всему содержимому целиком</strong>, а не первому числу внутри. Из этого вырастают оба правила.</p>
+    <p>Скажешь: тут же две разные истории — умножение и знаки? История одна. Минус перед скобкой — тот же множитель <span class="mono">(−1)</span>, просто его не пишут.</p>
+
+    <div class="split">
+      <div class="path mult">
+        <p class="cap">Опора 1</p>
+        <h3>🟢 Множитель раздаётся</h3>
+        <p>Множитель перед скобкой идёт к <strong>каждому</strong> слагаемому внутри.</p>
+        <span class="f">a·(b + c) = a·b + a·c</span>
+        <p>Это распределительное свойство: умножение на сумму = сумма умножений.</p>
+      </div>
+      <div class="path sign">
+        <p class="cap">Опора 2</p>
+        <h3>🔴 Знак перед скобкой</h3>
+        <p><strong>Плюс</strong> перед скобкой не меняет ничего. <strong>Минус</strong> переворачивает знак у каждого слагаемого внутри.</p>
+        <span class="f">−(b + c) = −b − c</span>
+        <p>У всех сразу, без пропусков.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Правила крупно</h2>
+
+    <h3>Распределительное свойство умножения</h3>
+    <div class="formulas">
+      <div class="fml m">a·(b + c) = a·b + a·c</div>
+      <div class="fml m">a·(b − c) = a·b − a·c
+        <span class="cm">Здесь a — множитель перед скобкой, b и c — слагаемые внутри. Буквами могут быть и числа: например, a = −2, b = x.</span>
+      </div>
+    </div>
+
+    <h3>Знак перед скобкой</h3>
+    <div class="formulas">
+      <div class="fml s">+(b + c) = b + c<span class="cm">Плюс перед скобкой — знаки сохраняются.</span></div>
+      <div class="fml s">−(b + c) = −b − c<span class="cm">Минус — знак каждого слагаемого меняется на противоположный.</span></div>
+      <div class="fml s">−(b − c) = −b + c<span class="cm">И «минус» внутри тоже переворачивается: становится «плюс».</span></div>
+    </div>
+
+    <div class="note">
+      <p><b>Три оговорки.</b></p>
+      <p>1. Правило знаков применяется к <strong>каждому</strong> слагаемому внутри скобки, без пропусков.</p>
+      <p>2. Вот та самая замена минуса на множитель: &nbsp;<span class="mono">−(b − c) = (−1)·(b − c) = −b + c</span>. Два правила схлопываются в одно.</p>
+      <p>3. Множитель перед скобкой умножается <strong>вместе со своим знаком</strong>: &nbsp;<span class="mono">−2·(x − 5) = −2·x + 10</span>.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Посмотри глазами: <span class="em">почему множитель раздаётся</span></h2>
+    <p>Возьмём прямоугольник со сторонами <span class="mono">a</span> и <span class="mono">(b + c)</span>. Его площадь — <span class="mono">a·(b + c)</span>. Теперь разрежем его вертикальной чертой надвое: слева стороны <span class="mono">a</span> и <span class="mono">b</span>, справа — <span class="mono">a</span> и <span class="mono">c</span>.</p>
+    <p>Площадь от черты не изменилась. Значит <span class="mono">a·(b + c) = a·b + a·c</span>. Подвигай ползунки прямо сейчас: равенство держится при любых сторонах.</p>
+    <div class="viz">
+      <canvas id="cv" width="660" height="330" aria-label="Прямоугольник со сторонами a и (b + c), разрезанный на две части"></canvas>
+      <div class="sliders">
+        <div class="sl"><label for="sa">a (высота)</label><input type="range" id="sa" min="1" max="6" value="3"><span class="val" id="va">3</span></div>
+        <div class="sl"><label for="sb">b</label><input type="range" id="sb" min="1" max="8" value="5"><span class="val" id="vb">5</span></div>
+        <div class="sl"><label for="sc">c</label><input type="range" id="sc" min="1" max="8" value="4"><span class="val" id="vc">4</span></div>
+      </div>
+      <div class="viz-eq" id="vizEq"></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Эталонный разбор — <span class="em">думаю вслух</span></h2>
+    <p>Показываю, как я рассуждаю. Задание: раскрыть скобки в <span class="mono">4·(2x − 3)</span>.</p>
+    <div class="walk">
+      <p class="q">4·(2x − 3) = ?</p>
+      <ol>
+        <li>Множитель <span class="mono">4</span> умножаю на первое слагаемое: <span class="mono">4·2x = 8x</span>.
+          <span class="why">Почему: распределительное свойство — множитель идёт к каждому слагаемому.</span></li>
+        <li>Множитель <span class="mono">4</span> умножаю на второе слагаемое <strong>вместе с его знаком</strong>: <span class="mono">4·(−3) = −12</span>.
+          <span class="why">Почему: второе слагаемое отрицательное, минус никуда не девается.</span></li>
+        <li>Записываю оба результата подряд.</li>
+      </ol>
+      <div class="verdict">4·(2x − 3) = 8x − 12</div>
+    </div>
+
+    <h3>Теперь с минусом перед скобкой — допиши сам</h3>
+    <p>Задание: раскрыть <span class="mono">−(a − 7 + 3b)</span>. Перед скобкой минус — меняем знак у каждого слагаемого. Начало такое:</p>
+    <div class="walk">
+      <p class="q">−(a − 7 + 3b) = −a … +7 … ____</p>
+      <ol>
+        <li>Было <span class="mono">+a</span> (плюс не пишут, но он там есть) → стало <span class="mono">−a</span>.</li>
+        <li>Было <span class="mono">−7</span> → стало <span class="mono">+7</span>.</li>
+        <li>А какой знак будет у <span class="mono">3b</span>? Внутри скобки он был <span class="mono">+3b</span> — значит…</li>
+      </ol>
+      <div class="drill" style="margin-top:1rem">
+        <details>
+          <summary><span class="q">Проверить третий шаг и ответ</span></summary>
+          <div class="ans">Было <span class="mono">+3b</span>, значит станет <span class="mono">−3b</span>. Целиком: <b><span class="mono">−(a − 7 + 3b) = −a + 7 − 3b</span></b>. Знак поменялся у всех трёх слагаемых, а не у одного первого.</div>
+        </details>
+      </div>
+    </div>
+
+    <h3>А это реши сам</h3>
+    <div class="drill">
+      <details>
+        <summary><span class="q">Раскрой скобки и запиши без скобок: <span class="mono">−3·(2y − 5)</span></span></summary>
+        <div class="ans">Множитель <span class="mono">−3</span> идёт к обоим слагаемым со своим знаком. <span class="mono">−3·2y = −6y</span>; <span class="mono">−3·(−5) = +15</span> (минус на минус даёт плюс). Ответ: <b><span class="mono">−6y + 15</span></b>.</div>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <h2>Тренажёр — <span class="em">бесконечная практика</span></h2>
+    <p>Выражение со скобками каждый раз новое. Раскрой его в уме или на черновике и впиши два числа: <strong>коэффициент при букве</strong> и <strong>свободное число</strong>. Минус пиши обычным знаком <span class="mono">-</span>. Застрял — жми «Показать разбор».</p>
+    <div class="trainer">
+      <div class="tr-task mono" id="trTask">3·(x + 4)</div>
+      <p class="tr-hint" id="trHint">Ответ имеет вид: <span class="mono">▢·x + ▢</span></p>
+      <div class="tr-fields">
+        <div class="fld"><span id="lblP">коэффициент при x</span><input type="text" id="inP" inputmode="text" autocomplete="off" spellcheck="false"></div>
+        <div class="fld"><span>свободное число</span><input type="text" id="inQ" inputmode="text" autocomplete="off" spellcheck="false"></div>
+      </div>
+      <div class="tr-btns">
+        <button class="go" id="trCheck" type="button">Проверить</button>
+        <button class="sh" id="trShow" type="button">Показать разбор</button>
+        <button class="nw" id="trNew" type="button">🎲 Новое задание</button>
+      </div>
+      <div class="tr-res" id="trRes"></div>
+      <p class="tr-counter" id="trCnt"></p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Проверь себя</h2>
+    <p>Реши сам, потом нажимай «проверить». Не подглядывай раньше времени 🙂</p>
+    <div class="drill">
+      <details>
+        <summary><span class="q"><span class="lvl">понимание</span>В выражении <span class="mono">−(x − 4)</span> какой знак получится у числа 4 после раскрытия скобок?</span></summary>
+        <div class="ans">Внутри скобки было <span class="mono">−4</span>, минус перед скобкой переворачивает знак → получится <b>плюс</b>, то есть <span class="mono">+4</span>. Целиком: <span class="mono">−(x − 4) = −x + 4</span>.</div>
+      </details>
+      <details>
+        <summary><span class="q"><span class="lvl">применение</span>Раскрой скобки: <span class="mono">5·(a + 3)</span> и <span class="mono">−2·(b − 6)</span></span></summary>
+        <div class="ans"><span class="mono">5·(a + 3) = 5a + 15</span> (пятёрка идёт и к <span class="mono">a</span>, и к 3).<br><span class="mono">−2·(b − 6) = −2b + 12</span> (второй раз минус на минус даёт плюс: <span class="mono">−2·(−6) = +12</span>).</div>
+      </details>
+      <details>
+        <summary><span class="q"><span class="lvl">анализ</span>Найди ошибку: «<span class="mono">−(2m − 9) = −2m − 9</span>». Запиши верно.</span></summary>
+        <div class="ans">Ошибка: у <b>второго</b> слагаемого не поменяли знак — минус «достал» только первое. Внутри было <span class="mono">−9</span>, значит должно стать <span class="mono">+9</span>. Верно: <b><span class="mono">−(2m − 9) = −2m + 9</span></b>.</div>
+      </details>
+      <details>
+        <summary><span class="q"><span class="lvl">анализ</span>Обратная задача: какое выражение в скобках, умноженное на 3, даёт <span class="mono">3c − 12</span>?</span></summary>
+        <div class="ans">Раскладываем обратно: <span class="mono">3c</span> получилось из <span class="mono">3·c</span>, а <span class="mono">−12</span> — из <span class="mono">3·(−4)</span>. Значит внутри скобки стояло <span class="mono">c − 4</span>. Ответ: <b><span class="mono">3·(c − 4)</span></b>. Проверь раскрытием: <span class="mono">3·(c − 4) = 3c − 12</span> ✓</div>
+      </details>
+      <details>
+        <summary><span class="q"><span class="lvl">анализ</span>Сначала угадай, чему равно <span class="mono">−(3 − x)</span>. Потом подставь <span class="mono">x = 1</span> и проверь себя.</span></summary>
+        <div class="ans">Раскрываем: <span class="mono">−(3 − x) = −3 + x</span>.<br>Проверка подстановкой <span class="mono">x = 1</span>: исходное <span class="mono">−(3 − 1) = −2</span>; раскрытое <span class="mono">−3 + 1 = −2</span>. Совпало → раскрытие верное.<br>А если бы ты написал <span class="bad">−3 − 1 = −4</span>, расхождение с <span class="mono">−2</span> сразу вскрыло бы ошибку со знаком. Этим приёмом можно проверять себя всегда: подставь любое число в исходное и в раскрытое — должно получиться одно и то же.</div>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <h2>Ловушки — <span class="em">не попадись</span></h2>
+    <ul class="traps">
+      <li><b>Минус «достал» только первое слагаемое.</b> Пишут <span class="bad">−(x − 5) = −x − 5</span>. Неверно: знак меняется у ВСЕХ слагаемых, верно <span class="good">−x + 5</span>. <i>Как не допустить:</i> проговаривай знак каждого слагаемого по очереди вслух.</li>
+      <li><b>Множитель умножили не на всё.</b> Пишут <span class="bad">3·(x + 4) = 3x + 4</span> — забыли умножить на 4. Верно: <span class="good">3x + 12</span>. <i>Как не допустить:</i> проверь, что от множителя «протянуты стрелочки» к каждому слагаемому.</li>
+      <li><b>Потеряли знак у второго слагаемого.</b> В <span class="mono">−2·(x − 5)</span> получают <span class="bad">−2x − 10</span> вместо <span class="good">−2x + 10</span>. <i>Как не допустить:</i> перемножай знаки отдельно от чисел: минус на минус даёт плюс.</li>
+      <li><b>Думают, что плюс перед скобкой что-то меняет.</b> <span class="good">+(a − b) = a − b</span>, ничего не переворачивается. Путаница идёт по аналогии с минусом. Плюс скобку не трогает вообще.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Объясни своими словами</h2>
+    <div class="selfcheck">
+      <p>Если ответишь на все три не подглядывая — тема твоя.</p>
+      <ol>
+        <li>Чему равно <span class="mono">6·(x − 2)</span> после раскрытия скобок?</li>
+        <li>Что происходит со знаками слагаемых, если перед скобкой стоит минус?</li>
+        <li>Раскрой: <span class="mono">−(a + b − c)</span>.</li>
+      </ol>
+      <div class="drill" style="margin-top:1rem">
+        <details>
+          <summary><span class="q">Ответы</span></summary>
+          <div class="ans">1) <b><span class="mono">6x − 12</span></b>.<br>2) <b>Каждый</b> знак меняется на противоположный — у всех слагаемых сразу.<br>3) <b><span class="mono">−a − b + c</span></b>.</div>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <div class="wrapup">
+    <h2>Запомни главное</h2>
+    <p class="big-rule">Множитель — к каждому слагаемому.<br>Минус перед скобкой — знак меняют все.</p>
+    <p>Баллы в этой теме теряют не на арифметике, а на забытом знаке у второго слагаемого. Проверка простая: подставь любое число в исходное выражение и в раскрытое. Не совпало — где-то потерян знак.</p>
+    <p class="next">👉 Дальше — <strong>приведение подобных слагаемых</strong>. Ради него мы скобки и убирали: когда их нет, одинаковые «буквенные» слагаемые наконец собираются вместе и выражение становится коротким.</p>
+  </div>
+
+</div>
+
+<script>
+(function(){
+  /* ---------- Визуализация: площадная модель ---------- */
+  var cv=document.getElementById('cv'), ctx=cv&&cv.getContext('2d');
+  var sa=document.getElementById('sa'), sb=document.getElementById('sb'), sc=document.getElementById('sc');
+  var va=document.getElementById('va'), vb=document.getElementById('vb'), vc=document.getElementById('vc');
+  var eqEl=document.getElementById('vizEq');
+
+  function drawViz(){
+    if(!ctx) return;
+    var a=+sa.value, b=+sb.value, c=+sc.value;
+    va.textContent=a; vb.textContent=b; vc.textContent=c;
+
+    /* размер в CSS-пикселях = реальная ширина блока, чтобы подписи не «сжимались» на телефоне */
+    var W=Math.max(260, Math.round(cv.clientWidth || cv.parentNode.clientWidth || 640));
+    var H=Math.round(Math.max(240, Math.min(340, W*0.56)));
+    var dpr=window.devicePixelRatio||1;
+    cv.width=Math.round(W*dpr); cv.height=Math.round(H*dpr);
+    cv.style.height=H+'px';
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+    ctx.clearRect(0,0,W,H);
+    ctx.fillStyle='#FFFFFF'; ctx.fillRect(0,0,W,H);
+
+    var padL=58, padR=22, padT=44, padB=48;
+    var maxW=W-padL-padR, maxH=H-padT-padB;
+    var unitX=maxW/16, unitY=maxH/6;
+    var pw=(b+c)*unitX, ph=a*unitY;
+    var x0=padL, y0=padT+(maxH-ph);
+    var bw=b*unitX, cw=c*unitX;
+
+    /* две части */
+    ctx.fillStyle='#E3F1EA'; ctx.fillRect(x0,y0,bw,ph);
+    ctx.fillStyle='#FBE9E4'; ctx.fillRect(x0+bw,y0,cw,ph);
+
+    /* сетка по единичным клеткам */
+    ctx.strokeStyle='rgba(38,32,46,.13)'; ctx.lineWidth=1;
+    var i;
+    for(i=1;i<b+c;i++){ ctx.beginPath(); ctx.moveTo(x0+i*unitX,y0); ctx.lineTo(x0+i*unitX,y0+ph); ctx.stroke(); }
+    for(i=1;i<a;i++){ ctx.beginPath(); ctx.moveTo(x0,y0+i*unitY); ctx.lineTo(x0+pw,y0+i*unitY); ctx.stroke(); }
+
+    /* контуры частей */
+    ctx.lineWidth=2.5;
+    ctx.strokeStyle='#2F7D5B'; ctx.strokeRect(x0,y0,bw,ph);
+    ctx.strokeStyle='#B4452E'; ctx.strokeRect(x0+bw,y0,cw,ph);
+
+    /* линия разреза пунктиром */
+    ctx.save(); ctx.setLineDash([7,5]); ctx.lineWidth=2; ctx.strokeStyle='#26202E';
+    ctx.beginPath(); ctx.moveTo(x0+bw,y0-12); ctx.lineTo(x0+bw,y0+ph+12); ctx.stroke(); ctx.restore();
+
+    var F='600 14px ui-monospace, Menlo, Consolas, monospace';
+    ctx.font=F; ctx.textBaseline='middle';
+
+    /* если подпись шире своей колонки — оставляем только букву */
+    function fitLabel(full, shortL, w){
+      return ctx.measureText(full).width + 8 <= w ? full : shortL;
+    }
+
+    /* подпись высоты a слева */
+    ctx.textAlign='right'; ctx.fillStyle='#2F5D8C';
+    ctx.fillText('a = '+a, x0-12, y0+ph/2);
+    ctx.strokeStyle='#2F5D8C'; ctx.lineWidth=1.5;
+    ctx.beginPath(); ctx.moveTo(x0-6,y0); ctx.lineTo(x0-6,y0+ph); ctx.stroke();
+
+    /* подписи ширин снизу */
+    ctx.textAlign='center';
+    ctx.fillStyle='#2F7D5B'; ctx.fillText(fitLabel('b = '+b,'b',bw), x0+bw/2, y0+ph+20);
+    ctx.fillStyle='#B4452E'; ctx.fillText(fitLabel('c = '+c,'c',cw), x0+bw+cw/2, y0+ph+20);
+
+    /* площади внутри частей */
+    ctx.font='700 15px ui-monospace, Menlo, Consolas, monospace';
+    ctx.fillStyle='#2F7D5B'; ctx.fillText(fitLabel('a·b = '+(a*b), String(a*b), bw), x0+bw/2, y0+ph/2);
+    ctx.fillStyle='#B4452E'; ctx.fillText(fitLabel('a·c = '+(a*c), String(a*c), cw), x0+bw+cw/2, y0+ph/2);
+
+    /* общая ширина сверху */
+    ctx.font=F; ctx.fillStyle='#26202E';
+    ctx.fillText(fitLabel('b + c = '+(b+c), String(b+c), pw), x0+pw/2, y0-26);
+    ctx.strokeStyle='#26202E'; ctx.lineWidth=1.5;
+    ctx.beginPath(); ctx.moveTo(x0,y0-12); ctx.lineTo(x0+pw,y0-12); ctx.stroke();
+
+    eqEl.innerHTML='a·(b + c) = '+a+'·('+b+' + '+c+') = '+(a*(b+c))
+      +'<br><span class="a">a·b</span> + <span class="b">a·c</span> = '+(a*b)+' + '+(a*c)+' = '+(a*b+a*c)
+      +'<br>'+(a*(b+c))+' = '+(a*b+a*c)+' ✓';
+  }
+  if(cv){
+    [sa,sb,sc].forEach(function(s){ s.addEventListener('input',drawViz); });
+    var rt=null;
+    window.addEventListener('resize',function(){ clearTimeout(rt); rt=setTimeout(drawViz,120); });
+    drawViz();
+  }
+
+  /* ---------- Тренажёр ---------- */
+  var MIN='−';                                  /* настоящий минус U+2212 */
+  function mn(s){ return String(s).replace(/-/g, MIN); }
+  function num(n){ return mn(String(n)); }
+  /* «+ 7» / «− 7» для записи в строку */
+  function term(n){ return (n<0 ? MIN+' ' : '+ ') + Math.abs(n); }
+
+  var LETTERS=['x','y','a','b','m','c','n','t'];
+  var taskEl=document.getElementById('trTask');
+  var hintEl=document.getElementById('trHint');
+  var lblP=document.getElementById('lblP');
+  var inP=document.getElementById('inP'), inQ=document.getElementById('inQ');
+  var resEl=document.getElementById('trRes'), cntEl=document.getElementById('trCnt');
+  var T=null, solved=0, tries=0;
+
+  function ri(a,b){ return Math.floor(Math.random()*(b-a+1))+a; }
+  function pick(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+
+  function make(seed){
+    if(seed) return seed;
+    var t={};
+    t.L = pick(LETTERS);
+    /* множитель перед скобкой: ±1 (чистый знак) встречается часто — это главная ловушка темы */
+    var mags=[1,1,1,2,2,3,3,4,5,6,7,10];
+    t.A = pick(mags) * (Math.random()<0.5 ? 1 : -1);
+    /* внутри скобки: k·L и число n, каждое со своим знаком */
+    t.k = pick([1,1,1,2,2,3,4,5,6]);
+    t.n = ri(2,12);
+    t.sk = Math.random()<0.75 ? 1 : -1;   /* знак буквенного слагаемого */
+    t.sn = Math.random()<0.5 ? 1 : -1;    /* знак числа */
+    t.rev = Math.random()<0.18;           /* краевой случай: число стоит первым */
+    t.p = t.A * t.k * t.sk;
+    t.q = t.A * t.n * t.sn;
+    return t;
+  }
+
+  /* «2x», «x», «−x», «−2x» — внутри скобки как первое слагаемое */
+  function inner(t){
+    var lt = (t.sk<0 ? MIN : '') + (t.k===1 ? '' : t.k) + t.L;
+    var nm = String(t.n);
+    if(t.rev){
+      var first = (t.sn<0 ? MIN : '') + nm;
+      var second = (t.sk<0 ? MIN+' ' : '+ ') + (t.k===1 ? '' : t.k) + t.L;
+      return first + ' ' + second;
+    }
+    return lt + ' ' + ((t.sn<0 ? MIN+' ' : '+ ') + nm);
+  }
+  function taskStr(t){
+    var pre;
+    if(t.A===1) pre='+';
+    else if(t.A===-1) pre=MIN;
+    else pre = num(t.A)+'·';
+    return pre + '(' + inner(t) + ')';
+  }
+
+  function render(t){
+    T=t;
+    taskEl.textContent = taskStr(t);
+    lblP.textContent = 'коэффициент при ' + t.L;
+    hintEl.innerHTML = 'Ответ имеет вид: <span class="mono">▢·'+t.L+' + ▢</span>';
+    inP.value=''; inQ.value='';
+    resEl.innerHTML=''; resEl.removeAttribute('data-done');
+    updCnt();
+  }
+  function updCnt(){
+    cntEl.textContent = tries ? ('Решено верно: '+solved+' из '+tries) : '';
+  }
+  function locked(){ return resEl.getAttribute('data-done')==='1'; }
+
+  function parseVal(s){
+    s = String(s).replace(/−/g,'-').replace(/\s/g,'').replace(/,/g,'.');
+    if(s==='') return null;
+    if(!/^[+-]?\d+$/.test(s)) return null;
+    return parseInt(s,10);
+  }
+
+  function signWord(a,b){
+    if(a<0 && b<0) return 'минус на минус даёт плюс';
+    if(a<0 || b<0) return 'минус на плюс даёт минус';
+    return 'плюс на плюс даёт плюс';
+  }
+
+  function solution(t){
+    var h='<div class="tr-sol">';
+    var lettPart = (t.sk<0?MIN:'') + (t.k===1?'':t.k) + t.L;
+    var numPart  = (t.sn<0?MIN:'') + t.n;
+
+    if(t.A===1){
+      h+='<div class="grp s">Перед скобкой плюс — знаки сохраняются:</div>';
+      h+='<div class="row">Слагаемое <span class="mono">'+lettPart+'</span> остаётся как есть → коэффициент при '+t.L+' равен <span class="mono">'+num(t.p)+'</span>.</div>';
+      h+='<div class="row">Слагаемое <span class="mono">'+numPart+'</span> остаётся как есть → число <span class="mono">'+num(t.q)+'</span>.</div>';
+    } else if(t.A===-1){
+      h+='<div class="grp s">Перед скобкой минус — знак меняется у КАЖДОГО слагаемого:</div>';
+      h+='<div class="row"><span class="mono">'+lettPart+'</span> → <span class="mono">'+num(t.p)+t.L+'</span>.</div>';
+      h+='<div class="row"><span class="mono">'+numPart+'</span> → <span class="mono">'+num(t.q)+'</span>.</div>';
+    } else {
+      h+='<div class="grp m">Множитель <span class="mono">'+num(t.A)+'</span> идёт к каждому слагаемому со своим знаком:</div>';
+      h+='<div class="row">'+num(t.A)+'·('+lettPart+') = <span class="mono">'+num(t.p)+t.L+'</span> &nbsp;<span style="opacity:.7">— '+signWord(t.A, t.sk)+'</span></div>';
+      h+='<div class="row">'+num(t.A)+'·('+numPart+') = <span class="mono">'+num(t.q)+'</span> &nbsp;<span style="opacity:.7">— '+signWord(t.A, t.sn)+'</span></div>';
+    }
+    var pStr = (t.p===1 ? t.L : (t.p===-1 ? MIN+t.L : num(t.p)+t.L));
+    h+='<div class="fin">'+taskStr(t)+' = '+pStr+' '+term(t.q)+'</div>';
+    h+='<div class="row" style="margin-top:.5rem;opacity:.75">Коэффициент при '+t.L+': <b>'+num(t.p)+'</b>&nbsp;&nbsp;•&nbsp;&nbsp;свободное число: <b>'+num(t.q)+'</b></div>';
+    return h+'</div>';
+  }
+
+  function check(){
+    if(locked()) return;
+    var p=parseVal(inP.value), q=parseVal(inQ.value);
+    if(p===null || q===null){
+      resEl.innerHTML='<div class="head info">Впиши оба числа целыми (минус можно писать обычным знаком «-»).</div>';
+      return;
+    }
+    tries++;
+    var ok = (p===T.p && q===T.q);
+    if(ok) solved++;
+    resEl.setAttribute('data-done','1');
+    resEl.innerHTML = (ok
+      ? '<div class="head ok">✓ Верно! Оба знака на месте.</div>'
+      : '<div class="head no">Не сходится. Твой ответ: '+num(p)+'·'+T.L+' '+term(q)+'. Смотри разбор:</div>') + solution(T);
+    updCnt();
+  }
+  function show(){
+    if(locked()) return;
+    resEl.setAttribute('data-done','1');
+    resEl.innerHTML='<div class="head info">Разбор:</div>'+solution(T);
+    updCnt();
+  }
+
+  document.getElementById('trCheck').addEventListener('click',check);
+  document.getElementById('trShow').addEventListener('click',show);
+  document.getElementById('trNew').addEventListener('click',function(){
+    render(make());
+    inP.focus();                 /* фокус только по клику пользователя */
+  });
+  [inP,inQ].forEach(function(el){
+    el.addEventListener('keydown',function(e){ if(e.key==='Enter') check(); });
+  });
+
+  /* стартовая задача = ровно та, что нарисована в разметке */
+  render({L:'x',A:3,k:1,n:4,sk:1,sn:1,rev:false,p:3,q:12});
+})();
+</script>
+<!--LESSON-NAV-BOT--><nav class="lnav lnav-bot"><a class="prev" href="./m6-bukvennye-vyrazheniya.html"><span class="dir">← Предыдущая</span><span class="ttl">Буквенные выражения и их значения</span></a><a class="to-cat" href="./catalog.html">📚 <span>Все темы</span></a><a class="next" href="./m6-podobnye-slagaemye.html"><span class="dir">Следующая →</span><span class="ttl">Приведение подобных слагаемых</span></a></nav><!--/LESSON-NAV-BOT-->

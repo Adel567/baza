@@ -1,0 +1,663 @@
+<!doctype html>
+<!-- humanized: humanizer-ru, 2026-08-28, тире возвращено -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Среднее арифметическое — математика, 5 класс</title>
+<style>
+  :root{
+    --paper:#F7F9F8;
+    --card:#FFFFFF;
+    --ink:#1D2B27;
+    --muted:#5D6B67;
+    --line:#E1E8E5;
+    --accent:#1F7A6B;
+    --accent-soft:#E3F1EE;
+    --accent-line:#B9DBD4;
+    --warm:#C2611F;
+    --warm-soft:#FBEEE3;
+    --ok:#2E8B57;
+    --ok-bg:#E7F4EC;
+    --no:#C0455B;
+    --no-bg:#F9E9EC;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper)}
+  .page{
+    max-width:740px;margin:0 auto;
+    padding:clamp(1.4rem,4vw,3rem) clamp(1rem,4vw,2rem) 4.5rem;
+    color:var(--ink);
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    font-size:17.5px;line-height:1.66;-webkit-font-smoothing:antialiased;
+  }
+  .mono{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-weight:650;font-variant-numeric:tabular-nums}
+
+  header.hero{border-bottom:3px solid var(--accent);padding-bottom:1.3rem}
+  .eyebrow{font-size:.73rem;letter-spacing:.15em;text-transform:uppercase;color:var(--accent);font-weight:700;margin:0 0 .5rem}
+  h1{font-size:clamp(2rem,7vw,2.9rem);line-height:1.05;margin:0;font-weight:800;letter-spacing:-.02em;text-wrap:balance}
+  .lede{font-size:1.1rem;color:var(--muted);margin:.85rem 0 0;max-width:56ch;text-wrap:pretty}
+
+  section{margin-top:2.5rem}
+  .kicker{font-size:.72rem;letter-spacing:.13em;text-transform:uppercase;color:var(--muted);font-weight:700;margin:0 0 .7rem;display:flex;align-items:center;gap:.6rem}
+  .kicker::before{content:"";width:1.4rem;height:2px;background:var(--accent);border-radius:2px;flex:none}
+  h2{font-size:1.45rem;margin:0 0 .2rem;font-weight:780;letter-spacing:-.015em;text-wrap:balance}
+  h2 .em{color:var(--accent)}
+  p{margin:.7rem 0}
+  strong{font-weight:680}
+
+  .lead-in{background:var(--accent-soft);border-radius:14px;padding:1.05rem 1.25rem}
+  .lead-in p{margin:.4rem 0;font-size:1.01rem}
+  .lead-in b{color:var(--accent)}
+
+  .myth{border-left:4px solid var(--warm);background:var(--warm-soft);border-radius:0 10px 10px 0;padding:.85rem 1.1rem;margin-top:1rem;font-size:.99rem}
+  .myth b{color:var(--warm)}
+
+  .recall{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:1rem 1.15rem;font-size:.98rem}
+  .recall p{margin:.35rem 0}
+
+  /* Ядро */
+  .hero-formula{background:var(--ink);color:#fff;border-radius:14px;padding:1.5rem 1.1rem;text-align:center;margin-top:1rem}
+  .hero-formula .lbl{font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:#9FBDB6;margin:0 0 .7rem}
+  .hero-formula .eq{font-family:ui-monospace,"SF Mono",Menlo,monospace;font-size:clamp(1rem,4.2vw,1.5rem);font-weight:700;line-height:1.5}
+  .hero-formula .eq b{color:#7ED5C3}
+  .hero-formula .note{font-size:.86rem;color:#9FBDB6;margin:.9rem 0 0}
+
+  ol.steps{margin:1rem 0 0;padding:0;list-style:none;counter-reset:s;display:flex;flex-direction:column;gap:.65rem}
+  ol.steps li{position:relative;padding-left:2.2rem;counter-increment:s}
+  ol.steps li::before{content:counter(s);position:absolute;left:0;top:.1rem;width:1.55rem;height:1.55rem;border-radius:50%;background:var(--accent-soft);color:var(--accent);font-size:.83rem;font-weight:800;display:flex;align-items:center;justify-content:center}
+
+  /* Разбор */
+  .worked{background:var(--card);border:1px solid var(--line);border-radius:13px;padding:1.15rem 1.25rem;margin-top:1rem}
+  .worked .task{font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.02rem;margin:0 0 .9rem;padding-bottom:.8rem;border-bottom:1px solid var(--line)}
+  .worked ol.steps{margin-top:0}
+  .worked .m{font-family:ui-monospace,Menlo,monospace;font-weight:650}
+  .verdict{margin-top:1rem;padding:.7rem 1rem;background:var(--ok-bg);border-radius:9px;font-weight:650;color:var(--ok);font-size:.98rem}
+
+  /* Визуализация */
+  .viz{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1rem 1rem .9rem;margin-top:1rem}
+  .viz canvas{width:100%;height:auto;display:block;border-radius:10px;background:#FCFEFD}
+  .viz-ctl{display:flex;gap:.45rem;flex-wrap:wrap;margin-top:.85rem}
+  .viz-ctl button{font:inherit;font-weight:700;font-size:.87rem;cursor:pointer;border-radius:9px;padding:.5rem .85rem;border:1px solid var(--line);background:var(--paper);color:var(--ink)}
+  .viz-ctl button.go{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .viz-ctl button.on{background:var(--accent-soft);border-color:var(--accent-line);color:var(--accent)}
+  .viz-ctl button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+  .viz-cap{margin:.8rem 0 0;font-size:.95rem;color:var(--muted);min-height:2.8em}
+  .viz-cap b{color:var(--ink)}
+
+  /* Числовая прямая / POE */
+  .board{background:var(--card);border:1px solid var(--line);border-radius:13px;padding:1.05rem 1.2rem;margin-top:1rem}
+  .board h3{margin:0 0 .4rem;font-size:1.05rem;font-weight:750}
+  .board p{margin:.4rem 0;font-size:.97rem}
+
+  /* Практика */
+  .drill{display:flex;flex-direction:column;gap:.7rem;margin-top:1rem}
+  details{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:.85rem 1.05rem}
+  details[open]{border-color:var(--accent)}
+  summary{cursor:pointer;font-weight:640;list-style:none;display:flex;justify-content:space-between;gap:.8rem;align-items:center;flex-wrap:wrap}
+  summary::-webkit-details-marker{display:none}
+  summary:focus-visible{outline:3px solid var(--accent);outline-offset:3px;border-radius:6px}
+  summary .q{font-size:1rem;flex:1;min-width:12ch}
+  summary .tag{font-size:.66rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);border:1px solid var(--line);border-radius:20px;padding:.1rem .55rem;white-space:nowrap}
+  summary::after{content:"ответ";font-size:.79rem;color:var(--accent);font-weight:700;white-space:nowrap}
+  details[open] summary::after{content:"скрыть"}
+  .ans{margin-top:.75rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.96rem;color:var(--muted)}
+  .ans b,.ans .m{color:var(--ink)}
+  .ans .m{font-family:ui-monospace,Menlo,monospace;font-weight:650}
+
+  /* Ошибки */
+  ul.traps{list-style:none;margin:1rem 0 0;padding:0;display:flex;flex-direction:column;gap:.7rem}
+  ul.traps li{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:.85rem 1.05rem .85rem 2.55rem;position:relative;font-size:.97rem}
+  ul.traps li::before{content:"⚠";position:absolute;left:1rem;top:.85rem;color:var(--warm)}
+  ul.traps b{font-weight:700}
+
+  .check{background:var(--card);border:1px solid var(--line);border-radius:13px;padding:1.05rem 1.2rem;margin-top:1rem}
+  .check ol{margin:.3rem 0 0;padding-left:1.3rem}
+  .check li{margin:.45rem 0;font-size:.98rem}
+
+  .wrapup{background:var(--accent);color:#fff;border-radius:16px;padding:1.3rem 1.4rem;margin-top:2.5rem}
+  .wrapup h2{color:#fff;margin:0 0 .5rem}
+  .wrapup p{color:#D8EDE8;margin:.45rem 0;font-size:1rem}
+  .wrapup .big-rule{font-size:1.08rem;font-weight:700;color:#fff}
+  .wrapup .next{font-size:.95rem;color:#C3E3DC;margin-top:1rem;padding-top:1rem;border-top:1px solid rgba(255,255,255,.22)}
+
+  /* Тренажёр */
+  .trainer{background:var(--card);border:1px solid var(--line);border-radius:15px;padding:1.15rem 1.15rem 1.1rem;margin-top:1rem}
+  .tr-modes{display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:.9rem}
+  .tr-modes button{font:inherit;font-size:.82rem;font-weight:700;cursor:pointer;border:1px solid var(--line);background:var(--paper);color:var(--muted);border-radius:20px;padding:.32rem .8rem}
+  .tr-modes button.on{background:var(--accent-soft);border-color:var(--accent-line);color:var(--accent)}
+  .tr-modes button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+  .tr-task{background:var(--accent-soft);border-radius:11px;padding:.95rem 1rem;font-size:1.02rem;line-height:1.55}
+  .tr-task .set{font-family:ui-monospace,Menlo,monospace;font-weight:800;font-size:clamp(1.05rem,4.6vw,1.35rem);display:block;margin-top:.5rem;color:var(--ink);word-spacing:.15em}
+  .tr-task .set .hole{background:#fff;border:2px dashed var(--warm);color:var(--warm);border-radius:6px;padding:0 .35rem}
+  .tr-ctl{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.9rem;align-items:center}
+  .tr-ctl input{flex:1;min-width:140px;font:inherit;padding:.52rem .7rem;border:1px solid var(--line);border-radius:9px;background:#fff;color:var(--ink)}
+  .tr-ctl button{font:inherit;font-weight:700;font-size:.89rem;cursor:pointer;border:1px solid transparent;border-radius:9px;padding:.55rem .95rem}
+  .tr-ctl .chk{background:var(--accent);color:#fff}
+  .tr-ctl .sh{background:transparent;color:var(--accent);border-color:var(--accent)}
+  .tr-ctl .nw{background:var(--accent-soft);color:var(--accent)}
+  .tr-ctl button:focus-visible,.tr-ctl input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+  .tr-res{margin-top:.9rem;font-size:.96rem}
+  .tr-res .head{font-weight:700;padding:.55rem .9rem;border-radius:9px}
+  .tr-res .head.ok{background:var(--ok-bg);color:var(--ok)}
+  .tr-res .head.no{background:var(--no-bg);color:var(--no)}
+  .tr-res .head.info{background:var(--accent-soft);color:var(--accent)}
+  .tr-sol{margin-top:.7rem;background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:.85rem 1rem;font-size:.93rem;line-height:1.8}
+  .tr-sol .row{margin:.15rem 0}
+  .tr-sol .num{font-family:ui-monospace,Menlo,monospace;font-weight:700;color:var(--ink)}
+  .tr-sol .tip{margin-top:.55rem;padding-top:.5rem;border-top:1px dashed var(--line);color:var(--muted);font-size:.9rem;line-height:1.6}
+
+  .tblwrap{overflow-x:auto;margin-top:1rem}
+  table{border-collapse:collapse;width:100%;min-width:380px;font-size:.95rem;background:var(--card)}
+  th,td{border:1px solid var(--line);padding:.55rem .7rem;text-align:left}
+  thead th{background:var(--accent-soft);font-weight:700;color:var(--accent)}
+
+  @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<!--LESSON-NAV-TOP--><style>.lnav{--lnav-accent:#3D5AF1}.lnav a{text-decoration:none;font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif}.lnav-top{max-width:820px;margin:0 auto;padding:.75rem clamp(1rem,4vw,1.5rem) .1rem}.lnav-top a{display:inline-flex;align-items:center;gap:.35rem;color:var(--lnav-accent);font-weight:600;font-size:.9rem}.lnav-top a:hover{text-decoration:underline}.lnav-bot{max-width:820px;margin:2.6rem auto 3rem;padding:1.1rem clamp(1rem,4vw,1.5rem) 0;border-top:1px solid #E4E8EF;display:flex;align-items:stretch;gap:.55rem}.lnav-bot a{min-width:0;display:flex;flex-direction:column;justify-content:center;gap:.15rem;border:1px solid #E4E8EF;border-radius:12px;padding:.65rem .85rem;color:#182233;background:#fff;transition:border-color .1s,transform .08s}.lnav-bot a:hover{border-color:var(--lnav-accent);transform:translateY(-1px)}.lnav-bot .prev,.lnav-bot .next{flex:1 1 0}.lnav-bot .next{text-align:right}.lnav-bot .dir{font-size:.72rem;color:#8A93A6;font-weight:600}.lnav-bot .ttl{font-size:.9rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.lnav-bot .to-cat{flex:0 0 auto;flex-direction:row;align-items:center;justify-content:center;color:var(--lnav-accent);font-weight:700;font-size:.85rem;white-space:nowrap}@media(max-width:420px){.lnav-bot .to-cat span{display:none}.lnav-bot .to-cat{padding:.65rem .7rem}}</style><nav class="lnav lnav-top"><a href="./catalog.html">← Все темы</a></nav><!--/LESSON-NAV-TOP-->
+<div class="page">
+
+  <header class="hero">
+    <p class="eyebrow">Математика · 5 класс</p>
+    <h1>Среднее<br>арифметическое</h1>
+    <p class="lede">Одно число вместо целого списка. То самое, что получится, если разделить всё поровну между всеми.</p>
+  </header>
+
+  <section>
+    <p class="kicker">Зачем это нужно</p>
+    <h2>Длинный список — <span class="em">в одно число</span></h2>
+    <div class="lead-in">
+      <p><b>Среднее арифметическое</b> — это «честное» число, которым описывают сразу всю группу значений.</p>
+      <p>Ты натыкаешься на него каждый день: средняя оценка за четверть, средняя температура за неделю, средняя скорость в пути, средний расход бензина, средняя цена покупки. Фраза «в среднем ученик читает 30 страниц в день» — это ровно оно.</p>
+    </div>
+    <p>Зачем оно нужно? Чтобы сравнивать. Вместо длинного списка («понедельник 5, вторник 18, среда 22…») остаётся одно число. У какого класса средний балл выше? В каком месяце теплее? Одно число отвечает сразу.</p>
+    <div class="myth">
+      <p style="margin:.2rem 0"><b>Миф, который надо снести сразу.</b> Многие думают, что среднее — это «число посередине между самым большим и самым маленьким». Нет. Среднее зависит от <strong>всех</strong> чисел набора, а не только от крайних. Ниже увидишь почему.</p>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Что вспомнить перед стартом</p>
+    <h2>Деление — твой главный инструмент</h2>
+    <div class="recall">
+      <p>Среднее ты считаешь делением, так что освежи <strong>деление десятичных дробей</strong>.</p>
+      <p>Запомни сразу: результат деления <strong>не обязан быть целым</strong>. Сумма не делится нацело — в ответе спокойно появится десятичная дробь вроде <span class="mono">6,4</span>. Это не ошибка.</p>
+      <p>И ещё пригодится аккуратность в сложении: сумму из десятка чисел легко запороть, если торопиться.</p>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Суть</p>
+    <h2>Раздать всё <span class="em">поровну</span></h2>
+    <p>Представь: у трёх друзей есть <span class="mono">4</span>, <span class="mono">6</span> и <span class="mono">8</span> конфет. Всего конфет <span class="mono">4 + 6 + 8 = 18</span>.</p>
+    <p>Высыпаем всё в одну кучу и раздаём поровну на троих: <span class="mono">18 : 3 = 6</span>. Каждому по 6 конфет. Вот это <span class="mono">6</span> и есть среднее арифметическое.</p>
+    <p>Весь смысл в одной фразе: <strong>сколько было бы у каждого, если бы поделили всё поровну</strong>. Поэтому среднее всегда лежит между самым маленьким и самым большим числом набора, но <strong>не обязательно ровно посередине</strong>.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Правило</p>
+    <h2>Определение и формула</h2>
+    <p><strong>Средним арифметическим</strong> нескольких чисел называют частное от деления суммы этих чисел на их количество.</p>
+
+    <div class="hero-formula">
+      <p class="lbl">Как это записывают</p>
+      <div class="eq"><b>среднее</b> = (сумма всех чисел) : (количество чисел)</div>
+      <p class="note">Например, для трёх чисел a, b, c: &nbsp;среднее = (a + b + c) : 3</p>
+    </div>
+
+    <p style="margin-top:1.2rem"><strong>Как считать — три шага:</strong></p>
+    <ol class="steps">
+      <li>Сложи все числа — найди <strong>сумму</strong>.</li>
+      <li>Сосчитай, сколько чисел в наборе, — это <strong>количество</strong>.</li>
+      <li>Раздели сумму на количество.</li>
+    </ol>
+
+    <div class="myth" style="border-left-color:var(--accent);background:var(--accent-soft)">
+      <p style="margin:.2rem 0"><b style="color:var(--accent)">Держи в голове два разных числа.</b> Сумма — сколько всего. Количество — сколько слагаемых. Делим всегда на <strong>количество</strong>: чисел пять — делим на 5, чисел семь — на 7. И ответ часто выходит десятичной дробью. Средний балл вполне может быть <span class="mono">4,2</span>.</p>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Разбираем вместе</p>
+    <h2>Эталонный пример — думаю вслух</h2>
+    <div class="worked">
+      <p class="task">Найди среднее арифметическое чисел 12, 7, 9, 16.</p>
+      <ol class="steps">
+        <li>Складываю все числа. Среднее — это «всё, поделённое поровну», значит сначала надо собрать это «всё»: <span class="m">12 + 7 + 9 + 16 = 44</span>.</li>
+        <li>Считаю, <strong>сколько</strong> чисел в наборе. Четыре — значит делю на 4. Не на 2, не на сумму, а именно на количество.</li>
+        <li>Делю сумму на количество: <span class="m">44 : 4 = 11</span>.</li>
+        <li>Проверяю на здравый смысл: 11 лежит между самым маленьким числом (7) и самым большим (16). Похоже на правду. Вышло бы 3 или 40 — я бы где-то ошибся.</li>
+      </ol>
+      <div class="verdict">Ответ: 11.</div>
+    </div>
+
+    <p style="margin-top:1.4rem">Теперь дострой рассуждение сам. Температуру в полдень измеряли 5 дней: <span class="mono">18, 21, 17, 20, 19</span> градусов. Найди среднюю температуру.</p>
+    <div class="drill">
+      <details>
+        <summary><span class="q">Шаг 1. Сумма: 18 + 21 + 17 + 20 + 19 = ?</span><span class="tag">дострой</span></summary>
+        <div class="ans">Складываем по порядку: <span class="m">18 + 21 = 39</span>, <span class="m">39 + 17 = 56</span>, <span class="m">56 + 20 = 76</span>, <span class="m">76 + 19 = 95</span>. Сумма равна <b>95</b>.</div>
+      </details>
+      <details>
+        <summary><span class="q">Шаг 2. Количество чисел: их сколько?</span><span class="tag">дострой</span></summary>
+        <div class="ans">Измеряли <b>5</b> дней, значит и чисел пять. Делим на 5.</div>
+      </details>
+      <details>
+        <summary><span class="q">Шаг 3. Среднее: 95 : 5 = ?</span><span class="tag">дострой</span></summary>
+        <div class="ans"><span class="m">95 : 5 = 19</span>. Средняя температура — <b>19 градусов</b>. Проверка: 19 лежит между 17 и 21, всё сходится.</div>
+      </details>
+    </div>
+
+    <p style="margin-top:1.4rem">И ещё один — целиком сам. За контрольные ученик получил оценки <span class="mono">4, 5, 3, 5, 4, 3</span>. Найди средний балл.</p>
+    <div class="drill">
+      <details>
+        <summary><span class="q">Проверить средний балл</span><span class="tag">сам</span></summary>
+        <div class="ans">Сумма: <span class="m">4 + 5 + 3 + 5 + 4 + 3 = 24</span>. Оценок <b>6</b>. Средний балл: <span class="m">24 : 6 = 4</span>.</div>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Увидеть глазами · интерактив</p>
+    <h2>Столбики, которые <span class="em">выравниваются</span></h2>
+    <p>Самая честная картинка темы. Столбики — стопки кубиков высотой 4, 6 и 8. Среднее — та высота, до которой они выровняются, если «лишние» кубики переложить с высоких столбиков на низкие. Ничего не добавляем и не выбрасываем, только перекладываем.</p>
+    <div class="viz">
+      <canvas id="barCanvas" width="640" height="330" aria-label="Столбики набора выравниваются до высоты среднего арифметического"></canvas>
+      <div class="viz-ctl">
+        <button type="button" class="set on" data-set="0">Набор 4, 6, 8</button>
+        <button type="button" class="set" data-set="1">Набор 2, 2, 2, 8</button>
+        <button type="button" class="go" id="vizGo">Выровнять</button>
+        <button type="button" id="vizReset">Сбросить</button>
+      </div>
+      <p class="viz-cap" id="vizCap"></p>
+    </div>
+    <p style="font-size:.93rem;color:var(--muted)">Не жми кнопку на втором наборе сразу. Сначала <strong>предскажи</strong>: среднее для <span class="mono">2, 2, 2, 8</span> ближе к 2 или к 8? Потом проверь и объясни себе почему.</p>
+
+    <div class="board">
+      <h3>Второе представление: числовая прямая</h3>
+      <p>Отметь числа набора точками на прямой. Среднее — точка <strong>равновесия</strong>: сумма расстояний влево от неё равна сумме расстояний вправо.</p>
+      <p>Возьми набор <span class="mono">1, 2, 99</span>. Кажется, «посередине» — это 50. Но равновесие вовсе не там: <span class="mono">(1 + 2 + 99) : 3 = 102 : 3 = 34</span>. Две маленькие точки перетягивают влево: их двое, а большая одна.</p>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Тренажёр · бесконечная практика</p>
+    <h2>Считай, пока не станет автоматом</h2>
+    <p>Два типа заданий: найти среднее арифметическое набора и обратная задача — по известному среднему найти пропущенное число. Вводи ответ (дробный — через запятую или точку) и проверяй себя. Не сошлось — открывай пошаговое решение.</p>
+    <div class="trainer">
+      <div class="tr-modes" id="trModes">
+        <button type="button" data-mode="mix" class="on">Вперемешку</button>
+        <button type="button" data-mode="avg">Найди среднее</button>
+        <button type="button" data-mode="miss">Найди пропущенное</button>
+      </div>
+      <div class="tr-task" id="trTask"></div>
+      <div class="tr-ctl">
+        <input id="trAns" type="text" inputmode="decimal" placeholder="ответ, напр. 11 или 3,5" aria-label="Твой ответ">
+        <button class="chk" id="trCheck" type="button">Проверить</button>
+        <button class="sh" id="trShow" type="button">Решение</button>
+        <button class="nw" id="trNew" type="button">🎲 Новое</button>
+      </div>
+      <div class="tr-res" id="trRes"></div>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Теперь ты · от простого к сложному</p>
+    <h2>Практика</h2>
+    <div class="drill">
+      <details>
+        <summary><span class="q">1) На что нужно поделить сумму чисел, чтобы получить среднее арифметическое?</span><span class="tag">понимание</span></summary>
+        <div class="ans">На <b>количество чисел</b> — на то, сколько всего значений в наборе. Не на два, не на сумму, не на самое большое число.</div>
+      </details>
+      <details>
+        <summary><span class="q">2) Найди среднее арифметическое чисел 30, 40, 50, 60.</span><span class="tag">применение</span></summary>
+        <div class="ans">Сумма: <span class="m">30 + 40 + 50 + 60 = 180</span>. Чисел <b>4</b>. Среднее: <span class="m">180 : 4 = 45</span>.</div>
+      </details>
+      <details>
+        <summary><span class="q">3) Найди среднее арифметическое чисел 1, 2 и 99.</span><span class="tag">применение</span></summary>
+        <div class="ans">Сумма: <span class="m">1 + 2 + 99 = 102</span>. Чисел <b>3</b>. Среднее: <span class="m">102 : 3 = 34</span>. Не 50! Проверь себя: 34 лежит между 1 и 99 — всё честно.</div>
+      </details>
+      <details>
+        <summary><span class="q">4) Среднее четырёх чисел равно 10. К набору добавили пятое число — 10. Изменится ли среднее?</span><span class="tag">анализ</span></summary>
+        <div class="ans"><b>Нет, останется 10.</b> Новое число равно прежнему среднему, выравнивать нечего: столбик добавили ровно той высоты, на которой все уже стоят. Если хочешь посчитать: сумма четырёх чисел <span class="m">10 · 4 = 40</span>, стало <span class="m">40 + 10 = 50</span>, чисел стало 5, среднее <span class="m">50 : 5 = 10</span>.</div>
+      </details>
+      <details>
+        <summary><span class="q">5) Найди ошибку: ученик нашёл среднее чисел 4, 6, 8 так — (4 + 6 + 8) : 2 = 9.</span><span class="tag">анализ</span></summary>
+        <div class="ans">Сумму он посчитал верно: <span class="m">4 + 6 + 8 = 18</span>. Ошибка в делителе: чисел <b>три</b>, а он поделил на 2. Верно так: <span class="m">18 : 3 = 6</span>. Здравый смысл ловит промах сразу: 9 больше, чем 8, а среднее не бывает больше самого большого числа набора.</div>
+      </details>
+      <details>
+        <summary><span class="q">6) Обратная задача: среднее трёх чисел равно 7. Два из них — 5 и 6. Найди третье.</span><span class="tag">анализ</span></summary>
+        <div class="ans">Разматываем назад. Раз среднее трёх чисел равно 7, то их сумма равна <span class="m">7 · 3 = 21</span>. Известные два дают <span class="m">5 + 6 = 11</span>. Значит третье число: <span class="m">21 − 11 = 10</span>. Проверка: <span class="m">(5 + 6 + 10) : 3 = 21 : 3 = 7</span>. Сходится.</div>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Где чаще всего ошибаются</p>
+    <h2>Четыре ловушки</h2>
+    <ul class="traps">
+      <li><b>Делят сумму не на то количество.</b> Чемпион по частоте: сумму пяти чисел посчитали, а поделили на 4 или на 2. <em>Как избежать:</em> ещё до деления подпиши отдельно «чисел всего 5» и дели именно на это число.</li>
+      <li><b>Забывают сложить все значения.</b> В длинном списке одно число теряется на раз. <em>Как избежать:</em> вычёркивай карандашом каждое число по мере сложения.</li>
+      <li><b>Путают среднее с «серединой между крайними».</b> Думают, что для набора <span class="mono">1, 2, 99</span> среднее равно <span class="mono">(1 + 99) : 2 = 50</span>. А оно <span class="mono">(1 + 2 + 99) : 3 = 34</span>. <em>Как избежать:</em> в формуле участвует <strong>каждое</strong> число набора, а не только наибольшее и наименьшее.</li>
+      <li><b>Считают, что среднее обязано быть целым.</b> Получилось <span class="mono">44 : 8 = 5,5</span> — это и есть правильное среднее. Совпадать с каким-то числом набора оно тоже не обязано. Не округляй без нужды.</li>
+    </ul>
+
+    <div class="tblwrap">
+      <table>
+        <thead><tr><th>Набор</th><th>Сумма : количество</th><th>Среднее</th></tr></thead>
+        <tbody>
+          <tr><td class="mono">4, 6, 8</td><td class="mono">18 : 3</td><td class="mono">6</td></tr>
+          <tr><td class="mono">1, 2, 99</td><td class="mono">102 : 3</td><td class="mono">34</td></tr>
+          <tr><td class="mono">2, 2, 2, 8</td><td class="mono">14 : 4</td><td class="mono">3,5</td></tr>
+          <tr><td class="mono">12, 7, 9, 16</td><td class="mono">44 : 4</td><td class="mono">11</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Проверь понимание</p>
+    <h2>Объясни своими словами</h2>
+    <div class="check">
+      <p style="margin-top:0">Ответь вслух, не подглядывая в урок:</p>
+      <ol>
+        <li>На что нужно поделить сумму чисел, чтобы найти их среднее арифметическое?</li>
+        <li>Найди среднее арифметическое чисел 10 и 20.</li>
+        <li>Верно ли, что среднее всегда стоит ровно посередине между самым большим и самым маленьким числом набора?</li>
+      </ol>
+      <div class="drill" style="margin-top:1rem">
+        <details>
+          <summary><span class="q">Сверить ответы</span></summary>
+          <div class="ans">1) На <b>количество чисел</b> в наборе. 2) <span class="m">(10 + 20) : 2 = 30 : 2 = 15</span>. 3) <b>Нет.</b> Среднее зависит от всех чисел набора: у <span class="m">1, 2, 99</span> оно равно 34, а вовсе не 50.</div>
+        </details>
+      </div>
+      <p style="margin-bottom:0;font-size:.95rem;color:var(--muted)">Запнулся хоть на одном вопросе — вернись к разделу «Раздать всё поровну» и прокрути столбики ещё раз.</p>
+    </div>
+  </section>
+
+  <div class="wrapup">
+    <h2>Запомни главное</h2>
+    <p class="big-rule">Среднее арифметическое = сумма всех чисел : количество чисел.</p>
+    <p>Это результат равного дележа: всё сложили в кучу и раздали поровну. Столбики выровнялись — высота, на которой они встали, и есть среднее.</p>
+    <p class="next">👉 Дальше это пригодится в <strong>задачах на движение</strong>: там появятся скорость, время и расстояние, а связка «сумма и количество» останется тем же рабочим инструментом.</p>
+  </div>
+
+</div>
+
+<script>
+/* Визуализация: столбики выравниваются до среднего */
+(function(){
+  var canvas=document.getElementById('barCanvas'); if(!canvas) return;
+  var ctx=canvas.getContext('2d');
+  var capEl=document.getElementById('vizCap');
+  var SETS=[[4,6,8],[2,2,2,8]];
+  var si=0, cur=SETS[0].slice(), raf=null, leveled=false;
+  var W=640,H=330,dpr=1;
+  var reduce=window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function fmt(x){ var n=Math.round(x*10)/10; return String(n).replace('.',','); }
+  function sum(a){ var s=0; for(var i=0;i<a.length;i++) s+=a[i]; return s; }
+  function mean(a){ return sum(a)/a.length; }
+
+  function resize(){
+    var cssW=canvas.clientWidth||640;
+    dpr=Math.min(window.devicePixelRatio||1,2);
+    W=cssW; H=Math.max(230, Math.round(cssW*0.52));
+    canvas.width=Math.round(W*dpr); canvas.height=Math.round(H*dpr);
+    canvas.style.height=H+'px';
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+  }
+
+  function draw(vals){
+    var base=SETS[si], m=mean(base);
+    var padX=Math.max(14, W*0.05), bottom=H-30, top=34;
+    var maxV=Math.max.apply(null, base);
+    var unit=(bottom-top)/(maxV+0.6);
+    var n=vals.length, slot=(W-2*padX)/n;
+    var bw=Math.min(slot*0.6, 68);
+
+    ctx.clearRect(0,0,W,H);
+    ctx.textAlign='center';
+    ctx.textBaseline='alphabetic';
+
+    /* линия среднего */
+    var my=bottom-m*unit;
+    ctx.save();
+    ctx.setLineDash([6,5]); ctx.strokeStyle='#1F7A6B'; ctx.lineWidth=2;
+    ctx.beginPath(); ctx.moveTo(padX*0.5, my); ctx.lineTo(W-padX*0.5, my); ctx.stroke();
+    ctx.restore();
+    ctx.fillStyle='#1F7A6B';
+    ctx.font='700 12px system-ui,-apple-system,"Segoe UI",Roboto,sans-serif';
+    ctx.textAlign='left';
+    ctx.fillText('среднее = '+fmt(m), padX*0.5+2, Math.max(12, my-6));
+
+    /* столбики */
+    for(var i=0;i<n;i++){
+      var x=padX+slot*i+(slot-bw)/2;
+      var h=vals[i]*unit;
+      var y=bottom-h;
+      ctx.fillStyle='#E3F1EE';
+      ctx.fillRect(x,y,bw,h);
+      ctx.strokeStyle='#1F7A6B'; ctx.lineWidth=2;
+      ctx.strokeRect(x+1,y+1,bw-2,h-2);
+      /* деления «кубиков» */
+      ctx.strokeStyle='#FFFFFF'; ctx.lineWidth=1.5;
+      for(var k=1;k<vals[i];k++){
+        var ky=bottom-k*unit;
+        ctx.beginPath(); ctx.moveTo(x+2,ky); ctx.lineTo(x+bw-2,ky); ctx.stroke();
+      }
+      ctx.fillStyle='#1D2B27';
+      ctx.font='800 14px ui-monospace,Menlo,Consolas,monospace';
+      ctx.textAlign='center';
+      ctx.fillText(fmt(vals[i]), x+bw/2, y-7);
+    }
+
+    /* базовая линия */
+    ctx.strokeStyle='#B9DBD4'; ctx.lineWidth=2;
+    ctx.beginPath(); ctx.moveTo(padX*0.5,bottom); ctx.lineTo(W-padX*0.5,bottom); ctx.stroke();
+
+    ctx.fillStyle='#5D6B67';
+    ctx.font='600 12px system-ui,-apple-system,"Segoe UI",Roboto,sans-serif';
+    ctx.textAlign='center';
+    ctx.fillText('сумма '+sum(base)+' : количество '+base.length+' = '+fmt(m), W/2, bottom+20);
+  }
+
+  function caption(){
+    var base=SETS[si], m=mean(base);
+    if(!leveled){
+      capEl.innerHTML='Столбики разной высоты: '+base.join(', ')+'. Как думаешь, <b>на какой высоте</b> они выровняются, если переложить лишние кубики с высоких на низкие?';
+    } else if(si===0){
+      capEl.innerHTML='Все выровнялись на высоте <b>6</b>. С восьмёрки сняли 2 кубика и отдали четвёрке — и три столбика стали одинаковыми. Это и есть среднее: <b>18 : 3 = 6</b>.';
+    } else {
+      capEl.innerHTML='Все выровнялись на высоте <b>3,5</b> — ближе к 2, чем к 8. Двоек три, а восьмёрка одна, вот они и «перетягивают» среднее к себе: <b>14 : 4 = 3,5</b>.';
+    }
+  }
+
+  function animate(to){
+    if(raf){ cancelAnimationFrame(raf); raf=null; }
+    var from=cur.slice();
+    if(reduce){ cur=to.slice(); draw(cur); caption(); return; }
+    var t0=null, dur=900;
+    function step(ts){
+      if(t0===null) t0=ts;
+      var p=Math.min(1,(ts-t0)/dur);
+      var e=p<0.5 ? 2*p*p : 1-Math.pow(-2*p+2,2)/2;
+      cur=from.map(function(v,i){ return v+(to[i]-v)*e; });
+      draw(cur);
+      if(p<1){ raf=requestAnimationFrame(step); } else { raf=null; caption(); }
+    }
+    raf=requestAnimationFrame(step);
+  }
+
+  function reset(keepCaption){
+    if(raf){ cancelAnimationFrame(raf); raf=null; }
+    cur=SETS[si].slice(); leveled=false; draw(cur);
+    if(!keepCaption) caption();
+  }
+
+  document.getElementById('vizGo').addEventListener('click',function(){
+    var m=mean(SETS[si]);
+    leveled=true;
+    animate(SETS[si].map(function(){ return m; }));
+    if(reduce) caption();
+  });
+  document.getElementById('vizReset').addEventListener('click',function(){ reset(); });
+
+  Array.prototype.forEach.call(document.querySelectorAll('.viz-ctl .set'),function(b){
+    b.addEventListener('click',function(){
+      si=+b.getAttribute('data-set');
+      Array.prototype.forEach.call(document.querySelectorAll('.viz-ctl .set'),function(o){ o.classList.remove('on'); });
+      b.classList.add('on');
+      reset();
+    });
+  });
+
+  window.addEventListener('resize',function(){ resize(); draw(cur); });
+  resize(); reset();
+})();
+</script>
+
+<script>
+/* Тренажёр: среднее арифметическое + обратная задача */
+(function(){
+  var taskEl=document.getElementById('trTask'); if(!taskEl) return;
+  var ansEl=document.getElementById('trAns'), resEl=document.getElementById('trRes');
+  var mode='mix', q=null;
+
+  var COUNT={2:'двух',3:'трёх',4:'четырёх',5:'пяти',6:'шести'};
+  function ri(a,b){ return Math.floor(Math.random()*(b-a+1))+a; }
+  function sum(a){ var s=0; for(var i=0;i<a.length;i++) s+=a[i]; return s; }
+  function fmt(x){
+    var n=Math.round(x*1000)/1000;
+    var s=String(Math.abs(n)).replace('.',',');
+    return (n<0?'−':'')+s;
+  }
+  function shuffle(a){
+    for(var i=a.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)); var t=a[i]; a[i]=a[j]; a[j]=t; }
+    return a;
+  }
+
+  /* ——— генератор: найди среднее ——— */
+  function genAvg(){
+    var r=Math.random();
+    var kind = r<0.38 ? 'int' : (r<0.58 ? 'hit' : (r<0.76 ? 'zero' : 'dec'));
+    for(var t=0;t<500;t++){
+      var arr=[], n, m, i, s;
+      if(kind==='dec'){
+        n = Math.random()<0.5 ? 4 : 5;
+        arr=[]; for(i=0;i<n;i++) arr.push(ri(1,30));
+        s=sum(arr);
+        if(n===5 && s%5!==0) return {type:'avg',arr:arr,ans:s/n,kind:'dec'};
+        if(n===4 && s%4===2) return {type:'avg',arr:arr,ans:s/n,kind:'dec'};
+        continue;
+      }
+      n=ri(3,5); m=ri(3,20); arr=[];
+      if(kind==='hit') arr.push(m);
+      if(kind==='zero') arr.push(0);
+      while(arr.length<n-1) arr.push(ri(Math.max(0,m-9), m+9));
+      var last=n*m-sum(arr);
+      if(last<0 || last>m+14) continue;
+      arr.push(last);
+      var same=true; for(i=1;i<arr.length;i++){ if(arr[i]!==arr[0]) same=false; }
+      if(same) continue;
+      if(kind==='zero' && arr.indexOf(0)<0) continue;
+      shuffle(arr);
+      return {type:'avg',arr:arr,ans:m,kind:kind};
+    }
+    return {type:'avg',arr:[12,7,9,16],ans:11,kind:'int'};
+  }
+
+  /* ——— генератор: найди пропущенное ——— */
+  function genMiss(){
+    for(var t=0;t<500;t++){
+      var n=ri(3,5), m=ri(4,20), known=[], i;
+      for(i=0;i<n-1;i++) known.push(ri(Math.max(0,m-9), m+9));
+      var miss=n*m-sum(known);
+      if(miss<0 || miss>m+16) continue;
+      var pos=ri(0,n-1);
+      var arr=known.slice();
+      arr.splice(pos,0,miss);
+      return {type:'miss',arr:arr,hide:pos,mean:m,ans:miss};
+    }
+    return {type:'miss',arr:[5,6,10],hide:2,mean:7,ans:10};
+  }
+
+  function render(){
+    var h='';
+    if(q.type==='avg'){
+      h='Найди среднее арифметическое чисел:<span class="set">'+q.arr.join(', ')+'</span>';
+    } else {
+      var parts=q.arr.map(function(v,i){ return i===q.hide ? '<span class="hole">?</span>' : v; });
+      h='Среднее арифметическое '+COUNT[q.arr.length]+' чисел равно <b>'+q.mean+'</b>. Найди пропущенное число:'
+        +'<span class="set">'+parts.join(', ')+'</span>';
+    }
+    taskEl.innerHTML=h;
+    resEl.innerHTML='';
+    ansEl.value='';
+  }
+
+  function solution(){
+    var h='<div class="tr-sol">';
+    if(q.type==='avg'){
+      var s=sum(q.arr), n=q.arr.length;
+      h+='<div class="row">Шаг 1. Сумма: <span class="num">'+q.arr.join(' + ')+' = '+s+'</span></div>';
+      h+='<div class="row">Шаг 2. Чисел в наборе: <span class="num">'+n+'</span> — значит делим на '+n+'.</div>';
+      h+='<div class="row">Шаг 3. Среднее: <span class="num">'+s+' : '+n+' = '+fmt(q.ans)+'</span></div>';
+      var tips=[];
+      if(q.kind==='dec') tips.push('Ответ получился десятичной дробью — так и должно быть, сумма не делится на количество нацело. Округлять не нужно.');
+      if(q.kind==='hit') tips.push('Заметил? Среднее совпало с одним из чисел набора. Так бывает, но совпадать оно не обязано.');
+      if(q.kind==='zero') tips.push('В наборе есть ноль. К сумме он ничего не добавляет, но в количестве участвует наравне со всеми — не забудь посчитать его.');
+      tips.push('Проверка смысла: '+fmt(q.ans)+' лежит между самым маленьким ('+Math.min.apply(null,q.arr)+') и самым большим ('+Math.max.apply(null,q.arr)+') числом набора.');
+      h+='<div class="tip">'+tips.join('<br>')+'</div>';
+    } else {
+      var n2=q.arr.length, total=q.mean*n2;
+      var known=q.arr.filter(function(v,i){ return i!==q.hide; });
+      h+='<div class="row">Шаг 1. Сумма всех '+n2+' чисел: <span class="num">'+q.mean+' · '+n2+' = '+total+'</span></div>';
+      h+='<div class="row">Шаг 2. Сумма известных: <span class="num">'+known.join(' + ')+' = '+sum(known)+'</span></div>';
+      h+='<div class="row">Шаг 3. Пропущенное число: <span class="num">'+total+' − '+sum(known)+' = '+q.ans+'</span></div>';
+      h+='<div class="tip">Идея обратной задачи: из среднего восстанавливаем сумму (умножением на количество), а из суммы вычитаем всё известное.</div>';
+    }
+    return h+'</div>';
+  }
+
+  function check(){
+    var raw=ansEl.value.trim().replace(/\s+/g,'').replace(',','.').replace(/−/g,'-');
+    if(!raw){ resEl.innerHTML='<div class="head no">Введи ответ или нажми «Решение».</div>'; return; }
+    var got=parseFloat(raw);
+    if(isNaN(got)){ resEl.innerHTML='<div class="head no">Не понял запись. Введи число, дробное — через запятую: 3,5</div>'; return; }
+    if(Math.abs(got-q.ans)<0.005){
+      resEl.innerHTML='<div class="head ok">✓ Верно! Ответ '+fmt(q.ans)+'.</div>'+solution();
+    } else {
+      var hint='';
+      if(q.type==='avg' && Math.abs(got-sum(q.arr))<0.005) hint=' Похоже, ты остановился на сумме — её ещё надо поделить на количество чисел.';
+      else if(q.type==='avg' && got>Math.max.apply(null,q.arr)) hint=' Твой ответ больше самого большого числа набора — так среднее не бывает. Проверь, на что делил.';
+      resEl.innerHTML='<div class="head no">✗ Пока не то.'+hint+' Посмотри разбор ниже.</div>'+solution();
+    }
+  }
+
+  function newTask(focus){
+    var pick = mode==='mix' ? (Math.random()<0.55?'avg':'miss') : mode;
+    q = pick==='avg' ? genAvg() : genMiss();
+    render();
+    if(focus) ansEl.focus();
+  }
+
+  Array.prototype.forEach.call(document.querySelectorAll('#trModes button'),function(b){
+    b.addEventListener('click',function(){
+      mode=b.getAttribute('data-mode');
+      Array.prototype.forEach.call(document.querySelectorAll('#trModes button'),function(o){ o.classList.remove('on'); });
+      b.classList.add('on');
+      newTask(false);
+    });
+  });
+  document.getElementById('trNew').addEventListener('click',function(){ newTask(true); });
+  document.getElementById('trCheck').addEventListener('click',check);
+  document.getElementById('trShow').addEventListener('click',function(){
+    resEl.innerHTML='<div class="head info">Пошаговое решение:</div>'+solution();
+  });
+  ansEl.addEventListener('keydown',function(e){ if(e.key==='Enter') check(); });
+
+  /* стартовая задача — валидная задача типа «найди среднее» */
+  q={type:'avg',arr:[12,7,9,16],ans:11,kind:'int'};
+  render();
+})();
+</script>
+<!--LESSON-NAV-BOT--><nav class="lnav lnav-bot"><a class="prev" href="./m5-okruglenie-desyatichnyh.html"><span class="dir">← Предыдущая</span><span class="ttl">Округление десятичных дробей</span></a><a class="to-cat" href="./catalog.html">📚 <span>Все темы</span></a><a class="next" href="./m5-perevod-drob-desyatichnaya.html"><span class="dir">Следующая →</span><span class="ttl">Связь обыкновенных и десятичных дробей</span></a></nav><!--/LESSON-NAV-BOT-->

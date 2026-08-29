@@ -1,0 +1,754 @@
+<!doctype html>
+<!-- humanized: humanizer-ru, 2026-08-28, тире возвращено -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Связь обыкновенных и десятичных дробей — математика, 5 класс</title>
+<style>
+  :root{
+    --paper:#FBF9F5;
+    --card:#FFFFFF;
+    --ink:#26202E;
+    --muted:#6B6473;
+    --line:#E7E2E8;
+    --brand:#6A3EA1;         /* основной */
+    --brand-soft:#EFE7F6;
+    --num:#CF5A34;           /* числитель дроби */
+    --num-soft:#FBEADF;
+    --num-line:#F0CDB8;
+    --den:#3A5AA0;           /* знаменатель дроби */
+    --den-soft:#E5EBF6;
+    --den-line:#C6D3EC;
+    --d1:#6A3EA1;            /* направление 1: десятичная → обыкновенная */
+    --d1-soft:#EFE7F6;
+    --d1-line:#D8C8EA;
+    --d2:#1F7A66;            /* направление 2: обыкновенная → десятичная */
+    --d2-soft:#E2F1ED;
+    --d2-line:#B7DDD3;
+    --ok:#2E8B57;
+    --ok-soft:#E7F4EC;
+    --no:#C0455B;
+    --no-soft:#F9E9EC;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper)}
+  .wrap{
+    max-width:760px;margin:0 auto;
+    padding:clamp(1.4rem,4vw,3rem) clamp(1.1rem,4vw,2rem) 4.5rem;
+    color:var(--ink);
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    font-size:17.5px;line-height:1.66;-webkit-font-smoothing:antialiased;
+  }
+  .mono{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-weight:600;font-variant-numeric:tabular-nums}
+
+  header.hero{border-bottom:3px solid var(--brand);padding-bottom:1.3rem;margin-bottom:.4rem}
+  .eyebrow{font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--brand);font-weight:700;margin:0 0 .5rem}
+  h1{font-family:Georgia,"Times New Roman",serif;font-size:clamp(1.9rem,6.6vw,2.9rem);line-height:1.05;margin:0;font-weight:700;letter-spacing:-.01em;text-wrap:balance}
+  .lede{font-size:1.08rem;color:var(--muted);margin:.8rem 0 0;max-width:60ch;text-wrap:pretty}
+
+  section{margin-top:2.5rem}
+  h2{font-family:Georgia,serif;font-size:1.4rem;font-weight:700;margin:0 0 .2rem;letter-spacing:-.005em;text-wrap:balance}
+  h3{font-size:1.1rem;font-weight:700;margin:1.6rem 0 .2rem}
+  .kicker{font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:600;margin:0 0 .8rem;display:flex;align-items:center;gap:.6rem}
+  .kicker::before{content:"";width:1.4rem;height:2px;background:var(--brand);border-radius:2px}
+  p{margin:.7rem 0}
+  strong{font-weight:680}
+
+  /* CSS-дробь: числитель оранжевый, знаменатель синий */
+  .frac{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;
+    font-family:ui-monospace,Menlo,monospace;font-weight:800;line-height:1.02;margin:0 .12em}
+  .frac .fn{color:var(--num);padding:0 .4em}
+  .frac .fl{width:100%;height:2px;background:var(--ink);margin:.1em 0}
+  .frac .fd{color:var(--den);padding:0 .4em}
+  .frac.big{font-size:1.5em}
+  .dec{font-family:ui-monospace,Menlo,monospace;font-weight:800;font-variant-numeric:tabular-nums}
+
+  .lead-in{background:var(--brand-soft);border-radius:14px;padding:1.1rem 1.3rem;font-size:1.02rem}
+  .lead-in p{margin:.45rem 0}
+  .lead-in b{color:var(--brand)}
+
+  .recall{background:var(--den-soft);border-radius:12px;padding:1rem 1.2rem;font-size:.98rem}
+  .recall p{margin:.45rem 0}
+  .recall b{color:var(--den)}
+
+  /* Ядро */
+  .core{background:var(--ink);color:#fff;border-radius:16px;padding:1.5rem 1.3rem;margin-top:1rem;text-align:center}
+  .core .eqline{display:flex;align-items:center;justify-content:center;gap:.7rem;flex-wrap:wrap;
+    font-family:ui-monospace,Menlo,monospace;font-weight:800;font-size:clamp(1.6rem,8vw,2.4rem)}
+  .core .eqline .d{color:#C7A9F0}
+  .core .eqline .eq{color:#fff;opacity:.7}
+  .core .eqline .frac .fn{color:#F0955F}
+  .core .eqline .frac .fl{background:#fff;height:3px}
+  .core .eqline .frac .fd{color:#8FA9E0}
+  .core .say{font-size:1rem;color:#E4DEEA;margin:1.1rem 0 0}
+  .core .say b{color:#F0955F}
+  .core .tbl{margin-top:1.2rem;padding-top:1.1rem;border-top:1px solid rgba(255,255,255,.16);display:grid;gap:.55rem}
+  .core .tbl .r{display:flex;align-items:center;justify-content:center;gap:.55rem;flex-wrap:wrap;font-size:.97rem;color:#E4DEEA}
+  .core .tbl .r b{color:#C7A9F0}
+
+  /* Две карточки-направления */
+  .dirs{display:grid;gap:.9rem;margin-top:1rem}
+  @media(min-width:620px){.dirs{grid-template-columns:1fr 1fr}}
+  .dir{border-radius:16px;padding:1.15rem 1.2rem;border:2px solid}
+  .dir.a{background:var(--d1-soft);border-color:var(--d1-line)}
+  .dir.b{background:var(--d2-soft);border-color:var(--d2-line)}
+  .dir .cap{font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;font-weight:700;margin:0}
+  .dir.a .cap{color:var(--d1)} .dir.b .cap{color:var(--d2)}
+  .dir h3{margin:.25rem 0 .6rem;font-size:1.12rem;font-weight:800}
+  .dir ol{margin:0;padding-left:1.15rem;display:flex;flex-direction:column;gap:.4rem}
+  .dir li{font-size:.96rem}
+  .dir .ex{margin:.8rem 0 0;padding-top:.7rem;border-top:1px dashed rgba(0,0,0,.14);font-size:.94rem}
+
+  .note{border-left:4px solid var(--brand);background:var(--brand-soft);border-radius:0 10px 10px 0;padding:.85rem 1.1rem;margin-top:1rem;font-size:.98rem}
+  .note b{color:var(--brand)}
+  .note p{margin:.4rem 0}
+
+  /* Разбор по шагам */
+  .worked{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.2rem 1.3rem;margin-top:1rem}
+  .worked .task{font-weight:700;font-size:1.02rem;margin:0 0 1rem;padding-bottom:.8rem;border-bottom:1px solid var(--line)}
+  ol.steps{margin:0;padding:0;list-style:none;counter-reset:s;display:flex;flex-direction:column;gap:.7rem}
+  ol.steps li{position:relative;padding-left:2.1rem;counter-increment:s;font-size:.98rem}
+  ol.steps li::before{content:counter(s);position:absolute;left:0;top:.05rem;width:1.5rem;height:1.5rem;border-radius:50%;
+    background:var(--brand-soft);color:var(--brand);font-size:.82rem;font-weight:700;display:flex;align-items:center;justify-content:center}
+  ol.steps .why{color:var(--muted);font-style:italic}
+  .verdict{margin-top:1rem;padding:.7rem 1rem;background:var(--ok-soft);border-radius:9px;font-weight:650;color:var(--ok);font-size:1rem}
+  .fill{display:inline-block;min-width:2.4rem;border-bottom:2px solid var(--num);text-align:center;font-weight:800;color:var(--num)}
+
+  /* Визуализация */
+  .viz{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:1.15rem 1.1rem 1.25rem;margin-top:1rem}
+  .viz canvas{width:100%;height:auto;display:block;border-radius:10px}
+  .viz .readout{text-align:center;font-family:ui-monospace,Menlo,monospace;font-weight:800;font-size:clamp(1rem,4.4vw,1.3rem);margin:.7rem 0 .1rem;display:flex;align-items:center;justify-content:center;gap:.5rem;flex-wrap:wrap}
+  .viz .readout .eqs{color:var(--muted);font-weight:600}
+  .viz .sub{text-align:center;color:var(--muted);font-size:.9rem;margin:.35rem 0 .9rem;min-height:2.6em}
+  .viz .ctl{display:flex;align-items:center;gap:.7rem;flex-wrap:wrap;justify-content:center}
+  .viz input[type=range]{flex:1 1 220px;min-width:170px;accent-color:var(--brand)}
+  .viz input[type=range]:focus-visible{outline:2px solid var(--brand);outline-offset:3px}
+  .presets{display:flex;gap:.4rem;justify-content:center;margin-bottom:.8rem;flex-wrap:wrap}
+  .presets button{font:inherit;font-size:.87rem;font-weight:700;font-family:ui-monospace,Menlo,monospace;border-radius:9px;padding:.32rem .75rem;cursor:pointer;border:1px solid var(--line);background:var(--paper);color:var(--muted)}
+  .presets button[aria-pressed=true]{background:var(--brand-soft);border-color:var(--brand);color:var(--brand)}
+  .presets button:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+
+  /* Таблица соответствий */
+  .tblwrap{overflow-x:auto;margin-top:1rem}
+  table{border-collapse:collapse;width:100%;min-width:430px;font-size:.96rem}
+  th,td{border:1px solid var(--line);padding:.55rem .7rem;text-align:center}
+  thead th{background:#F7F5F9;font-weight:700}
+  td.l{text-align:left;color:var(--muted);font-size:.9rem}
+
+  /* Тренажёр */
+  .trainer{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:1.25rem 1.2rem 1.15rem;margin-top:1rem}
+  .tr-badge{display:inline-block;font-size:.68rem;letter-spacing:.09em;text-transform:uppercase;font-weight:800;border-radius:20px;padding:.18rem .7rem}
+  .tr-badge.a{background:var(--d1-soft);color:var(--d1)}
+  .tr-badge.b{background:var(--d2-soft);color:var(--d2)}
+  .tr-q{font-family:ui-monospace,Menlo,monospace;font-weight:800;font-size:clamp(1.5rem,7vw,2.1rem);text-align:center;margin:.7rem 0 .2rem;display:flex;align-items:center;justify-content:center;gap:.4rem;flex-wrap:wrap}
+  .tr-task{text-align:center;color:var(--muted);font-size:.92rem;margin:.1rem 0 1rem}
+  .tr-ctl{display:flex;gap:.5rem;flex-wrap:wrap;align-items:center;justify-content:center}
+  .tr-ctl input{flex:1 1 170px;min-width:150px;font:inherit;font-family:ui-monospace,Menlo,monospace;font-weight:700;padding:.55rem .7rem;border:1px solid var(--line);border-radius:9px;background:#fff;color:var(--ink)}
+  .tr-ctl button{font:inherit;font-weight:700;font-size:.9rem;cursor:pointer;border:1px solid transparent;border-radius:9px;padding:.55rem 1rem}
+  .tr-ctl .go{background:var(--brand);color:#fff}
+  .tr-ctl .sh{background:var(--paper);border-color:var(--line);color:var(--ink)}
+  .tr-ctl .nw{background:var(--brand-soft);color:var(--brand)}
+  .tr-ctl button:focus-visible,.tr-ctl input:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+  .tr-res{margin-top:1rem;font-size:.96rem}
+  .tr-res .head{font-weight:700;padding:.6rem .9rem;border-radius:9px;margin-bottom:.7rem}
+  .tr-res .head.ok{background:var(--ok-soft);color:var(--ok)}
+  .tr-res .head.no{background:var(--no-soft);color:var(--no)}
+  .tr-res .head.info{background:var(--brand-soft);color:var(--brand)}
+  .tr-sol{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:.85rem 1rem}
+  .tr-sol .row{margin:.42rem 0;font-size:.95rem;display:flex;align-items:center;gap:.35rem;flex-wrap:wrap}
+  .tr-sol .row .n{flex:none;width:1.35rem;height:1.35rem;border-radius:50%;background:var(--brand-soft);color:var(--brand);font-size:.78rem;font-weight:800;display:flex;align-items:center;justify-content:center}
+  .tr-sol .fin{margin-top:.7rem;padding-top:.6rem;border-top:1px dashed var(--line);font-weight:700;display:flex;align-items:center;gap:.4rem;flex-wrap:wrap}
+
+  /* Практика */
+  .drill{display:flex;flex-direction:column;gap:.7rem;margin-top:1rem}
+  details{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:.9rem 1.1rem}
+  details[open]{border-color:var(--brand)}
+  summary{cursor:pointer;font-weight:600;list-style:none;display:flex;justify-content:space-between;gap:1rem;align-items:center}
+  summary::-webkit-details-marker{display:none}
+  summary:focus-visible{outline:2px solid var(--brand);outline-offset:3px;border-radius:6px}
+  summary .q{font-size:1rem}
+  summary::after{content:"ответ";font-size:.8rem;color:var(--brand);font-weight:700;white-space:nowrap;margin-left:auto}
+  details[open] summary::after{content:"скрыть"}
+  .ans{margin-top:.75rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.96rem;color:var(--muted)}
+  .ans b{color:var(--ink)}
+  .lvl{font-size:.72rem;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);font-weight:700;margin:1.4rem 0 .1rem}
+
+  /* Ошибки */
+  ul.traps{list-style:none;margin:1rem 0 0;padding:0;display:flex;flex-direction:column;gap:.7rem}
+  ul.traps li{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:.85rem 1.05rem .85rem 2.5rem;position:relative;font-size:.97rem}
+  ul.traps li::before{content:"⚠";position:absolute;left:1rem;top:.85rem;color:var(--num);font-size:1.05rem}
+  ul.traps b{font-weight:700}
+  ul.traps .fix{display:block;margin-top:.3rem;color:var(--muted)}
+  ul.traps .fix b{color:var(--ok)}
+
+  /* Проверка понимания */
+  .check{background:var(--brand-soft);border-radius:14px;padding:1.1rem 1.3rem;margin-top:1rem}
+  .check ol{margin:.3rem 0 0;padding-left:1.2rem}
+  .check li{margin:.45rem 0}
+
+  .wrapup{background:var(--brand);color:#fff;border-radius:16px;padding:1.4rem 1.4rem;margin-top:2.6rem}
+  .wrapup h2{color:#fff;margin:0 0 .5rem}
+  .wrapup p{color:#EEE6F6;margin:.5rem 0;font-size:1rem}
+  .wrapup .big-rule{font-size:1.08rem;font-weight:700;color:#fff}
+  .wrapup .next{font-size:.95rem;color:#D9C9EC;margin-top:1rem;padding-top:1rem;border-top:1px solid rgba(255,255,255,.2)}
+  .wrapup .frac .fn{color:#F0955F} .wrapup .frac .fl{background:#fff} .wrapup .frac .fd{color:#8FA9E0}
+
+  .foot{margin-top:2.4rem;font-size:.82rem;color:var(--muted);text-align:center}
+
+  .oge-tip{display:flex;gap:.8rem;align-items:flex-start;background:#FFF8E7;border:1px solid #F0D98A;border-left:4px solid #E0A315;border-radius:10px;padding:.85rem 1.05rem;margin:1.5rem 0}
+  .oge-tip .b{font-size:.72rem;font-weight:800;letter-spacing:.03em;color:#8A6A15;white-space:nowrap;text-transform:uppercase;padding-top:.15rem}
+  .oge-tip .x{font-size:.95rem;line-height:1.5}
+
+  a{color:var(--brand)}
+  @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<!--LESSON-NAV-TOP--><style>.lnav{--lnav-accent:#3D5AF1}.lnav a{text-decoration:none;font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif}.lnav-top{max-width:820px;margin:0 auto;padding:.75rem clamp(1rem,4vw,1.5rem) .1rem}.lnav-top a{display:inline-flex;align-items:center;gap:.35rem;color:var(--lnav-accent);font-weight:600;font-size:.9rem}.lnav-top a:hover{text-decoration:underline}.lnav-bot{max-width:820px;margin:2.6rem auto 3rem;padding:1.1rem clamp(1rem,4vw,1.5rem) 0;border-top:1px solid #E4E8EF;display:flex;align-items:stretch;gap:.55rem}.lnav-bot a{min-width:0;display:flex;flex-direction:column;justify-content:center;gap:.15rem;border:1px solid #E4E8EF;border-radius:12px;padding:.65rem .85rem;color:#182233;background:#fff;transition:border-color .1s,transform .08s}.lnav-bot a:hover{border-color:var(--lnav-accent);transform:translateY(-1px)}.lnav-bot .prev,.lnav-bot .next{flex:1 1 0}.lnav-bot .next{text-align:right}.lnav-bot .dir{font-size:.72rem;color:#8A93A6;font-weight:600}.lnav-bot .ttl{font-size:.9rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.lnav-bot .to-cat{flex:0 0 auto;flex-direction:row;align-items:center;justify-content:center;color:var(--lnav-accent);font-weight:700;font-size:.85rem;white-space:nowrap}@media(max-width:420px){.lnav-bot .to-cat span{display:none}.lnav-bot .to-cat{padding:.65rem .7rem}}</style><nav class="lnav lnav-top"><a href="./catalog.html">← Все темы</a></nav><!--/LESSON-NAV-TOP-->
+<div class="wrap">
+
+  <header class="hero">
+    <p class="eyebrow">Математика · 5 класс</p>
+    <h1>Связь обыкновенных<br>и десятичных дробей</h1>
+    <p class="lede">Почему <span class="dec">0,5</span> и <span class="frac"><span class="fn">1</span><span class="fl"></span><span class="fd">2</span></span> — это одно и то же число, и как переводить одну запись в другую в обе стороны.</p>
+  </header>
+
+  <section>
+    <p class="kicker">Зачем это нужно</p>
+    <div class="lead-in">
+      <p><b>Одно число — два костюма.</b> Половина пиццы — это <span class="frac"><span class="fn">1</span><span class="fl"></span><span class="fd">2</span></span>, а на ценнике та же половина может быть записана как <span class="dec">0,5</span>. Запись разная, число одно.</p>
+      <p>На уроке тебе подсовывают то одну запись, то другую, и переходить между ними надо свободно: сравнить <span class="frac"><span class="fn">3</span><span class="fl"></span><span class="fd">4</span></span> и <span class="dec">0,7</span>, сложить <span class="dec">0,2</span> и <span class="frac"><span class="fn">1</span><span class="fl"></span><span class="fd">2</span></span>, понять проценты (50% — это и <span class="frac"><span class="fn">1</span><span class="fl"></span><span class="fd">2</span></span>, и <span class="dec">0,5</span>).</p>
+      <p><b>Главный миф темы:</b> «обыкновенные и десятичные дроби — это разные числа». Нет. Перевод меняет костюм, а не само число. Точка на числовой прямой не сдвигается ни на миллиметр.</p>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Что вспомнить с прошлых шагов</p>
+    <h2>Опора: разряды и смысл дроби</h2>
+    <div class="recall">
+      <p>Понадобятся две вещи, и обе ты уже знаешь.</p>
+      <p><b>1) Разряды после запятой.</b> Первая цифра после запятой — десятые, вторая — сотые, третья — тысячные. В записи <span class="dec">0,37</span> цифра 3 — десятые, 7 — сотые.</p>
+      <p><b>2) Что значит обыкновенная дробь.</b> Знаменатель говорит, на сколько равных долей поделили целое, числитель — сколько долей взяли. А черта дроби — знак деления.</p>
+      <p>Ещё пригодится <b>сокращение дроби</b>: числитель и знаменатель делят на одно и то же число. Запись становится короче, значение остаётся прежним.</p>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Ядро темы</p>
+    <h2>Десятичная дробь — это обыкновенная со знаменателем 10, 100, 1000…</h2>
+    <p>Вся тема — в одной строчке. Цифры после запятой это числитель, а сколько их там, столько нулей в знаменателе:</p>
+    <div class="core">
+      <div class="eqline">
+        <span class="d">0,37</span>
+        <span class="eq">=</span>
+        <span class="frac"><span class="fn">37</span><span class="fl"></span><span class="fd">100</span></span>
+      </div>
+      <p class="say">Читаем <b>«тридцать семь сотых»</b> — знаменатель уже спрятан в самом чтении.</p>
+      <div class="tbl">
+        <div class="r"><b>одна</b> цифра после запятой → десятые → знаменатель <b>10</b>: 0,7 = 7/10</div>
+        <div class="r"><b>две</b> цифры → сотые → знаменатель <b>100</b>: 0,03 = 3/100</div>
+        <div class="r"><b>три</b> цифры → тысячные → знаменатель <b>1000</b>: 0,125 = 125/1000</div>
+      </div>
+    </div>
+
+    <h3>Два направления перевода</h3>
+    <p>Правил ровно два, по одному на каждое направление. Не путай их местами: на этом сыплется больше всего народу.</p>
+    <div class="dirs">
+      <div class="dir a">
+        <p class="cap">Направление 1</p>
+        <h3>Десятичная → обыкновенная</h3>
+        <ol>
+          <li><b>Числитель</b> — число из всех цифр после запятой. Есть целая часть — берём всё число без запятой.</li>
+          <li><b>Знаменатель</b> — единица с таким количеством нулей, сколько цифр стоит после запятой.</li>
+          <li>По возможности <b>сокращаем</b>.</li>
+        </ol>
+        <p class="ex"><span class="dec">0,45</span> → две цифры → <span class="frac"><span class="fn">45</span><span class="fl"></span><span class="fd">100</span></span> → сокращаем на 5 → <span class="frac"><span class="fn">9</span><span class="fl"></span><span class="fd">20</span></span></p>
+      </div>
+      <div class="dir b">
+        <p class="cap">Направление 2</p>
+        <h3>Обыкновенная → десятичная</h3>
+        <ol>
+          <li><b>Приводим знаменатель</b> к 10, 100 или 1000: умножаем числитель и знаменатель на одно и то же число.</li>
+          <li><b>Записываем числитель</b>, отделяя запятой столько последних цифр, сколько нулей в знаменателе.</li>
+        </ol>
+        <p class="ex"><span class="frac"><span class="fn">3</span><span class="fl"></span><span class="fd">4</span></span> → умножаем на 25 → <span class="frac"><span class="fn">75</span><span class="fl"></span><span class="fd">100</span></span> → два нуля → <span class="dec">0,75</span></p>
+      </div>
+    </div>
+
+    <div class="note">
+      <p><b>Какие дроби переводятся легко.</b> Те, у которых знаменатель — делитель числа 10, 100 или 1000: 2, 4, 5, 8, 20, 25, 50 и такие же. Их знаменатель получается «дотянуть» до разрядной единицы.</p>
+      <p>А дробь вроде <span class="frac"><span class="fn">1</span><span class="fl"></span><span class="fd">3</span></span> в конечную десятичную в 5 классе <b>не переводим</b>. Сколько ни умножай, тройку до 10, 100 или 1000 не дотянуть. Получается бесконечная дробь, но это уже позже.</p>
+    </div>
+    <div class="oge-tip"><div class="b">🎯 В ОГЭ</div><div class="x"><b>Задание 6.</b> В вычислениях числа нарочно дают вперемешку: часть обыкновенными дробями, часть десятичными. Первым делом их приводят к одному виду — без перевода тут никак.</div></div>
+  </section>
+
+  <section>
+    <p class="kicker">Разбираем вместе · думаю вслух</p>
+    <h2>Эталонный пример</h2>
+    <div class="worked">
+      <p class="task">Перевести <span class="dec">0,45</span> в обыкновенную дробь.</p>
+      <ol class="steps">
+        <li>Считаю цифры после запятой: их <b>две</b>. Значит знаменатель — <b>100</b> (две цифры → два нуля). <span class="why">Почему: вторая цифра после запятой — это разряд сотых.</span></li>
+        <li>Числитель — это число без запятой: <b>45</b>. Получаю <span class="frac"><span class="fn">45</span><span class="fl"></span><span class="fd">100</span></span>. <span class="why">Почему: 0,45 читается «сорок пять сотых» — сорок пять долей по одной сотой.</span></li>
+        <li>Проверяю, сокращается ли. И 45, и 100 делятся на 5: <span class="mono">45 : 5 = 9</span>, <span class="mono">100 : 5 = 20</span>. <span class="why">Почему сокращаю: значение дроби от этого не меняется, а запись становится проще.</span></li>
+        <li>Получаю <span class="frac"><span class="fn">9</span><span class="fl"></span><span class="fd">20</span></span>. Дальше сокращать нечего: 9 и 20 общих делителей больше не имеют.</li>
+      </ol>
+      <div class="verdict">Ответ: 0,45 = 9/20</div>
+    </div>
+
+    <h3>Теперь допиши шаг сам</h3>
+    <div class="worked">
+      <p class="task">Перевести <span class="frac"><span class="fn">3</span><span class="fl"></span><span class="fd">4</span></span> в десятичную дробь.</p>
+      <ol class="steps">
+        <li>Знаменатель 4 удобно дотянуть до 100. Спрашиваю себя: на сколько умножить 4, чтобы вышло 100? На <b>25</b>.</li>
+        <li>Умножаю на 25 и числитель, и знаменатель: <span class="mono">(3 · 25) / (4 · 25) = 75 / <span class="fill">?</span></span></li>
+        <li>Допиши знаменатель и запиши ответ десятичной дробью.</li>
+      </ol>
+      <details style="margin-top:1rem">
+        <summary><span class="q">Проверить себя</span></summary>
+        <div class="ans"><span class="mono">4 · 25 = 100</span>, значит получилось <b>75/100</b>. В знаменателе два нуля → отделяю запятой две последние цифры: <b>0,75</b>. Итог: 3/4 = 0,75.</div>
+      </details>
+    </div>
+
+    <h3>А это реши полностью сам</h3>
+    <div class="worked">
+      <p class="task">Перевести <span class="dec">0,6</span> в обыкновенную дробь и сократить.</p>
+      <details>
+        <summary><span class="q">Показать ответ</span></summary>
+        <div class="ans">После запятой одна цифра → знаменатель 10: <b>6/10</b>. И 6, и 10 делятся на 2 → <b>3/5</b>. Итог: 0,6 = 3/5.</div>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Смотри своими глазами</p>
+    <h2>Одна точка — две подписи</h2>
+    <p>Берём отрезок от 0 до 1 и делим его на 10 равных частей. Двигай ползунок: сверху точка подписана десятичной дробью, снизу — обыкновенной. Подписи разные, точка <strong>одна и та же</strong>.</p>
+    <div class="viz">
+      <div class="presets" id="vizPresets"></div>
+      <canvas id="vizC" width="1200" height="600" role="img" aria-label="Числовая прямая от нуля до единицы: одна точка подписана десятичной и обыкновенной дробью"></canvas>
+      <div class="readout" id="vizRead"></div>
+      <div class="sub" id="vizSub"></div>
+      <div class="ctl">
+        <input type="range" id="vizR" min="0" max="100" step="1" value="45" aria-label="Положение точки в сотых">
+      </div>
+    </div>
+    <p>Поймай ползунком <span class="dec">0,5</span>: точка встанет ровно посередине, а подпись снизу превратится в <span class="frac"><span class="fn">1</span><span class="fl"></span><span class="fd">2</span></span>. Половина и «пять десятых» — одно место на прямой, а не два разных числа.</p>
+
+    <h3>Одно и то же число тремя способами</h3>
+    <div class="tblwrap">
+      <table>
+        <thead><tr><th>Десятичная</th><th>Дробь со знаменателем 10/100</th><th>После сокращения</th><th>Как читаем</th></tr></thead>
+        <tbody>
+          <tr><td class="dec">0,5</td><td><span class="frac"><span class="fn">5</span><span class="fl"></span><span class="fd">10</span></span></td><td><span class="frac"><span class="fn">1</span><span class="fl"></span><span class="fd">2</span></span></td><td class="l">пять десятых</td></tr>
+          <tr><td class="dec">0,2</td><td><span class="frac"><span class="fn">2</span><span class="fl"></span><span class="fd">10</span></span></td><td><span class="frac"><span class="fn">1</span><span class="fl"></span><span class="fd">5</span></span></td><td class="l">две десятых</td></tr>
+          <tr><td class="dec">0,25</td><td><span class="frac"><span class="fn">25</span><span class="fl"></span><span class="fd">100</span></span></td><td><span class="frac"><span class="fn">1</span><span class="fl"></span><span class="fd">4</span></span></td><td class="l">двадцать пять сотых</td></tr>
+          <tr><td class="dec">0,45</td><td><span class="frac"><span class="fn">45</span><span class="fl"></span><span class="fd">100</span></span></td><td><span class="frac"><span class="fn">9</span><span class="fl"></span><span class="fd">20</span></span></td><td class="l">сорок пять сотых</td></tr>
+          <tr><td class="dec">0,05</td><td><span class="frac"><span class="fn">5</span><span class="fl"></span><span class="fd">100</span></span></td><td><span class="frac"><span class="fn">1</span><span class="fl"></span><span class="fd">20</span></span></td><td class="l">пять сотых</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Сначала предскажи, потом проверь</h3>
+    <div class="drill">
+      <details>
+        <summary><span class="q">Что больше: <span class="dec">0,7</span> или <span class="frac"><span class="fn">3</span><span class="fl"></span><span class="fd">4</span></span>? Сначала скажи вслух свой ответ, и только потом открывай.</span></summary>
+        <div class="ans">Сравнивать удобно, когда обе записи одного вида. Переводим: <b>3/4 = 75/100 = 0,75</b>. Видно сразу: <b>0,75 &gt; 0,7</b>, значит 3/4 больше. На прямой точка 3/4 стоит правее точки 0,7.</div>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Тренажёр · бесконечная практика</p>
+    <h2>Переводи в обе стороны</h2>
+    <p>Задания идут вперемешку, то в одну сторону, то в другую — как на контрольной. Обыкновенную дробь пиши через дробную черту: <span class="mono">9/20</span>. Десятичную — через запятую: <span class="mono">0,75</span>. Дроби записывай <strong>сокращёнными</strong>.</p>
+    <div class="trainer">
+      <div style="text-align:center"><span class="tr-badge a" id="trBadge">десятичная → обыкновенная</span></div>
+      <div class="tr-q" id="trQ"></div>
+      <p class="tr-task" id="trTask"></p>
+      <div class="tr-ctl">
+        <input id="trAns" type="text" inputmode="text" placeholder="твой ответ" aria-label="Ответ">
+        <button class="go" id="trCheck" type="button">Проверить</button>
+        <button class="sh" id="trShow" type="button">Показать решение</button>
+        <button class="nw" id="trNew" type="button">🎲 Новое задание</button>
+      </div>
+      <div class="tr-res" id="trRes"></div>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Практика по нарастанию</p>
+    <h2>Проверь себя</h2>
+    <p>Сначала решай, потом открывай ответ. Не подглядывай раньше времени 🙂</p>
+
+    <p class="lvl">Уровень 1 · понимание</p>
+    <div class="drill">
+      <details>
+        <summary><span class="q">1) Прочитай вслух и назови знаменатель будущей обыкновенной дроби: <span class="dec">0,9</span>; <span class="dec">0,09</span>; <span class="dec">0,009</span>.</span></summary>
+        <div class="ans"><b>0,9</b> — девять десятых, знаменатель <b>10</b>. <b>0,09</b> — девять сотых, знаменатель <b>100</b>. <b>0,009</b> — девять тысячных, знаменатель <b>1000</b>. Цифра одна и та же, а знаменатель разный: всё решает количество цифр после запятой.</div>
+      </details>
+      <details>
+        <summary><span class="q">2) Сколько нулей будет в знаменателе, если после запятой стоят три цифры?</span></summary>
+        <div class="ans">Три нуля: знаменатель <b>1000</b>. Сколько цифр после запятой, столько и нулей.</div>
+      </details>
+    </div>
+
+    <p class="lvl">Уровень 2 · применение</p>
+    <div class="drill">
+      <details>
+        <summary><span class="q">3) Переведи в обыкновенные дроби и сократи: <span class="dec">0,2</span>; <span class="dec">0,25</span>; <span class="dec">0,08</span>.</span></summary>
+        <div class="ans"><b>0,2</b> = 2/10 = <b>1/5</b> (сократили на 2).<br><b>0,25</b> = 25/100 = <b>1/4</b> (сократили на 25).<br><b>0,08</b> = 8/100 = <b>2/25</b> (сократили на 4). Ловушка: в 0,08 после запятой <em>две</em> цифры, поэтому знаменатель 100, а не 10.</div>
+      </details>
+      <details>
+        <summary><span class="q">4) Переведи в десятичные дроби: <span class="frac"><span class="fn">1</span><span class="fl"></span><span class="fd">2</span></span>; <span class="frac"><span class="fn">7</span><span class="fl"></span><span class="fd">10</span></span>; <span class="frac"><span class="fn">3</span><span class="fl"></span><span class="fd">5</span></span>; <span class="frac"><span class="fn">1</span><span class="fl"></span><span class="fd">4</span></span>.</span></summary>
+        <div class="ans"><b>1/2</b>: умножаем на 5 → 5/10 = <b>0,5</b>.<br><b>7/10</b>: знаменатель уже 10, ничего домножать не надо → <b>0,7</b>.<br><b>3/5</b>: умножаем на 2 → 6/10 = <b>0,6</b>.<br><b>1/4</b>: умножаем на 25 → 25/100 = <b>0,25</b>.</div>
+      </details>
+    </div>
+
+    <p class="lvl">Уровень 3 · анализ</p>
+    <div class="drill">
+      <details>
+        <summary><span class="q">5) Что изменится при переводе в обыкновенную дробь, если цифр после запятой станет на одну больше: было <span class="dec">0,5</span>, стало <span class="dec">0,05</span>?</span></summary>
+        <div class="ans">Было 0,5 = <b>5/10</b>, стало 0,05 = <b>5/100</b>. Числитель тот же, 5, а знаменатель вырос с 10 до 100. Долей взяли столько же, но каждая стала в 10 раз мельче — значит и <b>число уменьшилось в 10 раз</b>. После сокращения: 1/2 и 1/20.</div>
+      </details>
+      <details>
+        <summary><span class="q">6) Найди ошибку: «<span class="frac"><span class="fn">1</span><span class="fl"></span><span class="fd">2</span></span> = 0,12».</span></summary>
+        <div class="ans">Цифры из дроби просто «приклеили» к запятой. Так нельзя. Сначала приводим знаменатель к разрядной единице: <b>1/2 = 5/10 = 0,5</b>. А 0,12 — совсем другое число, 12/100 = 3/25.</div>
+      </details>
+      <details>
+        <summary><span class="q">7) Обратная задача: придумай десятичную дробь, которая после сокращения даёт <span class="frac"><span class="fn">1</span><span class="fl"></span><span class="fd">4</span></span>.</span></summary>
+        <div class="ans">Идём с конца: 1/4 надо превратить в дробь со знаменателем 10, 100 или 1000. Умножаем на 25: 1/4 = 25/100 → <b>0,25</b>. Проверка в обратную сторону: 0,25 = 25/100 = 1/4. Сходится.</div>
+      </details>
+      <details>
+        <summary><span class="q">8) Почему <span class="frac"><span class="fn">1</span><span class="fl"></span><span class="fd">3</span></span> не получится записать конечной десятичной дробью, а <span class="frac"><span class="fn">1</span><span class="fl"></span><span class="fd">8</span></span> получится?</span></summary>
+        <div class="ans">Чтобы вышла десятичная дробь, знаменатель надо дотянуть до 10, 100 или 1000. С <b>8</b> получается: <span class="mono">8 · 125 = 1000</span>, поэтому 1/8 = 125/1000 = <b>0,125</b>. А знаменатель <b>3</b> не умножишь ни на что так, чтобы получить 10, 100 или 1000: ни одно из них на 3 не делится. Потому 1/3 в 5 классе конечной десятичной и не записывают.</div>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Где чаще всего ошибаются</p>
+    <h2>Четыре ловушки</h2>
+    <ul class="traps">
+      <li><b>Читают 1/2 как 0,12.</b> Числитель со знаменателем просто приклеивают к запятой.
+        <span class="fix"><b>Как не попасться:</b> сначала приведи знаменатель к 10 или 100. 1/2 = 5/10 = 0,5. Цифры из дроби под запятую напрямую не переносятся никогда.</span></li>
+      <li><b>Не дополняют знаменатель до разрядной единицы.</b> Пишут «3/4 = 0,34» или «не переводится».
+        <span class="fix"><b>Как не попасться:</b> спроси себя, на сколько умножить знаменатель, чтобы получить 10, 100 или 1000. Для 4 это · 25, и выходит 75/100 = 0,75.</span></li>
+      <li><b>Путают направление перевода.</b> Считают цифры после запятой, когда переводят из обыкновенной в десятичную. Или наоборот.
+        <span class="fix"><b>Как не попасться:</b> держи в голове по одному правилу на каждое направление и в конце проверяй, что ответ записан в нужном виде.</span></li>
+      <li><b>Теряют ноль в записи «0,0…».</b> Превращают 0,05 в 5/10 вместо 5/100.
+        <span class="fix"><b>Как не попасться:</b> считай ВСЕ цифры после запятой, включая нули. В 0,05 их две → знаменатель 100.</span></li>
+    </ul>
+  </section>
+
+  <section>
+    <p class="kicker">Проверка понимания</p>
+    <h2>Объясни своими словами</h2>
+    <div class="check">
+      <p>Закрой урок и ответь вслух, как будто объясняешь другу, который тему пропустил:</p>
+      <ol>
+        <li>Чему равна <span class="dec">0,8</span> в виде обыкновенной дроби после сокращения?</li>
+        <li>Запиши <span class="frac"><span class="fn">1</span><span class="fl"></span><span class="fd">4</span></span> десятичной дробью и объясни, откуда взялся каждый шаг.</li>
+        <li>Сколько нулей будет в знаменателе, если в десятичной дроби три цифры после запятой?</li>
+        <li>Почему при переводе число не меняется, а меняется только его запись?</li>
+      </ol>
+    </div>
+    <div class="drill" style="margin-top:.8rem">
+      <details>
+        <summary><span class="q">Сверить ответы</span></summary>
+        <div class="ans">1) <b>0,8 = 8/10 = 4/5.</b> 2) <b>1/4 = 25/100 = 0,25</b>: умножили числитель и знаменатель на 25, в знаменателе два нуля → две цифры после запятой. 3) <b>Три нуля, знаменатель 1000.</b> 4) Потому что мы либо записываем то же количество долей другим способом, либо умножаем числитель и знаменатель на одно и то же число. От этого значение дроби не меняется.</div>
+      </details>
+    </div>
+  </section>
+
+  <div class="wrapup">
+    <h2>Запомни главное</h2>
+    <p class="big-rule">Десятичная дробь — это обыкновенная дробь со знаменателем 10, 100, 1000…<br>Перевод меняет костюм, а не число.</p>
+    <p>В одну сторону: считаешь цифры после запятой → столько нулей в знаменателе → сокращаешь. В обратную: домножаешь знаменатель до 10, 100 или 1000 → отделяешь запятой столько цифр, сколько нулей.</p>
+    <p class="next">👉 Дальше — <strong>проценты</strong>. Там та же связь работает третьим способом: 50% = <span class="frac"><span class="fn">1</span><span class="fl"></span><span class="fd">2</span></span> = <span class="dec" style="color:#fff">0,5</span>. Кто уверенно гоняет дроби туда-обратно, тому и проценты не страшны.</p>
+  </div>
+
+  <p class="foot">Быстрая проверка на выходе: 0,4 в обыкновенной · 2/5 в десятичной · сколько нулей в знаменателе у 0,125</p>
+
+</div>
+
+<script>
+/* ---------- Визуализация: числовая прямая, одна точка — две подписи ---------- */
+(function(){
+  var cv=document.getElementById('vizC'); if(!cv) return;
+  var ctx=cv.getContext('2d');
+  var S=2;                       /* логические координаты 600x300, масштаб 2 */
+  var rng=document.getElementById('vizR');
+  var readEl=document.getElementById('vizRead'), subEl=document.getElementById('vizSub');
+  var presEl=document.getElementById('vizPresets');
+  var COL_INK='#26202E', COL_LINE='#E7E2E8', COL_MUT='#6B6473';
+  var COL_NUM='#CF5A34', COL_DEN='#3A5AA0', COL_BRAND='#6A3EA1', COL_PAPER='#FBF9F5';
+
+  function gcd(a,b){ while(b){ var t=a%b; a=b; b=t; } return a; }
+  function dec(v){                /* v — сотые, 0..100 */
+    if(v===0) return '0';
+    if(v===100) return '1';
+    if(v%10===0) return '0,'+(v/10);
+    return '0,'+(v<10?'0'+v:''+v);
+  }
+  function red(v){ var g=gcd(v,100)||1; return [v/g,100/g]; }
+
+  function drawFrac(p,q,x,y,size){   /* дробь по центру x, середина черты на y */
+    ctx.textAlign='center';
+    ctx.font='800 '+size+'px ui-monospace,Menlo,monospace';
+    var wn=ctx.measureText(''+p).width, wd=ctx.measureText(''+q).width;
+    var w=Math.max(wn,wd)+size*0.5;
+    ctx.fillStyle=COL_NUM; ctx.fillText(''+p, x, y-size*0.28);
+    ctx.fillStyle=COL_DEN; ctx.fillText(''+q, x, y+size*0.98);
+    ctx.strokeStyle=COL_INK; ctx.lineWidth=2.6;
+    ctx.beginPath(); ctx.moveTo(x-w/2,y+size*0.09); ctx.lineTo(x+w/2,y+size*0.09); ctx.stroke();
+  }
+
+  function draw(v){
+    ctx.setTransform(S,0,0,S,0,0);
+    ctx.clearRect(0,0,600,300);
+    ctx.fillStyle=COL_PAPER; ctx.fillRect(0,0,600,300);
+
+    var lx=55, lw=490, ly=150;
+
+    /* сотые — мелкие штрихи */
+    ctx.strokeStyle='#EFEAF2'; ctx.lineWidth=1;
+    for(var j=0;j<=100;j++){
+      if(j%10===0) continue;
+      var jx=lx+lw*j/100;
+      ctx.beginPath(); ctx.moveTo(jx,ly-4); ctx.lineTo(jx,ly+4); ctx.stroke();
+    }
+    /* сама прямая */
+    ctx.strokeStyle=COL_INK; ctx.lineWidth=2.4;
+    ctx.beginPath(); ctx.moveTo(lx-18,ly); ctx.lineTo(lx+lw+22,ly); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(lx+lw+22,ly); ctx.lineTo(lx+lw+13,ly-5); ctx.lineTo(lx+lw+13,ly+5); ctx.closePath();
+    ctx.fillStyle=COL_INK; ctx.fill();
+
+    /* деления по десятым */
+    ctx.textAlign='center';
+    for(var i=0;i<=10;i++){
+      var xx=lx+lw*i/10, big=(i===0||i===5||i===10);
+      ctx.strokeStyle=COL_INK; ctx.lineWidth=big?2.4:1.4;
+      ctx.beginPath(); ctx.moveTo(xx,ly-(big?12:8)); ctx.lineTo(xx,ly+(big?12:8)); ctx.stroke();
+      if(big){
+        ctx.fillStyle=COL_INK; ctx.font='700 17px ui-monospace,Menlo,monospace';
+        ctx.fillText(i===0?'0':(i===10?'1':'0,5'), xx, ly+36);
+      }
+    }
+    ctx.fillStyle=COL_MUT; ctx.font='400 15px system-ui,-apple-system,"Segoe UI",sans-serif';
+    ctx.fillText('отрезок от 0 до 1 разделён на 10 равных частей', lx+lw/2, ly+62);
+
+    /* точка */
+    var mx=lx+lw*v/100;
+    ctx.strokeStyle=COL_BRAND; ctx.lineWidth=2; ctx.setLineDash([5,5]);
+    ctx.beginPath(); ctx.moveTo(mx,ly-52); ctx.lineTo(mx,ly+96); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle=COL_BRAND; ctx.beginPath(); ctx.arc(mx,ly,8,0,7); ctx.fill();
+    ctx.fillStyle='#fff'; ctx.beginPath(); ctx.arc(mx,ly,3.2,0,7); ctx.fill();
+
+    /* подпись сверху — десятичная */
+    ctx.textAlign='center';
+    ctx.fillStyle=COL_MUT; ctx.font='600 14px system-ui,-apple-system,"Segoe UI",sans-serif';
+    ctx.fillText('десятичная', mx, ly-84);
+    ctx.fillStyle=COL_BRAND; ctx.font='800 30px ui-monospace,Menlo,monospace';
+    ctx.fillText(dec(v), mx, ly-58);
+
+    /* подпись снизу — обыкновенная */
+    var r=red(v);
+    ctx.fillStyle=COL_MUT; ctx.font='600 14px system-ui,-apple-system,"Segoe UI",sans-serif';
+    ctx.fillText('обыкновенная', mx, ly+92);
+    if(v===0 || v===100){
+      ctx.fillStyle=COL_INK; ctx.font='800 30px ui-monospace,Menlo,monospace';
+      ctx.fillText(v===0?'0':'1', mx, ly+126);
+    } else {
+      drawFrac(r[0], r[1], mx, ly+112, 26);
+    }
+  }
+
+  function update(){
+    var v=+rng.value, r=red(v);
+    draw(v);
+    if(v===0 || v===100){
+      readEl.innerHTML = '<span class="dec">'+dec(v)+'</span><span class="eqs">=</span><span class="dec">'+(v===0?'0':'1')+'</span>';
+      subEl.textContent = v===0 ? 'Начало отрезка — здесь ещё ничего не взяли.' : 'Конец отрезка — взяли целую единицу.';
+    } else {
+      var h='<span class="dec">'+dec(v)+'</span><span class="eqs">=</span>'
+          + '<span class="frac"><span class="fn">'+v+'</span><span class="fl"></span><span class="fd">100</span></span>';
+      if(r[1]!==100) h += '<span class="eqs">=</span><span class="frac"><span class="fn">'+r[0]+'</span><span class="fl"></span><span class="fd">'+r[1]+'</span></span>';
+      readEl.innerHTML=h;
+      var s='';
+      if(v%10===0) s='Точка попала ровно на деление: это '+(v/10)+' десятых из десяти.';
+      else s='Точка между делениями — значит одних десятых мало, нужны сотые.';
+      if(r[1]!==100) s+=' Дробь '+v+'/100 сократилась до '+r[0]+'/'+r[1]+' — запись короче, а точка на месте.';
+      else s+=' Сократить '+v+'/100 нельзя: общих делителей у 100 и '+v+' нет.';
+      subEl.textContent=s;
+    }
+    var pv=String(v);
+    Array.prototype.forEach.call(presEl.children,function(b){
+      b.setAttribute('aria-pressed', b.getAttribute('data-v')===pv ? 'true':'false');
+    });
+  }
+
+  [['0,5',50],['0,25',25],['0,2',20],['0,75',75],['0,05',5]].forEach(function(o){
+    var b=document.createElement('button');
+    b.type='button'; b.textContent=o[0]; b.setAttribute('data-v',o[1]); b.setAttribute('aria-pressed','false');
+    b.addEventListener('click',function(){ rng.value=o[1]; update(); });
+    presEl.appendChild(b);
+  });
+  rng.addEventListener('input',update);
+  window.addEventListener('resize',function(){ update(); });
+  update();
+})();
+</script>
+
+<script>
+/* ---------- Тренажёр: перевод в обе стороны ---------- */
+(function(){
+  var qEl=document.getElementById('trQ'); if(!qEl) return;
+  var badgeEl=document.getElementById('trBadge'), taskEl=document.getElementById('trTask');
+  var ansEl=document.getElementById('trAns'), resEl=document.getElementById('trRes');
+
+  var T=null;
+
+  function ri(a,b){ return Math.floor(Math.random()*(b-a+1))+a; }
+  function pick(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+  function gcd(a,b){ while(b){ var t=a%b; a=b; b=t; } return a; }
+  function pow10(t){ return t===1?10:(t===2?100:1000); }
+  function frac(p,q){ return '<span class="frac"><span class="fn">'+p+'</span><span class="fl"></span><span class="fd">'+q+'</span></span>'; }
+  function dnum(s){ return '<span class="dec">'+s+'</span>'; }
+  function decStr(N,t){
+    var s=String(N);
+    while(s.length<=t) s='0'+s;
+    return s.slice(0,s.length-t)+','+s.slice(s.length-t);
+  }
+
+  /* Направление 1: десятичная -> обыкновенная (сократить) */
+  function genA(){
+    var d=pick([1,1,2,2,2,3]);
+    var k;
+    if(d===3){ k=pick([125,375,625,875]); }
+    else { do{ k=ri(1,pow10(d)-1); }while(k%10===0); }
+    var w = Math.random()<0.25 ? ri(1,3) : 0;
+    var D=pow10(d), N=w*D+k;
+    var g=gcd(N,D), p=N/g, q=D/g;
+    var ds=String(w)+','+(function(){ var s=String(k); while(s.length<d) s='0'+s; return s; })();
+    return {type:'A', d:d, D:D, N:N, g:g, p:p, q:q, ds:ds};
+  }
+
+  /* Направление 2: обыкновенная -> десятичная */
+  function genB(){
+    var DENS=[2,2,4,4,4,5,5,5,8,8,10,20,20,25,25,50,100];
+    var den=pick(DENS);
+    var t = (100%den===0) ? ((10%den===0)?1:2) : 3;
+    var m = pow10(t)/den;
+    var n;
+    do{ n=ri(1,2*den); }while(n%den===0 || gcd(n,den)!==1);
+    var N=n*m;
+    return {type:'B', den:den, n:n, t:t, m:m, N:N, ds:decStr(N,t)};
+  }
+
+  function render(){
+    if(T.type==='A'){
+      badgeEl.className='tr-badge a';
+      badgeEl.textContent='десятичная → обыкновенная';
+      qEl.innerHTML=dnum(T.ds);
+      taskEl.textContent='Запиши обыкновенной дробью и сократи. Пиши через черту, например 9/20.';
+      ansEl.placeholder='например  9/20';
+    } else {
+      badgeEl.className='tr-badge b';
+      badgeEl.textContent='обыкновенная → десятичная';
+      qEl.innerHTML=frac(T.n,T.den);
+      taskEl.textContent='Запиши десятичной дробью. Через запятую, например 0,75.';
+      ansEl.placeholder='например  0,75';
+    }
+    ansEl.value='';
+    resEl.innerHTML='';
+    resEl.removeAttribute('data-done');
+  }
+
+  function solA(){
+    var h='<div class="tr-sol">';
+    h+='<div class="row"><span class="n">1</span><span>После запятой '+T.d+' '+(T.d===1?'цифра':'цифры')+' → знаменатель '+T.D+'.</span></div>';
+    h+='<div class="row"><span class="n">2</span><span>Числитель — число без запятой: '+T.N+'. Получаем '+frac(T.N,T.D)+'</span></div>';
+    if(T.g>1) h+='<div class="row"><span class="n">3</span><span>И '+T.N+', и '+T.D+' делятся на '+T.g+' → сокращаем: '+frac(T.p,T.q)+'</span></div>';
+    else h+='<div class="row"><span class="n">3</span><span>Сокращать нечего: у '+T.N+' и '+T.D+' общих делителей нет.</span></div>';
+    h+='<div class="fin"><span>Ответ:</span>'+dnum(T.ds)+'<span>=</span>'+frac(T.p,T.q)+'</div>';
+    return h+'</div>';
+  }
+  function solB(){
+    var h='<div class="tr-sol">';
+    if(T.m>1) h+='<div class="row"><span class="n">1</span><span>Знаменатель '+T.den+' дотягиваем до '+pow10(T.t)+': умножаем на '+T.m+' ('+T.den+' · '+T.m+' = '+pow10(T.t)+').</span></div>';
+    else h+='<div class="row"><span class="n">1</span><span>Знаменатель уже разрядная единица ('+T.den+'), домножать не надо.</span></div>';
+    if(T.m>1) h+='<div class="row"><span class="n">2</span><span>'+frac(T.n,T.den)+'<span>=</span>'+frac(T.n+' · '+T.m, T.den+' · '+T.m)+'<span>=</span>'+frac(T.N,pow10(T.t))+'</span></div>';
+    else h+='<div class="row"><span class="n">2</span><span>Дробь уже нужного вида: '+frac(T.N,pow10(T.t))+'</span></div>';
+    h+='<div class="row"><span class="n">3</span><span>В знаменателе '+T.t+' '+(T.t===1?'нуль':'нуля')+' → отделяем запятой '+T.t+' '+(T.t===1?'последнюю цифру':'последние цифры')+': '+dnum(T.ds)+'</span></div>';
+    h+='<div class="fin"><span>Ответ:</span>'+frac(T.n,T.den)+'<span>=</span>'+dnum(T.ds)+'</div>';
+    return h+'</div>';
+  }
+  function solution(){ return T.type==='A' ? solA() : solB(); }
+
+  function locked(){ return resEl.getAttribute('data-done')==='1'; }
+
+  function check(){
+    if(locked()) return;
+    var raw=ansEl.value.trim().replace(/\s*\/\s*/g,'/').replace(/\s+/g,' ');
+    if(!raw){
+      resEl.innerHTML='<div class="head info">Сначала впиши ответ в поле.</div>';
+      return;
+    }
+    var head;
+    if(T.type==='A'){
+      var a, b, mixed=false, mw=0;
+      var m1=raw.match(/^(\d+)\/(\d+)$/);
+      var m2=raw.match(/^(\d+) (\d+)\/(\d+)$/);   /* смешанное число: 1 1/4 */
+      if(m1){ a=+m1[1]; b=+m1[2]; }
+      else if(m2){ mixed=true; mw=+m2[1]; b=+m2[3]; a=mw*b+(+m2[2]); }
+      else {
+        resEl.innerHTML='<div class="head info">Тут нужна обыкновенная дробь — запиши её через черту, например 9/20.</div>';
+        return;
+      }
+      if(!b){
+        resEl.innerHTML='<div class="head no">Знаменатель не может быть нулём — так дробь не записывают.</div>';
+        return;
+      }
+      if(a*T.q === T.p*b){
+        if(b===T.q) head='<div class="head ok">✓ Верно! И дробь сокращена до конца.</div>';
+        else head='<div class="head info">Значение верное, но дробь сокращена не до конца: получается '+T.p+'/'+T.q+'.</div>';
+      } else {
+        head='<div class="head no">Не сходится. Смотри разбор ниже.</div>';
+      }
+    } else {
+      var s=raw.replace(/\s/g,'').replace(',','.');
+      if(/^\./.test(s)) s='0'+s;
+      if(!/^\d+(\.\d+)?$/.test(s)){
+        resEl.innerHTML='<div class="head info">Тут нужна десятичная дробь — например 0,75.</div>';
+        return;
+      }
+      var val=parseFloat(s), want=T.N/pow10(T.t);
+      head = (Math.abs(val-want)<1e-9)
+        ? '<div class="head ok">✓ Верно!</div>'
+        : '<div class="head no">Не сходится. Смотри разбор ниже.</div>';
+    }
+    resEl.setAttribute('data-done','1');
+    resEl.innerHTML=head+solution();
+  }
+  function show(){
+    if(locked()) return;
+    resEl.setAttribute('data-done','1');
+    resEl.innerHTML='<div class="head info">Пошаговое решение:</div>'+solution();
+  }
+  function next(focus){
+    T = (Math.random()<0.5) ? genA() : genB();
+    render();
+    if(focus) ansEl.focus();
+  }
+
+  document.getElementById('trCheck').addEventListener('click',check);
+  document.getElementById('trShow').addEventListener('click',show);
+  document.getElementById('trNew').addEventListener('click',function(){ next(true); });
+  ansEl.addEventListener('keydown',function(e){ if(e.key==='Enter'){ e.preventDefault(); check(); } });
+
+  /* стартовое задание — фиксированное и валидное, без автофокуса */
+  T={type:'A', d:2, D:100, N:24, g:4, p:6, q:25, ds:'0,24'};
+  render();
+})();
+</script>
+<!--LESSON-NAV-BOT--><nav class="lnav lnav-bot"><a class="prev" href="./m5-srednee-arifmeticheskoe.html"><span class="dir">← Предыдущая</span><span class="ttl">Среднее арифметическое</span></a><a class="to-cat" href="./catalog.html">📚 <span>Все темы</span></a><a class="next" href="./m5-procenty-vvedenie.html"><span class="dir">Следующая →</span><span class="ttl">Понятие процента</span></a></nav><!--/LESSON-NAV-BOT-->

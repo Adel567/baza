@@ -1,0 +1,659 @@
+<!doctype html>
+<!-- humanized: humanizer-ru, 2026-08-29, тире возвращено -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Наименьшее общее кратное (НОК) — 6 класс</title>
+<style>
+  :root{
+    --paper:#FAF8F4;
+    --card:#FFFFFF;
+    --ink:#22262E;
+    --muted:#66707F;
+    --line:#E4E5EA;
+    --brand:#1F6F63;          /* НОК — основной акцент */
+    --brand-soft:#E4F1EE;
+    --brand-line:#BCDCD5;
+    --a:#C2571F;              /* шаги первого числа */
+    --a-soft:#FBEBDF;
+    --a-line:#EFCDB2;
+    --b:#3A54A0;              /* шаги второго числа */
+    --b-soft:#E6EAF7;
+    --b-line:#C5CFEC;
+    --ok:#2E8B57;
+    --no:#C23B3B;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper)}
+  .page{
+    max-width:720px;margin:0 auto;
+    padding:clamp(1.4rem,4vw,3rem) clamp(1.1rem,4vw,2rem) 4.5rem;
+    color:var(--ink);
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    font-size:17.5px;line-height:1.68;-webkit-font-smoothing:antialiased;
+  }
+  .mono{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-variant-numeric:tabular-nums;font-weight:600}
+  sup{font-size:.72em;line-height:0}
+
+  .hero{border-bottom:3px solid var(--brand);padding-bottom:1.4rem;margin-bottom:1.8rem}
+  .eyebrow{font-size:.74rem;letter-spacing:.15em;text-transform:uppercase;color:var(--brand);font-weight:700;margin:0 0 .55rem}
+  h1{font-size:clamp(2rem,6.5vw,3rem);line-height:1.03;margin:0;font-weight:800;letter-spacing:-.02em;text-wrap:balance}
+  .tagline{font-size:1.12rem;color:var(--muted);margin:.85rem 0 0;text-wrap:pretty}
+
+  section{margin-top:2.4rem}
+  h2{font-size:1.5rem;margin:0 0 .3rem;font-weight:780;letter-spacing:-.015em;text-wrap:balance}
+  h2 .em{color:var(--brand)}
+  h3{font-size:1.1rem;margin:1.4rem 0 .2rem;font-weight:750}
+  p{margin:.7rem 0}
+  strong{font-weight:680}
+
+  .lead-in{background:var(--brand-soft);border-radius:14px;padding:1.1rem 1.3rem;font-size:1.02rem}
+  .lead-in p{margin:.4rem 0}
+  .lead-in b{color:var(--brand)}
+
+  .recall{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.05rem 1.25rem;margin-top:1rem}
+  .recall .cap{font-size:.72rem;letter-spacing:.11em;text-transform:uppercase;font-weight:700;color:var(--muted);margin:0 0 .5rem}
+  .recall ul{margin:.2rem 0 0;padding-left:1.1rem;display:flex;flex-direction:column;gap:.45rem}
+  .recall li{font-size:.98rem}
+
+  .myth{border-left:4px solid var(--a);background:var(--a-soft);border-radius:0 10px 10px 0;padding:.85rem 1.1rem;margin-top:1rem;font-size:.99rem}
+  .myth b{color:var(--a)}
+
+  .note{border-left:4px solid var(--brand);background:var(--brand-soft);border-radius:0 10px 10px 0;padding:.8rem 1.1rem;margin-top:1rem;font-size:.98rem}
+  .note b{color:var(--brand)}
+
+  /* Ядро — правило */
+  .core{background:var(--card);border:2px solid var(--brand-line);border-radius:16px;padding:1.2rem 1.35rem;margin-top:1rem}
+  .core .def{font-size:1.05rem}
+  .core .def b{color:var(--brand)}
+  .steps{list-style:none;margin:1rem 0 0;padding:0;display:flex;flex-direction:column;gap:.65rem;counter-reset:st}
+  .steps li{position:relative;padding-left:2.6rem;font-size:1rem}
+  .steps li::before{counter-increment:st;content:counter(st);position:absolute;left:0;top:.05rem;width:1.85rem;height:1.85rem;border-radius:50%;background:var(--brand);color:#fff;font-weight:800;font-size:.95rem;display:flex;align-items:center;justify-content:center}
+  .formula{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-weight:700;font-size:1.05rem;text-align:center;background:var(--paper);border:1px solid var(--line);border-radius:11px;padding:.75rem .6rem;margin-top:1rem;overflow-x:auto;white-space:nowrap}
+
+  /* Таблица */
+  .tblwrap{overflow-x:auto;margin-top:1rem}
+  table{border-collapse:collapse;width:100%;min-width:430px;font-size:.96rem}
+  th,td{border:1px solid var(--line);padding:.6rem .75rem;text-align:left;background:var(--card)}
+  thead th{background:#F4F3F0;font-weight:700}
+  th.nod{color:var(--b);background:var(--b-soft)}
+  th.nok{color:var(--brand);background:var(--brand-soft)}
+  td.k{font-weight:650;background:#FBFAF8}
+
+  /* Разбор */
+  .walk{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.15rem 1.3rem;margin-top:1rem}
+  .walk .q{font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.08rem;margin:0 0 .9rem;padding-bottom:.7rem;border-bottom:1px solid var(--line)}
+  .walk ol{margin:0;padding-left:1.25rem;display:flex;flex-direction:column;gap:.6rem}
+  .walk li{font-size:.99rem}
+  .walk .think{color:var(--muted);font-size:.93rem;display:block;margin-top:.15rem}
+  .verdict{margin-top:1rem;padding:.75rem 1rem;background:var(--brand-soft);border-radius:10px;font-weight:650;color:var(--brand);font-size:1rem}
+  .cA{color:var(--a);font-weight:750}
+  .cB{color:var(--b);font-weight:750}
+  .cK{color:var(--brand);font-weight:750}
+
+  /* Быстрые случаи */
+  .cases{display:grid;gap:.85rem;margin-top:1rem}
+  @media(min-width:600px){.cases{grid-template-columns:1fr 1fr}}
+  .case{border-radius:14px;padding:1rem 1.15rem;border:2px solid}
+  .case.one{background:var(--a-soft);border-color:var(--a-line)}
+  .case.two{background:var(--b-soft);border-color:var(--b-line)}
+  .case .cap{font-size:.71rem;letter-spacing:.1em;text-transform:uppercase;font-weight:700;margin:0}
+  .case.one .cap{color:var(--a)} .case.two .cap{color:var(--b)}
+  .case h4{margin:.25rem 0 .4rem;font-size:1.05rem;font-weight:800}
+  .case p{margin:.3rem 0;font-size:.95rem}
+
+  /* Canvas */
+  .viz{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:1.1rem 1.15rem 1.2rem;margin-top:1rem}
+  .viz canvas{width:100%;height:auto;display:block;border-radius:10px}
+  .ctrls{display:flex;flex-wrap:wrap;gap:.9rem 1.4rem;align-items:center;margin-bottom:.9rem}
+  .ctrl{display:flex;align-items:center;gap:.55rem;flex:1 1 210px}
+  .ctrl label{font-weight:700;font-size:.95rem;white-space:nowrap}
+  .ctrl.a label{color:var(--a)} .ctrl.b label{color:var(--b)}
+  .ctrl input[type=range]{flex:1;min-width:90px;accent-color:var(--brand)}
+  .ctrl.a input[type=range]{accent-color:var(--a)}
+  .ctrl.b input[type=range]{accent-color:var(--b)}
+  .ctrl .val{font-family:ui-monospace,Menlo,monospace;font-weight:800;min-width:1.6rem;text-align:right}
+  input[type=range]:focus-visible{outline:2px solid var(--brand);outline-offset:3px}
+  .viz-out{margin-top:.85rem;text-align:center;font-size:1.02rem}
+  .viz-out b{color:var(--brand);font-family:ui-monospace,Menlo,monospace;font-size:1.15rem}
+  .viz-btns{display:flex;gap:.5rem;justify-content:center;margin-top:.9rem;flex-wrap:wrap}
+  .viz-btns button{font:inherit;font-weight:700;font-size:.9rem;border-radius:10px;padding:.5rem 1.05rem;cursor:pointer;border:1px solid var(--line);background:var(--paper);color:var(--ink)}
+  .viz-btns .go{background:var(--brand);color:#fff;border-color:var(--brand)}
+  .viz-btns button:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+
+  /* Тренажёр */
+  .trainer{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:1.3rem 1.3rem 1.2rem;margin-top:1rem}
+  .tr-task{font-family:ui-monospace,Menlo,monospace;font-weight:800;font-size:clamp(1.6rem,7.5vw,2.3rem);text-align:center;margin:.1rem 0 .25rem}
+  .tr-hint{text-align:center;color:var(--muted);font-size:.9rem;margin:0 0 1rem}
+  .tr-in{display:flex;gap:.5rem;justify-content:center;margin-bottom:1rem}
+  .tr-in input{font:inherit;font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.15rem;text-align:center;width:8rem;padding:.5rem .6rem;border:2px solid var(--line);border-radius:11px;background:var(--paper);color:var(--ink)}
+  .tr-in input:focus-visible{outline:2px solid var(--brand);outline-offset:2px;border-color:var(--brand-line)}
+  .tr-btns{display:flex;gap:.5rem;flex-wrap:wrap;justify-content:center}
+  .tr-btns button{font:inherit;font-weight:700;font-size:.92rem;border-radius:10px;padding:.55rem 1.1rem;cursor:pointer;border:1px solid transparent}
+  .tr-btns .go{background:var(--brand);color:#fff}
+  .tr-btns .sh{background:var(--paper);border:1px solid var(--line);color:var(--ink)}
+  .tr-btns .nw{background:var(--brand-soft);color:var(--brand)}
+  .tr-btns button:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+  .tr-res{margin-top:1.1rem;font-size:.97rem}
+  .tr-res .head{font-weight:700;padding:.6rem .9rem;border-radius:9px;margin-bottom:.7rem}
+  .tr-res .head.ok{background:#E7F4EC;color:var(--ok)}
+  .tr-res .head.no{background:#FBEAEA;color:var(--no)}
+  .tr-res .head.info{background:var(--brand-soft);color:var(--brand)}
+  .tr-sol{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:.85rem 1rem;overflow-x:auto}
+  .tr-sol .row{margin:.32rem 0;font-size:.95rem}
+  .tr-sol .fin{margin-top:.6rem;padding-top:.55rem;border-top:1px dashed var(--line);font-weight:700;color:var(--brand)}
+
+  /* Практика */
+  .drill{display:flex;flex-direction:column;gap:.7rem;margin-top:1rem}
+  .lvl{font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;font-weight:800;color:var(--muted);margin:1.3rem 0 .1rem}
+  details{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:.9rem 1.1rem}
+  details[open]{border-color:var(--brand-line)}
+  summary{cursor:pointer;font-weight:650;list-style:none;display:flex;justify-content:space-between;gap:1rem;align-items:center}
+  summary::-webkit-details-marker{display:none}
+  summary:focus-visible{outline:2px solid var(--brand);outline-offset:3px;border-radius:6px}
+  summary .q{font-size:1rem}
+  summary::after{content:"проверить";font-size:.8rem;color:var(--brand);font-weight:700;white-space:nowrap}
+  details[open] summary::after{content:"скрыть"}
+  .ans{margin-top:.75rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.96rem;color:var(--muted)}
+  .ans b{color:var(--ink)}
+
+  /* Ловушки */
+  ul.traps{list-style:none;margin:1rem 0 0;padding:0;display:flex;flex-direction:column;gap:.7rem}
+  ul.traps li{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:.85rem 1.05rem;padding-left:2.5rem;position:relative;font-size:.97rem}
+  ul.traps li::before{content:"⚠";position:absolute;left:1rem;top:.85rem;color:var(--a);font-size:1.05rem}
+  ul.traps b{font-weight:700}
+
+  .selfcheck ol{padding-left:1.2rem;display:flex;flex-direction:column;gap:.5rem;margin:.8rem 0 0}
+
+  .wrapup{background:var(--brand);color:#fff;border-radius:16px;padding:1.4rem 1.5rem;margin-top:2.4rem}
+  .wrapup h2{color:#fff;margin:0 0 .5rem}
+  .wrapup p{color:#DCEDE9;margin:.4rem 0;font-size:1rem}
+  .wrapup .big-rule{font-size:1.08rem;font-weight:700;color:#fff;margin:.6rem 0}
+  .wrapup .next{font-size:.95rem;color:#C3E0DA;margin-top:1rem;padding-top:1rem;border-top:1px solid rgba(255,255,255,.2)}
+
+  @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<!--LESSON-NAV-TOP--><style>.lnav{--lnav-accent:#3D5AF1}.lnav a{text-decoration:none;font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif}.lnav-top{max-width:820px;margin:0 auto;padding:.75rem clamp(1rem,4vw,1.5rem) .1rem}.lnav-top a{display:inline-flex;align-items:center;gap:.35rem;color:var(--lnav-accent);font-weight:600;font-size:.9rem}.lnav-top a:hover{text-decoration:underline}.lnav-bot{max-width:820px;margin:2.6rem auto 3rem;padding:1.1rem clamp(1rem,4vw,1.5rem) 0;border-top:1px solid #E4E8EF;display:flex;align-items:stretch;gap:.55rem}.lnav-bot a{min-width:0;display:flex;flex-direction:column;justify-content:center;gap:.15rem;border:1px solid #E4E8EF;border-radius:12px;padding:.65rem .85rem;color:#182233;background:#fff;transition:border-color .1s,transform .08s}.lnav-bot a:hover{border-color:var(--lnav-accent);transform:translateY(-1px)}.lnav-bot .prev,.lnav-bot .next{flex:1 1 0}.lnav-bot .next{text-align:right}.lnav-bot .dir{font-size:.72rem;color:#8A93A6;font-weight:600}.lnav-bot .ttl{font-size:.9rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.lnav-bot .to-cat{flex:0 0 auto;flex-direction:row;align-items:center;justify-content:center;color:var(--lnav-accent);font-weight:700;font-size:.85rem;white-space:nowrap}@media(max-width:420px){.lnav-bot .to-cat span{display:none}.lnav-bot .to-cat{padding:.65rem .7rem}}</style><nav class="lnav lnav-top"><a href="./catalog.html">← Все темы</a></nav><!--/LESSON-NAV-TOP-->
+<div class="page">
+
+  <header class="hero">
+    <p class="eyebrow">Математика · 6 класс</p>
+    <h1>Наименьшее<br>общее кратное</h1>
+    <p class="tagline">Первое число, в которое одновременно «попадают» шаги по <em>a</em> и шаги по <em>b</em>.</p>
+  </header>
+
+  <div class="lead-in">
+    <p><b>Зачем это нужно.</b> НОК в 6 классе учат ради дробей. Складывать и вычитать дроби с разными знаменателями без него не получится. Попробуй сложить <span class="mono">1/4</span> и <span class="mono">1/6</span> — сначала нужен общий знаменатель, и самый удобный общий знаменатель как раз НОК.</p>
+    <p>Задачи вокруг устроены так же. «Два автобуса отходят от остановки: один каждые 12 минут, другой каждые 8. Через сколько минут они уедут одновременно?» Ответ — НОК(12, 8). Шестерёнки, светофоры, мигающие лампочки, расписания — там та же механика.</p>
+  </div>
+
+  <div class="myth">
+    <p><b>Сразу разрушим главный миф.</b> Первая мысль почти у каждого: «перемножу числа и получу общее кратное». Перемножить и правда можно, получится <strong>общее</strong> кратное. Только не <strong>наименьшее</strong>. Для 4 и 6 произведение <span class="mono">24</span> — общее кратное, спору нет. А НОК всего <span class="mono">12</span>. Вся тема про то, как найти самое маленькое и не тащить лишнее.</p>
+  </div>
+
+  <section>
+    <h2>Что надо вспомнить перед стартом</h2>
+    <div class="recall">
+      <p class="cap">Разминка</p>
+      <ul>
+        <li><b>Разложение на простые множители.</b> Разложи 24 прямо сейчас, потом сверься: <span class="mono">24 = 2 · 12 = 2 · 2 · 6 = 2 · 2 · 2 · 3</span>, то есть <span class="mono">2<sup>3</sup> · 3</span>. Не разложишь — НОК не найдёшь.</li>
+        <li><b>НОД</b> — наибольший общий делитель. Для него берут <em>общие</em> множители, помнишь? Запомни это место: у НОК правило встанет зеркально.</li>
+        <li><b>Кратное числа</b> — то, что получается, если умножить его на натуральное число. Кратные 4: <span class="mono">4, 8, 12, 16, 20, 24…</span> Кратные 6: <span class="mono">6, 12, 18, 24, 30…</span></li>
+      </ul>
+    </div>
+  </section>
+
+  <section>
+    <h2>Суть: где <span class="em">встречаются шаги</span></h2>
+    <p>Общее кратное двух чисел — это число, которое делится и на первое, и на второе. У 4 и 6 общие кратные такие: <span class="mono">12, 24, 36…</span> и дальше без конца. Нам из этой бесконечной вереницы нужно только первое.</p>
+    <p>Нарисуй числовую прямую. По ней прыгают двое: первый шагает по <span class="cA">4</span>, второй — по <span class="cB">6</span>. Стартуют оба из нуля. <strong>НОК — это первая точка, куда они попадают одновременно.</strong> Для 4 и 6 это <span class="cK">12</span>.</p>
+
+    <div class="viz">
+      <div class="ctrls">
+        <div class="ctrl a">
+          <label for="vzA">Шаг a</label>
+          <input type="range" id="vzA" min="2" max="12" step="1" value="4">
+          <span class="val mono" id="vzAv">4</span>
+        </div>
+        <div class="ctrl b">
+          <label for="vzB">Шаг b</label>
+          <input type="range" id="vzB" min="2" max="12" step="1" value="6">
+          <span class="val mono" id="vzBv">6</span>
+        </div>
+      </div>
+      <canvas id="vzC" width="720" height="260" role="img" aria-label="Числовая прямая с прыжками по двум числам и точкой их первой встречи"></canvas>
+      <div class="viz-out" id="vzOut"></div>
+      <div class="viz-btns">
+        <button class="go" type="button" id="vzPlay">▶ Прыгать по шагам</button>
+        <button type="button" id="vzAll">Показать всё сразу</button>
+      </div>
+    </div>
+
+    <p>Покрути ползунки и последи за встречей. Поставь 3 и 9 — прыгуны сойдутся почти сразу. Поставь 5 и 7 — придётся тащиться до самого произведения. Эти два случая пригодятся дальше.</p>
+    <p>Обозначают так: <span class="mono">НОК(a, b)</span> или <span class="mono">K(a, b)</span>.</p>
+  </section>
+
+  <section>
+    <h2>Правило: <span class="em">все множители в наибольшей степени</span></h2>
+    <div class="core">
+      <p class="def"><b>Определение.</b> Наименьшим общим кратным чисел <span class="mono">a</span> и <span class="mono">b</span> называют наименьшее натуральное число, которое делится и на <span class="mono">a</span>, и на <span class="mono">b</span>. Записывают: <span class="mono">НОК(a, b)</span>.</p>
+      <h3>Как находить через разложение на простые множители</h3>
+      <ol class="steps">
+        <li>Разложи каждое число на простые множители.</li>
+        <li>Выпиши каждый простой множитель, который встретился <strong>хотя бы в одном</strong> разложении, и возьми его в <strong>наибольшей степени</strong> — с тем числом повторений, которое встретилось максимально.</li>
+        <li>Перемножь. Это и есть НОК.</li>
+      </ol>
+    </div>
+
+    <p>Теперь сравни с НОД. Правила стоят зеркально, и путаются школьники ровно здесь:</p>
+    <div class="tblwrap">
+      <table>
+        <thead><tr><th>Вопрос</th><th class="nod">НОД</th><th class="nok">НОК</th></tr></thead>
+        <tbody>
+          <tr><td class="k">Какие множители берём?</td><td>только <strong>общие</strong></td><td><strong>все</strong>, что есть хотя бы в одном разложении</td></tr>
+          <tr><td class="k">В какой степени?</td><td>в <strong>наименьшей</strong></td><td>в <strong>наибольшей</strong></td></tr>
+          <tr><td class="k">Каким получается ответ?</td><td>не больше меньшего числа</td><td>не меньше большего числа</td></tr>
+          <tr><td class="k">Для 12 и 18</td><td><span class="mono">6</span></td><td><span class="mono">36</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="note">
+      <p><b>Полезная связь.</b> НОК и НОД связаны формулой:</p>
+      <div class="formula">НОК(a, b) · НОД(a, b) = a · b &nbsp;&nbsp;⟹&nbsp;&nbsp; НОК(a, b) = (a · b) : НОД(a, b)</div>
+      <p style="margin-top:.7rem">НОД уже посчитан? Тогда НОК берётся одним делением.</p>
+    </div>
+
+    <p><strong>Условия.</strong> Числа натуральные (<span class="mono">a, b ≥ 1</span>). НОК всегда не меньше каждого из чисел. А если одно число делится на другое — скажем, 12 и 4, — то НОК равен большему: <span class="mono">НОК(12, 4) = 12</span>.</p>
+  </section>
+
+  <section>
+    <h2>Эталонный разбор — <span class="em">думаю вслух</span></h2>
+    <p>Дальше я рассуждаю вслух, а ты следи за ходом мысли. Задача: <strong>найти НОК(18, 24)</strong>.</p>
+    <div class="walk">
+      <p class="q">НОК(18, 24) = ?</p>
+      <ol>
+        <li>Раскладываю первое число: <span class="mono cA">18 = 2 · 3 · 3 = 2 · 3<sup>2</sup></span>.
+          <span class="think">Как я это получил: 18 = 2 · 9, а 9 = 3 · 3.</span></li>
+        <li>Раскладываю второе: <span class="mono cB">24 = 2 · 2 · 2 · 3 = 2<sup>3</sup> · 3</span>.
+          <span class="think">Как я это получил: 24 = 2 · 12 = 2 · 2 · 6 = 2 · 2 · 2 · 3.</span></li>
+        <li>Смотрю, какие вообще простые множители встретились: двойка и тройка. Беру каждый в наибольшей степени.
+          <span class="think">Двойка: в 18 она одна, в 24 их три — беру 2<sup>3</sup>. Тройка: в 24 она одна, в 18 их две — беру 3<sup>2</sup>.</span></li>
+        <li>Перемножаю: <span class="mono cK">НОК = 2<sup>3</sup> · 3<sup>2</sup> = 8 · 9 = 72</span>.</li>
+        <li>Проверяю, что не ошибся: <span class="mono">72 : 18 = 4</span> — делится нацело. <span class="mono">72 : 24 = 3</span> — тоже делится.
+          <span class="think">И меньшего общего кратного нет: если убрать хоть один множитель, число перестанет делиться на одно из двух.</span></li>
+      </ol>
+      <div class="verdict">Ответ: НОК(18, 24) = 72.</div>
+    </div>
+
+    <h3>Второй пример — попробуй закончить сам</h3>
+    <div class="walk">
+      <p class="q">НОК(10, 15) = ?</p>
+      <ol>
+        <li><span class="mono cA">10 = 2 · 5</span>.</li>
+        <li><span class="mono cB">15 = 3 · 5</span>.</li>
+        <li>Беру все множители в наибольшей степени: <span class="mono">2</span>, <span class="mono">3</span> и <span class="mono">5</span>. Пятёрка тут одна — она общая, поэтому берётся <strong>один раз</strong>, а не дважды.
+          <span class="think">Вот здесь и ломается «просто перемножу»: 10 · 15 = 150, а лишняя пятёрка нам не нужна.</span></li>
+      </ol>
+      <details style="margin-top:.9rem">
+        <summary><span class="q">Досчитай <span class="mono">2 · 3 · 5</span> и проверь ответ</span></summary>
+        <div class="ans"><b>НОК(10, 15) = 2 · 3 · 5 = 30.</b> Проверка: <span class="mono">30 : 10 = 3</span> и <span class="mono">30 : 15 = 2</span> — делится на оба.</div>
+      </details>
+    </div>
+
+    <h3>А теперь полностью сам</h3>
+    <details>
+      <summary><span class="q">Найди НОК(8, 12)</span></summary>
+      <div class="ans"><b>24.</b> Разложи: <span class="mono">8 = 2<sup>3</sup></span>, <span class="mono">12 = 2<sup>2</sup> · 3</span>. Берём <span class="mono">2<sup>3</sup> · 3 = 8 · 3 = 24</span>.</div>
+    </details>
+  </section>
+
+  <section>
+    <h2>Два случая, где считать почти не надо</h2>
+    <div class="cases">
+      <div class="case one">
+        <p class="cap">Случай 1</p>
+        <h4>Одно делится на другое</h4>
+        <p>Тогда НОК — это просто <strong>большее число</strong>.</p>
+        <p><span class="mono">НОК(12, 4) = 12</span>, ведь 12 уже делится на 4.</p>
+      </div>
+      <div class="case two">
+        <p class="cap">Случай 2</p>
+        <h4>Общих множителей нет</h4>
+        <p>Тогда НОК — это <strong>произведение</strong> чисел.</p>
+        <p><span class="mono">НОК(7, 5) = 35</span> — вот тут перемножение действительно работает.</p>
+      </div>
+    </div>
+    <p>Во всех остальных случаях перемножать нельзя. Общие множители посчитаются дважды, и произведение улетит выше, чем надо.</p>
+  </section>
+
+  <section>
+    <h2>Тренажёр — <span class="em">бесконечные НОК</span></h2>
+    <p>Считай в уме или на черновике и вводи ответ. Застрял — жми «Показать решение», там разложение по шагам. Задания не кончаются, сиди сколько нужно.</p>
+    <div class="trainer">
+      <div class="tr-task mono" id="trTask">НОК(12, 18) = ?</div>
+      <p class="tr-hint">Разложи оба числа на простые множители и возьми каждый в наибольшей степени</p>
+      <div class="tr-in">
+        <input type="text" id="trIn" inputmode="numeric" autocomplete="off" placeholder="ответ" aria-label="Ответ">
+      </div>
+      <div class="tr-btns">
+        <button class="go" id="trCheck" type="button">Проверить</button>
+        <button class="sh" id="trShow" type="button">Показать решение</button>
+        <button class="nw" id="trNew" type="button">🎲 Новое задание</button>
+      </div>
+      <div class="tr-res" id="trRes"></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Практика по нарастанию</h2>
+    <p>Сначала решай сам, ответ раскрывай потом. Пока не подглядываешь, работает голова 🙂</p>
+
+    <p class="lvl">Уровень 1 · понимание</p>
+    <div class="drill">
+      <details>
+        <summary><span class="q">1) Выпиши первые пять кратных числа 9. Какое из чисел — 18, 20, 27 — кратно 9?</span></summary>
+        <div class="ans">Первые пять кратных: <b><span class="mono">9, 18, 27, 36, 45</span></b>. Кратны 9 сразу два числа из списка: <b>18</b> (это 9 · 2) и <b>27</b> (это 9 · 3). А 20 на 9 не делится.</div>
+      </details>
+    </div>
+
+    <p class="lvl">Уровень 2 · применение</p>
+    <div class="drill">
+      <details>
+        <summary><span class="q">2) Найди НОК(6, 8).</span></summary>
+        <div class="ans"><span class="mono">6 = 2 · 3</span>, <span class="mono">8 = 2<sup>3</sup></span>. Берём двойку в наибольшей степени и тройку: <span class="mono">2<sup>3</sup> · 3 = 8 · 3 = </span><b>24</b>. Проверка: <span class="mono">24 : 6 = 4</span>, <span class="mono">24 : 8 = 3</span>.</div>
+      </details>
+      <details>
+        <summary><span class="q">3) Найди НОК(15, 20).</span></summary>
+        <div class="ans"><span class="mono">15 = 3 · 5</span>, <span class="mono">20 = 2<sup>2</sup> · 5</span>. Берём <span class="mono">2<sup>2</sup> · 3 · 5 = 4 · 3 · 5 = </span><b>60</b>. Пятёрка общая — берём её один раз. Проверка: <span class="mono">60 : 15 = 4</span>, <span class="mono">60 : 20 = 3</span>.</div>
+      </details>
+      <details>
+        <summary><span class="q">4) Первый автобус ходит каждые 9 минут, второй — каждые 12. Через сколько минут они снова отойдут одновременно?</span></summary>
+        <div class="ans">Нужен НОК(9, 12). <span class="mono">9 = 3<sup>2</sup></span>, <span class="mono">12 = 2<sup>2</sup> · 3</span>. Значит <span class="mono">2<sup>2</sup> · 3<sup>2</sup> = 4 · 9 = </span><b>36 минут</b>. Сходится: первый уйдёт на 36-й минуте (36 : 9 = 4 рейса), второй тоже (36 : 12 = 3 рейса).</div>
+      </details>
+    </div>
+
+    <p class="lvl">Уровень 3 · анализ</p>
+    <div class="drill">
+      <details>
+        <summary><span class="q">5) Что изменится в ответе НОК(a, b), если одно из чисел делится на другое? Приведи пример.</span></summary>
+        <div class="ans">Считать почти не придётся: <b>НОК будет равен большему числу</b>. Большее уже делится и на себя, и на меньшее — значит, оно и есть общее кратное, а меньше него общего кратного быть не может. Пример: <span class="mono">НОК(12, 4) = 12</span>.</div>
+      </details>
+      <details>
+        <summary><span class="q">6) Найди ошибку: «НОК(12, 18) = 2 · 3 = 6». Почему неверно и какой ответ правильный?</span></summary>
+        <div class="ans">Здесь взяли <b>только общие множители</b> — а это правило для <b>НОД</b>, не для НОК. Число 6 вообще меньше и 12, и 18, а НОК не может быть меньше самого большого из чисел — это сразу сигнал об ошибке. Правильно так: <span class="mono">12 = 2<sup>2</sup> · 3</span>, <span class="mono">18 = 2 · 3<sup>2</sup></span>, берём все множители в наибольшей степени: <span class="mono">2<sup>2</sup> · 3<sup>2</sup> = 4 · 9 = </span><b>36</b>.</div>
+      </details>
+      <details>
+        <summary><span class="q">7) Известно, что НОД(a, b) = 4, а a · b = 96. Чему равно НОК(a, b)?</span></summary>
+        <div class="ans">Пользуемся связью <span class="mono">НОК · НОД = a · b</span>. Отсюда <span class="mono">НОК = (a · b) : НОД = 96 : 4 = </span><b>24</b>. Сами числа a и b знать для этого не обязательно.</div>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <h2>Частые ошибки — не попадись</h2>
+    <ul class="traps">
+      <li><b>Путают НОК и НОД.</b> НОД — наибольший общий <strong>делитель</strong>, он меньше или равен числам. НОК — наименьшее общее <strong>кратное</strong>, оно больше или равно числам. Быстрая проверка: НОК не может быть меньше самого большого из чисел. Получил меньше — считал не то.</li>
+      <li><b>Берут только общие множители, как для НОД.</b> Для НОК нужны ВСЕ множители из обоих разложений. В НОК(12, 18) тройку и двойку, которых «не хватает» одному из чисел, тоже придётся взять.</li>
+      <li><b>Просто перемножают числа.</b> Если у чисел есть общие множители, произведение <span class="mono">a · b</span> даст общее кратное, но не наименьшее. Перемножение срабатывает только там, где общих множителей нет: <span class="mono">НОК(7, 5) = 35</span>.</li>
+    </ul>
+  </section>
+
+  <section class="selfcheck">
+    <h2>Проверь понимание</h2>
+    <p>Ответь вслух и своими словами, как будто объясняешь другу или боту. Потом сверься.</p>
+    <ol>
+      <li>Что больше для чисел 8 и 12 — их НОД или НОК?
+        <details style="margin-top:.5rem">
+          <summary><span class="q">сверить</span></summary>
+          <div class="ans"><b>НОК больше.</b> НОК(8, 12) = 24, а НОД(8, 12) = 4. Так будет всегда: кратное «уходит вверх», делитель «сидит внизу».</div>
+        </details>
+      </li>
+      <li>Как найти НОК через разложение на простые множители — в какой степени берут множители?
+        <details style="margin-top:.5rem">
+          <summary><span class="q">сверить</span></summary>
+          <div class="ans">Берут <b>каждый</b> простой множитель, входящий хотя бы в одно разложение, и <b>в наибольшей</b> степени — то есть с тем числом повторений, которое встретилось максимально.</div>
+        </details>
+      </li>
+      <li>Почему нельзя просто перемножить 12 и 18, чтобы получить их НОК?
+        <details style="margin-top:.5rem">
+          <summary><span class="q">сверить</span></summary>
+          <div class="ans">Потому что у 12 и 18 есть общие множители, и при перемножении они посчитаются дважды. Получится <span class="mono">216</span> — общее кратное, но не наименьшее. Наименьшее — <b>36</b>.</div>
+        </details>
+      </li>
+    </ol>
+  </section>
+
+  <div class="wrapup">
+    <h2>Запомни главное</h2>
+    <p class="big-rule">НОК — наименьшее число, которое делится на каждое из данных.<br>Ищем так: все простые множители, каждый в наибольшей степени.</p>
+    <p>Держи в голове зеркало: НОД — общие множители в наименьшей степени, НОК — все множители в наибольшей.</p>
+    <p class="next">👉 Дальше НОК пойдёт в дело: через него <strong>приводят дроби к общему знаменателю</strong>. НОК знаменателей и есть наименьший общий знаменатель — с ним дроби складываются без разбухших чисел.</p>
+  </div>
+
+</div>
+
+<script>
+(function(){
+  /* ---------- общие числовые хелперы ---------- */
+  function gcd(a,b){ while(b){ var t=a%b; a=b; b=t; } return a; }
+  function lcm(a,b){ return a/gcd(a,b)*b; }
+  function ri(a,b){ return Math.floor(Math.random()*(b-a+1))+a; }
+  function num(n){ return String(n).replace(/-/g,'−'); }
+
+  function factor(n){
+    var res=[], d=2;
+    while(d*d<=n){ var e=0; while(n%d===0){ n/=d; e++; } if(e) res.push([d,e]); d++; }
+    if(n>1) res.push([n,1]);
+    return res;
+  }
+  function factStr(f){
+    return f.map(function(p){ return p[1]===1 ? num(p[0]) : num(p[0])+'<sup>'+p[1]+'</sup>'; }).join(' · ');
+  }
+  function factPlain(n){
+    var f=factor(n), out=[];
+    f.forEach(function(p){ for(var i=0;i<p[1];i++) out.push(num(p[0])); });
+    return out.join(' · ');
+  }
+  /* «24 = 2 · 2 · 2 · 3 = 2³ · 3», но для 5 — просто «5 = 5» */
+  function factLine(n){
+    var f=factor(n), plain=factPlain(n), pow=factStr(f);
+    var hasPow = f.some(function(p){ return p[1]>1; });
+    return num(n) + ' = ' + plain + (hasPow ? ' = ' + pow : '');
+  }
+
+  /* ---------- 1. Визуализация: прыжки по числовой прямой ---------- */
+  var cv=document.getElementById('vzC'), ctx=cv.getContext('2d');
+  var sA=document.getElementById('vzA'), sB=document.getElementById('vzB');
+  var vA=document.getElementById('vzAv'), vB=document.getElementById('vzBv');
+  var out=document.getElementById('vzOut');
+  var W=cv.width, H=cv.height;
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var timer=null, shownA=0, shownB=0;
+
+  var COL={a:'#C2571F', b:'#3A54A0', k:'#1F6F63', line:'#8A929E', ink:'#22262E', muted:'#66707F'};
+
+  function draw(){
+    var a=+sA.value, b=+sB.value, L=lcm(a,b);
+    var padL=34, padR=26, y=H/2+6;
+    var span=W-padL-padR;
+    var X=function(v){ return padL + span*v/L; };
+
+    ctx.clearRect(0,0,W,H);
+
+    /* ось */
+    ctx.strokeStyle=COL.line; ctx.lineWidth=2;
+    ctx.beginPath(); ctx.moveTo(padL-16,y); ctx.lineTo(W-8,y); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(W-8,y); ctx.lineTo(W-20,y-5); ctx.lineTo(W-20,y+5); ctx.closePath();
+    ctx.fillStyle=COL.line; ctx.fill();
+
+    ctx.font='13px system-ui, -apple-system, "Segoe UI", Roboto, sans-serif';
+    ctx.textAlign='center';
+
+    /* ноль */
+    ctx.fillStyle=COL.ink;
+    ctx.beginPath(); ctx.arc(X(0),y,4,0,Math.PI*2); ctx.fill();
+    ctx.fillText('0', X(0), y+22);
+
+    /* дуги вверх — шаг a */
+    function arcs(step, upward, count, color){
+      ctx.strokeStyle=color; ctx.fillStyle=color; ctx.lineWidth=2.2;
+      var n=Math.round(L/step);
+      for(var i=0;i<Math.min(count,n);i++){
+        var x1=X(i*step), x2=X((i+1)*step), r=(x2-x1)/2, cxx=(x1+x2)/2;
+        var h=Math.min(r, 54);
+        ctx.beginPath();
+        ctx.ellipse(cxx, y, r, h, 0, upward?Math.PI:0, upward?Math.PI*2:Math.PI);
+        ctx.stroke();
+        ctx.beginPath(); ctx.arc(x2,y,4,0,Math.PI*2); ctx.fill();
+        ctx.font='12px system-ui, -apple-system, sans-serif';
+        ctx.fillText(num((i+1)*step), x2, upward ? y-h-8 : y+h+16);
+      }
+    }
+    arcs(a, true,  shownA, COL.a);
+    arcs(b, false, shownB, COL.b);
+
+    /* подписи шагов */
+    ctx.textAlign='left';
+    ctx.font='bold 13px system-ui, -apple-system, sans-serif';
+    ctx.fillStyle=COL.a; ctx.fillText('шаг ' + num(a), 6, 18);
+    ctx.fillStyle=COL.b; ctx.fillText('шаг ' + num(b), 6, H-8);
+
+    /* встреча */
+    var doneA = shownA >= Math.round(L/a), doneB = shownB >= Math.round(L/b);
+    if(doneA && doneB){
+      ctx.strokeStyle=COL.k; ctx.lineWidth=2; ctx.setLineDash([5,4]);
+      ctx.beginPath(); ctx.moveTo(X(L), 30); ctx.lineTo(X(L), H-26); ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.fillStyle=COL.k;
+      ctx.beginPath(); ctx.arc(X(L), y, 7, 0, Math.PI*2); ctx.fill();
+      ctx.textAlign='right'; ctx.font='bold 14px system-ui, -apple-system, sans-serif';
+      ctx.fillText('встреча: ' + num(L), X(L)-10, 24);
+      out.innerHTML='Первая общая точка: <b>НОК(' + num(a) + ', ' + num(b) + ') = ' + num(L) + '</b>';
+    } else {
+      out.innerHTML='<span style="color:#66707F">Идут по шагам… следи, где дуги встретятся.</span>';
+    }
+  }
+
+  function showAll(){
+    if(timer){ clearInterval(timer); timer=null; }
+    var a=+sA.value, b=+sB.value, L=lcm(a,b);
+    shownA=Math.round(L/a); shownB=Math.round(L/b);
+    draw();
+  }
+  function play(){
+    if(timer){ clearInterval(timer); timer=null; }
+    if(reduce){ showAll(); return; }
+    var a=+sA.value, b=+sB.value, L=lcm(a,b);
+    var nA=Math.round(L/a), nB=Math.round(L/b), i=0, total=Math.max(nA,nB);
+    shownA=0; shownB=0; draw();
+    timer=setInterval(function(){
+      i++;
+      shownA=Math.min(nA,i); shownB=Math.min(nB,i);
+      draw();
+      if(i>=total){ clearInterval(timer); timer=null; }
+    }, 420);
+  }
+  function reset(){
+    if(timer){ clearInterval(timer); timer=null; }
+    vA.textContent=num(+sA.value); vB.textContent=num(+sB.value);
+    showAll();
+  }
+  sA.addEventListener('input',reset);
+  sB.addEventListener('input',reset);
+  document.getElementById('vzPlay').addEventListener('click',play);
+  document.getElementById('vzAll').addEventListener('click',showAll);
+  reset();
+
+  /* ---------- 2. Тренажёр ---------- */
+  var A=12, B=18;
+  var taskEl=document.getElementById('trTask');
+  var inEl=document.getElementById('trIn');
+  var resEl=document.getElementById('trRes');
+
+  function genPair(){
+    for(var t=0;t<300;t++){
+      var r=Math.random(), a, b;
+      if(r<0.2){                       /* одно делится на другое */
+        a=ri(2,12); b=a*ri(2,5);
+      } else if(r<0.4){                /* без общих множителей */
+        var P=[3,4,5,7,8,9,11];
+        a=P[ri(0,P.length-1)]; b=P[ri(0,P.length-1)];
+      } else {                         /* общий случай */
+        a=ri(4,30); b=ri(4,30);
+      }
+      if(a===b) continue;
+      if(r>=0.4 && (gcd(a,b)===1 || a%b===0 || b%a===0)) continue;
+      if(r>=0.2 && r<0.4 && gcd(a,b)!==1) continue;
+      if(lcm(a,b)>300) continue;
+      return [Math.min(a,b), Math.max(a,b)];
+    }
+    return [6,8];
+  }
+
+  function solution(){
+    var fa=factor(A), fb=factor(B), L=lcm(A,B);
+    var primes=[], map={};
+    function add(f){ f.forEach(function(p){ if(map[p[0]]===undefined){ map[p[0]]=p[1]; primes.push(p[0]); } else if(p[1]>map[p[0]]) map[p[0]]=p[1]; }); }
+    add(fa); add(fb);
+    primes.sort(function(x,y){ return x-y; });
+
+    var h='<div class="tr-sol">';
+    h+='<div class="row"><b>Шаг 1.</b> Раскладываю на простые множители:</div>';
+    h+='<div class="row">&nbsp;&nbsp;<span class="mono" style="color:#C2571F">'+factLine(A)+'</span></div>';
+    h+='<div class="row">&nbsp;&nbsp;<span class="mono" style="color:#3A54A0">'+factLine(B)+'</span></div>';
+
+    var parts=[], vals=[];
+    primes.forEach(function(p){
+      var e=map[p];
+      parts.push(e===1 ? num(p) : num(p)+'<sup>'+e+'</sup>');
+      vals.push(Math.pow(p,e));
+    });
+    h+='<div class="row"><b>Шаг 2.</b> Беру каждый множитель в наибольшей степени: <span class="mono">'+parts.join(' · ')+'</span></div>';
+    h+='<div class="row"><b>Шаг 3.</b> Перемножаю: <span class="mono">'+parts.join(' · ')+' = '+vals.map(num).join(' · ')+' = '+num(L)+'</span></div>';
+
+    if(A!==0 && B%A===0){
+      h+='<div class="row" style="color:#66707F">Заметь: '+num(B)+' делится на '+num(A)+', поэтому НОК сразу равен большему числу.</div>';
+    } else if(gcd(A,B)===1){
+      h+='<div class="row" style="color:#66707F">Общих множителей у чисел нет — только в таком случае НОК совпадает с произведением '+num(A)+' · '+num(B)+'.</div>';
+    }
+    h+='<div class="row" style="color:#66707F">Проверка: '+num(L)+' : '+num(A)+' = '+num(L/A)+', '+num(L)+' : '+num(B)+' = '+num(L/B)+'.</div>';
+    h+='<div class="fin">Ответ: НОК('+num(A)+', '+num(B)+') = '+num(L)+'</div>';
+    return h+'</div>';
+  }
+
+  function render(){
+    taskEl.textContent='НОК(' + num(A) + ', ' + num(B) + ') = ?';
+    inEl.value=''; resEl.innerHTML='';
+  }
+  function newTask(focus){
+    var p=genPair(); A=p[0]; B=p[1];
+    render();
+    if(focus) inEl.focus();
+  }
+  function check(){
+    var raw=inEl.value.replace(/\s/g,'').replace(/−/g,'-');
+    if(raw===''){ resEl.innerHTML='<div class="head info">Введи ответ — число.</div>'; return; }
+    var v=Number(raw);
+    if(!isFinite(v)){ resEl.innerHTML='<div class="head info">Похоже, это не число. Введи ответ цифрами.</div>'; return; }
+    var L=lcm(A,B);
+    if(v===L){
+      resEl.innerHTML='<div class="head ok">✓ Верно! НОК(' + num(A) + ', ' + num(B) + ') = ' + num(L) + '</div>' + solution();
+    } else {
+      var hint='';
+      if(v===A*B && A*B!==L) hint=' Ты просто перемножил числа — а у них есть общие множители.';
+      else if(v===gcd(A,B)) hint=' Это НОД, а не НОК: ты взял только общие множители.';
+      else if(v<B) hint=' НОК не может быть меньше большего из чисел.';
+      resEl.innerHTML='<div class="head no">Не сходится.' + hint + ' Посмотри разбор.</div>' + solution();
+    }
+  }
+  document.getElementById('trCheck').addEventListener('click',check);
+  document.getElementById('trShow').addEventListener('click',function(){
+    resEl.innerHTML='<div class="head info">Решение задания НОК(' + num(A) + ', ' + num(B) + '):</div>' + solution();
+  });
+  document.getElementById('trNew').addEventListener('click',function(){ newTask(true); });
+  inEl.addEventListener('keydown',function(e){ if(e.key==='Enter') check(); });
+  render();
+})();
+</script>
+<!--LESSON-NAV-BOT--><nav class="lnav lnav-bot"><a class="prev" href="./m6-nod.html"><span class="dir">← Предыдущая</span><span class="ttl">Наибольший общий делитель (НОД)</span></a><a class="to-cat" href="./catalog.html">📚 <span>Все темы</span></a><a class="next" href="./m6-vzaimno-prostye.html"><span class="dir">Следующая →</span><span class="ttl">Взаимно простые числа</span></a></nav><!--/LESSON-NAV-BOT-->

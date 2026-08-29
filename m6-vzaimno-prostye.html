@@ -1,0 +1,576 @@
+<!doctype html>
+<!-- humanized: humanizer-ru, 2026-08-29, тире возвращено -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Взаимно простые числа — 6 класс</title>
+<style>
+  :root{
+    --paper:#F8FAF9;
+    --card:#FFFFFF;
+    --ink:#1F2A28;
+    --muted:#65746F;
+    --line:#E2E9E6;
+    --brand:#17766A;
+    --brand-soft:#E3F1EE;
+    --ok:#2E8B57;
+    --ok-soft:#E7F4EC;
+    --no:#C23B3B;
+    --no-soft:#FBEAEA;
+    --hi:#C87A16;          /* общий делитель */
+    --hi-soft:#FCF0DC;
+    --hi-line:#EFD5A6;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper)}
+  .page{
+    max-width:720px;margin:0 auto;
+    padding:clamp(1.4rem,4vw,3rem) clamp(1.1rem,4vw,2rem) 4.5rem;
+    color:var(--ink);
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    font-size:17.5px;line-height:1.68;-webkit-font-smoothing:antialiased;
+  }
+  .mono{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-variant-numeric:tabular-nums;font-weight:600}
+
+  .hero{border-bottom:3px solid var(--brand);padding-bottom:1.4rem;margin-bottom:1.8rem}
+  .eyebrow{font-size:.74rem;letter-spacing:.15em;text-transform:uppercase;color:var(--brand);font-weight:700;margin:0 0 .55rem}
+  h1{font-size:clamp(2rem,6.5vw,3rem);line-height:1.03;margin:0;font-weight:800;letter-spacing:-.02em;text-wrap:balance}
+  .tagline{font-size:1.12rem;color:var(--muted);margin:.85rem 0 0;text-wrap:pretty}
+
+  section{margin-top:2.4rem}
+  h2{font-size:1.5rem;margin:0 0 .3rem;font-weight:780;letter-spacing:-.015em;text-wrap:balance}
+  h2 .em{color:var(--brand)}
+  h3{font-size:1.08rem;margin:1.3rem 0 .2rem;font-weight:750}
+  p{margin:.7rem 0}
+  strong{font-weight:680}
+
+  .lead-in{background:var(--brand-soft);border-radius:14px;padding:1.1rem 1.3rem;font-size:1.02rem}
+  .lead-in p{margin:.4rem 0}
+  .lead-in b{color:var(--brand)}
+
+  /* Миф vs правда */
+  .myth{display:grid;gap:.9rem;margin-top:1rem}
+  @media(min-width:600px){.myth{grid-template-columns:1fr 1fr}}
+  .mcard{border-radius:16px;padding:1.1rem 1.25rem;border:2px solid}
+  .mcard.bad{background:var(--no-soft);border-color:#F0C9C9}
+  .mcard.good{background:var(--ok-soft);border-color:#BFE3CD}
+  .mcard .cap{font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;font-weight:700;margin:0}
+  .mcard.bad .cap{color:var(--no)} .mcard.good .cap{color:var(--ok)}
+  .mcard p{margin:.35rem 0;font-size:.98rem}
+  .mcard .q{font-size:1.05rem;font-weight:750;margin:.25rem 0 .4rem}
+
+  /* Повторение пререквизита */
+  .recall{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--brand);border-radius:0 12px 12px 0;padding:1rem 1.2rem;margin-top:1rem}
+  .recall p{margin:.4rem 0;font-size:.99rem}
+  .recall .ttl{font-weight:750;color:var(--brand);margin:0 0 .3rem}
+
+  /* Ядро — определение */
+  .core{background:var(--brand);color:#fff;border-radius:16px;padding:1.3rem 1.4rem;margin-top:1rem}
+  .core .lbl{font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;font-weight:700;color:#A9DCD3;margin:0 0 .5rem}
+  .core .big{font-family:ui-monospace,Menlo,Consolas,monospace;font-weight:800;font-size:clamp(1.35rem,6vw,1.9rem);margin:.2rem 0 .6rem;letter-spacing:.01em}
+  .core p{color:#DCF0EC;margin:.45rem 0;font-size:1rem}
+  .core b{color:#fff}
+
+  .facts{display:flex;flex-direction:column;gap:.7rem;margin-top:1rem}
+  .fact{display:flex;gap:.9rem;align-items:flex-start;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:.85rem 1.05rem;font-size:.98rem}
+  .fact .ic{flex:none;font-size:1.15rem;line-height:1.4}
+  .fact b{font-weight:700}
+
+  .note{border-left:4px solid var(--hi);background:var(--hi-soft);border-radius:0 10px 10px 0;padding:.8rem 1.1rem;margin-top:1rem;font-size:.98rem}
+  .note b{color:#8A5A10}
+
+  /* Разбор по шагам */
+  .walk{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.15rem 1.3rem;margin-top:1rem}
+  .walk .q{font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.08rem;margin:0 0 .9rem;padding-bottom:.7rem;border-bottom:1px solid var(--line)}
+  .walk ol{margin:0;padding-left:1.3rem;display:flex;flex-direction:column;gap:.6rem}
+  .walk li{font-size:.99rem}
+  .walk .why{display:block;color:var(--muted);font-size:.9rem;margin-top:.1rem}
+  .verdict{margin-top:1rem;padding:.75rem 1rem;background:var(--ok-soft);border-radius:10px;font-weight:650;color:var(--ok);font-size:1rem}
+
+  .divrow{display:flex;flex-wrap:wrap;gap:.35rem;align-items:center;margin:.35rem 0}
+  .divrow .lab{font-size:.92rem;color:var(--muted);margin-right:.2rem}
+  .divrow span.d{font-family:ui-monospace,Menlo,monospace;font-weight:700;background:var(--paper);border:1px solid var(--line);border-radius:7px;padding:.1rem .5rem;font-size:.95rem}
+  .divrow span.d.hi{background:var(--hi-soft);border-color:var(--hi-line);color:#8A5A10}
+
+  /* Визуализация */
+  .viz{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:1.2rem 1.2rem 1.1rem;margin-top:1rem}
+  .viz canvas{width:100%;height:auto;display:block}
+  .ctrls{display:flex;flex-direction:column;gap:.8rem;margin-bottom:1rem}
+  .ctrl{display:flex;align-items:center;gap:.8rem}
+  .ctrl label{font-family:ui-monospace,Menlo,monospace;font-weight:800;font-size:1rem;flex:none;width:4.6rem}
+  .ctrl input[type=range]{flex:1;accent-color:var(--brand);min-width:0}
+  .ctrl input[type=range]:focus-visible{outline:2px solid var(--brand);outline-offset:3px}
+  .ctrl .val{font-family:ui-monospace,Menlo,monospace;font-weight:800;font-size:1.05rem;width:2.4rem;text-align:right;flex:none}
+  .presets{display:flex;flex-wrap:wrap;gap:.45rem;margin-bottom:1rem}
+  .presets button{font:inherit;font-size:.87rem;font-weight:700;background:var(--paper);border:1px solid var(--line);border-radius:9px;padding:.35rem .8rem;cursor:pointer;color:var(--ink)}
+  .presets button:hover{border-color:var(--brand)}
+  .presets button:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+  .viz-verdict{margin-top:.9rem;padding:.7rem 1rem;border-radius:10px;font-weight:700;font-size:1rem;text-align:center}
+  .viz-verdict.ok{background:var(--ok-soft);color:var(--ok)}
+  .viz-verdict.no{background:var(--no-soft);color:var(--no)}
+
+  /* Тренажёр */
+  .trainer{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:1.3rem 1.3rem 1.2rem;margin-top:1rem}
+  .tr-pair{font-family:ui-monospace,Menlo,monospace;font-weight:800;font-size:clamp(1.9rem,9vw,2.8rem);text-align:center;letter-spacing:.02em;margin:.1rem 0 .3rem}
+  .tr-hint{text-align:center;color:var(--muted);font-size:.9rem;margin:0 0 1.1rem}
+  .tr-answers{display:flex;flex-wrap:wrap;gap:.55rem;justify-content:center;margin-bottom:1rem}
+  .tr-answers button{font:inherit;font-weight:700;font-size:.95rem;border:2px solid var(--line);background:var(--paper);border-radius:12px;padding:.6rem 1.1rem;cursor:pointer;color:var(--ink);transition:transform .08s,border-color .1s}
+  .tr-answers button:hover{transform:translateY(-1px);border-color:var(--brand)}
+  .tr-answers button:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+  .tr-btns{display:flex;gap:.5rem;flex-wrap:wrap;justify-content:center}
+  .tr-btns button{font:inherit;font-weight:700;font-size:.92rem;border-radius:10px;padding:.55rem 1.1rem;cursor:pointer;border:1px solid transparent}
+  .tr-btns .sh{background:var(--paper);border:1px solid var(--line);color:var(--ink)}
+  .tr-btns .nw{background:var(--brand-soft);color:var(--brand)}
+  .tr-btns button:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+  .tr-res{margin-top:1.1rem;font-size:.97rem}
+  .tr-res .head{font-weight:700;padding:.6rem .9rem;border-radius:9px;margin-bottom:.7rem}
+  .tr-res .head.ok{background:var(--ok-soft);color:var(--ok)}
+  .tr-res .head.no{background:var(--no-soft);color:var(--no)}
+  .tr-res .head.info{background:var(--brand-soft);color:var(--brand)}
+  .tr-sol{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:.85rem 1rem}
+  .tr-sol .row{margin:.35rem 0;font-size:.94rem}
+  .tr-sol .fin{margin-top:.6rem;padding-top:.55rem;border-top:1px dashed var(--line);font-weight:700}
+
+  /* Практика */
+  .drill{display:flex;flex-direction:column;gap:.7rem;margin-top:1rem}
+  .lvl{font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;font-weight:800;color:var(--brand);margin:1.4rem 0 .1rem}
+  details{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:.9rem 1.1rem}
+  details[open]{border-color:var(--brand)}
+  summary{cursor:pointer;font-weight:650;list-style:none;display:flex;justify-content:space-between;gap:1rem;align-items:center}
+  summary::-webkit-details-marker{display:none}
+  summary:focus-visible{outline:2px solid var(--brand);outline-offset:3px;border-radius:6px}
+  summary .q{font-size:1rem}
+  summary::after{content:"проверить";font-size:.8rem;color:var(--brand);font-weight:700;white-space:nowrap}
+  details[open] summary::after{content:"скрыть"}
+  .ans{margin-top:.75rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.96rem;color:var(--muted)}
+  .ans b{color:var(--ink)}
+
+  ul.traps{list-style:none;margin:1rem 0 0;padding:0;display:flex;flex-direction:column;gap:.7rem}
+  ul.traps li{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:.85rem 1.05rem;padding-left:2.5rem;position:relative;font-size:.97rem}
+  ul.traps li::before{content:"⚠";position:absolute;left:1rem;top:.85rem;color:var(--hi);font-size:1.05rem}
+  ul.traps b{font-weight:700}
+  ul.traps .fix{display:block;margin-top:.3rem;color:var(--muted);font-size:.92rem}
+
+  .selfcheck{background:var(--card);border:1px dashed var(--brand);border-radius:14px;padding:1.1rem 1.3rem;margin-top:1rem}
+  .selfcheck ol{margin:.4rem 0 0;padding-left:1.2rem}
+  .selfcheck li{margin:.45rem 0;font-size:1rem}
+
+  .wrapup{background:var(--brand);color:#fff;border-radius:16px;padding:1.4rem 1.5rem;margin-top:2.4rem}
+  .wrapup h2{color:#fff;margin:0 0 .5rem}
+  .wrapup p{color:#DCF0EC;margin:.4rem 0;font-size:1rem}
+  .wrapup .big-rule{font-size:1.1rem;font-weight:700;color:#fff;margin:.6rem 0}
+  .wrapup .next{font-size:.95rem;color:#B6DDD6;margin-top:1rem;padding-top:1rem;border-top:1px solid rgba(255,255,255,.2)}
+
+  .oge-tip{display:flex;gap:.8rem;align-items:flex-start;background:#FFF8E7;border:1px solid #F0D98A;border-left:4px solid #E0A315;border-radius:10px;padding:.85rem 1.05rem;margin:1.5rem 0}
+  .oge-tip .b{font-size:.72rem;font-weight:800;letter-spacing:.03em;color:#8A6A15;white-space:nowrap;text-transform:uppercase;padding-top:.15rem}
+  .oge-tip .x{font-size:.95rem;line-height:1.5}
+
+  @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<!--LESSON-NAV-TOP--><style>.lnav{--lnav-accent:#3D5AF1}.lnav a{text-decoration:none;font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif}.lnav-top{max-width:820px;margin:0 auto;padding:.75rem clamp(1rem,4vw,1.5rem) .1rem}.lnav-top a{display:inline-flex;align-items:center;gap:.35rem;color:var(--lnav-accent);font-weight:600;font-size:.9rem}.lnav-top a:hover{text-decoration:underline}.lnav-bot{max-width:820px;margin:2.6rem auto 3rem;padding:1.1rem clamp(1rem,4vw,1.5rem) 0;border-top:1px solid #E4E8EF;display:flex;align-items:stretch;gap:.55rem}.lnav-bot a{min-width:0;display:flex;flex-direction:column;justify-content:center;gap:.15rem;border:1px solid #E4E8EF;border-radius:12px;padding:.65rem .85rem;color:#182233;background:#fff;transition:border-color .1s,transform .08s}.lnav-bot a:hover{border-color:var(--lnav-accent);transform:translateY(-1px)}.lnav-bot .prev,.lnav-bot .next{flex:1 1 0}.lnav-bot .next{text-align:right}.lnav-bot .dir{font-size:.72rem;color:#8A93A6;font-weight:600}.lnav-bot .ttl{font-size:.9rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.lnav-bot .to-cat{flex:0 0 auto;flex-direction:row;align-items:center;justify-content:center;color:var(--lnav-accent);font-weight:700;font-size:.85rem;white-space:nowrap}@media(max-width:420px){.lnav-bot .to-cat span{display:none}.lnav-bot .to-cat{padding:.65rem .7rem}}</style><nav class="lnav lnav-top"><a href="./catalog.html">← Все темы</a></nav><!--/LESSON-NAV-TOP-->
+<div class="page">
+
+  <header class="hero">
+    <p class="eyebrow">Математика · 6 класс</p>
+    <h1>Взаимно простые<br>числа</h1>
+    <p class="tagline">Как за один взгляд понять, что дробь дальше <em>уже не сокращается</em>.</p>
+  </header>
+
+  <div class="lead-in">
+    <p><b>Зачем это нужно.</b> Чтобы видеть с ходу: вот эта дробь уже никуда не сокращается, дальше не мучайся.</p>
+    <p>Если числитель и знаменатель взаимно простые, «уменьшить» дробь нельзя. Это её окончательный вид. Ты просто перестаёшь перебирать делители впустую.</p>
+    <p>Понятие всплывёт при сокращении дробей, при приведении к общему знаменателю, а позже — в пропорциях и отношениях.</p>
+  </div>
+
+  <section>
+    <h2>Сначала разрушим <span class="em">главный миф</span></h2>
+    <p>Слышишь «взаимно простые» и достраиваешь: значит, оба числа простые. Звучит логично. И неверно.</p>
+    <div class="myth">
+      <div class="mcard bad">
+        <p class="cap">Так думают</p>
+        <p class="q">«Взаимно простые = оба числа простые»</p>
+        <p>Тогда пара <span class="mono">8 и 9</span> точно не подходит: 8 составное, 9 тоже составное.</p>
+      </div>
+      <div class="mcard good">
+        <p class="cap">А как есть</p>
+        <p class="q">8 и 9 — взаимно простые!</p>
+        <p>Простое число или составное — тут вообще не спрашивают. Спрашивают одно: <strong>есть ли у пары общие делители, кроме 1</strong>.</p>
+      </div>
+    </div>
+    <p>Держи это в голове весь урок: каждое число по отдельности нас не волнует, нас волнует <strong>общее</strong> у пары.</p>
+  </section>
+
+  <section>
+    <h2>Что нужно вспомнить</h2>
+    <div class="recall">
+      <p class="ttl">НОД — наибольший общий делитель</p>
+      <p>НОД(a, b) — самое большое число, на которое делятся <strong>оба</strong> числа сразу. Запись НОД(8, 9) читается «наибольший общий делитель 8 и 9».</p>
+      <p>Найти его можно в лоб: выписал делители первого числа, выписал делители второго, глянул, какие попали в оба списка. Самое большое из совпавших и есть НОД.</p>
+      <p>Если тут пока туго — вернись к теме про НОД. Дальше без неё будет тяжело.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Ядро темы: <span class="em">определение</span></h2>
+    <p>Два числа называют <strong>взаимно простыми</strong>, если у них нет общих делителей, кроме единицы. То есть единственное число, на которое делятся оба сразу, — это 1.</p>
+    <p>Короче ту же мысль записывают через НОД:</p>
+    <div class="core">
+      <p class="lbl">Определение</p>
+      <p class="big">НОД(a, b) = 1</p>
+      <p>Натуральные числа <b>a</b> и <b>b</b> называются <b>взаимно простыми</b>, если их наибольший общий делитель равен единице.</p>
+      <p><b>Как проверить:</b> найди НОД(a, b). Равен 1 — числа взаимно простые. Больше 1 — не взаимно простые.</p>
+    </div>
+    <p>По делимости у таких чисел нет ничего общего. Ни одного «кирпичика», на который их получилось бы разделить вместе. Поэтому дробь с взаимно простыми числителем и знаменателем сократить нечем.</p>
+
+    <div class="facts">
+      <div class="fact"><span class="ic">🔢</span><div>Речь идёт о <b>натуральных числах</b>: 1, 2, 3, 4, …</div></div>
+      <div class="fact"><span class="ic">1️⃣</span><div>У единицы с любым числом НОД равен 1, поэтому <b>1 взаимно проста с любым числом</b>.</div></div>
+      <div class="fact"><span class="ic">✅</span><div>Взаимно простыми могут быть <b>и простые, и составные</b> числа.</div></div>
+      <div class="fact"><span class="ic">↔️</span><div>Числа в паре могут быть <b>совсем не равны</b> и вообще не похожи друг на друга.</div></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Разбор: <span class="em">думаю вслух</span></h2>
+    <p>Вот как я рассуждаю на том самом спорном примере:</p>
+    <div class="walk">
+      <p class="q">Взаимно просты ли числа 8 и 9?</p>
+      <ol>
+        <li>Выписываю делители 8: <span class="mono">1, 2, 4, 8</span>.
+          <span class="why">Перечисляю всё, на что делится 8.</span></li>
+        <li>Выписываю делители 9: <span class="mono">1, 3, 9</span>.
+          <span class="why">То же самое для второго числа.</span></li>
+        <li>Сравниваю списки. Общее число только одно — <span class="mono">1</span>.
+          <span class="why">Двойки в списке девятки нет, тройки у восьмёрки нет. Пересекаться больше нечему.</span></li>
+        <li>Значит, <span class="mono">НОД(8, 9) = 1</span>.
+          <span class="why">Общий делитель один, он же и наибольший.</span></li>
+      </ol>
+      <div class="verdict">Вывод: 8 и 9 — взаимно простые. Оба составные, и это никак не мешает.</div>
+    </div>
+
+    <h3>А теперь допиши сам</h3>
+    <p>Ход тот же, но два шага я оставил тебе. Взаимно просты ли <span class="mono">15 и 25</span>?</p>
+    <div class="walk">
+      <p class="q">Взаимно просты ли 15 и 25?</p>
+      <ol>
+        <li>Делители 15: <span class="mono">1, 3, 5, 15</span>.</li>
+        <li>Делители 25: <span class="mono">1, 5, 25</span>.</li>
+        <li>Общий делитель, кроме 1, это число <b>____</b> , поэтому НОД(15, 25) = <b>____</b> .</li>
+        <li>Значит, 15 и 25 взаимно простыми <b>____</b> (являются / не являются).</li>
+      </ol>
+      <div class="drill" style="margin-top:1rem">
+        <details>
+          <summary><span class="q">Проверить, что получилось</span></summary>
+          <div class="ans">Кроме 1, в обоих списках торчит <b>5</b>. Значит НОД(15, 25) = <b>5</b>, а это больше 1 → числа <b>не являются</b> взаимно простыми.</div>
+        </details>
+      </div>
+    </div>
+
+    <h3>Теперь целиком сам</h3>
+    <div class="drill">
+      <details>
+        <summary><span class="q">Взаимно просты ли <span class="mono">14 и 15</span>?</span></summary>
+        <div class="ans">Делители 14: <b>1, 2, 7, 14</b>. Делители 15: <b>1, 3, 5, 15</b>. Общий только 1, поэтому НОД(14, 15) = 1 → числа <b>взаимно простые</b>.</div>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <h2>Посмотри глазами: <span class="em">две полоски делителей</span></h2>
+    <p>Выпиши делители каждого числа в строку и подсвети совпадения. Совпала одна единица — числа взаимно простые. Нагляднее способа нет.</p>
+    <p>Подвигай ползунки. Начни с пары <strong>8 и 9</strong>, потом жми «8 и 12»: меняется одно число, а ответ переворачивается. Сначала предскажи его в уме, потом смотри.</p>
+    <div class="viz">
+      <div class="presets">
+        <button type="button" data-a="8" data-b="9">8 и 9</button>
+        <button type="button" data-a="8" data-b="12">8 и 12</button>
+        <button type="button" data-a="15" data-b="25">15 и 25</button>
+        <button type="button" data-a="14" data-b="15">14 и 15</button>
+        <button type="button" data-a="1" data-b="7">1 и 7</button>
+      </div>
+      <div class="ctrls">
+        <div class="ctrl">
+          <label for="va">a =</label>
+          <input type="range" id="va" min="1" max="30" step="1" value="8">
+          <span class="val mono" id="la">8</span>
+        </div>
+        <div class="ctrl">
+          <label for="vb">b =</label>
+          <input type="range" id="vb" min="1" max="30" step="1" value="9">
+          <span class="val mono" id="lb">9</span>
+        </div>
+      </div>
+      <canvas id="strips" width="640" height="240" role="img" aria-label="Две полоски делителей с подсветкой общих"></canvas>
+      <div class="viz-verdict ok" id="vizVerdict">НОД(8, 9) = 1 · взаимно простые</div>
+    </div>
+    <div class="note">
+      <p><b>Что тут видно.</b> Жёлтым горят общие делители. Горит одна единица — числа взаимно простые. Загорелось что-то ещё — уже нет.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Тренажёр — <span class="em">бесконечная практика</span></h2>
+    <p>Выпадает случайная пара. Вопрос один: есть ли у этих чисел общий делитель больше 1? Прикинь в уме или на черновике, потом жми ответ. Запутался — открывай разбор.</p>
+    <div class="trainer">
+      <div class="tr-pair mono" id="trPair">8 и 9</div>
+      <p class="tr-hint">Эти числа взаимно простые?</p>
+      <div class="tr-answers">
+        <button type="button" id="trYes">Да, взаимно простые</button>
+        <button type="button" id="trNo">Нет</button>
+      </div>
+      <div class="tr-btns">
+        <button class="sh" id="trShow" type="button">Показать разбор</button>
+        <button class="nw" id="trNew" type="button">🎲 Новая пара</button>
+      </div>
+      <div class="tr-res" id="trRes"></div>
+    </div>
+  </section>
+
+  <div class="oge-tip"><div class="b">🎯 В ОГЭ</div><div class="x"><b>Задание 6</b> — вычисления с дробями. Ответ там ждут в самом простом виде. Кто видит несократимую дробь с ходу, экономит время на каждом таком номере.</div></div>
+
+  <section>
+    <h2>Проверь себя</h2>
+    <p>Сначала решаешь, потом раскрываешь ответ. Задачи идут по нарастанию — от простого к «подумать».</p>
+
+    <p class="lvl">Уровень 1 · понимание</p>
+    <div class="drill">
+      <details>
+        <summary><span class="q">1) Что означает запись <span class="mono">НОД(a, b) = 1</span>? Скажи своими словами.</span></summary>
+        <div class="ans">Наибольший общий делитель этих чисел равен единице, а значит <b>других общих делителей, кроме 1, у них нет</b>. Такие числа и называют взаимно простыми.</div>
+      </details>
+      <details>
+        <summary><span class="q">2) Будут ли числа <span class="mono">7 и 1</span> взаимно простыми?</span></summary>
+        <div class="ans">Да. У единицы с любым числом НОД равен 1, поэтому <b>1 взаимно проста с любым числом</b>, и с семёркой тоже.</div>
+      </details>
+    </div>
+
+    <p class="lvl">Уровень 2 · применение</p>
+    <div class="drill">
+      <details>
+        <summary><span class="q">3) Взаимно просты ли <span class="mono">12 и 35</span>?</span></summary>
+        <div class="ans">Делители 12: <b>1, 2, 3, 4, 6, 12</b>. Делители 35: <b>1, 5, 7, 35</b>. Совпадает только 1 → НОД = 1 → <b>да, взаимно простые</b>.</div>
+      </details>
+      <details>
+        <summary><span class="q">4) Взаимно просты ли <span class="mono">18 и 24</span>?</span></summary>
+        <div class="ans">Делители 18: <b>1, 2, 3, 6, 9, 18</b>. Делители 24: <b>1, 2, 3, 4, 6, 8, 12, 24</b>. Общие: 1, 2, 3 и 6, наибольший — <b>6</b>. НОД = 6, это больше 1 → <b>нет, не взаимно простые</b>.</div>
+      </details>
+    </div>
+
+    <p class="lvl">Уровень 3 · анализ</p>
+    <div class="drill">
+      <details>
+        <summary><span class="q">5) Что изменится, если в паре 8 и 9 заменить 9 на 12? Станут ли <span class="mono">8 и 12</span> взаимно простыми?</span></summary>
+        <div class="ans">Нет. У 8 и 12 есть общий делитель <b>4</b> (а ещё 2), то есть НОД больше 1. Поменяли одно число — ответ перевернулся: <b>8 и 9 взаимно простые, а 8 и 12 уже нет</b>.</div>
+      </details>
+      <details>
+        <summary><span class="q">6) Найди ошибку: ученик говорит «6 и 35 не взаимно простые, ведь оба составные».</span></summary>
+        <div class="ans">Простота чисел тут ни при чём, смотреть надо на общие делители. У 6 (делители <b>1, 2, 3, 6</b>) и 35 (делители <b>1, 5, 7, 35</b>) общих делителей, кроме 1, нет. Так что <b>6 и 35 как раз взаимно простые</b>.</div>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <h2>Ловушки — не попадись</h2>
+    <ul class="traps">
+      <li><b>«Взаимно простые — значит оба простые».</b> Мимо. Смотрим на общие делители, а не на простоту каждого числа: 8 и 9 составные, но взаимно простые.
+        <span class="fix">Как не ошибиться: проверяй НОД, а не «простоту» каждого числа.</span></li>
+      <li><b>«Составные числа не могут быть взаимно простыми».</b> Тоже мимо, вспомни 8 и 9 или 14 и 15.
+        <span class="fix">Как не ошибиться: решает отсутствие общих делителей, а не вид чисел.</span></li>
+      <li><b>Путают с «числа равны или похожи».</b> Взаимно простыми бывают совсем разные числа, хоть 9 и 100.
+        <span class="fix">Как не ошибиться: размер и близость чисел ничего не значат, считай НОД.</span></li>
+      <li><b>Увидел общий делитель 1 и сразу решил, что числа взаимно простые.</b> А остальные делители посмотреть забыл.
+        <span class="fix">Как не ошибиться: единица делит вообще всё, поэтому ищи общий делитель <b>больше 1</b>. Нет такого — вот тогда числа взаимно простые.</span></li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Объясни своими словами</h2>
+    <div class="selfcheck">
+      <p>Закрой урок и ответь вслух: себе, другу, родителям. Прошло без запинки — тема твоя.</p>
+      <ol>
+        <li>Какому числу должен равняться НОД двух чисел, чтобы они были взаимно простыми?</li>
+        <li>Могут ли два составных числа быть взаимно простыми? Приведи пример.</li>
+        <li>Почему дробь с взаимно простыми числителем и знаменателем нельзя сократить?</li>
+      </ol>
+      <div class="drill" style="margin-top:.9rem">
+        <details>
+          <summary><span class="q">Сверить ответы</span></summary>
+          <div class="ans">1) <b>Единице.</b> 2) <b>Да</b>, хоть 8 и 9. 3) У них <b>нет общего делителя больше 1</b>, а сокращать можно только на общий делитель.</div>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <div class="wrapup">
+    <h2>Запомни главное</h2>
+    <p class="big-rule">Взаимно простые числа — это числа, у которых наибольший общий делитель равен 1, то есть нет общих делителей, кроме единицы.</p>
+    <p>Простые они или составные, большие или маленькие — не спрашивают. Спрашивают НОД.</p>
+    <p class="next">👉 Дальше понятие работает в теме <strong>«Сокращение дробей»</strong>: сокращаешь ровно до того момента, когда числитель и знаменатель станут взаимно простыми. Дальше сокращать нечем — дробь в самом простом виде.</p>
+  </div>
+
+</div>
+
+<script>
+(function(){
+  var canvas=document.getElementById('strips'); if(!canvas) return;
+  var ctx=canvas.getContext('2d');
+  var sa=document.getElementById('va'), sb=document.getElementById('vb');
+  var la=document.getElementById('la'), lb=document.getElementById('lb');
+  var verdict=document.getElementById('vizVerdict');
+  var W=640,H=240,dpr=1;
+
+  function divisors(n){ var r=[]; for(var i=1;i<=n;i++){ if(n%i===0) r.push(i); } return r; }
+  function gcd(a,b){ while(b){ var t=a%b; a=b; b=t; } return a; }
+
+  function rr(x,y,w,h,r){
+    ctx.beginPath();
+    ctx.moveTo(x+r,y); ctx.lineTo(x+w-r,y); ctx.quadraticCurveTo(x+w,y,x+w,y+r);
+    ctx.lineTo(x+w,y+h-r); ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);
+    ctx.lineTo(x+r,y+h); ctx.quadraticCurveTo(x,y+h,x,y+h-r);
+    ctx.lineTo(x,y+r); ctx.quadraticCurveTo(x,y,x+r,y); ctx.closePath();
+  }
+
+  // раскладка одной полоски: возвращает высоту, при draw=false только считает
+  function strip(list, common, top, draw){
+    var pad=9, gap=7, chipH=30, lineGap=8, x=0, y=top, rows=1;
+    ctx.font='700 15px ui-monospace, Menlo, Consolas, monospace';
+    for(var i=0;i<list.length;i++){
+      var txt=String(list[i]);
+      var w=ctx.measureText(txt).width+pad*2;
+      if(x>0 && x+w>W){ x=0; y+=chipH+lineGap; rows++; }
+      if(draw){
+        var hi=common.indexOf(list[i])>=0;
+        ctx.fillStyle = hi ? '#FCF0DC' : '#F8FAF9';
+        rr(x,y,w,chipH,8); ctx.fill();
+        ctx.strokeStyle = hi ? '#EFD5A6' : '#E2E9E6'; ctx.lineWidth=1.5;
+        rr(x+.75,y+.75,w-1.5,chipH-1.5,8); ctx.stroke();
+        ctx.fillStyle = hi ? '#8A5A10' : '#65746F';
+        ctx.font='700 15px ui-monospace, Menlo, Consolas, monospace';
+        ctx.textBaseline='middle';
+        ctx.fillText(txt, x+pad, y+chipH/2+1);
+      }
+      x+=w+gap;
+    }
+    return rows*chipH + (rows-1)*lineGap;
+  }
+
+  function draw(){
+    var a=parseInt(sa.value,10), b=parseInt(sb.value,10);
+    la.textContent=a; lb.textContent=b;
+    var da=divisors(a), db=divisors(b);
+    var common=da.filter(function(d){ return db.indexOf(d)>=0; });
+    var g=gcd(a,b);
+
+    // первый проход — измеряем высоту
+    var cssW=canvas.clientWidth||640;
+    W=cssW;
+    ctx.setTransform(1,0,0,1,0,0);
+    ctx.font='700 15px ui-monospace, Menlo, Consolas, monospace';
+    var labelH=24, blockGap=22;
+    var h1=strip(da, common, 0, false);
+    var h2=strip(db, common, 0, false);
+    H=labelH+h1+blockGap+labelH+h2+6;
+
+    dpr=Math.min(window.devicePixelRatio||1,2);
+    canvas.width=W*dpr; canvas.height=H*dpr; canvas.style.height=H+'px';
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+    ctx.clearRect(0,0,W,H);
+
+    ctx.textBaseline='alphabetic';
+    ctx.fillStyle='#65746F';
+    ctx.font='600 13px system-ui, -apple-system, "Segoe UI", Roboto, sans-serif';
+    ctx.fillText('Делители числа '+a, 0, 15);
+    strip(da, common, labelH, true);
+
+    var y2=labelH+h1+blockGap;
+    ctx.textBaseline='alphabetic';
+    ctx.fillStyle='#65746F';
+    ctx.font='600 13px system-ui, -apple-system, "Segoe UI", Roboto, sans-serif';
+    ctx.fillText('Делители числа '+b, 0, y2-9);
+    strip(db, common, y2, true);
+
+    verdict.className='viz-verdict '+(g===1?'ok':'no');
+    verdict.textContent='НОД('+a+', '+b+') = '+g+' · '+(g===1?'взаимно простые':'не взаимно простые');
+  }
+
+  [sa,sb].forEach(function(s){ s.addEventListener('input',draw); });
+  Array.prototype.forEach.call(document.querySelectorAll('.presets button'),function(btn){
+    btn.addEventListener('click',function(){
+      sa.value=btn.getAttribute('data-a'); sb.value=btn.getAttribute('data-b'); draw();
+    });
+  });
+  window.addEventListener('resize',draw);
+  draw();
+})();
+</script>
+
+<script>
+(function(){
+  var pairEl=document.getElementById('trPair'), resEl=document.getElementById('trRes');
+  if(!pairEl) return;
+  var cur={a:8,b:9};
+
+  function ri(min,max){ return Math.floor(Math.random()*(max-min+1))+min; }
+  function gcd(a,b){ while(b){ var t=a%b; a=b; b=t; } return a; }
+  function divisors(n){ var r=[]; for(var i=1;i<=n;i++){ if(n%i===0) r.push(i); } return r; }
+  function isPrime(n){ if(n<2) return false; for(var i=2;i*i<=n;i++){ if(n%i===0) return false; } return true; }
+  function locked(){ return resEl.getAttribute('data-done')==='1'; }
+
+  function generate(){
+    var a,b,r=Math.random();
+    if(r<0.08){                       // краевой случай: единица
+      a=1; b=ri(2,40);
+    } else if(r<0.14){                // краевой случай: одинаковые числа
+      a=ri(2,30); b=a;
+    } else {
+      var wantCoprime = Math.random()<0.5;
+      var bothComposite = wantCoprime && Math.random()<0.5;
+      var tries=0;
+      do{
+        a=ri(2,60); b=ri(2,60); tries++;
+        var ok = ((gcd(a,b)===1)===wantCoprime) && a!==b;
+        if(ok && bothComposite && (isPrime(a)||isPrime(b))) ok=false;
+      } while(!ok && tries<400);
+    }
+    cur={a:a,b:b};
+    pairEl.textContent=a+' и '+b;
+    resEl.innerHTML=''; resEl.removeAttribute('data-done');
+  }
+
+  function solution(){
+    var a=cur.a, b=cur.b;
+    var da=divisors(a), db=divisors(b);
+    var common=da.filter(function(d){ return db.indexOf(d)>=0; });
+    var g=gcd(a,b);
+    var h='<div class="tr-sol">';
+    h+='<div class="row">Делители '+a+': <b>'+da.join(', ')+'</b></div>';
+    h+='<div class="row">Делители '+b+': <b>'+db.join(', ')+'</b></div>';
+    h+='<div class="row">Общие делители: <b>'+common.join(', ')+'</b></div>';
+    h+='<div class="row">Наибольший из них: НОД('+a+', '+b+') = <b>'+g+'</b></div>';
+    h+='<div class="fin">'+(g===1
+        ? 'НОД равен 1 → числа взаимно простые.'
+        : 'Есть общий делитель '+g+', больше 1 → числа не взаимно простые.')+'</div>';
+    return h+'</div>';
+  }
+
+  function answer(said){
+    if(locked()) return;
+    var right = (gcd(cur.a,cur.b)===1);
+    resEl.setAttribute('data-done','1');
+    resEl.innerHTML = (said===right
+      ? '<div class="head ok">✓ Верно!</div>'
+      : '<div class="head no">Не угадал — смотри разбор.</div>') + solution();
+  }
+
+  document.getElementById('trYes').addEventListener('click',function(){ answer(true); });
+  document.getElementById('trNo').addEventListener('click',function(){ answer(false); });
+  document.getElementById('trShow').addEventListener('click',function(){
+    if(locked()) return;
+    resEl.setAttribute('data-done','1');
+    resEl.innerHTML='<div class="head info">Разбор пары '+cur.a+' и '+cur.b+':</div>'+solution();
+  });
+  document.getElementById('trNew').addEventListener('click',function(){
+    generate(); this.focus();
+  });
+})();
+</script>
+<!--LESSON-NAV-BOT--><nav class="lnav lnav-bot"><a class="prev" href="./m6-nok.html"><span class="dir">← Предыдущая</span><span class="ttl">Наименьшее общее кратное (НОК)</span></a><a class="to-cat" href="./catalog.html">📚 <span>Все темы</span></a><a class="next" href="./m6-sokrashchenie-drobej.html"><span class="dir">Следующая →</span><span class="ttl">Основное свойство дроби и сокращение</span></a></nav><!--/LESSON-NAV-BOT-->

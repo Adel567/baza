@@ -1,0 +1,739 @@
+<!doctype html>
+<!-- humanized: humanizer-ru, 2026-08-29, тире возвращено -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Признаки делимости на 2, 3, 5, 9, 10 — 6 класс</title>
+<style>
+  :root{
+    --paper:#FAF8F5;
+    --card:#FFFFFF;
+    --ink:#241E2A;
+    --muted:#6C6573;
+    --line:#E7E2E7;
+    --brand:#8E3B6B;
+    --brand-soft:#F7E8F0;
+    --tail:#C05621;         /* хвост: 2, 5, 10 */
+    --tail-soft:#FBEADF;
+    --tail-line:#F0CDB8;
+    --sum:#2F5FA8;          /* сумма цифр: 3, 9 */
+    --sum-soft:#E4EBF7;
+    --sum-line:#C4D2EC;
+    --ok:#2E8B57;
+    --no:#C23B3B;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper)}
+  .page{
+    max-width:720px;margin:0 auto;
+    padding:clamp(1.4rem,4vw,3rem) clamp(1.1rem,4vw,2rem) 4.5rem;
+    color:var(--ink);
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    font-size:17.5px;line-height:1.68;-webkit-font-smoothing:antialiased;
+  }
+  .mono{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-variant-numeric:tabular-nums;font-weight:600}
+
+  .hero{border-bottom:3px solid var(--brand);padding-bottom:1.4rem;margin-bottom:1.8rem}
+  .eyebrow{font-size:.74rem;letter-spacing:.15em;text-transform:uppercase;color:var(--brand);font-weight:700;margin:0 0 .55rem}
+  h1{font-size:clamp(2rem,6.5vw,3rem);line-height:1.03;margin:0;font-weight:800;letter-spacing:-.02em;text-wrap:balance}
+  .tagline{font-size:1.12rem;color:var(--muted);margin:.85rem 0 0;text-wrap:pretty}
+
+  section{margin-top:2.4rem}
+  h2{font-size:1.5rem;margin:0 0 .3rem;font-weight:780;letter-spacing:-.015em;text-wrap:balance}
+  h2 .em{color:var(--brand)}
+  p{margin:.7rem 0}
+  strong{font-weight:680}
+
+  .lead-in{background:var(--brand-soft);border-radius:14px;padding:1.1rem 1.3rem;font-size:1.02rem}
+  .lead-in p{margin:.4rem 0}
+  .lead-in b{color:var(--brand)}
+
+  .recall{border:1px dashed var(--line);background:var(--card);border-radius:14px;padding:1rem 1.25rem;margin-top:1rem}
+  .recall .cap{font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;font-weight:700;color:var(--muted);margin:0 0 .4rem}
+  .recall p{margin:.35rem 0;font-size:.98rem}
+
+  /* Две дорожки */
+  .split{display:grid;gap:.9rem;margin-top:1rem}
+  @media(min-width:600px){.split{grid-template-columns:1fr 1fr}}
+  .path{border-radius:16px;padding:1.2rem 1.3rem;border:2px solid}
+  .path.tail{background:var(--tail-soft);border-color:var(--tail-line)}
+  .path.sum{background:var(--sum-soft);border-color:var(--sum-line)}
+  .path .cap{font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;font-weight:700;margin:0}
+  .path.tail .cap{color:var(--tail)} .path.sum .cap{color:var(--sum)}
+  .path h3{margin:.2rem 0 .5rem;font-size:1.3rem;font-weight:800}
+  .path p{margin:.3rem 0;font-size:.97rem}
+  .path .who{font-weight:800;font-family:ui-monospace,Menlo,monospace}
+  .path.tail .who{color:var(--tail)} .path.sum .who{color:var(--sum)}
+
+  /* Плитки правил */
+  .rules{display:flex;flex-direction:column;gap:.7rem;margin-top:1rem}
+  .rule{display:flex;align-items:center;gap:1rem;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:.85rem 1.05rem}
+  .rule .big{font-family:ui-monospace,Menlo,monospace;font-weight:800;font-size:1.5rem;flex:none;width:2.6rem;text-align:center}
+  .rule.t .big{color:var(--tail)} .rule.s .big{color:var(--sum)}
+  .rule .txt{flex:1}
+  .rule .txt b{font-weight:700}
+  .digits{display:flex;gap:.35rem;flex-wrap:wrap;margin-top:.35rem}
+  .digits span{font-family:ui-monospace,Menlo,monospace;font-weight:700;background:var(--paper);border:1px solid var(--line);border-radius:7px;padding:.12rem .5rem;font-size:.95rem}
+  .rule .ex{font-size:.87rem;color:var(--muted);margin-top:.3rem}
+  .rule .ex .mono{color:var(--ink)}
+
+  .note{border-left:4px solid var(--brand);background:var(--brand-soft);border-radius:0 10px 10px 0;padding:.8rem 1.1rem;margin-top:1rem;font-size:.98rem}
+  .note b{color:var(--brand)}
+  .note p{margin:.35rem 0}
+
+  /* Разбор по шагам */
+  .walk{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.15rem 1.3rem;margin-top:1rem}
+  .walk .q{font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.08rem;margin:0 0 .9rem;padding-bottom:.7rem;border-bottom:1px solid var(--line)}
+  .walk ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:.6rem}
+  .walk li{font-size:.98rem;display:flex;gap:.6rem;align-items:baseline}
+  .walk .why{display:block;color:var(--muted);font-size:.88rem;margin-top:.15rem}
+  .tag{font-size:.66rem;font-weight:700;padding:.08rem .42rem;border-radius:5px;flex:none;letter-spacing:.02em}
+  .tag.t{background:var(--tail-soft);color:var(--tail)} .tag.s{background:var(--sum-soft);color:var(--sum)}
+  .yes{color:var(--ok);font-weight:800} .no{color:var(--no);font-weight:800}
+  .verdict{margin-top:1rem;padding:.75rem 1rem;background:var(--brand-soft);border-radius:10px;font-weight:650;color:var(--brand);font-size:1rem}
+
+  /* Шпаргалка */
+  .tblwrap{overflow-x:auto;margin-top:1rem}
+  table{border-collapse:collapse;width:100%;min-width:430px;font-size:.96rem}
+  th,td{border:1px solid var(--line);padding:.6rem .75rem;text-align:left}
+  thead th{background:#F6F3F6;font-weight:700}
+  td.d{font-family:ui-monospace,Menlo,monospace;font-weight:800;text-align:center;width:3rem;font-size:1.15rem}
+  td.d.t{color:var(--tail);background:var(--tail-soft)} td.d.s{color:var(--sum);background:var(--sum-soft)}
+  td .mono{color:var(--ink)}
+
+  /* Лаборатория числа */
+  .lab{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:1.2rem 1.1rem;margin-top:1rem}
+  .lab-digits{display:flex;gap:.5rem;justify-content:center;flex-wrap:wrap}
+  .col{display:flex;flex-direction:column;align-items:center;gap:.3rem}
+  .col button{font:inherit;font-weight:800;font-size:.95rem;line-height:1;border:1px solid var(--line);background:var(--paper);color:var(--muted);border-radius:8px;width:2.6rem;padding:.32rem 0;cursor:pointer}
+  .col button:hover{border-color:var(--brand);color:var(--brand)}
+  .col button:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+  .cell{font-family:ui-monospace,Menlo,monospace;font-weight:800;font-size:clamp(1.7rem,8vw,2.3rem);width:2.6rem;text-align:center;border-radius:9px;padding:.15rem 0;background:var(--paper);border:2px solid var(--line)}
+  .cell.last{background:var(--tail-soft);border-color:var(--tail-line);color:var(--tail)}
+  .col .cap{font-size:.64rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:700;height:.9rem}
+  .col .cap.last{color:var(--tail)}
+  .lab-sum{text-align:center;margin:.9rem 0 .2rem;font-size:1rem;color:var(--sum);font-weight:700}
+  .lab-sum .mono{font-size:1.05rem}
+  .lamps{display:flex;flex-wrap:wrap;gap:.5rem;justify-content:center;margin-top:.9rem}
+  .lamp{border:2px solid var(--line);border-radius:12px;padding:.45rem .8rem;text-align:center;min-width:5.4rem;background:var(--paper)}
+  .lamp .n{font-family:ui-monospace,Menlo,monospace;font-weight:800;font-size:1.05rem}
+  .lamp .v{font-size:.74rem;font-weight:700;color:var(--muted)}
+  .lamp.on{background:#E9F5EE;border-color:#9ED3B4}
+  .lamp.on .n,.lamp.on .v{color:var(--ok)}
+  .lamp.off .n{color:var(--muted)}
+  .lab-btns{display:flex;gap:.5rem;justify-content:center;flex-wrap:wrap;margin-top:1rem}
+  .lab-btns button{font:inherit;font-weight:700;font-size:.9rem;border-radius:10px;padding:.5rem 1rem;cursor:pointer;border:1px solid var(--line);background:var(--brand-soft);color:var(--brand)}
+  .lab-btns button:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+  .lab-msg{margin-top:.8rem;font-size:.93rem;color:var(--muted);text-align:center;min-height:1.4rem}
+  .lab-msg b{color:var(--ink)}
+
+  /* Практика */
+  .drill{display:flex;flex-direction:column;gap:.7rem;margin-top:1rem}
+  details{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:.9rem 1.1rem}
+  details[open]{border-color:var(--brand)}
+  summary{cursor:pointer;font-weight:650;list-style:none;display:flex;justify-content:space-between;gap:1rem;align-items:center}
+  summary::-webkit-details-marker{display:none}
+  summary:focus-visible{outline:2px solid var(--brand);outline-offset:3px;border-radius:6px}
+  summary .q{font-size:1rem}
+  summary::after{content:"проверить";font-size:.8rem;color:var(--brand);font-weight:700;white-space:nowrap}
+  details[open] summary::after{content:"скрыть"}
+  .ans{margin-top:.75rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.96rem;color:var(--muted)}
+  .ans b{color:var(--ink)}
+  .lvl{font-size:.66rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--brand);margin:1rem 0 -.2rem}
+
+  /* Ловушки */
+  ul.traps{list-style:none;margin:1rem 0 0;padding:0;display:flex;flex-direction:column;gap:.7rem}
+  ul.traps li{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:.85rem 1.05rem;padding-left:2.5rem;position:relative;font-size:.97rem}
+  ul.traps li::before{content:"⚠";position:absolute;left:1rem;top:.85rem;color:var(--tail);font-size:1.05rem}
+  ul.traps b{font-weight:700}
+
+  .selfcheck{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.1rem 1.3rem;margin-top:1rem}
+  .selfcheck ol{margin:.4rem 0 0;padding-left:1.2rem}
+  .selfcheck li{margin:.45rem 0;font-size:.98rem}
+
+  .wrapup{background:var(--brand);color:#fff;border-radius:16px;padding:1.4rem 1.5rem;margin-top:2.4rem}
+  .wrapup h2{color:#fff;margin:0 0 .5rem}
+  .wrapup p{color:#F3E3EC;margin:.4rem 0;font-size:1rem}
+  .wrapup .big-rule{font-size:1.1rem;font-weight:700;color:#fff;margin:.6rem 0}
+  .wrapup .next{font-size:.95rem;color:#EBCEDE;margin-top:1rem;padding-top:1rem;border-top:1px solid rgba(255,255,255,.22)}
+
+  /* Тренажёр */
+  .trainer{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:1.3rem 1.2rem 1.2rem;margin-top:1rem}
+  .tr-kind{font-size:.7rem;letter-spacing:.09em;text-transform:uppercase;font-weight:800;color:var(--brand);text-align:center;margin:0 0 .5rem}
+  .tr-num{font-family:ui-monospace,Menlo,monospace;font-weight:800;font-size:clamp(1.9rem,9vw,2.8rem);text-align:center;letter-spacing:.03em;margin:.1rem 0 .3rem;color:var(--ink);word-break:break-word}
+  .tr-hint{text-align:center;color:var(--muted);font-size:.9rem;margin:0 0 1.1rem}
+  .tr-chips{display:flex;flex-wrap:wrap;gap:.5rem;justify-content:center;margin-bottom:1.15rem}
+  .chip{font-family:ui-monospace,Menlo,monospace;font-weight:800;font-size:1.05rem;border:2px solid var(--line);background:var(--paper);border-radius:12px;padding:.5rem 1rem;cursor:pointer;color:var(--muted);transition:transform .08s,border-color .1s,background .1s;position:relative}
+  .chip:hover{transform:translateY(-1px)}
+  .chip:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+  .chip.t.on{border-color:var(--tail);background:var(--tail-soft);color:var(--tail)}
+  .chip.s.on{border-color:var(--sum);background:var(--sum-soft);color:var(--sum)}
+  .chip.plain.on{border-color:var(--brand);background:var(--brand-soft);color:var(--brand)}
+  .chip.ok::after{content:"✓";position:absolute;top:-8px;right:-8px;background:var(--ok);color:#fff;font-size:.7rem;width:1.15rem;height:1.15rem;border-radius:50%;display:flex;align-items:center;justify-content:center}
+  .chip.err::after{content:"✕";position:absolute;top:-8px;right:-8px;background:var(--no);color:#fff;font-size:.7rem;width:1.15rem;height:1.15rem;border-radius:50%;display:flex;align-items:center;justify-content:center}
+  .tr-input{display:flex;gap:.5rem;justify-content:center;margin-bottom:1.1rem;flex-wrap:wrap}
+  .tr-input input{font:inherit;font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.05rem;text-align:center;width:min(15rem,80%);padding:.5rem .7rem;border:2px solid var(--line);border-radius:10px;background:var(--paper);color:var(--ink)}
+  .tr-input input:focus-visible{outline:2px solid var(--brand);outline-offset:1px}
+  .tr-btns{display:flex;gap:.5rem;flex-wrap:wrap;justify-content:center}
+  .tr-btns button{font:inherit;font-weight:700;font-size:.92rem;border-radius:10px;padding:.55rem 1.1rem;cursor:pointer;border:1px solid transparent}
+  .tr-btns .go{background:var(--brand);color:#fff}
+  .tr-btns .sh{background:var(--paper);border:1px solid var(--line);color:var(--ink)}
+  .tr-btns .nw{background:var(--brand-soft);color:var(--brand)}
+  .tr-btns button:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+  .tr-res{margin-top:1.1rem;font-size:.97rem}
+  .tr-res .head{font-weight:700;padding:.6rem .9rem;border-radius:9px;margin-bottom:.7rem}
+  .tr-res .head.ok{background:#E7F4EC;color:var(--ok)}
+  .tr-res .head.no{background:#FBEAEA;color:var(--no)}
+  .tr-res .head.info{background:var(--brand-soft);color:var(--brand)}
+  .tr-sol{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:.85rem 1rem}
+  .tr-sol .row{margin:.3rem 0;font-size:.94rem}
+  .tr-sol .grp{font-weight:700;margin-top:.55rem}
+  .tr-sol .grp.tail{color:var(--tail)} .tr-sol .grp.sum{color:var(--sum)}
+  .tr-sol .grp:first-child{margin-top:0}
+  .tr-sol .fin{margin-top:.6rem;padding-top:.5rem;border-top:1px dashed var(--line);font-weight:700}
+
+  @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<!--LESSON-NAV-TOP--><style>.lnav{--lnav-accent:#3D5AF1}.lnav a{text-decoration:none;font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif}.lnav-top{max-width:820px;margin:0 auto;padding:.75rem clamp(1rem,4vw,1.5rem) .1rem}.lnav-top a{display:inline-flex;align-items:center;gap:.35rem;color:var(--lnav-accent);font-weight:600;font-size:.9rem}.lnav-top a:hover{text-decoration:underline}.lnav-bot{max-width:820px;margin:2.6rem auto 3rem;padding:1.1rem clamp(1rem,4vw,1.5rem) 0;border-top:1px solid #E4E8EF;display:flex;align-items:stretch;gap:.55rem}.lnav-bot a{min-width:0;display:flex;flex-direction:column;justify-content:center;gap:.15rem;border:1px solid #E4E8EF;border-radius:12px;padding:.65rem .85rem;color:#182233;background:#fff;transition:border-color .1s,transform .08s}.lnav-bot a:hover{border-color:var(--lnav-accent);transform:translateY(-1px)}.lnav-bot .prev,.lnav-bot .next{flex:1 1 0}.lnav-bot .next{text-align:right}.lnav-bot .dir{font-size:.72rem;color:#8A93A6;font-weight:600}.lnav-bot .ttl{font-size:.9rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.lnav-bot .to-cat{flex:0 0 auto;flex-direction:row;align-items:center;justify-content:center;color:var(--lnav-accent);font-weight:700;font-size:.85rem;white-space:nowrap}@media(max-width:420px){.lnav-bot .to-cat span{display:none}.lnav-bot .to-cat{padding:.65rem .7rem}}</style><nav class="lnav lnav-top"><a href="./catalog.html">← Все темы</a></nav><!--/LESSON-NAV-TOP-->
+<div class="page">
+
+  <header class="hero">
+    <p class="eyebrow">Математика · 6 класс</p>
+    <h1>Признаки делимости<br>на 2, 3, 5, 9 и 10</h1>
+    <p class="tagline">Как за секунду понять, делится ли число, — <em>вообще не выполняя деление</em>.</p>
+  </header>
+
+  <div class="lead-in">
+    <p><b>Зачем это нужно.</b> Признак делимости — правило, которое отвечает по виду самого числа: делится или нет. Глянул на цифры — ответ готов.</p>
+    <p>Пригодится сразу в куче мест: сократить дробь (увидеть, что числитель и знаменатель оба делятся на 3), разложить число на множители, раздать поровну. 15 конфет на 5 человек разойдутся, а на 2 человека уже нет.</p>
+    <p>Скажешь: чтобы проверить делимость, всё равно надо поделить столбиком. Для 2, 3, 5, 9 и 10 — не надо. Хватает взгляда на цифры: быстрее, и негде ошибиться в делении.</p>
+  </div>
+
+  <section>
+    <h2>Сначала вспомни</h2>
+    <div class="recall">
+      <p class="cap">Что понадобится из прошлых тем</p>
+      <p>▸ Число <b>делится</b> на другое число, если деление выполняется <strong>нацело, без остатка</strong>. 12 делится на 4 (получается ровно 3), а на 5 не делится (остаётся остаток).</p>
+      <p>▸ Все правила ниже — про <strong>натуральные числа</strong>, то есть про числа, которыми считают предметы: 1, 2, 3, 4, …</p>
+      <p>▸ Запись «делится» выглядит так: <span class="mono">30 ⋮ 5</span> — читается «30 делится на 5».</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Главная идея: <span class="em">две разные дорожки</span></h2>
+    <p>Ответ про делимость спрятан в цифрах числа. Добывают его двумя разными способами, и вся тема держится на том, чтобы их не перепутать.</p>
+    <div class="split">
+      <div class="path tail">
+        <p class="cap">Дорожка 1</p>
+        <h3>🟠 Смотрим на последнюю цифру</h3>
+        <p>Решает <strong>только последняя цифра</strong>. На остальные можно даже не смотреть.</p>
+        <p>Так проверяют делимость на <span class="who">2, 5 и 10</span>.</p>
+      </div>
+      <div class="path sum">
+        <p class="cap">Дорожка 2</p>
+        <h3>🔵 Складываем все цифры</h3>
+        <p>Решает <strong>сумма всех цифр</strong>. Последняя цифра здесь сама по себе ничего не говорит.</p>
+        <p>Так проверяют делимость на <span class="who">3 и 9</span>.</p>
+      </div>
+    </div>
+    <p><b>Почему так?</b> Дело в нашей десятичной записи: разряды — это единицы, десятки, сотни, тысячи. Десятки, сотни и все разряды старше сами делятся на 2, на 5 и на 10. От них ответ не зависит вообще, поэтому решает последняя цифра. С 3 и 9 такой фокус не проходит: там зависимость сидит в сумме всех цифр.</p>
+  </section>
+
+  <section>
+    <h2>Дорожка 1 — последняя цифра <span style="color:var(--tail)">(2, 5, 10)</span></h2>
+    <div class="rules">
+      <div class="rule t">
+        <div class="big">÷2</div>
+        <div class="txt">
+          <b>Делится на 2</b>, если последняя цифра чётная:
+          <div class="digits"><span>0</span><span>2</span><span>4</span><span>6</span><span>8</span></div>
+          <div class="ex">Такие числа и называют <strong>чётными</strong>.</div>
+        </div>
+      </div>
+      <div class="rule t">
+        <div class="big">÷5</div>
+        <div class="txt">
+          <b>Делится на 5</b>, если последняя цифра:
+          <div class="digits"><span>0</span><span>5</span></div>
+        </div>
+      </div>
+      <div class="rule t">
+        <div class="big">÷10</div>
+        <div class="txt">
+          <b>Делится на 10</b>, если последняя цифра только:
+          <div class="digits"><span>0</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Дорожка 2 — сумма цифр <span style="color:var(--sum)">(3, 9)</span></h2>
+    <p>Здесь смотреть на последнюю цифру <strong>бесполезно</strong>. Складываем все цифры числа и проверяем уже саму сумму:</p>
+    <div class="rules">
+      <div class="rule s">
+        <div class="big">÷3</div>
+        <div class="txt"><b>Делится на 3</b>, если <b>сумма всех цифр</b> делится на 3.</div>
+      </div>
+      <div class="rule s">
+        <div class="big">÷9</div>
+        <div class="txt"><b>Делится на 9</b>, если <b>сумма всех цифр</b> делится на 9.</div>
+      </div>
+    </div>
+    <div class="note">
+      <p><b>Не остановись на полпути.</b> Сложить цифры — половина работы. Дальше проверь <strong>саму сумму</strong>: для 9 вышла сумма 12, а 12 на 9 не делится, значит и число не делится.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Разбираем число целиком — <span class="em">рассуждаю вслух</span></h2>
+    <p>Вот как я рассуждаю, когда спрашивают сразу про все признаки. Берём число <span class="mono">4 716</span>:</p>
+    <div class="walk">
+      <p class="q">Делится ли 4 716 на 2, 3, 5, 9, 10?</p>
+      <ul>
+        <li><span class="tag t">конец</span><span>На <b>2</b>? Последняя цифра 6, она чётная → <span class="yes">делится</span>.<span class="why">Смотрю только на конец числа: для 2 остальные цифры роли не играют.</span></span></li>
+        <li><span class="tag t">конец</span><span>На <b>5</b>? Последняя цифра 6, а нужна 0 или 5 → <span class="no">не делится</span>.</span></li>
+        <li><span class="tag t">конец</span><span>На <b>10</b>? Последняя цифра 6, а нужен 0 → <span class="no">не делится</span>.</span></li>
+        <li><span class="tag s">сумма</span><span>На <b>3</b>? Складываю все цифры: <span class="mono">4 + 7 + 1 + 6 = 18</span>. И <span class="mono">18 ⋮ 3</span> → <span class="yes">делится</span>.<span class="why">Здесь уже складываю все цифры, потому что для 3 правило про сумму.</span></span></li>
+        <li><span class="tag s">сумма</span><span>На <b>9</b>? Сумма та же, 18, и <span class="mono">18 ⋮ 9</span> → <span class="yes">делится</span>.<span class="why">Пересчитывать сумму не надо — она у числа одна.</span></span></li>
+      </ul>
+      <div class="verdict">Ответ: 4 716 делится на 2, 3 и 9; не делится на 5 и 10.</div>
+    </div>
+
+    <p>Теперь допиши сам. Проверим <span class="mono">2 835</span> на делимость на 9:</p>
+    <div class="drill">
+      <details>
+        <summary><span class="q">Сумма цифр: <span class="mono">2 + 8 + 3 + 5 = ___</span>. Делится ли она на 9? Значит, 2 835 ___ делится на 9.</span></summary>
+        <div class="ans">Сумма: <span class="mono">2 + 8 + 3 + 5 = 18</span>. Число 18 на 9 делится. Значит, <b>2 835 делится на 9</b>.</div>
+      </details>
+      <details>
+        <summary><span class="q">А теперь целиком: на какие из чисел 2, 3, 5, 9, 10 делится <span class="mono">5 940</span>?</span></summary>
+        <div class="ans">На <b>2</b> — последняя цифра 0, она чётная. На <b>5</b> и на <b>10</b> — последняя цифра 0. На <b>3</b> и на <b>9</b> — сумма цифр <span class="mono">5 + 9 + 4 + 0 = 18</span> делится и на 3, и на 9. То есть <b>на все пять</b>.</div>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <h2>Шпаргалка — все пять признаков</h2>
+    <div class="tblwrap">
+      <table>
+        <thead><tr><th>Делится на…</th><th>Когда</th><th>Что смотрим</th></tr></thead>
+        <tbody>
+          <tr><td class="d t">2</td><td>последняя цифра 0, 2, 4, 6 или 8</td><td>только конец</td></tr>
+          <tr><td class="d t">5</td><td>последняя цифра 0 или 5</td><td>только конец</td></tr>
+          <tr><td class="d t">10</td><td>последняя цифра 0</td><td>только конец</td></tr>
+          <tr><td class="d s">3</td><td>сумма цифр делится на 3</td><td>все цифры</td></tr>
+          <tr><td class="d s">9</td><td>сумма цифр делится на 9</td><td>все цифры</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>Заведи себе такую же табличку-чеклист: строки — числа, столбцы — «÷2, ÷3, ÷5, ÷9, ÷10», ставь «+» или «−». Сразу вылезет, что одно число часто делится на несколько сразу: <strong>если делится на 9, то делится и на 3</strong>; <strong>если делится на 10, то делится и на 2, и на 5</strong>.</p>
+  </section>
+
+  <section>
+    <h2>Собери число сам — <span class="em">и посмотри, что изменится</span></h2>
+    <p>Меняй цифры стрелками и следи за лампочками. Отдельно поиграй с кнопкой «переставить цифры»: цифры меняются местами, а их сумма остаётся прежней. Лампочки 3 и 9 стоят как вкопанные, зато 2, 5 и 10 переворачиваются запросто.</p>
+    <div class="lab">
+      <div class="lab-digits" id="labDigits"></div>
+      <p class="lab-sum" id="labSum"></p>
+      <div class="lamps" id="labLamps"></div>
+      <div class="lab-btns">
+        <button type="button" id="labShuffle">🔀 Переставить цифры</button>
+        <button type="button" id="labRandom">🎲 Другое число</button>
+      </div>
+      <p class="lab-msg" id="labMsg"></p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Тренажёр — <span class="em">бесконечная практика</span></h2>
+    <p>Задания идут наугад и вперемешку: то отметить все делители, то подобрать цифру, то ответить «да или нет». Сначала реши сам, потом проверяй. Застрял — жми «Показать разбор».</p>
+    <div class="trainer">
+      <p class="tr-kind" id="trKind">Задание</p>
+      <div class="tr-num mono" id="trNum">2 835</div>
+      <p class="tr-hint" id="trHint">Отметь все числа, на которые оно делится</p>
+      <div class="tr-chips" id="trChips"></div>
+      <div class="tr-input" id="trInputWrap" hidden>
+        <input id="trInput" type="text" inputmode="numeric" autocomplete="off" placeholder="например: 0, 3, 6">
+      </div>
+      <div class="tr-btns">
+        <button class="go" id="trCheck" type="button">Проверить</button>
+        <button class="sh" id="trShow" type="button">Показать разбор</button>
+        <button class="nw" id="trNew" type="button">🎲 Новое задание</button>
+      </div>
+      <div class="tr-res" id="trRes"></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Проверь себя</h2>
+    <p>Сначала решай, потом раскрывай ответ. Подглядывать раньше времени — только себя обманывать 🙂</p>
+
+    <p class="lvl">Разминка</p>
+    <div class="drill">
+      <details>
+        <summary><span class="q">1) Назови все последние цифры, при которых число делится на 5.</span></summary>
+        <div class="ans">Это <b>0 и 5</b> — других вариантов нет.</div>
+      </details>
+      <details>
+        <summary><span class="q">2) Какое правило работает для делимости на 3 — по последней цифре или по сумме цифр?</span></summary>
+        <div class="ans">По <b>сумме цифр</b>. По последней цифре проверяют только 2, 5 и 10.</div>
+      </details>
+    </div>
+
+    <p class="lvl">Применение</p>
+    <div class="drill">
+      <details>
+        <summary><span class="q">3) Из чисел <span class="mono">24, 35, 90, 117, 200</span> выпиши те, что делятся: а) на 2; б) на 5; в) на 9.</span></summary>
+        <div class="ans">
+          а) на <b>2</b> — последняя цифра чётная: <span class="mono">24, 90, 200</span>.<br>
+          б) на <b>5</b> — последняя цифра 0 или 5: <span class="mono">35, 90, 200</span>.<br>
+          в) на <b>9</b> — сумма цифр делится на 9: <span class="mono">90</span> (сумма 9) и <span class="mono">117</span> (сумма 1 + 1 + 7 = 9).
+        </div>
+      </details>
+    </div>
+
+    <p class="lvl">Анализ</p>
+    <div class="drill">
+      <details>
+        <summary><span class="q">4) В числе <span class="mono">471</span> переставили цифры и получили <span class="mono">714</span>. Изменится ли ответ про делимость на 3?</span></summary>
+        <div class="ans">Нет, не изменится. Сумма цифр осталась той же: <span class="mono">4 + 7 + 1 = 12</span> и <span class="mono">7 + 1 + 4 = 12</span>. А для 3 всё решает именно сумма — <b>оба числа делятся на 3</b>.</div>
+      </details>
+      <details>
+        <summary><span class="q">5) Найди ошибку: «Число 123 делится на 3, значит делится и на 9».</span></summary>
+        <div class="ans">Так рассуждать нельзя. Сумма цифр: <span class="mono">1 + 2 + 3 = 6</span>. Число 6 делится на 3 → <b>123 делится на 3</b>, всё верно. Но 6 <b>не делится на 9</b> → значит, и <b>123 на 9 не делится</b>. Для 9 нужно, чтобы сумма делилась именно на 9.</div>
+      </details>
+      <details>
+        <summary><span class="q">6) Обратная задача: какую цифру поставить вместо ★ в числе <span class="mono">4★</span>, чтобы оно делилось на 3?</span></summary>
+        <div class="ans">Перебираем цифры и каждый раз считаем сумму. Подходят <b>42</b> (сумма 6), <b>45</b> (сумма 9) и <b>48</b> (сумма 12) — все эти суммы делятся на 3. А, скажем, 41 не подходит: сумма 5 на 3 не делится.</div>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <h2>Ловушки — не попадись</h2>
+    <ul class="traps">
+      <li><b>Не проверяй 3 и 9 по последней цифре.</b> Говорят: «27 не делится на 3, ведь кончается на 7». Неверно — для 3 и 9 надо складывать все цифры: <span class="mono">2 + 7 = 9</span>, а 9 на 3 делится, значит и <b>27 делится на 3</b>. Держи в голове: 2, 5, 10 — по последней цифре; 3 и 9 — по сумме цифр.</li>
+      <li><b>Не путай признаки на 2 и на 5.</b> «На 5 делятся чётные» — нет. На 2 делятся числа с последней цифрой 0, 2, 4, 6, 8, а на 5 — только с 0 и 5.</li>
+      <li><b>Признак на 4 — это не признак на 2.</b> Число 6 делится на 2, но на 4 не делится. Признак делимости на 4 в эту тему не входит и по последней цифре не проверяется.</li>
+      <li><b>Сложил цифры — проверь саму сумму.</b> Частая история: для 9 получили сумму 12 и решили, что число делится. Но 12 на 9 не делится, значит и число тоже нет.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Объясни своими словами</h2>
+    <div class="selfcheck">
+      <p>Ответь вслух — так, будто объясняешь другу, который тему пропустил:</p>
+      <ol>
+        <li>По какой цифре проверяют делимость на 10 и какой она должна быть?</li>
+        <li>Делится ли 153 на 9? Как ты это узнал?</li>
+        <li>Чем проверка делимости на 2 отличается от проверки на 3?</li>
+        <li>Как думаешь, 312 делится на 3? Сначала предположи, потом проверь через сумму цифр, потом объясни почему.</li>
+      </ol>
+      <details style="margin-top:.9rem">
+        <summary><span class="q">Сверить ответы</span></summary>
+        <div class="ans">
+          1) По <b>последней</b> цифре, и она должна быть <b>0</b>.<br>
+          2) Да: сумма <span class="mono">1 + 5 + 3 = 9</span>, а 9 делится на 9.<br>
+          3) Для 2 хватает последней цифры (чётная или нет), а для 3 надо сложить <b>все</b> цифры и проверить сумму.<br>
+          4) Да, делится: <span class="mono">3 + 1 + 2 = 6</span>, а 6 делится на 3.
+        </div>
+      </details>
+    </div>
+  </section>
+
+  <div class="wrapup">
+    <h2>Запомни главное</h2>
+    <p class="big-rule">На 2, 5 и 10 — смотри на последнюю цифру.<br>На 3 и 9 — складывай все цифры.</p>
+    <p>Двух строчек хватает, чтобы отвечать про делимость мгновенно, без деления столбиком.</p>
+    <p class="next">👉 Дальше признаки пойдут в дело: по ним определяют <strong>простые и составные числа</strong> и <strong>раскладывают числа на множители</strong>. Чтобы разложить число, сначала надо быстро понять, на что оно вообще делится.</p>
+  </div>
+
+</div>
+
+<script>
+(function(){
+  function grp(n){ var s=String(n), o='', c=0; for(var i=s.length-1;i>=0;i--){ o=s[i]+o; if(++c%3===0 && i>0) o=' '+o; } return o; }
+  function dsum(n){ var s=0; n=Math.abs(n); while(n>0){ s+=n%10; n=Math.floor(n/10); } return s; }
+  function ri(a,b){ return Math.floor(Math.random()*(b-a+1))+a; }
+  function digitsStr(n){ return String(n).split('').join(' + '); }
+
+  /* ---------- Лаборатория числа ---------- */
+  var LAB=[2,8,3,5];
+  var labD=document.getElementById('labDigits');
+  var labSum=document.getElementById('labSum');
+  var labLamps=document.getElementById('labLamps');
+  var labMsg=document.getElementById('labMsg');
+  var LAMPS=[2,3,5,9,10];
+
+  function labBuild(){
+    labD.innerHTML='';
+    LAB.forEach(function(v,i){
+      var col=document.createElement('div'); col.className='col';
+      var up=document.createElement('button'); up.type='button'; up.textContent='▲';
+      up.setAttribute('aria-label','увеличить цифру');
+      var cell=document.createElement('div'); cell.className='cell'; cell.setAttribute('data-i',i);
+      var dn=document.createElement('button'); dn.type='button'; dn.textContent='▼';
+      dn.setAttribute('aria-label','уменьшить цифру');
+      var cap=document.createElement('div'); cap.className='cap';
+      up.addEventListener('click',function(){ LAB[i]=(LAB[i]+1)%10; labMsg.textContent=''; labPaint(); });
+      dn.addEventListener('click',function(){ LAB[i]=(LAB[i]+9)%10; labMsg.textContent=''; labPaint(); });
+      col.appendChild(up); col.appendChild(cell); col.appendChild(dn); col.appendChild(cap);
+      labD.appendChild(col);
+    });
+    labLamps.innerHTML='';
+    LAMPS.forEach(function(d){
+      var l=document.createElement('div'); l.className='lamp'; l.setAttribute('data-d',d);
+      l.innerHTML='<div class="n">÷'+d+'</div><div class="v"></div>';
+      labLamps.appendChild(l);
+    });
+  }
+  function labValue(){ return LAB[0]*1000+LAB[1]*100+LAB[2]*10+LAB[3]; }
+  function labPaint(){
+    var cells=labD.querySelectorAll('.cell'), caps=labD.querySelectorAll('.cap');
+    for(var i=0;i<4;i++){
+      cells[i].textContent=LAB[i];
+      cells[i].className='cell'+(i===3?' last':'');
+      caps[i].textContent=(i===3?'последняя':'');
+      caps[i].className='cap'+(i===3?' last':'');
+    }
+    var S=LAB[0]+LAB[1]+LAB[2]+LAB[3];
+    labSum.innerHTML='Сумма цифр: <span class="mono">'+LAB.join(' + ')+' = '+S+'</span>';
+    var N=labValue();
+    Array.prototype.forEach.call(labLamps.children,function(l){
+      var d=+l.getAttribute('data-d');
+      var ok = (d===3||d===9) ? (S%d===0) : (N%d===0);
+      l.className='lamp '+(ok?'on':'off');
+      l.querySelector('.v').textContent = ok?'делится':'нет';
+    });
+  }
+  document.getElementById('labShuffle').addEventListener('click',function(){
+    var before=LAB[0]+LAB[1]+LAB[2]+LAB[3], old=LAB.join('');
+    var tries=0;
+    do{
+      for(var i=LAB.length-1;i>0;i--){ var j=ri(0,i), t=LAB[i]; LAB[i]=LAB[j]; LAB[j]=t; }
+      tries++;
+    } while((LAB.join('')===old || LAB[0]===0) && tries<40);
+    if(LAB[0]===0){ for(var q=1;q<4;q++){ if(LAB[q]!==0){ LAB[0]=LAB[q]; LAB[q]=0; break; } } }
+    labPaint();
+    labMsg.innerHTML='Цифры переставили, а сумма как была <b>'+before+'</b>, так и осталась → лампочки ÷3 и ÷9 не изменились.';
+  });
+  document.getElementById('labRandom').addEventListener('click',function(){
+    LAB[0]=ri(1,9);
+    for(var i=1;i<4;i++) LAB[i]=ri(0,9);
+    labMsg.textContent='';
+    labPaint();
+  });
+  labBuild(); labPaint();
+
+  /* ---------- Тренажёр ---------- */
+  var DIVS=[{d:2,cls:'t'},{d:3,cls:'s'},{d:5,cls:'t'},{d:9,cls:'s'},{d:10,cls:'t'}];
+  var kindEl=document.getElementById('trKind');
+  var numEl=document.getElementById('trNum');
+  var hintEl=document.getElementById('trHint');
+  var chipsEl=document.getElementById('trChips');
+  var inpWrap=document.getElementById('trInputWrap');
+  var inpEl=document.getElementById('trInput');
+  var resEl=document.getElementById('trRes');
+  var T=null;
+
+  function locked(){ return resEl.getAttribute('data-done')==='1'; }
+  function yn(b){ return b?'<span class="yes">да</span>':'<span class="no">нет</span>'; }
+  function clsOf(d){ for(var i=0;i<DIVS.length;i++) if(DIVS[i].d===d) return DIVS[i].cls; return 't'; }
+
+  function makeChips(list,plain){
+    chipsEl.innerHTML='';
+    chipsEl.hidden=false;
+    list.forEach(function(item){
+      var b=document.createElement('button');
+      b.type='button';
+      b.className='chip '+(plain?'plain':clsOf(item.val));
+      b.setAttribute('data-v',item.val);
+      b.textContent=item.label;
+      b.addEventListener('click',function(){
+        if(locked()) return;
+        if(T.multi){
+          T.sel[item.val]=!T.sel[item.val];
+          b.classList.toggle('on',!!T.sel[item.val]);
+        } else {
+          T.sel={}; T.sel[item.val]=true;
+          Array.prototype.forEach.call(chipsEl.children,function(x){ x.classList.remove('on'); });
+          b.classList.add('on');
+        }
+      });
+      chipsEl.appendChild(b);
+    });
+  }
+
+  /* Тип A — отметь все делители */
+  function taskA(seed){
+    var N = seed || ri(100,9999);
+    T={type:'A',N:N,multi:true,sel:{},ans:{}};
+    DIVS.forEach(function(o){ T.ans[o.d] = (N%o.d===0); });
+    kindEl.textContent='Все делители';
+    numEl.textContent=grp(N);
+    hintEl.textContent='Отметь все числа, на которые оно делится';
+    inpWrap.hidden=true;
+    makeChips(DIVS.map(function(o){ return {val:o.d,label:'÷'+o.d}; }),false);
+  }
+  function solA(){
+    var N=T.N, last=N%10, S=dsum(N);
+    var h='<div class="tr-sol">';
+    h+='<div class="grp tail">Последняя цифра '+last+':</div>';
+    h+='<div class="row">÷2 — цифра '+(last%2===0?'чётная':'нечётная')+' → '+yn(N%2===0)+'</div>';
+    h+='<div class="row">÷5 — цифра '+((last===0||last===5)?'0 или 5':'не 0 и не 5')+' → '+yn(N%5===0)+'</div>';
+    h+='<div class="row">÷10 — цифра '+(last===0?'0':'не 0')+' → '+yn(N%10===0)+'</div>';
+    h+='<div class="grp sum">Сумма цифр: '+digitsStr(N)+' = '+S+'</div>';
+    h+='<div class="row">÷3 — сумма '+(S%3===0?'делится':'не делится')+' на 3 → '+yn(N%3===0)+'</div>';
+    h+='<div class="row">÷9 — сумма '+(S%9===0?'делится':'не делится')+' на 9 → '+yn(N%9===0)+'</div>';
+    var list=DIVS.filter(function(o){ return T.ans[o.d]; }).map(function(o){ return o.d; });
+    h+='<div class="fin">Ответ: '+(list.length?'делится на '+list.join(', '):'не делится ни на одно из них')+'.</div>';
+    return h+'</div>';
+  }
+
+  /* Тип B — подбери цифру вместо звёздочки */
+  function taskB(){
+    var k = Math.random()<0.6 ? 3 : 9;
+    var a=ri(1,9), c=ri(0,9);
+    var pos = Math.random()<0.5 ? 1 : 2;   /* звёздочка не в первом разряде */
+    var known = pos===1 ? [a,null,c] : [a,c,null];
+    var S0 = a + c;
+    var ans=[];
+    for(var x=0;x<=9;x++) if((S0+x)%k===0) ans.push(x);
+    T={type:'B',k:k,known:known,S0:S0,ansList:ans,multi:false,sel:{}};
+    kindEl.textContent='Подбери цифру';
+    numEl.textContent=known.map(function(v){ return v===null?'★':v; }).join('');
+    hintEl.textContent='Запиши все цифры вместо ★, при которых число делится на '+k;
+    chipsEl.innerHTML=''; chipsEl.hidden=true;
+    inpWrap.hidden=false;
+    inpEl.value='';
+  }
+  function solB(){
+    var shown=T.known.map(function(v){ return v===null?'★':v; }).join('');
+    var parts=T.known.map(function(v){ return v===null?'★':v; }).join(' + ');
+    var h='<div class="tr-sol">';
+    h+='<div class="grp sum">Считаем сумму цифр</div>';
+    h+='<div class="row">Сумма цифр числа '+shown+': '+parts+' = '+T.S0+' + ★</div>';
+    h+='<div class="row">Нужно, чтобы эта сумма делилась на '+T.k+'. Перебираем ★ от 0 до 9:</div>';
+    var rows=[];
+    for(var x=0;x<=9;x++){ if((T.S0+x)%T.k===0) rows.push('★ = '+x+' → сумма '+(T.S0+x)); }
+    h+='<div class="row">Подходят: '+rows.join('; ')+'.</div>';
+    h+='<div class="fin">Ответ: '+T.ansList.join(', ')+'.</div>';
+    return h+'</div>';
+  }
+
+  /* Тип C — да или нет */
+  function taskC(){
+    var pool=[2,3,5,9,10], d=pool[ri(0,pool.length-1)];
+    var N;
+    if(Math.random()<0.5){ N = d*ri(11,999); if(N>9999) N=d*ri(11,99); }
+    else { N=ri(100,9999); }
+    T={type:'C',N:N,d:d,multi:false,sel:{},ansYes:(N%d===0)};
+    kindEl.textContent='Да или нет';
+    numEl.textContent=grp(N);
+    hintEl.textContent='Делится ли это число на '+d+'?';
+    inpWrap.hidden=true;
+    makeChips([{val:'yes',label:'да'},{val:'no',label:'нет'}],true);
+  }
+  function solC(){
+    var N=T.N, d=T.d, S=dsum(N), last=N%10;
+    var h='<div class="tr-sol">';
+    if(d===3||d===9){
+      h+='<div class="grp sum">Правило: смотрим сумму цифр</div>';
+      h+='<div class="row">Сумма цифр: '+digitsStr(N)+' = '+S+'</div>';
+      h+='<div class="row">'+S+' '+(S%d===0?'делится':'не делится')+' на '+d+'</div>';
+    } else {
+      h+='<div class="grp tail">Правило: смотрим последнюю цифру</div>';
+      h+='<div class="row">Последняя цифра числа '+grp(N)+' — это '+last+'</div>';
+      if(d===2) h+='<div class="row">Для ÷2 нужна чётная цифра (0, 2, 4, 6, 8). Цифра '+last+' '+(last%2===0?'подходит':'не подходит')+'.</div>';
+      if(d===5) h+='<div class="row">Для ÷5 нужна 0 или 5. Цифра '+last+' '+((last===0||last===5)?'подходит':'не подходит')+'.</div>';
+      if(d===10) h+='<div class="row">Для ÷10 нужен 0. Цифра '+last+' '+(last===0?'подходит':'не подходит')+'.</div>';
+    }
+    h+='<div class="fin">Ответ: '+(T.ansYes?'да, делится на '+d:'нет, на '+d+' не делится')+'.</div>';
+    return h+'</div>';
+  }
+
+  function solution(){
+    if(T.type==='A') return solA();
+    if(T.type==='B') return solB();
+    return solC();
+  }
+
+  function newTask(seedA){
+    resEl.innerHTML=''; resEl.removeAttribute('data-done');
+    if(seedA){ taskA(seedA); return; }
+    var r=Math.random();
+    if(r<0.45) taskA(); else if(r<0.75) taskB(); else taskC();
+  }
+
+  function paintChips(reveal){
+    if(chipsEl.hidden) return;
+    Array.prototype.forEach.call(chipsEl.children,function(b){
+      var v=b.getAttribute('data-v');
+      var corr, chosen;
+      if(T.type==='A'){ corr=T.ans[+v]; chosen=!!T.sel[+v]; }
+      else { corr=(v==='yes')===T.ansYes; chosen=!!T.sel[v]; }
+      b.classList.toggle('on',!!corr);
+      if(reveal){
+        if(chosen===corr){ if(corr) b.classList.add('ok'); }
+        else if(chosen && !corr) b.classList.add('err');
+        else if(!chosen && corr) b.classList.add('err');
+      }
+    });
+  }
+
+  function parseDigits(s){
+    var m=String(s).match(/\d/g);
+    if(!m) return null;
+    var seen={}, out=[];
+    m.forEach(function(c){ if(!seen[c]){ seen[c]=1; out.push(+c); } });
+    out.sort(function(a,b){ return a-b; });
+    return out;
+  }
+
+  function check(){
+    if(locked()) return;
+    var ok=false, empty=false;
+    if(T.type==='A'){
+      ok=true;
+      DIVS.forEach(function(o){ if(!!T.sel[o.d] !== !!T.ans[o.d]) ok=false; });
+      paintChips(true);
+    } else if(T.type==='B'){
+      var got=parseDigits(inpEl.value);
+      if(got===null){ empty=true; }
+      else {
+        ok = got.length===T.ansList.length && got.every(function(v,i){ return v===T.ansList[i]; });
+      }
+    } else {
+      if(!T.sel.yes && !T.sel.no){ empty=true; }
+      else { ok = (!!T.sel.yes)===T.ansYes; paintChips(true); }
+    }
+    if(empty){
+      resEl.innerHTML='<div class="head info">Сначала дай ответ, потом проверяй — так честнее.</div>';
+      return;
+    }
+    resEl.setAttribute('data-done','1');
+    resEl.innerHTML=(ok
+      ? '<div class="head ok">✓ Верно!</div>'
+      : '<div class="head no">Пока не то — разбери решение ниже.</div>')+solution();
+  }
+
+  function show(){
+    if(locked()) return;
+    paintChips(false);
+    resEl.setAttribute('data-done','1');
+    resEl.innerHTML='<div class="head info">Разбор:</div>'+solution();
+  }
+
+  document.getElementById('trCheck').addEventListener('click',check);
+  document.getElementById('trShow').addEventListener('click',show);
+  document.getElementById('trNew').addEventListener('click',function(){
+    newTask();
+    if(!inpWrap.hidden) inpEl.focus();
+  });
+  inpEl.addEventListener('keydown',function(e){ if(e.key==='Enter') check(); });
+
+  newTask(2835);
+})();
+</script>
+<!--LESSON-NAV-BOT--><nav class="lnav lnav-bot"><a class="prev" href="./m6-delimost-opredelenie.html"><span class="dir">← Предыдущая</span><span class="ttl">Делимость, делители и кратные</span></a><a class="to-cat" href="./catalog.html">📚 <span>Все темы</span></a><a class="next" href="./m6-prostye-sostavnye.html"><span class="dir">Следующая →</span><span class="ttl">Простые и составные числа</span></a></nav><!--/LESSON-NAV-BOT-->

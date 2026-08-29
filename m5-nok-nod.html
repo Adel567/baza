@@ -1,0 +1,659 @@
+<!doctype html>
+<!-- humanized: humanizer-ru, 2026-08-28, тире возвращено -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>НОД и НОК — 5 класс</title>
+<style>
+  :root{
+    --paper:#FBF9F5;
+    --card:#FFFFFF;
+    --ink:#26202E;
+    --muted:#6B6473;
+    --line:#E7E2E8;
+    --brand:#6A3EA1;
+    --brand-soft:#EFE7F6;
+    --nod:#2E7D63;         /* НОД — вниз, общее внутри */
+    --nod-soft:#E4F1EC;
+    --nod-line:#B9DDD0;
+    --nok:#C2661F;         /* НОК — вверх, встреча */
+    --nok-soft:#FBECDF;
+    --nok-line:#F0CFB0;
+    --ok:#2E8B57;
+    --no:#C23B3B;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper)}
+  .page{
+    max-width:720px;margin:0 auto;
+    padding:clamp(1.4rem,4vw,3rem) clamp(1.1rem,4vw,2rem) 4.5rem;
+    color:var(--ink);
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    font-size:17.5px;line-height:1.68;-webkit-font-smoothing:antialiased;
+  }
+  .mono{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-variant-numeric:tabular-nums;font-weight:600}
+
+  .hero{border-bottom:3px solid var(--brand);padding-bottom:1.4rem;margin-bottom:1.8rem}
+  .eyebrow{font-size:.74rem;letter-spacing:.15em;text-transform:uppercase;color:var(--brand);font-weight:700;margin:0 0 .55rem}
+  h1{font-size:clamp(2rem,6.5vw,3rem);line-height:1.03;margin:0;font-weight:800;letter-spacing:-.02em;text-wrap:balance}
+  .tagline{font-size:1.12rem;color:var(--muted);margin:.85rem 0 0;text-wrap:pretty}
+
+  section{margin-top:2.4rem}
+  h2{font-size:1.5rem;margin:0 0 .3rem;font-weight:780;letter-spacing:-.015em;text-wrap:balance}
+  h2 .em{color:var(--brand)}
+  h3{font-size:1.1rem;margin:1.4rem 0 .2rem;font-weight:750}
+  p{margin:.7rem 0}
+  strong{font-weight:680}
+
+  .lead-in{background:var(--brand-soft);border-radius:14px;padding:1.1rem 1.3rem;font-size:1.02rem}
+  .lead-in p{margin:.4rem 0}
+  .lead-in b{color:var(--brand)}
+
+  /* Развилка НОД / НОК */
+  .split{display:grid;gap:.9rem;margin-top:1rem}
+  @media(min-width:600px){.split{grid-template-columns:1fr 1fr}}
+  .path{border-radius:16px;padding:1.2rem 1.3rem;border:2px solid}
+  .path.nod{background:var(--nod-soft);border-color:var(--nod-line)}
+  .path.nok{background:var(--nok-soft);border-color:var(--nok-line)}
+  .path .cap{font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;font-weight:700;margin:0}
+  .path.nod .cap{color:var(--nod)} .path.nok .cap{color:var(--nok)}
+  .path h3{margin:.2rem 0 .5rem;font-size:1.35rem;font-weight:800}
+  .path p{margin:.3rem 0;font-size:.97rem}
+  .path .who{font-weight:800;font-family:ui-monospace,Menlo,monospace}
+  .path.nod .who{color:var(--nod)} .path.nok .who{color:var(--nok)}
+
+  .rules{display:flex;flex-direction:column;gap:.7rem;margin-top:1rem}
+  .rule{display:flex;align-items:flex-start;gap:1rem;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:.85rem 1.05rem}
+  .rule .big{font-family:ui-monospace,Menlo,monospace;font-weight:800;font-size:1.05rem;flex:none;width:3.2rem;text-align:center;padding-top:.15rem}
+  .rule.d .big{color:var(--nod)} .rule.k .big{color:var(--nok)}
+  .rule .txt{flex:1;min-width:0}
+  .rule .ex{font-size:.87rem;color:var(--muted);margin-top:.3rem}
+  .rule .ex .mono{color:var(--ink)}
+
+  .note{border-left:4px solid var(--brand);background:var(--brand-soft);border-radius:0 10px 10px 0;padding:.8rem 1.1rem;margin-top:1rem;font-size:.98rem}
+  .note b{color:var(--brand)}
+  .note p{margin:.4rem 0}
+
+  .recall{background:var(--card);border:1px dashed var(--line);border-radius:14px;padding:1rem 1.2rem}
+  .recall p{margin:.45rem 0;font-size:.99rem}
+
+  /* Различитель */
+  .marker{display:flex;flex-direction:column;gap:.6rem;margin-top:1rem}
+  .marker .m{display:flex;gap:.85rem;align-items:center;border-radius:12px;padding:.8rem 1rem;border:1px solid}
+  .marker .m.d{background:var(--nod-soft);border-color:var(--nod-line)}
+  .marker .m.k{background:var(--nok-soft);border-color:var(--nok-line)}
+  .marker .m .ico{font-size:1.5rem;flex:none}
+  .marker .m .w{flex:1;font-size:.98rem}
+  .marker .m b{font-weight:800}
+  .marker .m.d b{color:var(--nod)} .marker .m.k b{color:var(--nok)}
+
+  /* Разбор по шагам */
+  .walk{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.15rem 1.3rem;margin-top:1rem}
+  .walk .q{font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.05rem;margin:0 0 .9rem;padding-bottom:.7rem;border-bottom:1px solid var(--line)}
+  .walk ol{margin:0;padding-left:1.2rem;display:flex;flex-direction:column;gap:.6rem}
+  .walk li{font-size:.99rem}
+  .walk li .why{color:var(--muted);font-size:.92rem;display:block}
+  .verdict{margin-top:1rem;padding:.75rem 1rem;background:var(--brand-soft);border-radius:10px;font-weight:650;color:var(--brand);font-size:1rem}
+  .tagd{color:var(--nod);font-weight:800}
+  .tagk{color:var(--nok);font-weight:800}
+
+  /* Наглядность */
+  .viz{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.1rem 1.1rem 1rem;margin-top:1rem}
+  .viz svg{display:block;width:100%;height:auto}
+  .viz .cap{font-size:.9rem;color:var(--muted);margin:.6rem 0 0;text-align:center}
+  .legend{display:flex;flex-wrap:wrap;gap:.5rem;justify-content:center;margin-top:.7rem;font-size:.88rem}
+  .legend span{border-radius:999px;padding:.15rem .7rem;font-weight:700}
+  .legend .l-d{background:var(--nod-soft);color:var(--nod)}
+  .legend .l-k{background:var(--nok-soft);color:var(--nok)}
+
+  /* Практика */
+  .drill{display:flex;flex-direction:column;gap:.7rem;margin-top:1rem}
+  .lvl{font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;font-weight:700;color:var(--brand);margin:1.4rem 0 .2rem}
+  details{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:.9rem 1.1rem}
+  details[open]{border-color:var(--brand)}
+  summary{cursor:pointer;font-weight:650;list-style:none;display:flex;justify-content:space-between;gap:1rem;align-items:center}
+  summary::-webkit-details-marker{display:none}
+  summary:focus-visible{outline:2px solid var(--brand);outline-offset:3px;border-radius:6px}
+  summary .q{font-size:1rem}
+  summary::after{content:"проверить";font-size:.8rem;color:var(--brand);font-weight:700;white-space:nowrap}
+  details[open] summary::after{content:"скрыть"}
+  .ans{margin-top:.75rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.96rem;color:var(--muted)}
+  .ans b{color:var(--ink)}
+
+  ul.traps{list-style:none;margin:1rem 0 0;padding:0;display:flex;flex-direction:column;gap:.7rem}
+  ul.traps li{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:.85rem 1.05rem;padding-left:2.5rem;position:relative;font-size:.97rem}
+  ul.traps li::before{content:"⚠";position:absolute;left:1rem;top:.85rem;color:var(--nok);font-size:1.05rem}
+  ul.traps b{font-weight:700}
+
+  .selfcheck{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.1rem 1.3rem;margin-top:1rem}
+  .selfcheck ol{margin:.3rem 0;padding-left:1.2rem}
+  .selfcheck li{margin:.45rem 0}
+
+  .wrapup{background:var(--brand);color:#fff;border-radius:16px;padding:1.4rem 1.5rem;margin-top:2.4rem}
+  .wrapup h2{color:#fff;margin:0 0 .5rem}
+  .wrapup p{color:#EEE6F6;margin:.4rem 0;font-size:1rem}
+  .wrapup .big-rule{font-size:1.1rem;font-weight:700;color:#fff;margin:.6rem 0}
+  .wrapup .next{font-size:.95rem;color:#D9C9EC;margin-top:1rem;padding-top:1rem;border-top:1px solid rgba(255,255,255,.2)}
+
+  /* Тренажёр */
+  .trainer{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:1.3rem 1.3rem 1.2rem;margin-top:1rem}
+  .tr-task{font-size:1.1rem;font-weight:650;text-align:center;padding:1rem;background:var(--brand-soft);border-radius:12px;line-height:1.5}
+  .tr-task .nums{font-family:ui-monospace,Menlo,monospace;font-weight:800}
+  .tr-pick{display:flex;gap:.5rem;justify-content:center;flex-wrap:wrap;margin-top:.9rem}
+  .tr-pick button{font:inherit;font-weight:800;font-size:1rem;border-radius:11px;padding:.5rem 1.2rem;cursor:pointer;background:var(--paper);border:2px solid var(--line);color:var(--muted)}
+  .tr-pick button.on[data-w="nod"]{border-color:var(--nod);background:var(--nod-soft);color:var(--nod)}
+  .tr-pick button.on[data-w="nok"]{border-color:var(--nok);background:var(--nok-soft);color:var(--nok)}
+  .tr-pick button:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+  .tr-ctl{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.9rem;align-items:center}
+  .tr-ctl input{flex:1;min-width:140px;font:inherit;padding:.55rem .75rem;border:1px solid var(--line);border-radius:10px;background:#fff;color:var(--ink)}
+  .tr-ctl button{font:inherit;font-weight:700;font-size:.92rem;border-radius:10px;padding:.55rem 1.05rem;cursor:pointer;border:1px solid transparent}
+  .tr-ctl .go{background:var(--brand);color:#fff}
+  .tr-ctl .sh{background:var(--paper);border:1px solid var(--line);color:var(--ink)}
+  .tr-ctl .nw{background:var(--brand-soft);color:var(--brand)}
+  .tr-ctl button:focus-visible,.tr-ctl input:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+  .tr-res{margin-top:1.05rem;font-size:.97rem}
+  .tr-res .head{font-weight:700;padding:.6rem .9rem;border-radius:9px;margin-bottom:.7rem}
+  .tr-res .head.ok{background:#E7F4EC;color:var(--ok)}
+  .tr-res .head.no{background:#FBEAEA;color:var(--no)}
+  .tr-res .head.info{background:var(--brand-soft);color:var(--brand)}
+  .tr-sol{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:.85rem 1rem}
+  .tr-sol .row{margin:.35rem 0;font-size:.94rem}
+  .tr-sol .row .mono{font-family:ui-monospace,Menlo,monospace}
+  .tr-sol .d{color:var(--nod);font-weight:800}
+  .tr-sol .k{color:var(--nok);font-weight:800}
+  .tr-sol svg{display:block;width:100%;height:auto;max-width:340px;margin:.6rem auto .2rem}
+
+  @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+<!--LESSON-NAV-TOP--><style>.lnav{--lnav-accent:#3D5AF1}.lnav a{text-decoration:none;font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif}.lnav-top{max-width:820px;margin:0 auto;padding:.75rem clamp(1rem,4vw,1.5rem) .1rem}.lnav-top a{display:inline-flex;align-items:center;gap:.35rem;color:var(--lnav-accent);font-weight:600;font-size:.9rem}.lnav-top a:hover{text-decoration:underline}.lnav-bot{max-width:820px;margin:2.6rem auto 3rem;padding:1.1rem clamp(1rem,4vw,1.5rem) 0;border-top:1px solid #E4E8EF;display:flex;align-items:stretch;gap:.55rem}.lnav-bot a{min-width:0;display:flex;flex-direction:column;justify-content:center;gap:.15rem;border:1px solid #E4E8EF;border-radius:12px;padding:.65rem .85rem;color:#182233;background:#fff;transition:border-color .1s,transform .08s}.lnav-bot a:hover{border-color:var(--lnav-accent);transform:translateY(-1px)}.lnav-bot .prev,.lnav-bot .next{flex:1 1 0}.lnav-bot .next{text-align:right}.lnav-bot .dir{font-size:.72rem;color:#8A93A6;font-weight:600}.lnav-bot .ttl{font-size:.9rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.lnav-bot .to-cat{flex:0 0 auto;flex-direction:row;align-items:center;justify-content:center;color:var(--lnav-accent);font-weight:700;font-size:.85rem;white-space:nowrap}@media(max-width:420px){.lnav-bot .to-cat span{display:none}.lnav-bot .to-cat{padding:.65rem .7rem}}</style><nav class="lnav lnav-top"><a href="./catalog.html">← Все темы</a></nav><!--/LESSON-NAV-TOP-->
+<div class="page">
+
+  <header class="hero">
+    <p class="eyebrow">Математика · 5 класс</p>
+    <h1>НОД и НОК</h1>
+    <p class="tagline">Два инструмента, которые открываются одним ключом — разложением на простые множители.</p>
+  </header>
+
+  <div class="lead-in">
+    <p><b>Зачем это нужно.</b> Оба сокращения живут рядом с дробями. <b>НОД</b> (наибольший общий делитель) сокращает дробь до конца за один шаг. <b>НОК</b> (наименьшее общее кратное) приводит дроби к общему знаменателю — а уже после этого их можно сравнивать, складывать и вычитать.</p>
+    <p><b>Из жизни.</b> У тебя <span class="mono">24</span> карандаша и <span class="mono">36</span> ручек. Надо разложить их в одинаковые наборы поровну, без остатка, и наборов сделать как можно больше. Сколько наборов? Это НОД(24, 36).</p>
+    <p>А теперь другая история. Один автобус приходит каждые <span class="mono">12</span> минут, второй — каждые <span class="mono">18</span>. Сейчас они пришли вместе. Через сколько минут снова встретятся? Это НОК(12, 18).</p>
+    <p><b>Сразу про главный миф.</b> Скажешь: большее число — это и есть НОК, а меньшее — НОД, чего тут считать? Нет. НОД всегда не больше меньшего из чисел, а НОК не меньше большего — но это отдельные числа, их надо посчитать, а не выдернуть готовыми из условия.</p>
+  </div>
+
+  <section>
+    <h2>Что нужно вспомнить</h2>
+    <p>Вся тема стоит на одном умении: <strong>разложить число на простые множители</strong>. Умеешь — дальше пойдёт легко.</p>
+    <div class="recall">
+      <p>Проверь себя на трёх числах — разложи их в уме или на черновике:</p>
+      <p><span class="mono">24 = 2 · 2 · 2 · 3</span> &nbsp;·&nbsp; <span class="mono">36 = 2 · 2 · 3 · 3</span> &nbsp;·&nbsp; <span class="mono">30 = 2 · 3 · 5</span></p>
+      <p>Раскладывай <strong>до конца, до простых чисел</strong>. Остановиться на «24 = 4 · 6» нельзя: 4 и 6 сами делятся дальше, и часть множителей потеряется.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Суть: <span class="em">один смотрит вниз, другой — вверх</span></h2>
+    <p>Сначала словами, без формул.</p>
+    <div class="split">
+      <div class="path nod">
+        <p class="cap">Смотрит вниз</p>
+        <h3>🟢 НОД</h3>
+        <p><strong>Делитель</strong> числа — число, на которое оно делится без остатка. <strong>Общий делитель</strong> двух чисел делит каждое из них.</p>
+        <p><span class="who">НОД</span> — самый большой из общих делителей. Он ищет, <strong>что у чисел общего внутри</strong>.</p>
+        <p>Поэтому НОД ≤ меньшего числа.</p>
+      </div>
+      <div class="path nok">
+        <p class="cap">Смотрит вверх</p>
+        <h3>🟠 НОК</h3>
+        <p><strong>Кратное</strong> числа — число, которое делится на него без остатка. <strong>Общее кратное</strong> двух чисел делится на каждое из них.</p>
+        <p><span class="who">НОК</span> — самое маленькое (но не ноль) из общих кратных. Он ищет, <strong>где числа впервые встретятся</strong>, шагая своими шагами.</p>
+        <p>Поэтому НОК ≥ большего числа.</p>
+      </div>
+    </div>
+    <p>Записывают их так: <span class="mono">НОД(a, b)</span> — наибольший общий делитель, <span class="mono">НОК(a, b)</span> — наименьшее общее кратное.</p>
+  </section>
+
+  <section>
+    <h2>Как отличить, <span class="em">что именно ищут в задаче</span></h2>
+    <p>Посчитать умеют почти все. Спотыкаются раньше: что вообще ищем — НОД или НОК? Держи два слова-маркера.</p>
+    <div class="marker">
+      <div class="m d">
+        <div class="ico">✂️</div>
+        <div class="w"><b>«Делим на части»</b> — разложить поровну, раздать без остатка, разрезать на одинаковые куски, сделать как можно больше одинаковых наборов. Ответ <b>внутри</b> чисел, он маленький → это <b>НОД</b>.</div>
+      </div>
+      <div class="m k">
+        <div class="ico">🔁</div>
+        <div class="w"><b>«Сходятся вместе»</b> — встретятся снова, мигнут одновременно, совпадут, повторится у обоих. Ответ <b>дальше</b> обоих чисел, он большой → это <b>НОК</b>.</div>
+      </div>
+    </div>
+    <p>Карандаши и ручки раскладывают <strong>по частям</strong> → НОД. Автобусы <strong>сходятся вместе</strong> → НОК.</p>
+  </section>
+
+  <section>
+    <h2>Правило: <span class="em">и то и другое — через простые множители</span></h2>
+    <p>Один и тот же первый шаг, а дальше два разных действия:</p>
+    <div class="rules">
+      <div class="rule d">
+        <div class="big">шаг 1</div>
+        <div class="txt"><b>Разложи каждое число на простые множители.</b>
+          <div class="ex">Вся подготовка на этом заканчивается. Дальше только выбираем множители.</div>
+        </div>
+      </div>
+      <div class="rule d">
+        <div class="big">НОД</div>
+        <div class="txt"><b>Перемножь только ОБЩИЕ множители</b> — те, что есть в обоих разложениях. Каждый общий множитель берём столько раз, сколько он входит в оба разложения одновременно (то есть в наименьшем количестве).
+          <div class="ex">Только общие — и ни одного лишнего.</div>
+        </div>
+      </div>
+      <div class="rule k">
+        <div class="big">НОК</div>
+        <div class="txt"><b>Перемножь ВСЕ множители первого числа и недостающие множители второго.</b> Каждый множитель берём в наибольшем количестве.
+          <div class="ex">Здесь нужны все множители, включая необщие.</div>
+        </div>
+      </div>
+    </div>
+    <div class="note">
+      <p><b>Условия.</b> Числа берём натуральные: 1, 2, 3, …</p>
+      <p><b>Особый случай.</b> Если у чисел нет общих простых множителей, то <span class="tagd">НОД = 1</span> (такие числа называют <strong>взаимно простыми</strong>), а <span class="tagk">НОК = их произведение</span>.</p>
+      <p><b>Проверка-связь.</b> <span class="mono">НОД(a, b) · НОК(a, b) = a · b</span>. Перемножил свои ответы и получил не <span class="mono">a · b</span> — значит где-то ошибка. Это бесплатный способ себя проверить.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Эталонный разбор — <span class="em">думаю вслух</span></h2>
+    <p>Смотри, как рассуждать от начала до конца. Берём числа <span class="mono">24</span> и <span class="mono">36</span>.</p>
+    <div class="walk">
+      <p class="q">Найти НОД(24, 36) и НОК(24, 36)</p>
+      <ol>
+        <li><span class="mono">24 = 2 · 2 · 2 · 3</span><span class="why">Раскладываю на простые множители, потому что так видно «состав» числа.</span></li>
+        <li><span class="mono">36 = 2 · 2 · 3 · 3</span><span class="why">То же самое со вторым числом.</span></li>
+        <li><span class="tagd">НОД:</span> беру то, что есть в ОБОИХ разложениях. Двойка есть и там и там — но в первом три двойки, во втором две, беру меньшее количество, значит две двойки: <span class="mono">2 · 2</span>. Тройка есть в обоих — в первом одна, во втором две, меньшее количество — одна: <span class="mono">· 3</span>.<span class="why">Меньшее количество — потому что делитель должен «поместиться» в оба числа.</span></li>
+        <li><span class="tagd">НОД = 2 · 2 · 3 = <span class="mono">12</span></span></li>
+        <li><span class="tagk">НОК:</span> беру всё из первого (<span class="mono">2 · 2 · 2 · 3</span>) и добавляю то, чего не хватило из второго. Во втором есть лишняя тройка — там две тройки, а я взял одну — добавляю <span class="mono">· 3</span>.<span class="why">Кратное обязано делиться на оба числа, поэтому в нём должны поместиться все множители и того и другого.</span></li>
+        <li><span class="tagk">НОК = 2 · 2 · 2 · 3 · 3 = <span class="mono">72</span></span></li>
+        <li><b>Проверка.</b> <span class="mono">12 · 72 = 864</span>, и <span class="mono">24 · 36 = 864</span>. Совпало — ответ верный.</li>
+      </ol>
+      <div class="verdict">НОД(24, 36) = 12, НОК(24, 36) = 72</div>
+    </div>
+
+    <h3>Теперь допиши сам: числа 18 и 30</h3>
+    <div class="walk">
+      <p class="q">Найти НОД(18, 30) и НОК(18, 30)</p>
+      <ol>
+        <li><span class="mono">18 = 2 · 3 · 3</span></li>
+        <li><span class="mono">30 = 2 · 3 · 5</span></li>
+        <li><span class="tagd">НОД:</span> общие множители — 2 и 3 (по одному разу). НОД = <span class="mono">2 · 3</span> = ______</li>
+        <li><span class="tagk">НОК:</span> всё из 18 (<span class="mono">2 · 3 · 3</span>) плюс недостающая 5 из 30. НОК = <span class="mono">2 · 3 · 3 · 5</span> = ______</li>
+      </ol>
+      <details style="margin-top:1rem">
+        <summary><span class="q">Посчитал? Сверься</span></summary>
+        <div class="ans"><b>НОД = 6</b>, <b>НОК = 90</b>. Проверка: <span class="mono">6 · 90 = 540</span> и <span class="mono">18 · 30 = 540</span> — сходится.</div>
+      </details>
+    </div>
+
+    <h3>А это уже целиком сам: числа 16 и 24</h3>
+    <div class="walk">
+      <p class="q">Найти НОД(16, 24) и НОК(16, 24)</p>
+      <p style="margin:0;font-size:.95rem;color:var(--muted)">Подсказка на разложение: <span class="mono">16 = 2 · 2 · 2 · 2</span>, <span class="mono">24 = 2 · 2 · 2 · 3</span>.</p>
+      <details style="margin-top:1rem">
+        <summary><span class="q">Показать ответ</span></summary>
+        <div class="ans"><b>НОД = 8</b> (три общие двойки: <span class="mono">2 · 2 · 2</span>), <b>НОК = 48</b> (<span class="mono">2 · 2 · 2 · 2 · 3</span>). Проверка: <span class="mono">8 · 48 = 384</span> и <span class="mono">16 · 24 = 384</span>.</div>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <h2>Как это выглядит — <span class="em">три картинки</span></h2>
+
+    <h3>1. Пересечение множителей</h3>
+    <p>Нарисуй два круга, которые пересекаются. В середину — общие множители, по краям — те, что есть только у одного числа. Вот 24 и 36:</p>
+    <div class="viz">
+      <svg viewBox="0 0 340 232" role="img" aria-label="Два пересекающихся круга: множители 24 и 36. В середине общие множители 2, 2 и 3.">
+        <circle cx="128" cy="112" r="90" fill="#E4F1EC" fill-opacity=".75" stroke="#B9DDD0" stroke-width="2"/>
+        <circle cx="212" cy="112" r="90" fill="#FBECDF" fill-opacity=".6" stroke="#F0CFB0" stroke-width="2"/>
+        <text x="62" y="32" text-anchor="middle" font-family="ui-monospace,Menlo,monospace" font-size="19" font-weight="700" fill="#2E7D63">24</text>
+        <text x="278" y="32" text-anchor="middle" font-family="ui-monospace,Menlo,monospace" font-size="19" font-weight="700" fill="#C2661F">36</text>
+        <text x="72" y="100" text-anchor="middle" font-family="ui-monospace,Menlo,monospace" font-size="15" fill="#6B6473">только у 24</text>
+        <text x="72" y="126" text-anchor="middle" font-family="ui-monospace,Menlo,monospace" font-size="22" font-weight="800" fill="#2E7D63">2</text>
+        <text x="268" y="100" text-anchor="middle" font-family="ui-monospace,Menlo,monospace" font-size="15" fill="#6B6473">только у 36</text>
+        <text x="268" y="126" text-anchor="middle" font-family="ui-monospace,Menlo,monospace" font-size="22" font-weight="800" fill="#C2661F">3</text>
+        <text x="170" y="98" text-anchor="middle" font-family="ui-monospace,Menlo,monospace" font-size="14" fill="#6B6473">общие</text>
+        <text x="170" y="126" text-anchor="middle" font-family="ui-monospace,Menlo,monospace" font-size="21" font-weight="800" fill="#26202E">2·2·3</text>
+        <text x="170" y="222" text-anchor="middle" font-family="system-ui,sans-serif" font-size="14" fill="#6B6473">середина → НОД &nbsp;·&nbsp; вся картинка → НОК</text>
+      </svg>
+      <p class="cap"><b style="color:var(--nod)">НОД</b> = только середина = <span class="mono">2 · 2 · 3 = 12</span>. <b style="color:var(--nok)">НОК</b> = вся картинка целиком, слева + середина + справа = <span class="mono">2 · (2 · 2 · 3) · 3 = 72</span>.</p>
+    </div>
+    <p>Одна картинка отвечает сразу на оба вопроса. Отсюда же видно, почему у взаимно простых чисел НОД = 1: середина пустая, брать нечего. А НОК тогда собирается из всего подряд, то есть равен произведению чисел.</p>
+
+    <h3>2. Круги делителей</h3>
+    <p>Тот же приём, но с самими делителями. Впиши в первый круг делители 12, во второй — делители 18. В пересечении соберутся общие делители, самый большой из них и есть НОД:</p>
+    <div class="viz">
+      <svg viewBox="0 0 340 226" role="img" aria-label="Делители 12 и делители 18; в пересечении общие делители 1, 2, 3, 6.">
+        <circle cx="128" cy="108" r="88" fill="#E4F1EC" fill-opacity=".75" stroke="#B9DDD0" stroke-width="2"/>
+        <circle cx="212" cy="108" r="88" fill="#EFE7F6" fill-opacity=".6" stroke="#D5C4E7" stroke-width="2"/>
+        <text x="60" y="28" text-anchor="middle" font-family="system-ui,sans-serif" font-size="15" font-weight="700" fill="#2E7D63">делители 12</text>
+        <text x="280" y="28" text-anchor="middle" font-family="system-ui,sans-serif" font-size="15" font-weight="700" fill="#6A3EA1">делители 18</text>
+        <text x="70" y="102" text-anchor="middle" font-family="ui-monospace,Menlo,monospace" font-size="20" font-weight="700" fill="#2E7D63">4</text>
+        <text x="70" y="130" text-anchor="middle" font-family="ui-monospace,Menlo,monospace" font-size="20" font-weight="700" fill="#2E7D63">12</text>
+        <text x="270" y="102" text-anchor="middle" font-family="ui-monospace,Menlo,monospace" font-size="20" font-weight="700" fill="#6A3EA1">9</text>
+        <text x="270" y="130" text-anchor="middle" font-family="ui-monospace,Menlo,monospace" font-size="20" font-weight="700" fill="#6A3EA1">18</text>
+        <text x="170" y="82" text-anchor="middle" font-family="system-ui,sans-serif" font-size="13" fill="#6B6473">общие</text>
+        <text x="170" y="106" text-anchor="middle" font-family="ui-monospace,Menlo,monospace" font-size="18" font-weight="700" fill="#26202E">1 &nbsp;2</text>
+        <text x="170" y="132" text-anchor="middle" font-family="ui-monospace,Menlo,monospace" font-size="18" font-weight="700" fill="#26202E">3 &nbsp;<tspan fill="#2E7D63" font-size="22" font-weight="800">6</tspan></text>
+        <text x="170" y="216" text-anchor="middle" font-family="system-ui,sans-serif" font-size="14" fill="#6B6473">самый большой в середине → НОД(12, 18) = 6</text>
+      </svg>
+      <p class="cap">Общие делители: <span class="mono">1, 2, 3, 6</span>. Наибольший — <span class="mono">6</span>. Значит НОД(12, 18) = 6.</p>
+    </div>
+
+    <h3>3. Числовая прямая — для НОК</h3>
+    <p>Отметь кратные 4 точками одного цвета, кратные 6 — другого. Первая точка, где цвета совпали, и есть НОК:</p>
+    <div class="viz">
+      <svg viewBox="0 0 340 130" role="img" aria-label="Числовая прямая: кратные 4 сверху, кратные 6 снизу, первое совпадение в точке 12.">
+        <line x1="14" y1="66" x2="330" y2="66" stroke="#9AA3B2" stroke-width="1.5"/>
+        <g font-family="ui-monospace,Menlo,monospace" font-size="11" fill="#6B6473" text-anchor="middle">
+          <g stroke="#D8D3DC" stroke-width="1">
+            <line x1="26" y1="62" x2="26" y2="70"/><line x1="62" y1="62" x2="62" y2="70"/><line x1="98" y1="62" x2="98" y2="70"/>
+            <line x1="134" y1="62" x2="134" y2="70"/><line x1="170" y1="62" x2="170" y2="70"/><line x1="206" y1="62" x2="206" y2="70"/>
+            <line x1="242" y1="62" x2="242" y2="70"/><line x1="278" y1="62" x2="278" y2="70"/><line x1="314" y1="62" x2="314" y2="70"/>
+          </g>
+          <text x="26" y="86">0</text><text x="62" y="86">4</text><text x="98" y="86">6</text>
+          <text x="134" y="86">8</text><text x="170" y="86">12</text><text x="206" y="86">16</text>
+          <text x="242" y="86">18</text><text x="278" y="86">20</text><text x="314" y="86">24</text>
+        </g>
+        <g fill="#2E7D63">
+          <circle cx="62" cy="46" r="6"/><circle cx="134" cy="46" r="6"/><circle cx="170" cy="46" r="7.5"/>
+          <circle cx="206" cy="46" r="6"/><circle cx="278" cy="46" r="6"/><circle cx="314" cy="46" r="6"/>
+        </g>
+        <text x="14" y="34" font-family="system-ui,sans-serif" font-size="12" font-weight="700" fill="#2E7D63">кратные 4</text>
+        <g fill="#C2661F">
+          <circle cx="98" cy="100" r="6"/><circle cx="170" cy="100" r="7.5"/><circle cx="242" cy="100" r="6"/><circle cx="314" cy="100" r="6"/>
+        </g>
+        <text x="14" y="122" font-family="system-ui,sans-serif" font-size="12" font-weight="700" fill="#C2661F">кратные 6</text>
+        <line x1="170" y1="46" x2="170" y2="100" stroke="#6A3EA1" stroke-width="2" stroke-dasharray="4 3"/>
+        <text x="170" y="22" text-anchor="middle" font-family="system-ui,sans-serif" font-size="13" font-weight="800" fill="#6A3EA1">НОК = 12</text>
+      </svg>
+      <div class="legend"><span class="l-d">кратные 4: 4, 8, 12, 16, 20, 24</span><span class="l-k">кратные 6: 6, 12, 18, 24</span></div>
+      <p class="cap">Цвета впервые совпали на 12 — это НОК(4, 6). А где они встретятся в следующий раз? На 24 — но это уже не наименьшее, а просто следующее общее кратное.</p>
+    </div>
+
+    <div class="note">
+      <p><b>Сначала предскажи, потом считай.</b> Не считая, ответь: НОД(15, 30) больше или меньше 15? А НОК? Теперь посчитай.</p>
+      <p>Ответ: НОД = 15, НОК = 30. Почему так? Одно число делит другое: 30 делится на 15 нацело. Тогда меньшее само оказывается наибольшим общим делителем, а большее — наименьшим общим кратным.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Тренажёр — <span class="em">бесконечная практика</span></h2>
+    <p>Три типа заданий вперемешку: найти НОД, найти НОК и понять по тексту задачи, что вообще ищут. Решай сам, потом проверяй — в разборе будет и разложение, и картинка с кругами.</p>
+    <div class="trainer">
+      <div class="tr-task" id="trTask">Найди НОД чисел <span class="nums">24</span> и <span class="nums">36</span></div>
+      <div class="tr-pick" id="trPick" hidden>
+        <button type="button" data-w="nod">это НОД</button>
+        <button type="button" data-w="nok">это НОК</button>
+      </div>
+      <div class="tr-ctl">
+        <input id="trAns" type="text" inputmode="numeric" autocomplete="off" placeholder="ответ — число" aria-label="Ответ">
+        <button class="go" id="trCheck" type="button">Проверить</button>
+        <button class="sh" id="trShow" type="button">Показать решение</button>
+        <button class="nw" id="trNew" type="button">🎲 Новое</button>
+      </div>
+      <div class="tr-res" id="trRes"></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Проверь себя</h2>
+    <p>Сначала решаешь сам, потом раскрываешь ответ. Не подглядывай раньше времени 🙂</p>
+
+    <p class="lvl">Понимание</p>
+    <div class="drill">
+      <details>
+        <summary><span class="q">1) Назови все делители числа <span class="mono">12</span> и все делители числа <span class="mono">18</span>. Какие из них общие? Какой самый большой?</span></summary>
+        <div class="ans">Делители 12: <span class="mono">1, 2, 3, 4, 6, 12</span>. Делители 18: <span class="mono">1, 2, 3, 6, 9, 18</span>. Общие: <span class="mono">1, 2, 3, 6</span>. Самый большой — <b>6</b>, это и есть НОД(12, 18).</div>
+      </details>
+      <details>
+        <summary><span class="q">2) Закончи фразу: «НОК — это самое маленькое число, которое делится и на …, и на …».</span></summary>
+        <div class="ans">«…и на первое число, и на второе». То есть НОК(a, b) — самое маленькое (не ноль) число, которое делится и на <b>a</b>, и на <b>b</b>.</div>
+      </details>
+    </div>
+
+    <p class="lvl">Применение</p>
+    <div class="drill">
+      <details>
+        <summary><span class="q">3) Найди НОД и НОК чисел <span class="mono">20</span> и <span class="mono">50</span>.</span></summary>
+        <div class="ans"><span class="mono">20 = 2 · 2 · 5</span>, <span class="mono">50 = 2 · 5 · 5</span>. Общие множители: 2 и 5 → <b>НОД = 10</b>. Всё из 20 плюс недостающая пятёрка из 50: <span class="mono">2 · 2 · 5 · 5</span> → <b>НОК = 100</b>. Проверка: <span class="mono">10 · 100 = 1000</span> и <span class="mono">20 · 50 = 1000</span>.</div>
+      </details>
+      <details>
+        <summary><span class="q">4) Один светофор мигает каждые <span class="mono">6</span> секунд, другой — каждые <span class="mono">8</span>. Сейчас мигнули вместе. Через сколько секунд мигнут вместе снова?</span></summary>
+        <div class="ans">«Мигнут вместе» → сходятся вместе → ищем <b>НОК</b>. <span class="mono">6 = 2 · 3</span>, <span class="mono">8 = 2 · 2 · 2</span>. НОК = <span class="mono">2 · 2 · 2 · 3 = 24</span>. Ответ: через <b>24 секунды</b>.</div>
+      </details>
+    </div>
+
+    <p class="lvl">Анализ</p>
+    <div class="drill">
+      <details>
+        <summary><span class="q">5) Что изменится, если у двух чисел НЕТ общих простых множителей? Чему тогда равны НОД и НОК?</span></summary>
+        <div class="ans">В середине кругов пусто — общих множителей нет, перемножать нечего, поэтому <b>НОД = 1</b>. А НОК приходится взять все множители обоих чисел, то есть <b>НОК = a · b</b>. Такие числа называют <b>взаимно простыми</b>.</div>
+      </details>
+      <details>
+        <summary><span class="q">6) Найди ошибку: ученик написал «НОД(12, 8) = 24, НОК(12, 8) = 4». В чём он перепутал?</span></summary>
+        <div class="ans">Он <b>поменял НОД и НОК местами</b>. Видно сразу, даже без счёта: НОД не может быть больше самих чисел, а 24 больше и 12, и 8. Правильно так: <b>НОД(12, 8) = 4</b>, <b>НОК(12, 8) = 24</b>.</div>
+      </details>
+      <details>
+        <summary><span class="q">7) Обратная задача: НОД двух чисел = <span class="mono">6</span>, одно из чисел = <span class="mono">18</span>, а НОК = <span class="mono">36</span>. Найди второе число.</span></summary>
+        <div class="ans">Используем связь <span class="mono">a · b = НОД · НОК</span>. Значит <span class="mono">18 · b = 6 · 36 = 216</span>, откуда <span class="mono">b = 216 : 18 = 12</span>. Второе число — <b>12</b>. Проверим: НОД(18, 12) = 6, НОК(18, 12) = 36 — сходится.</div>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <h2>Ловушки — не попадись</h2>
+    <ul class="traps">
+      <li><b>Путаешь НОД и НОК.</b> Запомни лесенку: НОД — наибольший Общий Делитель, он <b>маленький</b> (≤ меньшего из чисел); НОК — наименьшее Общее Кратное, оно <b>большое</b> (≥ большего из чисел). Если у тебя НОД получился больше самих чисел — это точно ошибка.</li>
+      <li><b>Для НОК берёшь только общие множители.</b> Только общие — это правило для НОД. Для НОК нужны ВСЕ множители, включая необщие.</li>
+      <li><b>Для НОД берёшь все множители подряд.</b> Наоборот: для НОД — только ОБЩИЕ, и каждый в наименьшем количестве.</li>
+      <li><b>Берёшь произведение чисел вместо НОК.</b> Произведение <span class="mono">a · b</span> — это всегда какое-то общее кратное, но не обязательно НАИМЕНЬШЕЕ. Оно равно НОК только у взаимно простых чисел. Для 24 и 36 произведение равно 864, а НОК = 72.</li>
+      <li><b>Забываешь разложить до простых.</b> Остановился на «24 = 4 · 6» — и легко потерял множители. Раскладывай до конца, до простых чисел.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Объясни своими словами</h2>
+    <p>Закрой урок и ответь вслух — себе, другу, родителям. Объяснил — тема твоя.</p>
+    <div class="selfcheck">
+      <ol>
+        <li>Чем НОД отличается от НОК одним словом про размер: какой обычно маленький, какой большой?</li>
+        <li>Найди НОД и НОК чисел <span class="mono">9</span> и <span class="mono">12</span>.</li>
+        <li>Если НОД(a, b) = 1, как называют такие числа и чему равен их НОК?</li>
+      </ol>
+      <details>
+        <summary><span class="q">Сверить ответы</span></summary>
+        <div class="ans">
+          <b>1.</b> НОД маленький (не больше меньшего числа), НОК большой (не меньше большего).<br>
+          <b>2.</b> <span class="mono">9 = 3 · 3</span>, <span class="mono">12 = 2 · 2 · 3</span>. Общая — одна тройка, значит <b>НОД = 3</b>. Все множители: <span class="mono">2 · 2 · 3 · 3</span>, значит <b>НОК = 36</b>. Проверка: <span class="mono">3 · 36 = 108</span> и <span class="mono">9 · 12 = 108</span>.<br>
+          <b>3.</b> Такие числа называют <b>взаимно простыми</b>, и их <b>НОК = a · b</b>.
+        </div>
+      </details>
+    </div>
+  </section>
+
+  <div class="wrapup">
+    <h2>Запомни главное</h2>
+    <p class="big-rule">НОД — только общие множители, он маленький.<br>НОК — все множители, он большой.</p>
+    <p>Разложи оба числа на простые множители, нарисуй два круга — и середина даст тебе НОД, а вся картинка целиком даст НОК. Перемножил ответы и получил <span class="mono" style="color:#fff">a · b</span> — значит всё верно.</p>
+    <p class="next">👉 Дальше НОК будет работать каждый день: с его помощью дроби <strong>приводят к общему знаменателю</strong> — и только после этого их можно сравнивать, складывать и вычитать.</p>
+  </div>
+
+</div>
+
+<script>
+(function(){
+  var taskEl=document.getElementById('trTask'), pickEl=document.getElementById('trPick');
+  var ansEl=document.getElementById('trAns'), resEl=document.getElementById('trRes');
+  if(!taskEl) return;
+  var cur=null, picked=null;
+
+  function ri(a,b){ return Math.floor(Math.random()*(b-a+1))+a; }
+  function gcd(a,b){ while(b){ var t=a%b; a=b; b=t; } return a; }
+  function lcm(a,b){ return a/gcd(a,b)*b; }
+  function factorize(n){ var f=[],d=2; while(d*d<=n){ while(n%d===0){ f.push(d); n=n/d; } d++; } if(n>1) f.push(n); return f; }
+  function prod(arr){ return arr.reduce(function(p,x){return p*x;},1); }
+  function joinF(arr){ return arr.length? arr.join(' · ') : '—'; }
+  function split(a,b){
+    var fa=factorize(a), fb=factorize(b), rest=fb.slice(), com=[], onlyA=[];
+    fa.forEach(function(p){ var i=rest.indexOf(p); if(i>=0){ com.push(p); rest.splice(i,1); } else onlyA.push(p); });
+    return {fa:fa,fb:fb,com:com,onlyA:onlyA,onlyB:rest};
+  }
+
+  /* --- генератор пар чисел --- */
+  function pair(){
+    var r=Math.random(), a,b,t;
+    if(r<0.6){                       // обычный случай: общий множитель есть
+      var g=ri(2,12), m, n, guard=0;
+      do{ m=ri(2,9); n=ri(2,9); guard++; } while((m===n || gcd(m,n)!==1) && guard<80);
+      if(m===n||gcd(m,n)!==1){ m=2; n=3; }
+      a=g*m; b=g*n;
+    } else if(r<0.8){                // краевой: взаимно простые
+      var guard2=0;
+      do{ a=ri(3,20); b=ri(3,20); guard2++; } while((a===b || gcd(a,b)!==1) && guard2<120);
+      if(a===b||gcd(a,b)!==1){ a=8; b=15; }
+    } else {                         // краевой: одно делится на другое
+      a=ri(2,15); b=a*ri(2,6);
+    }
+    if(a>b){ t=a; a=b; b=t; }
+    return [a,b];
+  }
+
+  var WORDS=[
+    { w:'nod', txt:function(a,b){ return 'У тебя <span class="nums">'+a+'</span> карандашей и <span class="nums">'+b+'</span> ручек. Надо разложить их в одинаковые наборы поровну, без остатка, и наборов сделать как можно больше. Сколько получится наборов?'; },
+      why:'«Разложить поровну на части, наборов как можно больше» — это делим на части, значит ищем НОД.' },
+    { w:'nok', txt:function(a,b){ return 'Один автобус приходит каждые <span class="nums">'+a+'</span> минут, второй — каждые <span class="nums">'+b+'</span> минут. Сейчас они пришли вместе. Через сколько минут они снова встретятся?'; },
+      why:'«Снова встретятся» — это сходятся вместе, значит ищем НОК.' },
+    { w:'nok', txt:function(a,b){ return 'Один светофор мигает каждые <span class="nums">'+a+'</span> секунд, другой — каждые <span class="nums">'+b+'</span> секунд. Сейчас мигнули вместе. Через сколько секунд они мигнут вместе снова?'; },
+      why:'«Мигнут вместе снова» — это сходятся вместе, значит ищем НОК.' }
+  ];
+
+  function makeTask(force){
+    var kind = force || ['nod','nok','word'][ri(0,2)];
+    var p=pair(), a=p[0], b=p[1];
+    var q={kind:kind, a:a, b:b, nod:gcd(a,b), nok:lcm(a,b)};
+    if(kind==='word'){
+      var w=WORDS[ri(0,WORDS.length-1)];
+      if(w.w==='nok' && b>60){ p=pair(); if(p[1]>60){ p=[6,8]; } q.a=p[0]; q.b=p[1]; q.nod=gcd(q.a,q.b); q.nok=lcm(q.a,q.b); }
+      q.word=w; q.want=w.w;
+    } else {
+      q.want=kind;
+    }
+    q.answer = (q.want==='nod') ? q.nod : q.nok;
+    return q;
+  }
+
+  function render(q){
+    cur=q; picked=null; ansEl.value=''; resEl.innerHTML='';
+    Array.prototype.forEach.call(pickEl.children,function(b){ b.classList.remove('on'); });
+    if(q.kind==='word'){
+      taskEl.innerHTML=q.word.txt(q.a,q.b)+'<div style="font-size:.88rem;color:var(--muted);font-weight:500;margin-top:.5rem">Сначала выбери, что ищем, потом введи число.</div>';
+      pickEl.hidden=false;
+    } else {
+      taskEl.innerHTML='Найди <b>'+(q.kind==='nod'?'НОД':'НОК')+'</b> чисел <span class="nums">'+q.a+'</span> и <span class="nums">'+q.b+'</span>';
+      pickEl.hidden=true;
+    }
+  }
+
+  /* --- картинка с кругами для разбора --- */
+  function venn(s){
+    var L=joinF(s.onlyA), C=joinF(s.com), R=joinF(s.onlyB);
+    return '<svg viewBox="0 0 340 190" role="img" aria-label="Круги множителей: слева '+L+', в середине '+C+', справа '+R+'">'+
+      '<circle cx="128" cy="95" r="82" fill="#E4F1EC" fill-opacity=".75" stroke="#B9DDD0" stroke-width="2"/>'+
+      '<circle cx="212" cy="95" r="82" fill="#FBECDF" fill-opacity=".6" stroke="#F0CFB0" stroke-width="2"/>'+
+      '<text x="58" y="24" text-anchor="middle" font-family="ui-monospace,Menlo,monospace" font-size="17" font-weight="700" fill="#2E7D63">'+s.a+'</text>'+
+      '<text x="282" y="24" text-anchor="middle" font-family="ui-monospace,Menlo,monospace" font-size="17" font-weight="700" fill="#C2661F">'+s.b+'</text>'+
+      '<text x="66" y="88" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" fill="#6B6473">только у '+s.a+'</text>'+
+      '<text x="66" y="112" text-anchor="middle" font-family="ui-monospace,Menlo,monospace" font-size="15" font-weight="800" fill="#2E7D63">'+L+'</text>'+
+      '<text x="274" y="88" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" fill="#6B6473">только у '+s.b+'</text>'+
+      '<text x="274" y="112" text-anchor="middle" font-family="ui-monospace,Menlo,monospace" font-size="15" font-weight="800" fill="#C2661F">'+R+'</text>'+
+      '<text x="170" y="86" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" fill="#6B6473">общие</text>'+
+      '<text x="170" y="110" text-anchor="middle" font-family="ui-monospace,Menlo,monospace" font-size="15" font-weight="800" fill="#26202E">'+C+'</text>'+
+      '<text x="170" y="182" text-anchor="middle" font-family="system-ui,sans-serif" font-size="12" fill="#6B6473">середина → НОД · вся картинка → НОК</text>'+
+      '</svg>';
+  }
+
+  function solutionHTML(){
+    var q=cur, s=split(q.a,q.b); s.a=q.a; s.b=q.b;
+    var h='<div class="tr-sol">';
+    if(q.kind==='word'){
+      h+='<div class="row"><b>Что ищем.</b> '+q.word.why+'</div>';
+    }
+    h+='<div class="row"><span class="mono">'+q.a+' = '+joinF(s.fa)+'</span></div>';
+    h+='<div class="row"><span class="mono">'+q.b+' = '+joinF(s.fb)+'</span></div>';
+    h+=venn(s);
+    if(s.com.length===0){
+      h+='<div class="row">Общих множителей нет — середина пустая. Числа <b>взаимно простые</b>.</div>';
+      h+='<div class="row"><span class="d">НОД = 1</span></div>';
+      h+='<div class="row"><span class="k">НОК = '+q.a+' · '+q.b+' = '+q.nok+'</span> (для взаимно простых НОК равен произведению)</div>';
+    } else if(q.b%q.a===0){
+      h+='<div class="row">Заметь: <span class="mono">'+q.b+'</span> делится на <span class="mono">'+q.a+'</span> нацело. Все множители меньшего числа целиком входят в большее.</div>';
+      h+='<div class="row"><span class="d">НОД = '+q.a+'</span> — это само меньшее число</div>';
+      h+='<div class="row"><span class="k">НОК = '+q.b+'</span> — это само большее число</div>';
+    } else {
+      h+='<div class="row">Общие множители (середина): <span class="mono">'+joinF(s.com)+'</span></div>';
+      h+='<div class="row"><span class="d">НОД = '+joinF(s.com)+' = '+q.nod+'</span></div>';
+      h+='<div class="row">Все множители — всё из '+q.a+' плюс недостающие из '+q.b+': <span class="mono">'+joinF(s.fa.concat(s.onlyB))+'</span></div>';
+      h+='<div class="row"><span class="k">НОК = '+joinF(s.fa.concat(s.onlyB))+' = '+q.nok+'</span></div>';
+    }
+    h+='<div class="row">Проверка: НОД · НОК = '+q.nod+' · '+q.nok+' = '+(q.nod*q.nok)+', и '+q.a+' · '+q.b+' = '+(q.a*q.b)+'. Сходится.</div>';
+    if(q.kind==='word'){
+      h+='<div class="row"><b>Ответ на задачу: '+q.answer+'</b></div>';
+    }
+    return h+'</div>';
+  }
+
+  function check(){
+    var q=cur, raw=ansEl.value.trim().replace(',','.');
+    if(q.kind==='word' && !picked){
+      resEl.innerHTML='<div class="head no">Сначала выбери: это задача на НОД или на НОК?</div>'; return;
+    }
+    if(!raw){
+      resEl.innerHTML='<div class="head no">Введи ответ числом или нажми «Показать решение».</div>'; return;
+    }
+    var got=parseFloat(raw);
+    if(isNaN(got)){
+      resEl.innerHTML='<div class="head no">Не понял запись — нужно одно число, например 12.</div>'; return;
+    }
+    var wantOk = (q.kind!=='word') || (picked===q.want);
+    var numOk = Math.abs(got-q.answer)<1e-9;
+    if(wantOk && numOk){
+      resEl.innerHTML='<div class="head ok">✓ Верно!</div>'+solutionHTML();
+    } else if(!wantOk){
+      resEl.innerHTML='<div class="head no">✗ Выбран не тот инструмент. '+q.word.why+'</div>'+solutionHTML();
+    } else {
+      var hint='';
+      if(got===q.a*q.b && q.want==='nok') hint=' Ты взял произведение чисел — это общее кратное, но не наименьшее.';
+      else if(got===q.nok && q.want==='nod') hint=' Похоже, ты посчитал НОК вместо НОД.';
+      else if(got===q.nod && q.want==='nok') hint=' Похоже, ты посчитал НОД вместо НОК.';
+      else if(q.want==='nod' && got>q.a) hint=' НОД не может быть больше меньшего из чисел.';
+      else if(q.want==='nok' && got<q.b) hint=' НОК не может быть меньше большего из чисел.';
+      resEl.innerHTML='<div class="head no">✗ Пока не то.'+hint+'</div>'+solutionHTML();
+    }
+  }
+
+  Array.prototype.forEach.call(pickEl.children,function(b){
+    b.addEventListener('click',function(){
+      picked=b.getAttribute('data-w');
+      Array.prototype.forEach.call(pickEl.children,function(x){ x.classList.remove('on'); });
+      b.classList.add('on');
+    });
+  });
+  document.getElementById('trCheck').addEventListener('click',check);
+  document.getElementById('trShow').addEventListener('click',function(){
+    resEl.innerHTML='<div class="head info">Разбор:</div>'+solutionHTML();
+  });
+  document.getElementById('trNew').addEventListener('click',function(){
+    render(makeTask()); ansEl.focus();
+  });
+  ansEl.addEventListener('keydown',function(e){ if(e.key==='Enter') check(); });
+
+  /* стартовая задача — та же, что в эталонном разборе, без автофокуса */
+  render({kind:'nod',a:24,b:36,nod:12,nok:72,want:'nod',answer:12});
+})();
+</script>
+<!--LESSON-NAV-BOT--><nav class="lnav lnav-bot"><a class="prev" href="./m5-razlozhenie-na-mnozhiteli.html"><span class="dir">← Предыдущая</span><span class="ttl">Разложение числа на простые множители</span></a><a class="to-cat" href="./catalog.html">📚 <span>Все темы</span></a><a class="next" href="./m5-obyknovennye-drobi-smysl.html"><span class="dir">Следующая →</span><span class="ttl">Доли и смысл обыкновенной дроби</span></a></nav><!--/LESSON-NAV-BOT-->

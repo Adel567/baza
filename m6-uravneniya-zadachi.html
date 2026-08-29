@@ -1,0 +1,713 @@
+<!doctype html>
+<!-- humanized: humanizer-ru, 2026-08-29, тире возвращено -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Решение задач с помощью уравнений — 6 класс</title>
+<style>
+  :root{
+    --paper:#FAF9F6;
+    --card:#FFFFFF;
+    --ink:#20242E;
+    --muted:#666E7D;
+    --line:#E4E6EC;
+    --brand:#2F4E9E;          /* основной */
+    --brand-soft:#E7ECF8;
+    --brand-line:#C4D0EE;
+    --mul:#2F4E9E;            /* «в … раз больше» — умножаем */
+    --mul-soft:#E7ECF8;
+    --mul-line:#C4D0EE;
+    --add:#C2661C;            /* «на … больше» — прибавляем */
+    --add-soft:#FBEEE1;
+    --add-line:#F0D2B4;
+    --ok:#2E8B57;
+    --no:#C23B3B;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper)}
+  .page{
+    max-width:720px;margin:0 auto;
+    padding:clamp(1.4rem,4vw,3rem) clamp(1.1rem,4vw,2rem) 4.5rem;
+    color:var(--ink);
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    font-size:17.5px;line-height:1.68;-webkit-font-smoothing:antialiased;
+  }
+  .mono{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-variant-numeric:tabular-nums;font-weight:600}
+
+  .hero{border-bottom:3px solid var(--brand);padding-bottom:1.4rem;margin-bottom:1.8rem}
+  .eyebrow{font-size:.74rem;letter-spacing:.15em;text-transform:uppercase;color:var(--brand);font-weight:700;margin:0 0 .55rem}
+  h1{font-size:clamp(1.9rem,6.2vw,2.9rem);line-height:1.05;margin:0;font-weight:800;letter-spacing:-.02em;text-wrap:balance}
+  .tagline{font-size:1.12rem;color:var(--muted);margin:.85rem 0 0;text-wrap:pretty}
+
+  section{margin-top:2.4rem}
+  h2{font-size:1.5rem;margin:0 0 .3rem;font-weight:780;letter-spacing:-.015em;text-wrap:balance}
+  h2 .em{color:var(--brand)}
+  h3{font-size:1.1rem;margin:1.3rem 0 .2rem;font-weight:750}
+  p{margin:.7rem 0}
+  strong{font-weight:680}
+
+  .lead-in{background:var(--brand-soft);border-radius:14px;padding:1.1rem 1.3rem;font-size:1.02rem}
+  .lead-in p{margin:.4rem 0}
+  .lead-in b{color:var(--brand)}
+
+  .where{display:flex;flex-wrap:wrap;gap:.4rem;margin:.9rem 0 .2rem}
+  .where span{background:var(--card);border:1px solid var(--line);border-radius:999px;padding:.25rem .8rem;font-size:.9rem}
+
+  .recall{background:var(--card);border:1px dashed var(--brand-line);border-radius:14px;padding:1rem 1.2rem}
+  .recall .cap{font-size:.72rem;letter-spacing:.11em;text-transform:uppercase;font-weight:700;color:var(--brand);margin:0 0 .4rem}
+  .recall ul{margin:.4rem 0 0;padding-left:1.2rem}
+  .recall li{margin:.3rem 0;font-size:.98rem}
+
+  /* Три шага */
+  .steps{display:flex;flex-direction:column;gap:.7rem;margin-top:1rem}
+  .step{display:flex;gap:1rem;background:var(--card);border:1px solid var(--line);border-radius:13px;padding:.95rem 1.1rem}
+  .step .n{flex:none;width:2rem;height:2rem;border-radius:50%;background:var(--brand);color:#fff;font-weight:800;display:flex;align-items:center;justify-content:center;font-size:1rem}
+  .step .txt b{font-weight:750}
+  .step .txt{font-size:.99rem}
+  .step .txt p{margin:.25rem 0}
+
+  /* Словарик перевода */
+  .dict{display:grid;gap:.8rem;margin-top:1rem}
+  @media(min-width:600px){.dict{grid-template-columns:1fr 1fr}}
+  .dc{border-radius:15px;padding:1.05rem 1.2rem;border:2px solid}
+  .dc.mul{background:var(--mul-soft);border-color:var(--mul-line)}
+  .dc.add{background:var(--add-soft);border-color:var(--add-line)}
+  .dc .cap{font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;font-weight:700;margin:0}
+  .dc.mul .cap{color:var(--mul)} .dc.add .cap{color:var(--add)}
+  .dc h3{margin:.15rem 0 .45rem;font-size:1.22rem;font-weight:800}
+  .dc p{margin:.25rem 0;font-size:.96rem}
+  .dc .big{font-family:ui-monospace,Menlo,monospace;font-weight:800;font-size:1.35rem;display:block;margin:.35rem 0}
+  .dc.mul .big{color:var(--mul)} .dc.add .big{color:var(--add)}
+
+  .note{border-left:4px solid var(--brand);background:var(--brand-soft);border-radius:0 10px 10px 0;padding:.8rem 1.1rem;margin-top:1rem;font-size:.98rem}
+  .note b{color:var(--brand)}
+
+  /* Эталонный разбор */
+  .walk{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.15rem 1.3rem;margin-top:1rem}
+  .walk .q{font-size:1.02rem;font-weight:700;margin:0 0 .9rem;padding-bottom:.7rem;border-bottom:1px solid var(--line)}
+  .walk ol{list-style:none;margin:0;padding:0;counter-reset:w;display:flex;flex-direction:column;gap:.75rem}
+  .walk li{position:relative;padding-left:1.9rem;font-size:.99rem;counter-increment:w}
+  .walk li::before{content:counter(w);position:absolute;left:0;top:.1rem;width:1.35rem;height:1.35rem;border-radius:50%;background:var(--brand-soft);color:var(--brand);font-size:.75rem;font-weight:800;display:flex;align-items:center;justify-content:center}
+  .walk .why{display:block;color:var(--muted);font-size:.88rem;margin-top:.15rem}
+  .verdict{margin-top:1.1rem;padding:.75rem 1rem;background:var(--brand-soft);border-radius:10px;font-weight:650;color:var(--brand);font-size:1rem}
+
+  .fill{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.05rem 1.2rem;margin-top:1rem}
+  .fill .q{font-weight:700;margin:0 0 .6rem}
+  .fill ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:.45rem;font-size:.98rem}
+  .gap{display:inline-block;min-width:2.6rem;border-bottom:2px solid var(--add);vertical-align:baseline}
+
+  .task{background:var(--card);border-left:4px solid var(--brand);border-radius:0 12px 12px 0;padding:.85rem 1.1rem;margin-top:1rem;font-size:1.03rem;font-weight:650}
+
+  /* Бар-модель ASCII */
+  .bars{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:.9rem 1.1rem;margin-top:1rem;overflow-x:auto}
+  .bars pre{margin:0;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.95rem;line-height:1.6}
+
+  /* Симулятор */
+  .sim{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:1.2rem 1.2rem 1rem;margin-top:1rem}
+  .sim canvas{width:100%;height:auto;display:block;border-radius:10px;background:var(--paper)}
+  .sim .ctrls{display:flex;flex-direction:column;gap:.75rem;margin-top:1rem}
+  .sim .row{display:flex;align-items:center;gap:.8rem;flex-wrap:wrap}
+  .sim label{font-size:.92rem;font-weight:650;min-width:9.5rem}
+  .sim input[type=range]{flex:1;min-width:140px;accent-color:var(--brand)}
+  .sim input[type=range]:focus-visible{outline:2px solid var(--brand);outline-offset:3px}
+  .sim .val{font-family:ui-monospace,Menlo,monospace;font-weight:800;color:var(--brand);min-width:2.5rem;text-align:right}
+  .sim .eq{margin-top:1rem;background:var(--brand-soft);border-radius:10px;padding:.75rem 1rem;font-family:ui-monospace,Menlo,monospace;font-size:.97rem;font-weight:700;color:var(--brand);overflow-x:auto}
+  .sim .warn{margin-top:.7rem;background:var(--add-soft);border:1px solid var(--add-line);border-radius:10px;padding:.65rem .95rem;font-size:.92rem;color:#8A4A12}
+
+  /* Практика */
+  .drill{display:flex;flex-direction:column;gap:.7rem;margin-top:1rem}
+  details{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:.9rem 1.1rem}
+  details[open]{border-color:var(--brand)}
+  summary{cursor:pointer;font-weight:650;list-style:none;display:flex;justify-content:space-between;gap:1rem;align-items:flex-start}
+  summary::-webkit-details-marker{display:none}
+  summary:focus-visible{outline:2px solid var(--brand);outline-offset:3px;border-radius:6px}
+  summary .q{font-size:1rem}
+  summary::after{content:"ответ";font-size:.8rem;color:var(--brand);font-weight:700;white-space:nowrap;padding-top:.2rem}
+  details[open] summary::after{content:"скрыть"}
+  .ans{margin-top:.75rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.96rem;color:var(--muted)}
+  .ans b{color:var(--ink)}
+  .lvl{font-size:.68rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--brand);display:block;margin-bottom:.2rem}
+
+  /* Ловушки */
+  ul.traps{list-style:none;margin:1rem 0 0;padding:0;display:flex;flex-direction:column;gap:.7rem}
+  ul.traps li{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:.85rem 1.05rem;padding-left:2.5rem;position:relative;font-size:.97rem}
+  ul.traps li::before{content:"⚠";position:absolute;left:1rem;top:.85rem;color:var(--add);font-size:1.05rem}
+  ul.traps b{font-weight:700}
+  ul.traps .fix{display:block;margin-top:.3rem;color:var(--muted);font-size:.92rem}
+
+  .self{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1rem 1.2rem;margin-top:1rem}
+  .self ol{margin:.3rem 0;padding-left:1.3rem}
+  .self li{margin:.45rem 0;font-size:.99rem}
+
+  .wrapup{background:var(--brand);color:#fff;border-radius:16px;padding:1.4rem 1.5rem;margin-top:2.4rem}
+  .wrapup h2{color:#fff;margin:0 0 .5rem}
+  .wrapup p{color:#E4EAF7;margin:.4rem 0;font-size:1rem}
+  .wrapup .big-rule{font-size:1.08rem;font-weight:700;color:#fff;margin:.6rem 0}
+  .wrapup .next{font-size:.95rem;color:#C6D3EE;margin-top:1rem;padding-top:1rem;border-top:1px solid rgba(255,255,255,.22)}
+
+  /* Тренажёр */
+  .trainer{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:1.3rem 1.3rem 1.2rem;margin-top:1rem}
+  .tr-task{font-size:1.06rem;line-height:1.6;margin:0 0 .3rem}
+  .tr-ask{font-weight:700;margin:.7rem 0 1rem}
+  .tr-in{display:flex;gap:.5rem;flex-wrap:wrap;align-items:center;margin-bottom:1rem}
+  .tr-in input{font:inherit;font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.05rem;width:8rem;padding:.5rem .7rem;border:2px solid var(--line);border-radius:10px;background:var(--paper);color:var(--ink)}
+  .tr-in input:focus-visible{outline:2px solid var(--brand);outline-offset:2px;border-color:var(--brand-line)}
+  .tr-in .unit{color:var(--muted);font-size:.92rem}
+  .tr-btns{display:flex;gap:.5rem;flex-wrap:wrap}
+  .tr-btns button{font:inherit;font-weight:700;font-size:.92rem;border-radius:10px;padding:.55rem 1.1rem;cursor:pointer;border:1px solid transparent}
+  .tr-btns .go{background:var(--brand);color:#fff}
+  .tr-btns .sh{background:var(--paper);border:1px solid var(--line);color:var(--ink)}
+  .tr-btns .nw{background:var(--brand-soft);color:var(--brand)}
+  .tr-btns button:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+  .tr-res{margin-top:1.1rem;font-size:.97rem}
+  .tr-res .head{font-weight:700;padding:.6rem .9rem;border-radius:9px;margin-bottom:.7rem}
+  .tr-res .head.ok{background:#E7F4EC;color:var(--ok)}
+  .tr-res .head.no{background:#FBEAEA;color:var(--no)}
+  .tr-res .head.info{background:var(--brand-soft);color:var(--brand)}
+  .tr-sol{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:.85rem 1rem}
+  .tr-sol .row{margin:.35rem 0;font-size:.95rem}
+  .tr-sol .row .mono{color:var(--ink)}
+  .tr-sol .row .why{color:var(--muted);font-size:.87rem}
+  .tr-sol .fin{margin-top:.6rem;padding-top:.55rem;border-top:1px dashed var(--line);font-weight:700}
+
+  @media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+<!--LESSON-NAV-TOP--><style>.lnav{--lnav-accent:#3D5AF1}.lnav a{text-decoration:none;font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif}.lnav-top{max-width:820px;margin:0 auto;padding:.75rem clamp(1rem,4vw,1.5rem) .1rem}.lnav-top a{display:inline-flex;align-items:center;gap:.35rem;color:var(--lnav-accent);font-weight:600;font-size:.9rem}.lnav-top a:hover{text-decoration:underline}.lnav-bot{max-width:820px;margin:2.6rem auto 3rem;padding:1.1rem clamp(1rem,4vw,1.5rem) 0;border-top:1px solid #E4E8EF;display:flex;align-items:stretch;gap:.55rem}.lnav-bot a{min-width:0;display:flex;flex-direction:column;justify-content:center;gap:.15rem;border:1px solid #E4E8EF;border-radius:12px;padding:.65rem .85rem;color:#182233;background:#fff;transition:border-color .1s,transform .08s}.lnav-bot a:hover{border-color:var(--lnav-accent);transform:translateY(-1px)}.lnav-bot .prev,.lnav-bot .next{flex:1 1 0}.lnav-bot .next{text-align:right}.lnav-bot .dir{font-size:.72rem;color:#8A93A6;font-weight:600}.lnav-bot .ttl{font-size:.9rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.lnav-bot .to-cat{flex:0 0 auto;flex-direction:row;align-items:center;justify-content:center;color:var(--lnav-accent);font-weight:700;font-size:.85rem;white-space:nowrap}@media(max-width:420px){.lnav-bot .to-cat span{display:none}.lnav-bot .to-cat{padding:.65rem .7rem}}</style><nav class="lnav lnav-top"><a href="./catalog.html">← Все темы</a></nav><!--/LESSON-NAV-TOP-->
+<div class="page">
+
+  <header class="hero">
+    <p class="eyebrow">Математика · 6 класс</p>
+    <h1>Решаем задачи<br>с помощью уравнений</h1>
+    <p class="tagline">Переводим обычный текст на язык математики, а дальше уравнение считает за тебя.</p>
+  </header>
+
+  <div class="lead-in">
+    <p><b>Зачем это нужно.</b> Куча задач устроена одинаково: дано целое, дана связь между частями, найди неизвестное. Можно подбирать наугад, но это долго и легко промахнуться.</p>
+    <p>Уравнение — короткая запись условия, которая сама выдаёт ответ. Обозначь неизвестное буквой и запиши то, что и так сказано в задаче. Всё.</p>
+    <div class="where">
+      <span>💰 деньги и сдача</span>
+      <span>🎂 возраст</span>
+      <span>🚗 движение</span>
+      <span>🍰 доли и проценты</span>
+      <span>📐 периметр и стороны</span>
+    </div>
+  </div>
+
+  <section>
+    <h2>Сразу разрушим главный миф</h2>
+    <p>Скажешь: <em>«уравнением сложнее, чем по действиям»</em>. Наоборот. Чем больше в задаче связей, тем сильнее уравнение разгружает голову: ты записываешь связь один раз, а дальше за тебя работает алгебра.</p>
+    <p>Плюс в 7 классе на этом навыке стоит вся алгебра. Разобраться дешевле сейчас.</p>
+  </section>
+
+  <section>
+    <h2>Что надо вспомнить перед стартом</h2>
+    <div class="recall">
+      <p class="cap">Освежи в памяти</p>
+      <ul>
+        <li>Что такое <b>линейное уравнение</b> и что значит «решить» его — найти такое число вместо <span class="mono">x</span>, при котором равенство становится верным.</li>
+        <li><b>Перенос слагаемого</b> через знак равенства — со сменой знака: из <span class="mono">2x + 50 = 90</span> получаем <span class="mono">2x = 90 − 50</span>.</li>
+        <li><b>Деление на коэффициент</b> при <span class="mono">x</span>: из <span class="mono">4x = 40</span> получаем <span class="mono">x = 40 : 4 = 10</span>.</li>
+        <li><b>Сложение подобных</b>: <span class="mono">x + 3x = 4x</span>.</li>
+      </ul>
+    </div>
+    <p>Если что-то из этого плывёт — вернись к теме «линейное уравнение». Дальше это нужно буквально на каждом шаге.</p>
+  </section>
+
+  <section>
+    <h2>Ядро темы: <span class="em">три шага</span></h2>
+    <p>Решить задачу уравнением — значит перевести текст на язык математики. Шаги каждый раз одни и те же:</p>
+    <div class="steps">
+      <div class="step">
+        <div class="n">1</div>
+        <div class="txt">
+          <b>Обозначаем неизвестное буквой.</b>
+          <p>Обычно это <span class="mono">x</span>. И сразу пишем <strong>словами</strong>, что за ней стоит: «Пусть <span class="mono">x</span> — количество карандашей во второй коробке».</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="n">2</div>
+        <div class="txt">
+          <b>Составляем уравнение.</b>
+          <p>Остальные величины выражаем через <span class="mono">x</span>, а потом ищем в условии равенство: общая сумма, две равные величины, «стало столько-то». Его и записываем.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="n">3</div>
+        <div class="txt">
+          <b>Решаем и истолковываем.</b>
+          <p>Нашли корень — примерь его <strong>к смыслу задачи</strong>. Людей не бывает 12,5, а длина не бывает отрицательной.</p>
+        </div>
+      </div>
+    </div>
+    <div class="note">
+      <p><b>Главная мысль.</b> Буква <span class="mono">x</span> — заместитель неизвестного числа. Обращаемся с ней как с обычным числом, а в конце уравнение само говорит, чему она равна.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Словарик перевода: <span class="em">«в» или «на»</span></h2>
+    <p>Почти вся сложность темы прячется в двух коротких словах. Запомни разницу намертво:</p>
+    <div class="dict">
+      <div class="dc mul">
+        <p class="cap">Больше в … раз</p>
+        <h3>умножаю</h3>
+        <p>«в 3 раза больше, чем <span class="mono">x</span>»</p>
+        <span class="big">3x</span>
+        <p>Число перед <span class="mono">x</span> и есть «во сколько раз».</p>
+      </div>
+      <div class="dc add">
+        <p class="cap">Больше на …</p>
+        <h3>прибавляю</h3>
+        <p>«на 5 больше, чем <span class="mono">x</span>»</p>
+        <span class="big">x + 5</span>
+        <p>Отдельное слагаемое — это «на сколько больше или меньше».</p>
+      </div>
+    </div>
+    <p>Что брать за <span class="mono">x</span>? То, что спрашивают, либо величину, через которую <strong>проще всего выразить остальные</strong>. Рубли, годы и сантиметры держим в уме: в уравнение идут только числа.</p>
+  </section>
+
+  <section>
+    <h2>Эталонный разбор — <span class="em">думаю вслух</span></h2>
+    <p class="task">В двух коробках 40 карандашей. В первой в 3 раза больше, чем во второй. Сколько карандашей в каждой коробке?</p>
+    <div class="walk">
+      <p class="q">Смотри, что у меня в голове на каждом шаге:</p>
+      <ol>
+        <li>Пусть во второй коробке <span class="mono">x</span> карандашей.
+          <span class="why">Почему вторая? Она меньшая, через неё легко выразить большую. Возьмёшь за <span class="mono">x</span> первую — придётся делить, и запись разбухнет.</span></li>
+        <li>Тогда в первой — <span class="mono">3x</span>.
+          <span class="why">«В 3 раза больше» — умножаем на 3. Не прибавляем тройку.</span></li>
+        <li>Всего: <span class="mono">x + 3x = 40</span>.
+          <span class="why">Вот она, главная связь: обе коробки вместе дают 40.</span></li>
+        <li><span class="mono">4x = 40</span>.
+          <span class="why">Сложил подобные слагаемые: <span class="mono">x + 3x = 4x</span>.</span></li>
+        <li><span class="mono">x = 40 : 4 = 10</span>.
+          <span class="why">Разделил на коэффициент при <span class="mono">x</span>.</span></li>
+        <li>Вторая коробка — 10, первая — <span class="mono">3 · 10 = 30</span>.
+          <span class="why">Не забудь: <span class="mono">x</span> — только одна из величин, вторую надо досчитать.</span></li>
+        <li>Проверка: <span class="mono">10 + 30 = 40</span> — верно, и оба числа целые и положительные.
+          <span class="why">Карандаши целые, и меньше нуля их не бывает. Здравый смысл не спорит.</span></li>
+      </ol>
+      <div class="verdict">Ответ: 10 и 30 карандашей.</div>
+    </div>
+
+    <h3>Теперь допиши сам</h3>
+    <p>Тот же ход, но часть шагов я оставил тебе. Возьми ручку.</p>
+    <div class="fill">
+      <p class="q">Книга и тетрадь стоят 90 рублей. Книга дороже тетради на 50 рублей. Сколько стоит каждая?</p>
+      <ul>
+        <li>Пусть тетрадь стоит <span class="mono">x</span> рублей, тогда книга — <span class="mono">x + 50</span>.</li>
+        <li>Уравнение: <span class="mono">x + (x + 50) = 90</span>.</li>
+        <li><span class="mono">2x + 50 = 90</span>.</li>
+        <li><span class="mono">2x = 90 − 50 = <span class="gap"></span></span></li>
+        <li><span class="mono">x = <span class="gap"></span> : 2 = <span class="gap"></span></span></li>
+        <li>Тетрадь: <span class="gap"></span> р., книга: <span class="gap"></span> р.</li>
+      </ul>
+      <details style="margin-top:.9rem">
+        <summary><span class="q">Сверить пропуски</span></summary>
+        <div class="ans"><span class="mono">2x = 40</span> (перенесли 50 вправо со сменой знака), <span class="mono">x = 40 : 2 = 20</span>. Значит <b>тетрадь 20 р., книга 70 р.</b> Проверка: <span class="mono">20 + 70 = 90</span>, и книга дороже ровно на 50.</div>
+      </details>
+    </div>
+
+    <h3>А эту реши целиком</h3>
+    <div class="fill">
+      <p class="q">Сейчас отцу 36 лет, а сыну 8. Через сколько лет отец будет в 3 раза старше сына?</p>
+      <p style="font-size:.93rem;color:var(--muted);margin:.3rem 0 0">Подсказка: через <span class="mono">x</span> лет отцу будет <span class="mono">36 + x</span>, а сыну <span class="mono">8 + x</span>. Уравнение: <span class="mono">36 + x = 3 · (8 + x)</span>.</p>
+      <details style="margin-top:.9rem">
+        <summary><span class="q">Показать ответ</span></summary>
+        <div class="ans">Через <b>6 лет</b>: отцу будет 42, сыну 14, и правда <span class="mono">42 = 3 · 14</span>.</div>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <h2>Увидеть уравнение: <span class="em">бар-модель</span></h2>
+    <p>Чтобы увидеть уравнение раньше, чем ты его записал, нарисуй полоски. Неизвестную величину рисуем одним кусочком, остальные — столькими же кусочками или кусочком с довеском.</p>
+    <p>Вернёмся к карандашам (всего 40, в первой коробке в 3 раза больше):</p>
+    <div class="bars">
+<pre>второй: [ x ]
+первый: [ x ][ x ][ x ]
+всего:  └──────── 40 ────────┘   →  4 кусочка = 40</pre>
+    </div>
+    <p>Два вопроса к картинке: <strong>«сколько всего одинаковых кусочков?»</strong> и <strong>«чему равен один?»</strong> После них уравнение <span class="mono">4x = 40</span> уже видно глазами.</p>
+    <p>Полезный приём: сначала прикинь ответ по схеме на глаз, потом подтверди уравнением. Совпало — ты понял связь, а не просто посчитал.</p>
+
+    <h3>Покрути сам</h3>
+    <p>Двигай ползунки: меняй общее количество и то, во сколько раз одна часть больше другой. Следи, как перестраиваются кусочки и как из них вырастает уравнение.</p>
+    <div class="sim">
+      <canvas id="simCv" width="600" height="232" role="img" aria-label="Бар-модель: полоски частей и общая сумма"></canvas>
+      <div class="ctrls">
+        <div class="row">
+          <label for="simS">Всего</label>
+          <input type="range" id="simS" min="10" max="60" step="1" value="40">
+          <span class="val" id="simSv">40</span>
+        </div>
+        <div class="row">
+          <label for="simK">Больше в … раз</label>
+          <input type="range" id="simK" min="2" max="5" step="1" value="3">
+          <span class="val" id="simKv">3</span>
+        </div>
+      </div>
+      <div class="eq" id="simEq"></div>
+      <div id="simWarn"></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Тренажёр — <span class="em">составь уравнение и реши</span></h2>
+    <p>Задачи здесь не кончаются, а тип тот же, что мы разбирали. Схема прежняя: обозначь <span class="mono">x</span>, составь уравнение, реши, ответь. Введи ответ числом и жми проверку — если не сошлось, разбор покажет каждый шаг.</p>
+    <div class="trainer">
+      <p class="tr-task" id="trTask">—</p>
+      <p class="tr-ask" id="trAsk">—</p>
+      <div class="tr-in">
+        <input type="text" id="trIn" inputmode="numeric" autocomplete="off" placeholder="ответ" aria-label="Твой ответ">
+        <span class="unit" id="trUnit"></span>
+      </div>
+      <div class="tr-btns">
+        <button class="go" id="trCheck" type="button">Проверить</button>
+        <button class="sh" id="trShow" type="button">Показать решение</button>
+        <button class="nw" id="trNew" type="button">🎲 Новая задача</button>
+      </div>
+      <div class="tr-res" id="trRes"></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Практика по нарастанию</h2>
+    <p>Сначала реши, потом раскрывай ответ. Подглядывать раньше времени бессмысленно: учит именно возня с задачей 🙂</p>
+    <div class="drill">
+      <details>
+        <summary><span class="q"><span class="lvl">Понимание</span>1) «Задумали число, прибавили 7, получили 19». Как запишется уравнение?</span></summary>
+        <div class="ans"><span class="mono">x + 7 = 19</span>. Здесь <span class="mono">x</span> — задуманное число, а «прибавили 7» превращается в <span class="mono">+ 7</span>.</div>
+      </details>
+      <details>
+        <summary><span class="q"><span class="lvl">Применение</span>2) В классе 28 учеников, девочек на 4 больше, чем мальчиков. Сколько мальчиков? Обозначь мальчиков за <span class="mono">x</span>, составь и реши уравнение.</span></summary>
+        <div class="ans">Пусть мальчиков <span class="mono">x</span>, тогда девочек <span class="mono">x + 4</span> (слово «на» → прибавляем). Уравнение: <span class="mono">x + (x + 4) = 28</span>, то есть <span class="mono">2x + 4 = 28</span>, <span class="mono">2x = 24</span>, <span class="mono">x = 12</span>. <b>Мальчиков 12, девочек 16.</b> Проверка: <span class="mono">12 + 16 = 28</span>, и девочек правда на 4 больше.</div>
+      </details>
+      <details>
+        <summary><span class="q"><span class="lvl">Анализ · что изменится, если…</span>3) В задаче про карандаши слова «в 3 раза больше» заменили на «на 20 больше». Составь новое уравнение и реши. Сравни с прежним ответом.</span></summary>
+        <div class="ans">Теперь во второй коробке <span class="mono">x</span>, а в первой <span class="mono">x + 20</span>. Уравнение: <span class="mono">x + (x + 20) = 40</span>, <span class="mono">2x = 20</span>, <span class="mono">x = 10</span>. Ответ: <b>10 и 30</b> — тот же, что и был! Это совпадение: при <span class="mono">x = 10</span> «в 3 раза больше» и «на 20 больше» дают одно и то же число 30. Уравнения-то разные, и при другом общем количестве ответы разойдутся.</div>
+      </details>
+      <details>
+        <summary><span class="q"><span class="lvl">Анализ · найди ошибку</span>4) К задаче «число и его утроенное дают 24» ученик записал <span class="mono">x · 3 = 24</span> и получил 8. В чём ошибка?</span></summary>
+        <div class="ans">В его уравнении <b>потерялось само число</b>: записано только утроенное. А по условию складываются два слагаемых: число и его утроенное. Верно: <span class="mono">x + 3x = 24</span>, значит <span class="mono">4x = 24</span> и <span class="mono">x = 6</span>. Проверка: <span class="mono">6 + 18 = 24</span>.</div>
+      </details>
+      <details>
+        <summary><span class="q"><span class="lvl">Анализ · обратная задача</span>5) Придумай текстовую задачу, которая решается уравнением <span class="mono">2x + 6 = 30</span>.</span></summary>
+        <div class="ans">Единственного правильного текста тут нет, но твой должен точно ложиться на уравнение: <b>удвоенная неизвестная величина</b>, довесок <b>6</b>, итог <b>30</b>. Проверка простая: перечитай написанное и составь уравнение с нуля. Должно выйти ровно <span class="mono">2x + 6 = 30</span> (корень <span class="mono">x = 12</span>).</div>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <h2>Частые ошибки</h2>
+    <ul class="traps">
+      <li><b>Неверно ввели переменную.</b> Берут за <span class="mono">x</span> не ту величину, и выражения становятся громоздкими.
+        <span class="fix">Как избежать: запиши словами «Пусть <span class="mono">x</span> — это …». Удобнее всего брать меньшую величину или ту, что спрашивают.</span></li>
+      <li><b>Уравнение не соответствует условию.</b> Например, «в 3 раза больше» записывают как <span class="mono">x + 3</span> вместо <span class="mono">3x</span>.
+        <span class="fix">Как избежать: проговаривай вслух — «больше <b>в</b> раз → умножаю, больше <b>на</b> → прибавляю».</span></li>
+      <li><b>Не проверили корень по смыслу.</b> Выходит «учеников 12,5» или «лет −3», и это спокойно записывают в ответ.
+        <span class="fix">Как избежать: подставь ответ обратно в текст задачи и спроси себя — так вообще бывает?</span></li>
+      <li><b>Потеряли скобки</b> в задачах про возраст и доли: пишут <span class="mono">3 · 8 + x</span> вместо <span class="mono">3 · (8 + x)</span>.
+        <span class="fix">Как избежать: множитель относится ко <b>всей сумме</b> — значит скобка обязательна.</span></li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Проверь, что понял</h2>
+    <p>Ответь своими словами, вслух или письменно. Буксуешь на формулировке — вернись к нужному разделу.</p>
+    <div class="self">
+      <ol>
+        <li>Какие три шага нужно сделать, чтобы решить задачу с помощью уравнения?</li>
+        <li>Как записать «число в 4 раза больше <span class="mono">x</span>» и «число на 4 больше <span class="mono">x</span>»? В чём разница?</li>
+        <li>Почему после нахождения корня обязательно проверять его по смыслу задачи?</li>
+      </ol>
+    </div>
+  </section>
+
+  <div class="wrapup">
+    <h2>Запомни главное</h2>
+    <p class="big-rule">Обозначь буквой → запиши связь равенством → реши и проверь по смыслу.</p>
+    <p>Решить задачу уравнением — значит превратить условие в равенство с буквой <span class="mono" style="color:#fff">x</span>, найти корень и сверить его со здравым смыслом.</p>
+    <p class="next">👉 В 7 классе <strong>линейное уравнение</strong> станет отдельной большой темой алгебры: общий вид, свойства, особые случаи. То, что ты сейчас отрабатываешь на текстовых задачах, там превратится в рабочий инструмент.</p>
+  </div>
+
+</div>
+
+<script>
+(function(){
+  /* ---------- бар-модель: интерактив ---------- */
+  var cv=document.getElementById('simCv');
+  if(cv && cv.getContext){
+    var ctx=cv.getContext('2d');
+    var sS=document.getElementById('simS'), sK=document.getElementById('simK');
+    var vS=document.getElementById('simSv'), vK=document.getElementById('simKv');
+    var eqEl=document.getElementById('simEq'), wnEl=document.getElementById('simWarn');
+    var COL_INK='#20242E', COL_MUT='#666E7D', COL_LINE='#C4D0EE',
+        COL_SMALL='#C2661C', COL_SMALL_BG='#FBEEE1',
+        COL_BIG='#2F4E9E', COL_BIG_BG='#E7ECF8';
+
+    function fmt(v){
+      if(Math.abs(v-Math.round(v))<1e-9) return String(Math.round(v));
+      return v.toFixed(2).replace(/0$/,'').replace('.',',');
+    }
+    /* скоба: снизу (dir=1) или сверху (dir=-1) */
+    function brace(x1,x2,y,dir,color){
+      ctx.strokeStyle=color; ctx.lineWidth=2;
+      ctx.beginPath();
+      ctx.moveTo(x1,y-9*dir); ctx.lineTo(x1,y); ctx.lineTo(x2,y); ctx.lineTo(x2,y-9*dir);
+      ctx.stroke();
+    }
+    function draw(){
+      var S=+sS.value, k=+sK.value, x=S/(k+1);
+      vS.textContent=S; vK.textContent=k;
+      var W=cv.width, H=cv.height;
+      ctx.clearRect(0,0,W,H);
+      ctx.fillStyle='#FAF9F6'; ctx.fillRect(0,0,W,H);
+
+      var left=24, right=W-24, full=right-left;
+      var unit=full/(k+1);              /* ширина одного кусочка */
+      var bh=54, yTop=84;               /* верх полосы */
+
+      ctx.textBaseline='middle';
+
+      /* один ряд из (k+1) одинаковых кусочков */
+      for(var i=0;i<=k;i++){
+        var bx=left+i*unit, small=(i===0);
+        ctx.fillStyle = small?COL_SMALL_BG:COL_BIG_BG;
+        ctx.fillRect(bx,yTop,unit,bh);
+        ctx.strokeStyle = small?COL_SMALL:COL_BIG; ctx.lineWidth=2;
+        ctx.strokeRect(bx,yTop,unit,bh);
+        ctx.fillStyle = small?COL_SMALL:COL_BIG;
+        ctx.textAlign='center';
+        ctx.font='800 19px ui-monospace,Menlo,Consolas,monospace';
+        ctx.fillText('x', bx+unit/2, yTop+bh/2);
+      }
+
+      /* скобы сверху: вторая часть = x, первая = kx */
+      var yUp=yTop-16;
+      brace(left+3, left+unit-3, yUp, -1, COL_SMALL);
+      brace(left+unit+3, right-3, yUp, -1, COL_BIG);
+      ctx.font='700 15px system-ui,-apple-system,"Segoe UI",Roboto,sans-serif';
+      ctx.textAlign='center';
+      ctx.fillStyle=COL_SMALL;
+      ctx.fillText('вторая: x', left+unit/2, yUp-24);
+      ctx.fillStyle=COL_BIG;
+      ctx.fillText('первая: '+k+'x  ('+razStr(k)+' больше)', left+unit+(full-unit)/2, yUp-24);
+
+      /* скоба снизу: всего */
+      var yb=yTop+bh+26;
+      brace(left, right, yb, 1, COL_LINE);
+      ctx.fillStyle='#FAF9F6'; ctx.fillRect(left+full/2-52,yb-12,104,24);
+      ctx.fillStyle=COL_INK; ctx.textAlign='center';
+      ctx.font='800 17px ui-monospace,Menlo,Consolas,monospace';
+      ctx.fillText('всего '+S, left+full/2, yb);
+
+      /* подпись про кусочки */
+      ctx.font='600 15px system-ui,-apple-system,"Segoe UI",Roboto,sans-serif';
+      ctx.fillStyle=COL_MUT; ctx.textAlign='center';
+      ctx.fillText('одинаковых кусочков: '+(k+1)+'   →   один кусочек = '+fmt(x), left+full/2, yb+30);
+
+      /* уравнение */
+      eqEl.innerHTML = 'x + '+k+'x = '+S+' &nbsp;→&nbsp; '+(k+1)+'x = '+S+
+        ' &nbsp;→&nbsp; x = '+S+' : '+(k+1)+' = '+fmt(x)+
+        '<br>вторая часть: '+fmt(x)+', первая часть: '+k+' · '+fmt(x)+' = '+fmt(k*x);
+
+      if(Math.abs(x-Math.round(x))>1e-9){
+        wnEl.innerHTML='<div class="warn"><b>Проверка по смыслу.</b> '+S+' не делится на '+(k+1)+
+          ' нацело, поэтому кусочек получился дробным ('+fmt(x)+'). Уравнение решено верно, но для карандашей или учеников такой ответ не подходит — значит, в реальной задаче условие подобрано бы иначе.</div>';
+      } else {
+        wnEl.innerHTML='';
+      }
+    }
+    sS.addEventListener('input',draw);
+    sK.addEventListener('input',draw);
+    draw();
+  }
+
+  /* ---------- тренажёр ---------- */
+  var MINUS='−';
+  function m(s){ return String(s).replace(/-/g, MINUS); }
+  function mono(s){ return '<span class="mono">'+s+'</span>'; }
+  function ri(a,b){ return Math.floor(Math.random()*(b-a+1))+a; }
+  function pick(a){ return a[Math.floor(Math.random()*a.length)]; }
+  function razStr(k){ return k===5 ? 'в 5 раз' : 'в '+k+' раза'; }
+  function plr(n,one,few,many){ var a=n%10, b=n%100;
+    if(a===1 && b!==11) return one;
+    if(a>=2 && a<=4 && (b<12 || b>14)) return few;
+    return many; }
+  function yrs(n){ var a=n%10, b=n%100;
+    if(a===1 && b!==11) return 'год';
+    if(a>=2 && a<=4 && (b<12 || b>14)) return 'года';
+    return 'лет'; }
+
+  var taskEl=document.getElementById('trTask'),
+      askEl=document.getElementById('trAsk'),
+      unitEl=document.getElementById('trUnit'),
+      inEl=document.getElementById('trIn'),
+      resEl=document.getElementById('trRes');
+  var cur=null;
+
+  /* Тип A: всего S, одна часть в k раз больше другой */
+  function genA(){
+    var sets=[
+      {a:'В двух коробках',f:['карандаш','карандаша','карандашей'],small:'во второй коробке',big:'в первой коробке',ask:'Сколько карандашей во второй коробке?',u:'карандашей'},
+      {a:'У Ани и Бори вместе',f:['наклейка','наклейки','наклеек'],small:'у Бори',big:'у Ани',ask:'Сколько наклеек у Бори?',u:'наклеек'},
+      {a:'В двух пачках',f:['тетрадь','тетради','тетрадей'],small:'во второй пачке',big:'в первой пачке',ask:'Сколько тетрадей во второй пачке?',u:'тетрадей'}
+    ];
+    var s=pick(sets), k=ri(2,5), x=ri(2,25), S=(k+1)*x;
+    var raz=razStr(k);
+    return {
+      text: s.a+' '+S+' '+plr(S,s.f[0],s.f[1],s.f[2])+'. '+cap(s.big)+' '+raz+' больше, чем '+s.small+'.',
+      ask: s.ask, unit: s.u, ans: x,
+      sol: [
+        ['Пусть '+s.small+' '+mono('x')+' '+s.u+'.','обозначаем меньшую величину, через неё проще выразить большую'],
+        ['Тогда '+s.big+' '+mono(k+'x')+'.','«'+raz+' больше» — умножаем на '+k],
+        ['Уравнение: '+mono('x + '+k+'x = '+S)+'.','главная связь условия — вместе получается '+S],
+        [mono((k+1)+'x = '+S)+'.','сложили подобные: x + '+k+'x = '+(k+1)+'x'],
+        [mono('x = '+S+' : '+(k+1)+' = '+x)+'.','разделили на коэффициент при x'],
+        ['Большая часть: '+mono(k+' · '+x+' = '+(k*x))+'.','x — это только меньшая величина, вторую надо досчитать'],
+        ['Проверка: '+mono(x+' + '+(k*x)+' = '+S)+' — сходится, числа целые и положительные.','ответ проходит проверку по смыслу']
+      ],
+      fin: 'Ответ: '+x+' и '+(k*x)+'.'
+    };
+  }
+
+  /* Тип B: всего S, одна часть на d больше другой */
+  function genB(){
+    var sets=[
+      {t:function(S,d){return 'Книга и тетрадь вместе стоят '+S+' '+plr(S,'рубль','рубля','рублей')+'. Книга дороже тетради на '+d+' '+plr(d,'рубль','рубля','рублей')+'.';},
+       ask:'Сколько рублей стоит тетрадь?',u:'рублей',small:'тетрадь стоит',big:'книга стоит',xr:[15,60],dr:[5,25]},
+      {t:function(S,d){return 'В классе '+S+' '+plr(S,'ученик','ученика','учеников')+', девочек на '+d+' больше, чем мальчиков.';},
+       ask:'Сколько в классе мальчиков?',u:'мальчиков',small:'мальчиков',big:'девочек',xr:[8,16],dr:[1,4]},
+      {t:function(S,d){return 'На двух полках '+S+' '+plr(S,'книга','книги','книг')+'. На верхней полке на '+d+' '+plr(d,'книгу','книги','книг')+' больше, чем на нижней.';},
+       ask:'Сколько книг на нижней полке?',u:'книг',small:'на нижней полке',big:'на верхней полке',xr:[5,20],dr:[2,8]}
+    ];
+    var s=pick(sets), x=ri(s.xr[0],s.xr[1]), d=2*ri(s.dr[0],s.dr[1]), S=2*x+d;
+    return {
+      text: s.t(S,d),
+      ask: s.ask, unit: s.u, ans: x,
+      sol: [
+        ['Пусть '+s.small+' '+mono('x')+'.','за x берём меньшую величину'],
+        ['Тогда '+s.big+' '+mono('x + '+d)+'.','«на '+d+' больше» — прибавляем '+d+', а не умножаем'],
+        ['Уравнение: '+mono('x + (x + '+d+') = '+S)+'.','вместе получается '+S],
+        [mono('2x + '+d+' = '+S)+'.','сложили подобные: x + x = 2x'],
+        [mono('2x = '+S+' '+MINUS+' '+d+' = '+(S-d))+'.','перенесли '+d+' вправо со сменой знака'],
+        [mono('x = '+(S-d)+' : 2 = '+x)+'.','разделили на коэффициент при x'],
+        ['Большая часть: '+mono(x+' + '+d+' = '+(x+d))+'.','x — это только меньшая величина, вторую надо досчитать'],
+        ['Проверка: '+mono(x+' + '+(x+d)+' = '+S)+' — верно.','ответ реалистичен']
+      ],
+      fin: 'Ответ: '+x+' и '+(x+d)+'.'
+    };
+  }
+
+  /* Тип C: задумали число — умножили на m, прибавили a, получили b */
+  function genC(){
+    var mm=ri(2,4), a=ri(3,20), x=ri(2,15), b=mm*x+a;
+    var phrase = mm===2 ? 'удвоили его' : (mm===3 ? 'утроили его' : 'умножили его на 4');
+    var word = mm===2 ? 'удвоили' : (mm===3 ? 'утроили' : 'умножили на 4');
+    return {
+      text: 'Задумали число, '+phrase+' и прибавили '+a+'. Получилось '+b+'.',
+      ask: 'Какое число задумали?', unit:'', ans: x,
+      sol: [
+        ['Пусть задуманное число — '+mono('x')+'.','обозначаем буквой то, что спрашивают'],
+        ['«'+cap(word)+'» — это '+mono(mm+'x')+', «прибавили '+a+'» — это '+mono('+ '+a)+'.','переводим слова по кусочкам'],
+        ['Уравнение: '+mono(mm+'x + '+a+' = '+b)+'.','записали то, что «получилось»'],
+        [mono(mm+'x = '+b+' '+MINUS+' '+a+' = '+(b-a))+'.','перенесли '+a+' вправо со сменой знака'],
+        [mono('x = '+(b-a)+' : '+mm+' = '+x)+'.','разделили на коэффициент при x'],
+        ['Проверка: '+mono(mm+' · '+x+' + '+a+' = '+b)+' — верно.','подставили корень обратно в условие']
+      ],
+      fin: 'Ответ: задумали число '+x+'.'
+    };
+  }
+
+  /* Тип D: возраст — через сколько лет старший будет в k раз старше младшего */
+  function genD(){
+    /* lo, hi — разумный возраст старшего; gap — минимальная разница в возрасте */
+    var pairs=[
+      ['отцу','сыну','отец','сына',28,54,20],
+      ['маме','дочери','мама','дочери',28,52,20],
+      ['дедушке','внуку','дедушка','внука',52,72,42]
+    ];
+    var p=pick(pairs);
+    var k,x,B,A,guard=0,ok=false;
+    do{
+      k=ri(2,4); x=ri(1,12); B=ri(4,14); A=k*(B+x)-x;
+      ok = (A>=p[4] && A<=p[5] && A-B>=p[6]);
+    } while(!ok && ++guard<500);
+    if(!ok){ p=pairs[0]; k=3; x=6; B=8; A=36; }
+    var c=k-1, D=A-k*B;   /* c·x = D, c>0, D>0 */
+    var steps=[
+      ['Пусть пройдёт '+mono('x')+' лет.','за x берём то, что спрашивают'],
+      ['Тогда старшему будет '+mono(A+' + x')+' лет, а младшему '+mono(B+' + x')+'.','за одинаковое время оба становятся старше одинаково'],
+      ['Уравнение: '+mono(A+' + x = '+k+' · ('+B+' + x)')+'.','скобка обязательна: множитель относится ко всей сумме'],
+      [mono(A+' + x = '+(k*B)+' + '+k+'x')+'.','раскрыли скобки: умножили '+k+' на каждое слагаемое'],
+      [mono(A+' '+MINUS+' '+(k*B)+' = '+k+'x '+MINUS+' x')+', то есть '+mono(D+' = '+(c===1?'x':c+'x'))+'.','собрали x справа, числа слева — со сменой знаков']
+    ];
+    if(c!==1) steps.push([mono('x = '+D+' : '+c+' = '+x)+'.','разделили на коэффициент при x']);
+    steps.push(['Проверка: через '+x+' '+yrs(x)+' им будет '+mono((A+x)+' и '+(B+x))+', и правда '+mono((A+x)+' = '+k+' · '+(B+x))+'.','ответ целый и положительный — по смыслу подходит']);
+    return {
+      text: 'Сейчас '+p[0]+' '+A+' '+yrs(A)+', а '+p[1]+' '+B+'. Через сколько лет '+p[2]+' будет '+razStr(k)+' старше '+p[3]+'?',
+      ask: 'Через сколько лет?', unit:'лет', ans: x,
+      sol: steps,
+      fin: 'Ответ: через '+x+' '+yrs(x)+'.'
+    };
+  }
+
+  function cap(s){ return s.charAt(0).toUpperCase()+s.slice(1); }
+
+  var GENS=[genA,genB,genC,genD];
+
+  function render(t){
+    cur=t;
+    taskEl.textContent=t.text;
+    askEl.textContent=t.ask;
+    unitEl.textContent=t.unit;
+    inEl.value='';
+    resEl.innerHTML='';
+    resEl.removeAttribute('data-done');
+  }
+  function newTask(focus){
+    render(pick(GENS)());
+    if(focus) inEl.focus();
+  }
+  function solutionHTML(){
+    var h='<div class="tr-sol">';
+    cur.sol.forEach(function(r){
+      h+='<div class="row">'+r[0]+'<span class="why"> — '+r[1]+'</span></div>';
+    });
+    h+='<div class="fin">'+cur.fin+'</div></div>';
+    return h;
+  }
+  function check(){
+    if(resEl.getAttribute('data-done')==='1') return;
+    var raw=inEl.value.replace(/−/g,'-').replace(',','.').replace(/\s/g,'').trim();
+    if(raw===''){
+      resEl.innerHTML='<div class="head info">Введи ответ числом — или жми «Показать решение».</div>';
+      return;
+    }
+    var v=Number(raw);
+    if(!isFinite(v)){
+      resEl.innerHTML='<div class="head info">Не понял ответ. Введи просто число, например 12.</div>';
+      return;
+    }
+    resEl.setAttribute('data-done','1');
+    var ok=Math.abs(v-cur.ans)<1e-9;
+    resEl.innerHTML=(ok
+      ? '<div class="head ok">✓ Верно! Разбор — чтобы сверить ход мысли:</div>'
+      : '<div class="head no">Не сходится. Правильный ответ: '+m(String(cur.ans))+'. Смотри, где разошлось:</div>')+solutionHTML();
+  }
+  function show(){
+    if(resEl.getAttribute('data-done')==='1') return;
+    resEl.setAttribute('data-done','1');
+    resEl.innerHTML='<div class="head info">Разбор по шагам:</div>'+solutionHTML();
+  }
+  document.getElementById('trCheck').addEventListener('click',check);
+  document.getElementById('trShow').addEventListener('click',show);
+  document.getElementById('trNew').addEventListener('click',function(){ newTask(true); });
+  inEl.addEventListener('keydown',function(e){ if(e.key==='Enter'){ e.preventDefault(); check(); } });
+
+  /* стартовая задача — без focus(), чтобы страница не прыгала */
+  render(genA());
+})();
+</script>
+<!--LESSON-NAV-BOT--><nav class="lnav lnav-bot"><a class="prev" href="./m6-lineynoe-uravnenie.html"><span class="dir">← Предыдущая</span><span class="ttl">Решение линейных уравнений</span></a><a class="to-cat" href="./catalog.html">📚 <span>Все темы</span></a><a class="next" href="./m6-perebor-variantov.html"><span class="dir">Следующая →</span><span class="ttl">Перебор вариантов и дерево возможностей</span></a></nav><!--/LESSON-NAV-BOT-->

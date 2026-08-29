@@ -1,0 +1,604 @@
+<!doctype html>
+<!-- humanized: humanizer-ru, 2026-08-29, тире возвращено -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Масштаб — математика, 6 класс</title>
+<style>
+  :root{
+    --paper:#F7F6F1;
+    --card:#FFFFFF;
+    --ink:#1F2430;
+    --muted:#616A7A;
+    --line:#E3E1D9;
+    --map:#1F6F8B;        /* карта / изображение */
+    --map-soft:#E4F0F4;
+    --map-line:#B9D9E3;
+    --real:#C4622D;       /* реальность */
+    --real-soft:#FBEBE0;
+    --real-line:#F0CDB2;
+    --ok:#2E8B57;
+    --no:#C23B3B;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper)}
+  .page{
+    max-width:740px;margin:0 auto;
+    padding:clamp(1.4rem,4vw,3rem) clamp(1.1rem,4vw,2rem) 4.5rem;
+    color:var(--ink);
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    font-size:17.5px;line-height:1.66;-webkit-font-smoothing:antialiased;
+  }
+  .mono{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-variant-numeric:tabular-nums;font-weight:600}
+
+  .hero{border-bottom:3px solid var(--map);padding-bottom:1.3rem;margin-bottom:1.7rem}
+  .eyebrow{font-size:.74rem;letter-spacing:.15em;text-transform:uppercase;color:var(--map);font-weight:700;margin:0 0 .55rem}
+  h1{font-size:clamp(2.1rem,7vw,3.1rem);line-height:1.03;margin:0;font-weight:800;letter-spacing:-.02em;text-wrap:balance}
+  .tagline{font-size:1.1rem;color:var(--muted);margin:.85rem 0 0;text-wrap:pretty}
+
+  section{margin-top:2.4rem}
+  h2{font-size:1.45rem;margin:0 0 .3rem;font-weight:780;letter-spacing:-.015em;text-wrap:balance}
+  h2 .em{color:var(--map)}
+  h3{font-size:1.1rem;margin:1.4rem 0 .2rem;font-weight:750}
+  p{margin:.7rem 0}
+  strong{font-weight:680}
+  .kicker{font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:700;margin:0 0 .55rem;display:flex;align-items:center;gap:.55rem}
+  .kicker::before{content:"";width:1.4rem;height:2px;background:var(--map);border-radius:2px}
+
+  .lead-in{background:var(--map-soft);border-radius:14px;padding:1.05rem 1.25rem;font-size:1.02rem}
+  .lead-in p{margin:.4rem 0}
+  .lead-in b{color:var(--map)}
+
+  .myth{border-left:4px solid var(--real);background:var(--real-soft);border-radius:0 10px 10px 0;padding:.85rem 1.1rem;margin-top:1rem;font-size:.99rem}
+  .myth b{color:var(--real)}
+
+  .recall{background:var(--card);border:1px dashed var(--line);border-radius:13px;padding:1rem 1.2rem;margin-top:1rem}
+  .recall ul{margin:.5rem 0 0;padding-left:1.15rem}
+  .recall li{margin:.35rem 0;font-size:.98rem}
+
+  /* Ядро */
+  .core{background:var(--card);border:2px solid var(--map-line);border-radius:16px;padding:1.2rem 1.3rem;margin-top:1rem}
+  .core .formula{font-family:ui-monospace,Menlo,Consolas,monospace;font-weight:800;font-size:clamp(1rem,4.3vw,1.25rem);text-align:center;color:var(--map);margin:.3rem 0 .8rem;line-height:1.5}
+  .core .formula .m{color:var(--map)} .core .formula .r{color:var(--real)}
+  .readout{display:flex;gap:.9rem;align-items:flex-start;margin:.7rem 0;font-size:.99rem}
+  .readout .k{font-family:ui-monospace,Menlo,monospace;font-weight:800;font-size:1.15rem;flex:none;width:2.2rem;text-align:center}
+  .readout.a .k{color:var(--map)} .readout.b .k{color:var(--real)}
+
+  .moves{display:grid;gap:.9rem;margin-top:1.1rem}
+  @media(min-width:600px){.moves{grid-template-columns:1fr 1fr}}
+  .move{border-radius:16px;padding:1.1rem 1.2rem;border:2px solid}
+  .move.toreal{background:var(--real-soft);border-color:var(--real-line)}
+  .move.tomap{background:var(--map-soft);border-color:var(--map-line)}
+  .move .cap{font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;font-weight:700;margin:0}
+  .move.toreal .cap{color:var(--real)} .move.tomap .cap{color:var(--map)}
+  .move h3{margin:.25rem 0 .45rem;font-size:1.22rem;font-weight:800}
+  .move .op{font-family:ui-monospace,Menlo,monospace;font-weight:800;font-size:1.05rem;margin:.45rem 0;padding:.5rem .65rem;background:rgba(255,255,255,.7);border-radius:9px}
+  .move p{margin:.3rem 0;font-size:.96rem}
+
+  .units{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:.9rem}
+  .units span{font-family:ui-monospace,Menlo,monospace;font-weight:700;background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:.28rem .6rem;font-size:.93rem}
+
+  /* Три представления */
+  .reps{display:grid;gap:.75rem;margin-top:1rem}
+  @media(min-width:640px){.reps{grid-template-columns:repeat(3,1fr)}}
+  .rep{background:var(--card);border:1px solid var(--line);border-radius:13px;padding:.95rem 1.05rem}
+  .rep .cap{font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:700;margin:0 0 .4rem}
+  .rep .big{font-family:ui-monospace,Menlo,monospace;font-weight:800;font-size:1.3rem;color:var(--map)}
+  .rep p{margin:.25rem 0 0;font-size:.93rem}
+
+  /* Бар-модель */
+  .bars{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.1rem 1.2rem;margin-top:1rem}
+  .bar-row{margin:.7rem 0}
+  .bar-lab{font-size:.86rem;font-weight:700;margin:0 0 .3rem;display:flex;justify-content:space-between;gap:1rem}
+  .bar-lab .r{font-weight:600;color:var(--muted)}
+  .bar{height:20px;border-radius:6px}
+  .bar.map{width:6px;min-width:6px;background:var(--map)}
+  .bar.real{width:100%;background:repeating-linear-gradient(90deg,var(--real) 0 5px,#EFD9C6 5px 6px)}
+  .bars .cap{font-size:.9rem;color:var(--muted);margin:.9rem 0 0}
+  .bars .cap b{color:var(--ink)}
+
+  /* Canvas-план */
+  .sim{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.1rem 1.1rem 1rem;margin-top:1rem}
+  .sim canvas{width:100%;height:auto;display:block;border-radius:10px;background:#FDFDFB}
+  .sim-ctl{display:flex;align-items:center;gap:.7rem;margin-top:.9rem;flex-wrap:wrap}
+  .sim-ctl label{font-weight:700;font-family:ui-monospace,Menlo,monospace;font-size:.95rem;flex:1 1 260px;display:flex;align-items:center;gap:.6rem}
+  .sim-ctl input[type=range]{flex:1;accent-color:var(--map);min-width:120px}
+  .sim-ctl input[type=range]:focus-visible{outline:2px solid var(--map);outline-offset:3px}
+  .sim-read{text-align:center;font-weight:700;font-family:ui-monospace,Menlo,monospace;font-size:1.02rem;background:var(--map-soft);color:var(--map);border-radius:9px;padding:.5rem .6rem;margin:.85rem 0 0}
+  .sim-note{font-size:.9rem;color:var(--muted);margin:.8rem 0 0}
+
+  /* Разбор */
+  .walk{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.15rem 1.3rem;margin-top:1rem}
+  .walk .q{font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.02rem;margin:0 0 .9rem;padding-bottom:.7rem;border-bottom:1px solid var(--line);line-height:1.5}
+  .walk ol{margin:0;padding-left:1.25rem;display:flex;flex-direction:column;gap:.6rem}
+  .walk li{font-size:.99rem}
+  .walk li .m{font-family:ui-monospace,Menlo,monospace;font-weight:700}
+  .walk li .why{display:block;color:var(--muted);font-size:.9rem;margin-top:.15rem}
+  .verdict{margin-top:1rem;padding:.7rem 1rem;background:var(--map-soft);border-radius:10px;font-weight:700;color:var(--map);font-size:1rem}
+
+  /* Практика */
+  .drill{display:flex;flex-direction:column;gap:.7rem;margin-top:1rem}
+  details{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:.9rem 1.1rem}
+  details[open]{border-color:var(--map)}
+  summary{cursor:pointer;font-weight:650;list-style:none;display:flex;justify-content:space-between;gap:1rem;align-items:center}
+  summary::-webkit-details-marker{display:none}
+  summary:focus-visible{outline:2px solid var(--map);outline-offset:3px;border-radius:6px}
+  summary .q{font-size:1rem}
+  summary::after{content:"ответ";font-size:.78rem;color:var(--map);font-weight:700;white-space:nowrap}
+  details[open] summary::after{content:"скрыть"}
+  .tag{font-size:.64rem;font-weight:700;padding:.1rem .45rem;border-radius:5px;background:var(--map-soft);color:var(--map);letter-spacing:.03em;white-space:nowrap}
+  .ans{margin-top:.75rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.96rem;color:var(--muted)}
+  .ans b{color:var(--ink)}
+  .ans .m{font-family:ui-monospace,Menlo,monospace;font-weight:700;color:var(--ink)}
+
+  /* Ловушки */
+  ul.traps{list-style:none;margin:1rem 0 0;padding:0;display:flex;flex-direction:column;gap:.7rem}
+  ul.traps li{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:.85rem 1.05rem .85rem 2.5rem;position:relative;font-size:.97rem}
+  ul.traps li::before{content:"⚠";position:absolute;left:1rem;top:.85rem;color:var(--real);font-size:1.05rem}
+  ul.traps b{font-weight:700}
+
+  /* Тренажёр */
+  .trainer{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:1.25rem 1.25rem 1.15rem;margin-top:1rem}
+  .tr-task{font-size:1.05rem;font-weight:650;line-height:1.5;margin:.1rem 0 1rem;text-align:center}
+  .tr-task .m{font-family:ui-monospace,Menlo,monospace;font-weight:800;color:var(--map);white-space:nowrap}
+  .tr-ctl{display:flex;gap:.5rem;flex-wrap:wrap;justify-content:center;align-items:center}
+  .tr-ctl input[type=text]{font:inherit;font-size:1rem;padding:.5rem .8rem;border:1px solid var(--line);border-radius:10px;min-width:0;flex:1 1 190px;background:var(--paper);color:var(--ink)}
+  .tr-ctl input[type=text]:focus-visible{outline:2px solid var(--map);outline-offset:1px}
+  .tr-ctl button{font:inherit;font-weight:700;font-size:.92rem;border-radius:10px;padding:.55rem 1.05rem;cursor:pointer;border:1px solid transparent}
+  .tr-ctl button:focus-visible{outline:2px solid var(--map);outline-offset:2px}
+  .tr-ctl .go{background:var(--map);color:#fff}
+  .tr-ctl .sh{background:var(--paper);border-color:var(--line);color:var(--ink)}
+  .tr-ctl .nw{background:var(--map-soft);color:var(--map)}
+  .tr-res{margin-top:1.05rem;font-size:.97rem}
+  .tr-res .head{font-weight:700;padding:.6rem .9rem;border-radius:9px;margin-bottom:.7rem}
+  .tr-res .head.ok{background:#E7F4EC;color:var(--ok)}
+  .tr-res .head.no{background:#FBEAEA;color:var(--no)}
+  .tr-res .head.info{background:var(--map-soft);color:var(--map)}
+  .tr-sol{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:.85rem 1rem}
+  .tr-sol .row{margin:.35rem 0;font-size:.94rem}
+  .tr-sol .row .m{font-family:ui-monospace,Menlo,monospace;font-weight:700}
+  .tr-sol .fin{margin-top:.6rem;padding-top:.55rem;border-top:1px dashed var(--line);font-weight:700}
+
+  .wrapup{background:var(--map);color:#fff;border-radius:16px;padding:1.35rem 1.45rem;margin-top:2.4rem}
+  .wrapup h2{color:#fff;margin:0 0 .5rem}
+  .wrapup p{color:#DDEDF2;margin:.4rem 0;font-size:1rem}
+  .wrapup .big-rule{font-size:1.06rem;font-weight:700;color:#fff;margin:.6rem 0;line-height:1.55}
+  .wrapup .next{font-size:.95rem;color:#C3DFE7;margin-top:1rem;padding-top:1rem;border-top:1px solid rgba(255,255,255,.22)}
+
+  .selfcheck{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.05rem 1.25rem;margin-top:1rem}
+  .selfcheck ol{margin:.4rem 0 0;padding-left:1.2rem}
+  .selfcheck li{margin:.4rem 0;font-size:.99rem}
+
+  @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<!--LESSON-NAV-TOP--><style>.lnav{--lnav-accent:#3D5AF1}.lnav a{text-decoration:none;font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif}.lnav-top{max-width:820px;margin:0 auto;padding:.75rem clamp(1rem,4vw,1.5rem) .1rem}.lnav-top a{display:inline-flex;align-items:center;gap:.35rem;color:var(--lnav-accent);font-weight:600;font-size:.9rem}.lnav-top a:hover{text-decoration:underline}.lnav-bot{max-width:820px;margin:2.6rem auto 3rem;padding:1.1rem clamp(1rem,4vw,1.5rem) 0;border-top:1px solid #E4E8EF;display:flex;align-items:stretch;gap:.55rem}.lnav-bot a{min-width:0;display:flex;flex-direction:column;justify-content:center;gap:.15rem;border:1px solid #E4E8EF;border-radius:12px;padding:.65rem .85rem;color:#182233;background:#fff;transition:border-color .1s,transform .08s}.lnav-bot a:hover{border-color:var(--lnav-accent);transform:translateY(-1px)}.lnav-bot .prev,.lnav-bot .next{flex:1 1 0}.lnav-bot .next{text-align:right}.lnav-bot .dir{font-size:.72rem;color:#8A93A6;font-weight:600}.lnav-bot .ttl{font-size:.9rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.lnav-bot .to-cat{flex:0 0 auto;flex-direction:row;align-items:center;justify-content:center;color:var(--lnav-accent);font-weight:700;font-size:.85rem;white-space:nowrap}@media(max-width:420px){.lnav-bot .to-cat span{display:none}.lnav-bot .to-cat{padding:.65rem .7rem}}</style><nav class="lnav lnav-top"><a href="./catalog.html">← Все темы</a></nav><!--/LESSON-NAV-TOP-->
+<div class="page">
+
+  <header class="hero">
+    <p class="eyebrow">Математика · 6 класс</p>
+    <h1>Масштаб</h1>
+    <p class="tagline">Как по карте узнать настоящее расстояние — и почему 1&nbsp;:&nbsp;1000 мельче, чем 1&nbsp;:&nbsp;100.</p>
+  </header>
+
+  <div class="lead-in">
+    <p><b>Зачем это нужно.</b> Дом, город или целую страну в натуральную величину не нарисуешь: столько бумаги просто не бывает.</p>
+    <p>Поэтому карты, планы квартир, чертежи деталей и схемы метро рисуют уменьшенными. А клетку или микросхему — наоборот, увеличенными. Масштаб — это подпись под рисунком, которая честно сообщает, во сколько раз он отличается от настоящего предмета.</p>
+  </div>
+
+  <div class="myth">
+    <p><b>Сразу разберёмся с главной путаницей.</b> Многие думают: чем больше число в записи <span class="mono">1 : 1000</span>, тем крупнее карта. Всё ровно наоборот. Масштаб <span class="mono">1 : 1000</span> показывает реальность <em>мельче</em>, чем масштаб <span class="mono">1 : 100</span>. Чем больше знаменатель, тем сильнее уменьшение и тем меньше деталей помещается на карте.</p>
+  </div>
+
+  <section>
+    <p class="kicker">Перед стартом</p>
+    <h2>Что нужно вспомнить</h2>
+    <div class="recall">
+      <ul>
+        <li><strong>Отношение двух чисел</strong> — запись вида <span class="mono">a : b</span>. Масштаб и есть отношение, ничего нового.</li>
+        <li><strong>Умножение и деление</strong> — весь пересчёт держится на них.</li>
+        <li><strong>Перевод единиц длины:</strong> <span class="mono">1 м = 100 см</span>, <span class="mono">1 км = 1000 м = 100 000 см</span>. Держи перед глазами: единицы придётся переводить почти в каждой задаче.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Ядро темы</p>
+    <h2>Что такое <span class="em">масштаб</span></h2>
+    <p><strong>Масштаб</strong> — это отношение длины отрезка на изображении (карте, плане, чертеже) к длине соответствующего отрезка в действительности, взятых <strong>в одинаковых единицах</strong>.</p>
+    <p>Если коротко, масштаб отвечает на один вопрос: «1 см на рисунке — это сколько в жизни?».</p>
+
+    <div class="core">
+      <div class="formula">масштаб = <span class="m">(длина на карте)</span> : <span class="r">(длина в реальности)</span></div>
+      <p style="margin:.2rem 0 .8rem;font-size:.97rem">Записывают его через двоеточие, в виде <span class="mono">1 : n</span> (читается «один к n»):</p>
+      <div class="readout a"><div class="k">1</div><div>слева всегда единица — это <strong>одна единица длины на карте</strong>.</div></div>
+      <div class="readout b"><div class="k">n</div><div>справа n — <strong>столько же таких единиц в реальности</strong>.</div></div>
+      <p style="font-size:.97rem;margin-top:.9rem">Например, <span class="mono">1 : 100 000</span> читается так: 1 см на карте — это 100 000 см в реальности. Единицы у обоих чисел одинаковые, они сокращаются, и от масштаба остаётся голое отношение чисел.</p>
+    </div>
+
+    <h3>Два главных перехода</h3>
+    <p>Дальше всё упирается в один вопрос: <em>куда мы идём</em> — к реальности или к карте. Спросишь, как запомнить, где умножать, а где делить? Не запоминай, смотри по смыслу: что больше, то и получается умножением.</p>
+    <div class="moves">
+      <div class="move toreal">
+        <p class="cap">Переход 1</p>
+        <h3>🟠 Из карты в реальность</h3>
+        <p>Реальность <strong>больше</strong> изображения → значит, <strong>умножаем</strong>.</p>
+        <div class="op">реальная длина = (длина на карте) · n</div>
+      </div>
+      <div class="move tomap">
+        <p class="cap">Переход 2</p>
+        <h3>🔵 Из реальности в карту</h3>
+        <p>Карта <strong>меньше</strong> реальности → значит, <strong>делим</strong>.</p>
+        <div class="op">длина на карте = (реальная длина) : n</div>
+      </div>
+    </div>
+
+    <h3>Когда это работает</h3>
+    <p>Что проверить до того, как начнёшь считать:</p>
+    <ul>
+      <li>Обе длины должны быть <strong>в одинаковых единицах</strong>, и приводить их надо <em>до</em> первого действия. Поэтому работа почти всегда начинается с перевода единиц.</li>
+      <li>Держи под рукой соотношения:</li>
+    </ul>
+    <div class="units"><span>1 м = 100 см</span><span>1 км = 1000 м</span><span>1 км = 100 000 см</span></div>
+    <p style="margin-top:1rem">Ещё одно. Масштаб <span class="mono">1 : n</span> при n &gt; 1 — это <strong>масштаб уменьшения</strong>, он и нужен картам с планами. А для совсем мелких предметов бывает <strong>масштаб увеличения</strong>, и тогда запись выглядит как <span class="mono">n : 1</span>.</p>
+  </section>
+
+  <section>
+    <p class="kicker">Наглядность</p>
+    <h2>Один масштаб — <span class="em">три разных взгляда</span></h2>
+    <p>Возьмём <span class="mono">1 : 100</span> и посмотрим на него с трёх сторон. Факт один, рассказан по-разному:</p>
+    <div class="reps">
+      <div class="rep"><p class="cap">Запись</p><div class="big">1 : 100</div><p>Как это пишут в углу плана.</p></div>
+      <div class="rep"><p class="cap">Фраза</p><div class="big" style="font-size:1rem">1 см = 1 м</div><p>1 см на плане — это 1 м в жизни (ведь 100 см = 1 м).</p></div>
+      <div class="rep"><p class="cap">Отрезки</p><div class="big" style="font-size:1rem">короткий и длинный</div><p>Длинный ровно в 100 раз больше короткого.</p></div>
+    </div>
+
+    <div class="bars">
+      <div class="bar-row">
+        <p class="bar-lab"><span style="color:var(--map)">На плане</span><span class="r">1 см</span></p>
+        <div class="bar map"></div>
+      </div>
+      <div class="bar-row">
+        <p class="bar-lab"><span style="color:var(--real)">В реальности</span><span class="r">100 см = 1 м</span></p>
+        <div class="bar real"></div>
+      </div>
+      <p class="cap">Нижний отрезок — это <b>100 таких же кусочков</b>, как верхний. Вот и весь масштаб <span class="mono">1 : 100</span>: одна полоска против ста.</p>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Покрути сам · интерактив</p>
+    <h2>Один дом на разных планах</h2>
+    <p>Дом не меняется: <span class="mono">12 м</span> в длину, <span class="mono">8 м</span> в ширину. Меняется только масштаб плана. Двигай ползунок и следи за рисунком.</p>
+    <p><strong>Сначала предскажи:</strong> когда знаменатель станет больше — дом на плане вырастет или уменьшится? Потом проверь.</p>
+    <div class="sim">
+      <canvas id="plan" width="680" height="440" aria-label="План дома в разных масштабах на листе в клетку"></canvas>
+      <div class="sim-ctl">
+        <label>масштаб <input id="planScale" type="range" min="0" max="5" step="1" value="0" aria-label="Знаменатель масштаба"> <span id="planVal" style="color:var(--map);min-width:8ch;text-align:right">1 : 100</span></label>
+      </div>
+      <div class="sim-read" id="planRead">1 см на плане = 1 м в жизни · дом занимает 12 × 8 см</div>
+      <p class="sim-note">Каждая клетка на листе — это <strong>1 см</strong>. Посчитай клетки вдоль дома и умножь на то, чему равен 1 см. Получатся настоящие 12 м. И заметь: чем больше число справа в масштабе, тем меньше клеток занимает дом. Знаменатель растёт — картинка мельчает.</p>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Разбираем вместе</p>
+    <h2>Эталонный пример</h2>
+    <p>Дальше я решаю вслух и объясняю каждый шаг, а не отделываюсь фразой «так надо».</p>
+    <div class="walk">
+      <p class="q">Масштаб карты 1 : 100 000. Расстояние между городами на карте 7 см. Найди реальное расстояние.</p>
+      <ol>
+        <li>Куда идём? От карты <strong>к реальности</strong>. Реальность больше карты, значит <strong>умножаем</strong>:
+          <span class="m">7 · 100 000 = 700 000</span> (см).
+          <span class="why">Почему умножаем: 1 см карты — это 100 000 см реальности, а у нас таких сантиметров целых 7.</span></li>
+        <li>Переводим в удобные единицы: <span class="m">700 000 см = 7000 м = 7 км</span>.
+          <span class="why">Почему так: делим на 100 (см → м), потом на 1000 (м → км).</span></li>
+      </ol>
+      <div class="verdict">Ответ: 7 км.</div>
+    </div>
+
+    <h3>Теперь ты — допиши шаги</h3>
+    <p>Тот же ход, но в обратную сторону. Сначала реши сам, потом раскрывай.</p>
+    <div class="drill">
+      <details>
+        <summary><span class="q">Масштаб плана 1 : 200. Длина комнаты в реальности 6 м. Найди длину на плане.</span></summary>
+        <div class="ans">
+          Приводим к одним единицам: <span class="m">6 м = 600 см</span>.<br>
+          Идём к карте, она меньше → <strong>делим</strong>: <span class="m">600 : 200 = 3</span> (см).<br>
+          <b>Ответ: 3 см.</b>
+        </div>
+      </details>
+      <details>
+        <summary><span class="q">На карте масштаба 1 : 50 000 озеро имеет длину 4 см. Какова его реальная длина в километрах?</span></summary>
+        <div class="ans">К реальности → умножаем: <span class="m">4 · 50 000 = 200 000</span> см. Переводим: <span class="m">200 000 см = 2000 м = 2 км</span>. <b>Ответ: 2 км.</b></div>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Тренажёр · бесконечная практика</p>
+    <h2>Реши сам, задачи не кончатся</h2>
+    <p>Жми «Новая задача» столько раз, сколько понадобится. Вводи <strong>только число</strong>: единицы уже названы в условии. Дробный ответ пиши через запятую или точку. Застрял — открывай «Показать решение» и разбирай по шагам.</p>
+    <div class="trainer">
+      <p class="tr-task" id="trTask">Масштаб карты <span class="m">1 : 25 000</span>. Расстояние на карте 6 см. Найди реальное расстояние в метрах.</p>
+      <div class="tr-ctl">
+        <button class="nw" id="trNew" type="button">🎲 Новая задача</button>
+        <input id="trAns" type="text" inputmode="decimal" placeholder="ответ числом" aria-label="Твой ответ">
+        <button class="go" id="trCheck" type="button">Проверить</button>
+        <button class="sh" id="trShow" type="button">Показать решение</button>
+      </div>
+      <div class="tr-res" id="trRes"></div>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Проверь себя</p>
+    <h2>Задачи по нарастанию</h2>
+    <p>Решай сам, потом раскрывай ответ. Последняя задача самая интересная: там надо думать, а не считать.</p>
+    <div class="drill">
+      <details>
+        <summary><span class="q">1) Прочитай масштаб <span class="mono">1 : 25 000</span> словами. Чему в реальности соответствует 1 см на этой карте?</span><span class="tag">понимание</span></summary>
+        <div class="ans">Читается «один к двадцати пяти тысячам»: 1 см на карте — это <span class="m">25 000 см</span> в реальности. Переведём: <span class="m">25 000 см = 250 м</span>. <b>Ответ: 250 м.</b></div>
+      </details>
+      <details>
+        <summary><span class="q">2) Масштаб 1 : 300. На чертеже деталь длиной 5 см. Найди её реальную длину в метрах.</span><span class="tag">применение</span></summary>
+        <div class="ans">Идём к реальности → умножаем: <span class="m">5 · 300 = 1500</span> см. Переводим в метры: <span class="m">1500 : 100 = 15</span> м. <b>Ответ: 15 м.</b></div>
+      </details>
+      <details>
+        <summary><span class="q">3) Найди ошибку: «Масштаб 1 : 200, комната 6 м. Считаем 6 : 200 = 0,03 — значит, на плане 0,03 см».</span><span class="tag">анализ</span></summary>
+        <div class="ans">Действие выбрано верно (к карте — делим), а вот <b>единицы не привели к одинаковым</b>: масштаб связывает сантиметры с сантиметрами, а в него подставили метры. Сначала <span class="m">6 м = 600 см</span>, и только потом <span class="m">600 : 200 = 3</span> см. <b>Правильный ответ: 3 см</b>, а не 0,03.</div>
+      </details>
+      <details>
+        <summary><span class="q">4) Две карты одной местности: 1 : 10 000 и 1 : 100 000. На какой из них город изображён крупнее и почему?</span><span class="tag">анализ</span></summary>
+        <div class="ans">Крупнее — на карте <span class="m">1 : 10 000</span>. Проверим фразой «1 см — это сколько метров»: на первой 1 см = 100 м, на второй 1 см = 1000 м. Где метров в одном сантиметре меньше, там всё изображено крупнее и подробнее. <b>Чем больше знаменатель, тем сильнее уменьшение.</b></div>
+      </details>
+      <details>
+        <summary><span class="q">5) Что изменится с реальным расстоянием, если знаменатель масштаба увеличить в 2 раза, а длину на карте оставить ту же?</span><span class="tag">анализ</span></summary>
+        <div class="ans">Реальное расстояние станет <b>вдвое больше</b>. Ведь реальная длина = (длина на карте) · n, длину на карте мы не трогали, а n выросло в 2 раза — значит и произведение выросло в 2 раза. Например, 3 см при <span class="m">1 : 10 000</span> дают 300 м, а при <span class="m">1 : 20 000</span> — уже 600 м.</div>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Где чаще всего спотыкаются</p>
+    <h2>Четыре ловушки</h2>
+    <ul class="traps">
+      <li><b>«1 : 1000 — это крупнее, чем 1 : 100».</b> Наоборот: чем больше знаменатель, тем сильнее уменьшение. Большое число справа — мелкая карта. Проверяй это фразой «1 см — это сколько метров»: где метров больше, там карта мельче.</li>
+      <li><b>Забыли перевести единицы.</b> Считают «6 м : 200» и получают бессмыслицу. Сначала всё в одинаковые единицы (<span class="mono">6 м = 600 см</span>), и только потом действие.</li>
+      <li><b>Делят вместо умножения и наоборот.</b> Подсказка по смыслу: идёшь <strong>к реальности — она больше — умножай</strong>; идёшь <strong>к карте — она меньше — дели</strong>.</li>
+      <li><b>Путают см, м и км в ответе.</b> Получили 700 000 см — и оставили «700 000» без единиц или назвали метрами. Дописывай единицу сразу и переводи её в удобную.</li>
+    </ul>
+  </section>
+
+  <section>
+    <p class="kicker">Скажи своими словами</p>
+    <h2>Понял ли ты тему</h2>
+    <p>Отвечай вслух и не подглядывай в текст. Застрял хоть на одном — вернись к нужному куску урока.</p>
+    <div class="selfcheck">
+      <ol>
+        <li>Масштаб <span class="mono">1 : 20 000</span>. Чему соответствует 1 см на карте (в метрах)?</li>
+        <li>Реальность больше изображения или меньше — и какое действие выбираем, чтобы из карты получить реальную длину?</li>
+        <li>Какая карта мельче: <span class="mono">1 : 5000</span> или <span class="mono">1 : 50 000</span>?</li>
+      </ol>
+    </div>
+    <div class="drill" style="margin-top:.8rem">
+      <details>
+        <summary><span class="q">Сверить ответы</span></summary>
+        <div class="ans">
+          1) <span class="m">20 000 см = 200 м</span>.<br>
+          2) Реальность <b>больше</b> изображения, поэтому из карты в реальность — <b>умножаем</b> на знаменатель.<br>
+          3) Мельче — <span class="m">1 : 50 000</span>: там знаменатель больше, значит уменьшение сильнее.
+        </div>
+      </details>
+    </div>
+  </section>
+
+  <div class="wrapup">
+    <h2>Запомни главное</h2>
+    <p class="big-rule">Масштаб — это отношение длины на изображении к реальной длине в одинаковых единицах.<br>К реальности умножаем, к карте делим, а единицы переводим заранее.</p>
+    <p>Три шага в любой задаче: привести к одинаковым единицам → решить, умножать или делить → перевести ответ в удобные единицы и подписать их. Пропустишь первый — остальные два не спасут.</p>
+    <p class="next">👉 Дальше — <strong>диаграммы</strong>. Там та же идея: реальные величины изображают уменьшенными по выбранному масштабу, и чтобы прочитать диаграмму, надо знать, чему равно одно деление.</p>
+  </div>
+
+</div>
+
+<script>
+(function(){
+  var cv=document.getElementById('plan'); if(!cv) return;
+  var ctx=cv.getContext('2d');
+  var sl=document.getElementById('planScale'), val=document.getElementById('planVal'), read=document.getElementById('planRead');
+  // Реальный дом: 12 м x 8 м = 1200 см x 800 см
+  var HOUSE_L=1200, HOUSE_W=800;
+  var SCALES=[100,200,400,500,1000,2000];   // знаменатели
+  var SHEET_W=16, SHEET_H=11;               // размер листа в сантиметрах
+  var W=680,H=440,dpr=1;
+
+  function grp(n){ var s=String(n),o='',c=0; for(var i=s.length-1;i>=0;i--){ o=s[i]+o; if(++c%3===0&&i>0) o=' '+o; } return o; }
+  function num(x){ var r=Math.round(x*100)/100; return String(r).replace('.', ','); }
+
+  function resize(){
+    var cssW=cv.clientWidth||680; dpr=Math.min(window.devicePixelRatio||1,2);
+    W=cssW; H=Math.round(cssW*(SHEET_H/SHEET_W));
+    cv.width=Math.round(W*dpr); cv.height=Math.round(H*dpr); cv.style.height=H+'px';
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+  }
+
+  function draw(){
+    var n=SCALES[+sl.value];
+    var px=W/SHEET_W;                 // пикселей в одном сантиметре листа
+    var lCm=HOUSE_L/n, wCm=HOUSE_W/n; // размеры дома на плане, см
+    ctx.clearRect(0,0,W,H);
+    // лист
+    ctx.fillStyle='#FDFDFB'; ctx.fillRect(0,0,W,H);
+    // клетка 1 см
+    ctx.strokeStyle='#E7E9E4'; ctx.lineWidth=1;
+    for(var gx=1;gx<SHEET_W;gx++){ ctx.beginPath(); ctx.moveTo(Math.round(gx*px)+.5,0); ctx.lineTo(Math.round(gx*px)+.5,H); ctx.stroke(); }
+    for(var gy=1;gy*px<H;gy++){ ctx.beginPath(); ctx.moveTo(0,Math.round(gy*px)+.5); ctx.lineTo(W,Math.round(gy*px)+.5); ctx.stroke(); }
+    // дом по центру
+    var w=lCm*px, h=wCm*px;
+    var x=(W-w)/2, y=(H-h)/2;
+    ctx.fillStyle='rgba(31,111,139,.16)';
+    ctx.fillRect(x,y,w,h);
+    ctx.strokeStyle='#1F6F8B'; ctx.lineWidth=2.5;
+    ctx.strokeRect(x,y,w,h);
+    // подписи размеров на плане
+    ctx.fillStyle='#1F6F8B';
+    ctx.font='700 '+Math.max(11,Math.round(W/52))+'px ui-monospace, Menlo, monospace';
+    ctx.textAlign='center'; ctx.textBaseline='bottom';
+    ctx.fillText(num(lCm)+' см', x+w/2, y-7);
+    ctx.textBaseline='top';
+    ctx.fillText(num(wCm)+' см', x+w/2, y+h+7);
+    // подпись реального размера внутри/над домом
+    ctx.fillStyle='#C4622D';
+    ctx.font='700 '+Math.max(11,Math.round(W/50))+'px system-ui, sans-serif';
+    ctx.textBaseline='middle';
+    if(h>26 && w>150){ ctx.fillText('на самом деле 12 м × 8 м', x+w/2, y+h/2); }
+    else { ctx.fillText('на самом деле 12 м × 8 м', W/2, y+h+Math.max(26,px*1.6)); }
+    // подпись масштаба в углу листа
+    ctx.fillStyle='#616A7A'; ctx.textAlign='left'; ctx.textBaseline='top';
+    ctx.font='700 '+Math.max(11,Math.round(W/56))+'px ui-monospace, Menlo, monospace';
+    ctx.fillText('М 1 : '+grp(n)+'   (клетка = 1 см)', 10, 8);
+
+    val.textContent='1 : '+grp(n);
+    read.textContent='1 см на плане = '+num(n/100)+' м в жизни · дом занимает '+num(lCm)+' × '+num(wCm)+' см';
+  }
+
+  function redraw(){ resize(); draw(); }
+  sl.addEventListener('input',draw);
+  window.addEventListener('resize',redraw);
+  redraw();
+})();
+</script>
+
+<script>
+(function(){
+  var taskEl=document.getElementById('trTask');
+  var ansEl=document.getElementById('trAns');
+  var resEl=document.getElementById('trRes');
+  var cur=null;
+
+  var NS=[1000,2000,5000,10000,25000,50000,100000,200000];
+  var NS_SMALL=[100,200,400,500,1000,2000,5000];
+
+  function ri(a,b){ return Math.floor(Math.random()*(b-a+1))+a; }
+  function pick(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+  function grp(n){
+    var neg = n<0; n=Math.abs(n);
+    var ip=Math.floor(n), fp=Math.round((n-ip)*1000)/1000;
+    var s=String(ip),o='',c=0;
+    for(var i=s.length-1;i>=0;i--){ o=s[i]+o; if(++c%3===0&&i>0) o=' '+o; }
+    if(fp>0){ o=o+','+String(fp).slice(2); }
+    return (neg?'−':'')+o;
+  }
+  function m(t){ return '<span class="m">'+t+'</span>'; }
+
+  function makeTask(){
+    var r=Math.random(), t;
+    if(r<0.34) t='toReal'; else if(r<0.66) t='toMap'; else if(r<0.86) t='oneCm'; else t='compare';
+
+    if(t==='toReal'){
+      var n=pick(NS), a=ri(2,9);
+      var cm=a*n, mm=cm/100;
+      var unit, ans;
+      if(mm%1000===0){ unit='километрах'; ans=mm/1000; } else { unit='метрах'; ans=mm; }
+      return {type:t,n:n,a:a,cm:cm,mm:mm,unit:unit,ans:ans,
+        html:'Масштаб карты '+m('1 : '+grp(n))+'. Расстояние на карте '+m(a+' см')+'. Найди реальное расстояние в '+unit+'.'};
+    }
+    if(t==='toMap'){
+      var n2=pick(NS_SMALL), a2;
+      if(n2>=1000 && Math.random()<0.2) a2=0.5; else a2=ri(2,9);
+      var cm2=a2*n2, m2=cm2/100;
+      var shown, unit2;
+      if(m2%1000===0){ shown=m2/1000; unit2='км'; } else { shown=m2; unit2='м'; }
+      return {type:t,n:n2,a:a2,cm:cm2,mm:m2,shown:shown,unit:unit2,ans:a2,
+        html:'Масштаб плана '+m('1 : '+grp(n2))+'. Реальная длина '+m(grp(shown)+' '+unit2)+'. Какой будет длина на плане, в сантиметрах?'};
+    }
+    if(t==='oneCm'){
+      var n3=pick(NS);
+      var mm3=n3/100, unit3, ans3;
+      if(mm3>=1000){ unit3='километрах'; ans3=mm3/1000; } else { unit3='метрах'; ans3=mm3; }
+      return {type:t,n:n3,mm:mm3,unit:unit3,ans:ans3,
+        html:'Масштаб '+m('1 : '+grp(n3))+'. Чему соответствует 1 см на карте — в '+unit3+'?'};
+    }
+    // compare
+    var i1=ri(0,NS.length-2), i2=ri(i1+1,NS.length-1);
+    var small=NS[i1], big=NS[i2];
+    var askSmaller=Math.random()<0.5;
+    return {type:'compare',small:small,big:big,askSmaller:askSmaller,ans:askSmaller?big:small,
+      html:'Две карты одной местности: '+m('1 : '+grp(small))+' и '+m('1 : '+grp(big))+'. На какой из них местность изображена '+(askSmaller?'<b>мельче</b>':'<b>крупнее</b>')+'? Впиши знаменатель этого масштаба.'};
+  }
+
+  function solution(q){
+    var h='<div class="tr-sol">';
+    if(q.type==='toReal'){
+      h+='<div class="row">1. Идём от карты к реальности. Реальность больше — значит '+m('умножаем')+'.</div>';
+      h+='<div class="row">2. '+m(q.a+' · '+grp(q.n)+' = '+grp(q.cm))+' см.</div>';
+      h+='<div class="row">3. Переводим: '+m(grp(q.cm)+' см = '+grp(q.mm)+' м')+(q.unit==='километрах'?' '+m('= '+grp(q.ans)+' км'):'')+'.</div>';
+      h+='<div class="fin">Ответ: '+grp(q.ans)+(q.unit==='километрах'?' км':' м')+'.</div>';
+    } else if(q.type==='toMap'){
+      h+='<div class="row">1. Приводим к одинаковым единицам: '+m(grp(q.shown)+' '+q.unit+' = '+grp(q.cm)+' см')+'.</div>';
+      h+='<div class="row">2. Идём к карте, она меньше — значит '+m('делим')+'.</div>';
+      h+='<div class="row">3. '+m(grp(q.cm)+' : '+grp(q.n)+' = '+grp(q.ans))+' см.</div>';
+      h+='<div class="fin">Ответ: '+grp(q.ans)+' см.</div>';
+    } else if(q.type==='oneCm'){
+      h+='<div class="row">1. Запись '+m('1 : '+grp(q.n))+' значит: 1 см на карте — это '+m(grp(q.n)+' см')+' в реальности.</div>';
+      h+='<div class="row">2. Переводим в метры: '+m(grp(q.n)+' : 100 = '+grp(q.mm))+' м.</div>';
+      if(q.unit==='километрах'){ h+='<div class="row">3. И в километры: '+m(grp(q.mm)+' : 1000 = '+grp(q.ans))+' км.</div>'; }
+      h+='<div class="fin">Ответ: '+grp(q.ans)+(q.unit==='километрах'?' км':' м')+'.</div>';
+    } else {
+      h+='<div class="row">Проверяем каждую карту фразой «1 см — это сколько метров»:</div>';
+      h+='<div class="row">'+m('1 : '+grp(q.small))+' → 1 см = '+m(grp(q.small/100)+' м')+'.</div>';
+      h+='<div class="row">'+m('1 : '+grp(q.big))+' → 1 см = '+m(grp(q.big/100)+' м')+'.</div>';
+      h+='<div class="row">Где в одном сантиметре умещается больше метров, там уменьшение сильнее и картинка мельче. Где меньше — там крупнее.</div>';
+      h+='<div class="fin">Ответ: '+grp(q.ans)+' (масштаб 1 : '+grp(q.ans)+').</div>';
+    }
+    return h+'</div>';
+  }
+
+  function parseAns(s){
+    s=String(s).replace(/ /g,' ').replace(/−/g,'-').trim().toLowerCase();
+    if(s.indexOf(':')>=0) s=s.split(':').pop();
+    s=s.replace(/[^0-9.,-]/g,'').replace(',', '.').replace(/\s/g,'');
+    if(s==='') return null;
+    var v=parseFloat(s);
+    return isNaN(v)?null:v;
+  }
+
+  function render(q){
+    cur=q;
+    taskEl.innerHTML=q.html;
+    ansEl.value='';
+    resEl.innerHTML='';
+    resEl.removeAttribute('data-done');
+  }
+
+  function check(){
+    if(!cur) return;
+    var v=parseAns(ansEl.value);
+    if(v===null){
+      resEl.innerHTML='<div class="head info">Впиши ответ числом — и жми «Проверить».</div>';
+      return;
+    }
+    var ok=Math.abs(v-cur.ans)<1e-9;
+    resEl.innerHTML=(ok
+      ? '<div class="head ok">✓ Верно! '+grp(cur.ans)+' — это оно.</div>'
+      : '<div class="head no">Не сходится. Правильный ответ: '+grp(cur.ans)+'. Смотри разбор.</div>')+solution(cur);
+    resEl.setAttribute('data-done','1');
+  }
+
+  function show(){
+    if(!cur) return;
+    resEl.innerHTML='<div class="head info">Пошаговое решение:</div>'+solution(cur);
+    resEl.setAttribute('data-done','1');
+  }
+
+  document.getElementById('trCheck').addEventListener('click',check);
+  document.getElementById('trShow').addEventListener('click',show);
+  document.getElementById('trNew').addEventListener('click',function(){ render(makeTask()); ansEl.focus(); });
+  ansEl.addEventListener('keydown',function(e){ if(e.key==='Enter'){ check(); } });
+
+  // стартовая задача — та же, что показана в разметке
+  render({type:'toReal',n:25000,a:6,cm:150000,mm:1500,unit:'метрах',ans:1500,
+    html:'Масштаб карты <span class="m">1 : 25 000</span>. Расстояние на карте <span class="m">6 см</span>. Найди реальное расстояние в метрах.'});
+})();
+</script>
+<!--LESSON-NAV-BOT--><nav class="lnav lnav-bot"><a class="prev" href="./m6-pryamaya-obratnaya.html"><span class="dir">← Предыдущая</span><span class="ttl">Прямая и обратная пропорциональность</span></a><a class="to-cat" href="./catalog.html">📚 <span>Все темы</span></a><a class="next" href="./m6-procent-ponyatie.html"><span class="dir">Следующая →</span><span class="ttl">Процент как сотая часть</span></a></nav><!--/LESSON-NAV-BOT-->

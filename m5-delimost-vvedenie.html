@@ -1,0 +1,677 @@
+<!doctype html>
+<!-- humanized: humanizer-ru, 2026-08-28, тире возвращено -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Делители и кратные — 5 класс</title>
+<style>
+  :root{
+    --paper:#FBF9F5;
+    --card:#FFFFFF;
+    --ink:#26202E;
+    --muted:#6B6473;
+    --line:#E7E2E8;
+    --brand:#6A3EA1;
+    --brand-soft:#EFE7F6;
+    --dvr:#2A7B6B;          /* делитель */
+    --dvr-soft:#E3F1EE;
+    --dvr-line:#B4D9D0;
+    --mul:#C06A1F;          /* кратное */
+    --mul-soft:#FBEEDD;
+    --mul-line:#F0D3AC;
+    --ok:#2E8B57;
+    --no:#C23B3B;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper)}
+  .page{
+    max-width:720px;margin:0 auto;
+    padding:clamp(1.4rem,4vw,3rem) clamp(1.1rem,4vw,2rem) 4.5rem;
+    color:var(--ink);
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    font-size:17.5px;line-height:1.68;-webkit-font-smoothing:antialiased;
+  }
+  .mono{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-variant-numeric:tabular-nums;font-weight:600}
+
+  .hero{border-bottom:3px solid var(--brand);padding-bottom:1.4rem;margin-bottom:1.8rem}
+  .eyebrow{font-size:.74rem;letter-spacing:.15em;text-transform:uppercase;color:var(--brand);font-weight:700;margin:0 0 .55rem}
+  h1{font-size:clamp(2rem,6.5vw,3rem);line-height:1.03;margin:0;font-weight:800;letter-spacing:-.02em;text-wrap:balance}
+  .tagline{font-size:1.12rem;color:var(--muted);margin:.85rem 0 0;text-wrap:pretty}
+
+  section{margin-top:2.4rem}
+  h2{font-size:1.5rem;margin:0 0 .3rem;font-weight:780;letter-spacing:-.015em;text-wrap:balance}
+  h2 .em{color:var(--brand)}
+  h3{font-size:1.12rem;margin:1.4rem 0 .2rem;font-weight:760}
+  p{margin:.7rem 0}
+  strong{font-weight:680}
+
+  .lead-in{background:var(--brand-soft);border-radius:14px;padding:1.1rem 1.3rem;font-size:1.02rem}
+  .lead-in p{margin:.4rem 0}
+  .lead-in b{color:var(--brand)}
+  .lead-in ul{margin:.5rem 0 .2rem;padding-left:1.2rem}
+  .lead-in li{margin:.25rem 0}
+
+  /* Развилка делитель / кратное */
+  .split{display:grid;gap:.9rem;margin-top:1rem}
+  @media(min-width:600px){.split{grid-template-columns:1fr 1fr}}
+  .path{border-radius:16px;padding:1.2rem 1.3rem;border:2px solid}
+  .path.dvr{background:var(--dvr-soft);border-color:var(--dvr-line)}
+  .path.mul{background:var(--mul-soft);border-color:var(--mul-line)}
+  .path .cap{font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;font-weight:700;margin:0}
+  .path.dvr .cap{color:var(--dvr)} .path.mul .cap{color:var(--mul)}
+  .path h3{margin:.2rem 0 .5rem;font-size:1.35rem;font-weight:800}
+  .path p{margin:.3rem 0;font-size:.97rem}
+  .path .who{font-weight:800;font-family:ui-monospace,Menlo,monospace}
+  .path.dvr .who{color:var(--dvr)} .path.mul .who{color:var(--mul)}
+
+  /* Плитки-правила */
+  .rules{display:flex;flex-direction:column;gap:.7rem;margin-top:1rem}
+  .rule{display:flex;align-items:center;gap:1rem;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:.85rem 1.05rem}
+  .rule .big{font-family:ui-monospace,Menlo,monospace;font-weight:800;font-size:1.35rem;flex:none;width:2.8rem;text-align:center;color:var(--brand)}
+  .rule .txt{flex:1}
+  .rule .ex{font-size:.87rem;color:var(--muted);margin-top:.3rem}
+  .rule .ex .mono{color:var(--ink)}
+
+  .note{border-left:4px solid var(--brand);background:var(--brand-soft);border-radius:0 10px 10px 0;padding:.8rem 1.1rem;margin-top:1rem;font-size:.98rem}
+  .note b{color:var(--brand)}
+  .note p{margin:.4rem 0}
+
+  .recall{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1rem 1.25rem;margin-top:1rem}
+  .recall p{margin:.4rem 0;font-size:.99rem}
+
+  /* Формула a = b · c */
+  .core{background:var(--card);border:2px solid var(--brand);border-radius:16px;padding:1.3rem;margin-top:1rem;text-align:center}
+  .core .f{font-family:ui-monospace,Menlo,monospace;font-weight:800;font-size:clamp(1.6rem,8vw,2.2rem);letter-spacing:.02em}
+  .core .f .a{color:var(--mul)} .core .f .b{color:var(--dvr)} .core .f .c{color:var(--muted)}
+  .core .legend{display:flex;flex-wrap:wrap;gap:.5rem 1.2rem;justify-content:center;margin-top:.9rem;font-size:.92rem;color:var(--muted)}
+  .core .legend b{font-family:ui-monospace,Menlo,monospace}
+  .core .legend .a b{color:var(--mul)} .core .legend .b b{color:var(--dvr)}
+
+  /* Разбор по шагам */
+  .walk{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.15rem 1.3rem;margin-top:1rem}
+  .walk .q{font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.08rem;margin:0 0 .9rem;padding-bottom:.7rem;border-bottom:1px solid var(--line)}
+  .walk ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:.6rem}
+  .walk li{font-size:.98rem;display:flex;gap:.6rem;align-items:baseline}
+  .tag{font-size:.66rem;font-weight:700;padding:.08rem .42rem;border-radius:5px;flex:none;letter-spacing:.02em}
+  .tag.d{background:var(--dvr-soft);color:var(--dvr)} .tag.m{background:var(--mul-soft);color:var(--mul)}
+  .why{color:var(--muted);font-size:.93rem}
+  .yes{color:var(--ok);font-weight:800} .no{color:var(--no);font-weight:800}
+  .verdict{margin-top:1rem;padding:.75rem 1rem;background:var(--brand-soft);border-radius:10px;font-weight:650;color:var(--brand);font-size:1rem}
+
+  .pairs{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:.9rem}
+  .pairs span{font-family:ui-monospace,Menlo,monospace;font-weight:700;background:var(--dvr-soft);border:1px solid var(--dvr-line);color:var(--dvr);border-radius:8px;padding:.2rem .6rem;font-size:.95rem}
+
+  /* Таблица */
+  .tblwrap{overflow-x:auto;margin-top:1rem}
+  table{border-collapse:collapse;width:100%;min-width:420px;font-size:.96rem}
+  th,td{border:1px solid var(--line);padding:.6rem .75rem;text-align:left}
+  thead th{background:#F7F5F9;font-weight:700}
+  td.h{font-weight:700;width:9rem}
+  td.d{background:var(--dvr-soft);color:var(--dvr)} td.m{background:var(--mul-soft);color:var(--mul)}
+
+  /* Наглядность: canvas */
+  .viz{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:1.1rem 1.1rem 1.2rem;margin-top:1rem}
+  .viz canvas{width:100%;display:block;border-radius:10px}
+  .viz .ctl{display:flex;align-items:center;gap:.7rem;flex-wrap:wrap;margin-bottom:.9rem}
+  .viz .ctl label{font-size:.92rem;color:var(--muted);font-weight:600;display:flex;align-items:center;gap:.6rem;flex:1 1 220px}
+  .viz .ctl input[type=range]{flex:1;min-width:120px;accent-color:var(--brand)}
+  .viz .ctl input[type=range]:focus-visible{outline:2px solid var(--brand);outline-offset:3px}
+  .viz .nval{font-family:ui-monospace,Menlo,monospace;font-weight:800;font-size:1.3rem;color:var(--brand);min-width:2.2rem;text-align:right}
+  .viz .quick{display:flex;gap:.4rem;flex-wrap:wrap}
+  .viz .quick button{font:inherit;font-size:.85rem;font-weight:700;font-family:ui-monospace,Menlo,monospace;border:1px solid var(--line);background:var(--paper);color:var(--muted);border-radius:8px;padding:.25rem .6rem;cursor:pointer}
+  .viz .quick button:hover{border-color:var(--brand);color:var(--brand)}
+  .viz .quick button:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+  .viz .out{margin-top:.85rem;font-size:.96rem}
+  .viz .out .lbl{color:var(--muted);font-size:.86rem}
+  .viz .out .list{font-family:ui-monospace,Menlo,monospace;font-weight:700;color:var(--dvr);font-size:1.05rem}
+  .viz .out .verd{margin-top:.5rem;background:var(--brand-soft);color:var(--brand);border-radius:9px;padding:.5rem .8rem;font-size:.93rem;font-weight:650}
+
+  /* Практика */
+  .drill{display:flex;flex-direction:column;gap:.7rem;margin-top:1rem}
+  details{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:.9rem 1.1rem}
+  details[open]{border-color:var(--brand)}
+  summary{cursor:pointer;font-weight:650;list-style:none;display:flex;justify-content:space-between;gap:1rem;align-items:center}
+  summary::-webkit-details-marker{display:none}
+  summary:focus-visible{outline:2px solid var(--brand);outline-offset:3px;border-radius:6px}
+  summary .q{font-size:1rem}
+  summary::after{content:"проверить";font-size:.8rem;color:var(--brand);font-weight:700;white-space:nowrap}
+  details[open] summary::after{content:"скрыть"}
+  .lvl{font-size:.65rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);background:var(--paper);border:1px solid var(--line);border-radius:5px;padding:.05rem .4rem;margin-right:.45rem}
+  .ans{margin-top:.75rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.96rem;color:var(--muted)}
+  .ans b{color:var(--ink)}
+
+  /* Ловушки */
+  ul.traps{list-style:none;margin:1rem 0 0;padding:0;display:flex;flex-direction:column;gap:.7rem}
+  ul.traps li{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:.85rem 1.05rem;padding-left:2.5rem;position:relative;font-size:.97rem}
+  ul.traps li::before{content:"⚠";position:absolute;left:1rem;top:.85rem;color:var(--mul);font-size:1.05rem}
+  ul.traps b{font-weight:700}
+
+  /* Проверка понимания */
+  ol.selfcheck{margin:1rem 0 0;padding-left:1.3rem}
+  ol.selfcheck li{margin:.5rem 0}
+
+  .wrapup{background:var(--brand);color:#fff;border-radius:16px;padding:1.4rem 1.5rem;margin-top:2.4rem}
+  .wrapup h2{color:#fff;margin:0 0 .5rem}
+  .wrapup p{color:#EEE6F6;margin:.4rem 0;font-size:1rem}
+  .wrapup .big-rule{font-size:1.08rem;font-weight:700;color:#fff;margin:.6rem 0}
+  .wrapup .next{font-size:.95rem;color:#D9C9EC;margin-top:1rem;padding-top:1rem;border-top:1px solid rgba(255,255,255,.2)}
+
+  /* Тренажёр */
+  .trainer{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:1.3rem 1.3rem 1.2rem;margin-top:1rem}
+  .tr-kind{font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;font-weight:800;color:var(--brand);text-align:center;margin:0 0 .5rem}
+  .tr-q{font-family:ui-monospace,Menlo,monospace;font-weight:800;font-size:clamp(1.15rem,5vw,1.5rem);text-align:center;line-height:1.35;margin:.1rem 0 .3rem}
+  .tr-hint{text-align:center;color:var(--muted);font-size:.88rem;margin:0 0 1.1rem}
+  .tr-ctl{display:flex;gap:.5rem;flex-wrap:wrap;justify-content:center;align-items:center}
+  .tr-ctl input[type=text]{font:inherit;font-family:ui-monospace,Menlo,monospace;font-weight:600;font-size:1rem;border:1px solid var(--line);border-radius:10px;padding:.55rem .8rem;flex:1 1 220px;min-width:0;background:var(--paper);color:var(--ink)}
+  .tr-ctl input[type=text]:focus-visible{outline:2px solid var(--brand);outline-offset:1px}
+  .tr-yn{display:flex;gap:.6rem;justify-content:center}
+  .tr-yn button{font:inherit;font-weight:800;font-size:1rem;border-radius:12px;padding:.55rem 1.5rem;cursor:pointer;border:2px solid var(--line);background:var(--paper);color:var(--ink)}
+  .tr-yn button:hover{border-color:var(--brand)}
+  .tr-btns{display:flex;gap:.5rem;flex-wrap:wrap;justify-content:center;margin-top:.7rem}
+  button{font-family:inherit}
+  .tr-btns button,.tr-ctl button{font:inherit;font-weight:700;font-size:.92rem;border-radius:10px;padding:.55rem 1.1rem;cursor:pointer;border:1px solid transparent}
+  .go{background:var(--brand);color:#fff}
+  .sh{background:var(--paper);border:1px solid var(--line);color:var(--ink)}
+  .nw{background:var(--brand-soft);color:var(--brand)}
+  .trainer button:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+  .tr-res{margin-top:1.1rem;font-size:.97rem}
+  .tr-res .head{font-weight:700;padding:.6rem .9rem;border-radius:9px;margin-bottom:.7rem}
+  .tr-res .head.ok{background:#E7F4EC;color:var(--ok)}
+  .tr-res .head.no{background:#FBEAEA;color:var(--no)}
+  .tr-res .head.info{background:var(--brand-soft);color:var(--brand)}
+  .tr-sol{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:.85rem 1rem}
+  .tr-sol .row{margin:.28rem 0;font-size:.93rem;font-family:ui-monospace,Menlo,monospace}
+  .tr-sol .grp{font-weight:700;margin-top:.55rem;font-family:inherit}
+  .tr-sol .grp:first-child{margin-top:0}
+  .tr-sol .fin{margin-top:.6rem;padding-top:.55rem;border-top:1px dashed var(--line);font-weight:700}
+
+  .oge-tip{display:flex;gap:.8rem;align-items:flex-start;background:#FFF8E7;border:1px solid #F0D98A;border-left:4px solid #E0A315;border-radius:10px;padding:.85rem 1.05rem;margin:1.5rem 0}
+  .oge-tip .b{font-size:.72rem;font-weight:800;letter-spacing:.03em;color:#8A6A15;white-space:nowrap;text-transform:uppercase;padding-top:.15rem}
+  .oge-tip .x{font-size:.95rem;line-height:1.5}
+
+  @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<!--LESSON-NAV-TOP--><style>.lnav{--lnav-accent:#3D5AF1}.lnav a{text-decoration:none;font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif}.lnav-top{max-width:820px;margin:0 auto;padding:.75rem clamp(1rem,4vw,1.5rem) .1rem}.lnav-top a{display:inline-flex;align-items:center;gap:.35rem;color:var(--lnav-accent);font-weight:600;font-size:.9rem}.lnav-top a:hover{text-decoration:underline}.lnav-bot{max-width:820px;margin:2.6rem auto 3rem;padding:1.1rem clamp(1rem,4vw,1.5rem) 0;border-top:1px solid #E4E8EF;display:flex;align-items:stretch;gap:.55rem}.lnav-bot a{min-width:0;display:flex;flex-direction:column;justify-content:center;gap:.15rem;border:1px solid #E4E8EF;border-radius:12px;padding:.65rem .85rem;color:#182233;background:#fff;transition:border-color .1s,transform .08s}.lnav-bot a:hover{border-color:var(--lnav-accent);transform:translateY(-1px)}.lnav-bot .prev,.lnav-bot .next{flex:1 1 0}.lnav-bot .next{text-align:right}.lnav-bot .dir{font-size:.72rem;color:#8A93A6;font-weight:600}.lnav-bot .ttl{font-size:.9rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.lnav-bot .to-cat{flex:0 0 auto;flex-direction:row;align-items:center;justify-content:center;color:var(--lnav-accent);font-weight:700;font-size:.85rem;white-space:nowrap}@media(max-width:420px){.lnav-bot .to-cat span{display:none}.lnav-bot .to-cat{padding:.65rem .7rem}}</style><nav class="lnav lnav-top"><a href="./catalog.html">← Все темы</a></nav><!--/LESSON-NAV-TOP-->
+<div class="page">
+
+  <header class="hero">
+    <p class="eyebrow">Математика · 5 класс</p>
+    <h1>Делители<br>и кратные</h1>
+    <p class="tagline">Про то, как одно число «помещается» в другом <em>без остатка</em> — и почему это два взгляда на одну и ту же ситуацию.</p>
+  </header>
+
+  <div class="lead-in">
+    <p><b>Зачем это нужно.</b> Вопрос «поделится ровно или нет» попадается тебе чуть ли не каждый день:</p>
+    <ul>
+      <li>Надо разделить <strong>24 конфеты</strong> поровну между гостями. На сколько человек получится без остатка? Только на то количество, которое делит 24 нацело: на 2, 3, 4, 6, 8, 12 или 24 человека.</li>
+      <li>Автобусы отходят <strong>каждые 15 минут</strong>. Моменты отправления — это кратные числа 15: 15, 30, 45, 60…</li>
+      <li>Раскладываешь <strong>30 плиток</strong> в прямоугольник: подойдут только такие стороны, которые «делят» 30.</li>
+    </ul>
+    <p><b>Житейское заблуждение:</b> будто поделить поровну можно всегда. Нельзя. 23 конфеты на 5 человек не разложишь: 5 не делитель числа 23.</p>
+    <p>А дальше в математике без этого вообще никак: сокращение дробей, общий знаменатель, разложение на множители, НОД и НОК — всё стоит на делителях и кратных.</p>
+  </div>
+
+  <section>
+    <h2>Сначала вспомни: <span class="em">деление с остатком</span></h2>
+    <div class="recall">
+      <p>Раздели <span class="mono">12 : 3</span> — получится ровно <span class="mono">4</span>, остатка нет.</p>
+      <p>Раздели <span class="mono">13 : 3</span> — получится <span class="mono">4</span> и <strong>остаток 1</strong>.</p>
+      <p>Вот эта разница и есть вся тема. Слово «делится» мы оставляем только для первого случая — когда остаток <strong>ровно 0</strong>.</p>
+    </div>
+    <p>Так что запомни формулировку: <strong>12 делится на 3</strong>, а <strong>13 на 3 не делится</strong>.</p>
+  </section>
+
+  <section>
+    <h2>Одна ситуация — <span class="em">два слова</span></h2>
+    <p>12 делится на 3, это мы уже выяснили. Сказать про это можно двумя способами — смотря с какой стороны глядеть:</p>
+    <div class="split">
+      <div class="path dvr">
+        <p class="cap">Взгляд снизу</p>
+        <h3>🟢 Делитель</h3>
+        <p><span class="who">3 — делитель числа 12.</span></p>
+        <p>Делитель — это <strong>то, на что делят</strong>. Он <strong>меньше или равен</strong> самому числу.</p>
+      </div>
+      <div class="path mul">
+        <p class="cap">Взгляд сверху</p>
+        <h3>🟠 Кратное</h3>
+        <p><span class="who">12 — кратное числа 3.</span></p>
+        <p>Кратное — это <strong>то, что получают повторением</strong>: 3 · 4 = 12. Оно <strong>больше или равно</strong> самому числу.</p>
+      </div>
+    </div>
+    <div class="note">
+      <p><b>Вот главная путаница темы.</b> «3 — кратное 12» — так говорить <span class="no">нельзя</span>: 3 меньше 12, значит 3 — это делитель.</p>
+      <p>Спасательный вопрос: <b>«что во что делится?»</b> Делится <strong>большое на маленькое</strong>. Маленькое — делитель, большое — кратное.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Ядро темы</h2>
+    <p>Оба слова описывают одно равенство. Возьмём натуральные числа a, b и c:</p>
+    <div class="core">
+      <div class="f"><span class="a">a</span> = <span class="b">b</span> · <span class="c">c</span></div>
+      <div class="legend">
+        <span class="a">делимое <b>a</b> — само кратное</span>
+        <span class="b">делитель <b>b</b></span>
+        <span>частное <b>c</b></span>
+      </div>
+    </div>
+    <div class="rules">
+      <div class="rule">
+        <div class="big">b</div>
+        <div class="txt">
+          <b>Делитель.</b> Число b называют делителем числа a, если a делится на b <strong>без остатка</strong> (то есть найдётся такое натуральное c, что a = b · c).
+          <div class="ex"><span class="mono">18 = 3 · 6</span> → значит 3 — делитель 18. И 6 тоже.</div>
+        </div>
+      </div>
+      <div class="rule">
+        <div class="big">a</div>
+        <div class="txt">
+          <b>Кратное.</b> Число a называют кратным числа b, если a делится на b без остатка. То же равенство <span class="mono">a = b · c</span>, просто смотрим на него с другой стороны.
+          <div class="ex"><span class="mono">18 = 3 · 6</span> → значит 18 — кратное числа 3.</div>
+        </div>
+      </div>
+      <div class="rule">
+        <div class="big">⋮</div>
+        <div class="txt">
+          <b>Запись.</b> «a делится на b» в тетради пишут словами или значком <span class="mono">a ⋮ b</span> — читается «a кратно b».
+          <div class="ex"><span class="mono">18 ⋮ 3</span> — «18 кратно 3». Верно.</div>
+        </div>
+      </div>
+    </div>
+
+    <h3>Границы, о которых нельзя забывать</h3>
+    <div class="tblwrap">
+      <table>
+        <thead><tr><th>Правило</th><th>Что это значит</th></tr></thead>
+        <tbody>
+          <tr><td class="h">Числа натуральные</td><td>Работаем с 1, 2, 3, …</td></tr>
+          <tr><td class="h">Делитель не 0</td><td>На нуль делить нельзя, поэтому делитель никогда не равен нулю.</td></tr>
+          <tr><td class="h d">1 — делитель любого числа</td><td>Любое число делится на 1, так что 1 в списке делителей всегда.</td></tr>
+          <tr><td class="h d">Число — делитель самого себя</td><td>Ведь <span class="mono">a = a · 1</span>. И кратное самому себе — тоже.</td></tr>
+          <tr><td class="h">Сколько их бывает</td><td>Делителей у числа <strong>конечное число</strong> — их можно все перечислить. А кратных — <strong>бесконечно много</strong>: само число, удвоенное, утроенное и так далее без конца.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2>Эталонный разбор: <span class="em">все делители 18</span></h2>
+    <p>Смотри, как я рассуждаю вслух. Иду по порядку с 1 и каждый раз проверяю: делится 18 нацело или нет?</p>
+    <div class="walk">
+      <p class="q">Найди все делители числа 18</p>
+      <ul>
+        <li><span class="tag d">1</span><span><span class="mono">18 : 1 = 18</span> — делится. Значит 1 — делитель, <span class="yes">а заодно и 18</span>. <span class="why">Почему сразу два: на 1 делится вообще всё, а напарником в паре оказывается само число.</span></span></li>
+        <li><span class="tag d">2</span><span><span class="mono">18 : 2 = 9</span> — делится. Значит 2 и 9 — делители. <span class="why">Почему парой: 18 = 2 · 9, и оба множителя одинаково честно делят 18.</span></span></li>
+        <li><span class="tag d">3</span><span><span class="mono">18 : 3 = 6</span> — делится. Значит 3 и 6 — делители (18 = 3 · 6).</span></li>
+        <li><span class="tag d">4</span><span><span class="mono">18 : 4 = 4</span> и остаток 2 — <span class="no">не делится</span>, 4 не делитель.</span></li>
+        <li><span class="tag d">5</span><span><span class="mono">18 : 5</span> нацело не делится — 5 не делитель.</span></li>
+        <li><span class="tag d">стоп</span><span>Дальше проверять не нужно. <span class="why">Мы дошли до пары (3; 6), где числа почти «встретились». У следующих чисел напарники были бы меньше 6 — а такие делители (1, 2, 3) мы уже нашли. Новых не появится.</span></span></li>
+      </ul>
+      <div class="pairs"><span>1 · 18</span><span>2 · 9</span><span>3 · 6</span></div>
+      <div class="verdict">Делители 18 — это 1, 2, 3, 6, 9, 18. Искать их удобно парами.</div>
+    </div>
+
+    <h3>А теперь кратные: первые пять кратных числа 7</h3>
+    <p>Кратные искать проще: просто умножай 7 на 1, 2, 3, 4, 5…</p>
+    <div class="walk">
+      <ul>
+        <li><span class="tag m">×1</span><span class="mono">7 · 1 = 7</span></li>
+        <li><span class="tag m">×2</span><span class="mono">7 · 2 = 14</span></li>
+        <li><span class="tag m">×3</span><span class="mono">7 · 3 = 21</span></li>
+        <li><span class="tag m">×4</span><span class="mono">7 · 4 = 28</span></li>
+        <li><span class="tag m">×5</span><span class="mono">7 · 5 = 35</span></li>
+      </ul>
+      <div class="verdict">Первые пять кратных: 7, 14, 21, 28, 35. И список можно продолжать бесконечно.</div>
+    </div>
+
+    <h3>Теперь ты: найди все делители 24</h3>
+    <p>Действуй так же, парами. Подсказка: (1; 24), (2; …), (3; …), (4; …) — и проверь, подходят ли 5 и 6.</p>
+    <div class="drill">
+      <details>
+        <summary><span class="q">Проверить свой список</span></summary>
+        <div class="ans">Пары: <span class="mono">1 · 24, 2 · 12, 3 · 8, 4 · 6</span>. Число 5 не подходит (24 : 5 не делится нацело), а 6 уже нашлось в паре с 4.<br>Ответ: <b>1, 2, 3, 4, 6, 8, 12, 24</b>.</div>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <h2>Наглядность: <span class="em">делители — это прямоугольники</span></h2>
+    <p>Возьми столько клеток, сколько единиц в числе, и складывай из них прямоугольники. Из 12 клеток получаются прямоугольники <span class="mono">1×12</span>, <span class="mono">2×6</span> и <span class="mono">3×4</span> — и стороны этих прямоугольников как раз и есть все делители числа 12.</p>
+    <p>А со стороной 5 прямоугольник из 12 клеток не сложится: 5 не делитель. Подвигай ползунок и убедись сам.</p>
+    <div class="viz">
+      <div class="ctl">
+        <label>Число клеток <input id="vN" type="range" min="1" max="36" step="1" value="12" aria-label="Количество клеток"><span class="nval mono" id="vVal">12</span></label>
+        <div class="quick">
+          <button type="button" data-n="12">12</button>
+          <button type="button" data-n="7">7</button>
+          <button type="button" data-n="24">24</button>
+          <button type="button" data-n="25">25</button>
+          <button type="button" data-n="36">36</button>
+        </div>
+      </div>
+      <canvas id="vCanvas" aria-label="Прямоугольники из клеток"></canvas>
+      <div class="out">
+        <span class="lbl">Делители:</span> <span class="list mono" id="vList">1, 2, 3, 4, 6, 12</span>
+        <div class="verd" id="vVerd"></div>
+      </div>
+    </div>
+    <div class="note">
+      <p><b>Кратные удобнее видеть на числовой прямой.</b> Отметь шаги по 3: <span class="mono">0, 3, 6, 9, 12, 15…</span> — кратные числа 3 это «прыжки одинаковой длины».</p>
+      <p>Попадём ли мы такими прыжками в точку 21? Да — это <span class="mono">3 · 7</span>. А в 20? Нет: 20 не делится на 3 нацело.</p>
+    </div>
+  </section>
+
+  <div class="oge-tip"><div class="b">🎯 Пригодится</div><div class="x">Быстро выписать все делители числа — база для сокращения дробей и общего знаменателя. Этим ты будешь пользоваться чуть ли не каждый урок ближайшие пять лет.</div></div>
+
+  <section>
+    <h2>Тренажёр — <span class="em">бесконечная практика</span></h2>
+    <p>Задания генерируются заново каждый раз. Три типа: выписать все делители, проверить кратность и найти общие делители двух чисел. Числа в ответе пиши через запятую, порядок не важен.</p>
+    <div class="trainer">
+      <p class="tr-kind" id="trKind">Выпиши все делители</p>
+      <div class="tr-q" id="trQ">Выпиши все делители числа 28</div>
+      <p class="tr-hint" id="trHint">Не забудь 1 и само число. Ищи парами.</p>
+      <div class="tr-ctl" id="trInputWrap">
+        <input id="trAns" type="text" placeholder="напр.  1, 2, 4, 7" aria-label="Ответ">
+        <button class="go" id="trCheck" type="button">Проверить</button>
+      </div>
+      <div class="tr-yn" id="trYN" style="display:none">
+        <button type="button" data-v="1">Да</button>
+        <button type="button" data-v="0">Нет</button>
+      </div>
+      <div class="tr-btns">
+        <button class="sh" id="trShow" type="button">Показать решение</button>
+        <button class="nw" id="trNew" type="button">🎲 Новое задание</button>
+      </div>
+      <div class="tr-res" id="trRes"></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Проверь себя</h2>
+    <p>Реши сам, потом раскрой ответ. Не подглядывай раньше времени 🙂</p>
+    <div class="drill">
+      <details>
+        <summary><span class="q"><span class="lvl">понимание</span>Прочитай запись <span class="mono">35 ⋮ 5</span> словами. Верна ли она?</span></summary>
+        <div class="ans">Читается: «<b>35 кратно 5</b>» (то есть 35 делится на 5). Проверяем: <span class="mono">35 : 5 = 7</span>, остатка нет → запись <b>верна</b>.</div>
+      </details>
+      <details>
+        <summary><span class="q"><span class="lvl">понимание</span>Является ли 9 делителем числа 45? А кратным?</span></summary>
+        <div class="ans"><span class="mono">45 : 9 = 5</span> без остатка → 9 <b>делитель</b> числа 45. А кратным 45 оно быть не может: 9 меньше 45. Наоборот — да: 45 кратно 9.</div>
+      </details>
+      <details>
+        <summary><span class="q"><span class="lvl">применение</span>Выпиши все делители числа 20.</span></summary>
+        <div class="ans">Парами: <span class="mono">1 · 20, 2 · 10, 4 · 5</span>. Число 3 не подходит.<br>Ответ: <b>1, 2, 4, 5, 10, 20</b>.</div>
+      </details>
+      <details>
+        <summary><span class="q"><span class="lvl">применение</span>Запиши первые шесть кратных числа 6.</span></summary>
+        <div class="ans">Умножаем 6 на 1, 2, 3, 4, 5, 6: <b>6, 12, 18, 24, 30, 36</b>.</div>
+      </details>
+      <details>
+        <summary><span class="q"><span class="lvl">применение</span>Делится ли 56 на 8 без остатка? Если да — запиши равенство вида a = b · c.</span></summary>
+        <div class="ans">Да: <span class="mono">56 : 8 = 7</span>, остатка нет. Равенство: <b>56 = 8 · 7</b>. Здесь 8 — делитель, 56 — кратное.</div>
+      </details>
+      <details>
+        <summary><span class="q"><span class="lvl">анализ</span>Найди ошибку: «Делители числа 16 — это 2, 4, 8».</span></summary>
+        <div class="ans">Потеряли <b>1 и 16</b>. Единица делит любое число, а число всегда делитель самого себя (<span class="mono">16 = 16 · 1</span>).<br>Правильный список: <b>1, 2, 4, 8, 16</b>.</div>
+      </details>
+      <details>
+        <summary><span class="q"><span class="lvl">анализ</span>Что изменится в списке делителей, если вместо 18 взять 19? Почему у 19 их всего два?</span></summary>
+        <div class="ans">У 18 делителей шесть: <span class="mono">1, 2, 3, 6, 9, 18</span>. А у 19 — только <b>1 и 19</b>.<br>Потому что 19 не делится нацело ни на 2, ни на 3, ни на 4… — ни одна пара множителей, кроме <span class="mono">1 · 19</span>, не даёт 19. Из 19 клеток можно сложить только полоску <span class="mono">1 × 19</span>.</div>
+      </details>
+      <details>
+        <summary><span class="q"><span class="lvl">анализ</span>Задумано число, у которого ровно три делителя: 1, само число и ещё одно — 5. Что это за число?</span></summary>
+        <div class="ans">Число делится на 5, значит оно вида <span class="mono">5 · c</span>. Если бы c было любым другим числом (кроме 5), у нас появился бы четвёртый делитель. Остаётся <span class="mono">5 · 5 = 25</span>.<br>Ответ: <b>25</b>, делители — <span class="mono">1, 5, 25</span>.</div>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <h2>Ловушки — не попадись</h2>
+    <ul class="traps">
+      <li><b>Путают делитель и кратное.</b> «3 — кратное 12» — неверно, 3 меньше 12, значит это делитель. Спасательный круг: делитель ≤ числа («то, на что делим»), кратное ≥ числа («то, что получаем повторением»).</li>
+      <li><b>Забывают 1 и само число.</b> Пишут делители 12 как «2, 3, 4, 6» и теряют 1 и 12. Начинай список именно с них — это всегда делители.</li>
+      <li><b>Обрывают перебор рано или ищут хаотично.</b> Идти надо по порядку: 1, 2, 3, … и выписывать парами. Только так список гарантированно полный.</li>
+      <li><b>Думают, что кратных конечное число.</b> Кратных бесконечно много (7, 14, 21, … без конца), а вот делителей у числа — конечное число.</li>
+      <li><b>Путают с остатком.</b> «13 делится на 3, ведь получается 4 с чем-то» — нет. Делится — это только когда остаток ровно 0.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Объясни своими словами</h2>
+    <p>Закрой урок и ответь вслух — себе, другу или родителям. Если получилось складно, тема твоя:</p>
+    <ol class="selfcheck">
+      <li>Чем делитель отличается от кратного? Приведи пример на числе 10.</li>
+      <li>Назови все делители числа 15 и первые три кратных числа 15.</li>
+      <li>Верно ли, что у любого числа кратных бесконечно много, а делителей — конечное число?</li>
+    </ol>
+    <div class="drill" style="margin-top:1rem">
+      <details>
+        <summary><span class="q">Сверить ответы</span></summary>
+        <div class="ans">
+          1) Делитель — то, на что делят (он меньше или равен числу); кратное — то, что получается повторением (оно больше или равно числу). Для 10: делители — <span class="mono">1, 2, 5, 10</span>; кратные — <span class="mono">10, 20, 30…</span><br>
+          2) Делители 15: <b>1, 3, 5, 15</b>. Первые три кратных: <b>15, 30, 45</b>.<br>
+          3) Да, верно.
+        </div>
+      </details>
+    </div>
+  </section>
+
+  <div class="wrapup">
+    <h2>Запомни главное</h2>
+    <p class="big-rule">Делитель — то, на что число делится без остатка.<br>Кратное — то, что само делится на данное число.</p>
+    <p>Это две стороны одного отношения «a делится на b», записанного равенством <strong>a = b · c</strong>. Кто меньше — тот делитель, кто больше — тот кратное.</p>
+    <p class="next">👉 Дальше: <strong>признаки делимости</strong> научат проверять делимость мгновенно, без перебора; потом появятся <strong>простые и составные числа</strong> (те самые, у которых делителей ровно два, как у 19), а за ними — <strong>НОД и НОК</strong>, где делители и кратные ищут сразу для двух чисел.</p>
+  </div>
+
+</div>
+
+<script>
+/* Наглядность: раскладка числа на прямоугольники */
+(function(){
+  var cv=document.getElementById('vCanvas'); if(!cv) return;
+  var ctx=cv.getContext('2d');
+  var sl=document.getElementById('vN'), val=document.getElementById('vVal');
+  var listEl=document.getElementById('vList'), verdEl=document.getElementById('vVerd');
+  var N=12, dpr=1;
+
+  function divisors(n){ var d=[]; for(var i=1;i<=n;i++) if(n%i===0) d.push(i); return d; }
+  function pairs(n){ var p=[]; for(var b=1;b*b<=n;b++) if(n%b===0) p.push([b,n/b]); return p; }
+
+  function draw(){
+    var ps=pairs(N), divs=divisors(N);
+    var cssW=cv.clientWidth||320;
+    var maxCols=0; ps.forEach(function(p){ if(p[1]>maxCols) maxCols=p[1]; });
+    var pad=10, labelH=20, gap=14;
+    var cell=Math.min(26,Math.floor((cssW-2*pad)/Math.max(maxCols,1)));
+    if(cell<4) cell=4;
+    var H=pad;
+    ps.forEach(function(p){ H+=labelH+p[0]*cell+gap; });
+    H=H-gap+pad;
+
+    dpr=Math.min(window.devicePixelRatio||1,2);
+    cv.width=Math.round(cssW*dpr); cv.height=Math.round(H*dpr);
+    cv.style.height=H+'px';
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+
+    ctx.fillStyle='#FBF9F5'; ctx.fillRect(0,0,cssW,H);
+    ctx.textBaseline='middle';
+    var y=pad;
+    ps.forEach(function(p){
+      var rows=p[0], cols=p[1];
+      ctx.fillStyle='#6B6473';
+      ctx.font='600 13px ui-monospace, Menlo, monospace';
+      ctx.fillText(rows+' × '+cols, pad, y+labelH/2);
+      y+=labelH;
+      for(var r=0;r<rows;r++){
+        for(var c=0;c<cols;c++){
+          var x=pad+c*cell, yy=y+r*cell;
+          ctx.fillStyle = (rows===cols) ? '#EFE7F6' : '#E3F1EE';
+          ctx.fillRect(x,yy,cell-1,cell-1);
+          ctx.strokeStyle = (rows===cols) ? '#C9B6E0' : '#B4D9D0';
+          ctx.lineWidth=1;
+          ctx.strokeRect(x+0.5,yy+0.5,cell-2,cell-2);
+        }
+      }
+      y+=rows*cell+gap;
+    });
+
+    listEl.textContent=divs.join(', ');
+    var msg;
+    if(N===1) msg='У единицы всего один делитель — она сама.';
+    else if(divs.length===2) msg='Только один прямоугольник — полоска 1 × '+N+'. Значит делителей всего два: 1 и само число.';
+    else if(ps.length && ps[ps.length-1][0]===ps[ps.length-1][1]) msg='Прямоугольников '+ps.length+', и один из них — квадрат '+ps[ps.length-1][0]+' × '+ps[ps.length-1][0]+'. Делителей '+divs.length+'.';
+    else msg='Прямоугольников '+ps.length+', а делителей '+divs.length+' — по два на каждый прямоугольник.';
+    verdEl.textContent=msg;
+  }
+  function setN(n){ N=n; sl.value=n; val.textContent=n; draw(); }
+  sl.addEventListener('input',function(){ setN(+sl.value); });
+  Array.prototype.forEach.call(document.querySelectorAll('.viz .quick button'),function(b){
+    b.addEventListener('click',function(){ setN(+b.getAttribute('data-n')); });
+  });
+  window.addEventListener('resize',draw);
+  setN(12);
+})();
+</script>
+
+<script>
+/* Тренажёр: делители, кратность, общие делители */
+(function(){
+  var kindEl=document.getElementById('trKind'), qEl=document.getElementById('trQ'), hintEl=document.getElementById('trHint');
+  var inpWrap=document.getElementById('trInputWrap'), ansEl=document.getElementById('trAns');
+  var ynEl=document.getElementById('trYN'), resEl=document.getElementById('trRes');
+  if(!qEl) return;
+  var cur=null;
+
+  function ri(a,b){ return Math.floor(Math.random()*(b-a+1))+a; }
+  function divisors(n){ var d=[]; for(var i=1;i<=n;i++) if(n%i===0) d.push(i); return d; }
+  function pairs(n){ var p=[]; for(var b=1;b*b<=n;b++) if(n%b===0) p.push([b,n/b]); return p; }
+  function common(a,b){ var da=divisors(a), out=[]; da.forEach(function(d){ if(b%d===0) out.push(d); }); return out; }
+
+  function parseList(s){
+    var parts=String(s).replace(/[;и]/g,',').split(/[,\s]+/).filter(function(x){ return x!==''; });
+    var nums=[], bad=false;
+    parts.forEach(function(p){
+      if(!/^\d+$/.test(p)){ bad=true; return; }
+      var v=parseInt(p,10);
+      if(nums.indexOf(v)===-1) nums.push(v);
+    });
+    if(bad || !nums.length) return null;
+    return nums.sort(function(x,y){ return x-y; });
+  }
+  function sameList(a,b){
+    if(!a || a.length!==b.length) return false;
+    for(var i=0;i<a.length;i++) if(a[i]!==b[i]) return false;
+    return true;
+  }
+
+  function generate(seed){
+    resEl.innerHTML=''; ansEl.value='';
+    var t = seed ? 'div' : ['div','mult','common'][ri(0,2)];
+    if(t==='div'){
+      var n;
+      if(seed) n=28;
+      else if(Math.random()<0.18) n=[7,11,13,17,19,23,29,31,37,41][ri(0,9)];   // простые
+      else n=ri(6,60);
+      cur={t:'div', n:n, ans:divisors(n)};
+      kindEl.textContent='Выпиши все делители';
+      qEl.textContent='Выпиши все делители числа '+n;
+      hintEl.textContent='Не забудь 1 и само число. Ищи парами.';
+      inpWrap.style.display=''; ynEl.style.display='none';
+      ansEl.placeholder='напр.  1, 2, 4, 7';
+    } else if(t==='mult'){
+      var b=ri(2,12), a;
+      if(Math.random()<0.5) a=b*ri(1,9);                 // кратное
+      else { a=b*ri(1,9)+ri(1,b-1); }                    // не кратное
+      cur={t:'mult', a:a, b:b, ans:(a%b===0)};
+      kindEl.textContent='Да или нет';
+      qEl.textContent='Является ли '+a+' кратным числа '+b+'?';
+      hintEl.textContent='Другими словами: делится ли '+a+' на '+b+' без остатка?';
+      inpWrap.style.display='none'; ynEl.style.display='flex';
+    } else {
+      var x=ri(8,48), y=ri(8,48);
+      cur={t:'common', a:x, b:y, ans:common(x,y)};
+      kindEl.textContent='Общие делители';
+      qEl.textContent='Найди все общие делители чисел '+x+' и '+y;
+      hintEl.textContent='Выпиши делители каждого числа и посмотри, какие встречаются в обоих списках.';
+      inpWrap.style.display=''; ynEl.style.display='none';
+      ansEl.placeholder='напр.  1, 2, 4';
+    }
+  }
+
+  function solution(){
+    var h='<div class="tr-sol">';
+    if(cur.t==='div'){
+      var ps=pairs(cur.n);
+      h+='<div class="grp">Идём по порядку и ищем пары:</div>';
+      var last=ps[ps.length-1][0], lim=Math.floor(Math.sqrt(cur.n));
+      for(var b=1;b<=lim;b++){
+        if(cur.n%b===0) h+='<div class="row">'+cur.n+' : '+b+' = '+(cur.n/b)+' → делители '+b+' и '+(cur.n/b)+'</div>';
+        else h+='<div class="row">'+cur.n+' : '+b+' — с остатком '+(cur.n%b)+', не делитель</div>';
+      }
+      h+='<div class="row">Дальше проверять нечего: напарники пошли бы меньше '+(cur.n/last)+', а их мы уже нашли.</div>';
+      h+='<div class="fin">Делители '+cur.n+': '+cur.ans.join(', ')+' — всего '+cur.ans.length+'.';
+      if(cur.ans.length===2) h+=' Только 1 и само число.';
+      h+='</div>';
+    } else if(cur.t==='mult'){
+      var c=Math.floor(cur.a/cur.b), r=cur.a%cur.b;
+      h+='<div class="grp">Делим:</div>';
+      if(r===0){
+        h+='<div class="row">'+cur.a+' : '+cur.b+' = '+c+', остаток 0</div>';
+        h+='<div class="row">Значит '+cur.a+' = '+cur.b+' · '+c+'</div>';
+        h+='<div class="fin">Да, '+cur.a+' кратно '+cur.b+'. А '+cur.b+' — делитель числа '+cur.a+'.</div>';
+      } else {
+        h+='<div class="row">'+cur.a+' : '+cur.b+' = '+c+', остаток '+r+'</div>';
+        h+='<div class="row">'+cur.b+' · '+c+' = '+(cur.b*c)+', а до '+cur.a+' не хватает '+r+'</div>';
+        h+='<div class="fin">Нет: остаток не 0, значит '+cur.a+' не кратно '+cur.b+'.</div>';
+      }
+    } else {
+      var da=divisors(cur.a), db=divisors(cur.b);
+      h+='<div class="grp">Делители '+cur.a+':</div><div class="row">'+da.join(', ')+'</div>';
+      h+='<div class="grp">Делители '+cur.b+':</div><div class="row">'+db.join(', ')+'</div>';
+      h+='<div class="grp">Что встречается в обоих списках:</div><div class="row">'+cur.ans.join(', ')+'</div>';
+      h+='<div class="fin">Общие делители: '+cur.ans.join(', ')+'.';
+      if(cur.ans.length===1) h+=' Только единица — общих делителей больше нет (единица общая всегда).';
+      h+='</div>';
+    }
+    return h+'</div>';
+  }
+
+  function verdict(ok,msg){
+    resEl.innerHTML='<div class="head '+(ok?'ok':'no')+'">'+(ok?'✓ ':'✗ ')+msg+'</div>'+solution();
+  }
+
+  function checkText(){
+    var got=parseList(ansEl.value);
+    if(got===null){ resEl.innerHTML='<div class="head no">Введи числа через запятую, например «1, 2, 4».</div>'; return; }
+    if(sameList(got,cur.ans)) verdict(true,'Верно! Список полный.');
+    else{
+      var hint='Не совсем.';
+      if(got.indexOf(1)===-1) hint='Не совсем — потерялась единица, она делитель любого числа.';
+      else if(cur.t==='div' && got.indexOf(cur.n)===-1) hint='Не совсем — забыл само число '+cur.n+', оно тоже делитель.';
+      else if(got.length<cur.ans.length) hint='Не совсем — нашёл не все, посмотри разбор.';
+      else if(got.length>cur.ans.length) hint='Не совсем — в списке лишние числа, проверь каждое делением.';
+      verdict(false,hint);
+    }
+  }
+  function checkYN(v){
+    if(v===cur.ans) verdict(true,'Верно!');
+    else verdict(false,'Не угадал — смотри деление ниже.');
+  }
+
+  document.getElementById('trCheck').addEventListener('click',checkText);
+  document.getElementById('trShow').addEventListener('click',function(){
+    resEl.innerHTML='<div class="head info">Разбор:</div>'+solution();
+  });
+  document.getElementById('trNew').addEventListener('click',function(){
+    generate(false);
+    if(inpWrap.style.display!=='none') ansEl.focus();
+  });
+  Array.prototype.forEach.call(ynEl.querySelectorAll('button'),function(b){
+    b.addEventListener('click',function(){ checkYN(b.getAttribute('data-v')==='1'); });
+  });
+  ansEl.addEventListener('keydown',function(e){ if(e.key==='Enter') checkText(); });
+
+  generate(true);
+})();
+</script>
+<!--LESSON-NAV-BOT--><nav class="lnav lnav-bot"><a class="prev" href="./m5-okruglenie-naturalnyh.html"><span class="dir">← Предыдущая</span><span class="ttl">Округление натуральных чисел и прикидка</span></a><a class="to-cat" href="./catalog.html">📚 <span>Все темы</span></a><a class="next" href="./m5-priznaki-delimosti.html"><span class="dir">Следующая →</span><span class="ttl">Признаки делимости на 2, 3, 5, 9, 10</span></a></nav><!--/LESSON-NAV-BOT-->

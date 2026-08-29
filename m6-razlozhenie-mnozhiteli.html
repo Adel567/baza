@@ -1,0 +1,604 @@
+<!doctype html>
+<!-- humanized: humanizer-ru, 2026-08-29, тире возвращено -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Разложение числа на простые множители — 6 класс</title>
+<style>
+  :root{
+    --paper:#FBF9F5;
+    --card:#FFFFFF;
+    --ink:#26202E;
+    --muted:#6B6473;
+    --line:#E7E2E8;
+    --brand:#6A3EA1;
+    --brand-soft:#EFE7F6;
+    --prime:#2E8B57;        /* простые множители */
+    --prime-soft:#E7F4EC;
+    --prime-line:#B6DCC6;
+    --comp:#CF5A34;         /* составные — их ещё делить */
+    --comp-soft:#FBEADF;
+    --comp-line:#F0CDB8;
+    --ok:#2E8B57;
+    --no:#C23B3B;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper)}
+  .page{
+    max-width:720px;margin:0 auto;
+    padding:clamp(1.4rem,4vw,3rem) clamp(1.1rem,4vw,2rem) 4.5rem;
+    color:var(--ink);
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    font-size:17.5px;line-height:1.68;-webkit-font-smoothing:antialiased;
+  }
+  .mono{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-variant-numeric:tabular-nums;font-weight:600}
+  sup{font-size:.68em;line-height:0}
+
+  .hero{border-bottom:3px solid var(--brand);padding-bottom:1.4rem;margin-bottom:1.8rem}
+  .eyebrow{font-size:.74rem;letter-spacing:.15em;text-transform:uppercase;color:var(--brand);font-weight:700;margin:0 0 .55rem}
+  h1{font-size:clamp(1.9rem,6vw,2.8rem);line-height:1.05;margin:0;font-weight:800;letter-spacing:-.02em;text-wrap:balance}
+  .tagline{font-size:1.12rem;color:var(--muted);margin:.85rem 0 0;text-wrap:pretty}
+
+  section{margin-top:2.4rem}
+  h2{font-size:1.5rem;margin:0 0 .3rem;font-weight:780;letter-spacing:-.015em;text-wrap:balance}
+  h2 .em{color:var(--brand)}
+  h3{font-size:1.1rem;margin:1.4rem 0 .2rem;font-weight:750}
+  p{margin:.7rem 0}
+  strong{font-weight:680}
+
+  .lead-in{background:var(--brand-soft);border-radius:14px;padding:1.1rem 1.3rem;font-size:1.02rem}
+  .lead-in p{margin:.4rem 0}
+  .lead-in b{color:var(--brand)}
+  .lead-in ul{margin:.5rem 0 .2rem;padding-left:1.15rem}
+  .lead-in li{margin:.3rem 0}
+
+  /* Повторение перед стартом */
+  .recall{border:1px dashed var(--line);background:var(--card);border-radius:14px;padding:1rem 1.25rem;margin-top:1rem}
+  .recall p{margin:.45rem 0;font-size:.98rem}
+  .recall .cap{font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;font-weight:700;color:var(--muted);margin:0 0 .4rem}
+
+  /* Ядро — определение */
+  .core{border:2px solid var(--brand);border-radius:16px;padding:1.2rem 1.35rem;margin-top:1rem;background:var(--card)}
+  .core .cap{font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;font-weight:700;color:var(--brand);margin:0 0 .4rem}
+  .core .big{font-size:1.12rem;font-weight:700;margin:.2rem 0}
+  .core .demo{font-family:ui-monospace,Menlo,Consolas,monospace;font-weight:700;font-size:1.25rem;text-align:center;margin:1rem 0 .2rem;color:var(--brand);overflow-x:auto}
+
+  .note{border-left:4px solid var(--brand);background:var(--brand-soft);border-radius:0 10px 10px 0;padding:.8rem 1.1rem;margin-top:1rem;font-size:.98rem}
+  .note b{color:var(--brand)}
+  .note p{margin:.35rem 0}
+
+  /* Правила-плитки */
+  ul.limits{list-style:none;margin:1rem 0 0;padding:0;display:flex;flex-direction:column;gap:.55rem}
+  ul.limits li{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:.7rem 1rem;font-size:.97rem}
+
+  /* Алгоритм */
+  ol.steps{counter-reset:s;list-style:none;margin:1rem 0 0;padding:0;display:flex;flex-direction:column;gap:.6rem}
+  ol.steps li{counter-increment:s;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:.8rem 1rem .8rem 3rem;position:relative;font-size:.98rem}
+  ol.steps li::before{content:counter(s);position:absolute;left:.85rem;top:.72rem;width:1.5rem;height:1.5rem;border-radius:50%;background:var(--brand-soft);color:var(--brand);font-weight:800;font-size:.85rem;display:flex;align-items:center;justify-content:center}
+
+  /* Лесенка */
+  .ladwrap{overflow-x:auto;margin-top:1rem}
+  table.ladder{border-collapse:collapse;font-family:ui-monospace,Menlo,Consolas,monospace;font-variant-numeric:tabular-nums;font-size:1.05rem}
+  table.ladder td{padding:.22rem .8rem;white-space:nowrap}
+  table.ladder td.l{text-align:right;font-weight:700;border-right:2px solid var(--brand);min-width:4.5rem}
+  table.ladder td.r{text-align:left;font-weight:800;color:var(--prime);min-width:2.5rem}
+  table.ladder td.c{font-family:system-ui,-apple-system,sans-serif;font-size:.86rem;color:var(--muted);white-space:normal;font-weight:400}
+  table.ladder tr.fin td.l{color:var(--brand)}
+
+  .walk{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.15rem 1.3rem;margin-top:1rem}
+  .walk .q{font-weight:700;font-size:1.05rem;margin:0 0 .5rem;padding-bottom:.6rem;border-bottom:1px solid var(--line)}
+  .verdict{margin-top:1rem;padding:.75rem 1rem;background:var(--brand-soft);border-radius:10px;font-weight:650;color:var(--brand);font-size:1rem}
+  .checkline{margin-top:.7rem;padding:.6rem .9rem;background:var(--prime-soft);border:1px solid var(--prime-line);border-radius:10px;font-size:.95rem;color:#1F5F3C}
+
+  /* Дерево-визуализация */
+  .viz{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:1.15rem 1.2rem;margin-top:1rem}
+  .viz canvas{width:100%;height:auto;display:block;touch-action:manipulation}
+  .viz-btns{display:flex;flex-wrap:wrap;gap:.45rem;justify-content:center;margin-bottom:1rem}
+  .viz-btns button{font:inherit;font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:.92rem;border:2px solid var(--line);background:var(--paper);color:var(--muted);border-radius:10px;padding:.4rem .85rem;cursor:pointer;transition:border-color .1s,background .1s,color .1s}
+  .viz-btns button.on{border-color:var(--brand);background:var(--brand-soft);color:var(--brand)}
+  .viz-btns button:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+  .viz-out{text-align:center;font-family:ui-monospace,Menlo,Consolas,monospace;font-weight:700;font-size:1.05rem;margin-top:.9rem;color:var(--ink);overflow-x:auto}
+  .viz-cap{text-align:center;font-size:.87rem;color:var(--muted);margin:.4rem 0 0}
+
+  /* Практика */
+  .drill{display:flex;flex-direction:column;gap:.7rem;margin-top:1rem}
+  details{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:.9rem 1.1rem}
+  details[open]{border-color:var(--brand)}
+  summary{cursor:pointer;font-weight:650;list-style:none;display:flex;justify-content:space-between;gap:1rem;align-items:center}
+  summary::-webkit-details-marker{display:none}
+  summary:focus-visible{outline:2px solid var(--brand);outline-offset:3px;border-radius:6px}
+  summary .q{font-size:1rem}
+  summary::after{content:"проверить";font-size:.8rem;color:var(--brand);font-weight:700;white-space:nowrap}
+  details[open] summary::after{content:"скрыть"}
+  .ans{margin-top:.75rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.96rem;color:var(--muted)}
+  .ans b{color:var(--ink)}
+  .lvl{font-size:.68rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:1.2rem 0 -.2rem}
+
+  /* Ловушки */
+  ul.traps{list-style:none;margin:1rem 0 0;padding:0;display:flex;flex-direction:column;gap:.7rem}
+  ul.traps li{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:.85rem 1.05rem;padding-left:2.5rem;position:relative;font-size:.97rem}
+  ul.traps li::before{content:"⚠";position:absolute;left:1rem;top:.85rem;color:var(--comp);font-size:1.05rem}
+  ul.traps b{font-weight:700}
+
+  .wrapup{background:var(--brand);color:#fff;border-radius:16px;padding:1.4rem 1.5rem;margin-top:2.4rem}
+  .wrapup h2{color:#fff;margin:0 0 .5rem}
+  .wrapup p{color:#EEE6F6;margin:.4rem 0;font-size:1rem}
+  .wrapup .big-rule{font-size:1.08rem;font-weight:700;color:#fff;margin:.6rem 0}
+  .wrapup .next{font-size:.95rem;color:#D9C9EC;margin-top:1rem;padding-top:1rem;border-top:1px solid rgba(255,255,255,.2)}
+
+  /* Тренажёр */
+  .trainer{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:1.3rem 1.3rem 1.2rem;margin-top:1rem}
+  .tr-num{font-family:ui-monospace,Menlo,monospace;font-weight:800;font-size:clamp(2.1rem,10vw,3rem);text-align:center;letter-spacing:.03em;margin:.1rem 0 .3rem;color:var(--ink)}
+  .tr-hint{text-align:center;color:var(--muted);font-size:.9rem;margin:0 0 1.1rem}
+  .tr-in{display:flex;justify-content:center;margin-bottom:1.1rem}
+  .tr-in input{font-family:ui-monospace,Menlo,Consolas,monospace;font-weight:700;font-size:1.15rem;text-align:center;width:min(100%,18rem);padding:.55rem .7rem;border:2px solid var(--line);border-radius:12px;background:var(--paper);color:var(--ink)}
+  .tr-in input:focus-visible{outline:none;border-color:var(--brand)}
+  .tr-btns{display:flex;gap:.5rem;flex-wrap:wrap;justify-content:center}
+  .tr-btns button{font:inherit;font-weight:700;font-size:.92rem;border-radius:10px;padding:.55rem 1.1rem;cursor:pointer;border:1px solid transparent}
+  .tr-btns .go{background:var(--brand);color:#fff}
+  .tr-btns .sh{background:var(--paper);border:1px solid var(--line);color:var(--ink)}
+  .tr-btns .nw{background:var(--brand-soft);color:var(--brand)}
+  .tr-btns button:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+  .tr-res{margin-top:1.1rem;font-size:.97rem}
+  .tr-res .head{font-weight:700;padding:.6rem .9rem;border-radius:9px;margin-bottom:.7rem}
+  .tr-res .head.ok{background:#E7F4EC;color:var(--ok)}
+  .tr-res .head.no{background:#FBEAEA;color:var(--no)}
+  .tr-res .head.info{background:var(--brand-soft);color:var(--brand)}
+  .tr-sol{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:.85rem 1rem}
+  .tr-sol .grp{font-weight:700;margin:0 0 .5rem}
+  .tr-sol .fin{margin-top:.8rem;font-family:ui-monospace,Menlo,Consolas,monospace;font-weight:800;font-size:1.05rem;color:var(--brand);overflow-x:auto}
+  .tr-sol .chk{margin-top:.5rem;font-size:.92rem;color:#1F5F3C}
+
+  .oge-tip{display:flex;gap:.8rem;align-items:flex-start;background:#FFF8E7;border:1px solid #F0D98A;border-left:4px solid #E0A315;border-radius:10px;padding:.85rem 1.05rem;margin:1.5rem 0}
+  .oge-tip .b{font-size:.72rem;font-weight:800;letter-spacing:.03em;color:#8A6A15;white-space:nowrap;text-transform:uppercase;padding-top:.15rem}
+  .oge-tip .x{font-size:.95rem;line-height:1.5}
+
+  @media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+<!--LESSON-NAV-TOP--><style>.lnav{--lnav-accent:#3D5AF1}.lnav a{text-decoration:none;font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif}.lnav-top{max-width:820px;margin:0 auto;padding:.75rem clamp(1rem,4vw,1.5rem) .1rem}.lnav-top a{display:inline-flex;align-items:center;gap:.35rem;color:var(--lnav-accent);font-weight:600;font-size:.9rem}.lnav-top a:hover{text-decoration:underline}.lnav-bot{max-width:820px;margin:2.6rem auto 3rem;padding:1.1rem clamp(1rem,4vw,1.5rem) 0;border-top:1px solid #E4E8EF;display:flex;align-items:stretch;gap:.55rem}.lnav-bot a{min-width:0;display:flex;flex-direction:column;justify-content:center;gap:.15rem;border:1px solid #E4E8EF;border-radius:12px;padding:.65rem .85rem;color:#182233;background:#fff;transition:border-color .1s,transform .08s}.lnav-bot a:hover{border-color:var(--lnav-accent);transform:translateY(-1px)}.lnav-bot .prev,.lnav-bot .next{flex:1 1 0}.lnav-bot .next{text-align:right}.lnav-bot .dir{font-size:.72rem;color:#8A93A6;font-weight:600}.lnav-bot .ttl{font-size:.9rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.lnav-bot .to-cat{flex:0 0 auto;flex-direction:row;align-items:center;justify-content:center;color:var(--lnav-accent);font-weight:700;font-size:.85rem;white-space:nowrap}@media(max-width:420px){.lnav-bot .to-cat span{display:none}.lnav-bot .to-cat{padding:.65rem .7rem}}</style><nav class="lnav lnav-top"><a href="./catalog.html">← Все темы</a></nav><!--/LESSON-NAV-TOP-->
+<div class="page">
+
+  <header class="hero">
+    <p class="eyebrow">Математика · 6 класс</p>
+    <h1>Разложение числа<br>на простые множители</h1>
+    <p class="tagline">Как разобрать любое число на «детальки» — и почему набор этих деталек всегда один и тот же.</p>
+  </header>
+
+  <div class="lead-in">
+    <p><b>Зачем это уметь.</b> Разложить число на простые множители — значит разобрать его на детальки. Любое составное число собирается из простых (2, 3, 5, 7, 11, …): перемножил — получил число. И наоборот, любое число разбирается обратно.</p>
+    <p>Зачем это нужно прямо сейчас:</p>
+    <ul>
+      <li>чтобы быстро находить <b>НОД</b> — например, на сколько одинаковых букетов разложить 24 розы и 36 тюльпанов;</li>
+      <li>чтобы находить <b>НОК</b> — например, когда снова совпадут два автобуса, которые ходят каждые 12 и каждые 18 минут;</li>
+      <li>чтобы сокращать дроби и видеть, какие делители у числа вообще есть.</li>
+    </ul>
+  </div>
+
+  <section>
+    <h2>Сначала разрушим <span class="em">одно заблуждение</span></h2>
+    <p>Многие думают так: множители у числа можно подобрать как угодно, вариантов куча. И ведь правда — 12 записывается и как <span class="mono">2 · 6</span>, и как <span class="mono">3 · 4</span>, и как <span class="mono">1 · 12</span>. Порядка тут вроде бы никакого.</p>
+    <p>А теперь потребуем, чтобы все множители были <strong>простыми</strong>. И свобода кончилась. Набор простых множителей у числа <strong>единственный</strong>, отличаться может только порядок записи. Двенадцать — это всегда <span class="mono">2 · 2 · 3</span>, и никак иначе.</p>
+    <div class="recall">
+      <p class="cap">Что вспомнить перед стартом</p>
+      <p><strong>Простое число</strong> делится только на 1 и на само себя. Дробить его дальше некуда. Составное разделить ещё на что-то можно.</p>
+      <p><strong>Признаки делимости</strong> понадобятся на каждом шаге: чётное число делится на 2; если сумма цифр делится на 3, то и само число делится на 3; число, оканчивающееся на 0 или 5, делится на 5.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Ядро темы</h2>
+    <div class="core">
+      <p class="cap">Определение</p>
+      <p class="big">Разложением числа на простые множители называют запись этого числа в виде произведения простых чисел.</p>
+      <p class="demo">60 = 2 · 2 · 3 · 5 = 2<sup>2</sup> · 3 · 5</p>
+    </div>
+
+    <h3>Как это записывают</h3>
+    <p>Между множителями ставят знак умножения «·», запятых никаких. Одинаковые множители удобно свернуть в степень: <span class="mono">2 · 2 · 2 = 2<sup>3</sup></span>. Показатель степени говорит, <strong>сколько раз множитель повторился</strong>.</p>
+
+    <h3>Где границы</h3>
+    <ul class="limits">
+      <li>Раскладывают только натуральные числа <strong>больше 1</strong>.</li>
+      <li>Число <strong>1 не раскладывают</strong>: простых множителей у него нет.</li>
+      <li>Само простое число «раскладывается» в себя: <span class="mono">7 = 7</span>. Это нормальный ответ, а не ошибка.</li>
+      <li>Разложение <strong>единственно</strong>. Это основная теорема арифметики; тебе пока хватит самого факта: набор простых множителей у числа один.</li>
+    </ul>
+
+    <h3>Алгоритм «лесенкой» (столбиком)</h3>
+    <ol class="steps">
+      <li>Слева пишем число, справа от вертикальной черты — <strong>наименьший</strong> простой делитель.</li>
+      <li>Делим, частное пишем слева ниже.</li>
+      <li>Повторяем, пока слева не останется <strong>1</strong>.</li>
+      <li>Всё, что справа от черты, и есть простые множители.</li>
+    </ol>
+    <div class="note"><p><b>Почему именно наименьший.</b> Берёшь каждый раз самый маленький простой делитель — и идёшь по простым числам по порядку: 2, потом 3, 5, 7 … Ничего не пропустишь. Начнёшь с большого множителя — запутаешься на втором шаге.</p></div>
+  </section>
+
+  <section>
+    <h2>Эталонный разбор: <span class="em">разложить 180</span></h2>
+    <p>Смотри, как я рассуждаю на каждом шаге — вслух, ничего не пропуская.</p>
+    <div class="walk">
+      <p class="q">180 = ?</p>
+      <div class="ladwrap">
+        <table class="ladder">
+          <tr><td class="l">180</td><td class="r">2</td><td class="c">180 чётное → делим на наименьшее простое, на 2</td></tr>
+          <tr><td class="l">90</td><td class="r">2</td><td class="c">90 ещё чётное → снова на 2</td></tr>
+          <tr><td class="l">45</td><td class="r">3</td><td class="c">45 на 2 не делится; делится на 3, ведь 4 + 5 = 9</td></tr>
+          <tr><td class="l">15</td><td class="r">3</td><td class="c">15 делится на 3, ведь 1 + 5 = 6</td></tr>
+          <tr><td class="l">5</td><td class="r">5</td><td class="c">5 — простое, делим его само на себя</td></tr>
+          <tr class="fin"><td class="l">1</td><td class="r"></td><td class="c">слева 1 → лесенка закончилась</td></tr>
+        </table>
+      </div>
+      <div class="verdict">180 = 2 · 2 · 3 · 3 · 5 = 2<sup>2</sup> · 3<sup>2</sup> · 5</div>
+      <div class="checkline"><strong>Проверка обратным умножением:</strong> 2 · 2 = 4, 4 · 3 = 12, 12 · 3 = 36, 36 · 5 = 180 ✓</div>
+    </div>
+
+    <h3>Теперь допиши сам: разложить 84</h3>
+    <p>Два шага я сделал, дальше — ты. На чём споткнулась лесенка?</p>
+    <div class="walk">
+      <div class="ladwrap">
+        <table class="ladder">
+          <tr><td class="l">84</td><td class="r">2</td><td class="c"></td></tr>
+          <tr><td class="l">42</td><td class="r">2</td><td class="c"></td></tr>
+          <tr><td class="l">21</td><td class="r">?</td><td class="c">на 2 не делится. Какой следующий простой делитель? Запиши его и продолжи</td></tr>
+          <tr><td class="l">?</td><td class="r">?</td><td class="c"></td></tr>
+          <tr class="fin"><td class="l">1</td><td class="r"></td><td class="c"></td></tr>
+        </table>
+      </div>
+      <details style="margin-top:1rem">
+        <summary><span class="q">Подсказка и ответ</span></summary>
+        <div class="ans">Подсказка: <b>21 = 3 · 7</b>. Значит лесенка идёт так: 21 делим на 3, слева остаётся 7; 7 простое, делим на 7, слева 1. Итог: <b>84 = 2 · 2 · 3 · 7 = 2<sup>2</sup> · 3 · 7</b>. Проверка: 2 · 2 = 4, 4 · 3 = 12, 12 · 7 = 84 ✓</div>
+      </details>
+    </div>
+
+    <h3>И одно целиком самостоятельно: разложить 126</h3>
+    <div class="drill">
+      <details>
+        <summary><span class="q">Разложи 126 на простые множители</span></summary>
+        <div class="ans"><b>126 = 2 · 3 · 3 · 7 = 2 · 3<sup>2</sup> · 7</b>. Проверка: 2 · 3 = 6, 6 · 3 = 18, 18 · 7 = 126 ✓</div>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <h2>Дерево множителей — <span class="em">второй взгляд на то же самое</span></h2>
+    <p>Лесенка — не единственный способ. Можно рисовать <strong>дерево</strong>: от числа отводим две ветки на любые два множителя; составные ветвим дальше, простые обводим — это «листья», дальше они не делятся.</p>
+    <p>Начни дерево для числа 60 с разных пар и посмотри на листья внизу. Переключай первую развилку:</p>
+
+    <div class="viz">
+      <div class="viz-btns" id="vizBtns"></div>
+      <canvas id="tree" width="480" height="270" role="img" aria-label="Дерево множителей числа 60"></canvas>
+      <div class="viz-out" id="vizOut"></div>
+      <p class="viz-cap">Зелёные кружки — простые числа, «листья» дерева. Оранжевые — составные, их ветвим дальше.</p>
+    </div>
+
+    <div class="note"><p><b>Что ты только что увидел.</b> Первые ветки каждый раз другие, форма дерева другая — а набор листьев всегда один: 2, 2, 3, 5. Вот она, единственность разложения, прямо на картинке.</p></div>
+  </section>
+
+  <div class="oge-tip"><div class="b">🎯 В ОГЭ</div><div class="x"><b>Задание 6.</b> Разложение на простые множители помогает сокращать дроби и находить НОД и НОК — сразу видно, из каких «кирпичиков» состоят оба числа.</div></div>
+
+  <section>
+    <h2>Тренажёр — <span class="em">бесконечная практика</span></h2>
+    <p>Появляется число. Разложи его и запиши ответ: множители через <span class="mono">*</span> или пробел, например <span class="mono">2*2*3*5</span>. Степени тоже понимаю: <span class="mono">2^2*3*5</span>. Порядок не важен.</p>
+    <div class="trainer">
+      <div class="tr-num mono" id="trNum">180</div>
+      <p class="tr-hint">Разложи на простые множители</p>
+      <div class="tr-in"><input id="trInput" type="text" inputmode="text" autocomplete="off" spellcheck="false" placeholder="например 2*2*3*3*5" aria-label="Твой ответ: простые множители"></div>
+      <div class="tr-btns">
+        <button class="go" id="trCheck" type="button">Проверить</button>
+        <button class="sh" id="trShow" type="button">Показать разбор</button>
+        <button class="nw" id="trNew" type="button">🎲 Новое число</button>
+      </div>
+      <div class="tr-res" id="trRes"></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Проверь себя</h2>
+    <p>Реши сам, потом нажимай «проверить». Не подглядывай раньше времени 🙂</p>
+
+    <p class="lvl">Понимание</p>
+    <div class="drill">
+      <details>
+        <summary><span class="q">1) Прочитай запись <span class="mono">2<sup>2</sup> · 5 · 7</span>. Какое это число?</span></summary>
+        <div class="ans">2<sup>2</sup> — это 4. Дальше 4 · 5 = 20, 20 · 7 = <b>140</b>.</div>
+      </details>
+      <details>
+        <summary><span class="q">2) Является ли запись <span class="mono">6 · 5</span> разложением числа 30 на простые множители?</span></summary>
+        <div class="ans"><b>Нет.</b> Произведение верное (6 · 5 = 30), но 6 не простое. Надо доразложить: 6 = 2 · 3, значит <b>30 = 2 · 3 · 5</b>.</div>
+      </details>
+    </div>
+
+    <p class="lvl">Применение</p>
+    <div class="drill">
+      <details>
+        <summary><span class="q">3) Разложи на простые множители: <span class="mono">48, 75, 200</span></span></summary>
+        <div class="ans"><b>48 = 2<sup>4</sup> · 3</b> (48, 24, 12, 6, 3, 1 — четыре раза делили на 2, потом на 3).<br>
+        <b>75 = 3 · 5<sup>2</sup></b> (75 на 2 не делится; 7 + 5 = 12 делится на 3 → 75 : 3 = 25 = 5 · 5).<br>
+        <b>200 = 2<sup>3</sup> · 5<sup>2</sup></b> (200, 100, 50, 25 — три раза на 2, потом 25 = 5 · 5).</div>
+      </details>
+    </div>
+
+    <p class="lvl">Анализ</p>
+    <div class="drill">
+      <details>
+        <summary><span class="q">4) Найди ошибку: «90 = 2 · 45». Почему это ещё не разложение и как довести до конца?</span></summary>
+        <div class="ans">Равенство верное, но <b>45 — составное число</b>, значит работа не закончена. Разложение готово только тогда, когда все множители простые. Доводим: 45 = 3 · 15 = 3 · 3 · 5. Итог: <b>90 = 2 · 3<sup>2</sup> · 5</b>.</div>
+      </details>
+      <details>
+        <summary><span class="q">5) Обратная задача: число разложилось как <span class="mono">2<sup>2</sup> · 3 · 5</span>. Что это за число?</span></summary>
+        <div class="ans">Просто перемножаем: 2<sup>2</sup> = 4, 4 · 3 = 12, 12 · 5 = <b>60</b>.</div>
+      </details>
+      <details>
+        <summary><span class="q">6) Что изменится в разложении числа 36, если его умножить на 2?</span></summary>
+        <div class="ans">36 = 2<sup>2</sup> · 3<sup>2</sup>. Умножаем на 2 — добавляется ещё одна двойка, получается <b>2<sup>3</sup> · 3<sup>2</sup></b> (это 72). Тройки не тронулись вообще.</div>
+      </details>
+      <details>
+        <summary><span class="q">7) Предскажи: сколько простых множителей (с учётом повторов) у числа 100? Потом проверь разложением и объясни.</span></summary>
+        <div class="ans">100 = 2 · 50 = 2 · 2 · 25 = 2 · 2 · 5 · 5, то есть <b>2<sup>2</sup> · 5<sup>2</sup></b>. Множителей с учётом повторов — <b>4</b>. Совпало с твоим предсказанием?</div>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <h2>Ловушки — не попадись</h2>
+    <ul class="traps">
+      <li><b>Остановился на составном множителе.</b> Написал «90 = 2 · 45» и решил, что готово. А 45 составное, его ещё раскладывать (45 = 3<sup>2</sup> · 5). Правило: разложение закончено, только когда слева в лесенке осталась 1, а все множители справа простые.</li>
+      <li><b>Потерял множитель.</b> Торопишься при делении и один делитель пропускаешь. Защита одна: <strong>проверка обратным умножением</strong>. Перемножь всё, что получилось, и сравни с исходным числом.</li>
+      <li><b>Напутал со степенью.</b> 2 · 2 · 2 — это 2<sup>3</sup>, а не 2 · 3 и не 6. Показатель показывает, сколько раз множитель повторился, а не результат умножения.</li>
+      <li><b>Взял не наименьший делитель.</b> Начал с большого множителя и запутался. Иди по простым по порядку: сначала пробуй 2, потом 3, 5, 7, …</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Объясни своими словами</h2>
+    <p>Закрой страницу и ответь вслух — себе, другу или голосовым сообщением:</p>
+    <div class="drill">
+      <details>
+        <summary><span class="q">Что значит «разложить число на простые множители»?</span></summary>
+        <div class="ans">Представить число в виде произведения, в котором все множители простые.</div>
+      </details>
+      <details>
+        <summary><span class="q">Как проверить, что разложение выполнено верно?</span></summary>
+        <div class="ans">Перемножить все полученные множители обратно и сравнить с исходным числом. И убедиться, что каждый множитель действительно простой.</div>
+      </details>
+      <details>
+        <summary><span class="q">Разложи 90 на простые множители</span></summary>
+        <div class="ans"><b>90 = 2 · 3<sup>2</sup> · 5</b>. Проверка: 2 · 3 = 6, 6 · 3 = 18, 18 · 5 = 90 ✓</div>
+      </details>
+    </div>
+  </section>
+
+  <div class="wrapup">
+    <h2>Запомни главное</h2>
+    <p class="big-rule">Спускайся лесенкой до 1, каждый раз бери наименьший простой делитель — и обязательно проверь ответ обратным умножением.</p>
+    <p>Разложить число на простые множители — значит представить его произведением простых чисел. Набор множителей у числа один, как дерево ни ветви.</p>
+    <p class="next">👉 Дальше эти «кирпичики» заработают в полную силу: по разложениям двух чисел находят <strong>НОД</strong> (наибольший общий делитель) и <strong>НОК</strong> (наименьшее общее кратное) — те самые букеты из роз с тюльпанами и автобусы, что ходят каждые 12 и 18 минут.</p>
+  </div>
+
+</div>
+
+<script>
+(function(){
+  /* ---------- общее ---------- */
+  function fact(n){ var f=[],d=2,m=n; while(d*d<=m){ while(m%d===0){ f.push(d); m=m/d; } d++; } if(m>1) f.push(m); return f; }
+  function powFmt(f){
+    var out=[], i=0;
+    while(i<f.length){ var j=i; while(j<f.length && f[j]===f[i]) j++; var c=j-i;
+      out.push(c>1 ? f[i]+'<sup>'+c+'</sup>' : ''+f[i]); i=j; }
+    return out.join(' · ');
+  }
+  function plainFmt(f){ return f.join(' · '); }
+  function ri(a,b){ return Math.floor(Math.random()*(b-a+1))+a; }
+
+  /* ---------- дерево множителей (canvas) ---------- */
+  var cv=document.getElementById('tree'), outEl=document.getElementById('vizOut'), btnsEl=document.getElementById('vizBtns');
+  if(cv && cv.getContext){
+    var VAR=[[6,10],[2,30],[4,15],[5,12]], cur=0;
+    function isPrime(n){ if(n<2) return false; for(var d=2; d*d<=n; d++) if(n%d===0) return false; return true; }
+    function node(n){
+      if(isPrime(n)) return {v:n,kids:null};
+      var d=2; while(n%d!==0) d++;
+      return {v:n,kids:[node(d),node(n/d)]};
+    }
+    function build(pair){
+      return {v:60,kids:[node(pair[0]),node(pair[1])]};
+    }
+    function leaves(t,acc){ if(!t.kids){ acc.push(t.v); return acc; } leaves(t.kids[0],acc); leaves(t.kids[1],acc); return acc; }
+    function depth(t){ return t.kids ? 1+Math.max(depth(t.kids[0]),depth(t.kids[1])) : 1; }
+
+    function layout(t,d,slot){
+      /* назначаем x по порядку листьев */
+      if(!t.kids){ t.x=slot.i++; t.d=d; return; }
+      layout(t.kids[0],d+1,slot); layout(t.kids[1],d+1,slot);
+      t.x=(t.kids[0].x+t.kids[1].x)/2; t.d=d;
+    }
+
+    function draw(){
+      var t=build(VAR[cur]), slot={i:0};
+      layout(t,0,slot);
+      var nL=slot.i, dep=depth(t);
+      var W=480, R=23, padX=36;
+      var H=270;   /* фиксируем высоту, чтобы страница не прыгала при переключении */
+      cv.width=W; cv.height=H;
+      var dpr=window.devicePixelRatio||1;
+      if(dpr>1){ cv.width=W*dpr; cv.height=H*dpr; }
+      cv.style.aspectRatio=W+' / '+H;
+      var g=cv.getContext('2d');
+      g.setTransform(dpr,0,0,dpr,0,0);
+      g.clearRect(0,0,W,H);
+      var stepX = nL>1 ? (W-2*padX)/(nL-1) : 0;
+      function px(n){ return nL>1 ? padX + n.x*stepX : W/2; }
+      var topPad=Math.max(34,(H-(dep-1)*66-2*R)/2);
+      function py(n){ return topPad + n.d*66; }
+
+      /* рёбра */
+      g.strokeStyle='#C9C2D2'; g.lineWidth=2;
+      (function edges(n){
+        if(!n.kids) return;
+        for(var i=0;i<2;i++){
+          var k=n.kids[i];
+          g.beginPath(); g.moveTo(px(n),py(n)+R-4); g.lineTo(px(k),py(k)-R+4); g.stroke();
+          edges(k);
+        }
+      })(t);
+
+      /* узлы */
+      g.font='700 19px ui-monospace, Menlo, Consolas, monospace';
+      g.textAlign='center'; g.textBaseline='middle';
+      (function nodes(n){
+        var leaf=!n.kids, x=px(n), y=py(n);
+        g.beginPath(); g.arc(x,y,R,0,Math.PI*2);
+        g.fillStyle = leaf ? '#E7F4EC' : '#FBEADF';
+        g.fill();
+        g.lineWidth = leaf ? 3 : 2;
+        g.strokeStyle = leaf ? '#2E8B57' : '#F0CDB8';
+        g.stroke();
+        g.fillStyle = leaf ? '#2E8B57' : '#CF5A34';
+        g.fillText(String(n.v), x, y+1);
+        if(n.kids){ nodes(n.kids[0]); nodes(n.kids[1]); }
+      })(t);
+
+      var L=leaves(t,[]);
+      var sorted=L.slice().sort(function(a,b){ return a-b; });
+      outEl.innerHTML = 'Листья: ' + L.join(', ') + '<br>60 = ' + plainFmt(sorted) + ' = ' + powFmt(sorted);
+    }
+
+    VAR.forEach(function(p,i){
+      var b=document.createElement('button');
+      b.type='button'; b.textContent=p[0]+' × '+p[1];
+      b.addEventListener('click',function(){
+        cur=i;
+        Array.prototype.forEach.call(btnsEl.children,function(x,j){ x.classList.toggle('on', j===i); });
+        draw();
+      });
+      btnsEl.appendChild(b);
+    });
+    btnsEl.children[0].classList.add('on');
+    draw();
+  }
+
+  /* ---------- тренажёр ---------- */
+  var numEl=document.getElementById('trNum'), inEl=document.getElementById('trInput'), resEl=document.getElementById('trRes');
+  var N=180, F=fact(180);
+  var POOL=[2,2,2,2,3,3,3,5,5,7,11];
+  var SMALL=[2,3,5,7,11,13,17,19,23,29,31,37,41,43,47];
+  var SUP={'⁰':0,'¹':1,'²':2,'³':3,'⁴':4,'⁵':5,'⁶':6,'⁷':7,'⁸':8,'⁹':9};
+
+  function gen(){
+    if(Math.random()<0.15) return SMALL[ri(0,SMALL.length-1)];   /* краевой случай: само простое */
+    for(var t=0;t<300;t++){
+      var n=1, k=ri(2,4);
+      for(var i=0;i<k;i++) n*=POOL[ri(0,POOL.length-1)];
+      if(n>=20 && n<=900 && n!==N) return n;
+    }
+    return 180;
+  }
+
+  function parseAns(s){
+    s=String(s||'').trim();
+    if(!s) return null;
+    s=s.replace(/[⁰¹²³⁴-⁹]+/g,function(m){
+      var v=''; for(var i=0;i<m.length;i++) v+=SUP[m.charAt(i)]; return '^'+v;
+    });
+    var parts=s.split(/[^0-9^]+/), out=[];
+    for(var i=0;i<parts.length;i++){
+      if(!parts[i]) continue;
+      var m=/^(\d+)(?:\^(\d+))?$/.exec(parts[i]);
+      if(!m) return null;
+      var base=+m[1], e=m[2]?+m[2]:1;
+      if(base<1 || e<1 || e>15) return null;
+      for(var j=0;j<e;j++) out.push(base);
+    }
+    if(!out.length || out.length>40) return null;
+    return out.sort(function(a,b){ return a-b; });
+  }
+
+  function isPr(n){ if(n<2) return false; for(var d=2; d*d<=n; d++) if(n%d===0) return false; return true; }
+
+  function ladder(n){
+    var m=n, d=2, rows=[];
+    while(m>1){
+      while(m%d!==0) d++;
+      var why;
+      if(d===2) why='чётное → делим на 2';
+      else if(d===3) why='сумма цифр делится на 3';
+      else if(d===5) why='оканчивается на 0 или 5';
+      else why = (m===d ? d+' — простое, делим само на себя' : 'наименьший простой делитель — '+d);
+      rows.push([m,d,why]);
+      m=m/d;
+    }
+    var h='<div class="ladwrap"><table class="ladder">';
+    for(var i=0;i<rows.length;i++){
+      h+='<tr><td class="l">'+rows[i][0]+'</td><td class="r">'+rows[i][1]+'</td><td class="c">'+rows[i][2]+'</td></tr>';
+    }
+    h+='<tr class="fin"><td class="l">1</td><td class="r"></td><td class="c">слева 1 → готово</td></tr>';
+    return h+'</table></div>';
+  }
+
+  function solution(){
+    var h='<div class="tr-sol">';
+    h+='<div class="grp">Спускаемся лесенкой:</div>';
+    h+=ladder(N);
+    h+='<div class="fin">'+N+' = '+plainFmt(F)+(F.length>1 && powFmt(F)!==plainFmt(F) ? ' = '+powFmt(F) : '')+'</div>';
+    var acc=F[0], chk='';
+    for(var i=1;i<F.length;i++){ chk+=(chk?', ':'')+acc+' · '+F[i]+' = '+(acc*F[i]); acc*=F[i]; }
+    h+='<div class="chk">Проверка обратным умножением: '+(chk||(N+' — простое, проверять нечего'))+' ✓</div>';
+    return h+'</div>';
+  }
+
+  function newTask(first){
+    N = first || gen();
+    F = fact(N);
+    numEl.textContent=String(N);
+    inEl.value='';
+    resEl.innerHTML='';
+    resEl.removeAttribute('data-done');
+  }
+
+  function same(a,b){
+    if(a.length!==b.length) return false;
+    for(var i=0;i<a.length;i++) if(a[i]!==b[i]) return false;
+    return true;
+  }
+
+  function check(){
+    var got=parseAns(inEl.value);
+    if(!got){
+      resEl.innerHTML='<div class="head info">Запиши множители через * или пробел — например 2*2*3*5. Можно и со степенью: 2^2*3*5.</div>';
+      return;
+    }
+    var prod=1;
+    for(var i=0;i<got.length;i++) prod*=got[i];
+    if(same(got,F)){
+      resEl.setAttribute('data-done','1');
+      resEl.innerHTML='<div class="head ok">✓ Верно! '+N+' = '+powFmt(F)+'</div>'+solution();
+      return;
+    }
+    var msg;
+    if(prod!==N){
+      msg='Перемножь свои множители: получилось '+prod+', а нужно '+N+'. Где-то потерялся или лишний множитель.';
+    } else {
+      var bad=null;
+      for(var j=0;j<got.length;j++){ if(!isPr(got[j])){ bad=got[j]; break; } }
+      if(bad===1) msg='Единицу в разложение не пишут — она ничего не добавляет.';
+      else if(bad!==null) msg='Произведение верное, но множитель '+bad+' — составной. Разложение ещё не доведено до конца.';
+      else msg='Не сходится с верным разложением — сверься с разбором ниже.';
+    }
+    resEl.setAttribute('data-done','1');
+    resEl.innerHTML='<div class="head no">'+msg+'</div>'+solution();
+  }
+
+  function show(){
+    resEl.setAttribute('data-done','1');
+    resEl.innerHTML='<div class="head info">Разбор числа '+N+':</div>'+solution();
+  }
+
+  document.getElementById('trCheck').addEventListener('click',check);
+  document.getElementById('trShow').addEventListener('click',show);
+  document.getElementById('trNew').addEventListener('click',function(){ newTask(); inEl.focus(); });
+  inEl.addEventListener('keydown',function(e){ if(e.key==='Enter') check(); });
+
+  newTask(180);   /* стартовое состояние совпадает с эталонным примером */
+})();
+</script>
+<!--LESSON-NAV-BOT--><nav class="lnav lnav-bot"><a class="prev" href="./m6-prostye-sostavnye.html"><span class="dir">← Предыдущая</span><span class="ttl">Простые и составные числа</span></a><a class="to-cat" href="./catalog.html">📚 <span>Все темы</span></a><a class="next" href="./m6-nod.html"><span class="dir">Следующая →</span><span class="ttl">Наибольший общий делитель (НОД)</span></a></nav><!--/LESSON-NAV-BOT-->

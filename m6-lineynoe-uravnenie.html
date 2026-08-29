@@ -1,0 +1,624 @@
+<!doctype html>
+<!-- humanized: humanizer-ru, 2026-08-29, тире возвращено -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Решение линейных уравнений — математика 6 класс</title>
+<style>
+  :root{
+    --paper:#F7F6F2; --card:#FFFFFF; --ink:#22242B; --muted:#666B77; --line:#E4E3DD;
+    --brand:#1F6F5C; --brand-soft:#E3F0EB;      /* зелёный — равновесие, равенство */
+    --x:#C4622C; --x-soft:#FBEADD;              /* переменная x */
+    --num:#3A5AA0; --num-soft:#E6EBF7;          /* числа */
+    --ok:#1E8E5A; --no:#C23B3B; --amber:#B9800F; --amber-soft:#FDF3DE;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper)}
+  .page{max-width:720px;margin:0 auto;padding:clamp(1.4rem,4vw,3rem) clamp(1.1rem,4vw,2rem) 4.5rem;
+    color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    font-size:17.5px;line-height:1.68;-webkit-font-smoothing:antialiased}
+  .mono{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-variant-numeric:tabular-nums;font-weight:600}
+  .xw{color:var(--x);font-weight:800}
+  .nw{color:var(--num);font-weight:800}
+
+  .hero{border-bottom:3px solid var(--brand);padding-bottom:1.4rem;margin-bottom:1.8rem}
+  .eyebrow{font-size:.74rem;letter-spacing:.15em;text-transform:uppercase;color:var(--brand);font-weight:700;margin:0 0 .55rem}
+  h1{font-size:clamp(1.9rem,6vw,2.8rem);line-height:1.05;margin:0;font-weight:800;letter-spacing:-.02em;text-wrap:balance}
+  .tagline{font-size:1.12rem;color:var(--muted);margin:.85rem 0 0;text-wrap:pretty}
+
+  section{margin-top:2.4rem}
+  h2{font-size:1.5rem;margin:0 0 .3rem;font-weight:780;letter-spacing:-.015em;text-wrap:balance}
+  h2 .em{color:var(--brand)}
+  h3{font-size:1.1rem;margin:1.4rem 0 .2rem;font-weight:750}
+  p{margin:.7rem 0}
+  strong{font-weight:680}
+
+  .lead-in{background:var(--brand-soft);border-radius:14px;padding:1.1rem 1.3rem;font-size:1.02rem}
+  .lead-in p{margin:.45rem 0}
+  .lead-in b{color:var(--brand)}
+
+  .myth{border-left:4px solid var(--x);background:var(--x-soft);border-radius:0 10px 10px 0;padding:.85rem 1.1rem;margin-top:1rem;font-size:.98rem}
+  .myth b{color:var(--x)}
+
+  .note{border-left:4px solid var(--brand);background:var(--brand-soft);border-radius:0 10px 10px 0;padding:.8rem 1.1rem;margin-top:1rem;font-size:.98rem}
+  .note b{color:var(--brand)}
+
+  /* Разминка-пререквизиты */
+  .warm{display:grid;gap:.7rem;margin-top:1rem}
+  @media(min-width:600px){.warm{grid-template-columns:1fr 1fr 1fr}}
+  .warm .w{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:.85rem 1rem;font-size:.95rem}
+  .warm .w .cap{font-size:.7rem;letter-spacing:.09em;text-transform:uppercase;font-weight:700;color:var(--muted);margin:0 0 .3rem}
+  .warm .w .ex{font-family:ui-monospace,Menlo,monospace;font-weight:700;color:var(--brand)}
+
+  /* Крупная формула */
+  .formula-box{background:var(--ink);color:#fff;border-radius:14px;padding:1.3rem;text-align:center;margin-top:1rem}
+  .formula-box .eq{font-family:ui-monospace,Menlo,monospace;font-size:clamp(1.5rem,6vw,2.1rem);font-weight:700;letter-spacing:.02em}
+  .formula-box .eq .xx{color:#F0A45E}
+  .formula-box .eq .nn{color:#8FB6F5}
+  .formula-box .sub{font-size:.9rem;color:#B4B8C4;margin:.7rem 0 0;line-height:1.5}
+
+  /* Два правила */
+  .rules{display:grid;gap:.9rem;margin-top:1rem}
+  @media(min-width:620px){.rules{grid-template-columns:1fr 1fr}}
+  .rule{border-radius:16px;padding:1.1rem 1.2rem;border:2px solid}
+  .rule.r1{background:var(--x-soft);border-color:#EFCDB2}
+  .rule.r2{background:var(--num-soft);border-color:#C6D3EC}
+  .rule .cap{font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;font-weight:700;margin:0}
+  .rule.r1 .cap{color:var(--x)} .rule.r2 .cap{color:var(--num)}
+  .rule h3{margin:.25rem 0 .45rem;font-size:1.15rem;font-weight:800}
+  .rule p{margin:.35rem 0;font-size:.96rem}
+  .rule .demo{font-family:ui-monospace,Menlo,monospace;font-weight:700;background:#fff;border-radius:9px;padding:.5rem .7rem;margin-top:.6rem;font-size:.93rem;text-align:center}
+
+  /* Весы */
+  .sim{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:1.1rem 1.1rem 1.2rem;margin-top:1rem}
+  .sim canvas{width:100%;height:auto;display:block;border-radius:10px;background:#FCFBF8}
+  .sim-cap{text-align:center;font-size:.95rem;color:var(--muted);margin:.7rem 0 .9rem;min-height:2.9em}
+  .sim-cap b{color:var(--ink)}
+  .sim-btns{display:flex;gap:.5rem;flex-wrap:wrap;justify-content:center}
+  .sim-btns button{font:inherit;font-weight:700;font-size:.88rem;cursor:pointer;border:1px solid var(--line);
+    background:var(--paper);color:var(--ink);border-radius:10px;padding:.5rem .9rem}
+  .sim-btns button.go{background:var(--brand);border-color:var(--brand);color:#fff}
+  .sim-btns button:disabled{opacity:.4;cursor:default}
+  .sim-btns button:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+  .legend{display:flex;gap:1rem;flex-wrap:wrap;justify-content:center;font-size:.85rem;color:var(--muted);margin-top:.8rem}
+  .legend i{display:inline-block;width:.85rem;height:.85rem;border-radius:4px;margin-right:.35rem;vertical-align:-1px}
+
+  /* Разбор */
+  .walk{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.15rem 1.3rem;margin-top:1rem}
+  .walk .q{font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.05rem;margin:0 0 .9rem;padding-bottom:.7rem;border-bottom:1px solid var(--line)}
+  .walk ol{margin:0;padding-left:1.25rem;display:flex;flex-direction:column;gap:.6rem}
+  .walk li{font-size:.97rem}
+  .walk li .why{display:block;color:var(--muted);font-size:.89rem;margin-top:.12rem}
+  .verdict{margin-top:1rem;padding:.7rem 1rem;background:var(--brand-soft);border-radius:10px;font-weight:650;color:var(--brand)}
+
+  /* Тренажёр */
+  .trainer{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:1.2rem 1.3rem;margin-top:1rem}
+  .tr-task{font-family:ui-monospace,Menlo,monospace;font-weight:800;font-size:clamp(1.25rem,5.5vw,1.6rem);text-align:center;
+    padding:1.05rem .6rem;background:var(--brand-soft);border-radius:11px;color:var(--ink);overflow-wrap:break-word}
+  .tr-ctl{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.9rem;align-items:center}
+  .tr-ctl input{font:inherit;font-family:ui-monospace,Menlo,monospace;font-weight:700;width:8.5rem;flex:1 1 8rem;
+    padding:.55rem .7rem;border:2px solid var(--line);border-radius:9px;background:var(--paper);color:var(--ink)}
+  .tr-ctl input:focus-visible{outline:none;border-color:var(--brand)}
+  .tr-ctl button{font:inherit;font-weight:700;font-size:.9rem;cursor:pointer;border:1px solid transparent;border-radius:9px;padding:.55rem .95rem}
+  .tr-ctl .go{background:var(--brand);color:#fff}
+  .tr-ctl .sh{background:var(--paper);border-color:var(--line);color:var(--ink)}
+  .tr-ctl .nw{background:var(--brand-soft);color:var(--brand)}
+  .tr-ctl button:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+  .tr-res{margin-top:1rem;font-size:.97rem}
+  .tr-res .head{font-weight:700;padding:.6rem .9rem;border-radius:9px;margin-bottom:.7rem}
+  .tr-res .head.ok{background:#E4F3EB;color:var(--ok)}
+  .tr-res .head.no{background:#FBEAEA;color:var(--no)}
+  .tr-res .head.info{background:var(--brand-soft);color:var(--brand)}
+  .tr-sol{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:.85rem 1rem}
+  .tr-sol .row{margin:.35rem 0;font-size:.94rem}
+  .tr-sol .row .st{font-family:ui-monospace,Menlo,monospace;font-weight:700;color:var(--ink)}
+  .tr-sol .row .cm{color:var(--muted);font-size:.88rem;display:block}
+  .tr-score{font-size:.85rem;color:var(--muted);margin-top:.7rem;text-align:right}
+
+  /* Практика */
+  .drill{display:flex;flex-direction:column;gap:.7rem;margin-top:1rem}
+  .lvl{font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;font-weight:800;color:var(--muted);margin:1.4rem 0 -.2rem}
+  details{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:.9rem 1.1rem}
+  details[open]{border-color:var(--brand)}
+  summary{cursor:pointer;font-weight:650;list-style:none;display:flex;justify-content:space-between;gap:1rem;align-items:center}
+  summary::-webkit-details-marker{display:none}
+  summary:focus-visible{outline:2px solid var(--brand);outline-offset:3px;border-radius:6px}
+  summary .q{font-size:1rem}
+  summary::after{content:"ответ";font-size:.8rem;color:var(--brand);font-weight:700;white-space:nowrap}
+  details[open] summary::after{content:"скрыть"}
+  .ans{margin-top:.75rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.96rem;color:var(--muted)}
+  .ans b{color:var(--ink)}
+  .ans .mono{color:var(--ink)}
+
+  /* Ошибки */
+  ul.traps{list-style:none;margin:1rem 0 0;padding:0;display:flex;flex-direction:column;gap:.7rem}
+  ul.traps li{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:.85rem 1.05rem .85rem 2.5rem;position:relative;font-size:.97rem}
+  ul.traps li::before{content:"⚠";position:absolute;left:1rem;top:.85rem;color:var(--amber);font-size:1.05rem}
+  ul.traps b{font-weight:700}
+  ul.traps .bad{color:var(--no);font-family:ui-monospace,Menlo,monospace;font-weight:700}
+  ul.traps .good{color:var(--ok);font-family:ui-monospace,Menlo,monospace;font-weight:700}
+
+  .selfcheck{list-style:none;margin:1rem 0 0;padding:0;display:flex;flex-direction:column;gap:.6rem;counter-reset:sc}
+  .selfcheck li{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:.8rem 1rem .8rem 2.9rem;position:relative;font-size:.97rem}
+  .selfcheck li::before{counter-increment:sc;content:counter(sc);position:absolute;left:.75rem;top:.8rem;width:1.6rem;height:1.6rem;border-radius:50%;
+    background:var(--brand-soft);color:var(--brand);font-weight:800;font-size:.85rem;display:flex;align-items:center;justify-content:center}
+
+  .wrapup{background:var(--brand);color:#fff;border-radius:16px;padding:1.4rem 1.5rem;margin-top:2.4rem}
+  .wrapup h2{color:#fff;margin:0 0 .5rem}
+  .wrapup p{color:#DCEDE7;margin:.4rem 0;font-size:1rem}
+  .wrapup .big-rule{font-size:1.08rem;font-weight:700;color:#fff;margin:.6rem 0}
+  .wrapup .next{font-size:.95rem;color:#BCDACE;margin-top:1rem;padding-top:1rem;border-top:1px solid rgba(255,255,255,.22)}
+
+  @media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+<!--LESSON-NAV-TOP--><style>.lnav{--lnav-accent:#3D5AF1}.lnav a{text-decoration:none;font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif}.lnav-top{max-width:820px;margin:0 auto;padding:.75rem clamp(1rem,4vw,1.5rem) .1rem}.lnav-top a{display:inline-flex;align-items:center;gap:.35rem;color:var(--lnav-accent);font-weight:600;font-size:.9rem}.lnav-top a:hover{text-decoration:underline}.lnav-bot{max-width:820px;margin:2.6rem auto 3rem;padding:1.1rem clamp(1rem,4vw,1.5rem) 0;border-top:1px solid #E4E8EF;display:flex;align-items:stretch;gap:.55rem}.lnav-bot a{min-width:0;display:flex;flex-direction:column;justify-content:center;gap:.15rem;border:1px solid #E4E8EF;border-radius:12px;padding:.65rem .85rem;color:#182233;background:#fff;transition:border-color .1s,transform .08s}.lnav-bot a:hover{border-color:var(--lnav-accent);transform:translateY(-1px)}.lnav-bot .prev,.lnav-bot .next{flex:1 1 0}.lnav-bot .next{text-align:right}.lnav-bot .dir{font-size:.72rem;color:#8A93A6;font-weight:600}.lnav-bot .ttl{font-size:.9rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.lnav-bot .to-cat{flex:0 0 auto;flex-direction:row;align-items:center;justify-content:center;color:var(--lnav-accent);font-weight:700;font-size:.85rem;white-space:nowrap}@media(max-width:420px){.lnav-bot .to-cat span{display:none}.lnav-bot .to-cat{padding:.65rem .7rem}}</style><nav class="lnav lnav-top"><a href="./catalog.html">← Все темы</a></nav><!--/LESSON-NAV-TOP-->
+<div class="page">
+
+  <header class="hero">
+    <p class="eyebrow">Математика · 6 класс</p>
+    <h1>Решение линейных уравнений</h1>
+    <p class="tagline">Находим неизвестное число не наугад, а по правилам: перенёс слагаемые, поделил на коэффициент.</p>
+  </header>
+
+  <div class="lead-in">
+    <p><b>Зачем это нужно.</b> Уравнение достаёт число, которого мы не знаем, — из того, что мы про него знаем.</p>
+    <p>Так считают сдачу, делят поровну, находят скорость или цену. «Потратили 350 рублей на 5 одинаковых ручек — сколько стоит одна?» Это уже уравнение: <span class="mono">5·<span class="xw">x</span> = 350</span>.</p>
+    <p>Дальше почти любая задача «найди неизвестное» сводится к уравнению. Линейные — самые первые из них, и на них стоит вся алгебра 7 класса.</p>
+  </div>
+
+  <div class="myth">
+    <p><b>Главный миф: «решить уравнение — значит угадать число».</b> Иногда и правда угадывается: в <span class="mono">x + 2 = 9</span> ответ виден сразу. Но попробуй угадать корень, когда он окажется большим, дробным или отрицательным. Не выйдет. Уравнения решают по правилам, преобразуя обе части одинаково. Правил всего два, и ты разберёшь их прямо сейчас.</p>
+  </div>
+
+  <section>
+    <h2>Сначала вспомни <span class="em">три вещи</span></h2>
+    <p>Всё это ты уже проходил. Без них решать уравнения будет мучительно, так что проверь себя на ходу:</p>
+    <div class="warm">
+      <div class="w">
+        <p class="cap">Подобные слагаемые</p>
+        <p>Слагаемые с одной буквой складывают через их коэффициенты.</p>
+        <p class="ex">5·x − 2·x = 3·x</p>
+      </div>
+      <div class="w">
+        <p class="cap">Знаки при вычитании</p>
+        <p>Сложение и вычитание с отрицательными числами. При переносе они вылезают постоянно.</p>
+        <p class="ex">6 : (−2) = −3</p>
+      </div>
+      <div class="w">
+        <p class="cap">Деление и дроби</p>
+        <p>Корень не обязан быть целым. Дробный ответ — тоже ответ.</p>
+        <p class="ex">15 : 3 = 5</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Суть: <span class="em">знак «=» — это весы</span></h2>
+    <p><strong>Уравнение</strong> — это равенство с неизвестным числом внутри (буквой, чаще всего <span class="xw mono">x</span>). <strong>Решить уравнение</strong> — значит найти все значения буквы, при которых равенство верное. Каждое такое значение называют <strong>корнем</strong>.</p>
+    <p>Смотри на знак «=» как на чашечные весы в равновесии: слева одна часть уравнения, справа другая, и они уравновешены. Делай <strong>с обеими чашами одно и то же</strong> — прибавь к обеим одинаковое число, сними с обеих одинаковый груз, раздели обе на одно и то же число. Весы не шелохнутся, а значит, равенство останется верным.</p>
+    <p>Отсюда и весь способ: упрощаем уравнение шаг за шагом, пока слева не останется одинокое <span class="mono xw">x</span>, а справа — число. Вот это число и есть ответ.</p>
+
+    <div class="formula-box">
+      <div class="eq">a·<span class="xx">x</span> + <span class="nn">b</span> = 0</div>
+      <p class="sub"><b>Линейное уравнение</b> — это уравнение, которое можно привести к такому виду:<br>буква <b>x стоит в первой степени</b> — не x², не под корнем, не в знаменателе.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Ядро: <span class="em">два правила</span></h2>
+    <p>Любое линейное уравнение решается двумя действиями. Ничего третьего изобретать не придётся.</p>
+    <div class="rules">
+      <div class="rule r1">
+        <p class="cap">Правило 1</p>
+        <h3>Перенос слагаемого</h3>
+        <p>Любое слагаемое можно перенести из одной части уравнения в другую, <strong>изменив его знак на противоположный</strong>.</p>
+        <p>Это прибавление или вычитание одного числа из обеих частей, только записанное короче.</p>
+        <div class="demo">5·x <span style="color:var(--x)">− 8</span> = 7 &nbsp;→&nbsp; 5·x = 7 <span style="color:var(--x)">+ 8</span></div>
+      </div>
+      <div class="rule r2">
+        <p class="cap">Правило 2</p>
+        <h3>Деление на коэффициент</h3>
+        <p>Обе части уравнения можно разделить на одно и то же число, <strong>не равное нулю</strong>.</p>
+        <p>Так убирают множитель перед <span class="mono">x</span> и оставляют букву одну.</p>
+        <div class="demo"><span style="color:var(--num)">3</span>·x = 15 &nbsp;→&nbsp; x = 15 : <span style="color:var(--num)">3</span> = 5</div>
+      </div>
+    </div>
+
+    <h3>Как называются части уравнения</h3>
+    <ul>
+      <li><span class="mono xw">x</span> — неизвестное, тот самый корень, который мы ищем;</li>
+      <li><strong>коэффициент</strong> при <span class="mono">x</span> — число, на которое умножен <span class="mono">x</span> (в <span class="mono">7·x</span> коэффициент равен <span class="nw">7</span>);</li>
+      <li><strong>свободные члены</strong> — числа без буквы.</li>
+    </ul>
+
+    <div class="note">
+      <p><b>Две оговорки.</b> Делить можно только на число, <strong>отличное от нуля</strong>. Если коэффициент при <span class="mono">x</span> вдруг оказался нулём — это отдельный случай (корней либо нет совсем, либо бесконечно много), в 6 классе он почти не попадается. Вторая: корень бывает целым, дробным и отрицательным. Дробный ответ — не повод искать ошибку.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Весы, которые <span class="em">можно потрогать</span></h2>
+    <p>Вот те самые весы для уравнения <span class="mono">5·x − 8 = 2·x + 7</span>. Оранжевый брусок — один <span class="mono xw">x</span>: сколько он весит, мы не знаем, но все бруски одинаковые. Синий кружок — гирька <span class="mono">+1</span>, красный — «антигирька» <span class="mono">−1</span>, и они гасят друг друга.</p>
+    <p>Жми кнопки по очереди и следи за коромыслом: после каждого действия весы <strong>остаются в равновесии</strong>. Это и есть решение уравнения, только грузами вместо букв.</p>
+    <div class="sim">
+      <canvas id="scaleCv" width="660" height="330" role="img" aria-label="Чашечные весы: слева 5 иксов и 8 антигирек, справа 2 икса и 7 гирек"></canvas>
+      <p class="sim-cap" id="scaleCap"><b>Старт.</b> Слева 5·x − 8, справа 2·x + 7. Весы уравновешены — значит, равенство верное.</p>
+      <div class="sim-btns">
+        <button class="go" id="scStep" type="button">Следующий шаг →</button>
+        <button id="scReset" type="button">Сначала</button>
+      </div>
+      <div class="legend">
+        <span><i style="background:#C4622C"></i>брусок x</span>
+        <span><i style="background:#3A5AA0"></i>гирька +1</span>
+        <span><i style="background:#C23B3B"></i>антигирька −1</span>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Разбор «думаю вслух»</h2>
+    <p>Теперь то же самое, но записью. Решаем <span class="mono">5·x − 8 = 2·x + 7</span>. Смотри не только на то, <em>что</em> я делаю, а и на <em>почему</em>: порядок мыслей тут важнее самих строчек.</p>
+    <div class="walk">
+      <p class="q">5·x − 8 = 2·x + 7</p>
+      <ol>
+        <li>Переношу <span class="mono xw">2·x</span> влево, меняя знак: <span class="mono">5·x − 2·x − 8 = 7</span>.
+          <span class="why">Почему: собираю все слагаемые с <span class="mono">x</span> в одной части.</span></li>
+        <li>Переношу <span class="mono">−8</span> вправо, знак меняется на <span class="mono">+8</span>: <span class="mono">5·x − 2·x = 7 + 8</span>.
+          <span class="why">Почему: числа без буквы собираю в другой части.</span></li>
+        <li>Привожу подобные: <span class="mono">3·x = 15</span>.
+          <span class="why">Почему: 5·x − 2·x = 3·x, а 7 + 8 = 15.</span></li>
+        <li>Делю обе части на коэффициент <span class="mono nw">3</span>: <span class="mono">x = 15 : 3 = 5</span>.
+          <span class="why">Почему: чтобы слева остался один x.</span></li>
+        <li><strong>Проверка.</strong> Подставляю x = 5 в исходное уравнение: слева <span class="mono">5·5 − 8 = 17</span>, справа <span class="mono">2·5 + 7 = 17</span>. Одинаково.
+          <span class="why">Почему: подстановка ловит почти любую арифметическую промашку.</span></li>
+      </ol>
+      <div class="verdict">Ответ: x = 5</div>
+    </div>
+
+    <h3>Теперь допиши сам</h3>
+    <p>Тот же алгоритм, только последний шаг за тобой. Сначала реши, потом раскрывай ответ.</p>
+    <div class="drill">
+      <details>
+        <summary><span class="q">Реши: <span class="mono">4·x + 3 = x + 18</span></span></summary>
+        <div class="ans">Переносим <span class="mono">x</span> влево, <span class="mono">3</span> — вправо: <span class="mono">4·x − x = 18 − 3</span>. Приводим подобные: <span class="mono">3·x = 15</span>. Последний шаг — делим обе части на 3: <span class="mono"><b>x = 15 : 3 = 5</b></span>. Проверка: <span class="mono">4·5 + 3 = 23</span> и <span class="mono">5 + 18 = 23</span>, сошлось.</div>
+      </details>
+      <details>
+        <summary><span class="q">Полностью сам: <span class="mono">6·x − 5 = 3·x + 13</span></span></summary>
+        <div class="ans"><span class="mono">6·x − 3·x = 13 + 5</span>, значит <span class="mono">3·x = 18</span> и <span class="mono"><b>x = 6</b></span>. Проверка: <span class="mono">6·6 − 5 = 31</span> и <span class="mono">3·6 + 13 = 31</span>.</div>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <h2>Тренажёр · <span class="em">решай сколько хочешь</span></h2>
+    <p>Уравнения генерируются заново каждый раз, так что кончиться они не могут. Реши на бумаге, впиши корень, проверь. Отрицательный ответ пиши со знаком минус, вот так: <span class="mono">−3</span>. Застрял — жми «Показать решение».</p>
+    <div class="trainer">
+      <div class="tr-task mono" id="trTask">5·x − 8 = 2·x + 7</div>
+      <div class="tr-ctl">
+        <input id="trIn" type="text" inputmode="text" autocomplete="off" placeholder="x = ?" aria-label="Введите корень уравнения">
+        <button class="go" id="trCheck" type="button">Проверить</button>
+        <button class="sh" id="trShow" type="button">Показать решение</button>
+        <button class="nw" id="trNew" type="button">🎲 Новое</button>
+      </div>
+      <div class="tr-res" id="trRes"></div>
+      <p class="tr-score" id="trScore">решено: 0 · верно: 0</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Проверь себя</h2>
+    <p>Задания идут по нарастанию: сначала понять, потом применить, потом раскопать чужую ошибку. Решай сам, ответ открывай только после попытки.</p>
+
+    <p class="lvl">Уровень 1 · понимание</p>
+    <div class="drill">
+      <details>
+        <summary><span class="q">1) В уравнении <span class="mono">9·x − 4 = 0</span> назови коэффициент при x и свободный член.</span></summary>
+        <div class="ans">Коэффициент при x — число, на которое умножен x, то есть <b>9</b>. Свободный член — число без буквы, то есть <b>−4</b>. Минус тут относится к четвёрке, он часть слагаемого.</div>
+      </details>
+      <details>
+        <summary><span class="q">2) Является ли <span class="mono">x = 7</span> корнем уравнения <span class="mono">x + 2 = 9</span>? Проверь подстановкой.</span></summary>
+        <div class="ans">Подставляем: <span class="mono">7 + 2 = 9</span>. Равенство верное, значит <b>да, x = 7 — корень</b>. Вся проверка так и устроена: подставил число вместо буквы, посмотрел, сошлось ли.</div>
+      </details>
+    </div>
+
+    <p class="lvl">Уровень 2 · применение</p>
+    <div class="drill">
+      <details>
+        <summary><span class="q">3) Реши: <span class="mono">x + 11 = 4</span></span></summary>
+        <div class="ans">Переносим 11 вправо со сменой знака: <span class="mono">x = 4 − 11</span>, то есть <span class="mono"><b>x = −7</b></span>. Проверка: <span class="mono">−7 + 11 = 4</span>. Минус в ответе никого не смущает, это полноценный корень.</div>
+      </details>
+      <details>
+        <summary><span class="q">4) Реши: <span class="mono">7·x = 42</span></span></summary>
+        <div class="ans">Здесь переносить нечего, сразу делим обе части на коэффициент 7: <span class="mono"><b>x = 42 : 7 = 6</b></span>. Проверка: <span class="mono">7·6 = 42</span>.</div>
+      </details>
+      <details>
+        <summary><span class="q">5) Реши: <span class="mono">2·x + 5 = x + 12</span></span></summary>
+        <div class="ans">Переносим <span class="mono">x</span> влево, <span class="mono">5</span> вправо: <span class="mono">2·x − x = 12 − 5</span>, то есть <span class="mono">x = 7</span>. Коэффициент здесь равен 1, так что делить не на что. Проверка: <span class="mono">2·7 + 5 = 19</span> и <span class="mono">7 + 12 = 19</span>. Ответ: <b>x = 7</b>.</div>
+      </details>
+    </div>
+
+    <p class="lvl">Уровень 3 · анализ</p>
+    <div class="drill">
+      <details>
+        <summary><span class="q">6) В уравнении <span class="mono">8·x = 24</span> ученик получил <span class="mono">x = 192</span>. Найди ошибку и исправь.</span></summary>
+        <div class="ans">Ученик <b>умножил вместо того, чтобы разделить</b>: 24 · 8 = 192. Но между 8 и x стоит умножение, значит обратное действие — деление: <span class="mono"><b>x = 24 : 8 = 3</b></span>. Подстановка выдала бы ошибку сразу: <span class="mono">8 · 192</span> на 24 не похоже совсем.</div>
+      </details>
+      <details>
+        <summary><span class="q">7) Что изменится в корне уравнения <span class="mono">3·x = 12</span>, если правую часть увеличить в 2 раза?</span></summary>
+        <div class="ans">Сейчас <span class="mono">x = 12 : 3 = 4</span>. Станет <span class="mono">3·x = 24</span>, откуда <span class="mono">x = 24 : 3 = 8</span>. <b>Корень тоже увеличится в 2 раза.</b> И это ожидаемо: коэффициент тот же, а делимое стало вдвое больше.</div>
+      </details>
+      <details>
+        <summary><span class="q">8) Обратная задача: придумай линейное уравнение, корень которого равен <span class="mono">−3</span>.</span></summary>
+        <div class="ans">Подойдёт любое, где при подстановке −3 равенство верное. Самое простое: <span class="mono"><b>x + 3 = 0</b></span>. Посложнее: <span class="mono"><b>2·x + 6 = 0</b></span> — проверим: <span class="mono">2·(−3) + 6 = −6 + 6 = 0</span>. Приём такой: берёшь любое уравнение, подставляешь −3 и подкручиваешь свободный член, пока обе части не совпадут.</div>
+      </details>
+      <details>
+        <summary><span class="q">9) Не решая, предскажи: корень уравнения <span class="mono">3·x = 27</span> больше или меньше 10? Потом проверь.</span></summary>
+        <div class="ans">Прикидка: <span class="mono">3 · 10 = 30</span>, а справа стоит 27 — чуть меньше. Значит и корень чуть меньше 10. Решаем: <span class="mono"><b>x = 27 : 3 = 9</b></span>. Предсказание сошлось. Прикидка «до решения» выручает часто: получилось 90 или 0,9 — значит, где-то по дороге ошибка.</div>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <h2>Частые ошибки — <span class="em">не попадись</span></h2>
+    <ul class="traps">
+      <li><b>Не меняют знак при переносе через «=».</b> Из <span class="mono">5·x − 8 = 7</span> пишут <span class="bad">5·x = 7 − 8</span>, хотя надо <span class="good">5·x = 7 + 8</span>. Как не допустить: проговаривай вслух «переношу — меняю знак». И держи в голове, откуда правило взялось: перенос — это одно и то же прибавление к обеим частям, действие сразу с двумя чашами весов.</li>
+      <li><b>Делят не на тот коэффициент или путают деление с вычитанием.</b> Из <span class="mono">3·x = 15</span> пишут <span class="bad">x = 15 − 3</span>. Как не допустить: между коэффициентом и x стоит <em>умножение</em>, значит обратное действие — <em>деление</em>: <span class="good">x = 15 : 3</span>.</li>
+      <li><b>Делят на переменную и теряют решения.</b> В уравнениях вида <span class="mono">x·(…)</span> рука тянется сократить на x, и часть корней тихо исчезает. В 6 классе делай проще: раскрой скобки, а на букву не дели.</li>
+      <li><b>Забывают про минус у отрицательного коэффициента.</b> Из <span class="mono">−2·x = 6</span> пишут <span class="bad">x = 3</span> вместо <span class="good">x = −3</span>. Как не допустить: делишь на −2, значит минус участвует в делении наравне с двойкой: <span class="mono">6 : (−2) = −3</span>.</li>
+      <li><b>Не проверяют ответ.</b> Самая обидная ошибка из всех, потому что лечится за десять секунд: подставь найденный корень в исходное уравнение. Подстановка ловит почти любой арифметический промах.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Объясни своими словами</h2>
+    <p>Закрой урок и ответь вслух — себе, родителю или чат-боту. Если фраза не складывается, вернись к нужному разделу: там и есть непроработанное место.</p>
+    <ol class="selfcheck">
+      <li>Что значит «решить уравнение» и как называется найденное число?</li>
+      <li>Сформулируй правило переноса слагаемого через знак «=».</li>
+      <li>Из <span class="mono">4·x = 20</span> — каким <em>одним</em> действием находим x?</li>
+    </ol>
+  </section>
+
+  <div class="wrapup">
+    <h2>Запомни главное</h2>
+    <p class="big-rule">Собери слагаемые с x в одной части (при переносе меняя знак),<br>числа — в другой, а потом раздели обе части на коэффициент при x.</p>
+    <p>И всегда проверяй подстановкой. Десять секунд, которые спасают всё решение.</p>
+    <p class="next">👉 В 7 классе ты встретишь <strong>линейное уравнение с одной переменной</strong> в общем виде <span class="mono" style="color:#fff">a·x = b</span>. Правила будут ровно эти же, добавятся только два особых случая: когда корней нет вовсе и когда подходит любое число.</p>
+  </div>
+
+</div>
+
+<script>
+(function(){
+  /* ===== Весы: 5·x − 8 = 2·x + 7 ===== */
+  var cv=document.getElementById('scaleCv');
+  if(cv){
+    var ctx=cv.getContext('2d');
+    var W=660,H=330;
+    var dpr=Math.min(window.devicePixelRatio||1,2);
+    cv.width=W*dpr; cv.height=H*dpr; ctx.scale(dpr,dpr);
+
+    var STATES=[
+      {L:{x:5,c:-8}, R:{x:2,c:7},
+       cap:'<b>Старт.</b> Слева 5·x − 8, справа 2·x + 7. Весы уравновешены — значит, равенство верное.',
+       btn:'Шаг 1: снять по 2·x с обеих чаш →'},
+      {L:{x:3,c:-8}, R:{x:0,c:7},
+       cap:'<b>Шаг 1.</b> Сняли по 2 бруска x с каждой чаши — поровну, поэтому равновесие сохранилось. Стало 3·x − 8 = 7. В записи это и есть «перенёс 2·x влево со сменой знака».',
+       btn:'Шаг 2: добавить по 8 гирек →'},
+      {L:{x:3,c:0}, R:{x:0,c:15},
+       cap:'<b>Шаг 2.</b> Положили на обе чаши по 8 гирек. Слева 8 гирек погасили 8 антигирек, справа стало 7 + 8 = 15. Получилось 3·x = 15 — это «перенёс −8 вправо со сменой знака».',
+       btn:'Шаг 3: разделить обе чаши на 3 →'},
+      {L:{x:1,c:0}, R:{x:0,c:5},
+       cap:'<b>Шаг 3.</b> Разделили содержимое обеих чаш на 3: слева остался один брусок, справа 15 : 3 = 5 гирек. Один x весит 5. <b>Ответ: x = 5.</b>',
+       btn:'Готово'}
+    ];
+    var st=0;
+    var capEl=document.getElementById('scaleCap');
+    var btnStep=document.getElementById('scStep');
+    var btnReset=document.getElementById('scReset');
+
+    function rr(x,y,w,h,r){
+      ctx.beginPath();
+      ctx.moveTo(x+r,y); ctx.lineTo(x+w-r,y); ctx.quadraticCurveTo(x+w,y,x+w,y+r);
+      ctx.lineTo(x+w,y+h-r); ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);
+      ctx.lineTo(x+r,y+h); ctx.quadraticCurveTo(x,y+h,x,y+h-r);
+      ctx.lineTo(x,y+r); ctx.quadraticCurveTo(x,y,x+r,y); ctx.closePath();
+    }
+    function drawPan(cx, data, label){
+      var plateY=268, plateHalf=118;
+      /* подвес */
+      ctx.strokeStyle='#B9B6AC'; ctx.lineWidth=2;
+      ctx.beginPath(); ctx.moveTo(cx,86); ctx.lineTo(cx-plateHalf+18,plateY); ctx.moveTo(cx,86); ctx.lineTo(cx+plateHalf-18,plateY); ctx.stroke();
+      /* чаша */
+      ctx.fillStyle='#E9E7DF'; ctx.strokeStyle='#B9B6AC'; ctx.lineWidth=2;
+      rr(cx-plateHalf,plateY,plateHalf*2,10,5); ctx.fill(); ctx.stroke();
+      /* содержимое */
+      var items=[],i;
+      for(i=0;i<data.x;i++) items.push('x');
+      for(i=0;i<Math.abs(data.c);i++) items.push(data.c>0?'p':'m');
+      var perRow=5, cw=40, ch=36;
+      var rows=Math.ceil(items.length/perRow);
+      for(i=0;i<items.length;i++){
+        var row=Math.floor(i/perRow), col=i%perRow;
+        var inRow=Math.min(perRow, items.length-row*perRow);
+        var startX=cx-(inRow*cw)/2+cw/2;
+        var px=startX+col*cw;
+        var py=plateY-6-(rows-1-row)*ch;
+        if(items[i]==='x'){
+          ctx.fillStyle='#C4622C';
+          rr(px-16,py-32,32,32,6); ctx.fill();
+          ctx.fillStyle='#fff'; ctx.font='700 17px ui-monospace, Menlo, monospace';
+          ctx.textAlign='center'; ctx.textBaseline='middle';
+          ctx.fillText('x',px,py-16);
+        }else{
+          ctx.fillStyle=(items[i]==='p')?'#3A5AA0':'#C23B3B';
+          ctx.beginPath(); ctx.arc(px,py-15,14,0,Math.PI*2); ctx.fill();
+          ctx.fillStyle='#fff'; ctx.font='700 13px ui-monospace, Menlo, monospace';
+          ctx.textAlign='center'; ctx.textBaseline='middle';
+          ctx.fillText(items[i]==='p'?'+1':'−1',px,py-15);
+        }
+      }
+      /* подпись */
+      ctx.fillStyle='#22242B'; ctx.font='700 17px ui-monospace, Menlo, monospace';
+      ctx.textAlign='center'; ctx.textBaseline='top';
+      ctx.fillText(label,cx,plateY+20);
+    }
+    function expr(d){
+      if(d.x===0) return (d.c<0?'−':'')+Math.abs(d.c);
+      var s=(d.x===1)?'x':(d.x+'·x');
+      if(d.c>0) s+=' + '+d.c;
+      else if(d.c<0) s+=' − '+Math.abs(d.c);
+      return s;
+    }
+    function draw(){
+      var s=STATES[st];
+      ctx.clearRect(0,0,W,H);
+      ctx.fillStyle='#FCFBF8'; ctx.fillRect(0,0,W,H);
+      /* стойка */
+      ctx.fillStyle='#B9B6AC';
+      ctx.beginPath(); ctx.moveTo(W/2,92); ctx.lineTo(W/2-34,150); ctx.lineTo(W/2+34,150); ctx.closePath(); ctx.fill();
+      ctx.fillRect(W/2-52,150,104,8);
+      /* коромысло */
+      ctx.strokeStyle='#8C887C'; ctx.lineWidth=6; ctx.lineCap='round';
+      ctx.beginPath(); ctx.moveTo(W/2-215,86); ctx.lineTo(W/2+215,86); ctx.stroke();
+      ctx.fillStyle='#8C887C';
+      ctx.beginPath(); ctx.arc(W/2,86,9,0,Math.PI*2); ctx.fill();
+      /* знак равенства */
+      ctx.fillStyle='#1F6F5C'; ctx.font='800 30px ui-monospace, Menlo, monospace';
+      ctx.textAlign='center'; ctx.textBaseline='middle';
+      ctx.fillText('=',W/2,40);
+      drawPan(W/2-165,s.L,expr(s.L));
+      drawPan(W/2+165,s.R,expr(s.R));
+      capEl.innerHTML=s.cap;
+      btnStep.textContent=s.btn;
+      btnStep.disabled=(st===STATES.length-1);
+    }
+    btnStep.addEventListener('click',function(){ if(st<STATES.length-1){ st++; draw(); } });
+    btnReset.addEventListener('click',function(){ st=0; draw(); });
+    draw();
+  }
+
+  /* ===== Тренажёр ===== */
+  function ri(a,b){ return Math.floor(Math.random()*(b-a+1))+a; }
+  function nz(a,b){ var v=0; while(v===0) v=ri(a,b); return v; }
+  function num(n){ return String(n).replace('-','−'); }
+  function paren(n){ return n<0 ? '(−'+Math.abs(n)+')' : String(n); }
+  function coefx(a){
+    if(a===1) return 'x';
+    if(a===-1) return '−x';
+    return num(a)+'·x';
+  }
+  function tail(b){
+    if(b===0) return '';
+    return b>0 ? ' + '+b : ' − '+Math.abs(b);
+  }
+  function side(a,b){
+    if(a===0) return num(b);
+    return coefx(a)+tail(b);
+  }
+
+  var task=null;
+  var taskEl=document.getElementById('trTask');
+  var inEl=document.getElementById('trIn');
+  var resEl=document.getElementById('trRes');
+  var scoreEl=document.getElementById('trScore');
+  var total=0, right=0;
+
+  /* Уравнение хранится как A·x + B = C·x + D, корень всегда целый */
+  function gen(){
+    var t=ri(1,4), A,B,C,D,k,root;
+    root = (Math.random()<0.12) ? 0 : nz(-9,9);
+    if(t===1){                       /* x + b = c */
+      k=1; C=0; B=nz(-12,12);
+    }else if(t===2){                 /* a·x = b, иногда с отрицательным коэффициентом */
+      k=nz(-9,9); while(Math.abs(k)===1) k=nz(-9,9);
+      C=0; B=0;
+    }else if(t===3){                 /* a·x + b = c */
+      k=ri(2,9); if(Math.random()<0.25) k=-k;
+      C=0; B=nz(-14,14);
+    }else{                           /* a·x + b = c·x + d */
+      C=ri(1,5); k=ri(2,6); B=nz(-12,12);
+      root=(Math.random()<0.1)?0:nz(-8,8);
+    }
+    A=k+C; D=k*root+B;
+    return {A:A,B:B,C:C,D:D,k:k,root:root,
+            q: side(A,B)+' = '+side(C,D)};
+  }
+
+  function steps(t){
+    var out=[], k=t.k, m=t.D-t.B;
+    if(t.C!==0){
+      out.push({s: side(t.A-t.C,t.B)+' = '+num(t.D),
+                c: 'Переношу '+coefx(t.C)+' влево, меняя знак: '+coefx(t.A)+' − '+coefx(t.C)+' = '+coefx(t.A-t.C)+'.'});
+    }
+    if(t.B!==0){
+      out.push({s: coefx(k)+' = '+num(t.D)+(t.B>0?' − '+t.B:' + '+Math.abs(t.B)),
+                c: 'Переношу свободный член '+num(t.B)+' вправо — знак меняется на противоположный.'});
+      out.push({s: coefx(k)+' = '+num(m),
+                c: 'Считаю правую часть: '+num(t.D)+' '+(t.B>0?'− '+t.B:'+ '+Math.abs(t.B))+' = '+num(m)+'.'
+                   + (k===1 ? ' Коэффициент при x равен 1 — делить не нужно, слева и так один x.' : '')});
+    }
+    if(Math.abs(k)===1){
+      if(t.B===0){
+        out.push({s:'x = '+num(t.root),
+                  c:'Коэффициент при x равен '+num(k)+' — делить не на что, корень уже виден.'});
+      }
+    }else{
+      out.push({s:'x = '+num(m)+' : '+paren(k)+' = '+num(t.root),
+                c:'Делю обе части на коэффициент при x, то есть на '+num(k)+'.'});
+    }
+    var L=t.A*t.root+t.B, R=t.C*t.root+t.D;
+    out.push({s:'проверка: '+num(L)+' = '+num(R),
+              c:'Подставляю x = '+num(t.root)+' в исходное уравнение — обе части совпали.'});
+    return out;
+  }
+
+  function solHtml(t){
+    var h='<div class="tr-sol">';
+    h+='<div class="row"><span class="st">'+t.q+'</span></div>';
+    steps(t).forEach(function(o){
+      h+='<div class="row"><span class="st">'+o.s+'</span><span class="cm">'+o.c+'</span></div>';
+    });
+    h+='<div class="row"><span class="st">Ответ: x = '+num(t.root)+'</span></div>';
+    return h+'</div>';
+  }
+
+  function newTask(seed, focus){
+    task = seed || gen();
+    taskEl.textContent=task.q;
+    inEl.value=''; resEl.innerHTML='';
+    if(focus) inEl.focus();
+  }
+  function parseAns(v){
+    v=String(v).trim().replace(/−/g,'-').replace(/\s+/g,'').replace(',','.');
+    if(v==='') return null;
+    if(!/^-?\d+(\.\d+)?$/.test(v)) return null;
+    return parseFloat(v);
+  }
+  function check(){
+    var v=parseAns(inEl.value);
+    if(v===null){
+      resEl.innerHTML='<div class="head info">Впиши в поле число — корень уравнения. Например: 5 или −3.</div>';
+      return;
+    }
+    total++;
+    if(v===task.root){ right++;
+      resEl.innerHTML='<div class="head ok">✓ Верно! x = '+num(task.root)+'</div>'+solHtml(task);
+    }else{
+      resEl.innerHTML='<div class="head no">Пока нет. Правильный корень: x = '+num(task.root)+'. Посмотри, на каком шаге разошлось.</div>'+solHtml(task);
+    }
+    scoreEl.textContent='решено: '+total+' · верно: '+right;
+  }
+  function show(){
+    resEl.innerHTML='<div class="head info">Разбор по шагам:</div>'+solHtml(task);
+  }
+  document.getElementById('trCheck').addEventListener('click',check);
+  document.getElementById('trShow').addEventListener('click',show);
+  document.getElementById('trNew').addEventListener('click',function(){ newTask(null,true); });
+  inEl.addEventListener('keydown',function(e){ if(e.key==='Enter'){ e.preventDefault(); check(); } });
+
+  /* стартовое состояние = эталонный пример урока */
+  newTask({A:5,B:-8,C:2,D:7,k:3,root:5,q:'5·x − 8 = 2·x + 7'}, false);
+})();
+</script>
+<!--LESSON-NAV-BOT--><nav class="lnav lnav-bot"><a class="prev" href="./m6-podobnye-slagaemye.html"><span class="dir">← Предыдущая</span><span class="ttl">Приведение подобных слагаемых</span></a><a class="to-cat" href="./catalog.html">📚 <span>Все темы</span></a><a class="next" href="./m6-uravneniya-zadachi.html"><span class="dir">Следующая →</span><span class="ttl">Решение задач с помощью уравнений</span></a></nav><!--/LESSON-NAV-BOT-->
