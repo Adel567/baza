@@ -1,0 +1,642 @@
+<!doctype html>
+<!-- humanized: humanizer-ru, 2026-08-29, тире возвращено -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Прямоугольник и квадрат — 5 класс</title>
+<style>
+  :root{
+    --paper:#FAF8F4;
+    --card:#FFFFFF;
+    --ink:#232028;
+    --muted:#6B6570;
+    --line:#E6E2E6;
+    --brand:#1F6F8B;          /* общий акцент */
+    --brand-soft:#E3F0F4;
+    --rect:#3A5AA0;           /* прямоугольник */
+    --rect-soft:#E6ECF7;
+    --rect-line:#C4D2EB;
+    --sq:#2E8B57;             /* квадрат */
+    --sq-soft:#E4F2EA;
+    --sq-line:#BCDFCB;
+    --diag:#8A4FA8;           /* диагонали */
+    --diag-soft:#F1E8F6;
+    --warn:#C0522A;
+    --no:#C23B3B;
+    --ok:#2E8B57;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper)}
+  .page{
+    max-width:720px;margin:0 auto;
+    padding:clamp(1.4rem,4vw,3rem) clamp(1.1rem,4vw,2rem) 4.5rem;
+    color:var(--ink);
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    font-size:17.5px;line-height:1.68;-webkit-font-smoothing:antialiased;
+  }
+  .mono{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-variant-numeric:tabular-nums;font-weight:600}
+
+  .hero{border-bottom:3px solid var(--brand);padding-bottom:1.4rem;margin-bottom:1.8rem}
+  .eyebrow{font-size:.74rem;letter-spacing:.15em;text-transform:uppercase;color:var(--brand);font-weight:700;margin:0 0 .55rem}
+  h1{font-size:clamp(2rem,6.5vw,3rem);line-height:1.05;margin:0;font-weight:800;letter-spacing:-.02em;text-wrap:balance}
+  .tagline{font-size:1.12rem;color:var(--muted);margin:.85rem 0 0;text-wrap:pretty}
+
+  section{margin-top:2.4rem}
+  h2{font-size:1.5rem;margin:0 0 .3rem;font-weight:780;letter-spacing:-.015em;text-wrap:balance}
+  h2 .em{color:var(--brand)}
+  h3{font-size:1.1rem;margin:1.3rem 0 .2rem;font-weight:760}
+  p{margin:.7rem 0}
+  strong{font-weight:680}
+
+  .lead-in{background:var(--brand-soft);border-radius:14px;padding:1.1rem 1.3rem;font-size:1.02rem}
+  .lead-in p{margin:.4rem 0}
+  .lead-in b{color:var(--brand)}
+
+  .things{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:.7rem}
+  .things span{background:#fff;border:1px solid var(--line);border-radius:8px;padding:.15rem .6rem;font-size:.9rem}
+
+  /* Повторение */
+  .recall{display:grid;gap:.7rem;margin-top:1rem}
+  @media(min-width:600px){.recall{grid-template-columns:1fr 1fr}}
+  .recall div{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--brand);border-radius:0 11px 11px 0;padding:.8rem 1.05rem;font-size:.97rem}
+  .recall b{color:var(--brand)}
+
+  /* Две карточки: прямоугольник / квадрат */
+  .split{display:grid;gap:.9rem;margin-top:1rem}
+  @media(min-width:600px){.split{grid-template-columns:1fr 1fr}}
+  .path{border-radius:16px;padding:1.2rem 1.3rem;border:2px solid}
+  .path.r{background:var(--rect-soft);border-color:var(--rect-line)}
+  .path.s{background:var(--sq-soft);border-color:var(--sq-line)}
+  .path .cap{font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;font-weight:700;margin:0}
+  .path.r .cap{color:var(--rect)} .path.s .cap{color:var(--sq)}
+  .path h3{margin:.2rem 0 .5rem;font-size:1.3rem;font-weight:800}
+  .path p{margin:.3rem 0;font-size:.97rem}
+
+  /* Матрёшка «квадрат внутри прямоугольников» */
+  .nest{margin-top:1rem;border:2px dashed var(--rect-line);background:var(--rect-soft);border-radius:16px;padding:1rem 1.1rem}
+  .nest .outer{font-weight:800;color:var(--rect);font-size:.95rem;margin:0 0 .6rem}
+  .nest .inner{border:2px solid var(--sq-line);background:var(--sq-soft);border-radius:12px;padding:.8rem 1rem}
+  .nest .inner b{color:var(--sq)}
+  .nest .fin{margin:.7rem 0 0;font-size:.95rem;color:var(--muted)}
+
+  /* Плитки-свойства */
+  .props{display:flex;flex-direction:column;gap:.7rem;margin-top:1rem}
+  .prop{display:flex;align-items:flex-start;gap:1rem;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:.85rem 1.05rem}
+  .prop .big{font-size:1.4rem;flex:none;width:2.2rem;text-align:center;line-height:1.3}
+  .prop .txt{flex:1;font-size:.98rem}
+  .prop .txt b{font-weight:700}
+  .prop .ex{font-size:.87rem;color:var(--muted);margin-top:.25rem}
+
+  .note{border-left:4px solid var(--brand);background:var(--brand-soft);border-radius:0 10px 10px 0;padding:.8rem 1.1rem;margin-top:1rem;font-size:.98rem}
+  .note b{color:var(--brand)}
+  .note.d{border-left-color:var(--diag);background:var(--diag-soft)}
+  .note.d b{color:var(--diag)}
+
+  /* Разбор по шагам */
+  .walk{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.15rem 1.3rem;margin-top:1rem}
+  .walk .q{font-weight:700;font-size:1.05rem;margin:0 0 .9rem;padding-bottom:.7rem;border-bottom:1px solid var(--line)}
+  .walk ol{margin:0;padding-left:1.3rem;display:flex;flex-direction:column;gap:.55rem}
+  .walk li{font-size:.98rem}
+  .walk .why{color:var(--muted);font-size:.93rem;display:block;margin-top:.15rem}
+  .verdict{margin-top:1rem;padding:.75rem 1rem;background:var(--brand-soft);border-radius:10px;font-weight:650;color:var(--brand);font-size:1rem}
+
+  /* Таблица-шпаргалка */
+  .tblwrap{overflow-x:auto;margin-top:1rem}
+  table{border-collapse:collapse;width:100%;min-width:420px;font-size:.96rem}
+  th,td{border:1px solid var(--line);padding:.6rem .75rem;text-align:left}
+  thead th{background:#F5F3F6;font-weight:700}
+  td.f{font-weight:700;width:9rem}
+  td.f.r{color:var(--rect);background:var(--rect-soft)}
+  td.f.s{color:var(--sq);background:var(--sq-soft)}
+
+  /* Чертёжник (canvas) */
+  .lab{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:1.1rem 1.2rem 1.2rem;margin-top:1rem}
+  .lab canvas{width:100%;height:auto;display:block;border-radius:10px;background:#fff}
+  .ctrls{display:flex;flex-direction:column;gap:.75rem;margin-top:1rem}
+  .ctrl{display:flex;align-items:center;gap:.8rem;font-size:.95rem}
+  .ctrl label{flex:none;width:6.6rem;font-weight:650}
+  .ctrl input[type=range]{flex:1;min-width:0;accent-color:var(--rect)}
+  .ctrl input[type=range]:focus-visible{outline:2px solid var(--brand);outline-offset:3px}
+  .ctrl .val{flex:none;width:3.4rem;text-align:right;font-family:ui-monospace,Menlo,monospace;font-weight:700}
+  .togg{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.3rem}
+  .togg button{font:inherit;font-weight:650;font-size:.88rem;border-radius:10px;padding:.45rem .9rem;cursor:pointer;border:1px solid var(--line);background:var(--paper);color:var(--ink)}
+  .togg button[aria-pressed=true]{border-color:var(--diag);background:var(--diag-soft);color:var(--diag)}
+  .togg button:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+  .lab-verdict{margin-top:.9rem;padding:.7rem 1rem;border-radius:10px;font-weight:650;font-size:.98rem;border:1px solid}
+  .lab-verdict.r{background:var(--rect-soft);border-color:var(--rect-line);color:var(--rect)}
+  .lab-verdict.s{background:var(--sq-soft);border-color:var(--sq-line);color:var(--sq)}
+
+  /* Тренажёр */
+  .trainer{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:1.3rem 1.3rem 1.2rem;margin-top:1rem}
+  .tr-task{font-size:1.06rem;line-height:1.55;margin:0 0 1rem;padding-bottom:.9rem;border-bottom:1px solid var(--line)}
+  .tr-row{display:flex;gap:.6rem;align-items:center;flex-wrap:wrap}
+  .tr-row input{font:inherit;font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.05rem;width:7.5rem;padding:.5rem .7rem;border:2px solid var(--line);border-radius:10px;background:var(--paper);color:var(--ink)}
+  .tr-row input:focus-visible{outline:2px solid var(--brand);outline-offset:1px;border-color:var(--brand)}
+  .tr-row .unit{color:var(--muted);font-size:.95rem}
+  .tr-btns{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.9rem}
+  .tr-btns button{font:inherit;font-weight:700;font-size:.92rem;border-radius:10px;padding:.55rem 1.1rem;cursor:pointer;border:1px solid transparent}
+  .tr-btns .go{background:var(--brand);color:#fff}
+  .tr-btns .sh{background:var(--paper);border:1px solid var(--line);color:var(--ink)}
+  .tr-btns .nw{background:var(--brand-soft);color:var(--brand)}
+  .tr-btns button:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+  .tr-res{margin-top:1.1rem;font-size:.97rem}
+  .tr-res .head{font-weight:700;padding:.6rem .9rem;border-radius:9px;margin-bottom:.7rem}
+  .tr-res .head.ok{background:#E7F4EC;color:var(--ok)}
+  .tr-res .head.no{background:#FBEAEA;color:var(--no)}
+  .tr-res .head.info{background:var(--brand-soft);color:var(--brand)}
+  .tr-sol{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:.85rem 1rem}
+  .tr-sol .row{margin:.35rem 0;font-size:.94rem}
+  .tr-sol .fin{margin-top:.6rem;padding-top:.55rem;border-top:1px dashed var(--line);font-weight:700}
+
+  /* Практика */
+  .drill{display:flex;flex-direction:column;gap:.7rem;margin-top:1rem}
+  details{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:.9rem 1.1rem}
+  details[open]{border-color:var(--brand)}
+  summary{cursor:pointer;font-weight:650;list-style:none;display:flex;justify-content:space-between;gap:1rem;align-items:center}
+  summary::-webkit-details-marker{display:none}
+  summary:focus-visible{outline:2px solid var(--brand);outline-offset:3px;border-radius:6px}
+  summary .q{font-size:1rem;font-weight:650}
+  summary::after{content:"проверить";font-size:.8rem;color:var(--brand);font-weight:700;white-space:nowrap}
+  details[open] summary::after{content:"скрыть"}
+  .ans{margin-top:.75rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.96rem;color:var(--muted)}
+  .ans b{color:var(--ink)}
+  .lvl{font-size:.68rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--brand);margin:1.2rem 0 .4rem}
+
+  /* Ловушки */
+  ul.traps{list-style:none;margin:1rem 0 0;padding:0;display:flex;flex-direction:column;gap:.7rem}
+  ul.traps li{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:.85rem 1.05rem;padding-left:2.5rem;position:relative;font-size:.97rem}
+  ul.traps li::before{content:"⚠";position:absolute;left:1rem;top:.85rem;color:var(--warn);font-size:1.05rem}
+  ul.traps b{font-weight:700}
+  ul.traps .fix{display:block;margin-top:.25rem;color:var(--muted);font-size:.92rem}
+
+  .selfcheck{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.1rem 1.3rem;margin-top:1rem}
+  .selfcheck ol{margin:.3rem 0 0;padding-left:1.3rem}
+  .selfcheck li{margin:.45rem 0}
+
+  .wrapup{background:var(--brand);color:#fff;border-radius:16px;padding:1.4rem 1.5rem;margin-top:2.4rem}
+  .wrapup h2{color:#fff;margin:0 0 .5rem}
+  .wrapup p{color:#E2EFF3;margin:.4rem 0;font-size:1rem}
+  .wrapup .big-rule{font-size:1.08rem;font-weight:700;color:#fff;margin:.6rem 0}
+  .wrapup .next{font-size:.95rem;color:#C6DEE6;margin-top:1rem;padding-top:1rem;border-top:1px solid rgba(255,255,255,.22)}
+
+  @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<!--LESSON-NAV-TOP--><style>.lnav{--lnav-accent:#3D5AF1}.lnav a{text-decoration:none;font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif}.lnav-top{max-width:820px;margin:0 auto;padding:.75rem clamp(1rem,4vw,1.5rem) .1rem}.lnav-top a{display:inline-flex;align-items:center;gap:.35rem;color:var(--lnav-accent);font-weight:600;font-size:.9rem}.lnav-top a:hover{text-decoration:underline}.lnav-bot{max-width:820px;margin:2.6rem auto 3rem;padding:1.1rem clamp(1rem,4vw,1.5rem) 0;border-top:1px solid #E4E8EF;display:flex;align-items:stretch;gap:.55rem}.lnav-bot a{min-width:0;display:flex;flex-direction:column;justify-content:center;gap:.15rem;border:1px solid #E4E8EF;border-radius:12px;padding:.65rem .85rem;color:#182233;background:#fff;transition:border-color .1s,transform .08s}.lnav-bot a:hover{border-color:var(--lnav-accent);transform:translateY(-1px)}.lnav-bot .prev,.lnav-bot .next{flex:1 1 0}.lnav-bot .next{text-align:right}.lnav-bot .dir{font-size:.72rem;color:#8A93A6;font-weight:600}.lnav-bot .ttl{font-size:.9rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.lnav-bot .to-cat{flex:0 0 auto;flex-direction:row;align-items:center;justify-content:center;color:var(--lnav-accent);font-weight:700;font-size:.85rem;white-space:nowrap}@media(max-width:420px){.lnav-bot .to-cat span{display:none}.lnav-bot .to-cat{padding:.65rem .7rem}}</style><nav class="lnav lnav-top"><a href="./catalog.html">← Все темы</a></nav><!--/LESSON-NAV-TOP-->
+<div class="page">
+
+  <header class="hero">
+    <p class="eyebrow">Математика · 5 класс</p>
+    <h1>Прямоугольник<br>и квадрат</h1>
+    <p class="tagline">Две фигуры, которые ты видишь каждый день. И одна неожиданная связь между ними.</p>
+  </header>
+
+  <div class="lead-in">
+    <p><b>Зачем это уметь.</b> Оглянись вокруг. Прямоугольники и квадраты будут почти везде:</p>
+    <div class="things"><span>лист бумаги</span><span>экран телефона</span><span>дверь</span><span>окно</span><span>плитка на полу</span><span>футбольное поле</span><span>шахматная доска</span></div>
+    <p>Сколько обоев взять на стену? Сколько метров плинтуса купить по периметру комнаты? Хватит ли плитки на пол? Чтобы ответить, надо сначала уверенно узнавать эти фигуры и помнить их свойства.</p>
+    <p>А дальше в математике на них держится многое: периметр многоугольника, площадь прямоугольника, потом объём и работа с координатами.</p>
+  </div>
+
+  <section>
+    <h2>Что вспомнить перед стартом</h2>
+    <p>Понадобятся всего две вещи, и обе ты уже знаешь:</p>
+    <div class="recall">
+      <div><b>Прямой угол</b> — это угол в <span class="mono">90°</span>. Из таких углов и собран прямоугольник. Проверить угол можно угольником, а в тетради — по клеткам.</div>
+      <div><b>Измерение отрезков</b> — стороны меряют линейкой и записывают в единицах длины: мм, см, дм, м.</div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Две фигуры: <span class="em">знакомимся</span></h2>
+    <div class="split">
+      <div class="path r">
+        <p class="cap">Фигура 1</p>
+        <h3>Прямоугольник</h3>
+        <p>Четырёхугольник, у которого <strong>все четыре угла прямые</strong> (по 90°).</p>
+        <p>Поэтому противоположные стороны у него равны и параллельны: верхняя равна нижней, левая — правой.</p>
+      </div>
+      <div class="path s">
+        <p class="cap">Фигура 2</p>
+        <h3>Квадрат</h3>
+        <p>Это прямоугольник, у которого <strong>ещё и все четыре стороны равны</strong> между собой.</p>
+        <p>Самый «ровный» случай: углы прямые, стороны одинаковые.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Главное недоразумение темы</h2>
+    <p>Многие уверены: «квадрат и прямоугольник — совсем разные фигуры». На вид они и правда разные. А по определению — нет.</p>
+    <p>Смотри сам. Прямоугольник — это фигура <em>с прямыми углами</em>. У квадрата все углы прямые? Прямые. Значит, квадрат подходит под определение прямоугольника. Просто у него вдобавок все стороны равны.</p>
+    <div class="nest">
+      <p class="outer">◻ Все прямоугольники</p>
+      <div class="inner"><b>◼ Квадраты</b> — те прямоугольники, у которых ещё и все стороны равны</div>
+      <p class="fin">Квадрат — свой в семье прямоугольников. Просто самый аккуратный из них.</p>
+    </div>
+    <div class="note">
+      <p><b>Запомни фразу.</b> Любой квадрат — прямоугольник, но не каждый прямоугольник — квадрат.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Определения и обозначения</h2>
+    <div class="props">
+      <div class="prop">
+        <div class="big" style="color:var(--rect)">◻</div>
+        <div class="txt"><b>Прямоугольник</b> — четырёхугольник, у которого все углы прямые (равны 90°).</div>
+      </div>
+      <div class="prop">
+        <div class="big" style="color:var(--sq)">◼</div>
+        <div class="txt"><b>Квадрат</b> — прямоугольник, у которого все стороны равны.</div>
+      </div>
+    </div>
+
+    <h3>Как обозначают</h3>
+    <div class="props">
+      <div class="prop">
+        <div class="big mono" style="color:var(--rect)">a</div>
+        <div class="txt"><b>Длина</b> — бо́льшая сторона прямоугольника. У квадрата той же буквой обозначают просто <b>сторону</b>.
+          <div class="ex">У квадрата длина и ширина равны, поэтому и говорят одним словом — «сторона».</div>
+        </div>
+      </div>
+      <div class="prop">
+        <div class="big mono" style="color:var(--rect)">b</div>
+        <div class="txt"><b>Ширина</b> — меньшая сторона прямоугольника.</div>
+      </div>
+      <div class="prop">
+        <div class="big mono">ABCD</div>
+        <div class="txt"><b>Вершины</b> подписывают буквами, обычно A, B, C, D. Тогда стороны читаются так: AB, BC, CD, AD.</div>
+      </div>
+      <div class="prop">
+        <div class="big" style="color:var(--diag)">╱</div>
+        <div class="txt"><b>Диагональ</b> — отрезок, соединяющий противоположные вершины (например, AC и BD).
+          <div class="ex">Диагонали — это <strong>не</strong> стороны.</div>
+        </div>
+      </div>
+    </div>
+
+    <h3>Свойства, которые надо знать</h3>
+    <div class="tblwrap">
+      <table>
+        <thead><tr><th>Где</th><th>Что верно</th></tr></thead>
+        <tbody>
+          <tr><td class="f r">Прямоугольник</td><td>Противоположные стороны равны: <span class="mono">AB = CD</span>, <span class="mono">BC = AD</span></td></tr>
+          <tr><td class="f r">Прямоугольник</td><td>Все углы прямые (90°)</td></tr>
+          <tr><td class="f r">Прямоугольник</td><td>Диагонали равны между собой: <span class="mono">AC = BD</span></td></tr>
+          <tr><td class="f s">Квадрат</td><td>Всё вышеперечисленное, и ещё все стороны равны: <span class="mono">AB = BC = CD = AD</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="note">
+      <p><b>Когда фигура вообще может быть прямоугольником.</b> Она должна быть плоской, замкнутой, с ровно 4 сторонами и 4 прямыми углами. Один угол не прямой — и всё, это уже не прямоугольник.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Эталонный разбор — <span class="em">думаю вслух</span></h2>
+    <p>Смотри, как тут рассуждают. Читай не спеша, вместе с пояснениями «почему».</p>
+    <div class="walk">
+      <p class="q">В прямоугольнике ABCD сторона AB = 7 см. Чему равна противоположная сторона CD?</p>
+      <ol>
+        <li>В прямоугольнике противоположные стороны равны — это его свойство.
+          <span class="why">Почему так: если все углы прямые, верхняя и нижняя стороны обязательно одной длины.</span></li>
+        <li>AB и CD — как раз противоположные стороны.</li>
+        <li>Значит, <span class="mono">CD = AB = 7 см</span>.</li>
+      </ol>
+      <div class="verdict">Ответ: CD = 7 см.</div>
+    </div>
+    <p>Заметь: линейку мы не брали и ничего не считали. Узнали фигуру, вспомнили её свойство — и всё.</p>
+  </section>
+
+  <section>
+    <h2>Чертёжник — <span class="em">покрути сам</span></h2>
+    <p>Вот прямоугольник ABCD на клетчатой бумаге. Меняй ползунками его стороны и следи за подписью внизу.</p>
+    <p><strong>Сначала предскажи:</strong> что получится, если сделать соседние стороны равными? Ответь себе вслух, а потом проверь ползунками.</p>
+    <div class="lab">
+      <canvas id="cv" width="660" height="440" aria-label="Чертёж прямоугольника ABCD на клетчатой бумаге"></canvas>
+      <div class="ctrls">
+        <div class="ctrl">
+          <label for="sw">Сторона AB</label>
+          <input type="range" id="sw" min="1" max="9" step="1" value="6">
+          <span class="val mono" id="vw">6</span>
+        </div>
+        <div class="ctrl">
+          <label for="sh">Сторона BC</label>
+          <input type="range" id="sh" min="1" max="7" step="1" value="3">
+          <span class="val mono" id="vh">3</span>
+        </div>
+        <div class="togg">
+          <button type="button" id="bd" aria-pressed="false">Показать диагонали AC и BD</button>
+        </div>
+      </div>
+      <div class="lab-verdict r" id="lv">Стороны разные → это прямоугольник (но не квадрат).</div>
+    </div>
+    <div class="note d">
+      <p><b>Про диагонали.</b> Включи их и посмотри. AC и BD идут наискосок, от вершины к противоположной вершине, и они равны между собой. А стороны идут по краю фигуры. Не путай.</p>
+    </div>
+    <p>А теперь то же самое руками в тетради. Начерти по клеткам прямоугольник 3×6 клеток и квадрат 4×4 клетки, подпиши вершины ABCD, отметь значком прямые углы. Проверь углы угольником, проведи диагонали и измерь их линейкой.</p>
+  </section>
+
+  <section>
+    <h2>Тренажёр — <span class="em">бесконечные задания</span></h2>
+    <p>Каждый раз новая задача про стороны и диагонали. Пиши ответ в сантиметрах, одно число, и проверяй себя. Застрял — жми «Показать решение».</p>
+    <div class="trainer">
+      <p class="tr-task" id="trTask">В прямоугольнике ABCD сторона AB = 7 см. Чему равна сторона CD?</p>
+      <div class="tr-row">
+        <input type="text" inputmode="decimal" id="trIn" placeholder="ответ" autocomplete="off">
+        <span class="unit">см</span>
+      </div>
+      <div class="tr-btns">
+        <button class="go" id="trCheck" type="button">Проверить</button>
+        <button class="sh" id="trShow" type="button">Показать решение</button>
+        <button class="nw" id="trNew" type="button">🎲 Новая задача</button>
+      </div>
+      <div class="tr-res" id="trRes"></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Практика</h2>
+    <p>Сначала решай сам, потом раскрывай ответ. Не подглядывай раньше времени 🙂</p>
+
+    <p class="lvl">Уровень 1 · узнать и назвать</p>
+    <div class="drill">
+      <details>
+        <summary><span class="q">1) Перед тобой фигуры: квадрат, прямоугольник (не квадрат), треугольник, фигура с одним непрямым углом. Какие из них прямоугольники? А какой из прямоугольников — квадрат?</span></summary>
+        <div class="ans">Прямоугольники — это <b>квадрат</b> и <b>прямоугольник (не квадрат)</b>: у обоих все четыре угла прямые. Треугольник отпадает, у него не четыре стороны. Фигура с одним непрямым углом тоже отпадает: прямыми должны быть <b>все</b> углы. А квадрат среди прямоугольников — тот, у которого все стороны равны.</div>
+      </details>
+      <details>
+        <summary><span class="q">2) Квадрат со стороной 4 см. Найди длины всех четырёх сторон.</span></summary>
+        <div class="ans">У квадрата все стороны равны: <span class="mono">AB = BC = CD = AD</span>. Раз <span class="mono">AB = 4 см</span>, то <b>BC = 4 см, CD = 4 см, AD = 4 см</b>.</div>
+      </details>
+    </div>
+
+    <p class="lvl">Уровень 2 · применить правило</p>
+    <div class="drill">
+      <details>
+        <summary><span class="q">3) В прямоугольнике одна сторона равна 9 см, а соседняя — 5 см. Назови длины всех четырёх сторон по порядку.</span></summary>
+        <div class="ans"><b>9 см, 5 см, 9 см, 5 см</b> — ведь противоположные стороны равны.</div>
+      </details>
+      <details>
+        <summary><span class="q">4) В прямоугольнике ABCD: AB = 12 см, BC = 6 см. Найди длину стороны CD и стороны AD.</span></summary>
+        <div class="ans">CD противоположна AB, значит <b>CD = 12 см</b>. AD противоположна BC, значит <b>AD = 6 см</b>.</div>
+      </details>
+    </div>
+
+    <p class="lvl">Уровень 3 · анализ</p>
+    <div class="drill">
+      <details>
+        <summary><span class="q">5) Что изменится с прямоугольником, если сделать обе соседние стороны равными?</span></summary>
+        <div class="ans">Тогда равными станут все четыре стороны (противоположные и так были равны), а углы остались прямыми. <b>Он станет квадратом.</b></div>
+      </details>
+      <details>
+        <summary><span class="q">6) Найди ошибку: «У этой фигуры три угла прямые, а четвёртый — острый, значит это прямоугольник».</span></summary>
+        <div class="ans">Фигура будет прямоугольником, только если <b>ВСЕ четыре угла прямые</b>. Здесь один угол острый, значит это не прямоугольник. Трёх прямых углов мало.</div>
+      </details>
+      <details>
+        <summary><span class="q">7) Обратная задача: у фигуры все четыре стороны равны и все углы прямые. Как она называется?</span></summary>
+        <div class="ans">Все углы прямые → это прямоугольник. Все стороны равны → значит это <b>квадрат</b>.</div>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <h2>Ловушки — не попадись</h2>
+    <ul class="traps">
+      <li><b>«Квадрат — это не прямоугольник».</b> Ещё как прямоугольник. Просто с равными сторонами.
+        <span class="fix">Как не ошибиться: проверь определение. У квадрата все углы прямые, значит он подходит под определение прямоугольника.</span></li>
+      <li><b>Путают стороны и диагонали.</b> Диагональ соединяет противоположные вершины и проходит «внутри» фигуры, она длиннее стороны. А сторона — это край фигуры.
+        <span class="fix">Как не ошибиться: стороны идут по периметру, диагонали — наискосок.</span></li>
+      <li><b>Неверно строят прямые углы.</b> «На глаз» углы выходят скошенными, и фигура перестаёт быть прямоугольником.
+        <span class="fix">Как не ошибиться: строй прямые углы по угольнику или по клеткам тетради, а не от руки.</span></li>
+      <li><b>Думают, что у прямоугольника все стороны равны.</b> Равны только противоположные, а соседние обычно разные.
+        <span class="fix">Как не ошибиться: все четыре стороны равны только у квадрата.</span></li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Проверь понимание</h2>
+    <p>Ответь вслух своими словами, как будто объясняешь другу. Потом раскрывай и сверяйся.</p>
+    <div class="drill">
+      <details>
+        <summary><span class="q">Какой четырёхугольник называется прямоугольником?</span></summary>
+        <div class="ans">Тот, <b>у которого все углы прямые</b>.</div>
+      </details>
+      <details>
+        <summary><span class="q">Чем квадрат отличается от обычного прямоугольника?</span></summary>
+        <div class="ans">У квадрата <b>все стороны равны</b>.</div>
+      </details>
+      <details>
+        <summary><span class="q">Верно ли, что каждый квадрат является прямоугольником?</span></summary>
+        <div class="ans"><b>Да.</b> У квадрата все углы прямые, значит он подходит под определение прямоугольника.</div>
+      </details>
+    </div>
+    <div class="selfcheck">
+      <p style="margin:0"><strong>Ещё три вопроса по чертежу.</strong> Достань свой рисунок из тетради и покажи:</p>
+      <ol>
+        <li>Покажи пальцем стороны.</li>
+        <li>Теперь покажи диагонали.</li>
+        <li>Где здесь прямые углы?</li>
+      </ol>
+    </div>
+  </section>
+
+  <div class="wrapup">
+    <h2>Запомни главное</h2>
+    <p class="big-rule">Прямоугольник — четырёхугольник со всеми прямыми углами и равными противоположными сторонами.<br>Квадрат — это прямоугольник, у которого ещё и все стороны равны.</p>
+    <p>Значит, любой квадрат — прямоугольник, но не наоборот.</p>
+    <p class="next">👉 Дальше на этих фигурах вырастут <strong>периметр многоугольника</strong> (сколько метров плинтуса купить по краю комнаты) и <strong>площадь прямоугольника</strong> (хватит ли плитки на пол). Свойство «противоположные стороны равны» понадобится там сразу.</p>
+  </div>
+
+</div>
+
+<script>
+(function(){
+  /* ---------- Чертёжник ---------- */
+  var cv=document.getElementById('cv'), ctx=cv.getContext('2d');
+  var sw=document.getElementById('sw'), sh=document.getElementById('sh');
+  var vw=document.getElementById('vw'), vh=document.getElementById('vh');
+  var bd=document.getElementById('bd'), lv=document.getElementById('lv');
+  var showDiag=false;
+  var W=cv.width, H=cv.height;
+
+  function draw(){
+    var w=+sw.value, h=+sh.value;
+    var cell=44;
+    ctx.clearRect(0,0,W,H);
+    ctx.fillStyle='#ffffff'; ctx.fillRect(0,0,W,H);
+
+    /* клетчатая бумага */
+    ctx.strokeStyle='#DCE6EF'; ctx.lineWidth=1;
+    for(var x=0;x<=W;x+=cell){ ctx.beginPath(); ctx.moveTo(x+.5,0); ctx.lineTo(x+.5,H); ctx.stroke(); }
+    for(var y=0;y<=H;y+=cell){ ctx.beginPath(); ctx.moveTo(0,y+.5); ctx.lineTo(W,y+.5); ctx.stroke(); }
+
+    var pw=w*cell, ph=h*cell;
+    var x0=Math.round((W-pw)/2/cell)*cell, y0=Math.round((H-ph)/2/cell)*cell;
+    var x1=x0+pw, y1=y0+ph;
+    var sq=(w===h);
+    var col=sq?'#2E8B57':'#3A5AA0', soft=sq?'rgba(46,139,87,.10)':'rgba(58,90,160,.10)';
+
+    ctx.fillStyle=soft; ctx.fillRect(x0,y0,pw,ph);
+    ctx.strokeStyle=col; ctx.lineWidth=4; ctx.lineJoin='round';
+    ctx.strokeRect(x0,y0,pw,ph);
+
+    /* значки прямых углов */
+    ctx.strokeStyle=col; ctx.lineWidth=2;
+    var m=Math.min(16, pw/3, ph/3);
+    var corners=[[x0,y0,1,1],[x1,y0,-1,1],[x1,y1,-1,-1],[x0,y1,1,-1]];
+    corners.forEach(function(c){
+      ctx.beginPath();
+      ctx.moveTo(c[0]+c[2]*m, c[1]);
+      ctx.lineTo(c[0]+c[2]*m, c[1]+c[3]*m);
+      ctx.lineTo(c[0], c[1]+c[3]*m);
+      ctx.stroke();
+    });
+
+    /* диагонали */
+    if(showDiag){
+      ctx.save();
+      ctx.strokeStyle='#8A4FA8'; ctx.lineWidth=3; ctx.setLineDash([8,6]);
+      ctx.beginPath(); ctx.moveTo(x0,y0); ctx.lineTo(x1,y1); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(x1,y0); ctx.lineTo(x0,y1); ctx.stroke();
+      ctx.restore();
+    }
+
+    /* вершины */
+    ctx.font='700 22px system-ui, -apple-system, "Segoe UI", Roboto, sans-serif';
+    ctx.fillStyle='#232028';
+    ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.fillText('A', x0-18, y0-16);
+    ctx.fillText('B', x1+18, y0-16);
+    ctx.fillText('C', x1+18, y1+16);
+    ctx.fillText('D', x0-18, y1+16);
+    corners.forEach(function(c){ ctx.beginPath(); ctx.arc(c[0],c[1],5,0,Math.PI*2); ctx.fillStyle=col; ctx.fill(); });
+
+    /* подписи сторон */
+    ctx.font='700 17px ui-monospace, Menlo, Consolas, monospace';
+    ctx.fillStyle=col;
+    ctx.fillText(w+' кл.', x0+pw/2, y0-20);
+    ctx.save();
+    ctx.translate(x1+26, y0+ph/2); ctx.rotate(Math.PI/2);
+    ctx.fillText(h+' кл.', 0, 0);
+    ctx.restore();
+
+    vw.textContent=w; vh.textContent=h;
+    lv.className='lab-verdict '+(sq?'s':'r');
+    lv.textContent = sq
+      ? 'Все стороны равны → это квадрат. И он же прямоугольник: углы-то остались прямыми.'
+      : 'Стороны разные → это прямоугольник (но не квадрат).';
+  }
+  sw.addEventListener('input',draw);
+  sh.addEventListener('input',draw);
+  bd.addEventListener('click',function(){
+    showDiag=!showDiag;
+    bd.setAttribute('aria-pressed', showDiag?'true':'false');
+    bd.textContent = showDiag ? 'Скрыть диагонали AC и BD' : 'Показать диагонали AC и BD';
+    draw();
+  });
+  draw();
+
+  /* ---------- Тренажёр ---------- */
+  var taskEl=document.getElementById('trTask');
+  var inEl=document.getElementById('trIn');
+  var resEl=document.getElementById('trRes');
+  var T=null;
+
+  function ri(a,b){ return Math.floor(Math.random()*(b-a+1))+a; }
+  function num(n){ return String(n).replace(/-/g,'−'); }
+  function pair(){ var a=ri(2,20), b; do{ b=ri(2,20); }while(b===a); return [a,b]; }
+
+  function make(kind){
+    var k = kind || ri(1,5), a, b, p;
+    if(k===1){
+      a=ri(2,20);
+      return {q:'В прямоугольнике ABCD сторона AB = '+num(a)+' см. Чему равна сторона CD?',
+        ans:a,
+        steps:['AB и CD — противоположные стороны прямоугольника.',
+               'В прямоугольнике противоположные стороны равны: AB = CD.',
+               'Значит CD = AB = '+num(a)+' см.'],
+        fin:'Ответ: CD = '+num(a)+' см.'};
+    }
+    if(k===2){
+      p=pair(); a=p[0]; b=p[1];
+      return {q:'В прямоугольнике ABCD: AB = '+num(a)+' см, BC = '+num(b)+' см. Чему равна сторона AD?',
+        ans:b,
+        steps:['Смотрим, какая сторона противоположна AD. Это BC.',
+               'В прямоугольнике противоположные стороны равны: BC = AD.',
+               'Значит AD = BC = '+num(b)+' см. Сторона AB здесь ни при чём — это соседняя сторона.'],
+        fin:'Ответ: AD = '+num(b)+' см.'};
+    }
+    if(k===3){
+      a=ri(2,20);
+      return {q:'ABCD — квадрат, его сторона AB = '+num(a)+' см. Чему равна сторона BC?',
+        ans:a,
+        steps:['У квадрата все стороны равны: AB = BC = CD = AD.',
+               'Раз AB = '+num(a)+' см, то и BC такая же.'],
+        fin:'Ответ: BC = '+num(a)+' см.'};
+    }
+    if(k===4){
+      a=ri(5,25);
+      return {q:'В прямоугольнике ABCD диагональ AC = '+num(a)+' см. Чему равна диагональ BD?',
+        ans:a,
+        steps:['AC и BD — диагонали: каждая соединяет противоположные вершины.',
+               'Диагонали прямоугольника равны между собой: AC = BD.',
+               'Значит BD = AC = '+num(a)+' см.'],
+        fin:'Ответ: BD = '+num(a)+' см.'};
+    }
+    p=pair(); a=p[0]; b=p[1];
+    return {q:'В прямоугольнике ABCD: AB = '+num(a)+' см, BC = '+num(b)+' см. Какой должна стать сторона BC, чтобы фигура превратилась в квадрат?',
+      ans:a,
+      steps:['Квадрат — это прямоугольник, у которого все стороны равны.',
+             'Сторона AB остаётся прежней: '+num(a)+' см.',
+             'Значит соседняя сторона BC тоже должна стать '+num(a)+' см — тогда все четыре стороны станут равными.'],
+      fin:'Ответ: BC = '+num(a)+' см.'};
+  }
+
+  function locked(){ return resEl.getAttribute('data-done')==='1'; }
+
+  function render(t){
+    T=t;
+    taskEl.textContent=T.q;
+    inEl.value=''; inEl.disabled=false;
+    resEl.innerHTML=''; resEl.removeAttribute('data-done');
+  }
+  function solution(){
+    var h='<div class="tr-sol">';
+    T.steps.forEach(function(s){ h+='<div class="row">'+s+'</div>'; });
+    h+='<div class="fin">'+T.fin+'</div>';
+    return h+'</div>';
+  }
+  function check(){
+    if(locked()) return;
+    var raw=inEl.value.replace(/−/g,'-').replace(',','.').replace(/\s/g,'');
+    if(raw===''){ resEl.innerHTML='<div class="head info">Сначала введи число — ответ в сантиметрах.</div>'; return; }
+    var v=parseFloat(raw);
+    var ok=isFinite(v) && Math.abs(v-T.ans)<1e-9;
+    resEl.setAttribute('data-done','1');
+    inEl.disabled=true;
+    resEl.innerHTML=(ok
+      ? '<div class="head ok">✓ Верно!</div>'
+      : '<div class="head no">Не сходится. Смотри разбор ниже.</div>')+solution();
+  }
+  function show(){
+    if(locked()) return;
+    resEl.setAttribute('data-done','1');
+    inEl.disabled=true;
+    resEl.innerHTML='<div class="head info">Как рассуждать:</div>'+solution();
+  }
+  document.getElementById('trCheck').addEventListener('click',check);
+  document.getElementById('trShow').addEventListener('click',show);
+  document.getElementById('trNew').addEventListener('click',function(){ render(make()); inEl.focus(); });
+  inEl.addEventListener('keydown',function(e){ if(e.key==='Enter') check(); });
+
+  render({q:'В прямоугольнике ABCD сторона AB = 7 см. Чему равна сторона CD?',
+    ans:7,
+    steps:['AB и CD — противоположные стороны прямоугольника.',
+           'В прямоугольнике противоположные стороны равны: AB = CD.',
+           'Значит CD = AB = 7 см.'],
+    fin:'Ответ: CD = 7 см.'});
+})();
+</script>
+<!--LESSON-NAV-BOT--><nav class="lnav lnav-bot"><a class="prev" href="./m5-treugolnik-vidy.html"><span class="dir">← Предыдущая</span><span class="ttl">Треугольник и его виды</span></a><a class="to-cat" href="./catalog.html">📚 <span>Все темы</span></a><a class="next" href="./m5-perimetr-mnogougolnika.html"><span class="dir">Следующая →</span><span class="ttl">Периметр многоугольника</span></a></nav><!--/LESSON-NAV-BOT-->

@@ -1,0 +1,725 @@
+<!doctype html>
+<!-- humanized: humanizer-ru, 2026-08-29, тире возвращено -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Вероятность случайного события — 6 класс</title>
+<style>
+  :root{
+    --paper:#F8F9FB;
+    --card:#FFFFFF;
+    --ink:#1E2430;
+    --muted:#666E7D;
+    --line:#E3E7EE;
+    --brand:#4B4FA6;          /* фирменный цвет темы */
+    --brand-soft:#ECEDFA;
+    --brand-line:#C6C9EE;
+    --take:#2E8B57;           /* благоприятный исход */
+    --take-soft:#E7F4EC;
+    --take-line:#BFE0CC;
+    --drop:#C0563B;           /* неподходящий исход / ошибка */
+    --drop-soft:#FBEBE6;
+    --drop-line:#F0C9BC;
+    --accent:#8A5CC4;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper)}
+  .page{
+    max-width:720px;margin:0 auto;
+    padding:clamp(1.4rem,4vw,3rem) clamp(1.1rem,4vw,2rem) 4.5rem;
+    color:var(--ink);
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    font-size:17.5px;line-height:1.68;-webkit-font-smoothing:antialiased;
+  }
+  .mono{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-variant-numeric:tabular-nums;font-weight:600}
+
+  .hero{border-bottom:3px solid var(--brand);padding-bottom:1.4rem;margin-bottom:1.8rem}
+  .eyebrow{font-size:.74rem;letter-spacing:.15em;text-transform:uppercase;color:var(--brand);font-weight:700;margin:0 0 .55rem}
+  h1{font-size:clamp(2rem,6.5vw,3rem);line-height:1.05;margin:0;font-weight:800;letter-spacing:-.02em;text-wrap:balance}
+  .tagline{font-size:1.12rem;color:var(--muted);margin:.85rem 0 0;text-wrap:pretty}
+
+  section{margin-top:2.4rem}
+  h2{font-size:1.5rem;margin:0 0 .3rem;font-weight:780;letter-spacing:-.015em;text-wrap:balance}
+  h2 .em{color:var(--brand)}
+  h3{font-size:1.1rem;margin:1.4rem 0 .2rem;font-weight:760}
+  p{margin:.7rem 0}
+  strong{font-weight:680}
+
+  .lead-in{background:var(--brand-soft);border-radius:14px;padding:1.1rem 1.3rem;font-size:1.02rem}
+  .lead-in p{margin:.4rem 0}
+  .lead-in b{color:var(--brand)}
+
+  .recall{border:1px dashed var(--brand-line);background:var(--card);border-radius:14px;padding:1rem 1.25rem;margin-top:1rem}
+  .recall .cap{font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;font-weight:700;color:var(--brand);margin:0 0 .3rem}
+  .recall p{margin:.35rem 0;font-size:.98rem}
+
+  .def{background:var(--card);border:2px solid var(--brand);border-radius:16px;padding:1.2rem 1.35rem;margin-top:1rem}
+  .def .cap{font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;font-weight:700;color:var(--brand);margin:0 0 .4rem}
+  .def .big{font-size:1.12rem;font-weight:700;margin:0;text-wrap:pretty}
+  .def .sub{color:var(--muted);font-size:.95rem;margin:.6rem 0 0}
+
+  /* дробь «столбиком» */
+  .frac{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;line-height:1.18;font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-weight:700}
+  .frac .num{border-bottom:1.6px solid currentColor;padding:0 .35em}
+  .frac .den{padding:0 .35em}
+  .formula{text-align:center;font-size:1.35rem;font-weight:800;margin:1rem 0 .2rem;color:var(--brand)}
+  .formula .frac{font-size:1rem}
+  .formula-words{text-align:center;font-size:.98rem;font-weight:700;margin:.9rem 0 0;color:var(--ink);line-height:1.4}
+  .formula-words .frac{font-family:inherit;font-size:.88rem;font-weight:650;max-width:min(100%,20rem)}
+  .formula-words .num{color:var(--take)}
+  .formula-words .den{color:var(--muted)}
+
+  .facts{display:flex;flex-direction:column;gap:.6rem;margin-top:1rem}
+  .fact{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:0 11px 11px 0;padding:.75rem 1rem;font-size:.97rem}
+  .fact b{color:var(--accent)}
+
+  .walk{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.15rem 1.3rem;margin-top:1rem}
+  .walk .q{font-weight:700;font-size:1.05rem;margin:0 0 .9rem;padding-bottom:.7rem;border-bottom:1px solid var(--line)}
+  .walk ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:.7rem}
+  .walk li{font-size:.99rem}
+  .walk .why{display:block;color:var(--muted);font-size:.9rem;font-style:italic;margin-top:.15rem}
+  .verdict{margin-top:1rem;padding:.75rem 1rem;background:var(--brand-soft);border-radius:10px;font-weight:650;color:var(--brand);font-size:1rem}
+  .good{color:var(--take);font-weight:800}
+  .bad{color:var(--drop);font-weight:800}
+
+  /* Canvas-визуализация */
+  .viz{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:1.15rem 1.2rem;margin-top:1rem}
+  .viz canvas{display:block;width:100%;height:auto;border-radius:8px;margin:.2rem 0 .8rem}
+  .viz .picks{display:flex;flex-wrap:wrap;gap:.45rem;justify-content:center;margin-bottom:.9rem}
+  .pick{font:inherit;font-size:.92rem;font-weight:700;border:2px solid var(--line);background:var(--paper);border-radius:10px;padding:.4rem .8rem;cursor:pointer;color:var(--muted)}
+  .pick:hover{border-color:var(--brand-line)}
+  .pick:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+  .pick.on{border-color:var(--brand);background:var(--brand-soft);color:var(--brand)}
+  .viz .verd{font-size:.97rem;border-radius:10px;padding:.6rem .9rem;text-align:center;font-weight:650;background:var(--paper);color:var(--muted)}
+  .viz .verd.ok{background:var(--take-soft);color:var(--take)}
+  .viz .verd.zero{background:var(--drop-soft);color:var(--drop)}
+  .viz .verd.half{background:var(--brand-soft);color:var(--brand)}
+  .viz .hint{font-size:.9rem;color:var(--muted);text-align:center;margin:.6rem 0 0}
+
+  /* Тренажёр */
+  .trainer{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:1.3rem 1.3rem 1.2rem;margin-top:1rem}
+  .tr-task{font-size:clamp(1.02rem,3.6vw,1.15rem);font-weight:700;text-align:center;margin:.1rem 0 .35rem;color:var(--ink);line-height:1.5;text-wrap:pretty}
+  .tr-hint{text-align:center;color:var(--muted);font-size:.88rem;margin:0 0 1rem}
+  .tr-in{display:flex;gap:.5rem;justify-content:center;align-items:center;flex-wrap:wrap;margin-bottom:1rem}
+  .tr-in input{font:inherit;font-family:ui-monospace,Menlo,Consolas,monospace;font-weight:700;font-size:1.2rem;width:8.5rem;text-align:center;padding:.5rem .6rem;border:2px solid var(--line);border-radius:10px;background:var(--paper);color:var(--ink)}
+  .tr-in input:focus-visible{outline:none;border-color:var(--brand)}
+  .tr-btns{display:flex;gap:.5rem;flex-wrap:wrap;justify-content:center}
+  .tr-btns button{font:inherit;font-weight:700;font-size:.92rem;border-radius:10px;padding:.55rem 1.1rem;cursor:pointer;border:1px solid transparent}
+  .tr-btns .go{background:var(--brand);color:#fff}
+  .tr-btns .sh{background:var(--paper);border:1px solid var(--line);color:var(--ink)}
+  .tr-btns .nw{background:var(--brand-soft);color:var(--brand)}
+  .tr-btns button:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+  .tr-res{margin-top:1.1rem;font-size:.97rem}
+  .tr-res .head{font-weight:700;padding:.6rem .9rem;border-radius:9px;margin-bottom:.7rem}
+  .tr-res .head.ok{background:var(--take-soft);color:var(--take)}
+  .tr-res .head.no{background:var(--drop-soft);color:var(--drop)}
+  .tr-res .head.info{background:var(--brand-soft);color:var(--brand)}
+  .tr-sol{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:.85rem 1rem}
+  .tr-sol .row{margin:.32rem 0;font-size:.95rem}
+  .tr-sol .row.res{font-weight:800;color:var(--brand);font-size:1.02rem;margin-top:.6rem;padding-top:.55rem;border-top:1px dashed var(--line)}
+  .tr-sol .mono{font-family:ui-monospace,Menlo,Consolas,monospace;font-weight:700}
+  .tr-sol .g{color:var(--take);font-weight:800}
+  .tr-score{text-align:center;font-size:.86rem;color:var(--muted);margin-top:.9rem}
+
+  /* Практика */
+  .drill{display:flex;flex-direction:column;gap:.7rem;margin-top:1rem}
+  .lvl{font-size:.7rem;letter-spacing:.09em;text-transform:uppercase;font-weight:800;color:var(--accent);margin:1.3rem 0 -.2rem}
+  details{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:.9rem 1.1rem}
+  details[open]{border-color:var(--brand)}
+  summary{cursor:pointer;font-weight:650;list-style:none;display:flex;justify-content:space-between;gap:1rem;align-items:center}
+  summary::-webkit-details-marker{display:none}
+  summary:focus-visible{outline:2px solid var(--brand);outline-offset:3px;border-radius:6px}
+  summary .q{font-size:1rem}
+  summary::after{content:"проверить";font-size:.8rem;color:var(--brand);font-weight:700;white-space:nowrap}
+  details[open] summary::after{content:"скрыть"}
+  .ans{margin-top:.75rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.96rem;color:var(--muted)}
+  .ans b{color:var(--ink)}
+
+  ul.traps{list-style:none;margin:1rem 0 0;padding:0;display:flex;flex-direction:column;gap:.7rem}
+  ul.traps li{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:.85rem 1.05rem;padding-left:2.5rem;position:relative;font-size:.97rem}
+  ul.traps li::before{content:"⚠";position:absolute;left:1rem;top:.85rem;color:var(--drop);font-size:1.05rem}
+  ul.traps b{font-weight:700}
+  ul.traps .fix{display:block;margin-top:.3rem;color:var(--take);font-size:.92rem}
+
+  ol.selfcheck{margin:1rem 0 0;padding-left:1.3rem;display:flex;flex-direction:column;gap:.5rem}
+  ol.selfcheck li{font-size:.99rem}
+
+  .wrapup{background:var(--brand);color:#fff;border-radius:16px;padding:1.4rem 1.5rem;margin-top:2.4rem}
+  .wrapup h2{color:#fff;margin:0 0 .5rem}
+  .wrapup p{color:#DEDFF6;margin:.4rem 0;font-size:1rem}
+  .wrapup .big-rule{font-size:1.08rem;font-weight:700;color:#fff;margin:.6rem 0}
+  .wrapup .frac{color:#fff}
+  .wrapup .next{font-size:.95rem;color:#C9CBEF;margin-top:1rem;padding-top:1rem;border-top:1px solid rgba(255,255,255,.2)}
+  .wrapup .next b{color:#fff}
+
+  @media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+<!--LESSON-NAV-TOP--><style>.lnav{--lnav-accent:#3D5AF1}.lnav a{text-decoration:none;font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif}.lnav-top{max-width:820px;margin:0 auto;padding:.75rem clamp(1rem,4vw,1.5rem) .1rem}.lnav-top a{display:inline-flex;align-items:center;gap:.35rem;color:var(--lnav-accent);font-weight:600;font-size:.9rem}.lnav-top a:hover{text-decoration:underline}.lnav-bot{max-width:820px;margin:2.6rem auto 3rem;padding:1.1rem clamp(1rem,4vw,1.5rem) 0;border-top:1px solid #E4E8EF;display:flex;align-items:stretch;gap:.55rem}.lnav-bot a{min-width:0;display:flex;flex-direction:column;justify-content:center;gap:.15rem;border:1px solid #E4E8EF;border-radius:12px;padding:.65rem .85rem;color:#182233;background:#fff;transition:border-color .1s,transform .08s}.lnav-bot a:hover{border-color:var(--lnav-accent);transform:translateY(-1px)}.lnav-bot .prev,.lnav-bot .next{flex:1 1 0}.lnav-bot .next{text-align:right}.lnav-bot .dir{font-size:.72rem;color:#8A93A6;font-weight:600}.lnav-bot .ttl{font-size:.9rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.lnav-bot .to-cat{flex:0 0 auto;flex-direction:row;align-items:center;justify-content:center;color:var(--lnav-accent);font-weight:700;font-size:.85rem;white-space:nowrap}@media(max-width:420px){.lnav-bot .to-cat span{display:none}.lnav-bot .to-cat{padding:.65rem .7rem}}</style><nav class="lnav lnav-top"><a href="./catalog.html">← Все темы</a></nav><!--/LESSON-NAV-TOP-->
+<div class="page">
+
+  <header class="hero">
+    <p class="eyebrow">Математика · 6 класс</p>
+    <h1>Вероятность случайного события</h1>
+    <p class="tagline">Как заменить расплывчатое «скорее всего» точным числом — и почему это число никогда не бывает больше единицы.</p>
+  </header>
+
+  <div class="lead-in">
+    <p><b>Зачем это нужно.</b> Ты и так говоришь это каждый день: «скорее всего», «вряд ли», «наверняка». Успею на автобус? Пойдёт дождь? Выпадет нужное число в настольной игре? Вероятность превращает размытые слова в <strong>точное число</strong>, и события наконец становится с чем сравнивать: что вероятнее, а что нет.</p>
+    <p>Встречается это везде: кубик и монета, лотереи, прогноз погоды («вероятность дождя 70 %»), контроль качества, спорт. В старших классах из темы вырастет целый раздел — статистика и теория вероятностей.</p>
+    <p><b>Сразу про главный миф.</b> Рассуждение, которое слышишь чаще всего: «исхода два — выпадет или нет, значит вероятность половина». Мимо. «Выпадет шестёрка» и «не выпадет» — правда два варианта, только они <strong>не равновозможны</strong>: шестёрка одна, а остальных граней пять. Считать надо равновозможные исходы. Формулировки тут ни при чём.</p>
+  </div>
+
+  <div class="recall">
+    <p class="cap">Что надо вспомнить</p>
+    <p>Про <strong>случайные события</strong>: результат опыта заранее неизвестен, но все возможные исходы перечислить можно.</p>
+    <p>Про <strong>перебор вариантов</strong>: выписать все исходы подряд и ни один не потерять. Иначе просто не узнаешь, сколько их всего.</p>
+    <p>Про <strong>отношения и дроби</strong>: «сколько из скольких», сокращение дроби и перевод её в десятичную и в проценты.</p>
+  </div>
+
+  <section>
+    <h2>Суть: <span class="em">это просто доля</span></h2>
+    <p>Сначала словами, без формул.</p>
+    <p>У опыта есть несколько исходов, и ни один не в привилегированном положении — все <strong>равновозможны</strong>. Грани правильного кубика как раз такие: ни одна не тяжелее и не «липче» соседних. Тогда вероятность события — это <strong>доля подходящих нам исходов</strong> (их зовут благоприятными) от всех исходов вообще.</p>
+    <p>Чем больше подходящих исходов, тем событие вероятнее. Подходят все — оно произойдёт точно. Не подходит ни один — оно невозможно. Между этими двумя краями и живёт всё остальное.</p>
+
+    <div class="def">
+      <p class="cap">Определение · классическая вероятность</p>
+      <p class="big">Если у опыта <span class="mono">n</span> равновозможных исходов и событию <span class="mono">A</span> благоприятствуют <span class="mono">m</span> из них, то вероятность события равна</p>
+      <p class="formula">P(A) = <span class="frac"><span class="num">m</span><span class="den">n</span></span></p>
+      <p class="formula-words">P(A) = <span class="frac"><span class="num">число благоприятных исходов</span><span class="den">общее число равновозможных исходов</span></span></p>
+      <p class="sub"><span class="mono">m</span> — число благоприятных исходов, то есть тех, при которых событие происходит. <span class="mono">n</span> — общее число всех равновозможных исходов. <span class="mono">P(A)</span> — вероятность события <span class="mono">A</span>; буква P от английского «probability», вероятность. Смысл дроби тот же, что и всегда: «сколько из скольких».</p>
+    </div>
+
+    <h3>Условия и границы — читай внимательно</h3>
+    <div class="facts">
+      <div class="fact"><b>Исходы обязаны быть равновозможными.</b> Кубик и монета должны быть «честными», без перевеса. Иначе формула не работает, и спорить тут не с чем.</div>
+      <div class="fact"><b>Всегда 0 ≤ P(A) ≤ 1.</b> Благоприятных не может быть больше, чем всех, значит <span class="mono">m ≤ n</span>. Отрицательной вероятность не бывает, больше единицы — тоже.</div>
+      <div class="fact"><b>P = 0</b> — событие невозможно: благоприятных исходов нет вообще, <span class="mono">m = 0</span>.</div>
+      <div class="fact"><b>P = 1</b> — событие достоверно, произойдёт обязательно: подходят все исходы, <span class="mono">m = n</span>.</div>
+      <div class="fact"><b>Форма ответа — на выбор.</b> Обыкновенная дробь, десятичная или проценты: <span class="mono">1/2 = 0,5 = 50 %</span>. Это одно и то же число.</div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Разбор: <span class="em">думаю вслух</span></h2>
+    <p>Смотри, как я рассуждаю по шагам. Курсивом — то, что проговариваю про себя.</p>
+    <div class="walk">
+      <p class="q">Бросают игральный кубик. Найти вероятность, что выпадет чётное число.</p>
+      <ul>
+        <li><b>Шаг 1. Сколько всего исходов?</b> Граней шесть: 1, 2, 3, 4, 5, 6. Кубик честный, значит исходы равновозможны, поэтому <span class="mono">n = 6</span>.
+          <span class="why">почему это важно: формула работает только с равновозможными исходами, иначе доля ничего не значит</span></li>
+        <li><b>Шаг 2. Какие исходы благоприятны?</b> Чётные числа: <span class="good">2, 4, 6</span> — их три, значит <span class="mono">m = 3</span>.
+          <span class="why">считаю только те грани, которые подходят под событие, остальные не трогаю</span></li>
+        <li><b>Шаг 3. Подставляю в формулу.</b> <span class="mono">P = m/n = 3/6 = 1/2</span>.
+          <span class="why">вероятность — это доля благоприятных от всех; дробь сразу сокращаю</span></li>
+        <li><b>Шаг 4. Перевожу в другие формы.</b> <span class="mono">1/2 = 0,5 = 50 %</span>.
+          <span class="why">привычка полезная: так ответ проще сравнить с чужим и легче почувствовать эту «половину»</span></li>
+      </ul>
+      <div class="verdict">Ответ: P = 1/2 = 0,5 = 50 %</div>
+    </div>
+
+    <h3>Теперь с пропущенным шагом — допиши сам</h3>
+    <div class="walk">
+      <p class="q">В коробке 10 одинаковых на ощупь шаров: 3 красных и 7 синих. Наугад вынимают один шар. Какова вероятность вынуть красный?</p>
+      <ul>
+        <li>Общее число исходов: шаров всего <span class="mono">n = 10</span>. <span class="why">шары одинаковые на ощупь — значит любой может попасться с равным успехом, исходы равновозможны</span></li>
+        <li>Благоприятные исходы: красных шаров <span class="mono">m = ____</span></li>
+        <li>Вероятность: <span class="mono">P = m/n = ____ / ____ = ____</span></li>
+      </ul>
+      <details style="margin-top:1rem">
+        <summary><span class="q">Заполнил пропуски? Открывай</span></summary>
+        <div class="ans">Красных три, поэтому <b>m = 3</b>. Дальше <span class="mono">P = 3/10 = <b>0,3</b> = 30 %</span>. Сокращать тут нечего: у 3 и 10 общих делителей, кроме единицы, нет.</div>
+      </details>
+    </div>
+
+    <h3>А это уже целиком сам</h3>
+    <div class="drill">
+      <details>
+        <summary><span class="q">Бросают кубик. Найди вероятность, что выпадет число больше 4.</span></summary>
+        <div class="ans">Исходов по-прежнему <span class="mono">n = 6</span>. Больше четырёх только два числа — <b>5 и 6</b>, значит <span class="mono">m = 2</span>. Отсюда <span class="mono">P = 2/6 = <b>1/3</b></span>.</div>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <h2>Наглядность: <span class="em">полоска и шкала</span></h2>
+    <p>Вероятность можно <strong>увидеть</strong> глазами, а не только посчитать. Ниже два способа, и оба про один и тот же бросок кубика.</p>
+    <p><strong>Полоска исходов (бар-модель).</strong> Рисуем прямоугольник — это «все исходы», и делим его на равные клетки по числу исходов. Благоприятные закрашиваем. Закрашенная доля полоски и есть вероятность.</p>
+    <p><strong>Шкала от 0 до 1.</strong> Отрезок: слева 0 — «невозможно», справа 1 — «обязательно», посередине половина — «поровну». Любое событие садится точкой на этот отрезок, и сразу понятно: за края не выбраться.</p>
+    <div class="viz">
+      <div class="picks" id="vzPicks"></div>
+      <canvas id="vzCanvas" width="660" height="340" aria-label="Полоска из шести исходов броска кубика с закрашенными благоприятными и шкала вероятности от 0 до 1"></canvas>
+      <div class="verd" id="vzVerd">Выбери событие — и посмотри, какая часть полоски закрасится</div>
+      <p class="hint">Зелёные клетки — исходы, которые подходят под событие. Серые — не подходят. Точка на шкале показывает, где оказалась вероятность.</p>
+    </div>
+    <p><strong>Предскажи, потом проверь.</strong> Как думаешь, что вероятнее — выпадет шестёрка или выпадет чётное число? Сначала ответь по ощущению, потом нажми обе кнопки и сравни: <span class="mono">1/6</span> против <span class="mono">1/2</span>. Если интуиция обманула — это нормально, объясни себе почему.</p>
+  </section>
+
+  <section>
+    <h2>Тренажёр — <span class="em">бесконечная практика</span></h2>
+    <p>Каждый раз новая задача. Найди <span class="mono">n</span> (сколько исходов всего) и <span class="mono">m</span> (сколько подходит), подставь в формулу и впиши ответ. Застрял — жми «Показать решение» и разбирай по шагам.</p>
+    <div class="trainer">
+      <div class="tr-task" id="trTask">Бросают игральный кубик. Найди вероятность, что выпадет чётное число.</div>
+      <p class="tr-hint" id="trHint">Ответ — дробью (1/2), десятичной (0,5) или в процентах (50%)</p>
+      <div class="tr-in">
+        <input type="text" inputmode="text" id="trAns" placeholder="ответ" autocomplete="off">
+      </div>
+      <div class="tr-btns">
+        <button class="go" id="trCheck" type="button">Проверить</button>
+        <button class="sh" id="trShow" type="button">Показать решение</button>
+        <button class="nw" id="trNew" type="button">🎲 Новая задача</button>
+      </div>
+      <div class="tr-res" id="trRes"></div>
+      <p class="tr-score" id="trScore"></p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Проверь себя</h2>
+    <p>Сначала решай сам, ответ открывай потом. Даже когда кажется, что не выходит, помучайся честно — толку будет больше, чем от подсмотренного решения.</p>
+
+    <p class="lvl">Уровень 1 · понимание</p>
+    <div class="drill">
+      <details>
+        <summary><span class="q">1) Какие значения вообще может принимать вероятность?</span></summary>
+        <div class="ans">Любые от <b>0 до 1</b> включительно. Меньше нуля — никак: отрицательного количества благоприятных исходов не бывает. Больше единицы — тоже: подходящих исходов не может оказаться больше, чем всех.</div>
+      </details>
+      <details>
+        <summary><span class="q">2) Что означает P(A) = 1? А P(A) = 0?</span></summary>
+        <div class="ans"><b>P(A) = 1</b> — событие достоверное, произойдёт обязательно: подходят все исходы, <span class="mono">m = n</span>. <b>P(A) = 0</b> — событие невозможное: благоприятных исходов нет ни одного, <span class="mono">m = 0</span>.</div>
+      </details>
+      <details>
+        <summary><span class="q">3) Прочитай словами запись P(A) = 2/5.</span></summary>
+        <div class="ans">«Вероятность события A равна двум пятым». По смыслу: из каждых пяти равновозможных исходов событию подходят два. В других формах это <b>0,4</b>, или <b>40 %</b>.</div>
+      </details>
+    </div>
+
+    <p class="lvl">Уровень 2 · применение</p>
+    <div class="drill">
+      <details>
+        <summary><span class="q">4) В классе 25 учеников, из них 10 девочек. Наугад вызывают одного. Найди вероятность, что вызовут девочку.</span></summary>
+        <div class="ans">Всего исходов <span class="mono">n = 25</span> — вызвать могут любого. Благоприятных <span class="mono">m = 10</span> — это девочки. Значит <span class="mono">P = 10/25 = <b>2/5</b> = 0,4 = 40 %</span>.</div>
+      </details>
+      <details>
+        <summary><span class="q">5) Бросают монету. Какова вероятность выпадения орла?</span></summary>
+        <div class="ans">Исхода два — орёл и решка, и у честной монеты они равновозможны, поэтому <span class="mono">n = 2</span>. Орёл один, <span class="mono">m = 1</span>. Отсюда <span class="mono">P = <b>1/2</b></span>. Обрати внимание: вот здесь делить пополам действительно можно — но только потому, что исходы честно равновозможны.</div>
+      </details>
+    </div>
+
+    <p class="lvl">Уровень 3 · анализ</p>
+    <div class="drill">
+      <details>
+        <summary><span class="q">6) Найди ошибку: ученик пишет, что вероятность выпадения шестёрки равна 1/2, потому что «либо выпадет, либо нет».</span></summary>
+        <div class="ans">Исходов он назвал два, и формально это правда — но они <b>не равновозможны</b>. «Шестёрка» — это одна грань, а «не шестёрка» — целых пять. Считать надо все равновозможные исходы, то есть грани: <span class="mono">n = 6</span>, <span class="mono">m = 1</span>, значит <span class="mono">P = <b>1/6</b></span>.</div>
+      </details>
+      <details>
+        <summary><span class="q">7) Что изменится, если… В коробке было 3 красных и 7 синих шаров. Добавили ещё 2 красных. Как изменится вероятность вынуть красный?</span></summary>
+        <div class="ans">Красных стало 5, всего шаров 12, поэтому новая вероятность <span class="mono">5/12</span>. Была <span class="mono">3/10</span>. Сравниваем: <span class="mono">5/12 ≈ 0,42</span>, а <span class="mono">3/10 = 0,3</span>, то есть <b>вероятность выросла</b>. Так и должно быть: числитель прибавил два, знаменатель тоже два, а доля подходящих исходов от этого подросла.</div>
+      </details>
+      <details>
+        <summary><span class="q">8) Обратная задача: вероятность вынуть чёрный шар равна 1/4, всего шаров 20. Сколько чёрных шаров?</span></summary>
+        <div class="ans">Из <span class="mono">P = m/n</span> следует <span class="mono">m = P · n</span>. Подставляем: <span class="mono">m = 1/4 · 20 = <b>5</b></span>. Проверка: <span class="mono">5/20 = 1/4</span> — сходится.</div>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <h2>Частые ошибки — <span class="em">не попадись</span></h2>
+    <ul class="traps">
+      <li><b>Вероятность получилась больше 1.</b> Вышло <span class="mono">7/5</span> или 1,3 — это сигнал тревоги, а не ответ. Обычно <span class="mono">m</span> и <span class="mono">n</span> поменялись местами либо взяты не те числа.
+        <span class="fix">Что делать: сверху всегда стоит меньшее или равное число. Не сходится — перечитывай условие с начала.</span></li>
+      <li><b>Не учитывают равновозможность.</b> Делят на два, потому что «событие или произойдёт, или нет». Так можно, только если оба исхода правда равновозможны — как орёл и решка.
+        <span class="fix">Что делать: для кубика, шаров разного цвета и прочего считай ВСЕ равновозможные исходы — грани, шары, — а не два словесных варианта.</span></li>
+      <li><b>Путают число благоприятных исходов и общее число.</b> В знаменатель ставят <span class="mono">m</span> вместо <span class="mono">n</span> или начинают считать благоприятные среди уже подходящих.
+        <span class="fix">Что делать: держи в голове одно — знаменатель это сколько исходов ВСЕГО, числитель это сколько из них ПОДХОДЯТ под событие.</span></li>
+      <li><b>Забывают сократить дробь или путаются в процентах.</b> <span class="mono">3/6</span> — это <span class="mono">1/2</span>, то есть 50 %, а не 36 %.
+        <span class="fix">Что делать: сократил дробь — и только потом переводи в десятичную и в проценты.</span></li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Объясни своими словами</h2>
+    <p>Ответь вслух или запиши, своими словами и не подглядывая. Сформулировал сам — тема твоя.</p>
+    <ol class="selfcheck">
+      <li>По какой формуле находят вероятность и что означают <span class="mono">m</span> и <span class="mono">n</span>?</li>
+      <li>Может ли вероятность быть равна 1,5? Почему?</li>
+      <li>В мешке 4 жёлтых и 6 зелёных конфет. Какова вероятность вынуть жёлтую? <em>(Проверь себя: 4/10 = 2/5 = 0,4.)</em></li>
+    </ol>
+  </section>
+
+  <div class="wrapup">
+    <h2>Запомни главное</h2>
+    <p class="big-rule">Вероятность события — это доля благоприятных исходов от всех равновозможных: P = <span class="frac"><span class="num">m</span><span class="den">n</span></span>. И она всегда лежит между 0 и 1.</p>
+    <p>Два вопроса, с которых начинается любая задача: сколько исходов всего и сколько из них подходят. Ответил на оба — считай, решил.</p>
+    <p class="next">👉 Дальше эта же формула вернётся в 9 классе как <b>классическое определение вероятности</b>. Формула останется прежней, а вот исходы станут сложнее: их придётся не просто пересчитывать по граням, а выписывать парами и наборами — например, все варианты броска двух кубиков сразу.</p>
+  </div>
+
+</div>
+
+<script>
+(function(){
+  /* ---------- общие помощники ---------- */
+  var MINUS = '−';
+  function fix(s){ return String(s).replace(/-/g, MINUS); }      /* настоящий минус в выводе */
+  function ri(a,b){ return Math.floor(Math.random()*(b-a+1))+a; }
+  function pick(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+  function gcd(a,b){ a=Math.abs(a); b=Math.abs(b); while(b){ var t=a%b; a=b; b=t; } return a; }
+  function red(m,n){ var g=gcd(m,n)||1; return [m/g, n/g]; }
+
+  /* десятичная запись дроби m/n, если она конечная; иначе null */
+  function decStr(m,n){
+    var r=red(m,n), q=r[1];
+    while(q%2===0) q/=2;
+    while(q%5===0) q/=5;
+    if(q!==1) return null;
+    var s=(m/n).toFixed(6).replace(/0+$/,'').replace(/\.$/,'');
+    return s.replace('.', ',');
+  }
+  /* проценты, если получается конечная запись; иначе null */
+  function pctStr(m,n){
+    var r=red(m*100, n), q=r[1];
+    while(q%2===0) q/=2;
+    while(q%5===0) q/=5;
+    if(q!==1) return null;
+    var s=(m*100/n).toFixed(6).replace(/0+$/,'').replace(/\.$/,'');
+    return s.replace('.', ',');
+  }
+  /* полная запись ответа: дробь = сокращённая = десятичная = проценты */
+  function ansStr(m,n){
+    if(m===0) return '0/'+n+' = 0';
+    if(m===n) return n+'/'+n+' = 1';
+    var r=red(m,n), out=m+'/'+n;
+    if(r[0]!==m) out += ' = '+r[0]+'/'+r[1];
+    var d=decStr(m,n); if(d) out += ' = '+d;
+    var p=pctStr(m,n); if(p) out += ' = '+p+' %';
+    return out;
+  }
+  function shortFrac(m,n){
+    if(m===0) return '0';
+    if(m===n) return '1';
+    var r=red(m,n);
+    return r[0]+'/'+r[1];
+  }
+
+  /* ---------- Canvas: полоска исходов + шкала 0..1 ---------- */
+  (function(){
+    var EVENTS=[
+      {lab:'выпадет 7',        faces:[],           note:'Такой грани у кубика просто нет: благоприятных исходов ноль. Событие <b>невозможное</b>, точка встала на самый левый край шкалы.'},
+      {lab:'выпадет 6',        faces:[6],          note:'Шестёрка одна из шести граней. Вот честный ответ на «либо выпадет, либо нет» — не половина, а сильно меньше.'},
+      {lab:'число больше 4',   faces:[5,6],        note:'Больше четырёх только 5 и 6 — две клетки из шести.'},
+      {lab:'чётное число',     faces:[2,4,6],      note:'Ровно половина полоски закрашена, и точка встала точно на середину шкалы.'},
+      {lab:'число от 1 до 6',  faces:[1,2,3,4,5,6],note:'Подходит любая грань — благоприятны все исходы. Событие <b>достоверное</b>, точка на правом краю шкалы.'}
+    ];
+    var N=6;
+    var cv=document.getElementById('vzCanvas');
+    var ctx=cv.getContext('2d');
+    var picksEl=document.getElementById('vzPicks');
+    var verd=document.getElementById('vzVerd');
+
+    function draw(ev){
+      var W=cv.width, H=cv.height;
+      ctx.clearRect(0,0,W,H);
+      var x0=60, x1=W-60, bw=x1-x0, cell=bw/N;
+      var by=64, bh=76;
+
+      /* заголовок полоски */
+      ctx.fillStyle='#666E7D';
+      ctx.font='600 16px system-ui, -apple-system, "Segoe UI", Roboto, sans-serif';
+      ctx.textAlign='left'; ctx.textBaseline='alphabetic';
+      ctx.fillText('Все 6 равновозможных исходов', x0, by-14);
+
+      /* клетки */
+      for(var i=1;i<=N;i++){
+        var hit = ev && ev.faces.indexOf(i)>=0;
+        var cx = x0+(i-1)*cell;
+        ctx.fillStyle = hit ? '#E7F4EC' : '#F1F3F7';
+        ctx.fillRect(cx, by, cell, bh);
+        ctx.strokeStyle = hit ? '#2E8B57' : '#C9CFDA';
+        ctx.lineWidth = hit ? 2.5 : 1.2;
+        ctx.strokeRect(cx, by, cell, bh);
+        ctx.fillStyle = hit ? '#2E8B57' : '#9AA3B2';
+        ctx.font='700 26px ui-monospace, Menlo, Consolas, monospace';
+        ctx.textAlign='center'; ctx.textBaseline='middle';
+        ctx.fillText(String(i), cx+cell/2, by+bh/2+1);
+      }
+
+      /* подпись под полоской */
+      var m = ev ? ev.faces.length : 0;
+      ctx.textAlign='center'; ctx.textBaseline='alphabetic';
+      if(ev){
+        ctx.fillStyle='#1E2430';
+        ctx.font='700 18px ui-monospace, Menlo, Consolas, monospace';
+        ctx.fillText('P = m/n = '+m+'/'+N+' = '+shortFrac(m,N), (x0+x1)/2, by+bh+34);
+      } else {
+        ctx.fillStyle='#9AA3B2';
+        ctx.font='600 16px system-ui, -apple-system, "Segoe UI", Roboto, sans-serif';
+        ctx.fillText('пока не выбрано ни одно событие', (x0+x1)/2, by+bh+34);
+      }
+
+      /* шкала 0..1 */
+      var sy=250;
+      ctx.strokeStyle='#C9CFDA'; ctx.lineWidth=3;
+      ctx.beginPath(); ctx.moveTo(x0,sy); ctx.lineTo(x1,sy); ctx.stroke();
+      var ticks=[[0,'0'],[0.5,'1/2'],[1,'1']];
+      ctx.font='700 15px ui-monospace, Menlo, Consolas, monospace';
+      for(var t=0;t<ticks.length;t++){
+        var tx=x0+bw*ticks[t][0];
+        ctx.strokeStyle='#9AA3B2'; ctx.lineWidth=2;
+        ctx.beginPath(); ctx.moveTo(tx,sy-9); ctx.lineTo(tx,sy+9); ctx.stroke();
+        ctx.fillStyle='#666E7D'; ctx.textAlign='center'; ctx.textBaseline='top';
+        ctx.fillText(ticks[t][1], tx, sy+14);
+      }
+      ctx.font='600 14px system-ui, -apple-system, "Segoe UI", Roboto, sans-serif';
+      ctx.fillStyle='#9AA3B2';
+      ctx.textAlign='left';  ctx.fillText('невозможно', x0, sy+38);
+      ctx.textAlign='right'; ctx.fillText('обязательно', x1, sy+38);
+
+      /* точка события на шкале */
+      if(ev){
+        var px = x0 + bw*(m/N);
+        ctx.fillStyle='#4B4FA6';
+        ctx.beginPath(); ctx.arc(px, sy, 10, 0, Math.PI*2); ctx.fill();
+        ctx.strokeStyle='#FFFFFF'; ctx.lineWidth=2.5; ctx.stroke();
+        ctx.fillStyle='#4B4FA6';
+        ctx.font='800 17px ui-monospace, Menlo, Consolas, monospace';
+        ctx.textAlign='center'; ctx.textBaseline='bottom';
+        ctx.fillText(shortFrac(m,N), px, sy-18);
+      }
+    }
+
+    function say(ev){
+      if(!ev){
+        verd.className='verd';
+        verd.textContent='Выбери событие — и посмотри, какая часть полоски закрасится';
+        return;
+      }
+      var m=ev.faces.length;
+      var cls = m===0 ? 'verd zero' : (m*2===N ? 'verd half' : 'verd ok');
+      verd.className=cls;
+      verd.innerHTML='Благоприятных исходов '+m+' из '+N+', значит P = '+m+'/'+N+
+        (shortFrac(m,N)!==(m+'/'+N) ? ' = '+shortFrac(m,N) : '')+'. '+ev.note;
+    }
+
+    EVENTS.forEach(function(ev){
+      var b=document.createElement('button');
+      b.type='button'; b.className='pick'; b.textContent=ev.lab;
+      b.addEventListener('click', function(){
+        Array.prototype.forEach.call(picksEl.children, function(x){ x.classList.remove('on'); });
+        b.classList.add('on');
+        draw(ev); say(ev);
+      });
+      picksEl.appendChild(b);
+    });
+    draw(null); say(null);
+  })();
+
+  /* ---------- Тренажёр: найди вероятность ---------- */
+  (function(){
+    var taskEl=document.getElementById('trTask');
+    var hintEl=document.getElementById('trHint');
+    var ansEl=document.getElementById('trAns');
+    var resEl=document.getElementById('trRes');
+    var scoreEl=document.getElementById('trScore');
+    var done=0, right=0, locked=false;
+    var T=null;
+
+    /* --- тип 1: кубик --- */
+    function diceTask(){
+      var v=pick([1,1,1,2,2,3,3,3,4,4,4,5,5,6,7]);
+      var faces=[], what='';
+      if(v===1){ faces=[2,4,6]; what='выпадет чётное число'; }
+      else if(v===2){ faces=[1,3,5]; what='выпадет нечётное число'; }
+      else if(v===3){ var k=ri(1,5); faces=[]; for(var i=k+1;i<=6;i++) faces.push(i); what='выпадет число больше '+k; }
+      else if(v===4){ var j=ri(2,6); faces=[]; for(var q=1;q<j;q++) faces.push(q); what='выпадет число меньше '+j; }
+      else if(v===5){ var e=ri(1,6); faces=[e]; what='выпадет число '+e; }
+      else if(v===6){ faces=[]; what='выпадет число 7'; }
+      else { faces=[1,2,3,4,5,6]; what='выпадет число от 1 до 6'; }
+      return {
+        kind:'prob', m:faces.length, n:6,
+        text:'Бросают игральный кубик. Найди вероятность, что '+what+'.',
+        allLine:'Граней шесть: 1, 2, 3, 4, 5, 6. Кубик честный, исходы равновозможны, поэтому <span class="mono">n = 6</span>.',
+        goodLine: faces.length
+          ? 'Подходят грани <span class="g">'+faces.join(', ')+'</span> — их <span class="mono">m = '+faces.length+'</span>.'
+          : 'Ни одна грань не подходит, поэтому <span class="mono">m = 0</span>: событие невозможное.'
+      };
+    }
+
+    /* --- тип 2: шары и конфеты --- */
+    var BOXES=[
+      {open:'В коробке', unit:'одинаковых на ощупь шаров', take:'Наугад вынимают один шар', pron:'он окажется',
+       cols:[{pl:'красных', ins:'красным'},{pl:'синих', ins:'синим'}]},
+      {open:'В мешке', unit:'конфет', take:'Наугад берут одну конфету', pron:'она окажется',
+       cols:[{pl:'жёлтых', ins:'жёлтой'},{pl:'зелёных', ins:'зелёной'}]}
+    ];
+    function ballsTask(){
+      var B=pick(BOXES);
+      var a=ri(2,9), b=ri(2,9), n=a+b;
+      var idx=ri(0,1);
+      var m = idx===0 ? a : b;
+      return {
+        kind:'prob', m:m, n:n,
+        text:B.open+' '+n+' '+B.unit+': '+a+' '+B.cols[0].pl+' и '+b+' '+B.cols[1].pl+'. '+B.take+
+             '. Найди вероятность, что '+B.pron+' '+B.cols[idx].ins+'.',
+        allLine:'Всего исходов столько, сколько предметов: <span class="mono">n = '+n+'</span> (это '+a+' + '+b+').',
+        goodLine:'Благоприятные — те, что '+B.cols[idx].pl+': <span class="mono">m = '+m+'</span>.'
+      };
+    }
+
+    /* --- тип 3: класс --- */
+    function classTask(){
+      var n=ri(18,30), d=ri(6,n-6);
+      var girls=(ri(0,1)===0);
+      var m = girls ? d : n-d;
+      return {
+        kind:'prob', m:m, n:n,
+        text:'В классе '+n+' учеников, из них '+d+' девочек. Наугад вызывают одного. Найди вероятность, что вызовут '+(girls?'девочку':'мальчика')+'.',
+        allLine:'Вызвать могут любого, поэтому <span class="mono">n = '+n+'</span>.',
+        goodLine: girls
+          ? 'Девочек '+d+', значит <span class="mono">m = '+d+'</span>.'
+          : 'Мальчиков <span class="mono">'+n+' '+MINUS+' '+d+' = '+(n-d)+'</span>, значит <span class="mono">m = '+(n-d)+'</span>.'
+      };
+    }
+
+    /* --- тип 4: обратная задача --- */
+    function inverseTask(){
+      var n=pick([8,10,12,15,16,20,24,25]);
+      var m=ri(1,n-1);
+      var r=red(m,n);
+      return {
+        kind:'count', m:m, n:n, answer:m,
+        text:'В мешке '+n+' шаров, часть из них чёрные. Вероятность вынуть чёрный шар равна '+r[0]+'/'+r[1]+
+             '. Сколько в мешке чёрных шаров?',
+        allLine:'Всего шаров <span class="mono">n = '+n+'</span>, вероятность <span class="mono">P = '+r[0]+'/'+r[1]+'</span>.',
+        goodLine:'Из <span class="mono">P = m/n</span> получаем <span class="mono">m = P · n</span>, то есть '+
+                 '<span class="mono">m = '+r[0]+'/'+r[1]+' · '+n+' = '+r[0]+' · '+n+' : '+r[1]+' = <span class="g">'+m+'</span></span>.'
+      };
+    }
+
+    function makeTask(){
+      var t=ri(1,10);
+      if(t<=4) return diceTask();
+      if(t<=7) return ballsTask();
+      if(t<=9) return classTask();
+      return inverseTask();
+    }
+
+    function newTask(seed){
+      T = seed || makeTask();
+      taskEl.textContent = T.text;
+      hintEl.textContent = (T.kind==='count')
+        ? 'Ответ — целым числом'
+        : 'Ответ — дробью (1/2), десятичной (0,5) или в процентах (50%)';
+      ansEl.value=''; resEl.innerHTML=''; locked=false;
+    }
+
+    function solution(){
+      var h='<div class="tr-sol">';
+      if(T.kind==='count'){
+        h+='<div class="row">1) '+T.allLine+'</div>';
+        h+='<div class="row">2) '+T.goodLine+'</div>';
+        h+='<div class="row">3) Проверка: <span class="mono">'+T.m+'/'+T.n+' = '+shortFrac(T.m,T.n)+'</span> — та самая вероятность из условия.</div>';
+        h+='<div class="row res">Ответ: '+T.m+' шаров</div>';
+        return h+'</div>';
+      }
+      h+='<div class="row">1) Сколько исходов всего? '+T.allLine+'</div>';
+      h+='<div class="row">2) Сколько из них благоприятны? '+T.goodLine+'</div>';
+      h+='<div class="row">3) Подставляем: <span class="mono">P = m/n = '+T.m+'/'+T.n+'</span>.</div>';
+      if(T.m===0){
+        h+='<div class="row">4) Благоприятных нет, поэтому вероятность равна нулю — событие невозможное.</div>';
+      } else if(T.m===T.n){
+        h+='<div class="row">4) Подходят все исходы, поэтому вероятность равна единице — событие достоверное.</div>';
+      } else {
+        var r=red(T.m,T.n);
+        h+='<div class="row">4) '+(r[0]!==T.m
+            ? 'Сокращаем дробь: <span class="mono">'+T.m+'/'+T.n+' = '+r[0]+'/'+r[1]+'</span>.'
+            : 'Сокращать нечего: у '+T.m+' и '+T.n+' общих делителей, кроме единицы, нет.')+'</div>';
+      }
+      h+='<div class="row res">Ответ: P = '+ansStr(T.m,T.n)+'</div>';
+      return h+'</div>';
+    }
+
+    function parseVal(raw){
+      var s=String(raw).replace(/\s+/g,'').replace(new RegExp(MINUS,'g'),'-').replace(/,/g,'.');
+      if(s==='') return null;
+      var pc=false;
+      if(s.charAt(s.length-1)==='%'){ pc=true; s=s.slice(0,-1); }
+      var v, mm=s.match(/^(-?\d+(?:\.\d+)?)\/(-?\d+(?:\.\d+)?)$/);
+      if(mm){
+        var den=Number(mm[2]);
+        if(den===0) return null;
+        v=Number(mm[1])/den;
+      } else if(/^-?\d+(\.\d+)?$/.test(s)){
+        v=Number(s);
+      } else return null;
+      if(pc) v/=100;
+      return v;
+    }
+
+    function check(){
+      if(locked) return;
+      var raw=ansEl.value.trim();
+      if(raw===''){
+        resEl.innerHTML='<div class="head info">Впиши ответ в поле — или нажми «Показать решение».</div>';
+        return;
+      }
+      var v=parseVal(raw);
+      if(v===null || !isFinite(v)){
+        resEl.innerHTML='<div class="head no">Это не похоже на число. Напиши дробью (1/2), десятичной (0,5) или в процентах (50%).</div>';
+        return;
+      }
+
+      var target = (T.kind==='count') ? T.answer : T.m/T.n;
+      var ok = Math.abs(v-target) < 1e-9;
+      locked=true; done++;
+      if(ok) right++;
+
+      var head;
+      if(ok){
+        head='<div class="head ok">✓ Верно! '+(T.kind==='count'
+              ? 'Чёрных шаров '+T.answer+'.'
+              : 'P = '+ansStr(T.m,T.n))+'</div>';
+      } else if(T.kind==='count'){
+        if(v!==Math.round(v)){
+          head='<div class="head no">Тут спрашивают количество шаров — ответ должен быть целым числом, а не дробью.</div>';
+        } else if(v>T.n){
+          head='<div class="head no">Чёрных не может быть больше, чем шаров всего ('+T.n+'). Разбор ниже.</div>';
+        } else {
+          head='<div class="head no">Не сходится: если бы чёрных было '+fix(v)+', вероятность вышла бы '+shortFrac(Math.max(v,0),T.n)+', а нужна '+shortFrac(T.m,T.n)+'.</div>';
+        }
+      } else if(v<0){
+        head='<div class="head no">Вероятность не бывает отрицательной: благоприятных исходов не может быть меньше нуля.</div>';
+      } else if(v>1){
+        head='<div class="head no">Вероятность не бывает больше 1 — благоприятных исходов не может быть больше, чем всех. Похоже, m и n поменялись местами.</div>';
+      } else if(T.m>0 && Math.abs(v - T.n/T.m) < 1e-9){
+        head='<div class="head no">Перевернул дробь: сверху должно стоять число благоприятных исходов, снизу — общее число.</div>';
+      } else if(Math.abs(v-target) < 0.01){
+        head='<div class="head no">Почти: это округление, а не точное значение. Запиши ответ обыкновенной дробью — '+shortFrac(T.m,T.n)+'.</div>';
+      } else {
+        head='<div class="head no">Не сходится. Проверь, правильно ли посчитаны m и n. Разбор ниже.</div>';
+      }
+      resEl.innerHTML=head+solution();
+      scoreEl.textContent='Решено: '+done+' · верно: '+right;
+    }
+
+    function show(){
+      if(locked) return;
+      locked=true;
+      resEl.innerHTML='<div class="head info">Разбираем задачу по шагам:</div>'+solution();
+    }
+
+    document.getElementById('trCheck').addEventListener('click', check);
+    document.getElementById('trShow').addEventListener('click', show);
+    document.getElementById('trNew').addEventListener('click', function(){ newTask(); ansEl.focus(); });
+    ansEl.addEventListener('keydown', function(e){ if(e.key==='Enter'){ check(); } });
+
+    /* стартовая задача — фиксированный валидный сид, тот же, что показан в разметке */
+    newTask({
+      kind:'prob', m:3, n:6,
+      text:'Бросают игральный кубик. Найди вероятность, что выпадет чётное число.',
+      allLine:'Граней шесть: 1, 2, 3, 4, 5, 6. Кубик честный, исходы равновозможны, поэтому <span class="mono">n = 6</span>.',
+      goodLine:'Подходят грани <span class="g">2, 4, 6</span> — их <span class="mono">m = 3</span>.'
+    });
+  })();
+})();
+</script>
+<!--LESSON-NAV-BOT--><nav class="lnav lnav-bot"><a class="prev" href="./m6-perebor-variantov.html"><span class="dir">← Предыдущая</span><span class="ttl">Перебор вариантов и дерево возможностей</span></a><a class="to-cat" href="./catalog.html">📚 <span>Все темы</span></a><a class="next" href="./m6-okruzhnost-krug.html"><span class="dir">Следующая →</span><span class="ttl">Окружность и круг</span></a></nav><!--/LESSON-NAV-BOT-->

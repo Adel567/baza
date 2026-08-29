@@ -1,0 +1,607 @@
+<!doctype html>
+<!-- humanized: humanizer-ru, 2026-08-29, тире возвращено -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Периметр многоугольника — 5 класс</title>
+<style>
+  :root{
+    --paper:#FAF8F4;
+    --card:#FFFFFF;
+    --ink:#232830;
+    --muted:#6A7079;
+    --line:#E5E2DB;
+    --brand:#15756C;          /* периметр — про КРАЙ */
+    --brand-soft:#E1F0EE;
+    --brand-line:#B7DCD7;
+    --area:#C2761B;           /* площадь — про ВНУТРЕННОСТЬ */
+    --area-soft:#FBEEDA;
+    --area-line:#F0D6A8;
+    --ok:#2E8B57;
+    --no:#C23B3B;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper)}
+  .page{
+    max-width:720px;margin:0 auto;
+    padding:clamp(1.4rem,4vw,3rem) clamp(1.1rem,4vw,2rem) 4.5rem;
+    color:var(--ink);
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    font-size:17.5px;line-height:1.68;-webkit-font-smoothing:antialiased;
+  }
+  .mono{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-variant-numeric:tabular-nums;font-weight:600}
+
+  .hero{border-bottom:3px solid var(--brand);padding-bottom:1.4rem;margin-bottom:1.8rem}
+  .eyebrow{font-size:.74rem;letter-spacing:.15em;text-transform:uppercase;color:var(--brand);font-weight:700;margin:0 0 .55rem}
+  h1{font-size:clamp(2rem,6.5vw,3rem);line-height:1.04;margin:0;font-weight:800;letter-spacing:-.02em;text-wrap:balance}
+  .tagline{font-size:1.12rem;color:var(--muted);margin:.85rem 0 0;text-wrap:pretty}
+
+  section{margin-top:2.4rem}
+  h2{font-size:1.5rem;margin:0 0 .3rem;font-weight:780;letter-spacing:-.015em;text-wrap:balance}
+  h2 .em{color:var(--brand)}
+  p{margin:.7rem 0}
+  strong{font-weight:680}
+
+  .lead-in{background:var(--brand-soft);border-radius:14px;padding:1.1rem 1.3rem;font-size:1.02rem}
+  .lead-in p{margin:.4rem 0}
+  .lead-in b{color:var(--brand)}
+  .lead-in ul{margin:.5rem 0 .2rem;padding-left:1.15rem}
+  .lead-in li{margin:.22rem 0}
+
+  /* Вспомнить перед стартом */
+  .recall{border:1px dashed var(--brand-line);background:var(--card);border-radius:14px;padding:1rem 1.25rem;margin-top:1rem}
+  .recall p.cap{font-size:.72rem;letter-spacing:.11em;text-transform:uppercase;font-weight:700;color:var(--brand);margin:0 0 .5rem}
+  .recall ul{margin:0;padding-left:1.15rem}
+  .recall li{margin:.3rem 0;font-size:.99rem}
+
+  /* Ядро — формулы */
+  .core{background:var(--brand);color:#fff;border-radius:16px;padding:1.3rem 1.4rem;margin-top:1rem}
+  .core .lbl{font-size:.72rem;letter-spacing:.11em;text-transform:uppercase;font-weight:700;color:#B9E0DA;margin:0}
+  .core .f{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-weight:800;font-size:clamp(1.15rem,5.2vw,1.55rem);margin:.35rem 0 0;letter-spacing:.01em}
+  .core .say{color:#CFE8E4;font-size:.97rem;margin:.45rem 0 0}
+
+  .cards2{display:grid;gap:.9rem;margin-top:1rem}
+  @media(min-width:600px){.cards2{grid-template-columns:1fr 1fr}}
+  .fcard{background:var(--card);border:2px solid var(--brand-line);border-radius:14px;padding:1.05rem 1.2rem}
+  .fcard h3{margin:0 0 .35rem;font-size:1.12rem;font-weight:800}
+  .fcard .f{font-family:ui-monospace,Menlo,Consolas,monospace;font-weight:800;font-size:1.25rem;color:var(--brand);margin:.2rem 0}
+  .fcard p{margin:.3rem 0;font-size:.95rem;color:var(--muted)}
+
+  .note{border-left:4px solid var(--brand);background:var(--brand-soft);border-radius:0 10px 10px 0;padding:.8rem 1.1rem;margin-top:1rem;font-size:.98rem}
+  .note b{color:var(--brand)}
+  .note.warn{border-left-color:var(--area);background:var(--area-soft)}
+  .note.warn b{color:var(--area)}
+
+  /* Разбор по шагам */
+  .walk{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.15rem 1.3rem;margin-top:1rem}
+  .walk .q{font-weight:700;font-size:1.05rem;margin:0 0 .9rem;padding-bottom:.7rem;border-bottom:1px solid var(--line)}
+  .walk ol{margin:0;padding-left:1.3rem;display:flex;flex-direction:column;gap:.55rem}
+  .walk li{font-size:.99rem}
+  .walk li .why{display:block;color:var(--muted);font-size:.9rem;margin-top:.15rem}
+  .verdict{margin-top:1rem;padding:.75rem 1rem;background:var(--brand-soft);border-radius:10px;font-weight:650;color:var(--brand);font-size:1rem}
+
+  /* Наглядность — canvas */
+  .viz{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:1.1rem 1.15rem 1.2rem;margin-top:1rem}
+  .viz canvas{display:block;width:100%;height:auto;border-radius:10px;background:var(--paper)}
+  .viz-pick{display:flex;flex-wrap:wrap;gap:.45rem;margin-bottom:.9rem}
+  .viz-pick button{font:inherit;font-size:.87rem;font-weight:700;border:2px solid var(--line);background:var(--paper);color:var(--muted);border-radius:10px;padding:.4rem .8rem;cursor:pointer}
+  .viz-pick button.on{border-color:var(--brand);background:var(--brand-soft);color:var(--brand)}
+  .viz-pick button:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+  .viz-run{display:flex;gap:.5rem;flex-wrap:wrap;align-items:center;margin-top:.9rem}
+  .viz-run button{font:inherit;font-weight:700;font-size:.92rem;border-radius:10px;padding:.55rem 1.1rem;cursor:pointer;border:1px solid transparent;background:var(--brand);color:#fff}
+  .viz-run button.ghost{background:var(--paper);border:1px solid var(--line);color:var(--ink)}
+  .viz-run button:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+  .viz-sum{font-family:ui-monospace,Menlo,Consolas,monospace;font-weight:800;font-size:1.02rem;color:var(--brand);min-height:1.5em;margin:.75rem 0 0;word-break:break-word}
+
+  /* Практика */
+  .drill{display:flex;flex-direction:column;gap:.7rem;margin-top:1rem}
+  .drill .lvl{font-size:.72rem;letter-spacing:.11em;text-transform:uppercase;font-weight:700;color:var(--muted);margin:.9rem 0 -.2rem}
+  .drill .lvl:first-child{margin-top:0}
+  details{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:.9rem 1.1rem}
+  details[open]{border-color:var(--brand)}
+  summary{cursor:pointer;font-weight:650;list-style:none;display:flex;justify-content:space-between;gap:1rem;align-items:center}
+  summary::-webkit-details-marker{display:none}
+  summary:focus-visible{outline:2px solid var(--brand);outline-offset:3px;border-radius:6px}
+  summary .q{font-size:1rem}
+  summary::after{content:"проверить";font-size:.8rem;color:var(--brand);font-weight:700;white-space:nowrap}
+  details[open] summary::after{content:"скрыть"}
+  .ans{margin-top:.75rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.96rem;color:var(--muted)}
+  .ans b{color:var(--ink)}
+
+  /* Ошибки */
+  ul.traps{list-style:none;margin:1rem 0 0;padding:0;display:flex;flex-direction:column;gap:.7rem}
+  ul.traps li{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:.85rem 1.05rem;padding-left:2.5rem;position:relative;font-size:.97rem}
+  ul.traps li::before{content:"⚠";position:absolute;left:1rem;top:.85rem;color:var(--area);font-size:1.05rem}
+  ul.traps b{font-weight:700}
+
+  /* Тренажёр */
+  .trainer{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:1.3rem 1.3rem 1.2rem;margin-top:1rem}
+  .tr-task{font-size:1.06rem;font-weight:650;text-align:center;margin:.1rem 0 .2rem;text-wrap:pretty}
+  .tr-hint{text-align:center;color:var(--muted);font-size:.88rem;margin:0 0 1.05rem}
+  .tr-in{display:flex;gap:.5rem;justify-content:center;align-items:center;flex-wrap:wrap;margin-bottom:1.05rem}
+  .tr-in input{font:inherit;font-family:ui-monospace,Menlo,Consolas,monospace;font-weight:700;font-size:1.15rem;width:8.5rem;text-align:center;padding:.5rem .6rem;border:2px solid var(--line);border-radius:11px;background:var(--paper);color:var(--ink)}
+  .tr-in input:focus-visible{outline:2px solid var(--brand);outline-offset:2px;border-color:var(--brand)}
+  .tr-in .unit{font-weight:700;color:var(--muted)}
+  .tr-btns{display:flex;gap:.5rem;flex-wrap:wrap;justify-content:center}
+  .tr-btns button{font:inherit;font-weight:700;font-size:.92rem;border-radius:10px;padding:.55rem 1.1rem;cursor:pointer;border:1px solid transparent}
+  .tr-btns .go{background:var(--brand);color:#fff}
+  .tr-btns .sh{background:var(--paper);border:1px solid var(--line);color:var(--ink)}
+  .tr-btns .nw{background:var(--brand-soft);color:var(--brand)}
+  .tr-btns button:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+  .tr-res{margin-top:1.1rem;font-size:.97rem}
+  .tr-res .head{font-weight:700;padding:.6rem .9rem;border-radius:9px;margin-bottom:.7rem}
+  .tr-res .head.ok{background:#E7F4EC;color:var(--ok)}
+  .tr-res .head.no{background:#FBEAEA;color:var(--no)}
+  .tr-res .head.info{background:var(--brand-soft);color:var(--brand)}
+  .tr-sol{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:.85rem 1rem}
+  .tr-sol .row{margin:.32rem 0;font-size:.94rem}
+  .tr-sol .row .mono{color:var(--ink)}
+  .tr-sol .fin{font-weight:800;color:var(--brand);margin-top:.55rem}
+
+  .wrapup{background:var(--brand);color:#fff;border-radius:16px;padding:1.4rem 1.5rem;margin-top:2.4rem}
+  .wrapup h2{color:#fff;margin:0 0 .5rem}
+  .wrapup p{color:#DCEEEB;margin:.4rem 0;font-size:1rem}
+  .wrapup .big-rule{font-size:1.08rem;font-weight:700;color:#fff;margin:.6rem 0;font-family:ui-monospace,Menlo,Consolas,monospace}
+  .wrapup .next{font-size:.95rem;color:#BEDFDA;margin-top:1rem;padding-top:1rem;border-top:1px solid rgba(255,255,255,.2)}
+  .wrapup ol{color:#DCEEEB;margin:.4rem 0;padding-left:1.2rem}
+  .wrapup li{margin:.25rem 0}
+
+  @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<!--LESSON-NAV-TOP--><style>.lnav{--lnav-accent:#3D5AF1}.lnav a{text-decoration:none;font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif}.lnav-top{max-width:820px;margin:0 auto;padding:.75rem clamp(1rem,4vw,1.5rem) .1rem}.lnav-top a{display:inline-flex;align-items:center;gap:.35rem;color:var(--lnav-accent);font-weight:600;font-size:.9rem}.lnav-top a:hover{text-decoration:underline}.lnav-bot{max-width:820px;margin:2.6rem auto 3rem;padding:1.1rem clamp(1rem,4vw,1.5rem) 0;border-top:1px solid #E4E8EF;display:flex;align-items:stretch;gap:.55rem}.lnav-bot a{min-width:0;display:flex;flex-direction:column;justify-content:center;gap:.15rem;border:1px solid #E4E8EF;border-radius:12px;padding:.65rem .85rem;color:#182233;background:#fff;transition:border-color .1s,transform .08s}.lnav-bot a:hover{border-color:var(--lnav-accent);transform:translateY(-1px)}.lnav-bot .prev,.lnav-bot .next{flex:1 1 0}.lnav-bot .next{text-align:right}.lnav-bot .dir{font-size:.72rem;color:#8A93A6;font-weight:600}.lnav-bot .ttl{font-size:.9rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.lnav-bot .to-cat{flex:0 0 auto;flex-direction:row;align-items:center;justify-content:center;color:var(--lnav-accent);font-weight:700;font-size:.85rem;white-space:nowrap}@media(max-width:420px){.lnav-bot .to-cat span{display:none}.lnav-bot .to-cat{padding:.65rem .7rem}}</style><nav class="lnav lnav-top"><a href="./catalog.html">← Все темы</a></nav><!--/LESSON-NAV-TOP-->
+<div class="page">
+
+  <header class="hero">
+    <p class="eyebrow">Математика · 5 класс</p>
+    <h1>Периметр<br>многоугольника</h1>
+    <p class="tagline">Длина «забора» вокруг фигуры. Считается сложением. Главное — не потерять ни одной стороны.</p>
+  </header>
+
+  <div class="lead-in">
+    <p><b>Зачем это уметь.</b> Периметр — это длина края фигуры. Обходишь её по самому краю и складываешь всё, что прошёл.</p>
+    <p>Где это встречается:</p>
+    <ul>
+      <li>сколько метров плинтуса купить, чтобы обойти комнату по краю;</li>
+      <li>сколько сетки нужно, чтобы огородить грядку или дачный участок;</li>
+      <li>какой длины лента нужна, чтобы обклеить край рамки для фото.</li>
+    </ul>
+  </div>
+
+  <section>
+    <h2>Сначала разрушим <span class="em">одно заблуждение</span></h2>
+    <p>Почти все думают так: «чем больше фигура, тем больше периметр». Звучит логично. И это неправда.</p>
+    <p>Возьми длинный тонкий прямоугольник <span class="mono">1 × 10</span> — периметр <span class="mono">22</span>. А «толстый» квадрат <span class="mono">3 × 3</span> вмещает внутри почти столько же, а периметр у него всего <span class="mono">12</span>.</p>
+    <div class="note warn">
+      <p><b>Запомни.</b> Периметр — это про <strong>КРАЙ</strong>, а не про «сколько помещается внутри». То, что внутри, — уже площадь, другая величина.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Что надо вспомнить перед стартом</h2>
+    <div class="recall">
+      <p class="cap">Быстрая проверка</p>
+      <ul>
+        <li><b>Длина отрезка.</b> Умеешь измерять отрезки и складывать длины — на этом весь периметр и держится.</li>
+        <li><b>Единицы длины.</b> Мм, см, дм, м, км. И что 1 дм = 10 см — тоже пригодится.</li>
+        <li><b>Прямоугольник и квадрат.</b> У прямоугольника противоположные стороны равны, а у квадрата равны все четыре.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section>
+    <h2>Ядро темы: <span class="em">складываем все стороны</span></h2>
+    <p><strong>Многоугольник</strong> — это замкнутая фигура из отрезков (они называются сторонами): треугольник, четырёхугольник, пятиугольник и так далее.</p>
+    <p>Пойди пешком по краю фигуры от вершины и вернись в неё же. Пройденный путь и есть периметр.</p>
+
+    <div class="core">
+      <p class="lbl">Правило (общее)</p>
+      <p class="f">P = a + b + c + …</p>
+      <p class="say">Периметр многоугольника равен сумме длин всех его сторон. Здесь <b>P</b> — периметр (от слова «perimeter»), а <b>a, b, c, …</b> — длины сторон.</p>
+    </div>
+
+    <p>Никакого хитрого прибора тут нет. Просто складываем длины всех краёв: ничего не пропускаем и ничего не считаем дважды.</p>
+
+    <p>Для двух фигур сумму можно свернуть покороче. Эти две формулы стоит выучить наизусть:</p>
+    <div class="cards2">
+      <div class="fcard">
+        <h3>Прямоугольник</h3>
+        <p class="f">P = 2 · (a + b)</p>
+        <p>Сторон четыре, противоположные равны, поэтому <span class="mono">P = a + b + a + b</span>. Складываем длину с шириной и удваиваем.</p>
+      </div>
+      <div class="fcard">
+        <h3>Квадрат</h3>
+        <p class="f">P = 4 · a</p>
+        <p>Все четыре стороны равны, поэтому <span class="mono">P = a + a + a + a</span>. Проще умножить сторону на 4.</p>
+      </div>
+    </div>
+
+    <div class="note">
+      <p><b>Три условия, без которых ответ будет неверным:</b></p>
+      <p>1) Все стороны выражены в ОДНИХ единицах. Нельзя складывать 3 см и 2 дм, пока не переведёшь их к одной мерке.<br>
+      2) Периметр измеряется в единицах длины: мм, см, дм, м, км. НЕ в см² — это была бы площадь.<br>
+      3) Длины сторон всегда положительные.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Эталон: <span class="em">рассуждаю вслух</span></h2>
+    <p>Смотри, как думать по шагам. Задача: найти периметр пятиугольника со сторонами <span class="mono">4 см, 6 см, 5 см, 3 см, 7 см</span>.</p>
+    <div class="walk">
+      <p class="q">P пятиугольника со сторонами 4, 6, 5, 3, 7 см</p>
+      <ol>
+        <li>Периметр — это сумма ВСЕХ сторон, значит складываю все пять чисел.
+          <span class="why">Почему все пять: правило не разрешает пропустить ни одну сторону, иначе кусок «забора» останется незакрытым.</span></li>
+        <li><span class="mono">P = 4 + 6 + 5 + 3 + 7</span>
+          <span class="why">Записываю сумму целиком, до счёта. Так видно, что слагаемых ровно пять — столько же, сколько сторон.</span></li>
+        <li>Считаю по порядку: <span class="mono">4 + 6 = 10</span>; <span class="mono">10 + 5 = 15</span>; <span class="mono">15 + 3 = 18</span>; <span class="mono">18 + 7 = 25</span>.
+          <span class="why">По шагу за раз — так почти невозможно сбиться.</span></li>
+        <li>Пишу единицы: сантиметры, потому что все стороны были в сантиметрах.</li>
+      </ol>
+      <div class="verdict">Ответ: P = 25 см.</div>
+    </div>
+
+    <p style="margin-top:1.6rem">Теперь прямоугольник. Тут работает короткая формула. Задача: стороны <span class="mono">8 см</span> и <span class="mono">5 см</span>. Попробуй допиcать шаги сам, потом раскрой ответ.</p>
+    <div class="walk">
+      <p class="q">P прямоугольника 8 см и 5 см</p>
+      <ol>
+        <li>У прямоугольника противоположные стороны равны, значит беру формулу <span class="mono">P = 2 · (a + b)</span>.</li>
+        <li>Складываю длину и ширину: <span class="mono">a + b = 8 + 5 = ____</span></li>
+        <li>Удваиваю результат: <span class="mono">P = 2 · ____ = ____ см</span></li>
+      </ol>
+      <details style="margin-top:1rem">
+        <summary><span class="q">Проверь себя</span></summary>
+        <div class="ans">Сначала должно получиться <b>13</b>, а потом <b>26 см</b>. Полностью: <span class="mono">P = 2 · (8 + 5) = 2 · 13 = 26</span> см.</div>
+      </details>
+    </div>
+
+    <p style="margin-top:1.6rem">И совсем короткий — квадрат со стороной <span class="mono">9 см</span>. Реши сам, прежде чем смотреть.</p>
+    <details>
+      <summary><span class="q">P квадрата со стороной 9 см</span></summary>
+      <div class="ans">Все четыре стороны равны, поэтому <span class="mono">P = 4 · 9 = <b>36</b></span> см.</div>
+    </details>
+  </section>
+
+  <section>
+    <h2>Наглядно: <span class="em">обойди по краю</span></h2>
+    <p>Вот приём, который спасает от потерянных сторон. Поставь точку в вершине и веди по сторонам стрелочками, пока не вернёшься в ту же точку. Сумма всех отрезков пути и есть периметр.</p>
+    <p>Выбери фигуру и нажми «Пройти по краю». Сумма будет набираться по одной стороне.</p>
+    <div class="viz">
+      <div class="viz-pick" id="vizPick"></div>
+      <canvas id="vizCv" width="640" height="380" role="img" aria-label="Чертёж фигуры с подписанными сторонами: обход по краю со сложением длин"></canvas>
+      <p class="viz-sum" id="vizSum"></p>
+      <div class="viz-run">
+        <button type="button" id="vizGo">▶ Пройти по краю</button>
+        <button type="button" class="ghost" id="vizReset">Сначала</button>
+      </div>
+    </div>
+
+    <div class="note">
+      <p><b>Предскажи → проверь → объясни.</b> Не считая, ответь: у кого периметр больше — у вытянутого прямоугольника <span class="mono">1 × 6</span> или у квадрата <span class="mono">3 × 3</span>? Загадал ответ — теперь прогони обе фигуры на чертеже выше.</p>
+      <p>Получится <span class="mono">14</span> против <span class="mono">12</span>. Вытянутая фигура выигрывает по периметру, хотя «на глаз» кажется меньше: длинного края много, а внутренности почти нет.</p>
+    </div>
+
+    <p>И ещё: нарисуй периметр и площадь рядом. Периметр — контур, обведённый жирной линией. Площадь — закрашенная внутренность. Разницу сразу видно глазами.</p>
+  </section>
+
+  <section>
+    <h2>Тренажёр — <span class="em">задания не кончаются</span></h2>
+    <p>Реши задачу, введи <strong>только число</strong> (единицы уже подписаны) и жми «Проверить». Не получается — открой пошаговое решение и разбери, где свернул не туда.</p>
+    <div class="trainer">
+      <p class="tr-task" id="trTask">…</p>
+      <p class="tr-hint" id="trHint">Ответ введи числом</p>
+      <div class="tr-in">
+        <input id="trAns" type="text" inputmode="numeric" autocomplete="off" aria-label="Твой ответ">
+        <span class="unit" id="trUnit">см</span>
+      </div>
+      <div class="tr-btns">
+        <button class="go" id="trCheck" type="button">Проверить</button>
+        <button class="sh" id="trShow" type="button">Показать решение</button>
+        <button class="nw" id="trNew" type="button">🎲 Новое задание</button>
+      </div>
+      <div class="tr-res" id="trRes"></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Проверь себя</h2>
+    <p>Сначала реши сам, только потом раскрывай ответ. Подглядывать раньше времени — обманывать себя 🙂</p>
+    <div class="drill">
+      <p class="lvl">Понимание</p>
+      <details>
+        <summary><span class="q">1) Что такое периметр многоугольника? Назови словами.</span></summary>
+        <div class="ans">Периметр — это <b>сумма длин всех сторон</b> многоугольника, то есть длина его края. Измеряется в единицах длины.</div>
+      </details>
+      <details>
+        <summary><span class="q">2) Прочитай формулу <span class="mono">P = 4 · a</span>: для какой она фигуры и что означает буква a?</span></summary>
+        <div class="ans">Это формула периметра <b>квадрата</b>. Буква <b>a</b> — длина его стороны. У квадрата все четыре стороны равны, поэтому сторону просто умножают на 4.</div>
+      </details>
+
+      <p class="lvl">Применение</p>
+      <details>
+        <summary><span class="q">3) Найди периметр треугольника со сторонами 7 м, 10 м и 12 м.</span></summary>
+        <div class="ans">Складываем все три стороны: <span class="mono">P = 7 + 10 + 12 = <b>29</b></span> м.</div>
+      </details>
+      <details>
+        <summary><span class="q">4) Найди периметр прямоугольника со сторонами 12 см и 4 см.</span></summary>
+        <div class="ans"><span class="mono">P = 2 · (12 + 4) = 2 · 16 = <b>32</b></span> см.</div>
+      </details>
+
+      <p class="lvl">Анализ</p>
+      <details>
+        <summary><span class="q">5) Что изменится, если… У квадрата сторону увеличили в 2 раза: было 5 см, стало 10 см. Во сколько раз изменится периметр?</span></summary>
+        <div class="ans">Было <span class="mono">P = 4 · 5 = 20</span> см, стало <span class="mono">P = 4 · 10 = 40</span> см. Периметр вырос <b>тоже в 2 раза</b>. Это видно и без чисел: каждую из четырёх сторон удвоили, значит и вся сумма удвоилась.</div>
+      </details>
+      <details>
+        <summary><span class="q">6) Найди ошибку. Ученик нашёл периметр прямоугольника 6 см на 4 см так: P = 6 + 4 = 10 см.</span></summary>
+        <div class="ans">Он сложил <b>только две стороны вместо четырёх</b>. Сторон у прямоугольника четыре, противоположные равны. Верно: <span class="mono">P = 2 · (6 + 4) = 2 · 10 = <b>20</b></span> см.</div>
+      </details>
+      <details>
+        <summary><span class="q">7) Обратная задача. Периметр квадрата равен 28 см. Чему равна его сторона?</span></summary>
+        <div class="ans">Периметр квадрата — это сторона, взятая 4 раза. Значит идём назад делением: <span class="mono">28 : 4 = <b>7</b></span> см.</div>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <h2>Ошибки, на которых <span class="em">попадаются чаще всего</span></h2>
+    <ul class="traps">
+      <li><b>Путают периметр и площадь.</b> Периметр — это длина края (в см), площадь — то, что внутри (в см²). Подсказка: периметр — «про забор», обходишь по краю; площадь — «про газон внутри».</li>
+      <li><b>Забывают сторону при сложении.</b> У фигур с 5–6 сторонами одну потерять легче лёгкого. Приём: перед сложением посчитай, сколько всего сторон, и проверь, что слагаемых столько же.</li>
+      <li><b>Для прямоугольника берут сумму двух сторон вместо четырёх.</b> У прямоугольника четыре стороны, противоположные равны, поэтому <span class="mono">P = 2 · (a + b)</span>, а не <span class="mono">a + b</span>.</li>
+      <li><b>Складывают разные единицы.</b> 3 см + 2 дм ≠ 5 «чего-то». Сначала переведи всё в одну мерку: 2 дм = 20 см, тогда 3 + 20 = 23 см.</li>
+    </ul>
+  </section>
+
+  <div class="wrapup">
+    <h2>Запомни главное</h2>
+    <p class="big-rule">P = a + b + c + …<br>Прямоугольник: P = 2 · (a + b)<br>Квадрат: P = 4 · a</p>
+    <p>Периметр многоугольника — сумма длин всех его сторон. Измеряется он в единицах длины.</p>
+    <p>Ответь себе вслух, не подглядывая:</p>
+    <ol>
+      <li>Периметр — это сумма чего у многоугольника?</li>
+      <li>По какой формуле быстрее найти периметр квадрата со стороной 6 см и чему он равен?</li>
+      <li>Чем периметр отличается от площади и в каких единицах он измеряется?</li>
+    </ol>
+    <p class="next">👉 Дальше — <strong>задачи на части и доли</strong>. Там пригодится то же умение: разобрать величину на слагаемые и не потерять ни одного.</p>
+  </div>
+
+</div>
+
+<script>
+(function(){
+  /* ---------- Наглядность: обход по краю ---------- */
+  var FIGS=[
+    {key:'r85', name:'Прямоугольник 8 × 5', w:8, h:5},
+    {key:'s9',  name:'Квадрат 9',          w:9, h:9},
+    {key:'r16', name:'Вытянутый 1 × 6',    w:6, h:1},
+    {key:'s3',  name:'Квадрат 3',          w:3, h:3}
+  ];
+  var cv=document.getElementById('vizCv'), ctx=cv.getContext('2d');
+  var pickEl=document.getElementById('vizPick'), sumEl=document.getElementById('vizSum');
+  var cur=FIGS[0], shown=0, timer=null;
+  var reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function sides(f){ return [f.w, f.h, f.w, f.h]; }
+  function perim(f){ return 2*(f.w+f.h); }
+
+  function geom(f){
+    var W=cv.width, H=cv.height, pad=64;
+    var k=Math.min((W-2*pad)/f.w, (H-2*pad)/f.h);
+    var w=f.w*k, h=f.h*k;
+    var x=(W-w)/2, y=(H-h)/2;
+    return [[x,y],[x+w,y],[x+w,y+h],[x,y+h]];
+  }
+
+  function draw(){
+    var W=cv.width,H=cv.height;
+    ctx.clearRect(0,0,W,H);
+    ctx.fillStyle='#FAF8F4'; ctx.fillRect(0,0,W,H);
+    var p=geom(cur), s=sides(cur);
+
+    /* внутренность — бледная, чтобы было видно: считаем не её */
+    ctx.beginPath();
+    ctx.moveTo(p[0][0],p[0][1]);
+    for(var i=1;i<4;i++) ctx.lineTo(p[i][0],p[i][1]);
+    ctx.closePath();
+    ctx.fillStyle='#FBEEDA'; ctx.fill();
+
+    /* серый контур целиком */
+    ctx.lineWidth=5; ctx.lineJoin='round'; ctx.strokeStyle='#D8D4CC'; ctx.stroke();
+
+    /* пройденные стороны — жирным цветом */
+    ctx.lineCap='round';
+    for(var j=0;j<shown;j++){
+      var a=p[j], b=p[(j+1)%4];
+      ctx.beginPath(); ctx.moveTo(a[0],a[1]); ctx.lineTo(b[0],b[1]);
+      ctx.strokeStyle='#15756C'; ctx.lineWidth=7; ctx.stroke();
+    }
+
+    /* подписи сторон */
+    ctx.font='700 20px ui-monospace, Menlo, Consolas, monospace';
+    ctx.textAlign='center'; ctx.textBaseline='middle';
+    var off=[[0,-24],[26,0],[0,24],[-26,0]];
+    for(var m=0;m<4;m++){
+      var a2=p[m], b2=p[(m+1)%4];
+      var mx=(a2[0]+b2[0])/2+off[m][0], my=(a2[1]+b2[1])/2+off[m][1];
+      ctx.fillStyle = (m<shown) ? '#15756C' : '#9C9890';
+      ctx.fillText(String(s[m]), mx, my);
+    }
+
+    /* вершина старта */
+    ctx.beginPath(); ctx.arc(p[0][0],p[0][1],7,0,6.2832);
+    ctx.fillStyle='#15756C'; ctx.fill();
+    ctx.fillStyle='#6A7079';
+    ctx.font='600 15px system-ui, -apple-system, sans-serif';
+    ctx.textAlign='left'; ctx.textBaseline='bottom';
+    ctx.fillText('старт', p[0][0]+11, p[0][1]-6);
+
+    /* строка суммы */
+    var s2=sides(cur), parts=[], total=0;
+    for(var q=0;q<shown;q++){ parts.push(s2[q]); total+=s2[q]; }
+    if(shown===0){
+      sumEl.textContent='P = ?';
+    } else if(shown<4){
+      sumEl.textContent='P = '+parts.join(' + ')+' … = '+total+' (пока)';
+    } else {
+      sumEl.textContent='P = '+parts.join(' + ')+' = '+perim(cur);
+    }
+  }
+
+  function stop(){ if(timer){ clearTimeout(timer); timer=null; } }
+  function step(){
+    shown++; draw();
+    if(shown<4) timer=setTimeout(step,750); else timer=null;
+  }
+  function run(){
+    stop();
+    if(reduced){ shown=4; draw(); return; }
+    shown=0; draw();
+    timer=setTimeout(step,250);
+  }
+  function reset(){ stop(); shown=0; draw(); }
+
+  FIGS.forEach(function(f){
+    var b=document.createElement('button');
+    b.type='button'; b.textContent=f.name;
+    if(f===cur) b.className='on';
+    b.addEventListener('click',function(){
+      cur=f; stop(); shown=0; draw();
+      Array.prototype.forEach.call(pickEl.children,function(x){ x.className=''; });
+      b.className='on';
+    });
+    pickEl.appendChild(b);
+  });
+  document.getElementById('vizGo').addEventListener('click',run);
+  document.getElementById('vizReset').addEventListener('click',reset);
+  draw();
+
+  /* ---------- Тренажёр ---------- */
+  var MINUS='−';
+  function fix(s){ return String(s).split('-').join(MINUS); }
+  function ri(a,b){ return Math.floor(Math.random()*(b-a+1))+a; }
+  function pick(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+
+  var taskEl=document.getElementById('trTask'),
+      hintEl=document.getElementById('trHint'),
+      unitEl=document.getElementById('trUnit'),
+      inEl=document.getElementById('trAns'),
+      resEl=document.getElementById('trRes');
+  var T=null;
+
+  var NAMES={3:'треугольника',4:'четырёхугольника',5:'пятиугольника',6:'шестиугольника'};
+
+  function makePoly(){
+    var n=ri(3,6), u=pick(['см','м','дм']), s=[], sum=0;
+    for(var i=0;i<n;i++){ var v=ri(2,15); s.push(v); sum+=v; }
+    var acc=0, rows=[];
+    for(var j=0;j<n;j++){
+      if(j===0){ acc=s[0]; }
+      else { rows.push(acc+' + '+s[j]+' = '+(acc+s[j])); acc+=s[j]; }
+    }
+    return {
+      q:'Найди периметр '+NAMES[n]+' со сторонами '+s.join(', ')+' '+u+'.',
+      hint:'Сторон здесь '+n+' — проследи, чтобы столько же было и слагаемых',
+      unit:u, ans:sum,
+      steps:['Периметр — это сумма всех сторон, а их тут '+n+'.',
+             'P = '+s.join(' + '),
+             'Считаю по шагам: '+rows.join('; ')+'.'],
+      fin:'P = '+sum+' '+u
+    };
+  }
+  function makeRect(){
+    var a=ri(2,20), b=ri(2,20), u=pick(['см','м','дм']);
+    return {
+      q:'Найди периметр прямоугольника со сторонами '+a+' '+u+' и '+b+' '+u+'.',
+      hint:'У прямоугольника четыре стороны, противоположные равны',
+      unit:u, ans:2*(a+b),
+      steps:['Формула прямоугольника: P = 2 · (a + b).',
+             'Складываю стороны: '+a+' + '+b+' = '+(a+b)+'.',
+             'Удваиваю: 2 · '+(a+b)+' = '+(2*(a+b))+'.'],
+      fin:'P = '+(2*(a+b))+' '+u
+    };
+  }
+  function makeSquare(){
+    var a=ri(2,25), u=pick(['см','м','дм']);
+    return {
+      q:'Найди периметр квадрата со стороной '+a+' '+u+'.',
+      hint:'У квадрата все четыре стороны одинаковые',
+      unit:u, ans:4*a,
+      steps:['Формула квадрата: P = 4 · a.',
+             'Подставляю сторону: P = 4 · '+a+'.',
+             'Считаю: 4 · '+a+' = '+(4*a)+'.'],
+      fin:'P = '+(4*a)+' '+u
+    };
+  }
+  function makeInverse(){
+    var a=ri(2,20), u=pick(['см','м','дм']), P=4*a;
+    return {
+      q:'Периметр квадрата равен '+P+' '+u+'. Чему равна его сторона?',
+      hint:'Обратная задача: тут ищем не периметр, а сторону',
+      unit:u, ans:a,
+      steps:['У квадрата периметр — это сторона, взятая 4 раза: P = 4 · a.',
+             'Значит идём назад делением: a = P : 4.',
+             'Считаю: '+P+' : 4 = '+a+'.'],
+      fin:'сторона = '+a+' '+u
+    };
+  }
+  function makeUnits(){
+    var a=ri(2,9), d=ri(1,5), b=10*d;
+    return {
+      q:'Найди периметр прямоугольника со сторонами '+a+' см и '+d+' дм. Ответ дай в сантиметрах.',
+      hint:'Осторожно: стороны даны в разных единицах',
+      unit:'см', ans:2*(a+b),
+      steps:['Складывать разные мерки нельзя — сначала перевожу: '+d+' дм = '+b+' см.',
+             'Теперь обе стороны в сантиметрах: '+a+' см и '+b+' см.',
+             'P = 2 · ('+a+' + '+b+') = 2 · '+(a+b)+' = '+(2*(a+b))+'.'],
+      fin:'P = '+(2*(a+b))+' см'
+    };
+  }
+
+  function newTask(focus){
+    var r=Math.random(), t;
+    if(r<0.30) t=makePoly();
+    else if(r<0.55) t=makeRect();
+    else if(r<0.72) t=makeSquare();
+    else if(r<0.87) t=makeInverse();
+    else t=makeUnits();
+    T=t;
+    taskEl.textContent=fix(t.q);
+    hintEl.textContent=fix(t.hint);
+    unitEl.textContent=t.unit;
+    inEl.value=''; resEl.innerHTML=''; resEl.removeAttribute('data-done');
+    if(focus) inEl.focus();
+  }
+  function solution(){
+    var h='<div class="tr-sol">';
+    T.steps.forEach(function(s){ h+='<div class="row"><span class="mono">'+fix(s)+'</span></div>'; });
+    h+='<div class="fin">'+fix(T.fin)+'</div>';
+    return h+'</div>';
+  }
+  function locked(){ return resEl.getAttribute('data-done')==='1'; }
+  function check(){
+    if(locked()) return;
+    var raw=inEl.value.replace(',','.').replace(/\s+/g,'').trim();
+    if(raw===''){
+      resEl.innerHTML='<div class="head info">Сначала введи ответ числом.</div>';
+      return;
+    }
+    var v=Number(raw);
+    resEl.setAttribute('data-done','1');
+    var ok = isFinite(v) && Math.abs(v-T.ans)<1e-9;
+    resEl.innerHTML=(ok
+      ? '<div class="head ok">✓ Верно! ' + fix(T.fin) + '</div>'
+      : '<div class="head no">Не сходится. Смотри разбор ниже.</div>') + solution();
+  }
+  function show(){
+    if(locked()) return;
+    resEl.setAttribute('data-done','1');
+    resEl.innerHTML='<div class="head info">Пошаговое решение:</div>'+solution();
+  }
+  document.getElementById('trCheck').addEventListener('click',check);
+  document.getElementById('trShow').addEventListener('click',show);
+  document.getElementById('trNew').addEventListener('click',function(){ newTask(true); });
+  inEl.addEventListener('keydown',function(e){ if(e.key==='Enter') check(); });
+  newTask(false);
+})();
+</script>
+<!--LESSON-NAV-BOT--><nav class="lnav lnav-bot"><a class="prev" href="./m5-pryamougolnik-kvadrat.html"><span class="dir">← Предыдущая</span><span class="ttl">Прямоугольник и квадрат</span></a><a class="to-cat" href="./catalog.html">📚 <span>Все темы</span></a><a class="next" href="./m5-ploshchad-pryamougolnika.html"><span class="dir">Следующая →</span><span class="ttl">Площадь прямоугольника и квадрата</span></a></nav><!--/LESSON-NAV-BOT-->

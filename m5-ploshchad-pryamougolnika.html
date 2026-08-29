@@ -1,0 +1,653 @@
+<!doctype html>
+<!-- humanized: humanizer-ru, 2026-08-29, тире возвращено -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Площадь прямоугольника и квадрата — 5 класс</title>
+<style>
+  :root{
+    --paper:#FBF9F5;
+    --card:#FFFFFF;
+    --ink:#26202E;
+    --muted:#6B6473;
+    --line:#E7E2E8;
+    --brand:#2E7D5B;         /* площадь */
+    --brand-soft:#E4F1EA;
+    --brand-line:#BFDDCC;
+    --peri:#CF5A34;          /* периметр */
+    --peri-soft:#FBEADF;
+    --peri-line:#F0CDB8;
+    --ok:#2E8B57;
+    --no:#C23B3B;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper)}
+  .page{
+    max-width:720px;margin:0 auto;
+    padding:clamp(1.4rem,4vw,3rem) clamp(1.1rem,4vw,2rem) 4.5rem;
+    color:var(--ink);
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    font-size:17.5px;line-height:1.68;-webkit-font-smoothing:antialiased;
+  }
+  .mono{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-variant-numeric:tabular-nums;font-weight:600}
+
+  .hero{border-bottom:3px solid var(--brand);padding-bottom:1.4rem;margin-bottom:1.8rem}
+  .eyebrow{font-size:.74rem;letter-spacing:.15em;text-transform:uppercase;color:var(--brand);font-weight:700;margin:0 0 .55rem}
+  h1{font-size:clamp(2rem,6.5vw,3rem);line-height:1.03;margin:0;font-weight:800;letter-spacing:-.02em;text-wrap:balance}
+  .tagline{font-size:1.12rem;color:var(--muted);margin:.85rem 0 0;text-wrap:pretty}
+
+  section{margin-top:2.4rem}
+  h2{font-size:1.5rem;margin:0 0 .3rem;font-weight:780;letter-spacing:-.015em;text-wrap:balance}
+  h2 .em{color:var(--brand)}
+  h3{font-size:1.1rem;margin:1.4rem 0 .2rem;font-weight:760}
+  p{margin:.7rem 0}
+  strong{font-weight:680}
+
+  .lead-in{background:var(--brand-soft);border-radius:14px;padding:1.1rem 1.3rem;font-size:1.02rem}
+  .lead-in p{margin:.4rem 0}
+  .lead-in b{color:var(--brand)}
+
+  .recall{border:1px dashed var(--line);background:var(--card);border-radius:14px;padding:1rem 1.25rem;margin-top:1rem}
+  .recall p{margin:.35rem 0;font-size:.97rem}
+  .recall .cap{font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;font-weight:700;color:var(--muted);margin:0 0 .4rem}
+
+  /* Развилка площадь / периметр */
+  .split{display:grid;gap:.9rem;margin-top:1rem}
+  @media(min-width:600px){.split{grid-template-columns:1fr 1fr}}
+  .path{border-radius:16px;padding:1.2rem 1.3rem;border:2px solid}
+  .path.area{background:var(--brand-soft);border-color:var(--brand-line)}
+  .path.per{background:var(--peri-soft);border-color:var(--peri-line)}
+  .path .cap{font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;font-weight:700;margin:0}
+  .path.area .cap{color:var(--brand)} .path.per .cap{color:var(--peri)}
+  .path h3{margin:.2rem 0 .5rem;font-size:1.3rem;font-weight:800}
+  .path p{margin:.3rem 0;font-size:.97rem}
+
+  /* Формула крупно */
+  .formula{background:var(--card);border:2px solid var(--brand-line);border-radius:16px;padding:1.2rem 1.3rem;margin-top:1rem;text-align:center}
+  .formula .big{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-weight:800;font-size:clamp(1.7rem,7vw,2.4rem);color:var(--brand);letter-spacing:.02em;margin:.1rem 0 .5rem}
+  .formula .why{font-size:.95rem;color:var(--muted);margin:0}
+  .legend{list-style:none;margin:1rem 0 0;padding:0;display:flex;flex-direction:column;gap:.4rem;font-size:.97rem}
+  .legend li{display:flex;gap:.7rem;align-items:baseline}
+  .legend .k{font-family:ui-monospace,Menlo,monospace;font-weight:800;color:var(--brand);flex:none;width:2.2rem}
+
+  .note{border-left:4px solid var(--brand);background:var(--brand-soft);border-radius:0 10px 10px 0;padding:.8rem 1.1rem;margin-top:1rem;font-size:.98rem}
+  .note b{color:var(--brand)}
+  .note.warn{border-left-color:var(--peri);background:var(--peri-soft)}
+  .note.warn b{color:var(--peri)}
+
+  /* Разбор по шагам */
+  .walk{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.15rem 1.3rem;margin-top:1rem}
+  .walk .q{font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.05rem;margin:0 0 .9rem;padding-bottom:.7rem;border-bottom:1px solid var(--line)}
+  .walk ol{margin:0;padding-left:1.3rem;display:flex;flex-direction:column;gap:.6rem}
+  .walk li{font-size:.98rem}
+  .walk li .say{display:block;color:var(--muted);font-size:.9rem;margin-top:.1rem}
+  .verdict{margin-top:1rem;padding:.75rem 1rem;background:var(--brand-soft);border-radius:10px;font-weight:650;color:var(--brand);font-size:1rem}
+
+  /* Canvas */
+  .sim{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:1.1rem 1.2rem 1.2rem;margin-top:1rem}
+  .sim canvas{width:100%;height:auto;display:block;border-radius:10px;background:#fff}
+  .ctrl{display:flex;flex-direction:column;gap:.6rem;margin-top:1rem}
+  .ctrl label{display:flex;align-items:center;gap:.8rem;font-size:.95rem}
+  .ctrl .nm{font-family:ui-monospace,Menlo,monospace;font-weight:800;flex:none;width:6.6rem}
+  .ctrl input[type=range]{flex:1;accent-color:var(--brand);min-width:0}
+  .ctrl input[type=range]:focus-visible{outline:2px solid var(--brand);outline-offset:3px}
+  .sim-out{margin-top:.9rem;background:var(--brand-soft);border-radius:10px;padding:.7rem 1rem;font-size:1rem;color:var(--brand);font-weight:700;text-align:center}
+  .sim-out .mono{color:var(--brand)}
+
+  /* Таблицы */
+  .tblwrap{overflow-x:auto;margin-top:1rem}
+  table{border-collapse:collapse;width:100%;min-width:380px;font-size:.96rem}
+  th,td{border:1px solid var(--line);padding:.55rem .75rem;text-align:left}
+  thead th{background:#F4F7F5;font-weight:700}
+  td.d{font-family:ui-monospace,Menlo,monospace;font-weight:800;text-align:center;color:var(--brand)}
+
+  /* Практика */
+  .drill{display:flex;flex-direction:column;gap:.7rem;margin-top:1rem}
+  details{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:.9rem 1.1rem}
+  details[open]{border-color:var(--brand)}
+  summary{cursor:pointer;font-weight:650;list-style:none;display:flex;justify-content:space-between;gap:1rem;align-items:center}
+  summary::-webkit-details-marker{display:none}
+  summary:focus-visible{outline:2px solid var(--brand);outline-offset:3px;border-radius:6px}
+  summary .q{font-size:1rem}
+  summary::after{content:"проверить";font-size:.8rem;color:var(--brand);font-weight:700;white-space:nowrap}
+  details[open] summary::after{content:"скрыть"}
+  .ans{margin-top:.75rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.96rem;color:var(--muted)}
+  .ans b{color:var(--ink)}
+
+  /* Ловушки */
+  ul.traps{list-style:none;margin:1rem 0 0;padding:0;display:flex;flex-direction:column;gap:.7rem}
+  ul.traps li{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:.85rem 1.05rem;padding-left:2.5rem;position:relative;font-size:.97rem}
+  ul.traps li::before{content:"⚠";position:absolute;left:1rem;top:.85rem;color:var(--peri);font-size:1.05rem}
+  ul.traps b{font-weight:700}
+
+  ol.check{margin:1rem 0 0;padding-left:1.3rem;display:flex;flex-direction:column;gap:.45rem;font-size:.99rem}
+
+  .wrapup{background:var(--brand);color:#fff;border-radius:16px;padding:1.4rem 1.5rem;margin-top:2.4rem}
+  .wrapup h2{color:#fff;margin:0 0 .5rem}
+  .wrapup p{color:#E3F0E8;margin:.4rem 0;font-size:1rem}
+  .wrapup .big-rule{font-size:1.15rem;font-weight:700;color:#fff;margin:.6rem 0;font-family:ui-monospace,Menlo,monospace}
+  .wrapup .next{font-size:.95rem;color:#C7E2D3;margin-top:1rem;padding-top:1rem;border-top:1px solid rgba(255,255,255,.2)}
+
+  /* Тренажёр */
+  .trainer{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:1.3rem 1.3rem 1.2rem;margin-top:1rem}
+  .tr-kind{font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;font-weight:700;color:var(--muted);text-align:center;margin:0 0 .5rem}
+  .tr-q{font-size:1.12rem;font-weight:650;text-align:center;margin:.1rem 0 1rem;text-wrap:balance}
+  .tr-q .mono{color:var(--brand)}
+  .tr-in{display:flex;gap:.5rem;align-items:center;justify-content:center;flex-wrap:wrap;margin-bottom:1.1rem}
+  .tr-in input{font:inherit;font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.15rem;width:7.5rem;text-align:center;padding:.5rem .6rem;border:2px solid var(--line);border-radius:10px;background:var(--paper);color:var(--ink)}
+  .tr-in input:focus-visible{outline:2px solid var(--brand);outline-offset:2px;border-color:var(--brand)}
+  .tr-in .unit{font-family:ui-monospace,Menlo,monospace;font-weight:800;color:var(--muted);font-size:1.1rem}
+  .tr-btns{display:flex;gap:.5rem;flex-wrap:wrap;justify-content:center}
+  .tr-btns button{font:inherit;font-weight:700;font-size:.92rem;border-radius:10px;padding:.55rem 1.1rem;cursor:pointer;border:1px solid transparent}
+  .tr-btns .go{background:var(--brand);color:#fff}
+  .tr-btns .sh{background:var(--paper);border:1px solid var(--line);color:var(--ink)}
+  .tr-btns .nw{background:var(--brand-soft);color:var(--brand)}
+  .tr-btns button:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+  .tr-res{margin-top:1.1rem;font-size:.97rem}
+  .tr-res .head{font-weight:700;padding:.6rem .9rem;border-radius:9px;margin-bottom:.7rem}
+  .tr-res .head.ok{background:#E7F4EC;color:var(--ok)}
+  .tr-res .head.no{background:#FBEAEA;color:var(--no)}
+  .tr-res .head.info{background:var(--brand-soft);color:var(--brand)}
+  .tr-sol{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:.85rem 1rem}
+  .tr-sol .row{margin:.32rem 0;font-size:.94rem}
+  .tr-sol .row .mono{color:var(--ink)}
+  .tr-sol .fin{font-weight:800;color:var(--brand);margin-top:.5rem}
+
+  @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<!--LESSON-NAV-TOP--><style>.lnav{--lnav-accent:#3D5AF1}.lnav a{text-decoration:none;font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif}.lnav-top{max-width:820px;margin:0 auto;padding:.75rem clamp(1rem,4vw,1.5rem) .1rem}.lnav-top a{display:inline-flex;align-items:center;gap:.35rem;color:var(--lnav-accent);font-weight:600;font-size:.9rem}.lnav-top a:hover{text-decoration:underline}.lnav-bot{max-width:820px;margin:2.6rem auto 3rem;padding:1.1rem clamp(1rem,4vw,1.5rem) 0;border-top:1px solid #E4E8EF;display:flex;align-items:stretch;gap:.55rem}.lnav-bot a{min-width:0;display:flex;flex-direction:column;justify-content:center;gap:.15rem;border:1px solid #E4E8EF;border-radius:12px;padding:.65rem .85rem;color:#182233;background:#fff;transition:border-color .1s,transform .08s}.lnav-bot a:hover{border-color:var(--lnav-accent);transform:translateY(-1px)}.lnav-bot .prev,.lnav-bot .next{flex:1 1 0}.lnav-bot .next{text-align:right}.lnav-bot .dir{font-size:.72rem;color:#8A93A6;font-weight:600}.lnav-bot .ttl{font-size:.9rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.lnav-bot .to-cat{flex:0 0 auto;flex-direction:row;align-items:center;justify-content:center;color:var(--lnav-accent);font-weight:700;font-size:.85rem;white-space:nowrap}@media(max-width:420px){.lnav-bot .to-cat span{display:none}.lnav-bot .to-cat{padding:.65rem .7rem}}</style><nav class="lnav lnav-top"><a href="./catalog.html">← Все темы</a></nav><!--/LESSON-NAV-TOP-->
+<div class="page">
+
+  <header class="hero">
+    <p class="eyebrow">Математика · 5 класс</p>
+    <h1>Площадь прямоугольника и квадрата</h1>
+    <p class="tagline">Сколько клеточек влезает внутрь фигуры. И почему их не надо считать по одной — хватит перемножить стороны.</p>
+  </header>
+
+  <div class="lead-in">
+    <p><b>Зачем это нужно.</b> Площадь — это сколько места фигура занимает на плоскости. Проще: сколько «клеточек» помещается внутри.</p>
+    <p>Считают её постоянно: сколько плитки взять на пол, сколько обоев на стену, сколько земли уйдёт под грядку, чей участок больше. Без площади не прикинешь ни цену ремонта, ни урожай с поля.</p>
+  </div>
+
+  <section>
+    <h2>Сначала — разрушим один миф</h2>
+    <p>Ходит такое поверье: <em>«чем больше периметр, тем больше площадь»</em>. Неправда. Смотри сам.</p>
+    <div class="split">
+      <div class="path per">
+        <p class="cap">Длинный узкий</p>
+        <h3>1 × 10</h3>
+        <p>Периметр — <strong>22</strong>. Больше!</p>
+        <p>Площадь — <strong>10</strong>. Меньше.</p>
+      </div>
+      <div class="path area">
+        <p class="cap">Квадрат</p>
+        <h3>5 × 5</h3>
+        <p>Периметр — <strong>20</strong>. Меньше.</p>
+        <p>Площадь — <strong>25</strong>. Больше!</p>
+      </div>
+    </div>
+    <div class="note warn">
+      <p><b>Запомни разницу.</b> Периметр — длина забора вокруг участка. Площадь — сама земля внутри. Величины разные, и из одной другая не вытекает.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Что надо вспомнить перед стартом</h2>
+    <div class="recall">
+      <p class="cap">Разминка на 30 секунд</p>
+      <p>· Чем прямоугольник отличается от квадрата? <strong>У квадрата все стороны равны</strong>, а у прямоугольника соседние стороны бывают разной длины.</p>
+      <p>· Что значит запись <span class="mono">a²</span>? Это «а в квадрате», то есть <span class="mono">a · a</span>. Например, <span class="mono">6² = 6 · 6 = 36</span>.</p>
+      <p>· Какие бывают единицы длины? <span class="mono">мм</span>, <span class="mono">см</span>, <span class="mono">м</span>. Площадь мерят «квадратными» версиями этих же единиц.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Суть: площадь — это <span class="em">число квадратиков</span></h2>
+    <p>Чтобы измерить площадь, берут «мерку» — единичный квадрат со стороной 1 (скажем, 1 см). Дальше просто: <strong>площадь фигуры — это число таких единичных квадратиков</strong>, которыми фигура заполнена целиком, без щелей и без нахлёстов.</p>
+    <p>Возьмём прямоугольник: 3 см в длину, 4 см в ширину. Разбиваем его на ряды клеточек — выходит <strong>4 ряда по 3 квадратика</strong>. Всего <span class="mono">4 · 3 = 12</span> квадратиков по 1 см².</p>
+    <p>Отсюда и формула. Тыкать пальцем в каждую клетку незачем: перемножь длины двух сторон, и готово. <strong>Умножение заменяет пересчёт квадратиков</strong>.</p>
+  </section>
+
+  <section>
+    <h2>Посмотри сам: <span class="em">двигай стороны</span></h2>
+    <p>Ниже — прямоугольник в клетку. Тяни ползунки и следи: число клеточек внутри каждый раз совпадает с произведением сторон. Ряды подсвечены через один, так их легче различить.</p>
+    <div class="sim">
+      <canvas id="cv" width="660" height="440" role="img" aria-label="Прямоугольник, разбитый на единичные квадратики"></canvas>
+      <div class="ctrl">
+        <label><span class="nm">длина a</span><input type="range" id="ra" min="1" max="12" value="3" step="1"><span class="mono" id="va">3</span></label>
+        <label><span class="nm">ширина b</span><input type="range" id="rb" min="1" max="9" value="4" step="1"><span class="mono" id="vb">4</span></label>
+      </div>
+      <div class="sim-out" id="simOut"></div>
+    </div>
+    <div class="note">
+      <p><b>Поставь a = b</b> — например, 5 и 5. Выйдет квадрат, клеточек в нём <span class="mono">5 · 5 = 25</span>. Это и есть то, что записывают как <span class="mono">5²</span>.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Ядро: две формулы</h2>
+
+    <h3>Прямоугольник</h3>
+    <div class="formula">
+      <p class="big">S = a · b</p>
+      <p class="why">площадь = длина одной стороны, умноженная на длину соседней</p>
+      <ul class="legend">
+        <li><span class="k">S</span><span>площадь (от слова «площадь»)</span></li>
+        <li><span class="k">a</span><span>длина одной стороны</span></li>
+        <li><span class="k">b</span><span>длина соседней стороны</span></li>
+      </ul>
+    </div>
+
+    <h3>Квадрат</h3>
+    <div class="formula">
+      <p class="big">S = a · a = a²</p>
+      <p class="why">у квадрата все стороны равны, то есть a = b, значит умножаем сторону саму на себя</p>
+      <ul class="legend">
+        <li><span class="k">a</span><span>длина стороны квадрата</span></li>
+        <li><span class="k">a²</span><span>читается «а в квадрате», это a · a</span></li>
+      </ul>
+    </div>
+
+    <h3>Когда формулу можно применять</h3>
+    <div class="note">
+      <p><b>Условие 1.</b> Стороны должны быть <strong>в одинаковых единицах</strong>: обе в см или обе в м. Одна в метрах, другая в сантиметрах? Сначала переводим к одной единице, потом умножаем.</p>
+      <p><b>Условие 2.</b> Единица площади — это единица длины «в квадрате»: см · см = см², м · м = м², мм · мм = мм². <strong>Ответ площади всегда в квадратных единицах.</strong></p>
+    </div>
+
+    <h3>Полезные единицы площади</h3>
+    <div class="tblwrap">
+      <table>
+        <thead><tr><th>Единица</th><th>Сколько это</th></tr></thead>
+        <tbody>
+          <tr><td class="d">1 см²</td><td>100 мм²</td></tr>
+          <tr><td class="d">1 м²</td><td>10 000 см²</td></tr>
+          <tr><td class="d">1 ар (сотка)</td><td>100 м²</td></tr>
+          <tr><td class="d">1 га</td><td>10 000 м²</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2>Эталонный разбор — <span class="em">думаю вслух</span></h2>
+    <p>Смотри, как я рассуждаю по шагам. К каждому шагу идёт объяснение, почему он именно такой.</p>
+    <div class="walk">
+      <p class="q">Найти площадь прямоугольника со сторонами 7 см и 5 см.</p>
+      <ol>
+        <li>Записываю формулу: <span class="mono">S = a · b</span>.
+          <span class="say">Почему эта? Фигура — прямоугольник, а у него площадь равна произведению сторон.</span></li>
+        <li>Подставляю: <span class="mono">S = 7 · 5</span>.
+          <span class="say">Почему сразу подставляю? Обе стороны уже в сантиметрах. Переводить нечего.</span></li>
+        <li>Считаю: <span class="mono">7 · 5 = 35</span>.</li>
+        <li>Записываю единицу: <span class="mono">см · см = см²</span>, значит <span class="mono">S = 35 см²</span>.
+          <span class="say">Почему с двойкой? Площадь всегда меряют в квадратных единицах.</span></li>
+      </ol>
+      <div class="verdict">Ответ: 35 см².</div>
+    </div>
+
+    <h3>Теперь допиши сам</h3>
+    <p>Ход мысли тот же, но пару шагов я оставил тебе. Найти площадь квадрата со стороной 9 см.</p>
+    <div class="walk">
+      <p class="q">S = ? , сторона квадрата 9 см</p>
+      <ol>
+        <li>Формула квадрата: <span class="mono">S = a²</span>.</li>
+        <li>Подставляю: <span class="mono">S = 9² = 9 · 9 = ____</span>.</li>
+        <li>Единица: <span class="mono">____</span>.</li>
+      </ol>
+      <p style="font-size:.92rem;color:var(--muted);margin-top:.9rem">Подсказка: перемножь 9 · 9 и не потеряй см².</p>
+      <details style="margin-top:.8rem">
+        <summary><span class="q">Сверить ответ</span></summary>
+        <div class="ans"><span class="mono">9 · 9 = 81</span>, единица — см². <b>Ответ: 81 см².</b></div>
+      </details>
+    </div>
+
+    <h3>А это уже полностью сам</h3>
+    <div class="drill">
+      <details>
+        <summary><span class="q">Поле прямоугольное: длина 8 м, ширина 6 м. Найди площадь.</span></summary>
+        <div class="ans"><span class="mono">S = 8 · 6 = 48</span>, единицы м · м = м². <b>Ответ: 48 м².</b></div>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <h2>Как растёт площадь квадрата</h2>
+    <p>Сторона растёт всего на 1, а площадь прыгает всё резче. Глянь на таблицу и попробуй объяснить сам, откуда такой разгон:</p>
+    <div class="tblwrap">
+      <table>
+        <thead><tr><th>Сторона a</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th></tr></thead>
+        <tbody>
+          <tr><td>Площадь a²</td><td class="d">1</td><td class="d">4</td><td class="d">9</td><td class="d">16</td><td class="d">25</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2>Предскажи → проверь → объясни</h2>
+    <p>Перед тобой два прямоугольника: узкий <span class="mono">1 × 8</span> и квадрат <span class="mono">3 × 3</span>. Сначала <strong>предскажи</strong> в уме, без счёта: у какого площадь больше? А периметр? Раскрывай только после этого.</p>
+    <div class="drill">
+      <details>
+        <summary><span class="q">Проверить предсказание</span></summary>
+        <div class="ans">Площади: у <span class="mono">1 × 8</span> — <b>8</b>, у <span class="mono">3 × 3</span> — <b>9</b>. Периметры: <b>18</b> и <b>12</b>.<br><br>Забора у узкого больше (периметр 18 против 12), а места внутри <b>меньше</b>. Длиннее по контуру — ещё не больше по площади. Тот самый миф, с которого мы начали.</div>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <h2>Тренажёр — <span class="em">задачи не кончаются</span></h2>
+    <p>Задачи тут не кончаются: то прямоугольник, то квадрат, то обратная, то с переводом единиц. Введи число в поле (единицу подскажет подпись справа) и жми «Проверить». Застрял — жми «Показать решение», там всё по шагам.</p>
+    <div class="trainer">
+      <p class="tr-kind" id="trKind">Прямоугольник</p>
+      <p class="tr-q" id="trQ"></p>
+      <div class="tr-in">
+        <input type="text" id="trIn" inputmode="numeric" autocomplete="off" aria-label="Твой ответ">
+        <span class="unit" id="trUnit">см²</span>
+      </div>
+      <div class="tr-btns">
+        <button class="go" id="trCheck" type="button">Проверить</button>
+        <button class="sh" id="trShow" type="button">Показать решение</button>
+        <button class="nw" id="trNew" type="button">🎲 Новая задача</button>
+      </div>
+      <div class="tr-res" id="trRes"></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Проверь себя</h2>
+    <p>Реши сам, потом жми «проверить». Не подглядывай раньше времени 🙂</p>
+
+    <h3>Понимаю</h3>
+    <div class="drill">
+      <details>
+        <summary><span class="q">1) Что показывает площадь прямоугольника — длину забора вокруг или количество единичных квадратиков внутри?</span></summary>
+        <div class="ans"><b>Количество единичных квадратиков внутри.</b> Длина забора вокруг — это периметр, совсем другая величина.</div>
+      </details>
+      <details>
+        <summary><span class="q">2) Назови формулу площади квадрата.</span></summary>
+        <div class="ans"><b>S = a² </b>, то есть <span class="mono">a · a</span>, где a — сторона квадрата.</div>
+      </details>
+    </div>
+
+    <h3>Применяю</h3>
+    <div class="drill">
+      <details>
+        <summary><span class="q">3) Найди площадь прямоугольника 12 см × 4 см.</span></summary>
+        <div class="ans"><span class="mono">S = 12 · 4 = 48</span>. <b>Ответ: 48 см².</b></div>
+      </details>
+      <details>
+        <summary><span class="q">4) Найди площадь квадрата со стороной 6 см.</span></summary>
+        <div class="ans"><span class="mono">S = 6² = 6 · 6 = 36</span>. <b>Ответ: 36 см².</b></div>
+      </details>
+    </div>
+
+    <h3>Анализирую</h3>
+    <div class="drill">
+      <details>
+        <summary><span class="q">5) Что изменится, если… у прямоугольника длину увеличили в 2 раза, а ширину оставили прежней. Во сколько раз изменится площадь?</span></summary>
+        <div class="ans">Площадь — это <span class="mono">a · b</span>. Один множитель вырос вдвое, второй остался прежним, значит и произведение выросло вдвое. <b>Площадь увеличится тоже в 2 раза.</b></div>
+      </details>
+      <details>
+        <summary><span class="q">6) Найди ошибку: ученик написал «S = 5 см + 3 см = 8 см».</span></summary>
+        <div class="ans">Ошибок тут сразу две. Первая: стороны надо <b>умножать, а не складывать</b> — от сложения выходит кусок периметра, а не площадь. Вторая: единица должна быть <b>см², а не см</b>.<br><br>Верно так: <span class="mono">S = 5 · 3 = 15 см²</span>.</div>
+      </details>
+      <details>
+        <summary><span class="q">7) Обратная задача: площадь прямоугольника 24 см², одна сторона 6 см. Найди вторую сторону.</span></summary>
+        <div class="ans">Раз <span class="mono">S = a · b</span>, неизвестную сторону находим делением: <span class="mono">24 : 6 = 4</span>. <b>Ответ: 4 см.</b> Обрати внимание: у стороны единица обычная — см, без квадрата.</div>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <h2>Ловушки — не попадись</h2>
+    <ul class="traps">
+      <li><b>Путают площадь и периметр</b> — складывают стороны вместо умножения. Спроси себя, что тебе вообще нужно. «Сколько забора» — складываю стороны, это периметр. «Сколько места внутри» — умножаю, это площадь.</li>
+      <li><b>Пишут см вместо см².</b> Помни: см · см = см². Площадь всегда в квадратных единицах, маленькая двойка обязательна.</li>
+      <li><b>Умножают разные единицы без перевода.</b> Видят 2 м и 30 см и бодро множат: <span class="mono">2 · 30 = 60</span>. Так нельзя. Сначала приводим к одной единице: <span class="mono">2 м = 200 см</span>, тогда <span class="mono">S = 200 · 30 = 6000 см²</span>.</li>
+      <li><b>Путают a² и a · 2.</b> Запись <span class="mono">9²</span> — это не <span class="mono">9 · 2 = 18</span>, а <span class="mono">9 · 9 = 81</span>. «а в квадрате» — это сторона на саму себя.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Объясни своими словами</h2>
+    <p>Самая честная проверка: расскажи вслух — маме, другу или коту. Прошло без запинок — тема твоя.</p>
+    <ol class="check">
+      <li>По какой формуле находят площадь прямоугольника? А квадрата?</li>
+      <li>В каких единицах записывают площадь, если стороны даны в сантиметрах?</li>
+      <li>Чем площадь отличается от периметра?</li>
+    </ol>
+  </section>
+
+  <div class="wrapup">
+    <h2>Запомни главное</h2>
+    <p class="big-rule">S = a · b — прямоугольник<br>S = a² — квадрат</p>
+    <p>Площадь прямоугольника — произведение его сторон, у квадрата — сторона на саму себя. И пишется она всегда в квадратных единицах: см², м², мм².</p>
+    <p class="next">👉 Дальше — <strong>объём прямоугольного параллелепипеда</strong>. Идея та же, только на шаг сложнее: фигуру заполняют уже не плоские квадратики, а кубики.</p>
+  </div>
+
+</div>
+
+<script>
+(function(){
+  /* ---------- Canvas: прямоугольник в клетку ---------- */
+  var cv=document.getElementById('cv');
+  if(cv && cv.getContext){
+    var ctx=cv.getContext('2d');
+    var ra=document.getElementById('ra'), rb=document.getElementById('rb');
+    var va=document.getElementById('va'), vb=document.getElementById('vb');
+    var out=document.getElementById('simOut');
+    var W=cv.width, H=cv.height;
+    var PAD=54;
+
+    function draw(){
+      var a=+ra.value, b=+rb.value;
+      va.textContent=a; vb.textContent=b;
+      ctx.clearRect(0,0,W,H);
+      ctx.fillStyle='#FFFFFF'; ctx.fillRect(0,0,W,H);
+
+      var maxW=W-2*PAD, maxH=H-2*PAD;
+      var cell=Math.min(maxW/12, maxH/9);
+      var w=cell*a, h=cell*b;
+      var x0=(W-w)/2, y0=(H-h)/2+6;
+
+      /* клетки: чередуем ряды двумя оттенками зелёного */
+      for(var j=0;j<b;j++){
+        for(var i=0;i<a;i++){
+          ctx.fillStyle = (j%2===0) ? '#DCEFE4' : '#EDF7F1';
+          ctx.fillRect(x0+i*cell, y0+j*cell, cell, cell);
+        }
+      }
+      /* сетка */
+      ctx.strokeStyle='#9FCBB3'; ctx.lineWidth=1;
+      for(var i2=0;i2<=a;i2++){
+        ctx.beginPath(); ctx.moveTo(x0+i2*cell, y0); ctx.lineTo(x0+i2*cell, y0+h); ctx.stroke();
+      }
+      for(var j2=0;j2<=b;j2++){
+        ctx.beginPath(); ctx.moveTo(x0, y0+j2*cell); ctx.lineTo(x0+w, y0+j2*cell); ctx.stroke();
+      }
+      /* контур */
+      ctx.strokeStyle='#2E7D5B'; ctx.lineWidth=3;
+      ctx.strokeRect(x0, y0, w, h);
+
+      /* номера клеток, если их не слишком много */
+      if(a*b<=48){
+        ctx.fillStyle='#4E7A65';
+        ctx.font='600 '+Math.max(10,Math.min(16,cell*0.36))+'px ui-monospace, Menlo, monospace';
+        ctx.textAlign='center'; ctx.textBaseline='middle';
+        var n=0;
+        for(var jj=0;jj<b;jj++){
+          for(var ii=0;ii<a;ii++){
+            n++;
+            ctx.fillText(String(n), x0+ii*cell+cell/2, y0+jj*cell+cell/2);
+          }
+        }
+      }
+      /* подписи сторон */
+      ctx.fillStyle='#26202E';
+      ctx.font='700 17px system-ui, -apple-system, sans-serif';
+      ctx.textAlign='center'; ctx.textBaseline='alphabetic';
+      ctx.fillText('a = '+a+' см', x0+w/2, y0-16);
+      ctx.save();
+      ctx.translate(x0-20, y0+h/2);
+      ctx.rotate(-Math.PI/2);
+      ctx.textBaseline='middle';
+      ctx.fillText('b = '+b+' см', 0, 0);
+      ctx.restore();
+
+      out.innerHTML = b+' ряд'+rowWord(b)+' по '+a+' — это <span class="mono">'+a+' · '+b+' = '+(a*b)+'</span> клеточек, то есть S = '+(a*b)+' см²';
+    }
+    function rowWord(n){
+      var n1=n%10, n2=n%100;
+      if(n2>=11 && n2<=14) return 'ов';
+      if(n1===1) return '';
+      if(n1>=2 && n1<=4) return 'а';
+      return 'ов';
+    }
+    ra.addEventListener('input',draw);
+    rb.addEventListener('input',draw);
+    draw();
+  }
+
+  /* ---------- Тренажёр ---------- */
+  var MIN='−';
+  function fx(s){ return String(s).replace(/-/g, MIN); }
+  function ri(a,b){ return Math.floor(Math.random()*(b-a+1))+a; }
+  function pick(arr){ return arr[ri(0,arr.length-1)]; }
+
+  var qEl=document.getElementById('trQ'), kEl=document.getElementById('trKind');
+  var inEl=document.getElementById('trIn'), uEl=document.getElementById('trUnit');
+  var resEl=document.getElementById('trRes');
+  var task=null;
+
+  function makeRect(){
+    var u=pick(['см','м']);
+    var a=ri(2,15), b=ri(2,12);
+    return {
+      kind:'Прямоугольник',
+      q:'Найди площадь прямоугольника со сторонами <span class="mono">'+a+' '+u+'</span> и <span class="mono">'+b+' '+u+'</span>.',
+      unit:u+'²',
+      ans:a*b,
+      steps:[
+        'Фигура — прямоугольник, значит формула <span class="mono">S = a · b</span>.',
+        'Обе стороны в одинаковых единицах ('+u+'), переводить не нужно.',
+        'Считаю: <span class="mono">'+fx(a+' · '+b+' = '+(a*b))+'</span>.',
+        'Единица: <span class="mono">'+u+' · '+u+' = '+u+'²</span>.'
+      ],
+      fin:'S = '+fx(a*b)+' '+u+'²'
+    };
+  }
+  function makeSquare(){
+    var u=pick(['см','м']);
+    var a=ri(1,15);
+    return {
+      kind:'Квадрат',
+      q:'Найди площадь квадрата со стороной <span class="mono">'+a+' '+u+'</span>.',
+      unit:u+'²',
+      ans:a*a,
+      steps:[
+        'Фигура — квадрат, у него все стороны равны, значит <span class="mono">S = a²</span>.',
+        'Подставляю: <span class="mono">S = '+a+'²</span>. Помню: это сторона на саму себя, а не на 2.',
+        'Считаю: <span class="mono">'+fx(a+' · '+a+' = '+(a*a))+'</span>.',
+        'Единица: <span class="mono">'+u+' · '+u+' = '+u+'²</span>.'
+      ],
+      fin:'S = '+fx(a*a)+' '+u+'²'
+    };
+  }
+  function makeBack(){
+    var u=pick(['см','м']);
+    var a=ri(2,12), b=ri(1,12), S=a*b;
+    return {
+      kind:'Обратная задача',
+      q:'Площадь прямоугольника <span class="mono">'+S+' '+u+'²</span>, одна сторона <span class="mono">'+a+' '+u+'</span>. Найди вторую сторону.',
+      unit:u,
+      ans:b,
+      steps:[
+        'Знаю, что <span class="mono">S = a · b</span>, но здесь неизвестен множитель b.',
+        'Неизвестный множитель находят делением: <span class="mono">b = S : a</span>.',
+        'Считаю: <span class="mono">'+fx(S+' : '+a+' = '+b)+'</span>.',
+        'Это сторона, а не площадь — единица обычная, <span class="mono">'+u+'</span>, без квадрата.'
+      ],
+      fin:'b = '+fx(b)+' '+u
+    };
+  }
+  function makeUnits(){
+    var m=ri(1,5), c=ri(1,9)*10, mc=m*100;
+    return {
+      kind:'Разные единицы',
+      q:'Стороны прямоугольника <span class="mono">'+m+' м</span> и <span class="mono">'+c+' см</span>. Найди площадь в см².',
+      unit:'см²',
+      ans:mc*c,
+      steps:[
+        'Стороны в разных единицах — умножать так нельзя, сначала перевожу.',
+        '<span class="mono">'+m+' м = '+mc+' см</span> (в одном метре 100 см).',
+        'Теперь обе стороны в см: <span class="mono">S = '+mc+' · '+c+'</span>.',
+        'Считаю: <span class="mono">'+fx(mc+' · '+c+' = '+(mc*c))+'</span>, единица см · см = см².'
+      ],
+      fin:'S = '+fx(mc*c)+' см²'
+    };
+  }
+  var MAKERS=[makeRect, makeRect, makeSquare, makeSquare, makeBack, makeUnits];
+
+  function locked(){ return resEl.getAttribute('data-done')==='1'; }
+
+  function render(t){
+    task=t;
+    kEl.textContent=t.kind;
+    qEl.innerHTML=t.q;
+    uEl.textContent=t.unit;
+    inEl.value='';
+    resEl.innerHTML='';
+    resEl.removeAttribute('data-done');
+  }
+  function solution(){
+    var h='<div class="tr-sol">';
+    for(var i=0;i<task.steps.length;i++){
+      h+='<div class="row">'+(i+1)+') '+task.steps[i]+'</div>';
+    }
+    h+='<div class="row fin">Ответ: '+task.fin+'</div>';
+    return h+'</div>';
+  }
+  function check(){
+    if(locked()) return;
+    var raw=inEl.value.replace(/\s/g,'').replace(/,/g,'.').replace(/−/g,'-');
+    if(raw===''){
+      resEl.innerHTML='<div class="head info">Сначала введи число в поле ответа.</div>';
+      return;
+    }
+    var val=Number(raw);
+    resEl.setAttribute('data-done','1');
+    var ok = isFinite(val) && val===task.ans;
+    resEl.innerHTML = (ok
+      ? '<div class="head ok">✓ Верно! '+task.fin+'</div>'
+      : '<div class="head no">Не сходится. Правильный ответ: '+task.fin+' — смотри разбор.</div>') + solution();
+  }
+  function show(){
+    if(locked()) return;
+    resEl.setAttribute('data-done','1');
+    resEl.innerHTML='<div class="head info">Решение по шагам:</div>'+solution();
+  }
+  document.getElementById('trCheck').addEventListener('click',check);
+  document.getElementById('trShow').addEventListener('click',show);
+  document.getElementById('trNew').addEventListener('click',function(){
+    render(pick(MAKERS)());
+    inEl.focus();
+  });
+  inEl.addEventListener('keydown',function(e){ if(e.key==='Enter') check(); });
+
+  /* стартовая задача — фиксированная, без автофокуса */
+  render({
+    kind:'Прямоугольник',
+    q:'Найди площадь прямоугольника со сторонами <span class="mono">7 см</span> и <span class="mono">4 см</span>.',
+    unit:'см²',
+    ans:28,
+    steps:[
+      'Фигура — прямоугольник, значит формула <span class="mono">S = a · b</span>.',
+      'Обе стороны в одинаковых единицах (см), переводить не нужно.',
+      'Считаю: <span class="mono">7 · 4 = 28</span>.',
+      'Единица: <span class="mono">см · см = см²</span>.'
+    ],
+    fin:'S = 28 см²'
+  });
+})();
+</script>
+<!--LESSON-NAV-BOT--><nav class="lnav lnav-bot"><a class="prev" href="./m5-perimetr-mnogougolnika.html"><span class="dir">← Предыдущая</span><span class="ttl">Периметр многоугольника</span></a><a class="to-cat" href="./catalog.html">📚 <span>Все темы</span></a><a class="next" href="./m5-pryamougolnyj-parallelepiped.html"><span class="dir">Следующая →</span><span class="ttl">Прямоугольный параллелепипед и куб</span></a></nav><!--/LESSON-NAV-BOT-->

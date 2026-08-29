@@ -1,0 +1,647 @@
+<!doctype html>
+<!-- humanized: humanizer-ru, 2026-08-29, тире возвращено -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Цена, количество, стоимость — 5 класс</title>
+<style>
+  :root{
+    --paper:#FBF9F5;
+    --card:#FFFFFF;
+    --ink:#26202E;
+    --muted:#6B6473;
+    --line:#E7E2E8;
+    --brand:#2F7A5E;          /* стоимость */
+    --brand-soft:#E3F1EA;
+    --brand-line:#BFDECD;
+    --price:#CF5A34;          /* цена */
+    --price-soft:#FBEADF;
+    --price-line:#F0CDB8;
+    --qty:#3A5AA0;            /* количество */
+    --qty-soft:#E5EBF6;
+    --qty-line:#C6D3EC;
+    --ok:#2E8B57;
+    --no:#C23B3B;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper)}
+  .page{
+    max-width:720px;margin:0 auto;
+    padding:clamp(1.4rem,4vw,3rem) clamp(1.1rem,4vw,2rem) 4.5rem;
+    color:var(--ink);
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    font-size:17.5px;line-height:1.68;-webkit-font-smoothing:antialiased;
+  }
+  .mono{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-variant-numeric:tabular-nums;font-weight:600}
+
+  .hero{border-bottom:3px solid var(--brand);padding-bottom:1.4rem;margin-bottom:1.8rem}
+  .eyebrow{font-size:.74rem;letter-spacing:.15em;text-transform:uppercase;color:var(--brand);font-weight:700;margin:0 0 .55rem}
+  h1{font-size:clamp(2rem,6.5vw,3rem);line-height:1.03;margin:0;font-weight:800;letter-spacing:-.02em;text-wrap:balance}
+  .tagline{font-size:1.12rem;color:var(--muted);margin:.85rem 0 0;text-wrap:pretty}
+
+  section{margin-top:2.4rem}
+  h2{font-size:1.5rem;margin:0 0 .3rem;font-weight:780;letter-spacing:-.015em;text-wrap:balance}
+  h2 .em{color:var(--brand)}
+  h3{font-size:1.1rem;margin:1.3rem 0 .2rem;font-weight:750}
+  p{margin:.7rem 0}
+  strong{font-weight:680}
+  .c-cost{color:var(--brand);font-weight:700}
+  .c-price{color:var(--price);font-weight:700}
+  .c-qty{color:var(--qty);font-weight:700}
+
+  .lead-in{background:var(--brand-soft);border-radius:14px;padding:1.1rem 1.3rem;font-size:1.02rem}
+  .lead-in p{margin:.4rem 0}
+  .lead-in b{color:var(--brand)}
+
+  .recall{border:2px dashed var(--line);border-radius:14px;padding:1rem 1.2rem;background:var(--card);margin-top:1rem}
+  .recall p{margin:.35rem 0;font-size:.98rem}
+  .recall .cap{font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;font-weight:700;color:var(--muted);margin:0 0 .4rem}
+
+  /* Три величины */
+  .split{display:grid;gap:.9rem;margin-top:1rem}
+  @media(min-width:620px){.split{grid-template-columns:repeat(3,1fr)}}
+  .path{border-radius:16px;padding:1.05rem 1.15rem;border:2px solid}
+  .path.price{background:var(--price-soft);border-color:var(--price-line)}
+  .path.qty{background:var(--qty-soft);border-color:var(--qty-line)}
+  .path.cost{background:var(--brand-soft);border-color:var(--brand-line)}
+  .path h3{margin:0 0 .35rem;font-size:1.15rem;font-weight:800}
+  .path.price h3{color:var(--price)} .path.qty h3{color:var(--qty)} .path.cost h3{color:var(--brand)}
+  .path p{margin:.25rem 0;font-size:.95rem}
+  .path .un{font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:.9rem;margin-top:.45rem;display:block}
+
+  /* Формулы */
+  .formula{background:var(--card);border:2px solid var(--brand-line);border-radius:14px;padding:1.1rem 1.2rem;text-align:center;margin-top:1rem}
+  .formula .main{font-family:ui-monospace,Menlo,monospace;font-weight:800;font-size:clamp(1.05rem,4.6vw,1.5rem);line-height:1.4}
+  .formula .sub{display:flex;flex-direction:column;gap:.35rem;margin-top:.9rem;padding-top:.9rem;border-top:1px dashed var(--line);font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:clamp(.92rem,3.9vw,1.15rem)}
+
+  .note{border-left:4px solid var(--brand);background:var(--brand-soft);border-radius:0 10px 10px 0;padding:.8rem 1.1rem;margin-top:1rem;font-size:.98rem}
+  .note b{color:var(--brand)}
+  .note p{margin:.35rem 0}
+
+  /* Треугольник */
+  .tri-wrap{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:1.2rem;margin-top:1rem}
+  .tri{display:grid;grid-template-columns:1fr 1fr;gap:.55rem;max-width:340px;margin:0 auto}
+  .tri button{font:inherit;font-weight:750;border-radius:12px;padding:.85rem .4rem;cursor:pointer;border:2px solid;background:var(--card);transition:opacity .12s,transform .08s}
+  .tri button:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+  .tri .top{grid-column:1 / -1;border-color:var(--brand-line);color:var(--brand);background:var(--brand-soft)}
+  .tri .lb{border-color:var(--price-line);color:var(--price);background:var(--price-soft)}
+  .tri .rb{border-color:var(--qty-line);color:var(--qty);background:var(--qty-soft)}
+  .tri button.hid{opacity:.28}
+  .tri-out{margin-top:1rem;text-align:center;font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:clamp(.95rem,4vw,1.15rem);min-height:2.6rem;display:flex;align-items:center;justify-content:center;background:var(--paper);border-radius:10px;padding:.7rem .8rem}
+  .tri-hint{text-align:center;color:var(--muted);font-size:.88rem;margin:.7rem 0 0}
+
+  /* Разбор по шагам */
+  .walk{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.15rem 1.3rem;margin-top:1rem}
+  .walk .q{font-weight:700;font-size:1.05rem;margin:0 0 .9rem;padding-bottom:.7rem;border-bottom:1px solid var(--line)}
+  .walk ol{margin:0;padding-left:1.25rem;display:flex;flex-direction:column;gap:.5rem}
+  .walk li{font-size:.98rem}
+  .verdict{margin-top:1rem;padding:.75rem 1rem;background:var(--brand-soft);border-radius:10px;font-weight:650;color:var(--brand);font-size:1rem}
+  .gap{display:inline-block;min-width:5.5rem;border-bottom:2px solid var(--muted);height:1.1em;vertical-align:-.15em}
+
+  /* Таблица */
+  .tblwrap{overflow-x:auto;margin-top:1rem}
+  table{border-collapse:collapse;width:100%;min-width:420px;font-size:.96rem}
+  th,td{border:1px solid var(--line);padding:.6rem .75rem;text-align:left}
+  thead th{background:#F5F3F7;font-weight:700}
+  th.h-price{color:var(--price)} th.h-qty{color:var(--qty)} th.h-cost{color:var(--brand)}
+  td.find{background:#FFF8E7;font-weight:700}
+
+  /* Canvas бар-модель */
+  .viz{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:1.1rem 1.2rem;margin-top:1rem}
+  .viz canvas{width:100%;height:auto;display:block}
+  .viz .ctl{display:flex;align-items:center;gap:.8rem;margin-top:.9rem;flex-wrap:wrap}
+  .viz .ctl label{font-size:.92rem;color:var(--muted);font-weight:600}
+  .viz input[type=range]{flex:1;min-width:150px;accent-color:var(--qty)}
+  .viz input[type=range]:focus-visible{outline:2px solid var(--qty);outline-offset:3px}
+  .viz .read{font-family:ui-monospace,Menlo,monospace;font-weight:800;color:var(--qty);white-space:nowrap}
+  .viz .say{margin:.8rem 0 0;font-size:.95rem;color:var(--muted)}
+
+  /* Практика */
+  .drill{display:flex;flex-direction:column;gap:.7rem;margin-top:1rem}
+  details{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:.9rem 1.1rem}
+  details[open]{border-color:var(--brand)}
+  summary{cursor:pointer;font-weight:650;list-style:none;display:flex;justify-content:space-between;gap:1rem;align-items:flex-start}
+  summary::-webkit-details-marker{display:none}
+  summary:focus-visible{outline:2px solid var(--brand);outline-offset:3px;border-radius:6px}
+  summary .q{font-size:1rem}
+  summary::after{content:"проверить";font-size:.8rem;color:var(--brand);font-weight:700;white-space:nowrap;padding-top:.2rem}
+  details[open] summary::after{content:"скрыть"}
+  .ans{margin-top:.75rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.96rem;color:var(--muted)}
+  .ans b{color:var(--ink)}
+  .lvl{font-size:.7rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:1.4rem 0 .2rem}
+
+  /* Ловушки */
+  ul.traps{list-style:none;margin:1rem 0 0;padding:0;display:flex;flex-direction:column;gap:.7rem}
+  ul.traps li{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:.85rem 1.05rem;padding-left:2.5rem;position:relative;font-size:.97rem}
+  ul.traps li::before{content:"⚠";position:absolute;left:1rem;top:.85rem;color:var(--price);font-size:1.05rem}
+  ul.traps b{font-weight:700}
+
+  ol.selfcheck{margin:1rem 0 0;padding-left:1.3rem;display:flex;flex-direction:column;gap:.55rem}
+  ol.selfcheck li{font-size:.99rem}
+
+  .wrapup{background:var(--brand);color:#fff;border-radius:16px;padding:1.4rem 1.5rem;margin-top:2.4rem}
+  .wrapup h2{color:#fff;margin:0 0 .5rem}
+  .wrapup p{color:#E1F0E8;margin:.4rem 0;font-size:1rem}
+  .wrapup .big-rule{font-size:1.1rem;font-weight:700;color:#fff;margin:.6rem 0;font-family:ui-monospace,Menlo,monospace}
+  .wrapup .next{font-size:.95rem;color:#C6E2D4;margin-top:1rem;padding-top:1rem;border-top:1px solid rgba(255,255,255,.2)}
+
+  /* Тренажёр */
+  .trainer{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:1.3rem;margin-top:1rem}
+  .tr-card{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:.95rem 1.05rem}
+  .tr-goods{font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;font-weight:700;color:var(--muted);margin:0 0 .5rem}
+  .tr-task{font-size:1.03rem;margin:0;line-height:1.6}
+  .tr-fields{display:flex;flex-direction:column;gap:.6rem;margin-top:1rem}
+  .tr-f{display:flex;align-items:center;gap:.6rem;flex-wrap:wrap}
+  .tr-f label{font-size:.94rem;font-weight:650;flex:1 1 9rem;min-width:0}
+  .tr-f input{font:inherit;font-weight:700;font-family:ui-monospace,Menlo,monospace;width:7.5rem;padding:.5rem .6rem;border:2px solid var(--line);border-radius:10px;background:var(--card);color:var(--ink)}
+  .tr-f input:focus-visible{outline:2px solid var(--brand);outline-offset:1px;border-color:var(--brand)}
+  .tr-btns{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:1rem}
+  .tr-btns button{font:inherit;font-weight:700;font-size:.92rem;border-radius:10px;padding:.55rem 1.1rem;cursor:pointer;border:1px solid transparent}
+  .tr-btns .go{background:var(--brand);color:#fff}
+  .tr-btns .sh{background:var(--paper);border:1px solid var(--line);color:var(--ink)}
+  .tr-btns .nw{background:var(--brand-soft);color:var(--brand)}
+  .tr-btns button:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+  .tr-res{margin-top:1.1rem;font-size:.97rem}
+  .tr-res .head{font-weight:700;padding:.6rem .9rem;border-radius:9px;margin-bottom:.7rem}
+  .tr-res .head.ok{background:#E7F4EC;color:var(--ok)}
+  .tr-res .head.no{background:#FBEAEA;color:var(--no)}
+  .tr-res .head.info{background:var(--brand-soft);color:var(--brand)}
+  .tr-sol{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:.85rem 1rem}
+  .tr-sol .row{margin:.32rem 0;font-size:.94rem}
+  .tr-sol .row .mono{color:var(--ink)}
+  .tr-sol .fin{margin-top:.6rem;padding-top:.55rem;border-top:1px dashed var(--line);font-weight:750;color:var(--brand)}
+  .tr-score{font-size:.85rem;color:var(--muted);margin:.85rem 0 0;text-align:right}
+
+  @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<!--LESSON-NAV-TOP--><style>.lnav{--lnav-accent:#3D5AF1}.lnav a{text-decoration:none;font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif}.lnav-top{max-width:820px;margin:0 auto;padding:.75rem clamp(1rem,4vw,1.5rem) .1rem}.lnav-top a{display:inline-flex;align-items:center;gap:.35rem;color:var(--lnav-accent);font-weight:600;font-size:.9rem}.lnav-top a:hover{text-decoration:underline}.lnav-bot{max-width:820px;margin:2.6rem auto 3rem;padding:1.1rem clamp(1rem,4vw,1.5rem) 0;border-top:1px solid #E4E8EF;display:flex;align-items:stretch;gap:.55rem}.lnav-bot a{min-width:0;display:flex;flex-direction:column;justify-content:center;gap:.15rem;border:1px solid #E4E8EF;border-radius:12px;padding:.65rem .85rem;color:#182233;background:#fff;transition:border-color .1s,transform .08s}.lnav-bot a:hover{border-color:var(--lnav-accent);transform:translateY(-1px)}.lnav-bot .prev,.lnav-bot .next{flex:1 1 0}.lnav-bot .next{text-align:right}.lnav-bot .dir{font-size:.72rem;color:#8A93A6;font-weight:600}.lnav-bot .ttl{font-size:.9rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.lnav-bot .to-cat{flex:0 0 auto;flex-direction:row;align-items:center;justify-content:center;color:var(--lnav-accent);font-weight:700;font-size:.85rem;white-space:nowrap}@media(max-width:420px){.lnav-bot .to-cat span{display:none}.lnav-bot .to-cat{padding:.65rem .7rem}}</style><nav class="lnav lnav-top"><a href="./catalog.html">← Все темы</a></nav><!--/LESSON-NAV-TOP-->
+<div class="page">
+
+  <header class="hero">
+    <p class="eyebrow">Математика · 5 класс</p>
+    <h1>Цена, количество,<br>стоимость</h1>
+    <p class="tagline">Три величины и одна формула. Дальше ты уже не гадаешь, <em>умножать тут или делить</em>.</p>
+  </header>
+
+  <div class="lead-in">
+    <p><b>Зачем это уметь.</b> Это самая магазинная математика. Купил хлеб, пополнил телефон, прикинул, хватит ли денег на 3 ручки, — вот тебе задача на цену, количество и стоимость.</p>
+    <p>С такими задачами ты не теряешься у кассы и можешь проверить сдачу. А позже эта же связь вырастет в <strong>пропорции</strong>: во сколько раз больше товара, во столько раз больше денег.</p>
+    <p><b>Главная ловушка.</b> Скажешь: чтобы найти цену за штуку, надо умножать. Нет. Цену одной единицы находят <strong>делением</strong> стоимости на количество. Вся путаница темы сидит тут.</p>
+  </div>
+
+  <section>
+    <h2>Что вспомнить перед стартом</h2>
+    <div class="recall">
+      <p class="cap">Тебе понадобится</p>
+      <p>▪ <strong>Умножение десятичных дробей.</strong> Считаешь как обычные числа, а потом ставишь запятую: сколько знаков после запятой было в множителях — столько и в ответе. Например, <span class="mono">24,5 × 6</span>: сначала <span class="mono">245 × 6 = 1470</span>, один знак после запятой → <span class="mono">147,0</span>, то есть <span class="mono">147</span>.</p>
+      <p>▪ <strong>Деление десятичных дробей</strong> — им ты будешь находить цену и количество.</p>
+      <p>▪ <strong>Деньги.</strong> 1 рубль = 100 копеек. Значит <span class="mono">35 руб. 50 коп. = 35,50 руб. = 35,5 руб.</span></p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Три величины — <span class="em">и что каждая значит</span></h2>
+    <p>В любой покупке есть ровно три величины. Разберёшься, чем они отличаются, — половина темы позади.</p>
+    <div class="split">
+      <div class="path price">
+        <h3>🟠 Цена</h3>
+        <p>Сколько стоит <strong>одна</strong> единица товара: 1 кг, 1 штука, 1 литр.</p>
+        <span class="un">руб./шт., руб./кг, руб./л</span>
+      </div>
+      <div class="path qty">
+        <h3>🔵 Количество</h3>
+        <p>Сколько единиц купили.</p>
+        <span class="un">шт., кг, л, м</span>
+      </div>
+      <div class="path cost">
+        <h3>🟢 Стоимость</h3>
+        <p>Сколько денег заплатили <strong>за всё</strong> вместе.</p>
+        <span class="un">руб. (можно с копейками)</span>
+      </div>
+    </div>
+    <p>За одну штуку ты платишь цену. За несколько штук — во столько же раз больше. Значит <strong>стоимость — это цена, повторённая столько раз, сколько единиц купили</strong>. А повторить число несколько раз и есть умножение.</p>
+  </section>
+
+  <section>
+    <h2>Ядро темы: <span class="em">одна формула и две обратные</span></h2>
+    <div class="formula">
+      <div class="main"><span class="c-cost">Стоимость</span> = <span class="c-price">Цена</span> × <span class="c-qty">Количество</span></div>
+      <div class="sub">
+        <div><span class="c-price">Цена</span> = <span class="c-cost">Стоимость</span> : <span class="c-qty">Количество</span></div>
+        <div><span class="c-qty">Количество</span> = <span class="c-cost">Стоимость</span> : <span class="c-price">Цена</span></div>
+      </div>
+    </div>
+    <p>Запоминать надо только <strong>первую</strong>. Две другие получаются из неё обратным действием — делением.</p>
+    <div class="note">
+      <p><b>Важно про единицы.</b> Цену и количество перемножают, только если они про <strong>один и тот же товар</strong>. Цену хлеба на количество молока умножать нельзя.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Подсказка-треугольник</h2>
+    <p>Способ не путать действие есть, и он простой. Нарисуй треугольник: наверху <span class="c-cost">Стоимость</span>, внизу <span class="c-price">Цена</span> и <span class="c-qty">Количество</span>. Теперь <strong>закрой пальцем то, что ищешь</strong>, и посмотри, что осталось.</p>
+    <div class="tri-wrap">
+      <div class="tri" id="tri">
+        <button class="top" type="button" data-k="cost">Стоимость</button>
+        <button class="lb" type="button" data-k="price">Цена</button>
+        <button class="rb" type="button" data-k="qty">Количество</button>
+      </div>
+      <div class="tri-out" id="triOut">Нажми на ту величину, которую ищешь</div>
+      <p class="tri-hint">Закрыл верх — две нижние умножаешь. Закрыл низ — верхнее делишь на оставшееся нижнее.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Разбор с проговариванием — <span class="em">думаю вслух</span></h2>
+    <p>Смотри, как рассуждать по шагам. Ничего не пропускай: эти же шаги ты потом повторишь сам.</p>
+    <div class="walk">
+      <p class="q">Тетрадь стоит 24,5 руб. Сколько заплатят за 6 таких тетрадей?</p>
+      <ol>
+        <li><b>Что дано?</b> Цена = <span class="mono c-price">24,5 руб./шт.</span>, количество = <span class="mono c-qty">6 шт.</span> Ищем <span class="c-cost">стоимость</span>.</li>
+        <li><b>Почему умножаем?</b> За каждую тетрадь платим 24,5 руб., а тетрадей 6 — значит цену берём 6 раз. Шесть раз по 24,5 — это умножение.</li>
+        <li><b>Считаем.</b> <span class="mono">24,5 × 6</span>. Умножаем как целые: <span class="mono">245 × 6 = 1470</span>. В множителе один знак после запятой — значит и в ответе один: <span class="mono">147,0</span>.</li>
+        <li><b>Ответ:</b> <span class="mono">147 руб.</span></li>
+        <li><b>Проверка прикидкой.</b> 24,5 — это примерно 25, а <span class="mono">25 × 6 = 150</span>. Получилось 147 — рядом со 150, значит не ошиблись с порядком.</li>
+      </ol>
+      <div class="verdict">Ответ: 147 руб.</div>
+    </div>
+
+    <h3>Теперь допиши шаг сам</h3>
+    <div class="walk">
+      <p class="q">За 4 кг яблок заплатили 312 руб. Какова цена 1 кг?</p>
+      <ol>
+        <li><b>Что ищем?</b> Цену за 1 кг. Дано: стоимость = <span class="mono">312 руб.</span>, количество = <span class="mono">4 кг</span>.</li>
+        <li><b>Какое действие?</b> Цену находим <span class="gap"></span> стоимости на количество.</li>
+        <li><b>Записываем:</b> <span class="mono">312 : 4 = </span><span class="gap"></span></li>
+        <li><b>Ответ:</b> цена = <span class="gap"></span> руб./кг.</li>
+      </ol>
+      <details>
+        <summary><span class="q">Проверить себя</span></summary>
+        <div class="ans">Действие — <b>деление</b> (ищем цену, значит делим стоимость на количество). <span class="mono">312 : 4 = 78</span>. Цена = <b>78 руб./кг</b>.</div>
+      </details>
+    </div>
+
+    <h3>А это реши полностью сам</h3>
+    <div class="walk">
+      <p class="q">Карандаш стоит 13 руб. На сколько карандашей хватит 100 руб. и сколько денег останется?</p>
+      <details>
+        <summary><span class="q">Показать ответ</span></summary>
+        <div class="ans">Ищем количество, значит делим: <span class="mono">100 : 13 = 7 (остаток 9)</span>. Хватит на <b>7 карандашей</b>, останется <b>9 руб.</b> Тут важно деление <b>с остатком</b>: целая часть — сколько штук купили, остаток — деньги, которые не потратили.</div>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <h2>Наглядность 1: <span class="em">таблица</span></h2>
+    <p>Быстрее всего порядок в условии наводит таблица из трёх столбцов. Выписал, что дано, — и сразу видно, какая клетка пустая.</p>
+    <div class="tblwrap">
+      <table>
+        <thead><tr><th>Задача</th><th class="h-price">Цена</th><th class="h-qty">Количество</th><th class="h-cost">Стоимость</th></tr></thead>
+        <tbody>
+          <tr><td>Тетради</td><td class="mono">24,5 руб./шт.</td><td class="mono">6 шт.</td><td class="find">? умножаем</td></tr>
+          <tr><td>Яблоки</td><td class="find">? делим</td><td class="mono">4 кг</td><td class="mono">312 руб.</td></tr>
+          <tr><td>Конфеты</td><td class="mono">80 руб./кг</td><td class="find">? делим</td><td class="mono">240 руб.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>Правило простое: <strong>пустая клетка сверху — умножаем, пустая клетка снизу — делим</strong>.</p>
+  </section>
+
+  <section>
+    <h2>Наглядность 2: <span class="em">полоса денег</span></h2>
+    <p>Почему цена = стоимость : количество, хорошо видно на картинке. Вся длинная полоса — это <span class="c-cost">стоимость</span> покупки, 240 руб. Разрежь её на равные части — столько, сколько единиц товара купили. Длина одной части и есть <span class="c-price">цена</span> одной единицы.</p>
+    <div class="viz">
+      <canvas id="bar" height="200" aria-label="Полоса стоимости 240 рублей, разделённая на равные части"></canvas>
+      <div class="ctl">
+        <label for="barN">Количество товара:</label>
+        <input type="range" id="barN" min="0" max="5" step="1" value="2">
+        <span class="read" id="barRead">4 шт.</span>
+      </div>
+      <p class="say" id="barSay"></p>
+    </div>
+    <p><b>Предскажи, потом проверь.</b> Не трогай пока ползунок. Сначала ответь себе: если частей станет вдвое больше, что будет с длиной одной части? Теперь двигай и проверяй. Денег всё те же 240 руб., их просто делят по-другому.</p>
+  </section>
+
+  <section>
+    <h2>Тренажёр — <span class="em">бесконечные задачи</span></h2>
+    <p>Задача каждый раз новая. Реши в тетради, впиши ответ и проверь. Дроби пиши через запятую (например <span class="mono">147,5</span>). Не получается — жми «Показать решение» и разбирай по шагам.</p>
+    <div class="trainer">
+      <div class="tr-card">
+        <p class="tr-goods" id="trGoods">товар</p>
+        <p class="tr-task" id="trTask">условие</p>
+      </div>
+      <div class="tr-fields" id="trFields"></div>
+      <div class="tr-btns">
+        <button class="go" id="trCheck" type="button">Проверить</button>
+        <button class="sh" id="trShow" type="button">Показать решение</button>
+        <button class="nw" id="trNew" type="button">🎲 Новая задача</button>
+      </div>
+      <div class="tr-res" id="trRes"></div>
+      <p class="tr-score" id="trScore"></p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Практика по шагам</h2>
+    <p>Реши сам, потом раскрой ответ. Не подглядывай раньше времени 🙂</p>
+
+    <p class="lvl">Уровень 1 · понимание</p>
+    <div class="drill">
+      <details>
+        <summary><span class="q">1) «5 булочек по 18 руб. стоят 90 руб.» Назови, какая величина здесь цена, какая количество, какая стоимость. Запиши формулу связи.</span></summary>
+        <div class="ans"><b>Цена</b> — 18 руб./шт. (за одну булочку). <b>Количество</b> — 5 шт. <b>Стоимость</b> — 90 руб. (за всё). Формула: <span class="mono">стоимость = цена × количество</span>, то есть <span class="mono">18 × 5 = 90</span>.</div>
+      </details>
+    </div>
+
+    <p class="lvl">Уровень 2 · применение</p>
+    <div class="drill">
+      <details>
+        <summary><span class="q">2) 1 м ленты стоит 22 руб. Сколько стоят 3 м?</span></summary>
+        <div class="ans">Ищем стоимость — значит умножаем: <span class="mono">22 × 3 = 66</span>. Ответ: <b>66 руб.</b></div>
+      </details>
+      <details>
+        <summary><span class="q">3) Та же лента по 22 руб. за метр. Сколько метров можно купить на 110 руб.?</span></summary>
+        <div class="ans">Ищем количество — значит делим: <span class="mono">110 : 22 = 5</span>. Ответ: <b>5 м</b>.</div>
+      </details>
+    </div>
+
+    <p class="lvl">Уровень 3 · анализ</p>
+    <div class="drill">
+      <details>
+        <summary><span class="q">4) Найди ошибку. За 5 ручек заплатили 175 руб. Ученик написал: «цена = 175 × 5 = 875 руб.» Что не так и как правильно?</span></summary>
+        <div class="ans">Ошибка в действии: ученик <b>умножил вместо деления</b>. Ищем цену — значит стоимость делим на количество: <span class="mono">175 : 5 = 35</span>. Цена = <b>35 руб./шт.</b> Заметь и по смыслу: одна ручка не может стоить дороже, чем все пять вместе.</div>
+      </details>
+      <details>
+        <summary><span class="q">5) Что изменится со стоимостью покупки, если количество товара увеличить в 2 раза, а цену оставить прежней? Во сколько раз?</span></summary>
+        <div class="ans">Стоимость <b>вырастет в 2 раза</b>. В формуле <span class="mono">стоимость = цена × количество</span> один множитель увеличили вдвое, второй не трогали — значит и произведение стало вдвое больше.</div>
+      </details>
+      <details>
+        <summary><span class="q">6) Обратная задача. На покупку потратили 240 руб., цена 1 кг конфет — 80 руб. Сколько килограммов купили?</span></summary>
+        <div class="ans">Ищем количество — делим: <span class="mono">240 : 80 = 3</span>. Ответ: <b>3 кг</b>.</div>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <h2>Ловушки — не попадись</h2>
+    <ul class="traps">
+      <li><b>Путаешь, умножать или делить.</b> Спасает треугольник и один вопрос себе: «что я ищу?». Ищу стоимость — умножаю. Ищу цену или количество — делю.</li>
+      <li><b>Теряешь рубли и копейки.</b> 35 руб. 5 коп. — это <span class="mono">35,05 руб.</span>, а не 35,5 руб. Перед умножением переведи всё в одни единицы (рубли с запятой) и следи за знаками после запятой.</li>
+      <li><b>Берёшь не ту цену.</b> Цена — всегда за <b>одну</b> штуку (1 кг, 1 шт.). Если в условии «3 кг за 240 руб.», то цена 1 кг = <span class="mono">240 : 3 = 80 руб.</span>, а не 240.</li>
+      <li><b>Перемножаешь разные товары.</b> Цену хлеба на количество молока умножать нельзя. Цена и количество должны относиться к одному и тому же товару.</li>
+      <li><b>Забываешь про остаток.</b> В задачах «на сколько хватит» нужно деление <b>с остатком</b>: целая часть — сколько штук купили, остаток — сколько денег осталось.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Проверь понимание</h2>
+    <p>Ответь своими словами, вслух или письменно. Если получается объяснить — тема твоя.</p>
+    <ol class="selfcheck">
+      <li>По какой формуле находят стоимость, зная цену и количество?</li>
+      <li>Стоимость 300 руб., количество 6 шт. Чему равна цена одной штуки и каким действием ты её нашёл?</li>
+      <li>Почему нельзя сказать «цена за всё»? В чём разница между ценой и стоимостью?</li>
+    </ol>
+    <div class="drill" style="margin-top:1rem">
+      <details>
+        <summary><span class="q">Сверить ответы</span></summary>
+        <div class="ans">1) <span class="mono">стоимость = цена × количество</span>. 2) <span class="mono">300 : 6 = 50</span> руб./шт., нашли <b>делением</b>. 3) Потому что цена — это всегда деньги <b>за одну</b> единицу товара, а деньги «за всё» называются стоимостью. Это два разных слова именно потому, что это две разные величины.</div>
+      </details>
+    </div>
+  </section>
+
+  <div class="wrapup">
+    <h2>Запомни главное</h2>
+    <p class="big-rule">Стоимость = цена × количество</p>
+    <p>А цену и количество находят обратным действием — <strong>делением</strong>. Ищешь общее — умножай, ищешь часть — дели.</p>
+    <p class="next">👉 Дальше эта же связь превращается в <strong>пропорции</strong> (6 класс): «во сколько раз больше товара — во столько раз больше денег». Так что этот треугольник ты ещё вспомнишь.</p>
+  </div>
+
+</div>
+
+<script>
+(function(){
+  /* ---------- Треугольник ---------- */
+  var TRI = {
+    cost:  {hide:'cost',  txt:'Закрыл <b>Стоимость</b> → остались Цена и Количество рядом → <b>умножаем</b><br>Стоимость = Цена × Количество'},
+    price: {hide:'price', txt:'Закрыл <b>Цену</b> → сверху Стоимость, снизу Количество → <b>делим</b><br>Цена = Стоимость : Количество'},
+    qty:   {hide:'qty',   txt:'Закрыл <b>Количество</b> → сверху Стоимость, снизу Цена → <b>делим</b><br>Количество = Стоимость : Цена'}
+  };
+  var triEl = document.getElementById('tri'), triOut = document.getElementById('triOut');
+  Array.prototype.forEach.call(triEl.querySelectorAll('button'), function(b){
+    b.addEventListener('click', function(){
+      var k = b.getAttribute('data-k');
+      Array.prototype.forEach.call(triEl.querySelectorAll('button'), function(x){
+        x.classList.toggle('hid', x.getAttribute('data-k') === k);
+      });
+      triOut.innerHTML = TRI[k].txt;
+    });
+  });
+
+  /* ---------- Полоса денег (Canvas) ---------- */
+  var TOTAL = 240, STEPS = [2,3,4,5,6,8];
+  var cv = document.getElementById('bar'), rd = document.getElementById('barRead'),
+      sl = document.getElementById('barN'), say = document.getElementById('barSay');
+  function drawBar(){
+    var n = STEPS[+sl.value], part = TOTAL / n;
+    var cssW = cv.clientWidth || cv.parentNode.clientWidth || 320;
+    var cssH = 200, dpr = window.devicePixelRatio || 1;
+    cv.width = Math.round(cssW * dpr); cv.height = Math.round(cssH * dpr);
+    cv.style.height = cssH + 'px';
+    var g = cv.getContext('2d');
+    g.setTransform(dpr,0,0,dpr,0,0);
+    g.clearRect(0,0,cssW,cssH);
+    var L = 6, R = cssW - 6, W = R - L, top = 62, h = 62;
+
+    /* подпись стоимости сверху */
+    g.fillStyle = '#2F7A5E';
+    g.font = '700 15px system-ui,-apple-system,sans-serif';
+    g.textAlign = 'center';
+    g.fillText('Стоимость — 240 руб.', (L+R)/2, 22);
+    /* скоба */
+    g.strokeStyle = '#BFDECD'; g.lineWidth = 2;
+    g.beginPath();
+    g.moveTo(L, 46); g.lineTo(L, 34); g.lineTo(R, 34); g.lineTo(R, 46);
+    g.stroke();
+
+    /* сегменты */
+    for(var i=0;i<n;i++){
+      var x = L + W*i/n, w = W/n;
+      g.fillStyle = (i%2===0) ? '#FBEADF' : '#F6DECF';
+      g.fillRect(x, top, w, h);
+      g.strokeStyle = '#CF5A34'; g.lineWidth = 2;
+      g.strokeRect(x + 1, top + 1, w - 2, h - 2);
+      var label = fmtNum(part);
+      g.fillStyle = '#8C3E1F';
+      g.font = (n >= 6 ? '700 12px ' : '700 15px ') + 'ui-monospace,Menlo,monospace';
+      g.textAlign = 'center';
+      if(n <= 8) g.fillText(label, x + w/2, top + h/2 + 5);
+    }
+
+    /* подпись снизу */
+    g.fillStyle = '#3A5AA0';
+    g.font = '700 14px system-ui,-apple-system,sans-serif';
+    g.textAlign = 'center';
+    g.fillText('Количество — ' + n + ' равных частей', (L+R)/2, top + h + 26);
+    g.fillStyle = '#6B6473';
+    g.font = '13px system-ui,-apple-system,sans-serif';
+    g.fillText('одна часть = цена одной единицы', (L+R)/2, top + h + 48);
+
+    rd.textContent = n + ' шт.';
+    say.innerHTML = 'Цена = 240 : ' + n + ' = <b>' + fmtNum(part) + ' руб.</b> за штуку. Частей больше — каждая короче, а денег столько же.';
+  }
+  function fmtNum(x){
+    var s = (Math.round(x*100)/100).toString();
+    return s.replace('.', ',');
+  }
+  sl.addEventListener('input', drawBar);
+  window.addEventListener('resize', drawBar);
+  drawBar();
+
+  /* ---------- Тренажёр ---------- */
+  var MINUS = '−';
+  var GOODS = [
+    {n:'тетради', u:'шт.'}, {n:'ручки', u:'шт.'}, {n:'карандаши', u:'шт.'},
+    {n:'булочки', u:'шт.'}, {n:'блокноты', u:'шт.'},
+    {n:'яблоки', u:'кг'}, {n:'конфеты', u:'кг'}, {n:'печенье', u:'кг'},
+    {n:'молоко', u:'л'}, {n:'сок', u:'л'},
+    {n:'лента', u:'м'}, {n:'верёвка', u:'м'}
+  ];
+  var task = null, done = false, solved = 0, total = 0;
+  var goodsEl = document.getElementById('trGoods'), taskEl = document.getElementById('trTask'),
+      fieldsEl = document.getElementById('trFields'), resEl = document.getElementById('trRes'),
+      scoreEl = document.getElementById('trScore');
+
+  function ri(a,b){ return Math.floor(Math.random()*(b-a+1))+a; }
+  function pick(a){ return a[Math.floor(Math.random()*a.length)]; }
+  /* число задано в десятых долях рубля -> строка */
+  function money(t){
+    var w = Math.floor(t/10), d = t % 10;
+    return d === 0 ? String(w) : (w + ',' + d);
+  }
+  function mk(type){
+    var g = pick(GOODS), p, q, c, t = {type:type, g:g};
+    if(type === 'cost'){
+      q = ri(2,9);
+      p = (Math.random() < 0.45) ? ri(10,60)*10 + 5 : ri(8,95)*10;   /* в десятых */
+      c = p * q;
+      t.priceS = money(p); t.qtyS = String(q); t.costS = money(c);
+      t.ask = 'Найди стоимость покупки.';
+      t.fields = [{label:'Стоимость, руб.:', ans: c/10}];
+    } else if(type === 'price'){
+      q = ri(2,9); p = ri(12,99); c = p*q;
+      t.priceS = String(p); t.qtyS = String(q); t.costS = String(c);
+      t.ask = 'Найди цену одной единицы товара.';
+      t.fields = [{label:'Цена, руб. за ' + g.u + ':', ans: p}];
+    } else if(type === 'qty'){
+      p = ri(9,60); q = ri(2,12); c = p*q;
+      t.priceS = String(p); t.qtyS = String(q); t.costS = String(c);
+      t.ask = 'Найди количество купленного товара.';
+      t.fields = [{label:'Количество, ' + g.u + ':', ans: q}];
+    } else { /* rest: на сколько хватит */
+      var M = pick([100,200,300,500,1000]);
+      var guard = 0;
+      do { p = ri(7,99); guard++; } while((M % p === 0 || Math.floor(M/p) < 2 || Math.floor(M/p) > 25) && guard < 200);
+      if(M % p === 0 || Math.floor(M/p) < 2){ p = 13; M = 100; }
+      q = Math.floor(M/p); c = M - p*q;
+      t.priceS = String(p); t.qtyS = String(q); t.costS = String(M); t.rest = c;
+      t.ask = 'На сколько единиц товара хватит этих денег и сколько останется?';
+      t.fields = [
+        {label:'Хватит на, ' + g.u + ':', ans: q},
+        {label:'Останется, руб.:', ans: c}
+      ];
+    }
+    return t;
+  }
+  function taskText(t){
+    var g = t.g;
+    if(t.type === 'cost')
+      return 'Цена — <b class="c-price">' + t.priceS + ' руб. за ' + g.u + '</b>. Купили <b class="c-qty">' + t.qtyS + ' ' + g.u + '</b>. ' + t.ask;
+    if(t.type === 'price')
+      return 'За <b class="c-qty">' + t.qtyS + ' ' + g.u + '</b> заплатили <b class="c-cost">' + t.costS + ' руб.</b> ' + t.ask;
+    if(t.type === 'qty')
+      return 'Цена — <b class="c-price">' + t.priceS + ' руб. за ' + g.u + '</b>. Всего заплатили <b class="c-cost">' + t.costS + ' руб.</b> ' + t.ask;
+    return 'Цена — <b class="c-price">' + t.priceS + ' руб. за ' + g.u + '</b>. В кошельке <b class="c-cost">' + t.costS + ' руб.</b> ' + t.ask;
+  }
+  function solutionHTML(t){
+    var g = t.g, h = '<div class="tr-sol">';
+    if(t.type === 'cost'){
+      h += '<div class="row">1. Ищем <b>стоимость</b> — это деньги за всё.</div>';
+      h += '<div class="row">2. Стоимость = цена × количество, значит <b>умножаем</b>.</div>';
+      h += '<div class="row">3. <span class="mono">' + t.priceS + ' × ' + t.qtyS + ' = ' + t.costS + '</span></div>';
+      h += '<div class="fin">Ответ: ' + t.costS + ' руб.</div>';
+    } else if(t.type === 'price'){
+      h += '<div class="row">1. Ищем <b>цену</b> — деньги за одну единицу.</div>';
+      h += '<div class="row">2. Цена = стоимость : количество, значит <b>делим</b>.</div>';
+      h += '<div class="row">3. <span class="mono">' + t.costS + ' : ' + t.qtyS + ' = ' + t.priceS + '</span></div>';
+      h += '<div class="fin">Ответ: ' + t.priceS + ' руб. за ' + g.u + '</div>';
+    } else if(t.type === 'qty'){
+      h += '<div class="row">1. Ищем <b>количество</b> — сколько единиц купили.</div>';
+      h += '<div class="row">2. Количество = стоимость : цена, значит <b>делим</b>.</div>';
+      h += '<div class="row">3. <span class="mono">' + t.costS + ' : ' + t.priceS + ' = ' + t.qtyS + '</span></div>';
+      h += '<div class="fin">Ответ: ' + t.qtyS + ' ' + g.u + '</div>';
+    } else {
+      var spent = Number(t.priceS) * Number(t.qtyS);
+      h += '<div class="row">1. Ищем <b>количество</b>, но денег может не хватить ровно — делим <b>с остатком</b>.</div>';
+      h += '<div class="row">2. <span class="mono">' + t.costS + ' : ' + t.priceS + ' = ' + t.qtyS + '</span> (остаток <span class="mono">' + t.rest + '</span>)</div>';
+      h += '<div class="row">3. Проверим: потратили <span class="mono">' + t.priceS + ' × ' + t.qtyS + ' = ' + spent + '</span>, осталось <span class="mono">' + t.costS + ' ' + MINUS + ' ' + spent + ' = ' + t.rest + '</span>.</div>';
+      h += '<div class="fin">Ответ: хватит на ' + t.qtyS + ' ' + g.u + ', останется ' + t.rest + ' руб.</div>';
+    }
+    return h + '</div>';
+  }
+  function renderFields(t){
+    fieldsEl.innerHTML = '';
+    t.fields.forEach(function(f, i){
+      var row = document.createElement('div'); row.className = 'tr-f';
+      var lab = document.createElement('label'); lab.textContent = f.label; lab.setAttribute('for','trIn'+i);
+      var inp = document.createElement('input');
+      inp.type = 'text'; inp.id = 'trIn'+i; inp.inputMode = 'decimal'; inp.autocomplete = 'off';
+      inp.addEventListener('keydown', function(e){ if(e.key === 'Enter') check(); });
+      row.appendChild(lab); row.appendChild(inp); fieldsEl.appendChild(row);
+    });
+  }
+  function parseVal(s){
+    s = String(s).replace(/\s/g,'').replace(/−/g,'-').replace(',', '.');
+    if(s === '') return null;
+    var v = Number(s);
+    return isNaN(v) ? null : v;
+  }
+  function newTask(type, focus){
+    task = mk(type || pick(['cost','price','qty','cost','price','qty','rest']));
+    done = false;
+    goodsEl.textContent = 'Товар: ' + task.g.n;
+    taskEl.innerHTML = taskText(task);
+    renderFields(task);
+    resEl.innerHTML = '';
+    if(focus){ var f = document.getElementById('trIn0'); if(f) f.focus(); }
+  }
+  function check(){
+    if(done || !task) return;
+    var allOk = true, empty = false;
+    task.fields.forEach(function(f, i){
+      var v = parseVal(document.getElementById('trIn'+i).value);
+      if(v === null) empty = true;
+      else if(Math.abs(v - f.ans) > 1e-9) allOk = false;
+    });
+    if(empty){
+      resEl.innerHTML = '<div class="head info">Впиши ответ в поле — и жми «Проверить».</div>';
+      return;
+    }
+    done = true; total++;
+    if(allOk) solved++;
+    resEl.innerHTML = (allOk
+      ? '<div class="head ok">✓ Верно! Действие выбрано правильно.</div>'
+      : '<div class="head no">Не сходится — посмотри разбор ниже.</div>') + solutionHTML(task);
+    scoreEl.textContent = 'Решено верно: ' + solved + ' из ' + total;
+  }
+  function show(){
+    if(done || !task) return;
+    done = true;
+    resEl.innerHTML = '<div class="head info">Разбор по шагам:</div>' + solutionHTML(task);
+  }
+  document.getElementById('trCheck').addEventListener('click', check);
+  document.getElementById('trShow').addEventListener('click', show);
+  document.getElementById('trNew').addEventListener('click', function(){ newTask(null, true); });
+  newTask('cost', false);
+})();
+</script>
+<!--LESSON-NAV-BOT--><nav class="lnav lnav-bot"><a class="prev" href="./m5-tekstovye-na-dvizhenie.html"><span class="dir">← Предыдущая</span><span class="ttl">Задачи на движение</span></a><a class="to-cat" href="./catalog.html">📚 <span>Все темы</span></a><a class="next" href="./m6-delimost-opredelenie.html"><span class="dir">Следующая →</span><span class="ttl">Делимость, делители и кратные</span></a></nav><!--/LESSON-NAV-BOT-->

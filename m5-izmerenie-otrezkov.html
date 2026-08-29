@@ -1,0 +1,696 @@
+<!doctype html>
+<!-- humanized: humanizer-ru, 2026-08-29, тире возвращено -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Измерение и построение отрезков, длина — 5 класс</title>
+<style>
+  :root{
+    --paper:#FAF8F4;
+    --card:#FFFFFF;
+    --ink:#22262E;
+    --muted:#666E7A;
+    --line:#E3E5EA;
+    --brand:#22607F;
+    --brand-soft:#E4EEF4;
+    --brand-line:#BFD8E5;
+    --mm:#C2622E;            /* миллиметры */
+    --mm-soft:#FBEBE0;
+    --mm-line:#F0CDB6;
+    --cm:#2C7A5B;            /* сантиметры */
+    --cm-soft:#E3F1EA;
+    --cm-line:#BFDDCE;
+    --ok:#2E8B57;
+    --no:#C23B3B;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper)}
+  .page{
+    max-width:720px;margin:0 auto;
+    padding:clamp(1.4rem,4vw,3rem) clamp(1.1rem,4vw,2rem) 4.5rem;
+    color:var(--ink);
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    font-size:17.5px;line-height:1.68;-webkit-font-smoothing:antialiased;
+  }
+  .mono{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-variant-numeric:tabular-nums;font-weight:600}
+
+  .hero{border-bottom:3px solid var(--brand);padding-bottom:1.4rem;margin-bottom:1.8rem}
+  .eyebrow{font-size:.74rem;letter-spacing:.15em;text-transform:uppercase;color:var(--brand);font-weight:700;margin:0 0 .55rem}
+  h1{font-size:clamp(1.9rem,6.2vw,2.9rem);line-height:1.05;margin:0;font-weight:800;letter-spacing:-.02em;text-wrap:balance}
+  .tagline{font-size:1.12rem;color:var(--muted);margin:.85rem 0 0;text-wrap:pretty}
+
+  section{margin-top:2.4rem}
+  h2{font-size:1.5rem;margin:0 0 .3rem;font-weight:780;letter-spacing:-.015em;text-wrap:balance}
+  h2 .em{color:var(--brand)}
+  h3{font-size:1.1rem;margin:1.4rem 0 .2rem;font-weight:760}
+  p{margin:.7rem 0}
+  strong{font-weight:680}
+
+  .lead-in{background:var(--brand-soft);border-radius:14px;padding:1.1rem 1.3rem;font-size:1.02rem}
+  .lead-in p{margin:.4rem 0}
+  .lead-in b{color:var(--brand)}
+
+  .recall{border:2px dashed var(--brand-line);border-radius:14px;padding:1rem 1.25rem;margin-top:1rem;background:#fff}
+  .recall .cap{font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;font-weight:700;color:var(--brand);margin:0 0 .4rem}
+  .recall ul{margin:.3rem 0 0;padding-left:1.15rem}
+  .recall li{margin:.3rem 0;font-size:.98rem}
+
+  /* Карточки-правила */
+  .rules{display:flex;flex-direction:column;gap:.7rem;margin-top:1rem}
+  .rule{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:.9rem 1.1rem}
+  .rule b.t{display:block;font-weight:800;margin-bottom:.15rem}
+  .rule.k{border-left:4px solid var(--brand)}
+  .rule .ex{font-size:.9rem;color:var(--muted);margin-top:.35rem}
+  .rule .ex .mono{color:var(--ink)}
+
+  .bigrule{background:var(--brand);color:#fff;border-radius:16px;padding:1.2rem 1.4rem;margin-top:1.1rem}
+  .bigrule .cap{font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;font-weight:700;color:#BBD6E4;margin:0 0 .4rem}
+  .bigrule .f{font-family:ui-monospace,Menlo,Consolas,monospace;font-weight:800;font-size:clamp(1.3rem,5.5vw,1.7rem);margin:.1rem 0 .3rem}
+  .bigrule p{color:#DCEAF1;margin:.35rem 0;font-size:1rem}
+
+  .note{border-left:4px solid var(--mm);background:var(--mm-soft);border-radius:0 10px 10px 0;padding:.8rem 1.1rem;margin-top:1rem;font-size:.98rem}
+  .note b{color:var(--mm)}
+
+  /* Таблица единиц */
+  .tblwrap{overflow-x:auto;margin-top:1rem}
+  table{border-collapse:collapse;width:100%;min-width:380px;font-size:.96rem}
+  th,td{border:1px solid var(--line);padding:.55rem .75rem;text-align:left}
+  thead th{background:#F2F4F7;font-weight:700}
+  td.u{font-family:ui-monospace,Menlo,monospace;font-weight:800;text-align:center;width:4rem;color:var(--cm);background:var(--cm-soft)}
+
+  /* Разбор по шагам */
+  .walk{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.15rem 1.3rem;margin-top:1rem}
+  .walk .q{font-weight:700;font-size:1.03rem;margin:0 0 .9rem;padding-bottom:.7rem;border-bottom:1px solid var(--line)}
+  .walk ol{margin:0;padding-left:1.25rem;display:flex;flex-direction:column;gap:.55rem}
+  .walk li{font-size:.98rem}
+  .walk li .why{color:var(--muted);font-size:.93rem;display:block}
+  .verdict{margin-top:1rem;padding:.75rem 1rem;background:var(--brand-soft);border-radius:10px;font-weight:650;color:var(--brand);font-size:1rem}
+
+  /* Интерактив / canvas */
+  .sim{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:1.1rem 1.15rem 1.2rem;margin-top:1rem}
+  .sim canvas{display:block;width:100%;height:auto;border-radius:10px}
+  .ctrls{display:flex;flex-direction:column;gap:.7rem;margin-top:.9rem}
+  .ctrl{display:flex;align-items:center;gap:.8rem;flex-wrap:wrap}
+  .ctrl label{font-size:.92rem;font-weight:650;min-width:8.5rem}
+  .ctrl input[type=range]{flex:1;min-width:150px;accent-color:var(--brand)}
+  .ctrl input[type=range]:focus-visible{outline:2px solid var(--brand);outline-offset:3px}
+  .val{font-family:ui-monospace,Menlo,monospace;font-weight:800;color:var(--brand);white-space:nowrap}
+  .toggle{display:flex;gap:.4rem;flex-wrap:wrap}
+  .toggle button{font:inherit;font-size:.88rem;font-weight:700;border:2px solid var(--line);background:var(--paper);color:var(--muted);border-radius:10px;padding:.4rem .85rem;cursor:pointer}
+  .toggle button.on{border-color:var(--brand);background:var(--brand-soft);color:var(--brand)}
+  .toggle button:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+  .simmsg{margin-top:.8rem;font-size:.95rem;padding:.65rem .9rem;border-radius:10px;background:var(--cm-soft);color:#1F5B44}
+  .simmsg.bad{background:#FBEAEA;color:var(--no)}
+
+  /* Тренажёр */
+  .trainer{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:1.25rem;margin-top:1rem}
+  .tr-tag{font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;font-weight:800;color:var(--brand);margin:0 0 .45rem}
+  .tr-q{font-size:1.06rem;font-weight:650;margin:0 0 1rem;line-height:1.5}
+  .tr-in{display:flex;gap:.5rem;align-items:center;flex-wrap:wrap;margin-bottom:1rem}
+  .tr-in input{font:inherit;font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.05rem;width:7rem;padding:.5rem .7rem;border:2px solid var(--line);border-radius:10px;background:var(--paper);color:var(--ink)}
+  .tr-in input:focus-visible{outline:none;border-color:var(--brand)}
+  .tr-in .unit{font-weight:700;color:var(--muted)}
+  .tr-btns{display:flex;gap:.5rem;flex-wrap:wrap}
+  .tr-btns button{font:inherit;font-weight:700;font-size:.92rem;border-radius:10px;padding:.55rem 1.1rem;cursor:pointer;border:1px solid transparent}
+  .tr-btns .go{background:var(--brand);color:#fff}
+  .tr-btns .sh{background:var(--paper);border:1px solid var(--line);color:var(--ink)}
+  .tr-btns .nw{background:var(--brand-soft);color:var(--brand)}
+  .tr-btns button:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+  .tr-res{margin-top:1.1rem;font-size:.97rem}
+  .tr-res .head{font-weight:700;padding:.6rem .9rem;border-radius:9px;margin-bottom:.7rem}
+  .tr-res .head.ok{background:#E7F4EC;color:var(--ok)}
+  .tr-res .head.no{background:#FBEAEA;color:var(--no)}
+  .tr-res .head.info{background:var(--brand-soft);color:var(--brand)}
+  .tr-sol{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:.85rem 1rem}
+  .tr-sol .row{margin:.35rem 0;font-size:.94rem}
+  .tr-sol .row b{color:var(--brand)}
+
+  /* Практика */
+  .drill{display:flex;flex-direction:column;gap:.7rem;margin-top:1rem}
+  .lvl{font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;font-weight:800;color:var(--muted);margin:1.5rem 0 .1rem}
+  details{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:.9rem 1.1rem}
+  details[open]{border-color:var(--brand)}
+  summary{cursor:pointer;font-weight:650;list-style:none;display:flex;justify-content:space-between;gap:1rem;align-items:center}
+  summary::-webkit-details-marker{display:none}
+  summary:focus-visible{outline:2px solid var(--brand);outline-offset:3px;border-radius:6px}
+  summary .q{font-size:1rem}
+  summary::after{content:"проверить";font-size:.8rem;color:var(--brand);font-weight:700;white-space:nowrap}
+  details[open] summary::after{content:"скрыть"}
+  .ans{margin-top:.75rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.96rem;color:var(--muted)}
+  .ans b{color:var(--ink)}
+
+  /* Ловушки */
+  ul.traps{list-style:none;margin:1rem 0 0;padding:0;display:flex;flex-direction:column;gap:.7rem}
+  ul.traps li{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:.85rem 1.05rem;padding-left:2.5rem;position:relative;font-size:.97rem}
+  ul.traps li::before{content:"⚠";position:absolute;left:1rem;top:.85rem;color:var(--mm);font-size:1.05rem}
+  ul.traps b{font-weight:700}
+
+  .selfcheck{background:var(--cm-soft);border:1px solid var(--cm-line);border-radius:14px;padding:1.1rem 1.3rem;margin-top:1rem}
+  .selfcheck ol{margin:.4rem 0 0;padding-left:1.2rem}
+  .selfcheck li{margin:.4rem 0;font-size:.99rem}
+
+  .wrapup{background:var(--brand);color:#fff;border-radius:16px;padding:1.4rem 1.5rem;margin-top:2.4rem}
+  .wrapup h2{color:#fff;margin:0 0 .5rem}
+  .wrapup p{color:#DCEAF1;margin:.4rem 0;font-size:1rem}
+  .wrapup .big{font-size:1.08rem;font-weight:700;color:#fff;margin:.6rem 0}
+  .wrapup .next{font-size:.95rem;color:#BBD6E4;margin-top:1rem;padding-top:1rem;border-top:1px solid rgba(255,255,255,.2)}
+
+  @media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+<!--LESSON-NAV-TOP--><style>.lnav{--lnav-accent:#3D5AF1}.lnav a{text-decoration:none;font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif}.lnav-top{max-width:820px;margin:0 auto;padding:.75rem clamp(1rem,4vw,1.5rem) .1rem}.lnav-top a{display:inline-flex;align-items:center;gap:.35rem;color:var(--lnav-accent);font-weight:600;font-size:.9rem}.lnav-top a:hover{text-decoration:underline}.lnav-bot{max-width:820px;margin:2.6rem auto 3rem;padding:1.1rem clamp(1rem,4vw,1.5rem) 0;border-top:1px solid #E4E8EF;display:flex;align-items:stretch;gap:.55rem}.lnav-bot a{min-width:0;display:flex;flex-direction:column;justify-content:center;gap:.15rem;border:1px solid #E4E8EF;border-radius:12px;padding:.65rem .85rem;color:#182233;background:#fff;transition:border-color .1s,transform .08s}.lnav-bot a:hover{border-color:var(--lnav-accent);transform:translateY(-1px)}.lnav-bot .prev,.lnav-bot .next{flex:1 1 0}.lnav-bot .next{text-align:right}.lnav-bot .dir{font-size:.72rem;color:#8A93A6;font-weight:600}.lnav-bot .ttl{font-size:.9rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.lnav-bot .to-cat{flex:0 0 auto;flex-direction:row;align-items:center;justify-content:center;color:var(--lnav-accent);font-weight:700;font-size:.85rem;white-space:nowrap}@media(max-width:420px){.lnav-bot .to-cat span{display:none}.lnav-bot .to-cat{padding:.65rem .7rem}}</style><nav class="lnav lnav-top"><a href="./catalog.html">← Все темы</a></nav><!--/LESSON-NAV-TOP-->
+<div class="page">
+
+  <header class="hero">
+    <p class="eyebrow">Математика · 5 класс</p>
+    <h1>Измерение и построение отрезков</h1>
+    <p class="tagline">Куда приложить линейку, как записать длину и как складывать отрезки, не путая сантиметры с миллиметрами.</p>
+  </header>
+
+  <div class="lead-in">
+    <p><b>Зачем это уметь.</b> С измерения отрезков начинается вся геометрия. Не умеешь — не найдёшь периметр, не начертишь треугольник, не нарисуешь план комнаты.</p>
+    <p>Да и в жизни ты меряешь длину постоянно: стол, свой рост, размер обуви.</p>
+    <p><b>Главный миф, который надо сломать:</b> «измерять можно с любого места линейки». Нет. Только с нуля. Приложишь начало отрезка к делению «1» — и ответ вырастет ровно на 1 см. Это самая частая ошибка в теме.</p>
+  </div>
+
+  <div class="recall">
+    <p class="cap">Сначала вспомни</p>
+    <ul>
+      <li><b>Отрезок</b> — это часть прямой с двумя концами. Его называют по концам двумя буквами: отрезок <span class="mono">AB</span>.</li>
+      <li><b>Единицы длины</b>: миллиметр, сантиметр, дециметр, метр, километр. Пригодятся все.</li>
+    </ul>
+  </div>
+
+  <section>
+    <h2>Что такое <span class="em">длина</span> отрезка</h2>
+    <p>Длина отрезка — это число, которое показывает, <strong>сколько раз в нём укладывается выбранная единица длины</strong>: сантиметр или миллиметр. Измерить отрезок — значит приложить к нему мерку и посчитать, сколько раз она поместилась. Мерка у нас на линейке, это её деления.</p>
+    <p>Записывают длину так:</p>
+    <div class="bigrule">
+      <p class="cap">Запись длины</p>
+      <p class="f">AB = 7 см</p>
+      <p>Читается: «длина отрезка AB равна семи сантиметрам».</p>
+    </div>
+    <p>Лови разницу: <strong>AB</strong> — сам отрезок, фигура на чертеже. А <strong>AB = 7 см</strong> — это уже его длина, число. Длину обозначают <span class="mono">AB</span> или <span class="mono">|AB|</span>.</p>
+    <p>Ещё одно: <strong>равные отрезки имеют равные длины, и наоборот</strong>. Если AB = CD, положи один отрезок на другой — они совпадут.</p>
+  </section>
+
+  <section>
+    <h2>Три правила, которые решают всё</h2>
+    <div class="rules">
+      <div class="rule k">
+        <b class="t">1. Как измерять линейкой</b>
+        Приложи линейку так, чтобы <strong>один конец отрезка совпал с делением 0</strong>. Посмотри, на какое деление попал второй конец. Это число и есть длина.
+        <div class="ex">Совместил конец с нулём, второй конец на «6 см 5 мм» → длина 6 см 5 мм.</div>
+      </div>
+      <div class="rule k">
+        <b class="t">2. Как сравнивать</b>
+        Длиннее тот отрезок, у которого длина выражена <strong>бóльшим числом</strong>. Но только если единицы одинаковые.
+        <div class="ex">6 см и 58 мм: переводим 6 см = <span class="mono">60</span> мм, и сразу видно, что 60 больше 58.</div>
+      </div>
+      <div class="rule k">
+        <b class="t">3. Как складывать</b>
+        Если точка C лежит на отрезке AB между A и B, то весь отрезок равен сумме двух кусков.
+        <div class="ex">Формула: <span class="mono">AB = AC + CB</span></div>
+      </div>
+    </div>
+    <div class="note">
+      <p><b>Железное условие.</b> Сравнивать и складывать длины можно только в одинаковых единицах. Сначала переводим всё в одну мерку, чаще всего в миллиметры. Считаем потом.</p>
+    </div>
+
+    <h3>Единицы длины — таблица</h3>
+    <div class="tblwrap">
+      <table>
+        <thead><tr><th>Единица</th><th>Сколько это в других единицах</th></tr></thead>
+        <tbody>
+          <tr><td class="u">1 см</td><td>= 10 мм</td></tr>
+          <tr><td class="u">1 дм</td><td>= 10 см = 100 мм</td></tr>
+          <tr><td class="u">1 м</td><td>= 10 дм = 100 см = 1000 мм</td></tr>
+          <tr><td class="u">1 км</td><td>= 1000 м</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2>Разбор с рассуждением вслух</h2>
+    <p>Разбираю по шагам и каждый раз говорю, <em>почему</em> делаю именно так.</p>
+    <div class="walk">
+      <p class="q">Отрезок AB измерили линейкой: его начало на делении 0, конец на делении 6 см 5 мм. Записать длину в миллиметрах.</p>
+      <ol>
+        <li>Длина равна 6 см 5 мм.
+          <span class="why">Почему: считаем от нуля до второго конца. Начало и так стоит на нуле, значит читаем деление как есть.</span></li>
+        <li>Переведём сантиметры в миллиметры: <span class="mono">6 см = 6 · 10 = 60 мм</span>.
+          <span class="why">Почему: в 1 см ровно 10 мм, значит в 6 см в десять раз больше миллиметров.</span></li>
+        <li>Сложим: <span class="mono">60 мм + 5 мм = 65 мм</span>.
+          <span class="why">Почему: вся длина складывается из целых сантиметров и оставшихся миллиметров.</span></li>
+      </ol>
+      <div class="verdict">Ответ: AB = 65 мм.</div>
+    </div>
+
+    <p>Теперь почти то же самое, только шаг допиши сам. Прочитай, реши в уме, потом раскрой проверку.</p>
+    <div class="drill">
+      <details>
+        <summary><span class="q">На отрезке MN отметили точку K между M и N. Известно: MK = 4 см, KN = 38 мм. Найти MN.</span></summary>
+        <div class="ans">
+          Шаг 1. Длины даны в разных единицах, переводим к миллиметрам: <b>MK = 4 см = 40 мм</b>.<br>
+          Шаг 2. <b>MN = MK + KN = 40 мм + 38 мм = 78 мм</b>.<br>
+          Шаг 3. Переведём ответ обратно: <b>78 мм = 7 см 8 мм</b>.
+        </div>
+      </details>
+      <details>
+        <summary><span class="q">Отрезок CD = 9 см 3 мм. На нём отметили точку P так, что CP = 5 см 8 мм. Найди PD.</span></summary>
+        <div class="ans">
+          Переводим всё в миллиметры: CD = 93 мм, CP = 58 мм.<br>
+          Точка P лежит на CD, значит CD = CP + PD, откуда <b>PD = 93 − 58 = 35 мм = 3 см 5 мм</b>.
+        </div>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <h2>Линейка вживую — <span class="em">почему нужен именно нуль</span></h2>
+    <p>Подвигай ползунок и смотри, что показывает линейка. Потом нажми «приложить к делению 1» и сравни, что прочитаешь.</p>
+    <div class="sim">
+      <canvas id="cvRuler" width="700" height="200" aria-label="Линейка с отрезком"></canvas>
+      <div class="ctrls">
+        <div class="ctrl">
+          <label for="rngLen">Длина отрезка</label>
+          <input type="range" id="rngLen" min="15" max="135" step="1" value="65">
+          <span class="val" id="valLen">65 мм</span>
+        </div>
+        <div class="ctrl">
+          <label>Куда приложили</label>
+          <div class="toggle">
+            <button type="button" id="btnZero" class="on">к нулю ✓</button>
+            <button type="button" id="btnOne">к делению 1 см</button>
+          </div>
+        </div>
+      </div>
+      <div class="simmsg" id="msgRuler"></div>
+    </div>
+    <div class="note">
+      <p><b>Заметил закономерность?</b> Когда прикладываешь к «1», ответ всегда больше настоящего ровно на 10 мм, то есть на 1 см. Отрезок-то не изменился. Изменилось только место, откуда ты начал считать.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Отрезок из двух кусков</h2>
+    <p>Отметим на отрезке AB точку C. Теперь AB состоит из двух кусков: AC и CB. Двигай точку C и следи за числами внизу.</p>
+    <div class="sim">
+      <canvas id="cvSum" width="700" height="170" aria-label="Отрезок AB с точкой C внутри"></canvas>
+      <div class="ctrls">
+        <div class="ctrl">
+          <label for="rngC">Где стоит точка C</label>
+          <input type="range" id="rngC" min="10" max="90" step="10" value="60">
+          <span class="val" id="valC">AC = 6 см</span>
+        </div>
+      </div>
+      <div class="simmsg" id="msgSum"></div>
+    </div>
+    <p>Куда точку C ни поставь, два куска вместе дают целый отрезок. Это и есть правило <span class="mono">AB = AC + CB</span>.</p>
+  </section>
+
+  <section>
+    <h2>Тренажёр — <span class="em">задания без конца</span></h2>
+    <p>Каждый раз новая задача. Ответ вводи <strong>в миллиметрах</strong>, одним числом. Не получается — жми «Показать решение» и разбирай по шагам.</p>
+    <div class="trainer">
+      <p class="tr-tag" id="trTag">Задание</p>
+      <p class="tr-q" id="trQ">—</p>
+      <div class="tr-in">
+        <input type="text" id="trAns" inputmode="numeric" autocomplete="off" placeholder="?">
+        <span class="unit">мм</span>
+      </div>
+      <div class="tr-btns">
+        <button class="go" id="trCheck" type="button">Проверить</button>
+        <button class="sh" id="trShow" type="button">Показать решение</button>
+        <button class="nw" id="trNew" type="button">🎲 Новое задание</button>
+      </div>
+      <div class="tr-res" id="trRes"></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Практика</h2>
+    <p>Решай сам, потом раскрывай ответ. Раньше времени не подглядывай 🙂</p>
+
+    <p class="lvl">Уровень 1 · понимание</p>
+    <div class="drill">
+      <details>
+        <summary><span class="q">1) Прочитай запись <span class="mono">AB = 12 см</span>. Что обозначает буква-пара AB, а что — число 12?</span></summary>
+        <div class="ans"><b>AB</b> — сам отрезок, фигура: часть прямой с концами в точках A и B. <b>12</b> — его длина, число: столько сантиметров в нём уложилось.</div>
+      </details>
+      <details>
+        <summary><span class="q">2) Сколько миллиметров в 3 см? А сколько сантиметров в 50 мм?</span></summary>
+        <div class="ans">В 1 см — 10 мм, значит <b>3 см = 3 · 10 = 30 мм</b>. Обратно: <b>50 мм = 5 см</b>, ведь 50 — это пять десятков миллиметров.</div>
+      </details>
+    </div>
+
+    <p class="lvl">Уровень 2 · применение</p>
+    <div class="drill">
+      <details>
+        <summary><span class="q">3) Построй (начерти) отрезок длиной 4 см 7 мм. Назови его буквами.</span></summary>
+        <div class="ans">Ставим точку и совмещаем её с делением <b>0</b> линейки. Отсчитываем 4 полных сантиметра и ещё 7 маленьких делений — это 47 мм. Там ставим вторую точку и соединяем. Обозначаем концы буквами, например <b>AB</b>, и подписываем: <b>AB = 4 см 7 мм</b>.</div>
+      </details>
+      <details>
+        <summary><span class="q">4) Даны два отрезка: KL = 6 см, EF = 58 мм. Какой длиннее и на сколько миллиметров?</span></summary>
+        <div class="ans">Единицы разные — переводим: <b>KL = 6 см = 60 мм</b>. Сравниваем: 60 &gt; 58, значит длиннее <b>KL</b>. Разница: <b>60 − 58 = 2 мм</b>.</div>
+      </details>
+    </div>
+
+    <p class="lvl">Уровень 3 · анализ</p>
+    <div class="drill">
+      <details>
+        <summary><span class="q">5) Найди ошибку: ученик приложил отрезок не к нулю, а к делению «1» и записал длину 8 см. Какова настоящая длина? В какую сторону он ошибся?</span></summary>
+        <div class="ans">Он начал отсчёт на 1 см позже нуля, вот лишний сантиметр и попал в ответ. Настоящая длина: <b>8 − 1 = 7 см</b>. Ошибся в сторону <b>увеличения</b>: записал больше, чем есть.</div>
+      </details>
+      <details>
+        <summary><span class="q">6) Что изменится, если… Отрезок AB = 10 см разделили точкой C так, что AC = 6 см. Чему равно CB? А если точку C сдвинуть на 2 см ближе к A?</span></summary>
+        <div class="ans">По правилу AB = AC + CB, значит <b>CB = 10 − 6 = 4 см</b>.<br>Сдвинули C на 2 см ближе к A: теперь <b>AC = 6 − 2 = 4 см</b>, а <b>CB = 4 + 2 = 6 см</b>. Один кусок укоротился ровно настолько, насколько вырос второй, поэтому сумма всё та же — 10 см.</div>
+      </details>
+      <details>
+        <summary><span class="q">7) Обратная задача: периметр будущего треугольника должен быть 15 см. Две стороны — отрезки по 6 см и 5 см. Какой длины начертить третий отрезок?</span></summary>
+        <div class="ans">Периметр — это сумма трёх сторон. Две уже известны: <b>6 + 5 = 11 см</b>. На третью остаётся <b>15 − 11 = 4 см</b>.</div>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <h2>Ловушки — не попадись</h2>
+    <ul class="traps">
+      <li><b>Отсчёт не от нуля.</b> Начало отрезка кладут к делению «1» или к самому краю линейки, где нуля и нет. Как не попасться: сначала найди на линейке деление <b>0</b> и совмести с ним конец отрезка. Проговаривай вслух: «начинаю с нуля».</li>
+      <li><b>Путают мм и см.</b> Пишут 65 мм как 65 см или наоборот. Как не попасться: помни 1 см = 10 мм и прикидывай на глаз — спичка примерно 4–5 см, а никак не 4–5 мм.</li>
+      <li><b>Складывают длины в разных единицах.</b> Считают «4 см + 38 мм = 42». А 42 чего? Непонятно. Как не попасться: сначала переведи всё в одну мерку, обычно в миллиметры, а потом складывай.</li>
+      <li><b>Считают, что отрезок и его длина — одно и то же.</b> Пишут «отрезок 7». Как не попасться: отрезок — это фигура (AB), а длина — число с единицей измерения (AB = 7 см).</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Объясни своими словами</h2>
+    <div class="selfcheck">
+      <p>Ответь вслух, как будто объясняешь младшему. Если получилось без запинок — тема твоя.</p>
+      <ol>
+        <li>С какого деления линейки нужно начинать измерять отрезок и почему?</li>
+        <li>Сколько миллиметров в 7 см 4 мм?</li>
+        <li>Точка C лежит на отрезке AB. Как через AC и CB найти AB?</li>
+      </ol>
+    </div>
+  </section>
+
+  <div class="wrapup">
+    <h2>Запомни главное</h2>
+    <p class="big">Меришь — совмещай конец отрезка с нулём линейки.<br>Складываешь и сравниваешь — сперва переведи всё в одну мерку.</p>
+    <p>И держи в голове две опоры: <strong>1 см = 10 мм</strong> и <strong>AB = AC + CB</strong>.</p>
+    <p class="next">👉 Дальше навык сразу пойдёт в дело: сложишь длины сторон — получишь <strong>периметр многоугольника</strong>.</p>
+  </div>
+
+</div>
+
+<script>
+(function(){
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ---------- общие хелперы ---------- */
+  function fmt(mm){                       // 78 -> "7 см 8 мм"
+    var c = Math.floor(mm/10), m = mm%10;
+    if(c===0) return m + ' мм';
+    if(m===0) return c + ' см';
+    return c + ' см ' + m + ' мм';
+  }
+  function ri(a,b){ return Math.floor(Math.random()*(b-a+1))+a; }
+  function mark(mm){ return mm===0 ? '0' : fmt(mm); }
+
+  /* ================= 1. Линейка ================= */
+  var cv = document.getElementById('cvRuler'), ctx = cv.getContext('2d');
+  var rngLen = document.getElementById('rngLen'), valLen = document.getElementById('valLen');
+  var msgR = document.getElementById('msgRuler');
+  var bZero = document.getElementById('btnZero'), bOne = document.getElementById('btnOne');
+  var shift = 0;                          // 0 мм или 10 мм
+
+  var PAD = 26, TOP = 96, RH = 74, MAXMM = 160;
+  var K = (cv.width - 2*PAD) / MAXMM;     // пикселей в одном мм
+
+  function x(mm){ return PAD + mm*K; }
+
+  function drawRuler(){
+    ctx.clearRect(0,0,cv.width,cv.height);
+    /* тело линейки */
+    ctx.fillStyle = '#FFF6E2';
+    ctx.strokeStyle = '#D9C79A';
+    ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.rect(PAD-14, TOP, MAXMM*K + 28, RH); ctx.fill(); ctx.stroke();
+    /* деления */
+    ctx.strokeStyle = '#6B5B3A'; ctx.lineWidth = 1;
+    ctx.fillStyle = '#4A3F28';
+    ctx.font = '600 13px ui-monospace, Menlo, monospace';
+    ctx.textAlign = 'center';
+    for(var mm=0; mm<=MAXMM; mm++){
+      var h = (mm%10===0) ? 26 : (mm%5===0 ? 16 : 9);
+      ctx.beginPath();
+      ctx.moveTo(x(mm)+0.5, TOP+1);
+      ctx.lineTo(x(mm)+0.5, TOP+1+h);
+      ctx.stroke();
+      if(mm%10===0) ctx.fillText(String(mm/10), x(mm), TOP+44);
+    }
+    /* отрезок */
+    var L = +rngLen.value;
+    var a = shift, b = shift + L;
+    var yS = 56;
+    ctx.strokeStyle = '#22607F'; ctx.lineWidth = 6; ctx.lineCap = 'round';
+    ctx.beginPath(); ctx.moveTo(x(a), yS); ctx.lineTo(x(b), yS); ctx.stroke();
+    ctx.fillStyle = '#22607F';
+    [a,b].forEach(function(p){ ctx.beginPath(); ctx.arc(x(p), yS, 5.5, 0, 6.2832); ctx.fill(); });
+    /* подписи концов */
+    ctx.font = '700 14px system-ui, sans-serif';
+    ctx.fillText('A', x(a), yS-14);
+    ctx.fillText('B', x(b), yS-14);
+    /* вертикальные направляющие к линейке */
+    ctx.strokeStyle = shift ? '#C23B3B' : '#2C7A5B';
+    ctx.lineWidth = 1.5;
+    ctx.setLineDash([4,4]);
+    [a,b].forEach(function(p){
+      ctx.beginPath(); ctx.moveTo(x(p), yS+8); ctx.lineTo(x(p), TOP+30); ctx.stroke();
+    });
+    ctx.setLineDash([]);
+    /* что читаем */
+    ctx.font = '700 15px system-ui, sans-serif';
+    ctx.textAlign = 'left';
+    ctx.fillStyle = shift ? '#C23B3B' : '#2C7A5B';
+    ctx.fillText('A на отметке ' + mark(a) + ',  B на отметке ' + mark(b), PAD-14, 24);
+  }
+
+  function updRuler(){
+    var L = +rngLen.value;
+    valLen.textContent = L + ' мм';
+    drawRuler();
+    if(shift===0){
+      msgR.className = 'simmsg';
+      msgR.innerHTML = 'Начало на нуле → на линейке читаем сразу верную длину: <b>' + L + ' мм = ' + fmt(L) + '</b>.';
+    }else{
+      var wrong = L + 10;
+      msgR.className = 'simmsg bad';
+      msgR.innerHTML = 'Начало на делении 1 см → второй конец попал на <b>' + fmt(wrong) + '</b>, хотя отрезок на самом деле <b>' + fmt(L) + '</b>. Ответ завышен на 1 см.';
+    }
+  }
+  rngLen.addEventListener('input', updRuler);
+  bZero.addEventListener('click', function(){
+    shift = 0; bZero.classList.add('on'); bOne.classList.remove('on');
+    bZero.textContent = 'к нулю ✓'; bOne.textContent = 'к делению 1 см';
+    updRuler();
+  });
+  bOne.addEventListener('click', function(){
+    shift = 10; bOne.classList.add('on'); bZero.classList.remove('on');
+    bOne.textContent = 'к делению 1 см ✓'; bZero.textContent = 'к нулю';
+    updRuler();
+  });
+  updRuler();
+
+  /* ================= 2. AB = AC + CB ================= */
+  var cs = document.getElementById('cvSum'), cx = cs.getContext('2d');
+  var rngC = document.getElementById('rngC'), valC = document.getElementById('valC'), msgS = document.getElementById('msgSum');
+  var TOTAL = 100;                        // мм, весь отрезок AB = 10 см
+  var SPAD = 40, SK = (cs.width - 2*SPAD) / TOTAL;
+  function sx(mm){ return SPAD + mm*SK; }
+
+  function drawSum(){
+    var ac = +rngC.value, cb = TOTAL - ac, y = 70;
+    cx.clearRect(0,0,cs.width,cs.height);
+    /* два куска разным цветом */
+    cx.lineWidth = 9; cx.lineCap = 'butt';
+    cx.strokeStyle = '#2C7A5B';
+    cx.beginPath(); cx.moveTo(sx(0), y); cx.lineTo(sx(ac), y); cx.stroke();
+    cx.strokeStyle = '#C2622E';
+    cx.beginPath(); cx.moveTo(sx(ac), y); cx.lineTo(sx(TOTAL), y); cx.stroke();
+    /* точки */
+    cx.fillStyle = '#22262E';
+    [0, ac, TOTAL].forEach(function(p){ cx.beginPath(); cx.arc(sx(p), y, 6, 0, 6.2832); cx.fill(); });
+    /* буквы */
+    cx.font = '700 16px system-ui, sans-serif'; cx.textAlign = 'center';
+    cx.fillText('A', sx(0), y-18);
+    cx.fillText('C', sx(ac), y-18);
+    cx.fillText('B', sx(TOTAL), y-18);
+    /* подписи кусков */
+    cx.font = '700 14px ui-monospace, Menlo, monospace';
+    cx.fillStyle = '#2C7A5B'; cx.fillText('AC = ' + (ac/10) + ' см', (sx(0)+sx(ac))/2, y+28);
+    cx.fillStyle = '#C2622E'; cx.fillText('CB = ' + (cb/10) + ' см', (sx(ac)+sx(TOTAL))/2, y+28);
+    /* скобка целого */
+    cx.strokeStyle = '#22607F'; cx.lineWidth = 2;
+    cx.beginPath();
+    cx.moveTo(sx(0), y+52); cx.lineTo(sx(0), y+60);
+    cx.lineTo(sx(TOTAL), y+60); cx.lineTo(sx(TOTAL), y+52);
+    cx.stroke();
+    cx.fillStyle = '#22607F'; cx.font = '700 14px ui-monospace, Menlo, monospace';
+    cx.fillText('AB = 10 см', sx(TOTAL/2), y+80);
+  }
+  function updSum(){
+    var ac = +rngC.value, cb = TOTAL - ac;
+    valC.textContent = 'AC = ' + (ac/10) + ' см';
+    drawSum();
+    msgS.innerHTML = 'AC + CB = ' + (ac/10) + ' см + ' + (cb/10) + ' см = <b>10 см</b> — это и есть весь отрезок AB.';
+  }
+  rngC.addEventListener('input', updSum);
+  updSum();
+
+  /* ================= 3. Тренажёр ================= */
+  var tQ = document.getElementById('trQ'), tTag = document.getElementById('trTag');
+  var tIn = document.getElementById('trAns'), tRes = document.getElementById('trRes');
+  var task = null;
+
+  function locked(){ return tRes.getAttribute('data-done')==='1'; }
+
+  function make(){
+    var t = ri(1,5);
+
+    if(t===1){                                   /* перевод в мм */
+      var a = ri(2,13), b = ri(0,9);
+      return {
+        tag:'Перевод в миллиметры',
+        q:'Отрезок AB измерили линейкой от нуля: получилось ' + fmt(a*10+b) + '. Сколько это миллиметров?',
+        ans:a*10+b,
+        sol:[
+          'В 1 см ровно 10 мм, значит ' + a + ' см = ' + a + ' · 10 = <b>' + (a*10) + ' мм</b>.',
+          (b===0 ? 'Лишних миллиметров нет, поэтому ответ уже готов.'
+                 : 'Добавляем оставшиеся миллиметры: ' + (a*10) + ' + ' + b + ' = <b>' + (a*10+b) + ' мм</b>.'),
+          'Ответ: AB = <b>' + (a*10+b) + ' мм</b>.'
+        ]
+      };
+    }
+
+    if(t===2){                                   /* сумма двух кусков */
+      var ac = ri(2,9), cb = ri(11,79);
+      return {
+        tag:'Сложение длин',
+        q:'Точка C лежит на отрезке AB между A и B. Известно: AC = ' + ac + ' см, CB = ' + cb + ' мм. Найди AB в миллиметрах.',
+        ans:ac*10+cb,
+        sol:[
+          'Единицы разные, переводим всё в миллиметры: AC = ' + ac + ' см = <b>' + (ac*10) + ' мм</b>.',
+          'Точка C лежит внутри отрезка, значит AB = AC + CB.',
+          'Считаем: ' + (ac*10) + ' + ' + cb + ' = <b>' + (ac*10+cb) + ' мм</b>, то есть ' + fmt(ac*10+cb) + '.'
+        ]
+      };
+    }
+
+    if(t===3){                                   /* разность */
+      var ab = ri(70,145), ap = ri(20, ab-15);
+      return {
+        tag:'Найди второй кусок',
+        q:'Отрезок AB = ' + fmt(ab) + '. На нём отметили точку C так, что AC = ' + fmt(ap) + '. Найди CB в миллиметрах.',
+        ans:ab-ap,
+        sol:[
+          'Переводим в миллиметры: AB = <b>' + ab + ' мм</b>, AC = <b>' + ap + ' мм</b>.',
+          'Из правила AB = AC + CB получаем CB = AB − AC.',
+          'Считаем: ' + ab + ' − ' + ap + ' = <b>' + (ab-ap) + ' мм</b>, то есть ' + fmt(ab-ap) + '.'
+        ]
+      };
+    }
+
+    if(t===4){                                   /* ошибка нуля */
+      var real = ri(25,130), read = real + 10;
+      return {
+        tag:'Ошибка с нулём',
+        q:'Ученик приложил конец отрезка не к нулю, а к делению 1 см, и прочитал ' + fmt(read) + '. Какова настоящая длина отрезка в миллиметрах?',
+        ans:real,
+        sol:[
+          'Отсчёт начали на 1 см позже нуля, поэтому в ответ попал лишний сантиметр.',
+          '1 см = 10 мм, а прочитано ' + fmt(read) + ' = <b>' + read + ' мм</b>.',
+          'Убираем лишнее: ' + read + ' − 10 = <b>' + real + ' мм</b>, то есть ' + fmt(real) + '.'
+        ]
+      };
+    }
+
+    /* t===5: сравнение, иногда отрезки равны */
+    var k = ri(2,12), eq = (ri(1,6)===1);
+    var ef = eq ? k*10 : ri(11,129);
+    var diff = Math.abs(k*10 - ef);
+    return {
+      tag:'Сравнение длин',
+      q:'Даны два отрезка: KL = ' + k + ' см, EF = ' + ef + ' мм. На сколько миллиметров один длиннее другого? (Если они равны — ответ 0.)',
+      ans:diff,
+      sol:[
+        'Сравнивать можно только в одинаковых единицах: KL = ' + k + ' см = <b>' + (k*10) + ' мм</b>.',
+        (diff===0
+          ? 'Оба отрезка по ' + (k*10) + ' мм — они <b>равны</b>, разница нулевая.'
+          : (k*10 > ef
+              ? 'Больше KL: ' + (k*10) + ' > ' + ef + '. Разница: ' + (k*10) + ' − ' + ef + ' = <b>' + diff + ' мм</b>.'
+              : 'Больше EF: ' + ef + ' > ' + (k*10) + '. Разница: ' + ef + ' − ' + (k*10) + ' = <b>' + diff + ' мм</b>.')),
+        'Ответ: <b>' + diff + ' мм</b>.'
+      ]
+    };
+  }
+
+  function solHtml(){
+    var h = '<div class="tr-sol">';
+    task.sol.forEach(function(row,i){ h += '<div class="row">' + (i+1) + '. ' + row + '</div>'; });
+    return h + '</div>';
+  }
+
+  function newTask(seed){
+    task = seed || make();
+    tTag.textContent = task.tag;
+    tQ.innerHTML = task.q;
+    tIn.value = '';
+    tRes.innerHTML = '';
+    tRes.removeAttribute('data-done');
+  }
+
+  function check(){
+    if(locked()) return;
+    var raw = tIn.value.replace(/\s|мм/g,'').replace(',','.');
+    if(raw===''){
+      tRes.innerHTML = '<div class="head info">Сначала впиши ответ в миллиметрах.</div>';
+      return;
+    }
+    var v = Number(raw);
+    if(!isFinite(v)){
+      tRes.innerHTML = '<div class="head info">Нужно одно число — количество миллиметров.</div>';
+      return;
+    }
+    tRes.setAttribute('data-done','1');
+    tRes.innerHTML = (v === task.ans
+      ? '<div class="head ok">✓ Верно! ' + task.ans + ' мм — это ' + fmt(task.ans) + '.</div>'
+      : '<div class="head no">Не сходится. Правильный ответ: ' + task.ans + ' мм (' + fmt(task.ans) + '). Смотри разбор.</div>') + solHtml();
+  }
+
+  function show(){
+    if(locked()) return;
+    tRes.setAttribute('data-done','1');
+    tRes.innerHTML = '<div class="head info">Разбор по шагам:</div>' + solHtml();
+  }
+
+  document.getElementById('trCheck').addEventListener('click', check);
+  document.getElementById('trShow').addEventListener('click', show);
+  document.getElementById('trNew').addEventListener('click', function(){ newTask(); tIn.focus(); });
+  tIn.addEventListener('keydown', function(e){ if(e.key==='Enter') check(); });
+
+  /* стартовое задание — фиксированное, совпадает с тем, что покажет разбор */
+  newTask({
+    tag:'Сложение длин',
+    q:'Точка K лежит на отрезке MN между M и N. Известно: MK = 4 см, KN = 38 мм. Найди MN в миллиметрах.',
+    ans:78,
+    sol:[
+      'Единицы разные, переводим всё в миллиметры: MK = 4 см = <b>40 мм</b>.',
+      'Точка K лежит внутри отрезка, значит MN = MK + KN.',
+      'Считаем: 40 + 38 = <b>78 мм</b>, то есть 7 см 8 мм.'
+    ]
+  });
+})();
+</script>
+<!--LESSON-NAV-BOT--><nav class="lnav lnav-bot"><a class="prev" href="./m5-tochka-pryamaya-luch-otrezok.html"><span class="dir">← Предыдущая</span><span class="ttl">Точка, прямая, луч, отрезок</span></a><a class="to-cat" href="./catalog.html">📚 <span>Все темы</span></a><a class="next" href="./m5-ugol-vidy-uglov.html"><span class="dir">Следующая →</span><span class="ttl">Угол, виды углов, измерение углов</span></a></nav><!--/LESSON-NAV-BOT-->

@@ -1,0 +1,631 @@
+<!doctype html>
+<!-- humanized: humanizer-ru, 2026-08-29, тире возвращено -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Упрощение буквенных выражений — 5 класс</title>
+<style>
+  :root{
+    --paper:#FAF8F4;
+    --card:#FFFFFF;
+    --ink:#232B2A;
+    --muted:#68706F;
+    --line:#E4E6E4;
+    --brand:#0F766E;          /* основной акцент */
+    --brand-soft:#E3F1EE;
+    --brand-line:#BEDDD7;
+    --let:#6A3EA1;            /* буквенные слагаемые */
+    --let-soft:#F0E9F8;
+    --let-line:#D8C6EE;
+    --num:#C2610F;            /* числа */
+    --num-soft:#FBEDDF;
+    --num-line:#F0CFAB;
+    --ok:#2E8B57;
+    --no:#C23B3B;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper)}
+  .page{
+    max-width:720px;margin:0 auto;
+    padding:clamp(1.4rem,4vw,3rem) clamp(1.1rem,4vw,2rem) 4.5rem;
+    color:var(--ink);
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    font-size:17.5px;line-height:1.68;-webkit-font-smoothing:antialiased;
+  }
+  .mono{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-variant-numeric:tabular-nums;font-weight:600}
+  .let{color:var(--let);font-weight:700}
+  .nm{color:var(--num);font-weight:700}
+
+  .hero{border-bottom:3px solid var(--brand);padding-bottom:1.4rem;margin-bottom:1.8rem}
+  .eyebrow{font-size:.74rem;letter-spacing:.15em;text-transform:uppercase;color:var(--brand);font-weight:700;margin:0 0 .55rem}
+  h1{font-size:clamp(2rem,6.5vw,3rem);line-height:1.03;margin:0;font-weight:800;letter-spacing:-.02em;text-wrap:balance}
+  .tagline{font-size:1.12rem;color:var(--muted);margin:.85rem 0 0;text-wrap:pretty}
+
+  section{margin-top:2.4rem}
+  h2{font-size:1.5rem;margin:0 0 .3rem;font-weight:780;letter-spacing:-.015em;text-wrap:balance}
+  h2 .em{color:var(--brand)}
+  h3{font-size:1.12rem;margin:1.4rem 0 .2rem;font-weight:760}
+  p{margin:.7rem 0}
+  strong{font-weight:680}
+
+  .lead-in{background:var(--brand-soft);border-radius:14px;padding:1.1rem 1.3rem;font-size:1.02rem}
+  .lead-in p{margin:.4rem 0}
+  .lead-in b{color:var(--brand)}
+
+  .recall{border:1px dashed var(--brand-line);background:var(--card);border-radius:14px;padding:1rem 1.2rem;margin-top:1rem}
+  .recall p:first-child{margin-top:0}
+  .recall ul{margin:.4rem 0 0;padding-left:1.15rem}
+  .recall li{margin:.35rem 0;font-size:.99rem}
+
+  /* Миф */
+  .myth{display:grid;gap:.9rem;margin-top:1rem}
+  @media(min-width:600px){.myth{grid-template-columns:1fr 1fr}}
+  .box{border-radius:16px;padding:1.1rem 1.25rem;border:2px solid}
+  .box.bad{background:#FBEAEA;border-color:#EFC6C6}
+  .box.good{background:var(--brand-soft);border-color:var(--brand-line)}
+  .box .cap{font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;font-weight:700;margin:0}
+  .box.bad .cap{color:var(--no)} .box.good .cap{color:var(--brand)}
+  .box p{margin:.35rem 0;font-size:.97rem}
+  .box .big{font-family:ui-monospace,Menlo,monospace;font-weight:800;font-size:1.25rem;margin:.3rem 0}
+
+  /* Правила */
+  .rules{display:flex;flex-direction:column;gap:.7rem;margin-top:1rem}
+  .rule{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:.95rem 1.15rem}
+  .rule .ttl{font-weight:750;margin:0 0 .3rem}
+  .rule .f{font-family:ui-monospace,Menlo,monospace;font-weight:800;font-size:1.22rem;text-align:center;margin:.6rem 0;letter-spacing:.02em;overflow-x:auto}
+  .rule.l{border-left:4px solid var(--let)}
+  .rule.n{border-left:4px solid var(--brand)}
+  .rule .ex{font-size:.9rem;color:var(--muted);margin-top:.35rem}
+  .rule .ex .mono{color:var(--ink)}
+
+  .note{border-left:4px solid var(--brand);background:var(--brand-soft);border-radius:0 10px 10px 0;padding:.8rem 1.1rem;margin-top:1rem;font-size:.98rem}
+  .note b{color:var(--brand)}
+  .note p{margin:.35rem 0}
+
+  /* Разбор по шагам */
+  .walk{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.15rem 1.3rem;margin-top:1rem}
+  .walk .q{font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.15rem;margin:0 0 .9rem;padding-bottom:.7rem;border-bottom:1px solid var(--line)}
+  .walk ol{margin:0;padding-left:1.3rem;display:flex;flex-direction:column;gap:.8rem}
+  .walk li{font-size:.99rem}
+  .walk li b{font-weight:700}
+  .why{display:block;margin-top:.25rem;font-size:.9rem;color:var(--muted);border-left:3px solid var(--brand-line);padding-left:.6rem}
+  .why b{color:var(--brand);font-weight:700}
+  .verdict{margin-top:1rem;padding:.75rem 1rem;background:var(--brand-soft);border-radius:10px;font-weight:650;color:var(--brand);font-size:1.05rem}
+
+  /* Карточки-модель */
+  .cards{display:flex;flex-wrap:wrap;align-items:center;gap:.4rem;margin:.9rem 0;font-family:ui-monospace,Menlo,monospace;font-weight:800}
+  .cc{width:2.3rem;height:2.8rem;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1.15rem;border:2px solid}
+  .cc.a{background:var(--let-soft);border-color:var(--let-line);color:var(--let)}
+  .cc.n{background:var(--num-soft);border-color:var(--num-line);color:var(--num)}
+  .op{font-size:1.2rem;color:var(--muted);padding:0 .15rem}
+  .cards-cap{font-size:.92rem;color:var(--muted);margin:.1rem 0 0}
+
+  /* POE-виджет */
+  .poe{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.15rem 1.3rem;margin-top:1rem}
+  .poe .lbl{display:flex;align-items:center;gap:.7rem;flex-wrap:wrap;font-size:.96rem}
+  .poe input[type=range]{flex:1;min-width:150px;accent-color:var(--brand)}
+  .poe .val{font-family:ui-monospace,Menlo,monospace;font-weight:800;color:var(--brand);font-size:1.1rem}
+  .poe input[type=range]:focus-visible{outline:2px solid var(--brand);outline-offset:3px}
+  .poe .lines{margin-top:.9rem;display:flex;flex-direction:column;gap:.5rem}
+  .poe .ln{font-family:ui-monospace,Menlo,monospace;font-size:1rem;background:var(--paper);border:1px solid var(--line);border-radius:9px;padding:.55rem .8rem;overflow-x:auto;white-space:nowrap}
+  .poe .eq{text-align:center;font-weight:700;color:var(--ok);margin-top:.7rem;font-size:1rem}
+
+  /* Тренажёр */
+  .trainer{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:1.3rem;margin-top:1rem}
+  .tr-task{font-family:ui-monospace,Menlo,monospace;font-weight:800;font-size:clamp(1.5rem,7vw,2.2rem);text-align:center;margin:.1rem 0 .3rem;color:var(--ink);overflow-x:auto;white-space:nowrap}
+  .tr-hint{text-align:center;color:var(--muted);font-size:.9rem;margin:0 0 1.1rem}
+  .tr-in{display:flex;gap:.5rem;justify-content:center;flex-wrap:wrap;margin-bottom:1rem}
+  .tr-in input{font:inherit;font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.1rem;text-align:center;border:2px solid var(--line);border-radius:11px;padding:.5rem .7rem;width:min(230px,70vw);background:var(--paper);color:var(--ink)}
+  .tr-in input:focus-visible{outline:none;border-color:var(--brand)}
+  .tr-btns{display:flex;gap:.5rem;flex-wrap:wrap;justify-content:center}
+  .tr-btns button{font:inherit;font-weight:700;font-size:.92rem;border-radius:10px;padding:.55rem 1.1rem;cursor:pointer;border:1px solid transparent}
+  .tr-btns .go{background:var(--brand);color:#fff}
+  .tr-btns .sh{background:var(--paper);border:1px solid var(--line);color:var(--ink)}
+  .tr-btns .nw{background:var(--brand-soft);color:var(--brand)}
+  .tr-btns button:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+  .tr-res{margin-top:1.1rem;font-size:.97rem}
+  .tr-res .head{font-weight:700;padding:.6rem .9rem;border-radius:9px;margin-bottom:.7rem}
+  .tr-res .head.ok{background:#E7F4EC;color:var(--ok)}
+  .tr-res .head.no{background:#FBEAEA;color:var(--no)}
+  .tr-res .head.info{background:var(--brand-soft);color:var(--brand)}
+  .tr-sol{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:.85rem 1rem}
+  .tr-sol .row{margin:.35rem 0;font-size:.94rem}
+  .tr-sol .row .mono{color:var(--ink)}
+  .tr-sol .fin{margin-top:.6rem;padding-top:.55rem;border-top:1px dashed var(--line);font-weight:750}
+
+  /* Практика */
+  .drill{display:flex;flex-direction:column;gap:.7rem;margin-top:1rem}
+  .lvl{font-size:.7rem;letter-spacing:.11em;text-transform:uppercase;font-weight:800;color:var(--brand);margin:1.4rem 0 -.2rem}
+  details{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:.9rem 1.1rem}
+  details[open]{border-color:var(--brand)}
+  summary{cursor:pointer;font-weight:650;list-style:none;display:flex;justify-content:space-between;gap:1rem;align-items:center}
+  summary::-webkit-details-marker{display:none}
+  summary:focus-visible{outline:2px solid var(--brand);outline-offset:3px;border-radius:6px}
+  summary .q{font-size:1rem}
+  summary::after{content:"проверить";font-size:.8rem;color:var(--brand);font-weight:700;white-space:nowrap}
+  details[open] summary::after{content:"скрыть"}
+  .ans{margin-top:.75rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.96rem;color:var(--muted)}
+  .ans b{color:var(--ink)}
+
+  /* Ловушки */
+  ul.traps{list-style:none;margin:1rem 0 0;padding:0;display:flex;flex-direction:column;gap:.7rem}
+  ul.traps li{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:.85rem 1.05rem;padding-left:2.5rem;position:relative;font-size:.97rem}
+  ul.traps li::before{content:"⚠";position:absolute;left:1rem;top:.85rem;color:var(--num);font-size:1.05rem}
+  ul.traps b{font-weight:700}
+  ul.traps .fix{display:block;margin-top:.3rem;font-size:.92rem;color:var(--muted)}
+  ul.traps .fix b{color:var(--brand)}
+
+  .selfcheck{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.1rem 1.3rem;margin-top:1rem}
+  .selfcheck ol{margin:.3rem 0 0;padding-left:1.2rem}
+  .selfcheck li{margin:.5rem 0;font-size:.99rem}
+
+  .wrapup{background:var(--brand);color:#fff;border-radius:16px;padding:1.4rem 1.5rem;margin-top:2.4rem}
+  .wrapup h2{color:#fff;margin:0 0 .5rem}
+  .wrapup p{color:#DDEEEA;margin:.4rem 0;font-size:1rem}
+  .wrapup .big-rule{font-size:1.08rem;font-weight:700;color:#fff;margin:.6rem 0}
+  .wrapup .next{font-size:.95rem;color:#BFDBD5;margin-top:1rem;padding-top:1rem;border-top:1px solid rgba(255,255,255,.2)}
+  .wrapup .mono{color:#fff}
+
+  @media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+<!--LESSON-NAV-TOP--><style>.lnav{--lnav-accent:#3D5AF1}.lnav a{text-decoration:none;font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif}.lnav-top{max-width:820px;margin:0 auto;padding:.75rem clamp(1rem,4vw,1.5rem) .1rem}.lnav-top a{display:inline-flex;align-items:center;gap:.35rem;color:var(--lnav-accent);font-weight:600;font-size:.9rem}.lnav-top a:hover{text-decoration:underline}.lnav-bot{max-width:820px;margin:2.6rem auto 3rem;padding:1.1rem clamp(1rem,4vw,1.5rem) 0;border-top:1px solid #E4E8EF;display:flex;align-items:stretch;gap:.55rem}.lnav-bot a{min-width:0;display:flex;flex-direction:column;justify-content:center;gap:.15rem;border:1px solid #E4E8EF;border-radius:12px;padding:.65rem .85rem;color:#182233;background:#fff;transition:border-color .1s,transform .08s}.lnav-bot a:hover{border-color:var(--lnav-accent);transform:translateY(-1px)}.lnav-bot .prev,.lnav-bot .next{flex:1 1 0}.lnav-bot .next{text-align:right}.lnav-bot .dir{font-size:.72rem;color:#8A93A6;font-weight:600}.lnav-bot .ttl{font-size:.9rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.lnav-bot .to-cat{flex:0 0 auto;flex-direction:row;align-items:center;justify-content:center;color:var(--lnav-accent);font-weight:700;font-size:.85rem;white-space:nowrap}@media(max-width:420px){.lnav-bot .to-cat span{display:none}.lnav-bot .to-cat{padding:.65rem .7rem}}</style><nav class="lnav lnav-top"><a href="./catalog.html">← Все темы</a></nav><!--/LESSON-NAV-TOP-->
+<div class="page">
+
+  <header class="hero">
+    <p class="eyebrow">Математика · 5 класс</p>
+    <h1>Упрощение<br>буквенных выражений</h1>
+    <p class="tagline">Как записать длинное выражение короче — и при этом ничего не сломать.</p>
+  </header>
+
+  <div class="lead-in">
+    <p><b>Зачем это уметь.</b> Буквенное выражение — это «формула», которая годится сразу для любых чисел. Только записана она часто длинно: <span class="mono">a + a + a</span> или <span class="mono">3 · b + 2 · b</span>. Упростить — значит записать то же самое короче. Тогда и считать, и подставлять числа проще.</p>
+    <p>Смотри, как в жизни. Ты купил <span class="mono let">a</span> тетрадей по 5 рублей и ещё <span class="mono let">a</span> тетрадей по 7 рублей. Стоимость: <span class="mono">5·a + 7·a</span>. Это же можно сразу записать как <span class="mono">12·a</span> — и работы вдвое меньше.</p>
+  </div>
+
+  <div class="recall">
+    <p><strong>Что вспомнить перед стартом.</strong></p>
+    <ul>
+      <li>Что такое <strong>буквенное выражение</strong>: вместо буквы можно подставить любое число.</li>
+      <li><strong>Свойства умножения</strong> — именно они разрешают переставлять и группировать слагаемые так, как нам удобно.</li>
+    </ul>
+  </div>
+
+  <section>
+    <h2>Сразу разрушим главный миф</h2>
+    <p>Многие думают, что «упростить» — значит «получить число». Это не так.</p>
+    <div class="myth">
+      <div class="box bad">
+        <p class="cap">✕ Так думают</p>
+        <p>«Упростил — значит посчитал до числа».</p>
+        <p class="big mono">5a + 7a = 12</p>
+        <p>Откуда бы взялось 12, если мы не знаем, чему равно <span class="mono">a</span>?</p>
+      </div>
+      <div class="box good">
+        <p class="cap">✓ А как правильно</p>
+        <p>Пока вместо буквы не подставили конкретное число, ответ так и остаётся буквенным выражением.</p>
+        <p class="big mono">5a + 7a = 12a</p>
+        <p>Упрощение — это аккуратная перезапись. Не счёт до числа.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Суть: <span class="em">коэффициент и подобные слагаемые</span></h2>
+    <p>В выражении <span class="mono">3 · a</span> число 3 — это <strong>коэффициент</strong>, оно показывает, <strong>сколько раз взяли букву</strong> <span class="mono let">a</span>. То есть запись <span class="mono">3a</span> означает ровно то же, что <span class="mono">a + a + a</span>.</p>
+    <p>Знак умножения между числом и буквой обычно не пишут: <span class="mono">3 · a = 3a</span>.</p>
+    <p><strong>Подобные слагаемые</strong> — это слагаемые с <strong>одной и той же буквой</strong> (скажем, <span class="mono let">3a</span> и <span class="mono let">5a</span>). Их объединяют так: складывают коэффициенты, а букву оставляют прежней. Это и называется <strong>приведением подобных слагаемых</strong>.</p>
+    <div class="note">
+      <p><b>Проще некуда.</b> <span class="mono">3a + 5a</span> — это «3 яблока плюс 5 яблок = 8 яблок», только вместо яблок буква <span class="mono">a</span>.</p>
+      <p>А вот <span class="mono">3a + 5</span> сложить не выйдет: это «3 яблока и 5 рублей», вещи разные.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Ядро темы: <span class="em">два правила</span></h2>
+    <div class="rules">
+      <div class="rule l">
+        <p class="ttl">1. Приведение подобных слагаемых</p>
+        <p>Чтобы сложить (или вычесть) слагаемые с одной и той же буквой, складывают (вычитают) их коэффициенты, а <strong>букву оставляют без изменения</strong>.</p>
+        <p class="f">k·a + m·a = (k + m)·a</p>
+        <p class="ex"><span class="mono">4a + 2a = 6a</span> — сложили 4 и 2, буква <span class="mono">a</span> осталась как была.</p>
+      </div>
+      <div class="rule n">
+        <p class="ttl">2. Распределительное свойство — раскрытие скобок</p>
+        <p>Множитель перед скобкой умножается <strong>на каждое</strong> слагаемое внутри скобок.</p>
+        <p class="f">a·(b + c) = a·b + a·c<br>a·(b − c) = a·b − a·c</p>
+        <p class="ex"><span class="mono">2 · (a + 3) = 2a + 6</span></p>
+      </div>
+    </div>
+
+    <h3>Обозначения</h3>
+    <div class="rules">
+      <div class="rule">
+        <p class="ttl">Буква — это переменная</p>
+        <p><span class="mono let">a</span>, <span class="mono let">b</span>, <span class="mono let">x</span> — вместо неё можно подставить число.</p>
+      </div>
+      <div class="rule">
+        <p class="ttl">Число перед буквой — коэффициент</p>
+        <p>Если числа не видно, коэффициент равен <strong>1</strong>: <span class="mono">a = 1·a</span>. Именно поэтому <span class="mono">5a + a = 6a</span>, а не <span class="mono">5a</span>.</p>
+      </div>
+    </div>
+
+    <div class="note">
+      <p><b>Когда правило работает — и когда нет.</b></p>
+      <p>• Объединять можно <strong>только подобные</strong> слагаемые, то есть с одинаковой буквой.</p>
+      <p>• Знак перед слагаемым всегда «прилипает» к нему — при вычитании и при раскрытии скобок терять его нельзя.</p>
+      <p>• <span class="mono">3a + 5</span> упростить дальше нельзя — это уже простейший вид, так и записываем в ответ.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Эталонный разбор — <span class="em">думаю вслух</span></h2>
+    <p>Смотри, как я рассуждаю шаг за шагом. У каждого шага объясняю ещё и «почему».</p>
+    <div class="walk">
+      <p class="q">Упростить 4a + 7 + 2a</p>
+      <ol>
+        <li><b>Ищу подобные слагаемые.</b> Подобные — это <span class="mono let">4a</span> и <span class="mono let">2a</span> (обе с буквой <span class="mono">a</span>). Число <span class="mono nm">7</span> стоит отдельно.
+          <span class="why"><b>Почему:</b> объединять можно только слагаемые с одной буквой.</span>
+        </li>
+        <li><b>Складываю коэффициенты подобных:</b> <span class="mono">4 + 2 = 6</span>, значит <span class="mono">4a + 2a = 6a</span>.
+          <span class="why"><b>Почему:</b> буква одна и та же, поэтому складываю только числа перед ней.</span>
+        </li>
+        <li><b>Число 7 остаётся как есть</b> — складывать его не с чем.
+          <span class="why"><b>Почему:</b> <span class="mono">7</span> — это не «штуки a», его нельзя приклеить к <span class="mono">6a</span>.</span>
+        </li>
+      </ol>
+      <div class="verdict">Ответ: 6a + 7</div>
+    </div>
+
+    <h3>Теперь допиши сам</h3>
+    <div class="drill">
+      <details>
+        <summary><span class="q">Упростить <span class="mono">9x − 3x + 5</span>. Подобные: <span class="mono">9x</span> и <span class="mono">3x</span>; значит <span class="mono">9x − 3x = ___ · x = ___</span>, число 5 остаётся, ответ <span class="mono">___ + 5</span>.</span></summary>
+        <div class="ans"><span class="mono">9 − 3 = 6</span>, поэтому <span class="mono">9x − 3x = 6x</span>. Число <span class="mono">5</span> ни с чем не объединяется. Ответ: <b class="mono">6x + 5</b>.</div>
+      </details>
+      <details>
+        <summary><span class="q">А это уже полностью сам: упростить <span class="mono">8b + b + 4 − 2</span>.</span></summary>
+        <div class="ans">Помни: <span class="mono">b = 1·b</span>, поэтому <span class="mono">8b + b = 9b</span>. Числа отдельно: <span class="mono">4 − 2 = 2</span>. Ответ: <b class="mono">9b + 2</b>.</div>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <h2>Наглядно: <span class="em">карточки с буквой</span></h2>
+    <p>Смотри: <span class="mono">3a</span> — это три одинаковые карточки с буквой <span class="mono let">a</span>, а <span class="mono">2a</span> — ещё две такие же. Вместе выходит пять карточек <span class="mono let">a</span>:</p>
+    <div class="cards">
+      <span class="cc a">a</span><span class="cc a">a</span><span class="cc a">a</span>
+      <span class="op">+</span>
+      <span class="cc a">a</span><span class="cc a">a</span>
+      <span class="op">=</span>
+      <span class="cc a">a</span><span class="cc a">a</span><span class="cc a">a</span><span class="cc a">a</span><span class="cc a">a</span>
+    </div>
+    <p class="cards-cap"><span class="mono">3a + 2a = 5a</span> — карточки одинаковые, поэтому их просто пересчитали.</p>
+    <p>А карточку с числом <span class="mono nm">5</span> к ним не приставишь: она другого «цвета».</p>
+    <div class="cards">
+      <span class="cc a">a</span><span class="cc a">a</span><span class="cc a">a</span>
+      <span class="op">+</span>
+      <span class="cc n">5</span>
+      <span class="op">=</span>
+      <span class="cc a">a</span><span class="cc a">a</span><span class="cc a">a</span>
+      <span class="op">+</span>
+      <span class="cc n">5</span>
+    </div>
+    <p class="cards-cap"><span class="mono">3a + 5</span> — так и остаётся, это уже простейший вид.</p>
+
+    <h3>Предскажи → проверь → объясни</h3>
+    <p>Сначала ответь себе: чему равно <span class="mono">4a + 3a</span>? А теперь проверим подстановкой. Двигай ползунок: вместо <span class="mono let">a</span> подставляется разное число, а слева и справа всё равно выходит одно и то же.</p>
+    <div class="poe">
+      <label class="lbl" for="poeA">Подставим <span class="mono let">a</span> =
+        <span class="val mono" id="poeVal">2</span>
+        <input type="range" id="poeA" min="1" max="10" step="1" value="2">
+      </label>
+      <div class="lines">
+        <div class="ln" id="poeL1"></div>
+        <div class="ln" id="poeL2"></div>
+      </div>
+      <p class="eq" id="poeEq"></p>
+    </div>
+    <p>Вывод: упрощение <strong>не меняет значения выражения</strong>. <span class="mono">4a + 3a</span> и <span class="mono">7a</span> — одно и то же, только записано короче.</p>
+  </section>
+
+  <section>
+    <h2>Тренажёр — <span class="em">упрощай сколько хочешь</span></h2>
+    <p>Задания появляются бесконечно. Упрости выражение и запиши ответ в поле — например, <span class="mono">6a + 7</span>. Порядок слагаемых не важен, пробелы и знак <span class="mono">·</span> можно не ставить. Не получается — жми «Показать решение».</p>
+    <div class="trainer">
+      <p class="tr-task mono" id="trTask">4a + 7 + 2a</p>
+      <p class="tr-hint">Упрости выражение</p>
+      <div class="tr-in">
+        <input type="text" id="trAns" inputmode="text" autocomplete="off" spellcheck="false" placeholder="твой ответ">
+      </div>
+      <div class="tr-btns">
+        <button class="go" id="trCheck" type="button">Проверить</button>
+        <button class="sh" id="trShow" type="button">Показать решение</button>
+        <button class="nw" id="trNew" type="button">🎲 Новое задание</button>
+      </div>
+      <div class="tr-res" id="trRes"></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Практика по нарастанию</h2>
+
+    <p class="lvl">Уровень 1 · понимание</p>
+    <div class="drill">
+      <details>
+        <summary><span class="q">1) Назови коэффициент в выражении <span class="mono">7m</span>.</span></summary>
+        <div class="ans">Коэффициент — <b>7</b>. Он показывает, что букву <span class="mono">m</span> взяли 7 раз.</div>
+      </details>
+      <details>
+        <summary><span class="q">2) Какие из слагаемых подобны: <span class="mono">5a</span>, <span class="mono">3b</span>, <span class="mono">2a</span>?</span></summary>
+        <div class="ans">Подобны <b class="mono">5a</b> и <b class="mono">2a</b>: буква у них одна и та же — <span class="mono">a</span>. У <span class="mono">3b</span> буква другая, пары ему нет.</div>
+      </details>
+    </div>
+
+    <p class="lvl">Уровень 2 · применение</p>
+    <div class="drill">
+      <details>
+        <summary><span class="q">3) Упрости: <span class="mono">6c + 3c</span></span></summary>
+        <div class="ans">Буква одна и та же, складываем коэффициенты: <span class="mono">6 + 3 = 9</span>. Ответ: <b class="mono">9c</b>.</div>
+      </details>
+      <details>
+        <summary><span class="q">4) Упрости: <span class="mono">10y − 4y + 1</span></span></summary>
+        <div class="ans">Подобные — <span class="mono">10y</span> и <span class="mono">4y</span>: <span class="mono">10 − 4 = 6</span>, получаем <span class="mono">6y</span>. Число 1 остаётся отдельно. Ответ: <b class="mono">6y + 1</b>.</div>
+      </details>
+      <details>
+        <summary><span class="q">5) Упрости: <span class="mono">2 · (a + 3)</span></span></summary>
+        <div class="ans">Раскрываем скобки — умножаем 2 на каждое слагаемое: <span class="mono">2 · a = 2a</span> и <span class="mono">2 · 3 = 6</span>. Ответ: <b class="mono">2a + 6</b>.</div>
+      </details>
+    </div>
+
+    <p class="lvl">Уровень 3 · анализ</p>
+    <div class="drill">
+      <details>
+        <summary><span class="q">6) Найди ошибку: ученик записал <span class="mono">4a + 5 = 9a</span>. В чём он не прав и как правильно?</span></summary>
+        <div class="ans">Он сложил число с буквенным слагаемым. А <span class="mono">4a</span> и <span class="mono">5</span> <b>не подобны</b>: у одного буква есть, у другого нет. Складывать их нельзя. Верная запись: <b class="mono">4a + 5</b>, дальше не упрощается.</div>
+      </details>
+      <details>
+        <summary><span class="q">7) Что изменится в ответе <span class="mono">7x + 2x</span>, если первый коэффициент заменить с 7 на 1?</span></summary>
+        <div class="ans">Было: <span class="mono">7x + 2x = 9x</span>. Станет: <span class="mono">x + 2x = 3x</span> — ведь <span class="mono">x = 1·x</span>, то есть <span class="mono">1 + 2 = 3</span>. Ответ уменьшился с <b class="mono">9x</b> до <b class="mono">3x</b>.</div>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <h2>Ловушки — не попадись</h2>
+    <ul class="traps">
+      <li><b>«Складывают» число с буквой:</b> пишут <span class="mono">3a + 2 = 5a</span>. Это неверно: <span class="mono">2</span> — не «штуки a».
+        <span class="fix"><b>Как не ошибиться:</b> объединяй только слагаемые с одинаковой буквой. «3 яблока + 2 рубля» не равно «5 яблок».</span>
+      </li>
+      <li><b>Складывают заодно и буквы:</b> в <span class="mono">4a + 2a</span> получают <span class="mono">6a²</span> или <span class="mono">6aa</span>.
+        <span class="fix"><b>Как не ошибиться:</b> буква при сложении <b>не меняется</b>, складываем только числа: <span class="mono">4a + 2a = 6a</span>.</span>
+      </li>
+      <li><b>Теряют знак при раскрытии скобок:</b> <span class="mono">2 · (a − 3) = 2a − 3</span> (забыли умножить 3 на 2) или <span class="mono">2 · (a − 3) = 2a + 6</span> (потеряли минус).
+        <span class="fix"><b>Как не ошибиться:</b> умножай на каждое слагаемое и сохраняй знак: <span class="mono">2 · (a − 3) = 2a − 6</span>.</span>
+      </li>
+      <li><b>Забывают про коэффициент 1:</b> в <span class="mono">5a + a</span> пишут <span class="mono">5a</span> вместо <span class="mono">6a</span>.
+        <span class="fix"><b>Как не ошибиться:</b> помни, что <span class="mono">a = 1·a</span>, поэтому <span class="mono">5a + a = 6a</span>.</span>
+      </li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Проверь, что понял</h2>
+    <p>Ответь на эти вопросы вслух, своими словами — как будто объясняешь другу. Объяснил? Значит тема твоя.</p>
+    <div class="selfcheck">
+      <ol>
+        <li>Можно ли сложить <span class="mono">5x</span> и <span class="mono">3</span>? Почему?</li>
+        <li>Чему равно <span class="mono">6a + a</span>? (Не забудь про коэффициент 1.)</li>
+        <li>Раскрой скобки: <span class="mono">3 · (b + 2)</span>.</li>
+      </ol>
+    </div>
+    <div class="drill" style="margin-top:.7rem">
+      <details>
+        <summary><span class="q">Сверить ответы</span></summary>
+        <div class="ans">
+          1) Нельзя: <span class="mono">5x</span> и <span class="mono">3</span> не подобны — у одного есть буква, у другого нет. Так и оставляем: <b class="mono">5x + 3</b>.<br>
+          2) <span class="mono">a = 1·a</span>, значит <span class="mono">6 + 1 = 7</span> и получается <b class="mono">7a</b>.<br>
+          3) Умножаем 3 на каждое слагаемое: <span class="mono">3 · b = 3b</span>, <span class="mono">3 · 2 = 6</span>. Ответ: <b class="mono">3b + 6</b>.
+        </div>
+      </details>
+    </div>
+  </section>
+
+  <div class="wrapup">
+    <h2>Запомни главное</h2>
+    <p class="big-rule">Упростить выражение — значит объединить подобные слагаемые: сложить их коэффициенты, а букву оставить. И если есть скобки, аккуратно раскрыть их, не потеряв знаки.</p>
+    <p>Подобные — только с одинаковой буквой. Число с буквой не складывается. А буква <span class="mono">a</span> без числа — это <span class="mono">1·a</span>.</p>
+    <p class="next">👉 В 7 классе на этом будут держаться <strong>алгебраические выражения</strong>: те же подобные слагаемые, те же скобки, только букв и действий станет больше.</p>
+  </div>
+
+</div>
+
+<script>
+(function(){
+  var M = "−"; // настоящий минус
+
+  /* ---------- POE ---------- */
+  var sl=document.getElementById('poeA'), val=document.getElementById('poeVal'),
+      l1=document.getElementById('poeL1'), l2=document.getElementById('poeL2'), eq=document.getElementById('poeEq');
+  function poe(){
+    var a=+sl.value;
+    val.textContent=a;
+    l1.textContent='4a + 3a = 4·'+a+' + 3·'+a+' = '+(4*a)+' + '+(3*a)+' = '+(7*a);
+    l2.textContent='7a = 7·'+a+' = '+(7*a);
+    eq.textContent='✓ Совпало: и слева, и справа получилось '+(7*a);
+  }
+  sl.addEventListener('input',poe);
+  poe();
+
+  /* ---------- Тренажёр ---------- */
+  var LETTERS=['a','b','c','x','y','m'];
+  var taskEl=document.getElementById('trTask'),
+      inEl=document.getElementById('trAns'),
+      resEl=document.getElementById('trRes');
+  var cur=null;
+
+  function ri(a,b){ return Math.floor(Math.random()*(b-a+1))+a; }
+  function pick(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+
+  // красивая запись выражения k*x + c
+  function expr(k,c,x){
+    var s='';
+    if(k===0) s='';
+    else if(k===1) s=x;
+    else s=k+x;
+    if(c===0) return s===''?'0':s;
+    if(s==='') return String(c);
+    return s+' '+(c>0?'+':M)+' '+Math.abs(c);
+  }
+  // слагаемое с буквой для текста задания
+  function term(k,x){ return k===1?x:(k+x); }
+
+  function makeTask(){
+    var x=pick(LETTERS);
+    var t=ri(1,8);
+    var k,m,n,a,b,q,ans,steps;
+
+    if(t===1){ // k·x + m·x
+      k=ri(2,9); m=ri(2,9);
+      q=term(k,x)+' + '+term(m,x);
+      ans={k:k+m,c:0};
+      steps=[
+        'Оба слагаемых с буквой <span class="mono">'+x+'</span> — значит они подобные.',
+        'Складываю коэффициенты: <span class="mono">'+k+' + '+m+' = '+(k+m)+'</span>. Буква остаётся прежней.'
+      ];
+    } else if(t===2){ // k·x − m·x + n
+      m=ri(2,6); k=m+ri(1,5); n=ri(1,12);
+      q=term(k,x)+' '+M+' '+term(m,x)+' + '+n;
+      ans={k:k-m,c:n};
+      steps=[
+        'Подобные — <span class="mono">'+term(k,x)+'</span> и <span class="mono">'+term(m,x)+'</span>: у них одна буква.',
+        'Вычитаю коэффициенты: <span class="mono">'+k+' '+M+' '+m+' = '+(k-m)+'</span>, получаю <span class="mono">'+term(k-m,x)+'</span>.',
+        'Число <span class="mono">'+n+'</span> не с чем объединять — оно остаётся.'
+      ];
+    } else if(t===3){ // k·x + n + m·x
+      k=ri(2,7); m=ri(2,7); n=ri(2,12);
+      q=term(k,x)+' + '+n+' + '+term(m,x);
+      ans={k:k+m,c:n};
+      steps=[
+        'Ищу подобные: это <span class="mono">'+term(k,x)+'</span> и <span class="mono">'+term(m,x)+'</span>, они стоят не рядом — это не мешает.',
+        'Складываю коэффициенты: <span class="mono">'+k+' + '+m+' = '+(k+m)+'</span>.',
+        'Число <span class="mono">'+n+'</span> остаётся отдельным слагаемым.'
+      ];
+    } else if(t===4){ // k·x + x  (коэффициент 1)
+      k=ri(2,9);
+      q=term(k,x)+' + '+x;
+      ans={k:k+1,c:0};
+      steps=[
+        'У буквы <span class="mono">'+x+'</span> без числа коэффициент равен 1: <span class="mono">'+x+' = 1·'+x+'</span>.',
+        'Складываю коэффициенты: <span class="mono">'+k+' + 1 = '+(k+1)+'</span>.'
+      ];
+    } else if(t===5){ // k·(x + n)
+      k=ri(2,7); n=ri(2,9);
+      q=k+' · ('+x+' + '+n+')';
+      ans={k:k,c:k*n};
+      steps=[
+        'Раскрываю скобки: множитель <span class="mono">'+k+'</span> умножаю на каждое слагаемое внутри.',
+        '<span class="mono">'+k+' · '+x+' = '+term(k,x)+'</span> и <span class="mono">'+k+' · '+n+' = '+(k*n)+'</span>.'
+      ];
+    } else if(t===6){ // k·(x − n)
+      k=ri(2,7); n=ri(2,9);
+      q=k+' · ('+x+' '+M+' '+n+')';
+      ans={k:k,c:-k*n};
+      steps=[
+        'Раскрываю скобки: <span class="mono">'+k+'</span> умножаю на каждое слагаемое.',
+        '<span class="mono">'+k+' · '+x+' = '+term(k,x)+'</span>, а <span class="mono">'+k+' · '+n+' = '+(k*n)+'</span>.',
+        'Знак минус перед вторым слагаемым сохраняю — он «прилипший»: получается <span class="mono">'+M+' '+(k*n)+'</span>.'
+      ];
+    } else if(t===7){ // k·x + a − b  (числа отдельно)
+      k=ri(2,8); b=ri(1,6); a=b+ri(1,8);
+      q=term(k,x)+' + '+a+' '+M+' '+b;
+      ans={k:k,c:a-b};
+      steps=[
+        'Буквенное слагаемое здесь одно — <span class="mono">'+term(k,x)+'</span>, объединять его не с чем.',
+        'А числа между собой подобны: <span class="mono">'+a+' '+M+' '+b+' = '+(a-b)+'</span>.'
+      ];
+    } else { // краевой: упростить нельзя
+      k=ri(2,9); n=ri(2,12);
+      q=term(k,x)+' + '+n;
+      ans={k:k,c:n};
+      steps=[
+        'Смотрю на слагаемые: <span class="mono">'+term(k,x)+'</span> с буквой и <span class="mono">'+n+'</span> без буквы.',
+        'Они <b>не подобны</b> — складывать их нельзя. Это уже простейший вид, ответ переписываю как есть.'
+      ];
+    }
+    return {x:x, q:q, k:ans.k, c:ans.c, steps:steps};
+  }
+
+  // парсер ответа ученика -> {k, c} или null
+  var CYR={'а':'a','в':'b','с':'c','х':'x','у':'y','м':'m','А':'a','В':'b','С':'c','Х':'x','У':'y','М':'m'};
+  function parse(str,x){
+    if(!str) return null;
+    var s=String(str).toLowerCase();
+    s=s.replace(/[авсхумАВСХУМ]/g,function(ch){ return CYR[ch]||ch; });
+    s=s.replace(/[−–—]/g,'-');
+    s=s.replace(/[\s·*]/g,'');
+    if(s==='') return null;
+    if(!/^[+-]?[0-9a-z+-]*$/.test(s)) return null;
+    if(s.charAt(0)!=='+' && s.charAt(0)!=='-') s='+'+s;
+    var re=/([+-])([0-9]*)([a-z]?)/g, mm, used=0, K=0, C=0;
+    while((mm=re.exec(s))!==null){
+      if(mm.index!==used) return null;
+      used=re.lastIndex;
+      var sign=(mm[1]==='-')?-1:1, num=mm[2], letter=mm[3];
+      if(num==='' && letter==='') return null;
+      if(letter!==''){
+        if(letter!==x) return null;
+        K+=sign*(num===''?1:parseInt(num,10));
+      } else {
+        C+=sign*parseInt(num,10);
+      }
+    }
+    if(used!==s.length) return null;
+    return {k:K,c:C};
+  }
+
+  function solution(t){
+    var h='<div class="tr-sol">';
+    for(var i=0;i<t.steps.length;i++) h+='<div class="row">'+(i+1)+') '+t.steps[i]+'</div>';
+    h+='<div class="fin">Ответ: <span class="mono">'+expr(t.k,t.c,t.x)+'</span></div>';
+    return h+'</div>';
+  }
+  function locked(){ return resEl.getAttribute('data-done')==='1'; }
+
+  function newTask(seed){
+    cur = seed || makeTask();
+    taskEl.textContent=cur.q;
+    inEl.value=''; inEl.removeAttribute('disabled');
+    resEl.innerHTML=''; resEl.removeAttribute('data-done');
+  }
+  function check(){
+    if(locked()) return;
+    var got=parse(inEl.value,cur.x);
+    if(got===null){
+      resEl.innerHTML='<div class="head info">Не понял запись. Пиши ответ вида <span class="mono">6'+cur.x+' + 7</span> — число с буквой и, если есть, отдельное число.</div>';
+      return;
+    }
+    var ok=(got.k===cur.k && got.c===cur.c);
+    resEl.setAttribute('data-done','1');
+    resEl.innerHTML=(ok
+      ? '<div class="head ok">✓ Верно! <span class="mono">'+expr(cur.k,cur.c,cur.x)+'</span></div>'
+      : '<div class="head no">Пока нет. Смотри разбор — и попробуй следующее задание.</div>')+solution(cur);
+  }
+  function show(){
+    if(locked()) return;
+    resEl.setAttribute('data-done','1');
+    resEl.innerHTML='<div class="head info">Разбор:</div>'+solution(cur);
+  }
+  document.getElementById('trCheck').addEventListener('click',check);
+  document.getElementById('trShow').addEventListener('click',show);
+  document.getElementById('trNew').addEventListener('click',function(){ newTask(); inEl.focus(); });
+  inEl.addEventListener('keydown',function(e){ if(e.key==='Enter'){ check(); } });
+
+  // стартовая задача = ровно та, что показана в разметке (эталон из разбора)
+  newTask({x:'a', q:'4a + 7 + 2a', k:6, c:7, steps:[
+    'Подобные — <span class="mono">4a</span> и <span class="mono">2a</span>, у них одна буква <span class="mono">a</span>.',
+    'Складываю коэффициенты: <span class="mono">4 + 2 = 6</span>, получаю <span class="mono">6a</span>.',
+    'Число <span class="mono">7</span> остаётся отдельно — его не с чем складывать.'
+  ]});
+})();
+</script>
+<!--LESSON-NAV-BOT--><nav class="lnav lnav-bot"><a class="prev" href="./m5-bukvennye-vyrazheniya.html"><span class="dir">← Предыдущая</span><span class="ttl">Буквенные выражения и значение выражения</span></a><a class="to-cat" href="./catalog.html">📚 <span>Все темы</span></a><a class="next" href="./m5-uravnenie-prostoe.html"><span class="dir">Следующая →</span><span class="ttl">Уравнение и его корень; решение простейших уравнений</span></a></nav><!--/LESSON-NAV-BOT-->
