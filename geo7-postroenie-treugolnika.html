@@ -1,0 +1,812 @@
+<!doctype html>
+<!-- humanized: humanizer-ru, 2026-09-04, тире возвращено -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Построение треугольника по трём элементам — геометрия 7 класс</title>
+<style>
+  :root{
+    --paper:#F6F7F9; --card:#FFFFFF; --ink:#1D2530; --muted:#606B7A; --line:#E3E7EE;
+    --brand:#2E5AAC; --brand-soft:#E4EBF7;
+    --sss:#159A8A; --sss-soft:#DEF3F0;   /* три стороны */
+    --sus:#7A4FBF; --sus-soft:#EDE6F9;   /* две стороны и угол */
+    --usu:#E27C2C; --usu-soft:#FBEEDF;   /* сторона и два угла */
+    --ban:#C23B3B;  --ban-soft:#FBE6E6;
+    --ok:#1E8E5A; --no:#C23B3B;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper)}
+  .page{max-width:720px;margin:0 auto;padding:clamp(1.4rem,4vw,3rem) clamp(1.1rem,4vw,2rem) 4.5rem;
+    color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:17.5px;line-height:1.68;-webkit-font-smoothing:antialiased}
+  .mono{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-variant-numeric:tabular-nums;font-weight:600}
+
+  .hero{border-bottom:3px solid var(--brand);padding-bottom:1.4rem;margin-bottom:1.8rem}
+  .eyebrow{font-size:.74rem;letter-spacing:.15em;text-transform:uppercase;color:var(--brand);font-weight:700;margin:0 0 .55rem}
+  h1{font-size:clamp(1.9rem,6vw,2.8rem);line-height:1.05;margin:0;font-weight:800;letter-spacing:-.02em;text-wrap:balance}
+  .tagline{font-size:1.12rem;color:var(--muted);margin:.85rem 0 0;text-wrap:pretty}
+
+  section{margin-top:2.4rem}
+  h2{font-size:1.5rem;margin:0 0 .3rem;font-weight:780;letter-spacing:-.015em;text-wrap:balance}
+  h2 .em{color:var(--brand)}
+  h3{font-size:1.08rem;margin:1.4rem 0 .2rem}
+  p{margin:.7rem 0}
+  strong{font-weight:680}
+
+  .lead-in{background:var(--brand-soft);border-radius:14px;padding:1.1rem 1.3rem;font-size:1.02rem}
+  .lead-in p{margin:.4rem 0}
+  .lead-in b{color:var(--brand)}
+
+  .formula-box{background:var(--ink);color:#fff;border-radius:14px;padding:1.3rem;text-align:center;margin-top:1rem}
+  .formula-box .eq{font-family:ui-monospace,Menlo,monospace;font-size:clamp(1rem,4vw,1.4rem);font-weight:700;line-height:1.5}
+  .formula-box .eq .h{color:#8FB2E6}
+  .formula-box .note{font-size:.9rem;color:#AEB8C6;margin:.7rem 0 0;line-height:1.6}
+
+  .note{border-left:4px solid var(--brand);background:var(--brand-soft);border-radius:0 10px 10px 0;padding:.8rem 1.1rem;margin-top:1rem;font-size:.98rem}
+  .note b{color:var(--brand)}
+  .note p{margin:.35rem 0}
+  .note.warn{border-left-color:var(--usu);background:var(--usu-soft)}
+  .note.warn b{color:#A8560F}
+  .note.ban{border-left-color:var(--ban);background:var(--ban-soft)}
+  .note.ban b{color:var(--ban)}
+
+  /* три случая — цвет-код */
+  .cases{display:grid;gap:.8rem;margin-top:1rem}
+  @media(min-width:600px){.cases{grid-template-columns:repeat(3,1fr)}}
+  .case{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1rem 1.1rem}
+  .case.c1{border-top:4px solid var(--sss)} .case.c2{border-top:4px solid var(--sus)} .case.c3{border-top:4px solid var(--usu)}
+  .case h3{margin:.1rem 0 .45rem;font-size:1.02rem;letter-spacing:.03em}
+  .case.c1 h3{color:var(--sss)} .case.c2 h3{color:var(--sus)} .case.c3 h3{color:var(--usu)}
+  .case .give{font-family:ui-monospace,Menlo,monospace;font-size:.92rem;font-weight:600;margin:0 0 .5rem}
+  .case p{margin:.4rem 0;font-size:.94rem}
+  .case .cond{font-size:.9rem;padding:.5rem .7rem;border-radius:9px;margin-top:.6rem}
+  .case.c1 .cond{background:var(--sss-soft)} .case.c2 .cond{background:var(--sus-soft)} .case.c3 .cond{background:var(--usu-soft)}
+
+  .steps{list-style:none;counter-reset:s;margin:1rem 0 0;padding:0;display:flex;flex-direction:column;gap:.55rem}
+  .steps li{counter-increment:s;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:.85rem 1.05rem .85rem 3rem;position:relative;font-size:.97rem}
+  .steps li::before{content:counter(s);position:absolute;left:.85rem;top:.8rem;width:1.5rem;height:1.5rem;border-radius:50%;
+    background:var(--brand);color:#fff;font-weight:800;font-size:.85rem;display:flex;align-items:center;justify-content:center}
+  .steps b{font-weight:750}
+
+  /* Диаграмма */
+  .diagram{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:1.2rem;margin-top:1rem}
+  .diagram canvas{width:100%;height:auto;display:block;border-radius:8px;background:#FCFDFE}
+  .picker{display:flex;flex-wrap:wrap;gap:.45rem;margin-bottom:.9rem}
+  .picker button{font:inherit;font-size:.85rem;font-weight:700;cursor:pointer;border-radius:999px;padding:.4rem .85rem;border:1.5px solid var(--line);background:#fff;color:var(--muted)}
+  .picker button.on{background:var(--brand-soft);border-color:var(--brand);color:var(--brand)}
+  .picker button:focus-visible{outline:3px solid var(--brand);outline-offset:2px}
+  .dctl{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.9rem;align-items:center}
+  .dctl button{font:inherit;font-weight:700;font-size:.9rem;cursor:pointer;border:none;border-radius:9px;padding:.55rem .95rem;color:#fff;background:var(--brand)}
+  .dctl button.ghost{background:transparent;color:var(--brand);border:1px solid var(--brand)}
+  .dctl button:disabled{opacity:.45;cursor:default}
+  .dctl button:focus-visible{outline:3px solid var(--brand);outline-offset:2px}
+  .dctl .count{font-family:ui-monospace,Menlo,monospace;font-size:.85rem;color:var(--muted);margin-left:auto}
+  .dsay{margin:.9rem 0 0;padding:.75rem 1rem;background:var(--brand-soft);border-radius:10px;font-size:.95rem;line-height:1.6;min-height:4.4rem}
+  .dsay b{color:var(--brand)}
+
+  .walk{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.15rem 1.3rem;margin-top:1rem}
+  .walk .q{font-weight:700;font-size:1.02rem;margin:0 0 .9rem;padding-bottom:.7rem;border-bottom:1px solid var(--line)}
+  .walk ol{margin:0;padding-left:1.2rem;display:flex;flex-direction:column;gap:.55rem}
+  .walk li{font-size:.95rem}
+  .walk .why{color:var(--muted)}
+  .verdict{margin-top:1rem;padding:.7rem 1rem;background:var(--brand-soft);border-radius:10px;font-weight:650;color:var(--brand);font-family:ui-monospace,Menlo,monospace}
+
+  .tbl-wrap{overflow-x:auto;margin-top:1rem;border:1px solid var(--line);border-radius:12px;background:var(--card)}
+  table{border-collapse:collapse;width:100%;min-width:460px;font-size:.93rem}
+  th,td{text-align:left;padding:.7rem .9rem;border-bottom:1px solid var(--line);vertical-align:top}
+  th{font-weight:750;background:#FBFCFD}
+  tr:last-child td{border-bottom:none}
+  td.l1{color:var(--sss);font-weight:750} td.l2{color:var(--sus);font-weight:750} td.l3{color:var(--usu);font-weight:750}
+
+  /* Тренажёр */
+  .trainer{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.2rem 1.3rem;margin-top:1rem}
+  .tr-kind{font-size:.74rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:700;text-align:center;margin:0 0 .5rem}
+  .tr-task{font-size:clamp(.98rem,3.6vw,1.08rem);text-align:center;padding:1rem;background:var(--brand-soft);border-radius:10px;font-weight:600;line-height:1.55}
+  .tr-task b{font-family:ui-monospace,Menlo,monospace;color:var(--ink)}
+  .tr-opts{display:flex;flex-direction:column;gap:.5rem;margin-top:1rem}
+  .tr-opts button{font:inherit;font-size:.95rem;text-align:left;cursor:pointer;border:1.5px solid var(--line);background:#fff;color:var(--ink);
+    border-radius:10px;padding:.65rem .9rem;line-height:1.45}
+  .tr-opts button:hover{border-color:var(--brand)}
+  .tr-opts button:focus-visible{outline:3px solid var(--brand);outline-offset:2px}
+  .tr-opts button.pick-ok{border-color:var(--ok);background:#E8F5EE;color:#14603C}
+  .tr-opts button.pick-no{border-color:var(--no);background:var(--ban-soft);color:#8A2626}
+  .tr-opts button:disabled{cursor:default}
+  .tr-ctl{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:1rem;align-items:center;justify-content:center}
+  .tr-ctl button{font:inherit;font-weight:700;font-size:.9rem;cursor:pointer;border:none;border-radius:9px;padding:.55rem .95rem;color:#fff;background:var(--brand)}
+  .tr-ctl button.ghost{background:transparent;color:var(--brand);border:1px solid var(--brand)}
+  .tr-ctl button:focus-visible{outline:3px solid var(--brand);outline-offset:2px}
+  .tr-result{margin-top:.9rem;font-size:.96rem;min-height:1.2rem;text-align:center}
+  .tr-result .ok{color:var(--ok);font-weight:700} .tr-result .bad{color:var(--no);font-weight:700}
+  .tr-result .sol{margin-top:.6rem;padding:.8rem 1rem;background:#FCFDFE;border:1px solid var(--line);border-radius:10px;font-size:.92rem;line-height:1.75;text-align:left;overflow-x:auto}
+  .tr-score{font-size:.85rem;color:var(--muted);text-align:center;margin:.7rem 0 0;font-family:ui-monospace,Menlo,monospace}
+  .tr-hint{font-size:.85rem;color:var(--muted);text-align:center;margin:.5rem 0 0}
+
+  details{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:.9rem 1.1rem;margin-top:.7rem}
+  details[open]{border-color:var(--brand)}
+  summary{cursor:pointer;font-weight:650;list-style:none;display:flex;justify-content:space-between;gap:1rem;align-items:center}
+  summary::-webkit-details-marker{display:none}
+  summary::after{content:"проверить";font-size:.8rem;color:var(--brand);font-weight:700;white-space:nowrap}
+  details[open] summary::after{content:"скрыть"}
+  summary:focus-visible{outline:3px solid var(--brand);outline-offset:3px;border-radius:6px}
+  .ans{margin-top:.75rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.96rem;color:var(--muted)}
+  .ans b{color:var(--ink)}
+  .drill{display:flex;flex-direction:column;gap:.2rem;margin-top:1rem}
+
+  ul.traps{list-style:none;margin:1rem 0 0;padding:0;display:flex;flex-direction:column;gap:.7rem}
+  ul.traps li{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:.85rem 1.05rem;padding-left:2.5rem;position:relative;font-size:.97rem}
+  ul.traps li::before{content:"⚠";position:absolute;left:1rem;top:.85rem;color:var(--usu)}
+  ul.traps b{font-weight:700}
+
+  .wrapup{background:var(--brand);color:#fff;border-radius:16px;padding:1.4rem 1.5rem;margin-top:2.4rem}
+  .wrapup h2{color:#fff;margin:0 0 .5rem}
+  .wrapup p{color:#DEE7F5;margin:.4rem 0;font-size:1rem}
+  .wrapup .big-rule{font-size:clamp(.95rem,3.6vw,1.12rem);font-weight:800;color:#fff;margin:.6rem 0;font-family:ui-monospace,Menlo,monospace;line-height:1.5}
+  .wrapup .next{font-size:.95rem;color:#C6D5EE;margin-top:1rem;padding-top:1rem;border-top:1px solid rgba(255,255,255,.2)}
+  .wrapup .next b{color:#fff}
+
+  @media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+<!--LESSON-NAV-TOP--><style>.lnav{--lnav-accent:#3D5AF1}.lnav a{text-decoration:none;font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif}.lnav-top{max-width:820px;margin:0 auto;padding:.75rem clamp(1rem,4vw,1.5rem) .1rem}.lnav-top a{display:inline-flex;align-items:center;gap:.35rem;color:var(--lnav-accent);font-weight:600;font-size:.9rem}.lnav-top a:hover{text-decoration:underline}.lnav-bot{max-width:820px;margin:2.6rem auto 3rem;padding:1.1rem clamp(1rem,4vw,1.5rem) 0;border-top:1px solid #E4E8EF;display:flex;align-items:stretch;gap:.55rem}.lnav-bot a{min-width:0;display:flex;flex-direction:column;justify-content:center;gap:.15rem;border:1px solid #E4E8EF;border-radius:12px;padding:.65rem .85rem;color:#182233;background:#fff;transition:border-color .1s,transform .08s}.lnav-bot a:hover{border-color:var(--lnav-accent);transform:translateY(-1px)}.lnav-bot .prev,.lnav-bot .next{flex:1 1 0}.lnav-bot .next{text-align:right}.lnav-bot .dir{font-size:.72rem;color:#8A93A6;font-weight:600}.lnav-bot .ttl{font-size:.9rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.lnav-bot .to-cat{flex:0 0 auto;flex-direction:row;align-items:center;justify-content:center;color:var(--lnav-accent);font-weight:700;font-size:.85rem;white-space:nowrap}@media(max-width:420px){.lnav-bot .to-cat span{display:none}.lnav-bot .to-cat{padding:.65rem .7rem}}</style><nav class="lnav lnav-top"><a href="./catalog.html">← Все темы</a></nav><!--/LESSON-NAV-TOP-->
+<div class="page">
+
+  <header class="hero">
+    <p class="eyebrow">Геометрия · 7 класс</p>
+    <h1>Построение треугольника по трём элементам</h1>
+    <p class="tagline">Три числа в условии — ещё не треугольник. Сначала проверяем, существует ли он, и только потом берём циркуль.</p>
+  </header>
+
+  <div class="lead-in">
+    <p><b>Зачем это нужно.</b> Построение циркулем и линейкой — это «честная» геометрия. Фигура получается не на глаз, а по точным правилам, и про неё можно <i>доказать</i>, что она именно такая, как требовалось. Отсюда растут все задачи на построение: биссектриса, перпендикуляр, деление отрезка.</p>
+    <p><b>И тут же связь с признаками равенства.</b> Если три заданных элемента однозначно задают треугольник — значит, по ним он и строится единственным образом (с точностью до наложения). Поэтому три случая построения называются так же, как признаки: ССС, СУС, УСУ.</p>
+  </div>
+
+  <section>
+    <h2>Главный миф: <span class="em">«задал три числа — треугольник будет»</span></h2>
+    <p>Кажется же: назвал три длины — фигура сама собой получится. А вот и нет.</p>
+    <p>Возьми стороны <span class="mono">2</span>, <span class="mono">3</span> и <span class="mono">10</span>. Отложи отрезок длиной 10 и попробуй дотянуться до его концов двумя короткими сторонами. <strong>Не дотянутся:</strong> 2 + 3 = 5, а это гораздо меньше 10. Дуги, которые ты проведёшь циркулем, просто не пересекутся — вершине негде появиться.</p>
+    <div class="note ban">
+      <p><b>Первый шаг любого построения — проверка существования.</b> Не «начинаю чертить», а «а существует ли вообще такой треугольник?».</p>
+    </div>
+    <p>Ниже, в разделе с чертежом, есть вкладка «2, 3, 10». Открой её и посмотри сам: дуги расходятся, между ними пропасть.</p>
+  </section>
+
+  <section>
+    <h2>Что вспомнить <span class="em">перед стартом</span></h2>
+    <p>Тема стоит на четырёх вещах, которые ты уже проходил. Пробеги глазами: дальше они понадобятся на каждом шаге.</p>
+    <ol class="steps">
+      <li><b>Неравенство треугольника.</b> Каждая сторона меньше суммы двух других. Это и есть проверка существования по трём сторонам.</li>
+      <li><b>Признак равенства по трём сторонам (ССС).</b> Он гарантирует: если три стороны заданы, треугольник получается один-единственный — вариантов «а вдруг другой» нет.</li>
+      <li><b>Построение угла, равного данному.</b> Углы мы не отмеряем транспортиром, а именно <b>строим</b> циркулем и линейкой.</li>
+      <li><b>Окружность.</b> Все её точки удалены от центра ровно на радиус. Именно поэтому циркуль умеет «откладывать» длину: дуга — это список всех мест, где может оказаться вершина.</li>
+    </ol>
+  </section>
+
+  <section>
+    <h2>Суть: <span class="em">вершину ловим пересечением</span></h2>
+    <p><strong>Построить треугольник по трём элементам</strong> — значит с помощью только циркуля и линейки без делений (никакого транспортира и никаких измерений числом) получить треугольник, у которого заданные элементы в точности равны данным.</p>
+    <p>Идея во всех трёх случаях одна. Запомни её одной фразой:</p>
+
+    <div class="formula-box">
+      <div class="eq">одну сторону (или угол) откладываем сразу,<br><span class="h">недостающую вершину ловим как точку пересечения</span></div>
+      <div class="note">двух окружностей · окружности и луча · двух лучей</div>
+    </div>
+
+    <p>Циркуль откладывает равные отрезки — это окружность данного радиуса. Построение угла откладывает данный угол. А признаки равенства (ССС, СУС, УСУ) отвечают за единственность: другого треугольника с такими же тремя элементами просто не бывает.</p>
+
+    <p><strong>Обозначения.</strong> Стороны — строчными: <span class="mono">a</span>, <span class="mono">b</span>, <span class="mono">c</span>. Вершины — заглавными: <span class="mono">A</span>, <span class="mono">B</span>, <span class="mono">C</span>. Углы — <span class="mono">α</span>, <span class="mono">β</span>, <span class="mono">γ</span> или <span class="mono">∠A</span>, <span class="mono">∠B</span>, <span class="mono">∠C</span>. Инструменты: <strong>линейка</strong> — только проводить прямые, без измерения; <strong>циркуль</strong> — откладывать радиус, равный данному отрезку.</p>
+  </section>
+
+  <section>
+    <h2>Три классических набора данных</h2>
+    <p>Наборов ровно три. У каждого своя проверка существования — вот она-то и решает, брать циркуль или сразу писать «треугольника нет».</p>
+
+    <div class="cases">
+      <div class="case c1">
+        <h3>ССС</h3>
+        <p class="give">даны a, b, c</p>
+        <p>Три стороны.</p>
+        <p class="cond"><b>Условие:</b> неравенство треугольника — каждая сторона меньше суммы двух других. Достаточно проверить наибольшую: она меньше суммы двух меньших.</p>
+      </div>
+      <div class="case c2">
+        <h3>СУС</h3>
+        <p class="give">даны a, b и угол α между ними</p>
+        <p>Две стороны и угол <b>между ними</b>.</p>
+        <p class="cond"><b>Условие:</b> любой угол 0° &lt; α &lt; 180° годится. Треугольник существует всегда и единственный.</p>
+      </div>
+      <div class="case c3">
+        <h3>УСУ</h3>
+        <p class="give">даны c и углы α, β при ней</p>
+        <p>Сторона и два <b>прилежащих</b> к ней угла.</p>
+        <p class="cond"><b>Условие:</b> α + β &lt; 180°. Иначе лучи из концов стороны не пересекутся с нужной стороны.</p>
+      </div>
+    </div>
+
+    <div class="note">
+      <p><b>Как не перепутать.</b> В названии буквы стоят в том же порядке, что элементы в фигуре. <b>СУС</b> — угол зажат <i>между</i> двумя сторонами. <b>УСУ</b> — сторона зажата <i>между</i> двумя углами. Одна эта мысль снимает половину ошибок.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Эталонный разбор — <span class="em">думаю вслух</span></h2>
+    <p>Классика раздела: построение по трём сторонам. Следи за «почему» в каждом шаге — без него чертёж останется картинкой, а не решением.</p>
+
+    <div class="walk">
+      <p class="q">Построить треугольник по сторонам a = 6, b = 5, c = 4.</p>
+      <ol>
+        <li><b>Шаг 1. Проверяю существование.</b> Наибольшая сторона 6, сумма двух других 5 + 4 = 9. Раз 6 &lt; 9 — треугольник существует.<br>
+          <span class="why">Почему: без этой проверки построение может «не сойтись» — дуги не пересекутся, и я зря изведу время.</span></li>
+        <li><b>Шаг 2.</b> Линейкой откладываю отрезок <span class="mono">BC = a = 6</span>. Это основание.<br>
+          <span class="why">Почему: начинать со стороны удобнее всего — она сразу задаёт положение всей фигуры.</span></li>
+        <li><b>Шаг 3.</b> Циркулем радиуса <span class="mono">b = 5</span> провожу окружность с центром в <span class="mono">C</span>.<br>
+          <span class="why">Почему: сторона AC должна равняться b, а все точки этой окружности удалены от C ровно на 5. Вершина A где-то здесь.</span></li>
+        <li><b>Шаг 4.</b> Циркулем радиуса <span class="mono">c = 4</span> провожу окружность с центром в <span class="mono">B</span>.<br>
+          <span class="why">Почему: сторона AB должна равняться c. Теперь у меня два «списка мест» для вершины A.</span></li>
+        <li><b>Шаг 5.</b> Точка пересечения окружностей — вершина <span class="mono">A</span>. Соединяю её с <span class="mono">B</span> и <span class="mono">C</span>.<br>
+          <span class="why">Почему: эта точка одновременно на расстоянии 5 от C и 4 от B — ровно то, что требовалось условием.</span></li>
+      </ol>
+      <div class="verdict">Ответ: треугольник построен, по признаку ССС он единственный</div>
+      <p style="font-size:.93rem;margin-top:.9rem">Дуги пересекаются в двух точках — сверху и снизу от основания. Треугольника это не удваивает: они зеркально равны, то есть накладываются друг на друга.</p>
+    </div>
+
+    <h3>Теперь с пропущенным шагом (СУС)</h3>
+    <div class="walk" style="margin-top:.6rem">
+      <p class="q">Построить треугольник по a = 7, b = 4 и углу α = 50° между ними.</p>
+      <ol>
+        <li><b>Шаг 1.</b> Проверяю: для СУС достаточно, чтобы 0° &lt; 50° &lt; 180°. Выполнено, строим.</li>
+        <li><b>Шаг 2.</b> Откладываю сторону <span class="mono">AC = b = 4</span>.</li>
+        <li><b>Шаг 3.</b> У вершины <span class="mono">A</span> строю угол, равный <span class="mono">50°</span> (построение угла, равного данному).</li>
+        <li><b>Шаг 4.</b> ________________________ <span class="why">(допиши сам: что дальше делает циркуль и откуда возьмётся вершина B)</span></li>
+      </ol>
+      <details style="margin-top:.9rem"><summary>Сверить четвёртый шаг</summary><div class="ans">На втором луче этого угла циркулем откладываю отрезок длиной <span class="mono">a = 7</span> — конец отрезка и есть вершина <b>B</b>. Остаётся соединить <b>B</b> и <b>C</b>.<br>Заметь: угол 50° оказался ровно <b>между</b> сторонами 4 и 7 — как и требовало условие СУС.</div></details>
+    </div>
+
+    <h3>А это — полностью сам (УСУ)</h3>
+    <div class="walk" style="margin-top:.6rem">
+      <p class="q">Построить треугольник по стороне c = 6 и прилежащим углам α = 40°, β = 70°.</p>
+      <p style="font-size:.94rem;color:var(--muted);margin:0">Указание: проверь сумму углов, отложи сторону, у одного её конца построй 40°, у другого 70°. Где окажется третья вершина?</p>
+      <details><summary>Ответ и шаги</summary><div class="ans">Проверка: <span class="mono">40° + 70° = 110° &lt; 180°</span> — лучи пересекутся, треугольник существует.<br>
+        Откладываю <span class="mono">c = 6</span>. У одного конца строю угол <b>40°</b>, у другого — <b>70°</b>, лучи веду в одну сторону от стороны. Точка их пересечения — третья вершина.<br>
+        Треугольник существует и <b>единственный</b>. Третий угол: <span class="mono">γ = 180° − 40° − 70° = 70°</span>.</div></details>
+    </div>
+  </section>
+
+  <section>
+    <h2>Увидь глазами — <span class="em">построение по шагам</span></h2>
+    <p>Выбери случай и жми «Шаг вперёд». Под чертежом каждый раз появляется описание шага — ровно то, что ты записал бы в тетради. Кнопка «Шаг назад» вернёт предыдущий кадр, если захочется пересмотреть.</p>
+    <p><strong>Приём «предскажи → проверь»:</strong> прежде чем нажать, скажи вслух, что появится следующим. Особенно на вкладке «2, 3, 10» — сначала предскажи, получится треугольник или нет, и только потом смотри.</p>
+
+    <div class="diagram">
+      <div class="picker" role="group" aria-label="Выбор случая построения">
+        <button type="button" data-s="0" class="on">ССС · 6, 5, 4</button>
+        <button type="button" data-s="1">СУС · 4, 7 и 50°</button>
+        <button type="button" data-s="2">УСУ · 6, 40° и 70°</button>
+        <button type="button" data-s="3">Не выйдет · 2, 3, 10</button>
+      </div>
+      <canvas id="cv" width="640" height="440" aria-label="Пошаговое построение треугольника циркулем и линейкой"></canvas>
+      <div class="dctl">
+        <button id="dPrev" type="button" class="ghost">← Шаг назад</button>
+        <button id="dNext" type="button">Шаг вперёд →</button>
+        <button id="dReset" type="button" class="ghost">Сначала</button>
+        <span class="count" id="dCount">шаг 0 из 4</span>
+      </div>
+      <p class="dsay" id="dSay"></p>
+    </div>
+
+    <p>В случае ССС вершина появляется <strong>последней</strong>. Сначала циркуль показывает все места, где она в принципе может оказаться, и только потом мы выбираем ту единственную точку, которая подходит сразу под оба условия. На вкладке «2, 3, 10» подходящих мест нет вообще — дуги расходятся.</p>
+
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>Случай</th><th>Что дано</th><th>Как ловим вершину</th><th>Когда существует</th></tr></thead>
+        <tbody>
+          <tr><td class="l1">ССС</td><td>три стороны a, b, c</td><td>пересечение двух окружностей</td><td>наибольшая сторона &lt; суммы двух других</td></tr>
+          <tr><td class="l2">СУС</td><td>стороны a, b и угол α между ними</td><td>пересечение окружности и луча</td><td>всегда, если 0° &lt; α &lt; 180°</td></tr>
+          <tr><td class="l3">УСУ</td><td>сторона c и углы α, β при ней</td><td>пересечение двух лучей</td><td>α + β &lt; 180°</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p style="font-size:.9rem;color:var(--muted)">Одна и та же таблица в двух представлениях: набор чисел в условии — и чертёж с дугами. «Условие выполнено» и «дуги пересеклись» — это про одно и то же.</p>
+  </section>
+
+  <section>
+    <h2>Тренажёр · <span class="em">существует ли и как строим</span></h2>
+    <p>Четыре вида вопросов: существует ли треугольник по трём сторонам, существует ли по стороне и двум углам, какой это случай построения и какой шаг идёт следующим. Задания не кончатся — жми «Новый вопрос» сколько нужно.</p>
+    <div class="trainer">
+      <p class="tr-kind" id="trKind">существование · ССС</p>
+      <div class="tr-task" id="trTask">Существует ли треугольник со сторонами <b>6, 5 и 4</b>?</div>
+      <div class="tr-opts" id="trOpts"></div>
+      <div id="trResult" class="tr-result"></div>
+      <div class="tr-ctl">
+        <button id="trNew" type="button">🎲 Новый вопрос</button>
+        <button id="trShow" type="button" class="ghost">Разбор</button>
+      </div>
+      <p class="tr-score" id="trScore">верно 0 из 0</p>
+      <p class="tr-hint">Не угадывай: сначала найди наибольший элемент и сравни его с суммой двух других (для углов — со 180°).</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Проверь себя</h2>
+    <p>Сначала решай сам, потом раскрывай ответ. Задачи идут от «назови» до «подумай».</p>
+    <div class="drill">
+      <details><summary>1) Какие три набора элементов задают треугольник однозначно? Что проверяют перед построением по трём сторонам?</summary><div class="ans"><b>ССС</b> (три стороны), <b>СУС</b> (две стороны и угол между ними), <b>УСУ</b> (сторона и два прилежащих угла).<br>Перед построением по трём сторонам проверяют <b>неравенство треугольника</b>: наибольшая сторона меньше суммы двух других.</div></details>
+
+      <details><summary>2) Построй треугольник по сторонам 5, 5 и 8. С чего начнёшь и как поймаешь третью вершину?</summary><div class="ans">Проверка: наибольшая сторона 8, сумма двух других 5 + 5 = 10. Раз <b>8 &lt; 10</b> — треугольник существует.<br>Откладываю основание 8. Из одного его конца провожу окружность радиусом 5, из другого — тоже радиусом 5. Точка пересечения дуг — третья вершина, соединяю её с концами основания. Случай ССС, треугольник единственный.</div></details>
+
+      <details><summary>3) Построй треугольник по двум сторонам 6 и 4 и углу 90° между ними. Какой это случай и в каком порядке действия?</summary><div class="ans">Это <b>СУС</b>. Проверка простая: 0° &lt; 90° &lt; 180°, значит треугольник существует и он единственный.<br>Откладываю сторону 6. У её конца строю угол 90°. На втором луче этого угла циркулем откладываю 4 — получаю третью вершину. Соединяю её со вторым концом первой стороны.<br>Главное — не перепутать: угол строится <b>между</b> данными сторонами 6 и 4, а не где придётся.</div></details>
+
+      <details><summary>4) Анализ. Можно ли построить треугольник по сторонам 3, 4 и 8? Объясни без чертежа.</summary><div class="ans">Нельзя. Наибольшая сторона <b>8</b>, а сумма двух других <b>3 + 4 = 7</b>. Раз 8 &gt; 7, неравенство треугольника нарушено.<br>По-человечески: две короткие стороны вместе короче длинной, им просто не дотянуться до её концов. Дуги радиусов 3 и 4 не пересекутся — вершине негде появиться.</div></details>
+
+      <details><summary>5) Найди ошибку. Ученик строит по УСУ при α = 100° и β = 95° и удивляется, что не получается. В чём дело?</summary><div class="ans">Условие существования для УСУ: <b>α + β &lt; 180°</b>. А здесь <span class="mono">100° + 95° = 195°</span>, что больше 180°.<br>Значит, лучи, проведённые из концов стороны, разойдутся и не пересекутся с нужной стороны — третьей вершине взяться неоткуда. Ошибка не в руках и не в циркуле: <b>ученик не проверил существование перед построением</b>.</div></details>
+
+      <details><summary>6) Обратная задача. Треугольник построили по СУС: угол 60° между сторонами 5 и 5. Какой это треугольник по виду?</summary><div class="ans"><b>Равносторонний.</b> Две стороны равны по условию (5 и 5), поэтому углы при третьей стороне равны между собой. На них остаётся <span class="mono">180° − 60° = 120°</span>, то есть по <span class="mono">60°</span> каждому.<br>Все три угла оказались по 60°, а значит и все стороны равны — треугольник равносторонний. Полезная привычка: после построения смотреть, <b>какой</b> треугольник получился, а не только «получился ли».</div></details>
+
+      <details><summary>7) Сколько решений? Сколько разных треугольников даёт построение по сторонам 7, 8, 9 — и почему?</summary><div class="ans">Один. Проверка проходит: 9 &lt; 7 + 8 = 15, треугольник существует. Дуги пересекаются в двух точках — по одной с каждой стороны от основания, — но получающиеся треугольники <b>зеркально равны</b>, то есть накладываются друг на друга.<br>Единственность гарантирует признак равенства <b>по трём сторонам</b>: другого треугольника с такими сторонами не бывает.</div></details>
+
+      <details><summary>8) Что изменится, если… взять стороны 3, 5 и 8 вместо 3, 5 и 7?</summary><div class="ans">С 3, 5 и 7 всё в порядке: 7 &lt; 3 + 5 = 8, треугольник строится.<br>А в наборе 3, 5, 8 наибольшая сторона <b>равна</b> сумме двух других: 3 + 5 = 8. Это пограничный случай: дуги не пересекутся, а лишь коснутся друг друга на самом основании. Вершина ляжет на ту же прямую, и фигура <b>вырождается в отрезок</b> — треугольника не получается.</div></details>
+    </div>
+  </section>
+
+  <section>
+    <h2>Ловушки</h2>
+    <ul class="traps">
+      <li><b>Не проверяют существование по неравенству треугольника.</b> Берут любые три длины и удивляются, что окружности не пересекаются. <i>Как не допустить:</i> всегда начинай с проверки — наибольшая сторона меньше суммы двух других?</li>
+      <li><b>Путают порядок построения по СУС / УСУ / ССС.</b> Типичное: для СУС сначала откладывают вторую сторону, а угол строят «между чужими» сторонами. <i>Как не допустить:</i> держи в голове, какой элемент между какими. Угол между сторонами — это СУС; сторона между углами — это УСУ.</li>
+      <li><b>Не исследуют число решений.</b> Считают, что ответ всегда «один треугольник». <i>Как не допустить:</i> после построения спроси себя: он единственный? не вырождается ли в отрезок — как при равенстве в неравенстве треугольника?</li>
+      <li><b>Меряют линейкой и транспортиром вместо построения.</b> Это уже не построение циркулем и линейкой. <i>Как не допустить:</i> длины откладывай только циркулем, углы — только построением угла, равного данному.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Объясни своими словами</h2>
+    <p>Закрой урок и ответь вслух — себе, родителям или голосовым сообщением другу.</p>
+    <p>1) Какие три классических набора элементов однозначно задают треугольник?<br>
+       2) Что нужно проверить перед построением по трём сторонам и как именно?<br>
+       3) В построении по СУС где находится заданный угол — между двумя данными сторонами или напротив стороны?</p>
+    <details><summary>Сверить ответы</summary><div class="ans">1) <b>ССС</b>, <b>СУС</b>, <b>УСУ</b>: три стороны; две стороны и угол между ними; сторона и два прилежащих к ней угла.<br>
+      2) <b>Неравенство треугольника</b>: наибольшая сторона меньше суммы двух других. Если нет — треугольника не существует, строить нечего.<br>
+      3) <b>Между</b> двумя данными сторонами. На этом и держится название: С-У-С, угол зажат между сторонами.</div></details>
+  </section>
+
+  <div class="wrapup">
+    <h2>Запомни главное</h2>
+    <p class="big-rule">сначала проверка существования · потом сторона или угол · вершина = точка пересечения</p>
+    <p>Треугольник по трём элементам строят циркулем и линейкой, находя недостающую вершину как пересечение двух окружностей, окружности и луча или двух лучей. Но только после проверки, что такой треугольник вообще существует: для ССС — неравенство треугольника, для УСУ — сумма двух углов меньше 180°, для СУС — сам угол между 0° и 180°.</p>
+    <p class="next">👉 Дальше эти три случая работают внутри любой задачи на построение: биссектриса, перпендикуляр, деление отрезка пополам. Схема везде одна — <b>отложил известное, поймал вершину пересечением, обосновал, проверил число решений</b>.</p>
+  </div>
+
+</div>
+
+<script>
+(function(){
+  var cv=document.getElementById('cv'); if(!cv) return;
+  var ctx=cv.getContext('2d');
+  var sayEl=document.getElementById('dSay'), cntEl=document.getElementById('dCount');
+  var btnNext=document.getElementById('dNext'), btnPrev=document.getElementById('dPrev'), btnReset=document.getElementById('dReset');
+  var reduce=false;
+  try{ reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches; }catch(e){}
+
+  var W=640,H=440,dpr=1,scene=0,step=0,rafId=0,MAX=4;
+  var COL={ink:'#1D2530',line:'#E3E7EE',brand:'#2E5AAC',sss:'#159A8A',sus:'#7A4FBF',usu:'#E27C2C',ban:'#C23B3B',muted:'#606B7A'};
+
+  var TEXT=[
+    [ '<b>Дано:</b> три стороны a = 6, b = 5, c = 4. Проверяю существование: наибольшая сторона 6 меньше суммы двух других (5 + 4 = 9). Треугольник есть — можно строить.',
+      '<b>Шаг 1.</b> Линейкой откладываю основание BC = a = 6. Оно задаёт положение всей фигуры.',
+      '<b>Шаг 2.</b> Циркулем провожу дугу с центром C радиусом b = 5. Все её точки удалены от C ровно на 5 — вершина A где-то здесь.',
+      '<b>Шаг 3.</b> Вторая дуга: центр B, радиус c = 4. Теперь у меня два «списка мест» для вершины A.',
+      '<b>Шаг 4.</b> Точка пересечения дуг — вершина A: она сразу и в 5 от C, и в 4 от B. Соединяю A с B и C. Готово, по признаку ССС такой треугольник единственный.' ],
+    [ '<b>Дано:</b> стороны b = 4 и a = 7 и угол α = 50° между ними. Для СУС проверка короткая: 0° &lt; 50° &lt; 180° — годится.',
+      '<b>Шаг 1.</b> Откладываю сторону AC = b = 4.',
+      '<b>Шаг 2.</b> У вершины A строю угол, равный 50°, и провожу второй луч.',
+      '<b>Шаг 3.</b> На этом луче циркулем откладываю отрезок AB = a = 7. Конец отрезка — вершина B.',
+      '<b>Шаг 4.</b> Соединяю B и C. Угол 50° оказался ровно между сторонами 4 и 7 — как и требовалось.' ],
+    [ '<b>Дано:</b> сторона c = 6 и прилежащие к ней углы α = 40° и β = 70°. Проверяю: 40° + 70° = 110° &lt; 180°, значит лучи пересекутся.',
+      '<b>Шаг 1.</b> Откладываю сторону AB = c = 6.',
+      '<b>Шаг 2.</b> У вершины A строю угол 40° и провожу луч.',
+      '<b>Шаг 3.</b> У вершины B строю угол 70° и веду луч в ту же сторону от AB.',
+      '<b>Шаг 4.</b> Лучи пересеклись — это вершина C. Третий угол получился γ = 180° − 40° − 70° = 70°.' ],
+    [ '<b>Дано:</b> стороны 2, 3 и 10. Предскажи: получится треугольник? Проверка: 2 + 3 = 5, а это меньше 10.',
+      '<b>Шаг 1.</b> Откладываю наибольшую сторону — отрезок длиной 10.',
+      '<b>Шаг 2.</b> Дуга с центром в правом конце, радиус 3.',
+      '<b>Шаг 3.</b> Дуга с центром в левом конце, радиус 2.',
+      '<b>Шаг 4.</b> Дуги даже не приблизились друг к другу — между ними пропасть. Двум коротким сторонам не дотянуться, треугольника нет.' ]
+  ];
+
+  var BOUNDS=[
+    [-1.2, 7.2, -1.0, 4.6],
+    [-1.0, 6.2, -1.0, 6.6],
+    [-1.0, 7.6, -1.0, 5.2],
+    [-3.5, 13.5, -1.0, 4.2]
+  ];
+
+  function resize(){
+    var c=cv.clientWidth||640; dpr=Math.min(window.devicePixelRatio||1,2);
+    W=c; H=Math.round(c*0.70); if(H<250) H=250;
+    cv.width=Math.round(W*dpr); cv.height=Math.round(H*dpr);
+    cv.style.height=H+'px'; ctx.setTransform(dpr,0,0,dpr,0,0);
+  }
+  function S(v){ return v*(W/640); }
+
+  function fit(b){
+    var padX=S(30), top=S(40), padB=S(34);
+    var s=Math.min((W-2*padX)/(b[1]-b[0]),(H-top-padB)/(b[3]-b[2]));
+    var ox=padX+((W-2*padX)-s*(b[1]-b[0]))/2;
+    var oy=top+((H-top-padB)-s*(b[3]-b[2]))/2;
+    return {s:s, m:function(x,y){ return [ox+(x-b[0])*s, oy+(b[3]-y)*s]; }};
+  }
+  function dot(P,col,r){ ctx.fillStyle=col; ctx.beginPath(); ctx.arc(P[0],P[1],r||S(4.2),0,6.2832); ctx.fill(); }
+  function label(t,P,col,dx,dy,align,base){
+    ctx.fillStyle=col; ctx.font='700 '+Math.max(11,S(16))+'px system-ui,sans-serif';
+    ctx.textAlign=align||'center'; ctx.textBaseline=base||'bottom';
+    ctx.fillText(t,P[0]+(dx||0),P[1]+(dy||0));
+  }
+  function small(t,P,col,align){
+    ctx.fillStyle=col; ctx.font='600 '+Math.max(10,S(13.5))+'px system-ui,sans-serif';
+    ctx.textAlign=align||'left'; ctx.textBaseline='alphabetic';
+    ctx.fillText(t,P[0],P[1]);
+  }
+  function seg(P,Q,col,w,dash){
+    ctx.save(); ctx.setLineDash(dash||[]); ctx.strokeStyle=col; ctx.lineWidth=w||S(2.4);
+    ctx.lineCap='round'; ctx.beginPath(); ctx.moveTo(P[0],P[1]); ctx.lineTo(Q[0],Q[1]); ctx.stroke(); ctx.restore();
+  }
+  function arcPart(C,r,a0,a1,k,col,w,dash){
+    ctx.save(); ctx.setLineDash(dash||[]); ctx.strokeStyle=col; ctx.lineWidth=w||S(2.2); ctx.lineCap='round';
+    ctx.beginPath(); ctx.arc(C[0],C[1],r,a0,a0+(a1-a0)*k); ctx.stroke(); ctx.restore();
+  }
+  function ang(P,Q){ return Math.atan2(Q[1]-P[1],Q[0]-P[0]); }
+  /* дуга-пометка угла при вершине V между направлениями на P1 и P2 */
+  function angMark(V,P1,P2,rad,txt,col,k){
+    var a1=ang(V,P1), a2=ang(V,P2), d=a2-a1;
+    while(d>Math.PI) d-=6.2832; while(d<-Math.PI) d+=6.2832;
+    arcPart(V,rad,a1,a1+d,k===undefined?1:k,col,S(2));
+    var am=a1+d/2;
+    label(txt,[V[0]+Math.cos(am)*(rad+S(15)), V[1]+Math.sin(am)*(rad+S(15))],col,0,S(5),'center','middle');
+  }
+  function ray(P,dirRad,len,col,w){
+    var E=[P[0]+Math.cos(dirRad)*len, P[1]+Math.sin(dirRad)*len];
+    seg(P,E,col,w||S(2.1));
+    ctx.save(); ctx.strokeStyle=col; ctx.lineWidth=w||S(2.1); ctx.lineCap='round';
+    ctx.beginPath();
+    ctx.moveTo(E[0]-Math.cos(dirRad)*S(11)-Math.sin(dirRad)*S(6.5), E[1]-Math.sin(dirRad)*S(11)+Math.cos(dirRad)*S(6.5));
+    ctx.lineTo(E[0],E[1]);
+    ctx.lineTo(E[0]-Math.cos(dirRad)*S(11)+Math.sin(dirRad)*S(6.5), E[1]-Math.sin(dirRad)*S(11)-Math.cos(dirRad)*S(6.5));
+    ctx.stroke(); ctx.restore();
+    return E;
+  }
+
+  var HEAD=['Дано: a = 6, b = 5, c = 4','Дано: b = 4, a = 7, α = 50°','Дано: c = 6, α = 40°, β = 70°','Дано: 2, 3, 10 — а получится ли?'];
+
+  function drawScene(k){
+    ctx.clearRect(0,0,W,H);
+    ctx.lineJoin='round';
+    var F=fit(BOUNDS[scene]), m=F.m, s=F.s;
+    small(HEAD[scene],[S(12),S(22)],scene===3?COL.ban:COL.muted);
+
+    if(scene===0){
+      var B=m(0,0), C=m(6,0), A=m(2.25,3.307);
+      if(step>=1){
+        seg(B,C,COL.ink,S(2.8));
+        dot(B,COL.ink); dot(C,COL.ink);
+        label('B',B,COL.ink,0,S(22),'center','middle');
+        label('C',C,COL.ink,0,S(22),'center','middle');
+        label('a = 6',[(B[0]+C[0])/2,B[1]],COL.ink,0,S(24),'center','middle');
+      }
+      if(step>=2){
+        var aC=ang(C,A), kk=(step===2)?k:1;
+        arcPart(C,5*s,aC-0.75,aC+0.75,kk,COL.sss,S(2.2));
+        if(kk>0.98) label('дуга (C; 5)',[C[0]+Math.cos(aC-0.75)*5*s, C[1]+Math.sin(aC-0.75)*5*s],COL.sss,-S(6),-S(10));
+      }
+      if(step>=3){
+        var aB=ang(B,A), k3=(step===3)?k:1;
+        arcPart(B,4*s,aB-0.75,aB+0.75,k3,COL.sus,S(2.2));
+        if(k3>0.98) label('дуга (B; 4)',[B[0]+Math.cos(aB+0.75)*4*s, B[1]+Math.sin(aB+0.75)*4*s],COL.sus,S(4),-S(10));
+      }
+      if(step>=4){
+        seg(A,B,COL.usu,S(3.2)); seg(A,C,COL.usu,S(3.2));
+        dot(A,COL.usu,S(5.4));
+        label('A',A,COL.usu,0,-S(12));
+        label('c = 4',[(A[0]+B[0])/2,(A[1]+B[1])/2],COL.usu,-S(20),0,'center','middle');
+        label('b = 5',[(A[0]+C[0])/2,(A[1]+C[1])/2],COL.usu,S(22),0,'center','middle');
+      }
+    }
+
+    if(scene===1){
+      var A1=m(0,0), C1=m(4,0), B1=m(4.4995,5.362);
+      var dirRad=ang(A1,B1);
+      if(step>=1){
+        seg(A1,C1,COL.ink,S(2.8));
+        dot(A1,COL.ink); dot(C1,COL.ink);
+        label('A',A1,COL.ink,0,S(22),'center','middle');
+        label('C',C1,COL.ink,0,S(22),'center','middle');
+        label('b = 4',[(A1[0]+C1[0])/2,A1[1]],COL.ink,0,S(24),'center','middle');
+      }
+      if(step>=2){
+        var E=ray(A1,dirRad,8*s,COL.sus,S(2.1));
+        angMark(A1,C1,E,S(30),'50°',COL.sus,(step===2)?k:1);
+      }
+      if(step>=3){
+        var k3b=(step===3)?k:1;
+        var aB2=ang(A1,B1);
+        arcPart(A1,7*s,aB2-0.5,aB2+0.5,k3b,COL.sss,S(2.2));
+        if(k3b>0.98){
+          seg(A1,B1,COL.usu,S(3.2));
+          label('a = 7',[(A1[0]+B1[0])/2,(A1[1]+B1[1])/2],COL.usu,-S(24),0,'center','middle');
+          dot(B1,COL.usu,S(5.4)); label('B',B1,COL.usu,S(4),-S(12));
+        }
+      }
+      if(step>=4){
+        seg(B1,C1,COL.usu,S(3.2));
+        dot(B1,COL.usu,S(5.4)); label('B',B1,COL.usu,S(4),-S(12));
+      }
+    }
+
+    if(scene===2){
+      var A2=m(0,0), B2=m(6,0), C2=m(4.596,3.857);
+      if(step>=1){
+        seg(A2,B2,COL.ink,S(2.8));
+        dot(A2,COL.ink); dot(B2,COL.ink);
+        label('A',A2,COL.ink,0,S(22),'center','middle');
+        label('B',B2,COL.ink,0,S(22),'center','middle');
+        label('c = 6',[(A2[0]+B2[0])/2,A2[1]],COL.ink,0,S(24),'center','middle');
+      }
+      if(step>=2){
+        var E1=ray(A2,ang(A2,C2),6.6*s,COL.usu,S(2.1));
+        angMark(A2,B2,E1,S(30),'40°',COL.usu,(step===2)?k:1);
+      }
+      if(step>=3){
+        var E2=ray(B2,ang(B2,C2),5.2*s,COL.sus,S(2.1));
+        angMark(B2,A2,E2,S(30),'70°',COL.sus,(step===3)?k:1);
+      }
+      if(step>=4){
+        seg(A2,C2,COL.sss,S(3.2)); seg(B2,C2,COL.sss,S(3.2));
+        dot(C2,COL.sss,S(5.4));
+        label('C',C2,COL.sss,0,-S(12));
+        label('γ = 70°',C2,COL.sss,S(6),S(26),'center','middle');
+      }
+    }
+
+    if(scene===3){
+      var P0=m(0,0), P1b=m(10,0);
+      if(step>=1){
+        seg(P0,P1b,COL.ink,S(2.8));
+        dot(P0,COL.ink); dot(P1b,COL.ink);
+        label('10',[(P0[0]+P1b[0])/2,P0[1]],COL.ink,0,S(24),'center','middle');
+      }
+      if(step>=2){ arcPart(P1b,3*s,Math.PI,6.2832,(step===2)?k:1,COL.sss,S(2.2));
+        if(step>2||k>0.98) label('r = 3',[P1b[0],P1b[1]-3*s],COL.sss,0,-S(8)); }
+      if(step>=3){ arcPart(P0,2*s,Math.PI,6.2832,(step===3)?k:1,COL.sus,S(2.2));
+        if(step>3||k>0.98) label('r = 2',[P0[0],P0[1]-2*s],COL.sus,0,-S(8)); }
+      if(step>=4){
+        var X=m(2,0.55), Y=m(7,0.55);
+        seg(X,Y,COL.ban,S(2),[6,5]);
+        label('дуги не встретились',[(X[0]+Y[0])/2,X[1]],COL.ban,0,-S(9));
+        label('2 + 3 = 5 < 10 — треугольника нет',[W/2,H-S(12)],COL.ban,0,0,'center','middle');
+      }
+    }
+  }
+
+  function render(){
+    if(rafId){ cancelAnimationFrame(rafId); rafId=0; }
+    if(reduce||step===0){ drawScene(1); return; }
+    var t0=null, dur=620;
+    function frame(ts){
+      if(t0===null) t0=ts;
+      var k=Math.min(1,(ts-t0)/dur);
+      drawScene(k);
+      if(k<1) rafId=requestAnimationFrame(frame); else rafId=0;
+    }
+    rafId=requestAnimationFrame(frame);
+  }
+
+  function update(){
+    sayEl.innerHTML=TEXT[scene][step];
+    cntEl.textContent='шаг '+step+' из '+MAX;
+    btnNext.disabled=(step>=MAX);
+    btnPrev.disabled=(step<=0);
+    btnNext.textContent=(step>=MAX)?((scene===3)?'Построения нет':'Построено ✓'):'Шаг вперёд →';
+    render();
+  }
+
+  Array.prototype.forEach.call(document.querySelectorAll('.picker button'),function(b){
+    b.addEventListener('click',function(){
+      Array.prototype.forEach.call(document.querySelectorAll('.picker button'),function(x){ x.classList.remove('on'); });
+      b.classList.add('on');
+      scene=parseInt(b.getAttribute('data-s'),10); step=0; update();
+    });
+  });
+  btnNext.addEventListener('click',function(){ if(step<MAX){ step++; update(); } });
+  btnPrev.addEventListener('click',function(){ if(step>0){ step--; update(); } });
+  btnReset.addEventListener('click',function(){ step=0; update(); });
+  window.addEventListener('resize',function(){ resize(); drawScene(1); });
+  resize(); update();
+})();
+</script>
+
+<script>
+(function(){
+  var taskEl=document.getElementById('trTask'), optsEl=document.getElementById('trOpts');
+  var resEl=document.getElementById('trResult'), kindEl=document.getElementById('trKind');
+  var scoreEl=document.getElementById('trScore');
+  if(!taskEl) return;
+  var MIN='−';
+  var total=0, right=0, cur=null, answered=false;
+
+  function ri(n){ return Math.floor(Math.random()*n); }
+  function shuffle(a){ for(var i=a.length-1;i>0;i--){ var j=ri(i+1), t=a[i]; a[i]=a[j]; a[j]=t; } return a; }
+
+  /* --- 1. существование по трём сторонам --- */
+  var SSS_OPTS=[
+    'Треугольник существует — можно строить',
+    'Треугольника нет: наибольшая сторона больше суммы двух других',
+    'Вырожденный случай: наибольшая сторона равна сумме двух других, точки лягут на одну прямую'
+  ];
+  function makeSSS(){
+    var a,b,c;
+    if(Math.random()<0.10){ b=ri(7)+2; c=ri(7)+2; a=b+c; }
+    else { a=ri(13)+2; b=ri(13)+2; c=ri(13)+2; }
+    var arr=shuffle([a,b,c]);
+    var mx=Math.max(arr[0],arr[1],arr[2]);
+    var sum=arr[0]+arr[1]+arr[2]-mx;
+    var k = (mx<sum)?0 : (mx>sum?1:2);
+    var why;
+    if(k===0) why='Наибольшая сторона '+mx+'. Сумма двух других: '+sum+'. Раз '+mx+' &lt; '+sum+', неравенство треугольника выполнено — треугольник существует, и он единственный (признак ССС).';
+    else if(k===1) why='Наибольшая сторона '+mx+', а сумма двух других всего '+sum+'. Раз '+mx+' &gt; '+sum+', две короткие стороны не дотянутся до концов длинной: дуги радиусов не пересекутся. Треугольника нет.';
+    else why='Наибольшая сторона '+mx+' в точности равна сумме двух других ('+sum+'). Дуги не пересекутся, а лишь коснутся на самом основании: вершина ляжет на ту же прямую. Фигура вырождается в отрезок, треугольника не получается.';
+    return {kind:'существование · ССС',
+      task:'Существует ли треугольник со сторонами <b>'+arr[0]+', '+arr[1]+' и '+arr[2]+'</b>?',
+      opts:SSS_OPTS.map(function(t,i){ return {text:t, ok:(i===k)}; }),
+      why:why};
+  }
+
+  /* --- 2. существование по стороне и двум прилежащим углам --- */
+  function makeUSU(){
+    var A,Bn;
+    if(Math.random()<0.55){ A=(ri(20)+3)*5; Bn=(ri(20)+3)*5; }
+    else { A=(ri(10)+14)*5; Bn=(ri(10)+14)*5; }
+    var s=A+Bn, c=(ri(9)+4);
+    var opts, why;
+    if(s<180){
+      var g=180-A-Bn;
+      var d=A+Bn; if(d===g) d=180-A; if(d===g) d=g+15;
+      opts=shuffle([
+        {text:'Существует, третий угол γ = '+g+'°', ok:true},
+        {text:'Существует, третий угол γ = '+d+'°', ok:false},
+        {text:'Не существует: α + β не меньше 180°', ok:false}
+      ]);
+      why='Проверка: α + β = '+A+'° + '+Bn+'° = '+s+'°, это меньше 180° — лучи из концов стороны пересекутся, треугольник существует и он единственный.<br>Третий угол: γ = 180° '+MIN+' '+A+'° '+MIN+' '+Bn+'° = '+g+'°.';
+    } else {
+      var d1=180-A, d2=180-Bn; if(d1===d2) d2=d1+10;
+      opts=shuffle([
+        {text:'Не существует: α + β не меньше 180°', ok:true},
+        {text:'Существует, третий угол γ = '+d1+'°', ok:false},
+        {text:'Существует, третий угол γ = '+d2+'°', ok:false}
+      ]);
+      why='Проверка: α + β = '+A+'° + '+Bn+'° = '+s+'°, а это не меньше 180°. Условие существования для УСУ (α + β &lt; 180°) нарушено: лучи разойдутся и не пересекутся с нужной стороны. Третьей вершине взяться неоткуда.';
+    }
+    return {kind:'существование · УСУ',
+      task:'Дана сторона <b>c = '+c+'</b> и прилежащие к ней углы <b>α = '+A+'°</b>, <b>β = '+Bn+'°</b>. Существует ли такой треугольник?',
+      opts:opts, why:why};
+  }
+
+  /* --- 3. какой это случай построения --- */
+  var CASE_OPTS=['ССС — по трём сторонам','СУС — по двум сторонам и углу между ними','УСУ — по стороне и двум прилежащим углам'];
+  function makeCase(){
+    var k=ri(3), txt, why;
+    if(k===0){
+      var b=ri(6)+4, c=ri(6)+4, a=ri(Math.min(b,c))+Math.max(b,c)-Math.min(b,c)+1;
+      if(a>=b+c) a=b+c-1;
+      if(a<1) a=1;
+      txt='даны три стороны: '+a+', '+b+' и '+c;
+      why='Все три данных элемента — стороны, углов в условии нет. Это случай <b>ССС</b>. Первым делом проверь неравенство треугольника, потом откладывай большую сторону и лови вершину пересечением двух дуг.';
+    } else if(k===1){
+      var s1=ri(8)+3, s2=ri(8)+3, u=(ri(30)+2)*5;
+      txt='даны две стороны '+s1+' и '+s2+' и угол '+u+'° <b>между ними</b>';
+      why='Угол зажат между двумя данными сторонами — это <b>СУС</b>. Такой треугольник существует при любом угле от 0° до 180° и он единственный. Порядок: откладываем сторону, строим угол при её конце, на втором луче откладываем вторую сторону.';
+    } else {
+      var cc=ri(9)+4, u1=(ri(14)+4)*5, u2=(ri(12)+4)*5;
+      if(u1+u2>=180) u2=180-u1-10;
+      if(u2<10) u2=10;
+      txt='дана сторона '+cc+' и <b>прилежащие к ней</b> углы '+u1+'° и '+u2+'°';
+      why='Сторона зажата между двумя данными углами — это <b>УСУ</b>. Проверка существования: '+u1+'° + '+u2+'° = '+(u1+u2)+'° &lt; 180°. Строим сторону, при каждом её конце — свой угол, вершина = точка пересечения лучей.';
+    }
+    return {kind:'какой это случай',
+      task:'В задаче на построение '+txt+'. Какой это случай?',
+      opts:CASE_OPTS.map(function(t,i){ return {text:t, ok:(i===k)}; }),
+      why:why};
+  }
+
+  /* --- 4. следующий шаг построения --- */
+  var SEQ=[
+    { setup:'Строим треугольник по трём сторонам a = 8, b = 6, c = 5.',
+      done:'Проверка пройдена: 8 &lt; 6 + 5. Основание длиной 8 отложено.',
+      ok:'Провести дугу с центром в одном конце основания радиусом 6',
+      bad:['Измерить линейкой, где должна быть третья вершина, и поставить точку','Построить транспортиром угол 60° при конце основания'],
+      w:'Дальше работает циркуль: дуга радиусом 6 показывает все точки, удалённые от этого конца ровно на 6. Потом такая же дуга радиусом 5 из другого конца, и вершина — их пересечение.' },
+    { setup:'Строим треугольник по трём сторонам a = 8, b = 6, c = 5.',
+      done:'Обе дуги проведены и пересеклись.',
+      ok:'Отметить точку пересечения дуг и соединить её с концами основания',
+      bad:['Проверить линейкой, что стороны получились 6 и 5','Провести третью дугу для надёжности'],
+      w:'Точка пересечения удалена от одного конца на 6, от другого на 5 — ровно то, что требовалось. Проверять линейкой нечего: равенство следует из построения.' },
+    { setup:'Строим по двум сторонам 5 и 9 и углу 40° между ними (СУС).',
+      done:'Сторона 5 отложена.',
+      ok:'При конце этой стороны построить угол, равный 40°',
+      bad:['Отложить вторую сторону 9 от того же конца куда-нибудь','Провести дугу радиусом 9 и взять любую точку'],
+      w:'Угол в СУС стоит <b>между</b> данными сторонами, поэтому его строят сразу после первой стороны. Только потом на втором луче откладывают вторую сторону.' },
+    { setup:'Строим по двум сторонам 5 и 9 и углу 40° между ними (СУС).',
+      done:'Сторона 5 отложена, угол 40° при её конце построен.',
+      ok:'Циркулем отложить на втором луче угла отрезок 9 — это третья вершина',
+      bad:['Соединить концы уже построенных отрезков и закончить','Построить при втором конце ещё один угол 40°'],
+      w:'Вершина ловится пересечением окружности радиуса 9 с лучом угла. После этого остаётся соединить её с концом первой стороны.' },
+    { setup:'Строим по стороне c = 7 и прилежащим углам 50° и 60° (УСУ).',
+      done:'Проверка пройдена: 50° + 60° = 110° &lt; 180°. Сторона 7 отложена.',
+      ok:'Построить угол 50° при одном конце стороны и угол 60° при другом',
+      bad:['Отложить циркулем от одного конца отрезок 7 ещё раз','Построить оба угла при одном и том же конце стороны'],
+      w:'Углы в УСУ прилежат к данной стороне, то есть сидят при разных её концах. Лучи ведём в одну сторону от стороны — тогда они и пересекутся.' },
+    { setup:'Строим по стороне c = 7 и прилежащим углам 50° и 60° (УСУ).',
+      done:'Оба угла построены, лучи проведены в одну сторону от стороны.',
+      ok:'Отметить точку пересечения лучей — это третья вершина, треугольник готов',
+      bad:['Измерить транспортиром получившийся третий угол','Провести дугу и подобрать вершину циркулем'],
+      w:'Пересечение лучей и есть третья вершина: у неё автоматически верные углы при концах стороны. Третий угол считается, а не измеряется: γ = 180° '+MIN+' 50° '+MIN+' 60° = 70°.' },
+    { setup:'В условии сказано: построить треугольник по сторонам 4, 6 и 11.',
+      done:'Ничего ещё не построено.',
+      ok:'Сначала проверить неравенство треугольника: 11 и 4 + 6 = 10',
+      bad:['Отложить сторону 11 и начать проводить дуги','Начать с самой короткой стороны 4'],
+      w:'Проверка идёт до любого чертежа. Здесь 11 &gt; 4 + 6 = 10, значит треугольника не существует и строить нечего — это и есть правильный ответ на задачу.' }
+  ];
+  function makeSeq(){
+    var s=SEQ[ri(SEQ.length)];
+    return {kind:'следующий шаг',
+      task:s.setup+'<br><span style="font-weight:500">Уже сделано: '+s.done+'</span><br><b>Какой шаг следующий?</b>',
+      opts:shuffle([{text:s.ok,ok:true},{text:s.bad[0],ok:false},{text:s.bad[1],ok:false}]),
+      why:s.w};
+  }
+
+  function render(){
+    optsEl.innerHTML='';
+    cur.opts.forEach(function(o,i){
+      var b=document.createElement('button');
+      b.type='button'; b.textContent=o.text;
+      b.addEventListener('click',function(){ pick(i,b); });
+      optsEl.appendChild(b);
+    });
+    resEl.innerHTML='';
+  }
+  function lock(){
+    Array.prototype.forEach.call(optsEl.children,function(b,i){
+      b.disabled=true;
+      if(cur.opts[i].ok) b.classList.add('pick-ok');
+    });
+  }
+  function solHTML(){ return '<div class="sol">'+cur.why+'</div>'; }
+  function pick(i,btn){
+    if(answered) return;
+    answered=true; total++;
+    if(cur.opts[i].ok){ right++; resEl.innerHTML='<span class="ok">✓ Верно!</span>'+solHTML(); }
+    else{ btn.classList.add('pick-no'); resEl.innerHTML='<span class="bad">✗ Не то.</span>'+solHTML(); }
+    lock();
+    scoreEl.textContent='верно '+right+' из '+total;
+  }
+
+  function generate(){
+    var r=Math.random();
+    cur=(r<0.3)?makeSSS():(r<0.55?makeUSU():(r<0.75?makeCase():makeSeq()));
+    answered=false;
+    kindEl.textContent=cur.kind;
+    taskEl.innerHTML=cur.task;
+    render();
+  }
+
+  document.getElementById('trNew').addEventListener('click',generate);
+  document.getElementById('trShow').addEventListener('click',function(){
+    if(!answered){ answered=true; total++; lock(); scoreEl.textContent='верно '+right+' из '+total; }
+    resEl.innerHTML=solHTML();
+  });
+
+  /* стартовое состояние совпадает с тем, что уже написано в разметке */
+  cur={kind:'существование · ССС',
+    task:'Существует ли треугольник со сторонами <b>6, 5 и 4</b>?',
+    opts:SSS_OPTS.map(function(t,i){ return {text:t, ok:(i===0)}; }),
+    why:'Наибольшая сторона 6. Сумма двух других: 5 + 4 = 9. Раз 6 &lt; 9, неравенство треугольника выполнено — треугольник существует, и он единственный (признак ССС).'};
+  answered=false;
+  render();
+})();
+</script>
+<!--LESSON-NAV-BOT--><nav class="lnav lnav-bot"><a class="prev" href="./geo7-postroenie-perpendikulyara.html"><span class="dir">← Предыдущая</span><span class="ttl">Построение перпендикуляра к прямой</span></a><a class="to-cat" href="./catalog.html">📚 <span>Все темы</span></a><a class="next" href="./alg8-racionalnaya-drob-opredelenie.html"><span class="dir">Следующая →</span><span class="ttl">Рациональная дробь и её область определения</span></a></nav><!--/LESSON-NAV-BOT-->

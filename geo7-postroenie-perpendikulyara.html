@@ -1,0 +1,800 @@
+<!doctype html>
+<!-- humanized: humanizer-ru, 2026-09-04, тире возвращено -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Построение перпендикуляра к прямой, геометрия 7 класс</title>
+<style>
+  :root{
+    --paper:#F6F7F9; --card:#FFFFFF; --ink:#1D2530; --muted:#606B7A; --line:#E3E7EE;
+    --brand:#2E5AAC; --brand-soft:#E4EBF7;
+    --ok:#1E8E5A; --ok-soft:#E0F2E9;
+    --warn:#E0A315; --warn-soft:#FFF8E7;
+    --no:#C23B3B; --no-soft:#FAE6E6;
+    --circ:#159A8A; --warm:#E27C2C;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper)}
+  .page{max-width:720px;margin:0 auto;padding:clamp(1.4rem,4vw,3rem) clamp(1.1rem,4vw,2rem) 4.5rem;
+    color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:17.5px;line-height:1.68;-webkit-font-smoothing:antialiased}
+  .mono{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-variant-numeric:tabular-nums;font-weight:600}
+
+  .hero{border-bottom:3px solid var(--brand);padding-bottom:1.4rem;margin-bottom:1.8rem}
+  .eyebrow{font-size:.74rem;letter-spacing:.15em;text-transform:uppercase;color:var(--brand);font-weight:700;margin:0 0 .55rem}
+  h1{font-size:clamp(1.9rem,6vw,2.8rem);line-height:1.05;margin:0;font-weight:800;letter-spacing:-.02em;text-wrap:balance}
+  .tagline{font-size:1.12rem;color:var(--muted);margin:.85rem 0 0;text-wrap:pretty}
+
+  section{margin-top:2.4rem}
+  h2{font-size:1.5rem;margin:0 0 .3rem;font-weight:780;letter-spacing:-.015em;text-wrap:balance}
+  h2 .em{color:var(--brand)}
+  p{margin:.7rem 0}
+  strong{font-weight:680}
+
+  .lead-in{background:var(--brand-soft);border-radius:14px;padding:1.1rem 1.3rem;font-size:1.02rem}
+  .lead-in p{margin:.4rem 0}
+  .lead-in b{color:var(--brand)}
+
+  .recall{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1rem 1.2rem;margin-top:1rem}
+  .recall h3{margin:0 0 .5rem;font-size:.8rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+  .recall ul{margin:0;padding-left:1.15rem;display:flex;flex-direction:column;gap:.35rem;font-size:.97rem}
+
+  .formula-box{background:var(--ink);color:#fff;border-radius:14px;padding:1.3rem;text-align:center;margin-top:1rem}
+  .formula-box .eq{font-family:ui-monospace,Menlo,monospace;font-size:clamp(1.6rem,6vw,2.2rem);font-weight:700}
+  .formula-box .eq .s{color:#8FB2E6}
+  .formula-box .note{font-size:.9rem;color:#AEB8C6;margin:.7rem 0 0}
+
+  .note{border-left:4px solid var(--brand);background:var(--brand-soft);border-radius:0 10px 10px 0;padding:.8rem 1.1rem;margin-top:1rem;font-size:.98rem}
+  .note b{color:var(--brand)}
+  .note.th{border-left-color:var(--ok);background:var(--ok-soft)}
+  .note.th b{color:var(--ok)}
+  .note.warnbox{border-left-color:var(--warn);background:var(--warn-soft)}
+  .note.warnbox b{color:#9A6C05}
+
+  /* Два случая рядом */
+  .cases{display:grid;gap:.8rem;margin-top:1rem}
+  @media(min-width:560px){.cases{grid-template-columns:1fr 1fr}}
+  .case{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1rem 1.15rem}
+  .case.one{border-top:4px solid var(--brand)}
+  .case.two{border-top:4px solid var(--warm)}
+  .case h3{margin:0 0 .5rem;font-size:1rem}
+  .case.one h3{color:var(--brand)} .case.two h3{color:var(--warm)}
+  .case ol{margin:0;padding-left:1.15rem;display:flex;flex-direction:column;gap:.45rem;font-size:.95rem}
+  .case .tag{display:inline-block;font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;font-weight:700;color:var(--muted);margin-bottom:.2rem}
+
+  /* Чертёж */
+  .diagram{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:1.2rem;margin-top:1rem}
+  .diagram canvas{width:100%;height:auto;display:block;border-radius:8px}
+  .picker{display:flex;flex-wrap:wrap;gap:.45rem;margin-bottom:.9rem}
+  .picker button{font:inherit;font-size:.85rem;font-weight:700;cursor:pointer;border-radius:999px;padding:.4rem .85rem;border:1.5px solid var(--line);background:#fff;color:var(--muted)}
+  .picker button.on{background:var(--brand-soft);border-color:var(--brand);color:var(--brand)}
+  .picker button:focus-visible{outline:3px solid var(--brand);outline-offset:2px}
+  .dctl{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.9rem;align-items:center}
+  .dctl button{font:inherit;font-weight:700;font-size:.9rem;cursor:pointer;border:none;border-radius:9px;padding:.55rem .95rem;color:#fff;background:var(--brand)}
+  .dctl button.ghost{background:transparent;color:var(--brand);border:1px solid var(--brand)}
+  .dctl button:disabled{opacity:.45;cursor:default}
+  .dctl button:focus-visible{outline:3px solid var(--brand);outline-offset:2px}
+  .dctl .count{font-family:ui-monospace,Menlo,monospace;font-size:.85rem;color:var(--muted);margin-left:auto}
+  .dsay{margin:.9rem 0 0;padding:.75rem 1rem;background:var(--brand-soft);border-radius:10px;font-size:.95rem;line-height:1.6;min-height:3.4rem}
+  .cap{font-size:.9rem;color:var(--muted);margin-top:.6rem}
+
+  .walk{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.15rem 1.3rem;margin-top:1rem}
+  .walk .q{font-weight:700;font-size:1.02rem;margin:0 0 .9rem;padding-bottom:.7rem;border-bottom:1px solid var(--line)}
+  .walk ol{margin:0;padding-left:1.2rem;display:flex;flex-direction:column;gap:.5rem}
+  .walk li{font-size:.95rem}
+  .walk .why{color:var(--muted)}
+  .verdict{margin-top:1rem;padding:.7rem 1rem;background:var(--brand-soft);border-radius:10px;font-weight:650;color:var(--brand);font-family:ui-monospace,Menlo,monospace}
+
+  .tw{overflow-x:auto;margin-top:1rem;border:1px solid var(--line);border-radius:12px;background:var(--card)}
+  table{border-collapse:collapse;width:100%;font-size:.95rem}
+  th,td{padding:.6rem .8rem;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
+  th{font-size:.78rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:700}
+  tr:last-child td{border-bottom:none}
+  td.mono{font-family:ui-monospace,Menlo,monospace;font-weight:700;white-space:nowrap}
+
+  /* Тренажёр */
+  .trainer{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.2rem 1.3rem;margin-top:1rem}
+  .tr-kind{font-size:.74rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:700;text-align:center;margin:0 0 .5rem}
+  .tr-task{font-size:clamp(.98rem,3.6vw,1.08rem);text-align:center;padding:1rem;background:var(--brand-soft);border-radius:10px;font-weight:600;line-height:1.55}
+  .tr-task b{font-family:ui-monospace,Menlo,monospace;color:var(--ink)}
+  .tr-opts{display:flex;flex-direction:column;gap:.5rem;margin-top:1rem}
+  .tr-opts button{font:inherit;font-size:.95rem;text-align:left;cursor:pointer;border:1.5px solid var(--line);background:#fff;color:var(--ink);
+    border-radius:10px;padding:.65rem .9rem;line-height:1.45}
+  .tr-opts button:hover{border-color:var(--brand)}
+  .tr-opts button:focus-visible{outline:3px solid var(--brand);outline-offset:2px}
+  .tr-opts button.pick-ok{border-color:var(--ok);background:var(--ok-soft);color:#14603C}
+  .tr-opts button.pick-no{border-color:var(--no);background:var(--no-soft);color:#8A2626}
+  .tr-opts button:disabled{cursor:default}
+  .tr-ctl{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:1rem;align-items:center;justify-content:center}
+  .tr-ctl button{font:inherit;font-weight:700;font-size:.9rem;cursor:pointer;border:none;border-radius:9px;padding:.55rem .95rem;color:#fff;background:var(--brand)}
+  .tr-ctl button.ghost{background:transparent;color:var(--brand);border:1px solid var(--brand)}
+  .tr-ctl button:focus-visible{outline:3px solid var(--brand);outline-offset:2px}
+  .tr-result{margin-top:.9rem;font-size:.96rem;min-height:1.2rem;text-align:center}
+  .tr-result .ok{color:var(--ok);font-weight:700} .tr-result .bad{color:var(--no);font-weight:700}
+  .tr-result .sol{margin-top:.6rem;padding:.8rem 1rem;background:#FCFDFE;border:1px solid var(--line);border-radius:10px;font-size:.92rem;line-height:1.7;text-align:left}
+  .tr-score{text-align:center;font-family:ui-monospace,Menlo,monospace;font-size:.85rem;color:var(--muted);margin:.8rem 0 0}
+
+  details{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:.9rem 1.1rem;margin-top:.7rem}
+  details[open]{border-color:var(--brand)}
+  summary{cursor:pointer;font-weight:650;list-style:none;display:flex;justify-content:space-between;gap:1rem;align-items:center}
+  summary::-webkit-details-marker{display:none}
+  summary::after{content:"проверить";font-size:.8rem;color:var(--brand);font-weight:700;white-space:nowrap}
+  details[open] summary::after{content:"скрыть"}
+  summary:focus-visible{outline:3px solid var(--brand);outline-offset:3px;border-radius:6px}
+  .ans{margin-top:.75rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.96rem;color:var(--muted)}
+  .ans b{color:var(--ink)}
+  .drill{display:flex;flex-direction:column;gap:.2rem;margin-top:1rem}
+  .lvl{font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:700;margin:1.1rem 0 -.2rem}
+
+  ul.traps{list-style:none;margin:1rem 0 0;padding:0;display:flex;flex-direction:column;gap:.7rem}
+  ul.traps li{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:.85rem 1.05rem;padding-left:2.5rem;position:relative;font-size:.97rem}
+  ul.traps li::before{content:"\26A0";position:absolute;left:1rem;top:.85rem;color:var(--warn)}
+  ul.traps b{font-weight:700}
+  ul.traps .fix{display:block;margin-top:.3rem;color:var(--muted);font-size:.93rem}
+
+  .selfcheck{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--ok);border-radius:0 12px 12px 0;padding:1rem 1.2rem;margin-top:1rem}
+  .selfcheck ol{margin:.4rem 0 0;padding-left:1.2rem;display:flex;flex-direction:column;gap:.4rem;font-size:.97rem}
+
+  .wrapup{background:var(--brand);color:#fff;border-radius:16px;padding:1.4rem 1.5rem;margin-top:2.4rem}
+  .wrapup h2{color:#fff;margin:0 0 .5rem}
+  .wrapup p{color:#DEE7F5;margin:.4rem 0;font-size:1rem}
+  .wrapup .big-rule{font-size:1.1rem;font-weight:800;color:#fff;margin:.6rem 0;font-family:ui-monospace,Menlo,monospace}
+  .wrapup .next{font-size:.95rem;color:#C6D5EE;margin-top:1rem;padding-top:1rem;border-top:1px solid rgba(255,255,255,.2)}
+  .wrapup .next b{color:#fff}
+
+  @media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+<!--LESSON-NAV-TOP--><style>.lnav{--lnav-accent:#3D5AF1}.lnav a{text-decoration:none;font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif}.lnav-top{max-width:820px;margin:0 auto;padding:.75rem clamp(1rem,4vw,1.5rem) .1rem}.lnav-top a{display:inline-flex;align-items:center;gap:.35rem;color:var(--lnav-accent);font-weight:600;font-size:.9rem}.lnav-top a:hover{text-decoration:underline}.lnav-bot{max-width:820px;margin:2.6rem auto 3rem;padding:1.1rem clamp(1rem,4vw,1.5rem) 0;border-top:1px solid #E4E8EF;display:flex;align-items:stretch;gap:.55rem}.lnav-bot a{min-width:0;display:flex;flex-direction:column;justify-content:center;gap:.15rem;border:1px solid #E4E8EF;border-radius:12px;padding:.65rem .85rem;color:#182233;background:#fff;transition:border-color .1s,transform .08s}.lnav-bot a:hover{border-color:var(--lnav-accent);transform:translateY(-1px)}.lnav-bot .prev,.lnav-bot .next{flex:1 1 0}.lnav-bot .next{text-align:right}.lnav-bot .dir{font-size:.72rem;color:#8A93A6;font-weight:600}.lnav-bot .ttl{font-size:.9rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.lnav-bot .to-cat{flex:0 0 auto;flex-direction:row;align-items:center;justify-content:center;color:var(--lnav-accent);font-weight:700;font-size:.85rem;white-space:nowrap}@media(max-width:420px){.lnav-bot .to-cat span{display:none}.lnav-bot .to-cat{padding:.65rem .7rem}}</style><nav class="lnav lnav-top"><a href="./catalog.html">← Все темы</a></nav><!--/LESSON-NAV-TOP-->
+<div class="page">
+
+  <header class="hero">
+    <p class="eyebrow">Геометрия · 7 класс</p>
+    <h1>Построение перпендикуляра к прямой</h1>
+    <p class="tagline">Циркуль и линейка без делений дают ровно 90°, а не «примерно похоже». И этот прямой угол можно доказать, а не пообещать.</p>
+  </header>
+
+  <div class="lead-in">
+    <p><b>Где встречается.</b> Перпендикуляр — это «строго поперёк». Без него не построить высоту треугольника и не найти кратчайшее расстояние от точки до прямой.</p>
+    <p>В жизни то же самое: прямой угол стены, угол дома, разметка поля. Строитель и столяр делают это угольником, а геометр — циркулем и линейкой, чтобы построение было точным и обоснованным.</p>
+  </div>
+
+  <section>
+    <h2>Главный миф <span class="em">и сразу в утиль</span></h2>
+    <p>Звучит он так: «перпендикуляр можно просто провести через точку — лишь бы выглядело прямо». Удобно. И неправильно.</p>
+    <p>На глаз угол почти никогда не равен ровно 90°. Пара градусов промаха на листе не видна, а построение уже испорчено. <strong>Циркульное построение даёт ровно прямой угол, и это можно доказать.</strong></p>
+    <div class="note">
+      <p><b>Запомни установку.</b> «Похоже на прямой» и «прямой» — не одно и то же. В геометрии засчитывается только второе.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Разминка: что понадобится</h2>
+    <div class="recall">
+      <h3>Освежи перед стартом</h3>
+      <ul>
+        <li><b>Перпендикулярные прямые</b> — пересекаются под углом <span class="mono">90°</span>. Запись: <span class="mono">b &#8869; a</span>.</li>
+        <li><b>Середина отрезка</b> — точка, которая делит отрезок на две равные части.</li>
+        <li><b>Расстояние от точки до прямой</b> измеряется по перпендикуляру, а не наискосок.</li>
+        <li><b>Инструменты</b> — только циркуль и линейка <em>без делений</em>. Ничего не измеряем числом.</li>
+      </ul>
+    </div>
+    <p class="cap">Заминка хоть на одном пункте — вернись к нему сейчас. Дальше всё построение держится ровно на этих четырёх вещах.</p>
+  </section>
+
+  <section>
+    <h2>Суть: два случая и одна общая идея</h2>
+    <p>Перпендикуляр к прямой — это прямая, которая пересекает данную прямую под углом 90°. «Построить перпендикуляр» значит: <strong>через заданную точку провести прямую, образующую с данной прямой прямой угол</strong>.</p>
+    <p>Дальше внимательно. Случая два, и путать их нельзя:</p>
+    <div class="cases">
+      <div class="case one">
+        <span class="tag">случай 1</span>
+        <h3>Точка лежит на прямой</h3>
+        <p style="margin:.2rem 0 0;font-size:.95rem">Перпендикуляр <strong>выходит</strong> из этой точки. Точка сама станет вершиной прямого угла.</p>
+      </div>
+      <div class="case two">
+        <span class="tag">случай 2</span>
+        <h3>Точка вне прямой</h3>
+        <p style="margin:.2rem 0 0;font-size:.95rem">Перпендикуляр <strong>опускается</strong> из точки на прямую. Точка их пересечения называется основанием перпендикуляра.</p>
+      </div>
+    </div>
+    <p>А идея построения в обоих случаях одна. Циркулем находим <strong>две точки, одинаково удалённые</strong> от концов некоторого отрезка на прямой. Прямая через такие точки и есть перпендикуляр: она проходит через середину отрезка и равноудалена от его концов.</p>
+    <div class="formula-box">
+      <div class="eq">b <span class="s">&#8869;</span> a</div>
+      <div class="note">равные расстояния от концов отрезка &rarr; серединный перпендикуляр &rarr; угол 90°</div>
+    </div>
+    <p>Циркуль здесь работает как машинка равных расстояний: одна ножка, один раствор — расстояния равны гарантированно. Из этого равенства прямой угол и получается.</p>
+  </section>
+
+  <section>
+    <h2>Алгоритмы <span class="em">по шагам</span></h2>
+    <div class="note">
+      <p><b>Определение.</b> Перпендикуляр к прямой <span class="mono">a</span> — прямая <span class="mono">b</span>, пересекающая <span class="mono">a</span> под углом 90°. Обозначают <span class="mono">b &#8869; a</span>.</p>
+    </div>
+    <div class="cases">
+      <div class="case one">
+        <span class="tag">алгоритм 1</span>
+        <h3>Точка M лежит на прямой a</h3>
+        <ol>
+          <li>Ставим ножку циркуля в <span class="mono">M</span> и проводим дугу. Она пересечёт прямую в двух точках <span class="mono">A</span> и <span class="mono">B</span> по разные стороны от <span class="mono">M</span>, значит <span class="mono">MA = MB</span>.</li>
+          <li>Раствором больше <span class="mono">MA</span> проводим дугу из <span class="mono">A</span> и тем же раствором дугу из <span class="mono">B</span>. Они пересекаются в точке <span class="mono">C</span>.</li>
+          <li>Проводим прямую <span class="mono">MC</span> — это и есть перпендикуляр: <span class="mono">MC &#8869; a</span>.</li>
+        </ol>
+      </div>
+      <div class="case two">
+        <span class="tag">алгоритм 2</span>
+        <h3>Точка P лежит вне прямой a</h3>
+        <ol>
+          <li>Из точки <span class="mono">P</span> проводим дугу, пересекающую прямую <span class="mono">a</span> в двух точках <span class="mono">A</span> и <span class="mono">B</span>. Раствор берём такой, чтобы дуга достала до прямой.</li>
+          <li>Из <span class="mono">A</span> и из <span class="mono">B</span> одним и тем же раствором (больше половины <span class="mono">AB</span>) проводим две дуги по другую сторону прямой. Они пересекутся в точке <span class="mono">Q</span>.</li>
+          <li>Проводим прямую <span class="mono">PQ</span>. Она пересекает <span class="mono">a</span> в точке <span class="mono">H</span>, и <span class="mono">PH &#8869; a</span>. Точка <span class="mono">H</span> — основание перпендикуляра.</li>
+        </ol>
+      </div>
+    </div>
+    <div class="tw">
+      <table>
+        <thead><tr><th>Буква</th><th>Что обозначает</th></tr></thead>
+        <tbody>
+          <tr><td class="mono">a</td><td>данная прямая</td></tr>
+          <tr><td class="mono">M, P</td><td>данные точки: M — на прямой, P — вне прямой</td></tr>
+          <tr><td class="mono">A, B</td><td>точки на прямой, равноудалённые от данной точки</td></tr>
+          <tr><td class="mono">C, Q</td><td>точки пересечения дуг</td></tr>
+          <tr><td class="mono">H</td><td>основание перпендикуляра</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="cap">Инструменты — только циркуль и линейка без делений. Никаких «отмерил 4 см» в решении быть не должно.</p>
+  </section>
+
+  <section>
+    <h2>Эталонный разбор: <span class="em">думаю вслух</span></h2>
+    <div class="walk">
+      <p class="q">Дана прямая a и точка M на ней. Построить прямую b, перпендикулярную a и проходящую через M.</p>
+      <ol>
+        <li>Ставлю циркуль в <b>M</b>, провожу дугу — получаю <b>A</b> и <b>B</b> на прямой. <span class="why">Почему так: обе точки лежат на одной дуге с центром M, значит MA = MB, и точка M оказывается серединой отрезка AB. Отрезок для работы готов.</span></li>
+        <li>Из <b>A</b> и из <b>B</b> одним раствором (возьму больше MA) провожу две дуги, они пересекаются в точке <b>C</b>. <span class="why">Почему одним раствором: тогда CA = CB, то есть точка C равноудалена от концов отрезка AB. Разные растворы этого равенства не дадут.</span></li>
+        <li>Провожу прямую <b>MC</b>. <span class="why">Почему это перпендикуляр: прямая проходит через середину M отрезка AB и через равноудалённую от его концов точку C. Значит это серединный перпендикуляр к AB, поэтому MC &#8869; AB, то есть MC &#8869; a.</span></li>
+      </ol>
+      <div class="verdict">Ответ: прямая MC — искомый перпендикуляр</div>
+    </div>
+    <p>Посмотри на структуру: в каждом шаге есть «что делаю» и «почему так можно». Вторая половина и превращает картинку в решение.</p>
+  </section>
+
+  <section>
+    <h2>Увидь глазами: <span class="em">построение по шагам</span></h2>
+    <p>Выбери случай и жми «Шаг вперёд». Под чертежом появляется описание шага — ровно то, что ты записал бы в тетради. Кнопка «Шаг назад» вернёт на предыдущий этап, если что-то проскочило мимо.</p>
+    <p><strong>Приём «предскажи &rarr; проверь»:</strong> перед нажатием скажи вслух, что появится следующим. Потом нажимай и сверяйся.</p>
+    <div class="diagram">
+      <div class="picker" role="group" aria-label="Выбор случая построения">
+        <button type="button" data-s="0" class="on">Точка M на прямой</button>
+        <button type="button" data-s="1">Точка P вне прямой</button>
+        <button type="button" data-s="2">Середина отрезка CD</button>
+      </div>
+      <canvas id="cv" width="640" height="450" aria-label="Пошаговое построение перпендикуляра циркулем и линейкой"></canvas>
+      <div class="dctl">
+        <button id="dPrev" type="button" class="ghost">&larr; Шаг назад</button>
+        <button id="dNext" type="button">Шаг вперёд &rarr;</button>
+        <span class="count" id="dCount">шаг 0 из 3</span>
+      </div>
+      <p class="dsay" id="dSay"></p>
+    </div>
+    <p class="cap">Следи за бирюзовыми дугами: в обоих случаях они идут <em>парами одинакового раствора</em>. Вот и весь секрет — циркуль строит равные расстояния, а равные расстояния строят прямой угол.</p>
+    <details>
+      <summary>Предскажи: получится ли прямой угол, если из A и из B взять <em>разные</em> растворы?</summary>
+      <div class="ans"><b>Нет.</b> При разных растворах точка пересечения дуг уже не будет равноудалена от A и B. А весь наш вывод держался ровно на равенстве CA = CB: без него прямая через эту точку — не серединный перпендикуляр, и угол получится любой, только не 90°.</div>
+    </details>
+  </section>
+
+  <section>
+    <h2>Допиши шаг сам</h2>
+    <div class="walk">
+      <p class="q">Дана прямая a и точка P вне неё. Два шага уже сделаны.</p>
+      <ol>
+        <li>Из <b>P</b> провели дугу, она пересекает <b>a</b> в точках <b>A</b> и <b>B</b>. Тогда <span class="mono">PA = PB</span>.</li>
+        <li>Из <b>A</b> и из <b>B</b> одинаковым раствором провели дуги по другую сторону прямой, они дали точку <b>Q</b>. Тогда <span class="mono">QA = QB</span>.</li>
+        <li>____________________ <span class="why">(допиши: что нужно провести дальше и почему получится прямой угол)</span></li>
+      </ol>
+      <details><summary>Проверить себя</summary><div class="ans">Провести прямую <b>PQ</b>. Обоснование: обе точки, и <b>P</b>, и <b>Q</b>, равноудалены от <b>A</b> и <b>B</b>. Значит <b>PQ</b> — серединный перпендикуляр к отрезку <b>AB</b>, поэтому <b>PQ &#8869; a</b>. Точка пересечения с прямой — основание <b>H</b>.</div></details>
+    </div>
+  </section>
+
+  <section>
+    <h2>Тренажёр · построение перпендикуляра</h2>
+    <p>Вопросы пяти видов: определить случай, назвать следующий шаг, выбрать раствор циркуля, найти ошибку и обосновать прямой угол. Задания не кончаются — жми «Новый вопрос» сколько нужно.</p>
+    <div class="trainer">
+      <p class="tr-kind" id="trKind">какой случай</p>
+      <div class="tr-task" id="trTask">Дана прямая <b>a</b> и точка <b>M</b>, которая лежит на прямой a. Какой это случай?</div>
+      <div class="tr-opts" id="trOpts"></div>
+      <div id="trResult" class="tr-result"></div>
+      <div class="tr-ctl">
+        <button id="trNew" type="button">🎲 Новый вопрос</button>
+        <button id="trShow" type="button" class="ghost">Разбор</button>
+      </div>
+      <p class="tr-score" id="trScore">верно 0 из 0</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Проверь себя</h2>
+
+    <p class="lvl">Понимание</p>
+    <div class="drill">
+      <details><summary>1) Что такое перпендикуляр к прямой?</summary><div class="ans">Это прямая, которая пересекает данную прямую под углом <b>90°</b>. Запись: <span class="mono">b &#8869; a</span>. Построить перпендикуляр через точку — значит провести через эту точку прямую, образующую с данной прямой прямой угол.</div></details>
+      <details><summary>2) Чем отличается случай «точка на прямой» от случая «точка вне прямой»?</summary><div class="ans">В первом случае перпендикуляр <b>выходит</b> из точки, лежащей на прямой, и сама эта точка становится вершиной прямого угла. Во втором перпендикуляр <b>опускается</b> из точки на прямую, и у него появляется <b>основание</b> — точка пересечения с прямой. Первые шаги построения у этих случаев разные, поэтому начинать надо всегда с вопроса «где лежит точка?».</div></details>
+    </div>
+
+    <p class="lvl">Применение</p>
+    <div class="drill">
+      <details><summary>3) Дана прямая a и точка K вне неё. Построй циркулем и линейкой перпендикуляр из K на a и отметь его основание H. Опиши шаги.</summary><div class="ans">Шаг 1: из <b>K</b> провожу дугу такого раствора, чтобы она достала до прямой, — получаю точки <b>A</b> и <b>B</b> на прямой <span class="mono">a</span>, причём <span class="mono">KA = KB</span>.<br>Шаг 2: из <b>A</b> и из <b>B</b> одним и тем же раствором (больше половины <span class="mono">AB</span>) провожу дуги по другую сторону прямой, они пересекаются в точке <b>Q</b>, значит <span class="mono">QA = QB</span>.<br>Шаг 3: провожу прямую <b>KQ</b>; она пересекает <span class="mono">a</span> в точке <b>H</b>. Обоснование: K и Q равноудалены от A и B, значит KQ — серединный перпендикуляр к AB, поэтому <span class="mono">KH &#8869; a</span>, а <b>H</b> — основание перпендикуляра.</div></details>
+      <details><summary>4) Дан отрезок CD длиной 6 см. Построй прямую, перпендикулярную CD и проходящую через его середину.</summary><div class="ans">Это <b>серединный перпендикуляр</b>. Из <b>C</b> и из <b>D</b> одним и тем же раствором (больше <b>3 см</b>, то есть больше половины отрезка) проводим по две дуги — с каждой стороны от отрезка. Соединяем две точки пересечения дуг: полученная прямая перпендикулярна <span class="mono">CD</span> и проходит через его середину.</div></details>
+    </div>
+
+    <p class="lvl">Анализ</p>
+    <div class="drill">
+      <details><summary>5) Что изменится в построении, если точка лежит ровно на прямой, а не вне её?</summary><div class="ans">Меняется <b>первый шаг</b>. Для точки вне прямой дугу проводят так, чтобы она <em>достала</em> до прямой и пересекла её в двух точках. Для точки на прямой дуга из этой точки пересекает прямую автоматически — по разные стороны от неё, и точка сразу оказывается серединой отрезка AB.<br>Дальше всё одинаково: две дуги равного раствора из A и из B, потом прямая через данную точку и точку пересечения дуг. И общая идея не меняется: ищем точки, равноудалённые от концов отрезка.</div></details>
+      <details><summary>6) Найди ошибку: ученик из точек A и B взял <em>разные</em> растворы циркуля. Почему точка пересечения дуг тогда не годится?</summary><div class="ans">Потому что при разных растворах <span class="mono">CA &ne; CB</span> — точка пересечения <b>не равноудалена</b> от A и B. А обоснование прямого угла целиком опиралось на равенство расстояний: только прямая, проходящая через две равноудалённые от A и B точки, является серединным перпендикуляром к AB. Нет равенства — нет и гарантии 90°: угол выйдет каким угодно.</div></details>
+      <details><summary>7) Обратная задача: дана точка C и прямая a, а построение уже стёрли. Восстанови, какой отрезок AB был построен.</summary><div class="ans">Раз C — точка пересечения дуг, она равноудалена от A и B, а сами A и B лежат на прямой <span class="mono">a</span>. Значит, поставив ножку циркуля в <b>C</b> и подобрав раствор так, чтобы дуга пересекла прямую <span class="mono">a</span>, мы получим на ней две точки — это и есть <b>A</b> и <b>B</b>: они лежат на одной дуге с центром C, поэтому <span class="mono">CA = CB</span>. Именно к такому отрезку AB прямая через C и данную точку будет серединным перпендикуляром.</div></details>
+    </div>
+  </section>
+
+  <section>
+    <h2>Ловушки</h2>
+    <ul class="traps">
+      <li><b>Путают два случая.</b> Для точки на прямой и для точки вне прямой первые шаги разные.<span class="fix">Как не допустить: первым делом спроси себя — где лежит точка? Ответ определяет алгоритм.</span></li>
+      <li><b>Берут разные растворы циркуля</b> при проведении дуг из A и из B. Тогда точка пересечения не равноудалена от A и B, и угол не выйдет прямым.<span class="fix">Как не допустить: раствор для обеих дуг должен быть <b>одинаковым</b> — поставил и не трогай винт.</span></li>
+      <li><b>Берут слишком маленький раствор</b> — меньше половины AB. Дуги просто не пересекаются, строить нечего.<span class="fix">Как не допустить: бери раствор заведомо больше половины отрезка.</span></li>
+      <li><b>Проводят прямую «на глаз»</b> и считают, что 90° получился сам собой.<span class="fix">Как не допустить: прямой угол надо обосновать. Прямая двух равноудалённых точек — это серединный перпендикуляр, вот и всё доказательство.</span></li>
+      <li><b>Забывают обосновать прямой угол.</b> Построение без объяснения «почему это перпендикуляр» — неполное решение.<span class="fix">Как не допустить: всегда называй вслух, что прямая проходит через две точки, равноудалённые от A и B.</span></li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Объясни своими словами</h2>
+    <div class="selfcheck">
+      <p>Закрой конспект и ответь вслух, как будто объясняешь другу:</p>
+      <ol>
+        <li>Какими двумя инструментами строят перпендикуляр и почему нельзя «на глаз»?</li>
+        <li>Почему дуги из точек A и B обязательно проводят одним и тем же раствором циркуля?</li>
+        <li>Чем отличается построение, когда точка на прямой, от случая, когда точка вне прямой?</li>
+      </ol>
+    </div>
+  </section>
+
+  <div class="wrapup">
+    <h2>Запомни главное</h2>
+    <p class="big-rule">равные расстояния &rarr; серединный перпендикуляр &rarr; 90°</p>
+    <p>Перпендикуляр через данную точку строят циркулем и линейкой: ищут точки, равноудалённые от двух точек прямой. Это и даёт настоящий прямой угол вместо «похожего на прямой».</p>
+    <p class="next">👉 Дальше: <b>построение треугольника</b> по заданным элементам — там та же логика «дуга даёт равные расстояния», только дуг понадобится больше.</p>
+  </div>
+
+</div>
+
+<script>
+(function(){
+  var cv=document.getElementById('cv'); if(!cv) return;
+  var ctx=cv.getContext('2d');
+  var sayEl=document.getElementById('dSay'), cntEl=document.getElementById('dCount');
+  var btnNext=document.getElementById('dNext'), btnPrev=document.getElementById('dPrev');
+  var reduce=false;
+  try{ reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches; }catch(e){}
+
+  var W=640,H=450,dpr=1,scene=0,step=0,rafId=0;
+  var COL={ink:'#1D2530',rule:'#2E5AAC',circ:'#159A8A',warm:'#E27C2C',muted:'#606B7A',ok:'#1E8E5A'};
+  var PERP='⊥';
+
+  var TEXT=[
+    [ 'Дано: прямая a и точка M на ней. Нужен перпендикуляр, проходящий через M.',
+      '<b>Шаг 1.</b> Ставлю ножку циркуля в M и провожу дугу. Она пересекает прямую в точках A и B по разные стороны от M. Значит MA = MB, и M — середина отрезка AB.',
+      '<b>Шаг 2.</b> Беру раствор больше MA и провожу дугу из A, затем тем же раствором дугу из B. Они пересекаются в точке C, поэтому CA = CB.',
+      '<b>Шаг 3.</b> Провожу прямую MC. Она идёт через середину M отрезка AB и через равноудалённую точку C, то есть это серединный перпендикуляр к AB. Значит MC ' + PERP + ' a.' ],
+    [ 'Дано: прямая a и точка P вне неё. Перпендикуляр надо опустить из P на прямую.',
+      '<b>Шаг 1.</b> Из P провожу дугу такого раствора, чтобы она достала до прямой. Дуга пересекает a в точках A и B, значит PA = PB.',
+      '<b>Шаг 2.</b> Из A и из B одним и тем же раствором (больше половины AB) провожу дуги по другую сторону прямой. Они пересекаются в точке Q, значит QA = QB.',
+      '<b>Шаг 3.</b> Провожу прямую PQ. Обе точки P и Q равноудалены от A и B, поэтому PQ — серединный перпендикуляр к AB. Прямую a она пересекает в точке H: это основание перпендикуляра, и PH ' + PERP + ' a.' ],
+    [ 'Дано: отрезок CD. Нужна прямая, перпендикулярная CD и проходящая через его середину.',
+      '<b>Шаг 1.</b> Беру раствор циркуля больше половины CD. Меньше нельзя: дуги тогда не пересекутся.',
+      '<b>Шаг 2.</b> Этим раствором провожу дуги из C и из D — с обеих сторон отрезка. Сверху дуги дают точку E, снизу точку F.',
+      '<b>Шаг 3.</b> Провожу прямую EF. Обе точки равноудалены от C и D, значит EF — серединный перпендикуляр: EF ' + PERP + ' CD и проходит через середину отрезка.' ]
+  ];
+
+  function resize(){
+    var c=cv.clientWidth||640; dpr=Math.min(window.devicePixelRatio||1,2);
+    W=c; H=Math.round(c*0.70); if(H<250) H=250;
+    cv.width=Math.round(W*dpr); cv.height=Math.round(H*dpr);
+    cv.style.height=H+'px'; ctx.setTransform(dpr,0,0,dpr,0,0);
+  }
+  function S(v){ return v*(W/640); }
+  function U(){ return Math.min(W*0.15,H*0.20); }
+  function dot(P,col,r){ ctx.fillStyle=col; ctx.beginPath(); ctx.arc(P[0],P[1],r||S(4.4),0,6.2832); ctx.fill(); }
+  function label(t,P,col,dx,dy,align,base){
+    ctx.fillStyle=col; ctx.font='700 '+Math.max(11,S(17))+'px system-ui,-apple-system,sans-serif';
+    ctx.textAlign=align||'center'; ctx.textBaseline=base||'middle';
+    ctx.fillText(t,P[0]+(dx||0),P[1]+(dy||0));
+  }
+  function small(t,P,col,align,base){
+    ctx.fillStyle=col; ctx.font='600 '+Math.max(10,S(13))+'px system-ui,-apple-system,sans-serif';
+    ctx.textAlign=align||'center'; ctx.textBaseline=base||'middle';
+    ctx.fillText(t,P[0],P[1]);
+  }
+  function seg(P,Q,col,w,dash){
+    ctx.save(); ctx.setLineDash(dash||[]); ctx.strokeStyle=col; ctx.lineWidth=w||S(2.4);
+    ctx.lineCap='round'; ctx.beginPath(); ctx.moveTo(P[0],P[1]); ctx.lineTo(Q[0],Q[1]); ctx.stroke(); ctx.restore();
+  }
+  function arcPart(C,r,a0,a1,k,col,w,dash){
+    ctx.save(); ctx.setLineDash(dash||[]); ctx.strokeStyle=col; ctx.lineWidth=w||S(2.2); ctx.lineCap='round';
+    ctx.beginPath(); ctx.arc(C[0],C[1],r,a0,a0+(a1-a0)*k); ctx.stroke(); ctx.restore();
+  }
+  /* значок прямого угла в точке V, стороны идут к точкам P и Q */
+  function rightAngle(V,P,Q,col){
+    var m=S(13);
+    var u1=[(P[0]-V[0]),(P[1]-V[1])], u2=[(Q[0]-V[0]),(Q[1]-V[1])];
+    var l1=Math.hypot(u1[0],u1[1])||1, l2=Math.hypot(u2[0],u2[1])||1;
+    u1=[u1[0]/l1*m,u1[1]/l1*m]; u2=[u2[0]/l2*m,u2[1]/l2*m];
+    ctx.save(); ctx.strokeStyle=col; ctx.lineWidth=S(2); ctx.beginPath();
+    ctx.moveTo(V[0]+u1[0],V[1]+u1[1]);
+    ctx.lineTo(V[0]+u1[0]+u2[0],V[1]+u1[1]+u2[1]);
+    ctx.lineTo(V[0]+u2[0],V[1]+u2[1]);
+    ctx.stroke(); ctx.restore();
+  }
+  /* прямая через две точки, продлённая в обе стороны */
+  function fullLine(P,Q,col,w){
+    var dx=Q[0]-P[0], dy=Q[1]-P[1], L=Math.hypot(dx,dy)||1;
+    dx/=L; dy/=L;
+    var big=W+H;
+    seg([P[0]-dx*big,P[1]-dy*big],[P[0]+dx*big,P[1]+dy*big],col,w);
+  }
+
+  function drawScene(k){
+    ctx.clearRect(0,0,W,H);
+    ctx.lineJoin='round';
+    var u=U();
+
+    if(scene===0){
+      var ay=H*0.60;
+      var M=[W*0.5, ay];
+      var r1=1.1*u, r2=1.65*u;
+      var A=[M[0]-r1, ay], B=[M[0]+r1, ay];
+      var ch=Math.sqrt(r2*r2-r1*r1);
+      var C=[M[0], ay-ch];
+
+      seg([S(12),ay],[W-S(12),ay],COL.ink,S(2.4));
+      label('a',[W-S(20),ay],COL.muted,0,S(16));
+      dot(M,COL.ink); label('M',M,COL.ink,0,S(20));
+
+      if(step>=1){
+        arcPart(M,r1,0,6.2832,(step===1)?k:1,COL.circ,S(2));
+        if(step>1||k>0.85){
+          dot(A,COL.circ); dot(B,COL.circ);
+          label('A',A,COL.circ,0,S(20)); label('B',B,COL.circ,0,S(20));
+          small('MA = MB',[M[0],ay+r1+S(16)],COL.circ);
+        }
+      }
+      if(step>=2){
+        var kk=(step===2)?k:1;
+        var aA=Math.atan2(C[1]-A[1],C[0]-A[0]);
+        var aB=Math.atan2(C[1]-B[1],C[0]-B[0]);
+        arcPart(A,r2,aA-0.55,aA+0.55,kk,COL.circ,S(2));
+        arcPart(B,r2,aB-0.55,aB+0.55,kk,COL.circ,S(2));
+        if(kk>0.85){
+          dot(C,COL.warm,S(5)); label('C',C,COL.warm,S(16),-S(4));
+          small('CA = CB',[C[0]+S(58),C[1]-S(14)],COL.warm);
+        }
+      }
+      if(step>=3){
+        fullLine(M,C,COL.warm,S(3));
+        rightAngle(M,C,B,COL.ok);
+        label('MC '+PERP+' a',[M[0]+S(74),(M[1]+C[1])/2],COL.warm);
+      }
+    }
+
+    if(scene===1){
+      var ay1=H*0.52;
+      var P=[W*0.5, ay1-1.15*u];
+      var rp=1.6*u, rq=1.75*u;
+      var half=Math.sqrt(rp*rp-(1.15*u)*(1.15*u));
+      var A1=[P[0]-half, ay1], B1=[P[0]+half, ay1];
+      var qd=Math.sqrt(rq*rq-half*half);
+      var Q=[P[0], ay1+qd];
+      var Hp=[P[0], ay1];
+
+      seg([S(12),ay1],[W-S(12),ay1],COL.ink,S(2.4));
+      label('a',[W-S(20),ay1],COL.muted,0,-S(16));
+      dot(P,COL.ink); label('P',P,COL.ink,0,-S(18));
+
+      if(step>=1){
+        arcPart(P,rp,0.35,Math.PI-0.35,(step===1)?k:1,COL.circ,S(2));
+        if(step>1||k>0.85){
+          dot(A1,COL.circ); dot(B1,COL.circ);
+          label('A',A1,COL.circ,-S(14),-S(12)); label('B',B1,COL.circ,S(14),-S(12));
+          small('PA = PB',[P[0]+S(52),P[1]+S(24)],COL.circ);
+        }
+      }
+      if(step>=2){
+        var k2=(step===2)?k:1;
+        var bA=Math.atan2(Q[1]-A1[1],Q[0]-A1[0]);
+        var bB=Math.atan2(Q[1]-B1[1],Q[0]-B1[0]);
+        arcPart(A1,rq,bA-0.5,bA+0.5,k2,COL.circ,S(2));
+        arcPart(B1,rq,bB-0.5,bB+0.5,k2,COL.circ,S(2));
+        if(k2>0.85){
+          dot(Q,COL.warm,S(5)); label('Q',Q,COL.warm,0,S(20));
+          small('QA = QB',[Q[0]+S(52),Q[1]-S(6)],COL.warm);
+        }
+      }
+      if(step>=3){
+        fullLine(P,Q,COL.warm,S(3));
+        dot(Hp,COL.ok,S(5)); label('H',Hp,COL.ok,-S(16),S(16));
+        rightAngle(Hp,P,B1,COL.ok);
+        label('PH '+PERP+' a',[P[0]+S(78),(P[1]+ay1)/2],COL.warm);
+      }
+    }
+
+    if(scene===2){
+      var my=H*0.50;
+      var Cp=[W*0.5-1.3*u, my], Dp=[W*0.5+1.3*u, my];
+      var r=1.75*u;
+      var hh=Math.sqrt(r*r-(1.3*u)*(1.3*u));
+      var E=[W*0.5, my-hh], F=[W*0.5, my+hh];
+
+      seg(Cp,Dp,COL.ink,S(3.2));
+      dot(Cp,COL.ink); dot(Dp,COL.ink);
+      label('C',Cp,COL.ink,-S(16),S(6)); label('D',Dp,COL.ink,S(16),S(6));
+
+      if(step===1){
+        seg(Cp,[Cp[0]+r*k,Cp[1]-S(30)],COL.circ,S(2),[6,5]);
+        if(k>0.85) small('раствор больше половины CD',[W*0.5,my-S(52)],COL.circ);
+      }
+      if(step>=2){
+        var k3=(step===2)?k:1;
+        var eA=Math.atan2(E[1]-Cp[1],E[0]-Cp[0]);
+        var eB=Math.atan2(E[1]-Dp[1],E[0]-Dp[0]);
+        var fA=Math.atan2(F[1]-Cp[1],F[0]-Cp[0]);
+        var fB=Math.atan2(F[1]-Dp[1],F[0]-Dp[0]);
+        arcPart(Cp,r,eA-0.45,eA+0.45,k3,COL.circ,S(2));
+        arcPart(Dp,r,eB-0.45,eB+0.45,k3,COL.circ,S(2));
+        arcPart(Cp,r,fA-0.45,fA+0.45,k3,COL.circ,S(2));
+        arcPart(Dp,r,fB-0.45,fB+0.45,k3,COL.circ,S(2));
+        if(k3>0.85){
+          dot(E,COL.warm,S(5)); label('E',E,COL.warm,S(16),0);
+          dot(F,COL.warm,S(5)); label('F',F,COL.warm,S(16),0);
+        }
+      }
+      if(step>=3){
+        fullLine(E,F,COL.warm,S(3));
+        var mid=[W*0.5,my];
+        dot(mid,COL.ok,S(5));
+        rightAngle(mid,E,Dp,COL.ok);
+        small('середина CD',[W*0.5+S(66),my+S(18)],COL.ok);
+        label('EF '+PERP+' CD',[W*0.5,F[1]+S(24)],COL.warm);
+      }
+    }
+  }
+
+  function render(){
+    if(rafId){ cancelAnimationFrame(rafId); rafId=0; }
+    if(reduce||step===0){ drawScene(1); return; }
+    var t0=null, dur=700;
+    function frame(ts){
+      if(t0===null) t0=ts;
+      var k=Math.min(1,(ts-t0)/dur);
+      drawScene(k);
+      if(k<1) rafId=requestAnimationFrame(frame); else rafId=0;
+    }
+    rafId=requestAnimationFrame(frame);
+  }
+
+  function update(){
+    sayEl.innerHTML=TEXT[scene][step];
+    cntEl.textContent='шаг '+step+' из 3';
+    btnNext.disabled=(step>=3);
+    btnPrev.disabled=(step<=0);
+    btnNext.textContent=(step>=3)?'Построено ✓':'Шаг вперёд →';
+    render();
+  }
+
+  Array.prototype.forEach.call(document.querySelectorAll('.picker button'),function(b){
+    b.addEventListener('click',function(){
+      Array.prototype.forEach.call(document.querySelectorAll('.picker button'),function(x){ x.classList.remove('on'); });
+      b.classList.add('on');
+      scene=parseInt(b.getAttribute('data-s'),10); step=0; update();
+    });
+  });
+  btnNext.addEventListener('click',function(){ if(step<3){ step++; update(); } });
+  btnPrev.addEventListener('click',function(){ if(step>0){ step--; update(); } });
+  window.addEventListener('resize',function(){ resize(); drawScene(1); });
+  resize(); update();
+})();
+</script>
+
+<script>
+(function(){
+  var taskEl=document.getElementById('trTask'), optsEl=document.getElementById('trOpts'),
+      resEl=document.getElementById('trResult'), kindEl=document.getElementById('trKind'),
+      scoreEl=document.getElementById('trScore');
+  if(!taskEl) return;
+  var PERP='⊥', DASH='—';
+  var cur=null, answered=false, right=0, total=0;
+
+  function ri(n){ return Math.floor(Math.random()*n); }
+  function shuffle(a){
+    for(var i=a.length-1;i>0;i--){ var j=ri(i+1), t=a[i]; a[i]=a[j]; a[j]=t; }
+    return a;
+  }
+
+  /* --- банк 1: какой случай --- */
+  var CASE_ON=[
+    'Дана прямая <b>a</b> и точка <b>M</b>, лежащая на этой прямой.',
+    'Точка <b>K</b> отмечена прямо на прямой <b>a</b>, нужен перпендикуляр через K.',
+    'На прямой <b>a</b> взята точка <b>T</b>; надо провести через неё перпендикуляр к a.'
+  ];
+  var CASE_OFF=[
+    'Дана прямая <b>a</b> и точка <b>P</b>, которая на прямой не лежит.',
+    'Точка <b>K</b> находится вне прямой <b>a</b>, нужен перпендикуляр из K к a.',
+    'Точка <b>N</b> взята над прямой <b>a</b>; надо опустить из неё перпендикуляр.'
+  ];
+  var CASE_OPTS=[
+    'Точка лежит на прямой: перпендикуляр выходит из неё, сама точка станет вершиной прямого угла.',
+    'Точка вне прямой: перпендикуляр опускается на прямую, точка их пересечения ' + DASH + ' основание.',
+    'Случай не важен: алгоритм в обоих случаях начинается одинаково.'
+  ];
+  function makeCase(){
+    var on=(Math.random()<0.5);
+    var t=on?CASE_ON[ri(CASE_ON.length)]:CASE_OFF[ri(CASE_OFF.length)];
+    var opts=[
+      {text:CASE_OPTS[0], ok:on},
+      {text:CASE_OPTS[1], ok:!on},
+      {text:CASE_OPTS[2], ok:false}
+    ];
+    var w = on
+      ? 'Точка лежит <b>на прямой</b>, значит работает алгоритм 1: дуга из точки сразу пересекает прямую в двух точках A и B по разные стороны, и данная точка оказывается серединой AB. Основания у такого перпендикуляра нет ' + DASH + ' точка сама является вершиной прямого угла.'
+      : 'Точка лежит <b>вне прямой</b>, значит работает алгоритм 2: сначала из точки проводят дугу такого раствора, чтобы она достала до прямой и дала точки A и B. В конце появляется <b>основание H</b> ' + DASH + ' точка пересечения перпендикуляра с прямой.';
+    w += ' А вариант «случай не важен» неверен: первые шаги у двух случаев разные.';
+    return {kind:'какой случай', task:t+'<br><b>Какой это случай?</b>', opts:shuffle(opts), why:w};
+  }
+
+  /* --- банк 2: следующий шаг --- */
+  var SEQ=[
+    { s:'Точка <b>M</b> лежит на прямой <b>a</b>.', d:'дуга из M проведена, на прямой получены точки A и B',
+      ok:'Провести из A и из B дуги одним и тем же раствором (больше MA) до их пересечения в точке C.',
+      bad:['Соединить линейкой точки A и B.','Приложить линейку и провести через M прямую так, чтобы угол выглядел прямым.'],
+      w:'Нужны две точки, равноудалённые от A и B. Одна такая уже есть ' + DASH + ' это сама точка M (MA = MB). Вторую даёт пересечение дуг равного раствора из A и из B: получится точка C с CA = CB.' },
+    { s:'Точка <b>M</b> лежит на прямой <b>a</b>.', d:'получены точки A, B и точка пересечения дуг C',
+      ok:'Провести прямую MC ' + DASH + ' это и есть искомый перпендикуляр.',
+      bad:['Провести прямую AC.','Провести ещё одну дугу из точки C.'],
+      w:'Прямая MC проходит через середину M отрезка AB и через равноудалённую от его концов точку C, значит это серединный перпендикуляр к AB. Поэтому MC ' + PERP + ' a. Прямая AC ничего не даёт: A ' + DASH + ' конец отрезка, а не его середина.' },
+    { s:'Точка <b>P</b> лежит вне прямой <b>a</b>.', d:'дуга из P пересекла прямую в точках A и B',
+      ok:'Из A и из B одним и тем же раствором провести дуги по другую сторону прямой до пересечения в точке Q.',
+      bad:['Соединить P с точкой A.','Отметить середину AB на глаз и соединить её с P.'],
+      w:'У нас уже есть точка, равноудалённая от A и B: это P, ведь PA = PB. Нужна вторая такая точка, и её даёт пересечение дуг равного раствора из A и из B по другую сторону прямой. Середину «на глаз» ставить нельзя ' + DASH + ' это отказ от построения.' },
+    { s:'Точка <b>P</b> лежит вне прямой <b>a</b>.', d:'получены точки A, B и точка Q по другую сторону прямой',
+      ok:'Провести прямую PQ; точка её пересечения с прямой a ' + DASH + ' основание H.',
+      bad:['Провести прямую AQ.','Провести прямую через P параллельно прямой a.'],
+      w:'И P, и Q равноудалены от A и B, поэтому PQ ' + DASH + ' серединный перпендикуляр к отрезку AB, то есть PQ ' + PERP + ' a. Точку пересечения с прямой обозначают H: это основание перпендикуляра.' },
+    { s:'Дан отрезок <b>CD</b>, нужен перпендикуляр через его середину.', d:'взят раствор циркуля больше половины CD',
+      ok:'Провести этим раствором дуги из C и из D с обеих сторон отрезка и соединить две точки их пересечения.',
+      bad:['Измерить линейкой половину CD и поставить там точку.','Провести дуги только с одной стороны отрезка.'],
+      w:'Две точки пересечения дуг равноудалены от C и от D, поэтому прямая через них ' + DASH + ' серединный перпендикуляр к CD. Линейка с делениями запрещена, а одной точки для прямой мало: нужны обе, сверху и снизу.' }
+  ];
+  function makeSeq(){
+    var s=SEQ[ri(SEQ.length)];
+    var opts=shuffle([{text:s.ok,ok:true},{text:s.bad[0],ok:false},{text:s.bad[1],ok:false}]);
+    return {kind:'следующий шаг',
+      task:s.s+'<br><span style="font-weight:500">Уже сделано: '+s.d+'.</span><br><b>Какой шаг следующий?</b>',
+      opts:opts, why:s.w};
+  }
+
+  /* --- банк 3: раствор циркуля --- */
+  function makeRadius(){
+    var L=4+ri(11);                      /* 4..14 см */
+    var halfFloor=Math.floor(L/2);       /* наибольшее целое, не превосходящее L/2 */
+    var good=halfFloor+1+ri(Math.max(1,L-halfFloor)); /* строго больше L/2 */
+    var pool=[];
+    for(var i=1;i<=halfFloor;i++) pool.push(i);
+    shuffle(pool);
+    var bad1=pool[0], bad2=(pool.length>1)?pool[1]:null;
+    var opts=[{text:good+' см', ok:true},{text:bad1+' см', ok:false}];
+    if(bad2!==null) opts.push({text:bad2+' см', ok:false});
+    else opts.push({text:'любой, лишь бы дуги были красивые', ok:false});
+    var halfTxt=(L%2===0)?(L/2)+' см':(L/2).toFixed(1).replace('.',',')+' см';
+    var w='Половина отрезка AB равна <b>'+halfTxt+'</b>. Раствор должен быть <b>строго больше</b> половины, иначе дуги из A и из B не пересекутся и строить будет нечего. Из предложенных подходит только <b>'+good+' см</b>.';
+    return {kind:'раствор циркуля',
+      task:'Строим серединный перпендикуляр к отрезку <b>AB</b> длиной <b>'+L+' см</b>. Какой раствор циркуля годится для дуг из A и из B?',
+      opts:shuffle(opts), why:w};
+  }
+
+  /* --- банк 4: найди ошибку --- */
+  var ERR=[
+    { t:'Ученик провёл дугу из A одним раствором, а дугу из B ' + DASH + ' другим, и соединил точку их пересечения с M.',
+      d:'Растворы для двух дуг должны быть одинаковыми.',
+      w:'При разных растворах точка пересечения не равноудалена от A и B. А всё обоснование прямого угла держалось на равенстве CA = CB: без него прямая уже не серединный перпендикуляр, и 90° не гарантированы.' },
+    { t:'Отрезок AB получился длиной 8 см, а ученик взял раствор циркуля 3 см и удивился, что дуги не пересеклись.',
+      d:'Раствор взят меньше половины отрезка.',
+      w:'Половина AB равна 4 см, а раствор 3 см меньше. Дуги радиуса 3 см из A и из B просто не дотягиваются друг до друга. Раствор надо брать заведомо больше половины отрезка.' },
+    { t:'Ученик приложил линейку и провёл прямую через точку так, чтобы угол «выглядел прямым».',
+      d:'Прямая проведена на глаз, без построения.',
+      w:'На глаз угол почти никогда не равен ровно 90°. Прямой угол нужно получить построением циркулем и линейкой, а не подгонкой картинки.' },
+    { t:'Ученик всё построил верно, сдал чертёж и на вопрос «почему угол прямой» ответил: «ну вот же, видно».',
+      d:'Нет обоснования, почему получился прямой угол.',
+      w:'Построение без объяснения ' + DASH + ' неполное решение. Надо назвать: прямая проходит через две точки, равноудалённые от A и B, значит это серединный перпендикуляр к AB, поэтому угол прямой.' },
+    { t:'Ученик не посмотрел, где находится данная точка, и сразу начал строить по алгоритму для точки вне прямой, хотя точка лежала на прямой.',
+      d:'Не определён случай: точка на прямой или вне её.',
+      w:'Первые шаги у двух случаев разные, поэтому начинать надо с вопроса «где лежит точка?». Ответ и определяет, какой алгоритм применять.' }
+  ];
+  function makeErr(){
+    var i=ri(ERR.length), e=ERR[i];
+    var others=[];
+    for(var j=0;j<ERR.length;j++) if(j!==i) others.push(ERR[j].d);
+    shuffle(others);
+    var opts=shuffle([{text:e.d,ok:true},{text:others[0],ok:false},{text:others[1],ok:false}]);
+    return {kind:'найди ошибку', task:e.t+'<br><b>Что здесь нарушено?</b>', opts:opts, why:e.w};
+  }
+
+  /* --- банк 5: обоснование --- */
+  var WHY=[
+    { q:'Точка M лежит на прямой a, построены A, B и C. Почему прямая <b>MC</b> перпендикулярна прямой a?',
+      ok:'Потому что MA = MB и CA = CB: прямая MC проходит через середину AB и через равноудалённую от A и B точку, то есть это серединный перпендикуляр.',
+      bad:['Потому что на чертеже этот угол выглядит прямым.','Потому что прямая MC проходит через точку C, а C построена циркулем.'],
+      w:'Прямая, проходящая через две точки, равноудалённые от концов отрезка, ' + DASH + ' серединный перпендикуляр к этому отрезку. Здесь такие точки M (MA = MB) и C (CA = CB), поэтому MC ' + PERP + ' AB, то есть MC ' + PERP + ' a.' },
+    { q:'Точка P вне прямой a, построены A, B и Q. Почему <b>PQ</b> перпендикулярна прямой a?',
+      ok:'Потому что PA = PB и QA = QB: обе точки равноудалены от A и B, значит PQ ' + DASH + ' серединный перпендикуляр к отрезку AB.',
+      bad:['Потому что точка Q лежит по другую сторону прямой, чем P.','Потому что отрезок PQ самый короткий из всех возможных.'],
+      w:'Работает то же правило: две точки, равноудалённые от концов отрезка AB, задают серединный перпендикуляр к AB. Расположение Q по другую сторону прямой ' + DASH + ' лишь удобство чертежа, само по себе оно ничего не доказывает.' },
+    { q:'Почему дуги из точек A и B обязательно проводят <b>одним и тем же</b> раствором циркуля?',
+      ok:'Только тогда точка пересечения дуг равноудалена от A и B, а без этого равенства прямой угол не обосновать.',
+      bad:['Чтобы чертёж выглядел аккуратно и симметрично.','Чтобы дуги получились одинаковой длины.'],
+      w:'Равный раствор ' + DASH + ' это равные расстояния до точки пересечения: CA = CB. Именно из этого равенства следует, что прямая через эту точку ' + DASH + ' серединный перпендикуляр. Аккуратность чертежа тут ни при чём.' }
+  ];
+  function makeWhy(){
+    var x=WHY[ri(WHY.length)];
+    var opts=shuffle([{text:x.ok,ok:true},{text:x.bad[0],ok:false},{text:x.bad[1],ok:false}]);
+    return {kind:'обоснование', task:x.q, opts:opts, why:x.w};
+  }
+
+  var MAKERS=[makeCase,makeSeq,makeRadius,makeErr,makeWhy];
+
+  function render(){
+    kindEl.textContent=cur.kind;
+    taskEl.innerHTML=cur.task;
+    optsEl.innerHTML='';
+    answered=false;
+    cur.opts.forEach(function(o,i){
+      var b=document.createElement('button');
+      b.type='button'; b.textContent=o.text;
+      b.addEventListener('click',function(){ pick(i,b); });
+      optsEl.appendChild(b);
+    });
+    resEl.innerHTML='';
+  }
+  function lock(){
+    Array.prototype.forEach.call(optsEl.children,function(b,i){
+      b.disabled=true;
+      if(cur.opts[i].ok) b.classList.add('pick-ok');
+    });
+  }
+  function solHTML(){ return '<div class="sol">'+cur.why+'</div>'; }
+  function pick(i,btn){
+    if(answered) return;
+    answered=true; total++;
+    if(cur.opts[i].ok){ right++; resEl.innerHTML='<span class="ok">✓ Верно!</span>'+solHTML(); }
+    else{ btn.classList.add('pick-no'); resEl.innerHTML='<span class="bad">✗ Не то.</span>'+solHTML(); }
+    lock();
+    scoreEl.textContent='верно '+right+' из '+total;
+  }
+  function generate(){ cur=MAKERS[ri(MAKERS.length)](); render(); }
+
+  document.getElementById('trNew').addEventListener('click',generate);
+  document.getElementById('trShow').addEventListener('click',function(){
+    if(!answered){ answered=true; total++; lock(); scoreEl.textContent='верно '+right+' из '+total; }
+    resEl.innerHTML=solHTML();
+  });
+
+  /* стартовая задача совпадает с тем, что показано в разметке */
+  cur={ kind:'какой случай',
+    task:'Дана прямая <b>a</b> и точка <b>M</b>, которая лежит на прямой a.<br><b>Какой это случай?</b>',
+    opts:[
+      {text:CASE_OPTS[0], ok:true},
+      {text:CASE_OPTS[1], ok:false},
+      {text:CASE_OPTS[2], ok:false}
+    ],
+    why:'Точка лежит <b>на прямой</b>, значит работает алгоритм 1: дуга из точки сразу пересекает прямую в двух точках A и B по разные стороны, и данная точка оказывается серединой AB. Основания у такого перпендикуляра нет ' + DASH + ' точка сама является вершиной прямого угла.' };
+  render();
+})();
+</script>
+<!--LESSON-NAV-BOT--><nav class="lnav lnav-bot"><a class="prev" href="./geo7-postroenie-serediny.html"><span class="dir">← Предыдущая</span><span class="ttl">Построение середины отрезка и серединного перпендикуляра</span></a><a class="to-cat" href="./catalog.html">📚 <span>Все темы</span></a><a class="next" href="./geo7-postroenie-treugolnika.html"><span class="dir">Следующая →</span><span class="ttl">Построение треугольника по трём элементам</span></a></nav><!--/LESSON-NAV-BOT-->

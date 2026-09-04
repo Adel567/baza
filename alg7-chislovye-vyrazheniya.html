@@ -1,0 +1,469 @@
+<!doctype html>
+<!-- humanized: humanizer-ru, 2026-09-04, тире возвращено -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Числовые выражения и их значения — алгебра 7 класс</title>
+<style>
+  :root{
+    --paper:#F5F7FA; --card:#FFFFFF; --ink:#1B2432; --muted:#5C687C; --line:#E3E8EF;
+    --brand:#176B8A; --brand-soft:#E2F0F5;   /* бирюзово-синий — «вычисляем» */
+    --op:#C4571F; --op-soft:#FBEADF;         /* знаки действий, приоритет */
+    --num:#2E8560; --num-soft:#E1F2EA;       /* числа */
+    --ok:#1E8E5A; --no:#C23B3B; --amber:#C8891A;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper)}
+  .page{max-width:720px;margin:0 auto;padding:clamp(1.4rem,4vw,3rem) clamp(1.1rem,4vw,2rem) 4.5rem;
+    color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:17.5px;line-height:1.68;-webkit-font-smoothing:antialiased}
+  .mono{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-variant-numeric:tabular-nums;font-weight:600}
+  .ow{color:var(--op);font-weight:800} .nw{color:var(--num);font-weight:800}
+
+  .hero{border-bottom:3px solid var(--brand);padding-bottom:1.4rem;margin-bottom:1.8rem}
+  .eyebrow{font-size:.74rem;letter-spacing:.15em;text-transform:uppercase;color:var(--brand);font-weight:700;margin:0 0 .55rem}
+  h1{font-size:clamp(1.9rem,6vw,2.8rem);line-height:1.05;margin:0;font-weight:800;letter-spacing:-.02em;text-wrap:balance}
+  .tagline{font-size:1.12rem;color:var(--muted);margin:.85rem 0 0;text-wrap:pretty}
+
+  section{margin-top:2.4rem}
+  h2{font-size:1.5rem;margin:0 0 .3rem;font-weight:780;letter-spacing:-.015em;text-wrap:balance}
+  h2 .em{color:var(--brand)}
+  p{margin:.7rem 0}
+  strong{font-weight:680}
+
+  .lead-in{background:var(--brand-soft);border-radius:14px;padding:1.1rem 1.3rem;font-size:1.02rem}
+  .lead-in p{margin:.4rem 0}
+  .lead-in b{color:var(--brand)}
+
+  .recall{background:var(--card);border:1px dashed var(--line);border-radius:14px;padding:1rem 1.2rem;margin-top:1rem}
+  .recall h3{margin:0 0 .4rem;font-size:1rem;color:var(--brand);letter-spacing:.02em}
+  .recall ul{margin:.3rem 0 0;padding-left:1.1rem;font-size:.97rem}
+  .recall li{margin:.25rem 0}
+
+  .formula-box{background:var(--ink);color:#fff;border-radius:14px;padding:1.3rem;text-align:center;margin-top:1rem}
+  .formula-box .eq{font-family:ui-monospace,Menlo,monospace;font-size:clamp(1rem,3.6vw,1.35rem);font-weight:700;line-height:1.6;overflow-wrap:break-word}
+  .formula-box .eq .s1{color:#7FD4EA} .formula-box .eq .s2{color:#F0A45E} .formula-box .eq .s3{color:#6FD3A6}
+  .formula-box .note{font-size:.9rem;color:#AEB8C7;margin:.7rem 0 0}
+
+  .note{border-left:4px solid var(--brand);background:var(--brand-soft);border-radius:0 10px 10px 0;padding:.8rem 1.1rem;margin-top:1rem;font-size:.98rem}
+  .note b{color:var(--brand)}
+  .note.warn{border-left-color:var(--no);background:#FCEDED}
+  .note.warn b{color:var(--no)}
+
+  .steps{list-style:none;counter-reset:st;margin:1rem 0 0;padding:0;display:flex;flex-direction:column;gap:.55rem}
+  .steps li{position:relative;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:.85rem 1rem .85rem 3rem;font-size:.98rem}
+  .steps li::before{counter-increment:st;content:counter(st);position:absolute;left:.7rem;top:.8rem;width:1.6rem;height:1.6rem;border-radius:50%;background:var(--brand);color:#fff;font-weight:800;font-size:.85rem;display:flex;align-items:center;justify-content:center}
+
+  .signs{display:flex;flex-direction:column;gap:.5rem;margin-top:1rem}
+  .signs div{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--num);border-radius:0 11px 11px 0;padding:.75rem 1rem;font-size:.97rem}
+  .signs div.minus{border-left-color:var(--op)}
+
+  .walk{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.15rem 1.3rem;margin-top:1rem}
+  .walk .q{font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.05rem;margin:0 0 .9rem;padding-bottom:.7rem;border-bottom:1px solid var(--line);overflow-wrap:break-word}
+  .walk ol{margin:0;padding-left:1.2rem;display:flex;flex-direction:column;gap:.5rem}
+  .walk li{font-size:.96rem}
+  .walk b{font-weight:700}
+  .walk i{color:var(--muted);font-style:italic}
+  .verdict{margin-top:1rem;padding:.7rem 1rem;background:var(--brand-soft);border-radius:10px;font-weight:650;color:var(--brand)}
+
+  /* Числовая прямая */
+  .sim{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.1rem 1.2rem;margin-top:1rem}
+  .sim canvas{width:100%;height:auto;display:block}
+  .sim-ctl{display:flex;flex-direction:column;gap:.6rem;margin-top:.7rem}
+  .sim-ctl label{display:flex;align-items:center;gap:.7rem;font-size:.93rem;font-weight:650}
+  .sim-ctl input[type=range]{flex:1;accent-color:var(--brand);min-width:120px}
+  .sim-ctl input[type=range]:focus-visible{outline:3px solid var(--brand);outline-offset:3px}
+  .sim-ctl .val{font-family:ui-monospace,Menlo,monospace;font-weight:800;min-width:2.6rem;text-align:right;color:var(--brand)}
+  .sim-read{margin-top:.7rem;text-align:center;font-family:ui-monospace,Menlo,monospace;font-weight:800;font-size:clamp(1rem,4.5vw,1.25rem)}
+
+  /* Тренажёр */
+  .trainer{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.2rem 1.3rem;margin-top:1rem}
+  .tr-task{font-family:ui-monospace,Menlo,monospace;font-weight:800;font-size:clamp(1.05rem,4.6vw,1.45rem);text-align:center;padding:1.1rem;background:var(--brand-soft);border-radius:10px;color:var(--ink);overflow-wrap:break-word}
+  .tr-ctl{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.9rem;align-items:center}
+  .tr-ctl button{font:inherit;font-weight:700;font-size:.9rem;cursor:pointer;border:none;border-radius:9px;padding:.55rem .95rem;color:#fff;background:var(--brand)}
+  .tr-ctl button.sec{background:var(--op)}
+  .tr-ctl button.ghost{background:transparent;color:var(--brand);border:1px solid var(--brand)}
+  .tr-ctl input{flex:1;min-width:120px;font:inherit;padding:.5rem .7rem;border:1px solid var(--line);border-radius:9px;background:#fff;color:var(--ink)}
+  .tr-ctl button:focus-visible,.tr-ctl input:focus-visible{outline:3px solid var(--brand);outline-offset:2px}
+  .tr-hint{font-size:.86rem;color:var(--muted);margin:.6rem 0 0}
+  .tr-result{margin-top:.9rem;font-size:.96rem;min-height:1.2rem}
+  .tr-result .ok{color:var(--ok);font-weight:700} .tr-result .bad{color:var(--no);font-weight:700}
+  .tr-result .sol{margin-top:.6rem;padding:.8rem 1rem;background:#FAFCFD;border:1px solid var(--line);border-radius:10px;font-family:ui-monospace,Menlo,monospace;font-size:.92rem;line-height:1.9;overflow-wrap:break-word}
+  .tr-result .sol b{color:var(--brand)}
+  .tr-result .sol i{font-family:system-ui,sans-serif;font-style:normal;color:var(--muted);font-size:.85rem}
+
+  details{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:.9rem 1.1rem;margin-top:.7rem}
+  details[open]{border-color:var(--brand)}
+  summary{cursor:pointer;font-weight:650;list-style:none;display:flex;justify-content:space-between;gap:1rem;align-items:center}
+  summary::-webkit-details-marker{display:none}
+  summary::after{content:"ответ";font-size:.8rem;color:var(--brand);font-weight:700;white-space:nowrap}
+  details[open] summary::after{content:"скрыть"}
+  summary:focus-visible{outline:3px solid var(--brand);outline-offset:3px;border-radius:6px}
+  .ans{margin-top:.75rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.96rem;color:var(--muted)}
+  .ans b{color:var(--ink)}
+  .drill{display:flex;flex-direction:column;gap:.2rem;margin-top:1rem}
+  .lvl{font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:700;margin:1.2rem 0 .1rem}
+
+  ul.traps{list-style:none;margin:1rem 0 0;padding:0;display:flex;flex-direction:column;gap:.7rem}
+  ul.traps li{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:.85rem 1.05rem;padding-left:2.5rem;position:relative;font-size:.97rem}
+  ul.traps li::before{content:"⚠";position:absolute;left:1rem;top:.85rem;color:var(--op)}
+  ul.traps b{font-weight:700}
+
+  .wrapup{background:var(--brand);color:#fff;border-radius:16px;padding:1.4rem 1.5rem;margin-top:2.4rem}
+  .wrapup h2{color:#fff;margin:0 0 .5rem}
+  .wrapup p{color:#DCEDF3;margin:.4rem 0;font-size:1rem}
+  .wrapup .big-rule{font-size:clamp(.95rem,3.4vw,1.1rem);font-weight:700;color:#fff;margin:.6rem 0;font-family:ui-monospace,Menlo,monospace}
+  .wrapup .next{font-size:.95rem;color:#C6E2EC;margin-top:1rem;padding-top:1rem;border-top:1px solid rgba(255,255,255,.2)}
+  .wrapup .next b{color:#fff}
+
+  @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<!--LESSON-NAV-TOP--><style>.lnav{--lnav-accent:#3D5AF1}.lnav a{text-decoration:none;font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif}.lnav-top{max-width:820px;margin:0 auto;padding:.75rem clamp(1rem,4vw,1.5rem) .1rem}.lnav-top a{display:inline-flex;align-items:center;gap:.35rem;color:var(--lnav-accent);font-weight:600;font-size:.9rem}.lnav-top a:hover{text-decoration:underline}.lnav-bot{max-width:820px;margin:2.6rem auto 3rem;padding:1.1rem clamp(1rem,4vw,1.5rem) 0;border-top:1px solid #E4E8EF;display:flex;align-items:stretch;gap:.55rem}.lnav-bot a{min-width:0;display:flex;flex-direction:column;justify-content:center;gap:.15rem;border:1px solid #E4E8EF;border-radius:12px;padding:.65rem .85rem;color:#182233;background:#fff;transition:border-color .1s,transform .08s}.lnav-bot a:hover{border-color:var(--lnav-accent);transform:translateY(-1px)}.lnav-bot .prev,.lnav-bot .next{flex:1 1 0}.lnav-bot .next{text-align:right}.lnav-bot .dir{font-size:.72rem;color:#8A93A6;font-weight:600}.lnav-bot .ttl{font-size:.9rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.lnav-bot .to-cat{flex:0 0 auto;flex-direction:row;align-items:center;justify-content:center;color:var(--lnav-accent);font-weight:700;font-size:.85rem;white-space:nowrap}@media(max-width:420px){.lnav-bot .to-cat span{display:none}.lnav-bot .to-cat{padding:.65rem .7rem}}</style><nav class="lnav lnav-top"><a href="./catalog.html">← Все темы</a></nav><!--/LESSON-NAV-TOP-->
+<div class="page">
+
+  <header class="hero">
+    <p class="eyebrow">Алгебра · 7 класс · выражения</p>
+    <h1>Числовые выражения и их значения</h1>
+    <p class="tagline">Выражение — это рецепт числа: запись того, как его получить. Дальше дело за малым: приготовить строго по порядку.</p>
+  </header>
+
+  <div class="lead-in">
+    <p><b>Где встречается.</b> Считаешь чек в магазине, сдачу, расход бензина, площадь комнаты — ты вычисляешь числовое выражение. В самой математике на этом стоит всё дальнейшее: буквенные выражения, уравнения, формулы. Правила порядка действий и знаков там ровно те же.</p>
+    <p><b>Главный миф.</b> «Считаю слева направо, как читаю». Нет. Очередь задают сами действия: умножение и деление «сильнее» сложения и вычитания. Привычка читать подряд и даёт в выражении <span class="mono">2 + 3 · 4</span> неверный ответ 20 вместо <b>14</b>.</p>
+  </div>
+
+  <div class="recall">
+    <h3>Сначала вспомни</h3>
+    <ul>
+      <li>Как складывать и вычитать <b>натуральные числа</b> и как записаны действия: «·» — умножение, «:» — деление.</li>
+      <li>Что такое <b>отрицательные числа</b> и <b>модуль</b> <span class="mono">|a|</span> — расстояние от нуля до числа; он всегда неотрицателен.</li>
+      <li>Что делить на ноль нельзя.</li>
+    </ul>
+  </div>
+
+  <section>
+    <h2>Суть простыми словами</h2>
+    <p><strong>Числовое выражение</strong> — это запись из чисел, соединённых знаками действий <span class="mono">(+, −, ·, :)</span> и скобками. Если все указанные в ней действия можно выполнить, то полученный результат называют <strong>значением выражения</strong>.</p>
+    <p>Выражение хранит <strong>инструкцию</strong>, а не готовый результат. Вычислить его — значит по шагам свернуть всю запись в одно число, соблюдая порядок действий.</p>
+    <p>Ещё тонкость: значение есть <strong>не у каждого</strong> выражения. Например, <span class="mono">12 : (3 − 3)</span> — вполне законная запись, но значения у неё нет: в скобке получается ноль, а на ноль делить нельзя. Поэтому в задании всегда два вопроса: посчитай — и проверь, что считать вообще есть что.</p>
+  </section>
+
+  <section>
+    <h2>Правило: <span class="em">порядок действий</span></h2>
+    <div class="formula-box">
+      <div class="eq"><span class="s1">скобки</span> &nbsp;⟶&nbsp; <span class="s2">· и :</span> &nbsp;⟶&nbsp; <span class="s3">+ и −</span></div>
+      <div class="note">внутри одной ступени — слева направо</div>
+    </div>
+    <ol class="steps">
+      <li>Сначала выполняются действия <b>в скобках</b>. Внутри скобок — снова по этим же правилам.</li>
+      <li>Затем <b>умножение и деление</b> — слева направо, в том порядке, как они записаны.</li>
+      <li>В последнюю очередь <b>сложение и вычитание</b> — тоже слева направо.</li>
+    </ol>
+    <p style="font-weight:700;margin-top:1.4rem">Правила знаков — они понадобятся на шагах 2 и 3:</p>
+    <div class="signs">
+      <div><b>Сложение одинаковых знаков:</b> <span class="mono">(−a) + (−b) = −(a + b)</span>. Складываем модули, знак остаётся тем же.</div>
+      <div class="minus"><b>Сложение разных знаков:</b> из большего модуля вычитаем меньший и берём знак того числа, у которого модуль больше. Так <span class="mono">−8 + 3 = −5</span>.</div>
+      <div><b>Умножение и деление:</b> у чисел <b>одного</b> знака результат положителен, у чисел <b>разных</b> знаков — отрицателен. Коротко: «минус на минус даёт плюс».</div>
+    </div>
+    <div class="note warn">
+      <p><b>Условие применимости.</b> Деление определено только на число, не равное нулю. Если по ходу вычислений возникает деление на 0 — выражение <b>не имеет значения</b>. Это полноценный ответ, а не ошибка в задании.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Разбор «думаю вслух»</h2>
+    <p>Найдём значение выражения <span class="mono">2 + 3 · (7 − 9)</span>. Проговариваю каждый шаг — и <i>что</i> делаю, и <i>почему именно это</i>.</p>
+    <div class="walk">
+      <p class="q">2 + 3 · (7 − 9)</p>
+      <ol>
+        <li><b>7 − 9 = −2.</b> <i>Скобка идёт первой, что бы там ни стояло. Вычитаем из меньшего большее — значит, результат отрицательный: модули 9 и 7, разница 2, знак минус.</i></li>
+        <li><b>3 · (−2) = −6.</b> <i>Теперь ступень «умножение и деление» — она раньше сложения. Знаки разные, поэтому в ответе минус.</i></li>
+        <li><b>2 + (−6) = −4.</b> <i>Сложение — в последнюю очередь. Знаки разные: из большего модуля 6 вычитаем меньший 2, получаем 4, а знак берём у минус шести.</i></li>
+      </ol>
+      <div class="verdict">Ответ: −4.</div>
+    </div>
+
+    <p style="margin-top:1.6rem"><strong>Теперь допиши сам.</strong> Найди значение <span class="mono">(−12) : 4 + 5 · (−2)</span>. Первый шаг я сделал, остальные — за тобой.</p>
+    <div class="walk">
+      <p class="q">(−12) : 4 + 5 · (−2)</p>
+      <ol>
+        <li><b>(−12) : 4 = −3.</b> <i>Деление раньше сложения; знаки разные — минус.</i></li>
+        <li><b>5 · (−2) = ___</b> <i>умножение, знаки разные.</i></li>
+        <li><b>−3 + (___) = ___</b> <i>сложение в конце.</i></li>
+      </ol>
+      <details><summary>Проверить себя</summary>
+        <div class="ans"><span class="mono">5 · (−2) = −10</span>, дальше <span class="mono">−3 + (−10) = −13</span>. Знаки одинаковые, поэтому модули складываем: 3 + 10 = 13, знак минус. <b>Ответ: −13.</b></div></details>
+    </div>
+
+    <p style="margin-top:1.6rem"><strong>И один целиком самостоятельно.</strong> Найди значение <span class="mono">18 : (3 − 3) − 7</span>. Осторожно — здесь есть подвох.</p>
+    <details><summary>Показать ответ</summary>
+      <div class="ans">В скобке <span class="mono">3 − 3 = 0</span>, и на втором шаге получается <span class="mono">18 : 0</span> — деление на ноль. Значит, <b>выражение не имеет значения</b>. Дальше считать нечего.</div></details>
+  </section>
+
+  <section>
+    <h2>Наглядно: <span class="em">числовая прямая</span></h2>
+    <p>Сложение и вычитание со знаками удобно видеть на числовой прямой. Ставим точку на первом числе, а второе число — это шаг: <b>плюс</b> — шаг вправо, <b>минус</b> — шаг влево. Куда пришли, то и ответ. Подвигай ползунки и посмотри, как это работает.</p>
+    <div class="sim">
+      <canvas id="nl" width="720" height="180" role="img" aria-label="Числовая прямая со стрелкой шага"></canvas>
+      <div class="sim-ctl">
+        <label>Старт <input id="nlA" type="range" min="-9" max="9" step="1" value="-8"><span class="val" id="nlAv">−8</span></label>
+        <label>Шаг <input id="nlB" type="range" min="-9" max="9" step="1" value="3"><span class="val" id="nlBv">+3</span></label>
+      </div>
+      <div class="sim-read" id="nlRead">−8 + 3 = −5</div>
+    </div>
+    <p style="font-size:.95rem;color:var(--muted)">Отсюда сразу видно: «минус восемь плюс три» — это никак не «минус одиннадцать». Мы стартуем слева от нуля и делаем три шага <b>вправо</b>, то есть приближаемся к нулю.</p>
+
+    <p style="margin-top:1.6rem"><strong>Предскажи → проверь → объясни.</strong> Вот два выражения: <span class="mono">12 − 4 · 2</span> и <span class="mono">(12 − 4) · 2</span>. Числа одинаковые, знаки одинаковые. Сначала <b>предскажи</b>: дадут ли они одинаковый ответ? Потом посчитай и только после этого открывай.</p>
+    <details><summary>Проверить предсказание</summary>
+      <div class="ans">Ответы разные: <span class="mono">12 − 4 · 2 = 12 − 8 = 4</span>, а <span class="mono">(12 − 4) · 2 = 8 · 2 = 16</span>. В первом выражении умножение сильнее вычитания и идёт первым. Во втором скобка заставляет вычитание пойти вперёд — и весь результат меняется. <b>Скобки нужны именно для того, чтобы переломить обычный порядок.</b></div></details>
+  </section>
+
+  <section>
+    <h2>Тренажёр · решай сколько хочешь</h2>
+    <p>Нажми «Новое», найди значение выражения и введи ответ числом. Иногда попадаются выражения, у которых значения нет, — тогда пиши <b>нет</b>. Кнопка «Решение» покажет все шаги по порядку.</p>
+    <div class="trainer">
+      <div class="tr-task" id="trTask">2 + 3 · (7 − 9)</div>
+      <div class="tr-ctl">
+        <button id="trNew" type="button">🎲 Новое</button>
+        <input id="trAns" type="text" inputmode="text" placeholder="ответ или «нет»" aria-label="Значение выражения">
+        <button id="trCheck" type="button" class="sec">Проверить</button>
+        <button id="trShow" type="button" class="ghost">Решение</button>
+      </div>
+      <p class="tr-hint">Минус можно вводить обычным дефисом: <span class="mono">-13</span>.</p>
+      <div id="trResult" class="tr-result"></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Проверь себя</h2>
+
+    <p class="lvl">Понимание</p>
+    <div class="drill">
+      <details><summary>1) Какое действие в выражении <span class="mono">6 − 2 · 5</span> выполняется последним?</summary>
+        <div class="ans">Сначала умножение <span class="mono">2 · 5 = 10</span>, и только потом вычитание. Значит, последнее действие — <b>вычитание</b> (а значение: <span class="mono">6 − 10 = −4</span>).</div></details>
+      <details><summary>2) Какое действие в выражении <span class="mono">5 + 6 : 3</span> выполняется первым?</summary>
+        <div class="ans"><b>Деление:</b> оно на ступень выше сложения. <span class="mono">6 : 3 = 2</span>, затем <span class="mono">5 + 2 = 7</span>.</div></details>
+    </div>
+
+    <p class="lvl">Применение</p>
+    <div class="drill">
+      <details><summary>3) Вычисли: <span class="mono">(−4) · 3 + 20 : (−5)</span>.</summary>
+        <div class="ans">Сначала вся ступень «умножение и деление»: <span class="mono">(−4) · 3 = −12</span> и <span class="mono">20 : (−5) = −4</span>. Потом сложение: <span class="mono">−12 + (−4) = −16</span>. <b>Ответ: −16.</b></div></details>
+      <details><summary>4) Вычисли: <span class="mono">(−7) + 4</span>.</summary>
+        <div class="ans">Знаки разные: из большего модуля вычитаем меньший, <span class="mono">7 − 4 = 3</span>, знак берём у минус семи. <b>Ответ: −3.</b></div></details>
+      <details><summary>5) Имеет ли значение выражение <span class="mono">9 : (2 − 2)</span>?</summary>
+        <div class="ans">Нет. В скобке <span class="mono">2 − 2 = 0</span>, а делить на ноль нельзя — <b>значения у выражения нет</b>.</div></details>
+    </div>
+
+    <p class="lvl">Анализ</p>
+    <div class="drill">
+      <details><summary>6) Что изменится, если убрать скобки? Сравни <span class="mono">24 : (4 + 2)</span> и <span class="mono">24 : 4 + 2</span>.</summary>
+        <div class="ans">Со скобками: <span class="mono">4 + 2 = 6</span>, затем <span class="mono">24 : 6 = 4</span>. Без скобок сначала идёт деление: <span class="mono">24 : 4 = 6</span>, затем <span class="mono">6 + 2 = 8</span>. Получилось <b>4 и 8</b>: запись почти одна и та же, а ответы расходятся. Скобки решают, кто ходит первым.</div></details>
+      <details><summary>7) Найди ошибку: ученик записал <span class="mono">10 − 2 · 3 = 8 · 3 = 24</span>. Где он ошибся?</summary>
+        <div class="ans">Он посчитал слева направо и <b>вычел раньше умножения</b>. Умножение сильнее: <span class="mono">2 · 3 = 6</span>, потом <span class="mono">10 − 6 = 4</span>. <b>Верный ответ: 4.</b></div></details>
+      <details><summary>8) Обратная задача: подбери число вместо □, чтобы выражение <span class="mono">30 : □</span> не имело значения.</summary>
+        <div class="ans"><b>□ = 0.</b> Только деление на ноль лишает выражение значения; при любом другом числе результат существует.</div></details>
+    </div>
+  </section>
+
+  <section>
+    <h2>Ловушки</h2>
+    <ul class="traps">
+      <li><b>Считают слева направо, игнорируя приоритет.</b> Получают <span class="mono">2 + 3 · 4 = 20</span> вместо <span class="mono">14</span>. <i>Как не допустить:</i> перед счётом подчеркни в выражении все умножения и деления — их выполняем первыми.</li>
+      <li><b>Теряют минус при действиях с отрицательными числами.</b> Пишут <span class="mono">(−5) · (−2) = −10</span>, хотя верно <span class="mono">10</span>. <i>Как не допустить:</i> проговаривай знак отдельно, вслух: «минус на минус — плюс».</li>
+      <li><b>Не замечают деление на ноль.</b> Спокойно «получают» ответ у <span class="mono">7 : (4 − 4)</span>. <i>Как не допустить:</i> перед делением проверь, не равен ли делитель нулю. Если ноль — значения нет.</li>
+      <li><b>Путают знак суммы при разных знаках.</b> Считают <span class="mono">−8 + 3 = −11</span>. <i>Как не допустить:</i> вычитай модули (<span class="mono">8 − 3 = 5</span>) и бери знак большего по модулю — минус, то есть <span class="mono">−5</span>.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Объясни своими словами</h2>
+    <p>Закрой урок и ответь вслух — себе, родителю или чат-боту. Если получается связно, тему ты держишь:</p>
+    <ol class="steps">
+      <li>Чем <b>выражение</b> отличается от его <b>значения</b>?</li>
+      <li>В каком порядке выполняются действия и зачем нужны скобки?</li>
+      <li>Приведи пример выражения, у которого <b>нет</b> значения, и объясни почему.</li>
+    </ol>
+  </section>
+
+  <div class="wrapup">
+    <h2>Запомни главное</h2>
+    <p class="big-rule">скобки → умножение и деление → сложение и вычитание</p>
+    <p>Выполняй действия по очереди, следи за знаками и держи в голове ноль в делителе: там значения просто нет.</p>
+    <p class="next">👉 Дальше — <b>буквенные выражения</b>: вместо части чисел там стоят буквы, а порядок действий и правила знаков остаются теми же. Так что этот урок — прямая опора для следующего.</p>
+  </div>
+
+</div>
+
+<script>
+(function(){
+  /* ---------- числовая прямая ---------- */
+  var cv=document.getElementById('nl');
+  if(cv){
+    var ctx=cv.getContext('2d'),
+        aEl=document.getElementById('nlA'), bEl=document.getElementById('nlB'),
+        avEl=document.getElementById('nlAv'), bvEl=document.getElementById('nlBv'),
+        readEl=document.getElementById('nlRead');
+    var W=720,H=180,PAD=34,MINV=-13,MAXV=13,STEP=(W-2*PAD)/(MAXV-MINV),BASE=118;
+    var dpr=window.devicePixelRatio||1;
+    cv.width=W*dpr; cv.height=H*dpr; ctx.scale(dpr,dpr);
+
+    var m=function(v){ return v<0?('−'+(-v)):(''+v); };
+    var sg=function(v){ return v<0?('−'+(-v)):('+'+v); };
+    var px=function(v){ return PAD+(v-MINV)*STEP; };
+
+    var draw=function(){
+      var a=parseInt(aEl.value,10), b=parseInt(bEl.value,10), r=a+b;
+      ctx.clearRect(0,0,W,H);
+      /* ось */
+      ctx.strokeStyle='#8A97A8'; ctx.lineWidth=1.5;
+      ctx.beginPath(); ctx.moveTo(PAD-14,BASE); ctx.lineTo(W-PAD+14,BASE); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(W-PAD+14,BASE); ctx.lineTo(W-PAD+6,BASE-5); ctx.lineTo(W-PAD+6,BASE+5); ctx.closePath();
+      ctx.fillStyle='#8A97A8'; ctx.fill();
+      /* штрихи и подписи */
+      ctx.font='600 12px system-ui,-apple-system,sans-serif'; ctx.textAlign='center';
+      for(var v=MINV+1;v<=MAXV-1;v++){
+        var x=px(v), big=(v%2===0);
+        ctx.strokeStyle=(v===0)?'#1B2432':'#B6C0CC'; ctx.lineWidth=(v===0)?2:1;
+        ctx.beginPath(); ctx.moveTo(x,BASE-(big?7:4)); ctx.lineTo(x,BASE+(big?7:4)); ctx.stroke();
+        if(big){ ctx.fillStyle='#5C687C'; ctx.fillText(m(v),x,BASE+24); }
+      }
+      /* дуга шага */
+      var xa=px(a), xr=px(r);
+      if(b!==0){
+        ctx.strokeStyle='#C4571F'; ctx.lineWidth=2.5;
+        ctx.beginPath();
+        ctx.moveTo(xa,BASE-10);
+        ctx.quadraticCurveTo((xa+xr)/2,BASE-62,xr,BASE-10);
+        ctx.stroke();
+        var dir=(b>0)?1:-1;
+        ctx.beginPath();
+        ctx.moveTo(xr,BASE-8);
+        ctx.lineTo(xr-dir*9,BASE-20);
+        ctx.lineTo(xr+dir*3,BASE-22);
+        ctx.closePath(); ctx.fillStyle='#C4571F'; ctx.fill();
+        ctx.fillStyle='#C4571F'; ctx.font='700 14px system-ui,-apple-system,sans-serif';
+        ctx.fillText(sg(b),(xa+xr)/2,BASE-52);
+      }
+      /* точки */
+      ctx.fillStyle='#176B8A';
+      ctx.beginPath(); ctx.arc(xa,BASE,6,0,6.284); ctx.fill();
+      ctx.font='700 13px system-ui,-apple-system,sans-serif';
+      ctx.fillText('старт '+m(a),xa,BASE+46);
+      ctx.fillStyle='#1E8E5A';
+      ctx.beginPath(); ctx.arc(xr,BASE,6,0,6.284); ctx.fill();
+      ctx.fillText('итог '+m(r),xr,BASE+64);
+
+      avEl.textContent=m(a); bvEl.textContent=sg(b);
+      readEl.innerHTML=m(a)+' '+(b<0?'− '+(-b):'+ '+b)+' = <span style="color:#1E8E5A">'+m(r)+'</span>';
+    };
+    aEl.addEventListener('input',draw);
+    bEl.addEventListener('input',draw);
+    draw();
+  }
+
+  /* ---------- тренажёр ---------- */
+  var taskEl=document.getElementById('trTask'), ansEl=document.getElementById('trAns'), resEl=document.getElementById('trResult');
+  if(!taskEl) return;
+  var cur=null;
+
+  function ri(min,max){ return Math.floor(Math.random()*(max-min+1))+min; }
+  function nz(min,max){ var v; do{ v=ri(min,max); }while(v===0); return v; }
+  function n(v){ return v<0?('−'+(-v)):(''+v); }          /* настоящий минус U+2212 */
+  function p(v){ return v<0?('('+n(v)+')'):(''+v); }           /* отрицательное — в скобках */
+
+  function generate(){
+    var q={}, roll=ri(1,100);
+
+    if(roll<=15){                        /* краевой случай: значения нет */
+      var z1=ri(2,12), z2=ri(2,9)*ri(2,9), z3=ri(1,12);
+      q.text=z2+' : ('+z1+' − '+z1+') − '+z3;
+      q.val=null;
+      q.steps=[
+        z1+' − '+z1+' = 0',
+        z2+' : 0 — <i>деление на ноль</i>',
+        '<b>значения нет</b>'
+      ];
+    } else if(roll<=36){                 /* p + q · (r − s) */
+      var a1=nz(-12,12), b1=nz(-7,7), r1=ri(1,12), s1=ri(1,12);
+      if(r1===s1){ s1=r1+ri(1,4); }
+      var d1=r1-s1, m1=b1*d1, v1=a1+m1;
+      q.text=n(a1)+' + '+p(b1)+' · ('+r1+' − '+s1+')';
+      q.val=v1;
+      q.steps=[
+        'скобка: '+r1+' − '+s1+' = '+n(d1),
+        'умножение: '+p(b1)+' · '+p(d1)+' = '+n(m1),
+        'сложение: '+n(a1)+' + '+p(m1)+' = <b>'+n(v1)+'</b>'
+      ];
+    } else if(roll<=57){                 /* m : k + q · r */
+      var k2=nz(-8,8), t2=nz(-9,9), m2=k2*t2, b2=nz(-7,7), r2=ri(2,9);
+      var pr2=b2*r2, v2=t2+pr2;
+      q.text=p(m2)+' : '+p(k2)+' + '+p(b2)+' · '+r2;
+      q.val=v2;
+      q.steps=[
+        'деление: '+p(m2)+' : '+p(k2)+' = '+n(t2),
+        'умножение: '+p(b2)+' · '+r2+' = '+n(pr2),
+        'сложение: '+n(t2)+' + '+p(pr2)+' = <b>'+n(v2)+'</b>'
+      ];
+    } else if(roll<=78){                 /* p − q · r */
+      var a3=ri(2,20), b3=nz(-9,9), r3=ri(2,9);
+      var pr3=b3*r3, v3=a3-pr3;
+      q.text=a3+' − '+p(b3)+' · '+r3;
+      q.val=v3;
+      q.steps=[
+        'умножение раньше вычитания: '+p(b3)+' · '+r3+' = '+n(pr3),
+        'вычитание: '+a3+' − '+p(pr3)+' = <b>'+n(v3)+'</b>'
+      ];
+    } else {                             /* m : (a + b) − c */
+      var a4, b4, d4;
+      do{ a4=ri(2,12); d4=(ri(0,1)===1?1:-1)*ri(2,9); b4=d4-a4; }while(b4===0);
+      var t4=nz(-9,9), m4=d4*t4, c4=ri(1,12), v4=t4-c4;
+      q.text=p(m4)+' : ('+a4+(b4<0?' − '+(-b4):' + '+b4)+') − '+c4;
+      q.val=v4;
+      q.steps=[
+        'скобка: '+a4+(b4<0?' − '+(-b4):' + '+b4)+' = '+n(d4),
+        'деление: '+p(m4)+' : '+p(d4)+' = '+n(t4),
+        'вычитание: '+n(t4)+' − '+c4+' = <b>'+n(v4)+'</b>'
+      ];
+    }
+
+    cur=q; taskEl.textContent=q.text; resEl.innerHTML=''; ansEl.value='';
+  }
+
+  function solHTML(){
+    var h='<div class="sol">'+cur.text+'<br>';
+    for(var i=0;i<cur.steps.length;i++){ h+='→ '+cur.steps[i]+'<br>'; }
+    h+=(cur.val===null?'Ответ: <b>значения нет</b>':'Ответ: <b>'+n(cur.val)+'</b>');
+    return h+'</div>';
+  }
+
+  function check(){
+    var raw=ansEl.value.trim().toLowerCase().replace(/\s+/g,'').replace(/,/g,'.').replace(/−/g,'-');
+    if(raw===''){ resEl.innerHTML='<span class="bad">Введи ответ или нажми «Решение».</span>'; return; }
+    var saysNone=(raw.indexOf('нет')===0)||(raw.indexOf('не')===0);
+    if(cur.val===null){
+      if(saysNone){ resEl.innerHTML='<span class="ok">✓ Верно! Деление на ноль — значения нет.</span>'+solHTML(); }
+      else{ resEl.innerHTML='<span class="bad">✗ Присмотрись к скобке: там получается ноль.</span>'+solHTML(); }
+      return;
+    }
+    if(saysNone){ resEl.innerHTML='<span class="bad">✗ Здесь значение есть — считай по порядку.</span>'+solHTML(); return; }
+    var got=parseFloat(raw);
+    if(isNaN(got)){ resEl.innerHTML='<span class="bad">Это не число. Введи ответ числом или «нет».</span>'; return; }
+    if(Math.abs(got-cur.val)<0.001){ resEl.innerHTML='<span class="ok">✓ Верно! '+n(cur.val)+'</span>'+solHTML(); }
+    else{ resEl.innerHTML='<span class="bad">✗ Пока не то — глянь решение по шагам.</span>'+solHTML(); }
+  }
+
+  /* стартовая задача — эталонный пример из разбора */
+  cur={
+    text:'2 + 3 · (7 − 9)',
+    val:-4,
+    steps:['скобка: 7 − 9 = −2','умножение: 3 · (−2) = −6','сложение: 2 + (−6) = <b>−4</b>']
+  };
+  taskEl.textContent=cur.text;
+
+  document.getElementById('trNew').addEventListener('click',function(){ generate(); ansEl.focus(); });
+  document.getElementById('trCheck').addEventListener('click',check);
+  document.getElementById('trShow').addEventListener('click',function(){ resEl.innerHTML=solHTML(); });
+  ansEl.addEventListener('keydown',function(e){ if(e.key==='Enter') check(); });
+})();
+</script>
+<!--LESSON-NAV-BOT--><nav class="lnav lnav-bot"><a class="prev" href="./m6-diagrammy.html"><span class="dir">← Предыдущая</span><span class="ttl">Диаграммы и наглядное представление данных</span></a><a class="to-cat" href="./catalog.html">📚 <span>Все темы</span></a><a class="next" href="./alg7-vyrazheniya.html"><span class="dir">Следующая →</span><span class="ttl">Буквенные выражения и их значения</span></a></nav><!--/LESSON-NAV-BOT-->

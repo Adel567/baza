@@ -1,0 +1,536 @@
+<!doctype html>
+<!-- humanized: humanizer-ru, 2026-09-04, тире возвращено -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Нахождение числа по его проценту — математика 5 класс</title>
+<style>
+  :root{
+    --paper:#F7F6FB; --card:#FFFFFF; --ink:#211D2E; --muted:#645D74; --line:#E7E4F0;
+    --brand:#6C4FD8; --brand-soft:#ECE8FB;      /* фиолетовый — целое, 100 % */
+    --fill:#F2A03D; --fill-soft:#FCEEDB;        /* оранжевый — известная часть */
+    --whole:#EEF0F6;
+    --ok:#1E8E5A; --no:#C23B3B;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper)}
+  .page{max-width:720px;margin:0 auto;padding:clamp(1.4rem,4vw,3rem) clamp(1.1rem,4vw,2rem) 4.5rem;
+    color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:17.5px;line-height:1.68;-webkit-font-smoothing:antialiased}
+  .mono{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-variant-numeric:tabular-nums;font-weight:600}
+
+  .hero{border-bottom:3px solid var(--brand);padding-bottom:1.4rem;margin-bottom:1.8rem}
+  .eyebrow{font-size:.74rem;letter-spacing:.15em;text-transform:uppercase;color:var(--brand);font-weight:700;margin:0 0 .55rem}
+  h1{font-size:clamp(1.9rem,6vw,2.8rem);line-height:1.05;margin:0;font-weight:800;letter-spacing:-.02em;text-wrap:balance}
+  .tagline{font-size:1.12rem;color:var(--muted);margin:.85rem 0 0;text-wrap:pretty}
+
+  section{margin-top:2.4rem}
+  h2{font-size:1.5rem;margin:0 0 .3rem;font-weight:780;letter-spacing:-.015em;text-wrap:balance}
+  h2 .em{color:var(--brand)}
+  p{margin:.7rem 0}
+  strong{font-weight:680}
+  .pw{color:var(--brand);font-weight:800} .fw{color:var(--fill);font-weight:800}
+
+  .lead-in{background:var(--brand-soft);border-radius:14px;padding:1.1rem 1.3rem;font-size:1.02rem}
+  .lead-in p{margin:.4rem 0}
+  .lead-in b{color:var(--brand)}
+  .chips{display:flex;flex-wrap:wrap;gap:.45rem;margin:.7rem 0 0}
+  .chips span{background:#fff;border:1px solid var(--line);border-radius:20px;padding:.28rem .8rem;font-size:.9rem;font-weight:600}
+
+  .formula-box{background:var(--ink);color:#fff;border-radius:14px;padding:1.3rem;text-align:center;margin-top:1rem}
+  .formula-box .eq{font-family:ui-monospace,Menlo,monospace;font-size:clamp(1.25rem,5.4vw,1.95rem);font-weight:700}
+  .formula-box .eq .p{color:#B7A2F5} .formula-box .eq .f{color:#F3B36A}
+  .formula-box .note{font-size:.9rem;color:#B4AEC4;margin:.7rem 0 0}
+  .legend{list-style:none;margin:1rem 0 0;padding:0;display:flex;flex-direction:column;gap:.3rem;font-size:.95rem;text-align:left;color:#D8D3E6}
+  .legend b{font-family:ui-monospace,Menlo,monospace}
+
+  .note{border-left:4px solid var(--brand);background:var(--brand-soft);border-radius:0 10px 10px 0;padding:.8rem 1.1rem;margin-top:1rem;font-size:.98rem}
+  .note b{color:var(--brand)}
+  .note.warm{border-left-color:var(--fill);background:var(--fill-soft)}
+  .note.warm b{color:#B9701A}
+
+  .split{display:grid;gap:.9rem;margin-top:1rem}
+  @media(min-width:560px){.split{grid-template-columns:1fr 1fr}}
+  .card2{border:2px solid var(--line);border-radius:16px;padding:1.1rem 1.2rem;background:var(--card)}
+  .card2 h3{margin:.1rem 0 .4rem;font-size:1.08rem;font-weight:800}
+  .card2 .big{font-family:ui-monospace,Menlo,monospace;font-weight:800;font-size:1.3rem;color:var(--brand)}
+  .card2 p{margin:.25rem 0;font-size:.95rem}
+  .card2.o{border-color:#F3D6AE} .card2.o .big{color:var(--fill)}
+
+  .steps2{display:flex;flex-direction:column;gap:.7rem;margin-top:1rem}
+  .step{display:flex;gap:.9rem;align-items:flex-start;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:.95rem 1.1rem}
+  .step .n{flex:0 0 auto;width:2rem;height:2rem;border-radius:50%;background:var(--brand);color:#fff;font-weight:800;display:flex;align-items:center;justify-content:center;font-size:.95rem}
+  .step.two .n{background:var(--fill)}
+  .step .t{min-width:0}
+  .step .t b{display:block;font-size:1rem}
+  .step .t span{font-size:.94rem;color:var(--muted)}
+
+  /* Визуализация — бар-модель */
+  .viz{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:1.2rem;margin-top:1rem}
+  .viz canvas{width:100%;height:auto;display:block;margin:0 auto;border-radius:8px}
+  .viz .row{display:flex;align-items:center;gap:.6rem;margin-top:1rem;font-family:ui-monospace,Menlo,monospace;font-weight:700}
+  .viz input[type=range]{flex:1;accent-color:var(--brand)}
+  .viz .pval{min-width:5ch;text-align:right;color:var(--fill)}
+  .viz .readout{text-align:center;font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:clamp(.95rem,3.7vw,1.1rem);margin:1rem 0 0}
+  .viz .readout .p{color:var(--brand)} .viz .readout .f{color:var(--fill)}
+  .viz .cap{text-align:center;font-size:.88rem;color:var(--muted);margin:.5rem 0 0}
+
+  .walk{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.15rem 1.3rem;margin-top:1rem}
+  .walk .q{font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.02rem;margin:0 0 .9rem;padding-bottom:.7rem;border-bottom:1px solid var(--line)}
+  .walk ol{margin:0;padding-left:1.2rem;display:flex;flex-direction:column;gap:.55rem}
+  .walk li{font-size:.96rem}
+  .walk b{font-weight:700}
+  .walk .why{color:var(--muted);font-size:.9rem}
+  .verdict{margin-top:1rem;padding:.7rem 1rem;background:var(--brand-soft);border-radius:10px;font-weight:650;color:var(--brand);font-family:ui-monospace,Menlo,monospace}
+
+  .tbl-wrap{overflow-x:auto;margin-top:1rem}
+  table{border-collapse:collapse;width:100%;min-width:280px;background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden;font-size:.97rem}
+  th,td{padding:.6rem .9rem;text-align:left;border-bottom:1px solid var(--line);font-family:ui-monospace,Menlo,monospace;font-weight:600}
+  th{background:var(--brand-soft);color:var(--brand);font-weight:800;font-size:.85rem;letter-spacing:.03em;text-transform:uppercase}
+  tr:last-child td{border-bottom:none;background:var(--brand-soft);font-weight:800}
+  tr.one td{color:var(--muted)}
+
+  /* Тренажёр */
+  .trainer{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.2rem 1.3rem;margin-top:1rem}
+  .tabs{display:flex;gap:.4rem;margin-bottom:.9rem;flex-wrap:wrap}
+  .tabs button{font:inherit;font-weight:700;font-size:.82rem;cursor:pointer;border:1px solid var(--line);background:var(--paper);color:var(--muted);border-radius:20px;padding:.35rem .85rem}
+  .tabs button.on{background:var(--brand);color:#fff;border-color:var(--brand)}
+  .tr-task{font-family:ui-monospace,Menlo,monospace;font-weight:800;font-size:clamp(1rem,4vw,1.2rem);text-align:center;padding:1rem;background:var(--brand-soft);border-radius:10px;color:var(--ink);line-height:1.5}
+  .tr-ctl{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.9rem;align-items:center}
+  .tr-ctl button{font:inherit;font-weight:700;font-size:.9rem;cursor:pointer;border:none;border-radius:9px;padding:.55rem .95rem;color:#fff;background:var(--brand)}
+  .tr-ctl button.sec{background:var(--fill)}
+  .tr-ctl button.ghost{background:transparent;color:var(--brand);border:1px solid var(--brand)}
+  .tr-ctl input{flex:1;min-width:130px;font:inherit;padding:.5rem .7rem;border:1px solid var(--line);border-radius:9px;background:#fff;color:var(--ink)}
+  .tr-ctl button:focus-visible,.tr-ctl input:focus-visible{outline:3px solid var(--brand);outline-offset:2px}
+  .tr-result{margin-top:.9rem;font-size:.96rem;min-height:1.2rem}
+  .tr-result .ok{color:var(--ok);font-weight:700} .tr-result .bad{color:var(--no);font-weight:700}
+  .tr-result .sol{margin-top:.6rem;padding:.8rem 1rem;background:#FCFBFF;border:1px solid var(--line);border-radius:10px;font-family:ui-monospace,Menlo,monospace;font-size:.9rem;line-height:1.85}
+
+  details{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:.9rem 1.1rem;margin-top:.7rem}
+  details[open]{border-color:var(--brand)}
+  summary{cursor:pointer;font-weight:650;list-style:none;display:flex;justify-content:space-between;gap:1rem;align-items:center}
+  summary::-webkit-details-marker{display:none}
+  summary::after{content:"ответ";font-size:.8rem;color:var(--brand);font-weight:700;white-space:nowrap}
+  details[open] summary::after{content:"скрыть"}
+  .ans{margin-top:.75rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.96rem;color:var(--muted)}
+  .ans b{color:var(--ink)}
+  .drill{display:flex;flex-direction:column;gap:.2rem;margin-top:1rem}
+  .lvl{font-size:.72rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--fill);margin:1.2rem 0 -.2rem}
+
+  ul.traps{list-style:none;margin:1rem 0 0;padding:0;display:flex;flex-direction:column;gap:.7rem}
+  ul.traps li{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:.85rem 1.05rem;padding-left:2.5rem;position:relative;font-size:.97rem}
+  ul.traps li::before{content:"⚠";position:absolute;left:1rem;top:.85rem;color:var(--fill)}
+  ul.traps b{font-weight:700}
+
+  .wrapup{background:var(--brand);color:#fff;border-radius:16px;padding:1.4rem 1.5rem;margin-top:2.4rem}
+  .wrapup h2{color:#fff;margin:0 0 .5rem}
+  .wrapup p{color:#E7E1FA;margin:.4rem 0;font-size:1rem}
+  .wrapup .big-rule{font-size:clamp(1rem,4.2vw,1.15rem);font-weight:700;color:#fff;margin:.6rem 0;font-family:ui-monospace,Menlo,monospace}
+  .wrapup .next{font-size:.95rem;color:#D6CCF5;margin-top:1rem;padding-top:1rem;border-top:1px solid rgba(255,255,255,.25)}
+  .wrapup .next b{color:#fff}
+
+  .tabs button:focus-visible,.viz input[type=range]:focus-visible,summary:focus-visible{outline:3px solid var(--brand);outline-offset:2px;border-radius:8px}
+  @media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+  .oge-tip{display:flex;gap:.8rem;align-items:flex-start;background:#FFF8E7;border:1px solid #F0D98A;border-left:4px solid #E0A315;border-radius:10px;padding:.85rem 1.05rem;margin:1.5rem 0}
+  .oge-tip .b{font-size:.72rem;font-weight:800;letter-spacing:.03em;color:#8A6A15;white-space:nowrap;text-transform:uppercase;padding-top:.15rem}
+  .oge-tip .x{font-size:.95rem;line-height:1.5}
+</style>
+
+<!--LESSON-NAV-TOP--><style>.lnav{--lnav-accent:#3D5AF1}.lnav a{text-decoration:none;font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif}.lnav-top{max-width:820px;margin:0 auto;padding:.75rem clamp(1rem,4vw,1.5rem) .1rem}.lnav-top a{display:inline-flex;align-items:center;gap:.35rem;color:var(--lnav-accent);font-weight:600;font-size:.9rem}.lnav-top a:hover{text-decoration:underline}.lnav-bot{max-width:820px;margin:2.6rem auto 3rem;padding:1.1rem clamp(1rem,4vw,1.5rem) 0;border-top:1px solid #E4E8EF;display:flex;align-items:stretch;gap:.55rem}.lnav-bot a{min-width:0;display:flex;flex-direction:column;justify-content:center;gap:.15rem;border:1px solid #E4E8EF;border-radius:12px;padding:.65rem .85rem;color:#182233;background:#fff;transition:border-color .1s,transform .08s}.lnav-bot a:hover{border-color:var(--lnav-accent);transform:translateY(-1px)}.lnav-bot .prev,.lnav-bot .next{flex:1 1 0}.lnav-bot .next{text-align:right}.lnav-bot .dir{font-size:.72rem;color:#8A93A6;font-weight:600}.lnav-bot .ttl{font-size:.9rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.lnav-bot .to-cat{flex:0 0 auto;flex-direction:row;align-items:center;justify-content:center;color:var(--lnav-accent);font-weight:700;font-size:.85rem;white-space:nowrap}@media(max-width:420px){.lnav-bot .to-cat span{display:none}.lnav-bot .to-cat{padding:.65rem .7rem}}</style><nav class="lnav lnav-top"><a href="./catalog.html">← Все темы</a></nav><!--/LESSON-NAV-TOP-->
+<div class="page">
+
+  <header class="hero">
+    <p class="eyebrow">Математика · 5 класс · проценты</p>
+    <h1>Нахождение числа по его проценту</h1>
+    <p class="tagline">«Скидка 20 % составила 300 рублей. Сколько стоила вещь?» Часть известна, а найти надо целое. Задача обратная — и действия в ней меняются местами.</p>
+  </header>
+
+  <div class="lead-in">
+    <p><b>Что здесь нового.</b> Раньше ты находил процент от числа: знаешь целое — ищешь часть. Сейчас всё наоборот: известна <b>часть</b> (значение какого-то процента), а найти нужно <b>всё целое</b> — те самые 100 %.</p>
+    <div class="chips"><span>скидка 20 % = 300 р</span><span>15 % урожая = 600 кг</span><span>40 % пути = 12 км</span></div>
+    <p>Во всех трёх строчках спрятан один и тот же вопрос: «а сколько было всего?»</p>
+  </div>
+
+  <section>
+    <h2>Главный миф: <span class="em">«раз проценты — значит умножать»</span></h2>
+    <p>Так думает почти каждый, кто видит знак «%». А действие зависит от того, что именно ты ищешь.</p>
+    <p>Когда ищем <strong>часть по целому</strong> — умножаем. Когда ищем <strong>целое по части</strong> — <strong>делим</strong>. Умножение и деление здесь <strong>меняются местами</strong> по сравнению с прямой задачей. Держи это в голове весь урок.</p>
+  </section>
+
+  <section>
+    <h2>Что вспомнить перед стартом</h2>
+    <p>Тебе понадобится прямая задача — <strong>процент от числа</strong>. Проверь себя на ней:</p>
+    <div class="drill">
+      <details><summary>Сколько будет 20 % от 1500 рублей?</summary>
+        <div class="ans"><span class="mono">1500 : 100 · 20 = 15 · 20 = <b>300</b></span> рублей. Сначала нашли один процент, потом взяли двадцать таких.</div></details>
+    </div>
+    <p>Заметил? Это ровно тот пример, который мы сейчас будем решать <em>задом наперёд</em>: нам дадут 300 рублей и попросят вернуть 1500.</p>
+  </section>
+
+  <section>
+    <h2>Суть: сначала <span class="em">один процент</span></h2>
+    <p>Любая величина целиком — это её <span class="pw">100 %</span>. Скажут тебе, чему равны, например, 25 %, — ты знаешь только кусочек. Сразу до целого не допрыгнуть, поэтому идём через самую маленькую ступеньку.</p>
+    <div class="steps2">
+      <div class="step"><div class="n">1</div><div class="t"><b>Найди 1 % — раздели</b><span>Делю данное значение на количество процентов. Получаю «единичный» кусочек.</span></div></div>
+      <div class="step two"><div class="n">2</div><div class="t"><b>Собери 100 % — умножь</b><span>Умножаю один процент на 100. Получаю всё число целиком.</span></div></div>
+    </div>
+    <p>Словами это звучит так: <strong>«делю данное число на количество процентов — получаю 1 %; умножаю 1 % на 100 — получаю всё число»</strong>. Проговори вслух пару раз, это и есть весь алгоритм.</p>
+    <p>Символьно: если <span class="mono">p</span> процентов равны величине <span class="mono">A</span>, то один процент — это <span class="mono">A : p</span>, а всё число — <span class="mono">(A : p) · 100</span>.</p>
+  </section>
+
+  <section>
+    <h2>Правило и формула</h2>
+    <p><strong>Чтобы найти число, у которого известно значение его процента, нужно это значение разделить на число процентов и результат умножить на 100.</strong></p>
+    <div class="formula-box">
+      <div class="eq"><span class="p">X</span> = (<span class="f">A</span> : p) · 100</div>
+      <ul class="legend">
+        <li><b>X</b> — искомое целое число, то, что принимаем за 100 %</li>
+        <li><b>A</b> — известное значение части</li>
+        <li><b>p</b> — сколько процентов составляет эта часть</li>
+      </ul>
+      <div class="note">делим на число процентов, умножаем на сто</div>
+    </div>
+    <div class="split">
+      <div class="card2 o">
+        <h3>Способ через дробь</h3>
+        <div class="big">X = A : (p/100)</div>
+        <p>Ведь <span class="mono">p % = p/100</span>. Деление на такую дробь и даёт <span class="mono">A : p · 100</span> — тот же самый результат.</p>
+      </div>
+      <div class="card2">
+        <h3>Про единицы</h3>
+        <div class="big">A и X — одинаковые</div>
+        <p>Рубли с рублями, кг с кг, км с км. А число процентов <span class="mono">p</span> — <strong>без единиц</strong>, это просто «сколько сотых».</p>
+      </div>
+    </div>
+    <div class="note"><p><b>Главное условие.</b> Чётко пойми, что в задаче принимается за 100 %. Это всегда «целое», от которого считали часть, — и именно его ты ищешь.</p></div>
+    <div class="oge-tip"><div class="b">🎯 В ОГЭ</div><div class="x"><b>Задания 1–5.</b> Задачи про цены, тарифы и скидки часто устроены наоборот: дана часть в процентах, а нужна полная величина. Этот урок там и пригодится.</div></div>
+  </section>
+
+  <section>
+    <h2>Разбор по шагам <span class="em">«думаю вслух»</span></h2>
+    <p>Скидка 20 % составила 300 рублей. Сколько стоила вещь без скидки?</p>
+    <div class="walk">
+      <p class="q">20 % = 300 р · полная цена = ?</p>
+      <ol>
+        <li><b>Что здесь 100 %?</b> Полная цена вещи — её и ищем. <span class="why">Почему: скидку считали именно от полной цены, значит целое — это она.</span></li>
+        <li><b>Ищем 1 %:</b> <span class="mono">300 : 20 = 15</span> (р). <span class="why">Почему: делю значение на число процентов, чтобы узнать, сколько приходится на один процент.</span></li>
+        <li><b>Ищем 100 %:</b> <span class="mono">15 · 100 = 1500</span> (р). <span class="why">Почему: из одного процента собираю все сто.</span></li>
+      </ol>
+      <div class="verdict">Ответ: 1500 рублей</div>
+      <p style="margin:.9rem 0 0;font-size:.94rem;color:var(--muted)">Проверка обратным действием: <span class="mono">20 % от 1500 = 1500 : 100 · 20 = 300</span> р. Сходится.</p>
+    </div>
+
+    <p>Теперь допиши сам — один шаг пропущен.</p>
+    <div class="walk">
+      <p class="q">15 % урожая — это 600 кг. Сколько собрали всего?</p>
+      <ol>
+        <li><span class="mono">1 % = 600 : 15 = 40</span> (кг).</li>
+        <li><span class="mono">Всего = 40 · ____ = ____</span> кг.</li>
+      </ol>
+      <div class="drill">
+        <details><summary>Подсказка: на что умножаем?</summary>
+          <div class="ans">Умножаем на <b>100</b> — ведь весь урожай это 100 %. Должно получиться <b>4000 кг</b>.</div></details>
+      </div>
+    </div>
+
+    <p>А эту попробуй целиком сам, до того как откроешь ответ.</p>
+    <div class="walk">
+      <p class="q">Турист прошёл 40 % маршрута, это 12 км. Найди длину всего маршрута.</p>
+      <div class="drill">
+        <details><summary>Проверить себя</summary>
+          <div class="ans"><span class="mono">1 % = 12 : 40 = 0,3</span> км, затем <span class="mono">0,3 · 100 = 30</span> км. Ответ: <b>30 км</b>.</div></details>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Посмотри <span class="em">своими глазами</span></h2>
+    <p>Полоска целиком — это <span class="pw">всё число, 100 %</span>. Она разделена на 10 равных долей по 10 %. Оранжевым закрашена та часть, которую мы знаем: <span class="fw">300 рублей</span>.</p>
+    <p>Двигай ползунок и следи: <strong>чем меньше процентов приходится на те же 300 рублей, тем длиннее вся полоска</strong>. Логично: если 300 р — это маленький кусочек, значит целое огромное.</p>
+    <div class="viz">
+      <canvas id="bar" width="560" height="215" aria-label="Полоска-целое: закрашенная часть равна 300 рублям, длина всей полоски меняется"></canvas>
+      <div class="row"><span class="pval" id="pval">20 %</span><input id="slider" type="range" min="0" max="12" step="1" value="3" aria-label="Сколько процентов составляют 300 рублей"></div>
+      <p class="readout" id="readout"></p>
+      <p class="cap" id="cap"></p>
+    </div>
+    <div class="note"><p><b>Предскажи до расчёта.</b> Прежде чем считать, спроси себя: ответ будет больше 300 или меньше? Почти все говорят «больше» — и это верно: часть всегда меньше целого (пока процент меньше 100).</p></div>
+
+    <p>Ту же картинку можно записать таблицей — от известного процента вниз к одному, потом вверх к сотне:</p>
+    <div class="tbl-wrap">
+      <table>
+        <tr><th>проценты</th><th>значение</th></tr>
+        <tr><td>20 %</td><td>300 р</td></tr>
+        <tr class="one"><td>1 %</td><td>15 р</td></tr>
+        <tr><td>100 %</td><td>1500 р</td></tr>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2>Тренажёр · целое по части</h2>
+    <p>Три режима: сначала отдельно ступенька «один процент», потом целое число, потом задачи словами. Нажимай «Новое» — заданий бесконечно. Дробь пиши через запятую или точку, единицы писать не надо.</p>
+    <div class="trainer">
+      <div class="tabs">
+        <button id="tabOne" class="on" type="button">Найди 1 %</button>
+        <button id="tabAll" type="button">Найди всё число</button>
+        <button id="tabWord" type="button">Задачи словами</button>
+      </div>
+      <div class="tr-task" id="trTask">20 % числа равны 300. Чему равен 1 %?</div>
+      <div class="tr-ctl">
+        <button id="trNew" type="button">🎲 Новое</button>
+        <input id="trAns" type="text" placeholder="твой ответ" aria-label="Ответ">
+        <button id="trCheck" type="button" class="sec">Проверить</button>
+        <button id="trShow" type="button" class="ghost">Решение</button>
+      </div>
+      <div id="trResult" class="tr-result"></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Практика</h2>
+
+    <p class="lvl">Понимание</p>
+    <div class="drill">
+      <details><summary>1) «8 % книг — это 24 штуки». Что здесь принимаем за 100 %? Что ищем — часть или целое?</summary>
+        <div class="ans">За 100 % принимаем <b>всё количество книг</b> — от него считали проценты. Искать надо <b>целое</b>.</div></details>
+      <details><summary>2) Каким действием находят один процент, если известно значение нескольких процентов?</summary>
+        <div class="ans"><b>Делением</b>: данное значение делим на число процентов.</div></details>
+      <details><summary>3) В задаче «30 % класса — это 9 человек» что принимается за 100 %?</summary>
+        <div class="ans"><b>Весь класс</b> целиком.</div></details>
+    </div>
+
+    <p class="lvl">Применение</p>
+    <div class="drill">
+      <details><summary>4) 5 % от числа равны 35. Найди само число.</summary>
+        <div class="ans"><span class="mono">35 : 5 = 7</span>, затем <span class="mono">7 · 100 = <b>700</b></span>.</div></details>
+      <details><summary>5) 10 % числа равны 9. Чему равно само число?</summary>
+        <div class="ans"><span class="mono">9 : 10 = 0,9</span>, затем <span class="mono">0,9 · 100 = <b>90</b></span>.</div></details>
+    </div>
+
+    <p class="lvl">Анализ</p>
+    <div class="drill">
+      <details><summary>6) Найди ошибку. «25 % суммы — это 50 р.» Ученик решил так: 50 · 25 = 1250 р. Где он неправ?</summary>
+        <div class="ans">Он <b>умножил вместо деления</b> — сработал миф «проценты значит умножать». Правильно: <span class="mono">50 : 25 = 2</span>, потом <span class="mono">2 · 100 = <b>200</b></span> р.</div></details>
+      <details><summary>7) Что изменится в ответе, если те же 50 р составляют не 25 %, а 50 %?</summary>
+        <div class="ans">Целое станет <b>меньше</b>: <span class="mono">50 : 50 · 100 = <b>100</b></span> р. Известная часть стала крупнее, а целое, в котором она помещается, — короче.</div></details>
+    </div>
+  </section>
+
+  <section>
+    <h2>Ловушки</h2>
+    <ul class="traps">
+      <li><b>Умножают вместо деления.</b> Видят «проценты» — и сразу умножают данное число на проценты. Защита: сначала находи 1 % через <b>деление</b>, потом × 100. И проверяй обратным действием: процент от найденного целого должен дать исходную часть.</li>
+      <li><b>Путают, что принять за 100 %.</b> Принимают за целое известную часть. Защита: задай вопрос «от чего считали этот процент?» — вот это и есть 100 %, и это как раз то, что ищем.</li>
+      <li><b>Теряют одно из двух действий.</b> Делят на 100, забыв про число процентов, или наоборот. Защита: держи два шага раздельно — <span class="mono">: p</span> даёт 1 %, <span class="mono">· 100</span> даёт всё число.</li>
+      <li><b>Смешивают с прямой задачей.</b> Здесь ищем <b>большее</b> (целое) по меньшему (части), поэтому ответ обычно больше известного числа — если процент меньше 100. Получилось меньше — насторожись и перечитай условие.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Объясни своими словами</h2>
+    <p>Закрой урок и ответь вслух — себе, родителю или голосовому помощнику. Запнулся на формулировке — туда и возвращайся.</p>
+    <div class="drill">
+      <details><summary>Расскажи алгоритм двумя шагами: что делаешь первым действием и почему именно так?</summary>
+        <div class="ans">Первым действием <b>делю</b> известное значение на число процентов — так получаю один процент. Вторым <b>умножаю</b> результат на 100 — так собираю всё целое.</div></details>
+      <details><summary>Почему в этой задаче ответ получается больше данного числа, а в прямой — меньше?</summary>
+        <div class="ans">Потому что здесь мы идём <b>от части к целому</b>, а часть меньше целого (при проценте меньше 100). В прямой задаче наоборот: из целого достаём кусочек.</div></details>
+    </div>
+  </section>
+
+  <div class="wrapup">
+    <h2>Запомни главное</h2>
+    <p class="big-rule">X = (A : p) · 100</p>
+    <p>Чтобы найти целое по его проценту, <strong style="color:#fff">раздели данное значение на число процентов</strong> (получишь 1 %) <strong style="color:#fff">и умножь на 100</strong>. Два шага, ни одного лишнего.</p>
+    <p class="next">👉 Дальше — <b>понятие процента</b> в 6 классе: тот же знак «%» разберём глубже, свяжем с дробями и сведём все задачи на проценты в одну систему.</p>
+  </div>
+
+</div>
+
+<script>
+/* Визуализация: бар-модель. Известная часть = 300 р, меняем её долю в целом */
+(function(){
+  var canvas=document.getElementById('bar'); if(!canvas) return;
+  var ctx=canvas.getContext('2d');
+  var slider=document.getElementById('slider'), pval=document.getElementById('pval');
+  var readout=document.getElementById('readout'), cap=document.getElementById('cap');
+  var A=300;
+  var PS=[5,10,12,15,20,25,30,40,50,60,75,80,100]; /* все дают целое X */
+  var W=560, H=215;
+  function css(v){ return getComputedStyle(document.documentElement).getPropertyValue(v).trim(); }
+  var dpr=Math.min(window.devicePixelRatio||1,2);
+  canvas.width=W*dpr; canvas.height=H*dpr;
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+
+  function draw(p){
+    var X=A/p*100;
+    var pad=22, barX=pad, barW=W-pad*2, barY=76, barH=60;
+    ctx.clearRect(0,0,W,H);
+    ctx.font='600 17px ui-monospace, Menlo, monospace';
+    ctx.textAlign='center';
+
+    /* подпись целого сверху */
+    ctx.fillStyle=css('--brand');
+    ctx.fillText('всё число = 100 %  →  X = ?', W/2, 30);
+
+    /* фигурная скобка целого */
+    ctx.strokeStyle=css('--brand'); ctx.lineWidth=2;
+    ctx.beginPath();
+    ctx.moveTo(barX, 52); ctx.lineTo(barX, 44); ctx.lineTo(barX+barW, 44); ctx.lineTo(barX+barW, 52);
+    ctx.stroke();
+
+    /* пустая полоска */
+    ctx.fillStyle=css('--whole');
+    ctx.fillRect(barX, barY, barW, barH);
+
+    /* закрашенная часть */
+    var fw=barW*p/100;
+    ctx.fillStyle=css('--fill');
+    ctx.fillRect(barX, barY, fw, barH);
+
+    /* деления по 10 % */
+    ctx.strokeStyle='#ffffff'; ctx.lineWidth=1;
+    for(var i=1;i<10;i++){
+      var x=barX+barW*i/10;
+      ctx.beginPath(); ctx.moveTo(x, barY); ctx.lineTo(x, barY+barH); ctx.stroke();
+    }
+    /* рамка */
+    ctx.strokeStyle=css('--brand'); ctx.lineWidth=2;
+    ctx.strokeRect(barX, barY, barW, barH);
+
+    /* подпись части внутри/над полоской */
+    ctx.fillStyle='#ffffff';
+    ctx.font='800 18px ui-monospace, Menlo, monospace';
+    if(fw>96){ ctx.fillText(p+' %', barX+fw/2, barY+barH/2+6); }
+    else { ctx.fillStyle=css('--fill'); ctx.textAlign='left'; ctx.fillText(p+' %', barX+fw+8, barY+barH/2+6); ctx.textAlign='center'; }
+
+    /* скобка части снизу + значение */
+    ctx.strokeStyle=css('--fill'); ctx.lineWidth=2;
+    ctx.beginPath();
+    ctx.moveTo(barX, barY+barH+8); ctx.lineTo(barX, barY+barH+16); ctx.lineTo(barX+Math.max(fw,2), barY+barH+16); ctx.lineTo(barX+Math.max(fw,2), barY+barH+8);
+    ctx.stroke();
+    ctx.fillStyle=css('--fill');
+    ctx.font='800 18px ui-monospace, Menlo, monospace';
+    var lx=barX+Math.max(fw,2)/2;
+    if(lx<44) lx=44;
+    ctx.fillText(A+' р', lx, barY+barH+38);
+
+    /* итог */
+    ctx.fillStyle=css('--ink');
+    ctx.font='700 18px ui-monospace, Menlo, monospace';
+    ctx.fillText('X = '+A+' : '+p+' · 100 = '+fmt(X)+' р', W/2, H-14);
+
+    pval.textContent=p+' %';
+    readout.innerHTML='<span class="f">'+p+' % = '+A+' р</span> &nbsp;→&nbsp; 1 % = '+fmt(A/p)+' р &nbsp;→&nbsp; <span class="p">100 % = '+fmt(X)+' р</span>';
+    var k=X/A;
+    cap.textContent = p===100 ? 'Процент равен ста — известная часть совпала со всем числом.'
+      : (k===Math.round(k) ? 'Одна доля полоски — это 10 %. Целое ровно в ' + k + ' раз больше известных ' + A + ' р.'
+                           : 'Одна доля полоски — это 10 %. Чем короче оранжевый кусок, тем длиннее вся полоска.');
+  }
+  function fmt(v){
+    var s=Math.round(v*100)/100;
+    return String(s).replace('.',',');
+  }
+  slider.addEventListener('input',function(){ draw(PS[parseInt(slider.value,10)]); });
+  draw(PS[parseInt(slider.value,10)]);
+})();
+</script>
+
+<script>
+/* Тренажёр: нахождение числа по его проценту */
+(function(){
+  var taskEl=document.getElementById('trTask'), ansEl=document.getElementById('trAns'), resEl=document.getElementById('trResult');
+  if(!taskEl) return;
+  var tabOne=document.getElementById('tabOne'), tabAll=document.getElementById('tabAll'), tabWord=document.getElementById('tabWord');
+  var mode='one';
+  var cur={p:20, A:300, one:15, X:1500, w:null};
+
+  var PS=[2,4,5,8,10,12,15,20,25,30,40,50,60,75,80,100];
+  var WORDS=[
+    {t:'Скидка {p} % составила {A} рублей. Сколько стоила вещь без скидки?', u:'рублей', what:'полная цена'},
+    {t:'Первый сорт — это {p} % урожая, и это {A} кг. Сколько собрали всего?', u:'кг', what:'весь урожай'},
+    {t:'Турист прошёл {p} % маршрута, это {A} км. Какова длина всего маршрута?', u:'км', what:'длина маршрута'}
+  ];
+  function ri(min,max){ return Math.floor(Math.random()*(max-min+1))+min; }
+  function fmt(v){
+    var s=Math.round(v*1000)/1000;
+    return String(s).replace('.',',');
+  }
+  function gen(){
+    for(var guard=0;guard<40;guard++){
+      var p=PS[ri(0,PS.length-1)];
+      var one;
+      var r=Math.random();
+      if(r<0.75) one=ri(1,40);          /* целый один процент */
+      else if(r<0.92) one=ri(1,20)/2;   /* половинки: 0,5 · 1,5 ... */
+      else one=ri(1,9)/10;              /* десятые: 0,3 км как в маршруте */
+      var A=Math.round(p*one*1000)/1000;
+      if(A<3) continue;                 /* слишком мелкая часть — перегенерируем */
+      return {p:p, one:one, A:A, X:Math.round(one*100*1000)/1000};
+    }
+    return {p:20, one:15, A:300, X:1500};
+  }
+  function generate(focus){
+    var g=gen();
+    cur={p:g.p, A:g.A, one:g.one, X:g.X, w:null};
+    if(mode==='one'){
+      taskEl.textContent = cur.p+' % числа равны '+fmt(cur.A)+'. Чему равен 1 %?';
+    } else if(mode==='all'){
+      taskEl.textContent = cur.p+' % числа равны '+fmt(cur.A)+'. Найди само число.';
+    } else {
+      var w=WORDS[ri(0,WORDS.length-1)];
+      cur.w=w;
+      taskEl.textContent = w.t.replace('{p}', cur.p).replace('{A}', fmt(cur.A));
+    }
+    resEl.innerHTML=''; ansEl.value='';
+    if(focus) ansEl.focus();
+  }
+  function target(){ return mode==='one' ? cur.one : cur.X; }
+  function solHTML(){
+    var h='<div class="sol">';
+    if(mode==='one'){
+      h+='ищем один процент — делим<br>';
+      h+='1 % = '+fmt(cur.A)+' : '+cur.p+' = <b>'+fmt(cur.one)+'</b>';
+    } else if(mode==='all'){
+      h+='1 % = '+fmt(cur.A)+' : '+cur.p+' = '+fmt(cur.one)+'<br>';
+      h+='100 % = '+fmt(cur.one)+' · 100 = <b>'+fmt(cur.X)+'</b>';
+    } else {
+      h+='за 100 % берём: '+cur.w.what+'<br>';
+      h+='1 % = '+fmt(cur.A)+' : '+cur.p+' = '+fmt(cur.one)+' '+cur.w.u+'<br>';
+      h+='100 % = '+fmt(cur.one)+' · 100 = <b>'+fmt(cur.X)+' '+cur.w.u+'</b><br>';
+      h+='проверка: '+fmt(cur.X)+' : 100 · '+cur.p+' = '+fmt(cur.A);
+    }
+    return h+'</div>';
+  }
+  function check(){
+    var raw=ansEl.value.trim().replace(/\s/g,'').replace(',','.');
+    raw=raw.replace(/[^0-9.]/g,'');
+    if(raw===''){ resEl.innerHTML='<span class="bad">Введи ответ или нажми «Решение».</span>'; return; }
+    var got=parseFloat(raw);
+    if(isNaN(got)){ resEl.innerHTML='<span class="bad">Это не похоже на число. Попробуй ещё.</span>'; return; }
+    if(Math.abs(got-target())<0.005){
+      resEl.innerHTML='<span class="ok">✓ Верно!</span>'+solHTML();
+    } else if(mode!=='one' && Math.abs(got-cur.one)<0.005){
+      resEl.innerHTML='<span class="bad">✗ Это только один процент. Осталось умножить на 100.</span>'+solHTML();
+    } else if(Math.abs(got-cur.A*cur.p)<0.005){
+      resEl.innerHTML='<span class="bad">✗ Похоже, ты умножил вместо деления — классическая ловушка.</span>'+solHTML();
+    } else {
+      resEl.innerHTML='<span class="bad">✗ Пока не то — посмотри решение.</span>'+solHTML();
+    }
+  }
+  function setMode(m){
+    mode=m;
+    tabOne.className = m==='one'?'on':'';
+    tabAll.className = m==='all'?'on':'';
+    tabWord.className = m==='word'?'on':'';
+    generate(true);
+  }
+  tabOne.addEventListener('click',function(){ setMode('one'); });
+  tabAll.addEventListener('click',function(){ setMode('all'); });
+  tabWord.addEventListener('click',function(){ setMode('word'); });
+  document.getElementById('trNew').addEventListener('click',function(){ generate(true); });
+  document.getElementById('trCheck').addEventListener('click',check);
+  document.getElementById('trShow').addEventListener('click',function(){ resEl.innerHTML=solHTML(); });
+  ansEl.addEventListener('keydown',function(e){ if(e.key==='Enter') check(); });
+  /* старт: та же задача, что показана в разметке (без фокуса) */
+})();
+</script>
+<!--LESSON-NAV-BOT--><nav class="lnav lnav-bot"><a class="prev" href="./m5-nahozhdenie-procenta-ot-chisla.html"><span class="dir">← Предыдущая</span><span class="ttl">Нахождение процента от числа</span></a><a class="to-cat" href="./catalog.html">📚 <span>Все темы</span></a><a class="next" href="./m5-procenty-zadachi.html"><span class="dir">Следующая →</span><span class="ttl">Текстовые задачи на проценты</span></a></nav><!--/LESSON-NAV-BOT-->

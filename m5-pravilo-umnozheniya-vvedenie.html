@@ -1,0 +1,600 @@
+<!doctype html>
+<!-- humanized: humanizer-ru, 2026-09-04, тире возвращено -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Правило умножения в комбинаторике — 5 класс</title>
+<style>
+  :root{
+    --paper:#FBF9F5;
+    --card:#FFFFFF;
+    --ink:#26202E;
+    --muted:#6B6473;
+    --line:#E7E2E8;
+    --brand:#6A3EA1;
+    --brand-soft:#EFE7F6;
+    --one:#CF5A34;          /* первый выбор */
+    --one-soft:#FBEADF;
+    --one-line:#F0CDB8;
+    --two:#3A5AA0;          /* второй выбор */
+    --two-soft:#E5EBF6;
+    --two-line:#C6D3EC;
+    --ok:#2E8B57;
+    --no:#C23B3B;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper)}
+  .page{
+    max-width:720px;margin:0 auto;
+    padding:clamp(1.4rem,4vw,3rem) clamp(1.1rem,4vw,2rem) 4.5rem;
+    color:var(--ink);
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    font-size:17.5px;line-height:1.68;-webkit-font-smoothing:antialiased;
+  }
+  .mono{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-variant-numeric:tabular-nums;font-weight:600}
+
+  .hero{border-bottom:3px solid var(--brand);padding-bottom:1.4rem;margin-bottom:1.8rem}
+  .eyebrow{font-size:.74rem;letter-spacing:.15em;text-transform:uppercase;color:var(--brand);font-weight:700;margin:0 0 .55rem}
+  h1{font-size:clamp(2rem,6.5vw,3rem);line-height:1.03;margin:0;font-weight:800;letter-spacing:-.02em;text-wrap:balance}
+  .tagline{font-size:1.12rem;color:var(--muted);margin:.85rem 0 0;text-wrap:pretty}
+
+  section{margin-top:2.4rem}
+  h2{font-size:1.5rem;margin:0 0 .3rem;font-weight:780;letter-spacing:-.015em;text-wrap:balance}
+  h2 .em{color:var(--brand)}
+  p{margin:.7rem 0}
+  strong{font-weight:680}
+
+  .lead-in{background:var(--brand-soft);border-radius:14px;padding:1.1rem 1.3rem;font-size:1.02rem}
+  .lead-in p{margin:.4rem 0}
+  .lead-in b{color:var(--brand)}
+
+  /* Освежить в памяти */
+  .recall{border:1px dashed var(--line);background:var(--card);border-radius:14px;padding:1rem 1.25rem;margin-top:1rem}
+  .recall .cap{font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;font-weight:700;color:var(--muted);margin:0 0 .4rem}
+  .recall ul{margin:.3rem 0 0;padding-left:1.2rem}
+  .recall li{margin:.3rem 0;font-size:.98rem}
+
+  /* Миф против правды */
+  .split{display:grid;gap:.9rem;margin-top:1rem}
+  @media(min-width:600px){.split{grid-template-columns:1fr 1fr}}
+  .path{border-radius:16px;padding:1.2rem 1.3rem;border:2px solid}
+  .path.bad{background:#FBEAEA;border-color:#EFC7C7}
+  .path.good{background:#E7F4EC;border-color:#BFE0CC}
+  .path .cap{font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;font-weight:700;margin:0}
+  .path.bad .cap{color:var(--no)} .path.good .cap{color:var(--ok)}
+  .path h3{margin:.2rem 0 .5rem;font-size:1.3rem;font-weight:800}
+  .path.bad h3{color:var(--no)} .path.good h3{color:var(--ok)}
+  .path p{margin:.3rem 0;font-size:.97rem}
+
+  /* Формула-плашка */
+  .formula{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:1.3rem;text-align:center;margin-top:1rem}
+  .formula .big{font-family:ui-monospace,Menlo,Consolas,monospace;font-weight:800;font-size:clamp(1.5rem,7vw,2.1rem);letter-spacing:.02em}
+  .formula .big .a{color:var(--one)} .formula .big .b{color:var(--two)}
+  .formula .cmt{color:var(--muted);font-size:.93rem;margin:.7rem 0 0}
+  .legend{display:flex;flex-direction:column;gap:.5rem;margin-top:1rem;text-align:left}
+  .legend div{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:.55rem .8rem;font-size:.95rem}
+  .legend .k{font-family:ui-monospace,Menlo,monospace;font-weight:800;margin-right:.45rem}
+  .legend .k.a{color:var(--one)} .legend .k.b{color:var(--two)}
+
+  .note{border-left:4px solid var(--brand);background:var(--brand-soft);border-radius:0 10px 10px 0;padding:.8rem 1.1rem;margin-top:1rem;font-size:.98rem}
+  .note b{color:var(--brand)}
+
+  /* Разбор по шагам */
+  .walk{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.15rem 1.3rem;margin-top:1rem}
+  .walk .q{font-weight:700;font-size:1.05rem;margin:0 0 .9rem;padding-bottom:.7rem;border-bottom:1px solid var(--line)}
+  .walk ol{margin:0;padding-left:1.3rem;display:flex;flex-direction:column;gap:.6rem}
+  .walk li{font-size:.98rem}
+  .walk li .why{display:block;color:var(--muted);font-size:.9rem;margin-top:.15rem}
+  .verdict{margin-top:1rem;padding:.75rem 1rem;background:var(--brand-soft);border-radius:10px;font-weight:650;color:var(--brand);font-size:1rem}
+
+  /* Наглядность */
+  .viz{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:1.15rem 1.2rem;margin-top:1rem}
+  .viz canvas{width:100%;height:auto;display:block;border-radius:10px}
+  .ctrls{display:flex;flex-direction:column;gap:.7rem;margin-bottom:1rem}
+  .ctrl{display:flex;align-items:center;gap:.75rem;font-size:.95rem}
+  .ctrl label{flex:none;font-weight:700;min-width:9.5rem}
+  .ctrl.a label{color:var(--one)} .ctrl.b label{color:var(--two)}
+  .ctrl input[type=range]{flex:1;min-width:0;accent-color:var(--brand)}
+  .ctrl input[type=range]:focus-visible{outline:2px solid var(--brand);outline-offset:3px}
+  .ctrl .val{font-family:ui-monospace,Menlo,monospace;font-weight:800;width:1.6rem;text-align:right}
+  .viz-out{text-align:center;font-family:ui-monospace,Menlo,monospace;font-weight:800;font-size:1.15rem;margin:.9rem 0 0}
+  .viz-out .res{color:var(--brand)}
+
+  .tblwrap{overflow-x:auto;margin-top:1rem}
+  table{border-collapse:collapse;width:100%;min-width:360px;font-size:.96rem}
+  th,td{border:1px solid var(--line);padding:.55rem .7rem;text-align:center}
+  thead th{background:var(--two-soft);color:var(--two);font-weight:700}
+  tbody th{background:var(--one-soft);color:var(--one);font-weight:700;text-align:left}
+  td{font-size:.9rem;color:var(--muted)}
+
+  /* Практика */
+  .drill{display:flex;flex-direction:column;gap:.7rem;margin-top:1rem}
+  details{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:.9rem 1.1rem}
+  details[open]{border-color:var(--brand)}
+  summary{cursor:pointer;font-weight:650;list-style:none;display:flex;justify-content:space-between;gap:1rem;align-items:center}
+  summary::-webkit-details-marker{display:none}
+  summary:focus-visible{outline:2px solid var(--brand);outline-offset:3px;border-radius:6px}
+  summary .q{font-size:1rem}
+  summary::after{content:"проверить";font-size:.8rem;color:var(--brand);font-weight:700;white-space:nowrap}
+  details[open] summary::after{content:"скрыть"}
+  .ans{margin-top:.75rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.96rem;color:var(--muted)}
+  .ans b{color:var(--ink)}
+  .lvl{font-size:.66rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--brand);background:var(--brand-soft);border-radius:5px;padding:.1rem .45rem;margin-right:.45rem}
+
+  /* Ловушки */
+  ul.traps{list-style:none;margin:1rem 0 0;padding:0;display:flex;flex-direction:column;gap:.7rem}
+  ul.traps li{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:.85rem 1.05rem;padding-left:2.5rem;position:relative;font-size:.97rem}
+  ul.traps li::before{content:"⚠";position:absolute;left:1rem;top:.85rem;color:var(--one);font-size:1.05rem}
+  ul.traps b{font-weight:700}
+
+  .selfcheck{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.1rem 1.3rem;margin-top:1rem}
+  .selfcheck ol{margin:.2rem 0 0;padding-left:1.3rem}
+  .selfcheck li{margin:.5rem 0;font-size:.99rem}
+
+  .wrapup{background:var(--brand);color:#fff;border-radius:16px;padding:1.4rem 1.5rem;margin-top:2.4rem}
+  .wrapup h2{color:#fff;margin:0 0 .5rem}
+  .wrapup p{color:#EEE6F6;margin:.4rem 0;font-size:1rem}
+  .wrapup .big-rule{font-size:1.1rem;font-weight:700;color:#fff;margin:.6rem 0}
+  .wrapup .next{font-size:.95rem;color:#D9C9EC;margin-top:1rem;padding-top:1rem;border-top:1px solid rgba(255,255,255,.2)}
+
+  /* Тренажёр */
+  .trainer{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:1.3rem 1.3rem 1.2rem;margin-top:1rem}
+  .tr-task{font-size:1.05rem;line-height:1.55;margin:0 0 1rem;text-align:center;text-wrap:pretty}
+  .tr-task b{color:var(--brand)}
+  .tr-form{display:flex;gap:.5rem;justify-content:center;flex-wrap:wrap;align-items:center}
+  .tr-form input{font:inherit;font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.1rem;width:8rem;text-align:center;padding:.5rem .6rem;border:2px solid var(--line);border-radius:10px;background:var(--paper);color:var(--ink)}
+  .tr-form input:focus-visible{outline:2px solid var(--brand);outline-offset:2px;border-color:var(--brand)}
+  .tr-btns{display:flex;gap:.5rem;flex-wrap:wrap;justify-content:center;margin-top:.9rem}
+  .tr-btns button{font:inherit;font-weight:700;font-size:.92rem;border-radius:10px;padding:.55rem 1.1rem;cursor:pointer;border:1px solid transparent}
+  .tr-btns .go{background:var(--brand);color:#fff}
+  .tr-btns .sh{background:var(--paper);border:1px solid var(--line);color:var(--ink)}
+  .tr-btns .nw{background:var(--brand-soft);color:var(--brand)}
+  .tr-btns button:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+  .tr-res{margin-top:1.1rem;font-size:.97rem}
+  .tr-res .head{font-weight:700;padding:.6rem .9rem;border-radius:9px;margin-bottom:.7rem}
+  .tr-res .head.ok{background:#E7F4EC;color:var(--ok)}
+  .tr-res .head.no{background:#FBEAEA;color:var(--no)}
+  .tr-res .head.info{background:var(--brand-soft);color:var(--brand)}
+  .tr-sol{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:.85rem 1rem}
+  .tr-sol .row{margin:.35rem 0;font-size:.94rem}
+  .tr-sol .row .n{font-family:ui-monospace,Menlo,monospace;font-weight:800}
+  .tr-sol .row.a .n{color:var(--one)} .tr-sol .row.b .n{color:var(--two)}
+  .tr-sol .fin{margin-top:.6rem;padding-top:.55rem;border-top:1px dashed var(--line);font-family:ui-monospace,Menlo,monospace;font-weight:800;font-size:1.02rem}
+  .tr-score{text-align:center;color:var(--muted);font-size:.85rem;margin:.9rem 0 0}
+
+  @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<!--LESSON-NAV-TOP--><style>.lnav{--lnav-accent:#3D5AF1}.lnav a{text-decoration:none;font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif}.lnav-top{max-width:820px;margin:0 auto;padding:.75rem clamp(1rem,4vw,1.5rem) .1rem}.lnav-top a{display:inline-flex;align-items:center;gap:.35rem;color:var(--lnav-accent);font-weight:600;font-size:.9rem}.lnav-top a:hover{text-decoration:underline}.lnav-bot{max-width:820px;margin:2.6rem auto 3rem;padding:1.1rem clamp(1rem,4vw,1.5rem) 0;border-top:1px solid #E4E8EF;display:flex;align-items:stretch;gap:.55rem}.lnav-bot a{min-width:0;display:flex;flex-direction:column;justify-content:center;gap:.15rem;border:1px solid #E4E8EF;border-radius:12px;padding:.65rem .85rem;color:#182233;background:#fff;transition:border-color .1s,transform .08s}.lnav-bot a:hover{border-color:var(--lnav-accent);transform:translateY(-1px)}.lnav-bot .prev,.lnav-bot .next{flex:1 1 0}.lnav-bot .next{text-align:right}.lnav-bot .dir{font-size:.72rem;color:#8A93A6;font-weight:600}.lnav-bot .ttl{font-size:.9rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.lnav-bot .to-cat{flex:0 0 auto;flex-direction:row;align-items:center;justify-content:center;color:var(--lnav-accent);font-weight:700;font-size:.85rem;white-space:nowrap}@media(max-width:420px){.lnav-bot .to-cat span{display:none}.lnav-bot .to-cat{padding:.65rem .7rem}}</style><nav class="lnav lnav-top"><a href="./catalog.html">← Все темы</a></nav><!--/LESSON-NAV-TOP-->
+<div class="page">
+
+  <header class="hero">
+    <p class="eyebrow">Математика · 5 класс</p>
+    <h1>Правило<br>умножения</h1>
+    <p class="tagline">Как узнать, сколько получится вариантов, — <em>не выписывая их все</em>.</p>
+  </header>
+
+  <div class="lead-in">
+    <p><b>Зачем это нужно.</b> Вопрос «сколько всего получится способов?» встречается на каждом шагу.</p>
+    <p>Сколько разных нарядов можно собрать из 3 футболок и 2 пар шорт? Сколько разных номеров можно составить из цифр? Сколько разных обедов в столовой, если есть выбор первого, второго и напитка?</p>
+    <p>Можно нарисовать дерево вариантов или выписать всё списком. Но чем больше выборов, тем длиннее список — и тем легче пропустить вариант или посчитать один дважды. <strong>Правило умножения даёт число вариантов сразу</strong>, вообще без выписывания.</p>
+  </div>
+
+  <div class="recall">
+    <p class="cap">Что вспомнить перед стартом</p>
+    <ul>
+      <li><strong>Дерево вариантов</strong> — схема, где от старта идут ветки, а от каждой ветки — свои веточки. Каждый конец дерева = один вариант.</li>
+      <li><strong>Умножение натуральных чисел</strong> — сегодня всё сведётся к обычному умножению вроде <span class="mono">3 · 2</span> или <span class="mono">4 · 3</span>.</li>
+    </ul>
+  </div>
+
+  <section>
+    <h2>Главная развилка: <span class="em">плюс или умножить?</span></h2>
+    <p>Задача: <strong>3 футболки и 2 пары шорт</strong>. Сколько разных нарядов можно собрать? Прежде чем читать дальше — назови своё число. Не подглядывай, просто скажи вслух.</p>
+    <div class="split">
+      <div class="path bad">
+        <p class="cap">Первая мысль</p>
+        <h3>3 + 2 = 5</h3>
+        <p>«Три футболки да две шорт — всего пять вещей, значит пять нарядов».</p>
+        <p>Так отвечает почти каждый. И это <strong>неверно</strong>: складывать здесь нельзя.</p>
+      </div>
+      <div class="path good">
+        <p class="cap">Как правильно</p>
+        <h3>3 · 2 = 6</h3>
+        <p>Наряд собирается в два шага: сначала футболка, потом шорты.</p>
+        <p>К <strong>каждой</strong> из 3 футболок подходят любые из 2 шорт — значит на каждую футболку приходится по 2 наряда.</p>
+      </div>
+    </div>
+    <p>Складывать нельзя потому, что каждый вариант первого шага не добавляется к остальным, а <strong>размножается</strong> на все варианты второго. Футболка не остаётся сама по себе — она превращается в столько нарядов, сколько есть шорт.</p>
+  </section>
+
+  <section>
+    <h2>Правило умножения</h2>
+    <p>То же самое коротко, на буквах. Пусть в задаче два выбора:</p>
+    <div class="formula">
+      <div class="big"><span class="a">a</span> · <span class="b">b</span></div>
+      <p class="cmt">столько способов сделать оба выбора вместе</p>
+      <div class="legend">
+        <div><span class="k a">a</span>— число способов сделать <strong>первый</strong> выбор</div>
+        <div><span class="k b">b</span>— число способов сделать <strong>второй</strong> выбор (при любом исходе первого)</div>
+        <div><span class="k">·</span>— знак умножения</div>
+      </div>
+    </div>
+    <p>Выборов больше двух? Ничего нового: числа способов перемножаются дальше —</p>
+    <div class="formula"><div class="big">a · b · c · …</div></div>
+    <div class="note">
+      <p><b>Условие применимости — важно!</b> Выборы должны быть <strong>независимыми</strong>: число способов на втором шаге не зависит от того, что выбрали на первом.</p>
+      <p>«3 футболки и 2 шорт» — независимы: какую футболку ни возьми, шорт всё равно 2. А если бы какая-то футболка не сочеталась с какими-то шортами, выборы стали бы зависимыми, и простое умножение уже не годилось бы.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Эталонный разбор — <span class="em">думаю вслух</span></h2>
+    <p>В кафе можно выбрать 1 из <strong>4</strong> видов мороженого и полить его 1 из <strong>3</strong> сиропов. Сколько разных порций можно заказать?</p>
+    <div class="walk">
+      <p class="q">Смотри, как я рассуждаю по шагам:</p>
+      <ol>
+        <li>Здесь <strong>два выбора</strong>: сначала мороженое, потом сироп.
+          <span class="why">Почему два: в порции есть и мороженое, и сироп — одного без другого не бывает.</span></li>
+        <li>Первый выбор — <strong>4 способа</strong> (видов мороженого 4). Второй — <strong>3 способа</strong> (сиропов 3).
+          <span class="why">Почему так: к любому мороженому подходит любой сироп, значит выборы независимы — на втором шаге всегда 3 варианта.</span></li>
+        <li>По правилу умножения: <span class="mono">4 · 3 = 12</span>.
+          <span class="why">Почему умножаем: каждое из 4 мороженых даёт 3 разные порции, всего 4 · 3.</span></li>
+      </ol>
+      <div class="verdict">Ответ: 12 разных порций.</div>
+    </div>
+
+    <p style="margin-top:1.6rem"><strong>Теперь допиши сам.</strong> На завтрак выбирают 1 из <strong>2</strong> каш и 1 из <strong>5</strong> напитков. Сколько разных завтраков?</p>
+    <div class="walk">
+      <p class="q">Первый выбор — 2 способа, второй выбор — 5 способов.</p>
+      <p style="margin:0">По правилу умножения число завтраков равно <span class="mono">2 · 5 = <span style="letter-spacing:.2em">?</span></span></p>
+      <details style="margin-top:.9rem">
+        <summary><span class="q">Досчитал? Открывай</span></summary>
+        <div class="ans"><span class="mono">2 · 5 = 10</span>. <b>Ответ: 10 разных завтраков.</b></div>
+      </details>
+    </div>
+
+    <p style="margin-top:1.6rem"><strong>А это реши целиком сам.</strong> Замок открывается, если набрать сначала 1 из <strong>6</strong> букв, а затем 1 из <strong>4</strong> цифр. Сколько всего разных кодов?</p>
+    <div class="drill">
+      <details>
+        <summary><span class="q">Показать решение</span></summary>
+        <div class="ans">Два независимых выбора: буква — 6 способов, цифра — 4 способа. <span class="mono">6 · 4 = 24</span>. <b>Ответ: 24 кода.</b></div>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <h2>Видно глазами: <span class="em">дерево вариантов</span></h2>
+    <p>Дерево показывает, откуда берётся умножение. От старта идут ветки — это первый выбор. От каждой ветки отходят веточки — это второй. <strong>Каждый конец дерева = один вариант.</strong></p>
+    <p>Подвигай ползунки и посмотри, как растёт число концов.</p>
+    <div class="viz">
+      <div class="ctrls">
+        <div class="ctrl a">
+          <label for="sA">Первый выбор</label>
+          <input type="range" id="sA" min="1" max="4" step="1" value="3">
+          <span class="val" id="vA">3</span>
+        </div>
+        <div class="ctrl b">
+          <label for="sB">Второй выбор</label>
+          <input type="range" id="sB" min="1" max="4" step="1" value="2">
+          <span class="val" id="vB">2</span>
+        </div>
+      </div>
+      <canvas id="tree" width="660" height="460" role="img" aria-label="Дерево вариантов: от старта идут ветки первого выбора, от каждой — веточки второго выбора"></canvas>
+      <p class="viz-out"><span style="color:var(--one)" id="oA">3</span> · <span style="color:var(--two)" id="oB">2</span> = <span class="res" id="oR">6</span> <span style="font-weight:600;color:var(--muted);font-size:.9rem">концов</span></p>
+    </div>
+    <p>Двигаешь второй ползунок — и видно: каждая ветка первого выбора обрастает таким числом веточек, сколько вариантов у второго. Оттого числа перемножаются, а не складываются.</p>
+
+    <p style="margin-top:1.6rem">Тот же счёт видно в <strong>таблице</strong>. Строки — футболки (3 штуки), столбцы — шорты (2 штуки). Клеток выходит <span class="mono">3 · 2 = 6</span>, и каждая клетка — это один наряд.</p>
+    <div class="tblwrap">
+      <table>
+        <thead><tr><th></th><th>шорты 1</th><th>шорты 2</th></tr></thead>
+        <tbody>
+          <tr><th>футболка 1</th><td>наряд 1</td><td>наряд 2</td></tr>
+          <tr><th>футболка 2</th><td>наряд 3</td><td>наряд 4</td></tr>
+          <tr><th>футболка 3</th><td>наряд 5</td><td>наряд 6</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>Число вариантов здесь — это число клеток прямоугольника: строки умножить на столбцы.</p>
+  </section>
+
+  <section>
+    <h2>Тренажёр — <span class="em">считай варианты</span></h2>
+    <p>Каждый раз новая задача. Прикинь, сколько выборов в условии и по сколько способов у каждого, перемножь и введи ответ. Застрял — жми «Показать решение».</p>
+    <div class="trainer">
+      <p class="tr-task" id="trTask">—</p>
+      <div class="tr-form">
+        <input type="text" id="trInp" inputmode="numeric" autocomplete="off" placeholder="ответ" aria-label="Число вариантов">
+      </div>
+      <div class="tr-btns">
+        <button class="go" id="trCheck" type="button">Проверить</button>
+        <button class="sh" id="trShow" type="button">Показать решение</button>
+        <button class="nw" id="trNew" type="button">🎲 Новая задача</button>
+      </div>
+      <div class="tr-res" id="trRes"></div>
+      <p class="tr-score" id="trScore">Решено: 0 · Верно: 0</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Проверь себя</h2>
+    <p>Сначала решаешь сам, потом открываешь ответ 🙂</p>
+    <div class="drill">
+      <details>
+        <summary><span class="q"><span class="lvl">понимание</span>1) Для задачи про выбор записали <span class="mono">5 · 2 = 10</span>. Что означает 5, что означает 2, что означает 10? Почему тут умножение, а не плюс?</span></summary>
+        <div class="ans"><b>5</b> — число способов сделать первый выбор. <b>2</b> — число способов сделать второй выбор. <b>10</b> — общее число вариантов, то есть сколькими способами можно сделать оба выбора вместе. Умножение стоит потому, что к каждому из 5 вариантов первого выбора подходят все 2 варианта второго: каждый первый вариант размножается на 2.</div>
+      </details>
+      <details>
+        <summary><span class="q"><span class="lvl">применение</span>2) Из города A в город B ведут 3 дороги, из B в C — 4 дороги. Сколькими способами можно проехать из A в C через B?</span></summary>
+        <div class="ans">Два выбора: дорога A→B (3 способа) и дорога B→C (4 способа). Они независимы: по какой дороге ни доедешь до B, дальше всё равно 4 дороги. <span class="mono">3 · 4 = 12</span>. <b>Ответ: 12 способов.</b></div>
+      </details>
+      <details>
+        <summary><span class="q"><span class="lvl">анализ</span>3) Что изменится, если к 3 футболкам добавить ещё одну (станет 4), а шорт по-прежнему 2? Нарядов станет больше или меньше и на сколько?</span></summary>
+        <div class="ans">Было <span class="mono">3 · 2 = 6</span>, стало <span class="mono">4 · 2 = 8</span>. Нарядов стало <b>больше на 2</b>. И это логично: новая футболка приносит с собой ровно столько нарядов, сколько есть шорт, — то есть 2.</div>
+      </details>
+      <details>
+        <summary><span class="q"><span class="lvl">анализ</span>4) Найди ошибку в решении ученика: «3 футболки и 2 шорт, значит <span class="mono">3 + 2 = 5</span> нарядов».</span></summary>
+        <div class="ans">Ученик <b>сложил вместо умножения</b>. Он посчитал, сколько всего вещей (3 футболки да 2 шорт — действительно 5 вещей), а спрашивали про число нарядов. Наряд — это пара «футболка + шорты», и к каждой из 3 футболок подходят обе пары шорт. Правильно: <span class="mono">3 · 2 = 6</span> нарядов. Проверить легко деревом: 3 ветки, от каждой по 2 веточки, концов ровно 6, а не 5.</div>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <h2>Ловушки — не попадись</h2>
+    <ul class="traps">
+      <li><b>Складывают вместо умножения.</b> Пишут <span class="mono">3 + 2 = 5</span> вместо <span class="mono">3 · 2 = 6</span>. Как не попасться: спроси себя — «к каждому варианту первого выбора подходят ВСЕ варианты второго?». Если да, это умножение. Сомневаешься — проверь на маленьком примере, нарисовав дерево: концов выйдет именно 6, а не 5.</li>
+      <li><b>Считают зависимые выборы как независимые.</b> Умножают, хотя второй выбор зависит от первого — например, нельзя взять один и тот же предмет дважды, и после первого выбора способов остаётся меньше. Проверка простая: посмотри, не меняется ли число способов на втором шаге из-за первого выбора. Меняется — перемножить эти два числа уже нельзя.</li>
+      <li><b>Путают порядок и не различают выборы.</b> Не видят, что «выбрать мороженое» и «выбрать сироп» — это два разных выбора, и пытаются считать их как один. Лечится списком: выпиши, сколько в задаче отдельных выборов и сколько способов у каждого.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Объясни своими словами</h2>
+    <div class="selfcheck">
+      <ol>
+        <li>Если первый выбор можно сделать 4 способами, а второй — 3 способами, сколько всего пар выборов?</li>
+        <li>Почему в таких задачах числа вариантов умножают, а не складывают?</li>
+        <li>Что должно быть верно про два выбора, чтобы их количества способов можно было просто перемножить?</li>
+      </ol>
+      <div class="drill" style="margin-top:1rem">
+        <details>
+          <summary><span class="q">Сверить ответы</span></summary>
+          <div class="ans">
+            1) <span class="mono">4 · 3 = 12</span> пар.<br>
+            2) Потому что каждый вариант первого выбора сочетается со <b>всеми</b> вариантами второго — то есть размножается на них, а не просто добавляется к ним.<br>
+            3) Выборы должны быть <b>независимыми</b>: число способов на втором шаге не зависит от того, что выбрали на первом.
+          </div>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <div class="wrapup">
+    <h2>Запомни главное</h2>
+    <p class="big-rule">Число вариантов при двух независимых выборах = <span class="mono" style="color:#fff">a · b</span>.<br>Три выбора и больше — перемножаем дальше: <span class="mono" style="color:#fff">a · b · c · …</span></p>
+    <p>Не «сколько всего вещей», а «сколько получится сочетаний» — вот на какой вопрос отвечает правило умножения.</p>
+    <p class="next">👉 Дальше ты выйдешь на <strong>отношения</strong> — там числа тоже сравнивают и связывают между собой, и умение аккуратно считать «сколько на сколько» пригодится сразу.</p>
+  </div>
+
+</div>
+
+<script>
+(function(){
+  /* ---------- Дерево вариантов ---------- */
+  var cv=document.getElementById('tree'), ctx=cv.getContext('2d');
+  var sA=document.getElementById('sA'), sB=document.getElementById('sB');
+  var vA=document.getElementById('vA'), vB=document.getElementById('vB');
+  var oA=document.getElementById('oA'), oB=document.getElementById('oB'), oR=document.getElementById('oR');
+  var W=580,H=460, ONE='#CF5A34', TWO='#3A5AA0', INK='#26202E', MUT='#6B6473';
+
+  function setupCanvas(){
+    var dpr=window.devicePixelRatio||1;
+    cv.width=W*dpr; cv.height=H*dpr;
+    cv.style.aspectRatio=W+' / '+H;
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+  }
+  function dot(x,y,r,color){
+    ctx.beginPath(); ctx.arc(x,y,r,0,Math.PI*2);
+    ctx.fillStyle=color; ctx.fill();
+  }
+  function line(x1,y1,x2,y2,color,w){
+    ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(x2,y2);
+    ctx.strokeStyle=color; ctx.lineWidth=w; ctx.stroke();
+  }
+  function drawTree(a,b){
+    ctx.clearRect(0,0,W,H);
+    ctx.fillStyle='#FFFFFF'; ctx.fillRect(0,0,W,H);
+
+    var total=a*b;
+    var x0=40, x1=225, x2=430;
+    var top=58, bot=H-30;
+    var span=bot-top;
+    var ys=[];
+    var i,j;
+    for(i=0;i<total;i++){
+      ys.push(total===1 ? (top+bot)/2 : top + span*i/(total-1));
+    }
+    var y0=(top+bot)/2;
+
+    ctx.font='600 13px ui-monospace, Menlo, Consolas, monospace';
+    ctx.textBaseline='middle';
+
+    /* подписи уровней */
+    ctx.textAlign='center';
+    ctx.fillStyle=MUT; ctx.font='700 15px system-ui, sans-serif';
+    ctx.fillText('старт', x0+6, 26);
+    ctx.fillStyle=ONE; ctx.fillText('первый выбор', x1, 26);
+    ctx.fillStyle=TWO; ctx.fillText('второй выбор', x2+40, 26);
+
+    /* ветки */
+    for(i=0;i<a;i++){
+      var kids=ys.slice(i*b,(i+1)*b);
+      var yi=0;
+      for(j=0;j<kids.length;j++) yi+=kids[j];
+      yi=yi/kids.length;
+      line(x0,y0,x1,yi,ONE,2.4);
+      for(j=0;j<kids.length;j++) line(x1,yi,x2,kids[j],TWO,1.8);
+      dot(x1,yi,9,ONE);
+      ctx.fillStyle='#FFFFFF'; ctx.font='700 12px system-ui, sans-serif'; ctx.textAlign='center';
+      ctx.fillText(String(i+1),x1,yi+0.5);
+    }
+
+    /* концы */
+    ctx.textAlign='left';
+    for(i=0;i<total;i++){
+      dot(x2,ys[i],6,TWO);
+      ctx.fillStyle=INK; ctx.font='600 15px ui-monospace, Menlo, monospace';
+      ctx.fillText('вариант '+(i+1), x2+13, ys[i]);
+    }
+
+    dot(x0,y0,9,INK);
+  }
+  function render(){
+    var a=+sA.value, b=+sB.value;
+    vA.textContent=a; vB.textContent=b;
+    oA.textContent=a; oB.textContent=b; oR.textContent=a*b;
+    drawTree(a,b);
+  }
+  setupCanvas();
+  sA.addEventListener('input',render);
+  sB.addEventListener('input',render);
+  window.addEventListener('resize',function(){ setupCanvas(); render(); });
+  render();
+
+  /* ---------- Тренажёр ---------- */
+  var taskEl=document.getElementById('trTask');
+  var inpEl=document.getElementById('trInp');
+  var resEl=document.getElementById('trRes');
+  var scoreEl=document.getElementById('trScore');
+  var done=0, right=0, cur=null;
+
+  function ri(a,b){ return Math.floor(Math.random()*(b-a+1))+a; }
+  function pick(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+  function wordForm(n,f1,f2,f5){
+    var n10=n%10, n100=n%100;
+    if(n100>=11 && n100<=14) return f5;
+    if(n10===1) return f1;
+    if(n10>=2 && n10<=4) return f2;
+    return f5;
+  }
+
+  function sp(n){ return n+' '+wordForm(n,'способ','способа','способов'); }
+
+  var TPL2=[
+    { a1:false, b1:false, make:function(a,b){ return {
+      text:'В кафе можно выбрать 1 из <b>'+a+'</b> видов мороженого и полить его 1 из <b>'+b+'</b> сиропов. Сколько разных порций можно заказать?',
+      s1:'выбор мороженого — '+sp(a),
+      s2:'выбор сиропа — '+sp(b),
+      unit:wordForm(a*b,'порция','порции','порций')
+    };}},
+    { a1:false, b1:false, make:function(a,b){ return {
+      text:'На завтрак выбирают 1 из <b>'+a+'</b> каш и 1 из <b>'+b+'</b> напитков. Сколько разных завтраков можно собрать?',
+      s1:'выбор каши — '+sp(a),
+      s2:'выбор напитка — '+sp(b),
+      unit:wordForm(a*b,'завтрак','завтрака','завтраков')
+    };}},
+    { a1:false, b1:false, make:function(a,b){ return {
+      text:'Замок открывается, если набрать сначала 1 из <b>'+a+'</b> букв, а затем 1 из <b>'+b+'</b> цифр. Сколько всего разных кодов?',
+      s1:'выбор буквы — '+sp(a),
+      s2:'выбор цифры — '+sp(b),
+      unit:wordForm(a*b,'код','кода','кодов')
+    };}},
+    { a1:true, b1:true, make:function(a,b){ return {
+      text:'У Кати <b>'+a+'</b> '+wordForm(a,'футболка','футболки','футболок')+' и <b>'+b+'</b> '+wordForm(b,'пара','пары','пар')+' шорт. Сколько разных нарядов она может собрать?',
+      s1:'выбор футболки — '+sp(a),
+      s2:'выбор шорт — '+sp(b),
+      unit:wordForm(a*b,'наряд','наряда','нарядов')
+    };}},
+    { a1:false, b1:true, make:function(a,b){ return {
+      text:'Из города A в город B ведут <b>'+a+'</b> '+wordForm(a,'дорога','дороги','дорог')+', из B в C — <b>'+b+'</b> '+wordForm(b,'дорога','дороги','дорог')+'. Сколькими способами можно проехать из A в C через B?',
+      s1:'выбор дороги от A до B — '+sp(a),
+      s2:'выбор дороги от B до C — '+sp(b),
+      unit:wordForm(a*b,'способ','способа','способов')
+    };}}
+  ];
+
+  function makeTask(){
+    if(Math.random()<0.25){
+      var a=ri(2,4), b=ri(2,4), c=ri(2,3);
+      return {
+        html:'В столовой на обед выбирают 1 из <b>'+a+'</b> первых блюд, 1 из <b>'+b+'</b> вторых блюд и 1 из <b>'+c+'</b> напитков. Сколько разных обедов можно собрать?',
+        steps:[
+          {t:'первое блюдо — '+sp(a), k:'a'},
+          {t:'второе блюдо — '+sp(b), k:'b'},
+          {t:'напиток — '+sp(c), k:'a'}
+        ],
+        expr:a+' · '+b+' · '+c+' = '+(a*b*c),
+        ans:a*b*c,
+        unit:wordForm(a*b*c,'обед','обеда','обедов')
+      };
+    }
+    var tpl=pick(TPL2);
+    var A=ri(2,8), B=ri(2,7);
+    /* краевой случай: на каком-то шаге всего один способ */
+    if(tpl.a1 && Math.random()<0.12) A=1;
+    else if(tpl.b1 && Math.random()<0.12) B=1;
+    var t=tpl.make(A,B);
+    return {
+      html:t.text,
+      steps:[{t:t.s1,k:'a'},{t:t.s2,k:'b'}],
+      expr:A+' · '+B+' = '+(A*B),
+      ans:A*B,
+      unit:t.unit
+    };
+  }
+
+  function solution(){
+    var h='<div class="tr-sol">';
+    h+='<div class="row">Выборов в задаче — <span class="n">'+cur.steps.length+'</span>, и они независимы: число способов на каждом следующем шаге не зависит от предыдущего.</div>';
+    for(var i=0;i<cur.steps.length;i++){
+      h+='<div class="row '+cur.steps[i].k+'">'+(i+1)+') '+cur.steps[i].t+'</div>';
+    }
+    h+='<div class="row">Перемножаем количества способов:</div>';
+    h+='<div class="fin">'+cur.expr+'</div>';
+    h+='<div class="row" style="margin-top:.5rem">Ответ: <span class="n">'+cur.ans+'</span> '+cur.unit+'.</div>';
+    return h+'</div>';
+  }
+  function locked(){ return resEl.getAttribute('data-done')==='1'; }
+
+  function newTask(focus){
+    cur=makeTask();
+    taskEl.innerHTML=cur.html;
+    inpEl.value=''; inpEl.disabled=false;
+    resEl.innerHTML=''; resEl.removeAttribute('data-done');
+    if(focus) inpEl.focus();
+  }
+  function check(){
+    if(locked()) return;
+    var raw=inpEl.value.replace(/\s/g,'').replace(',','.');
+    if(raw===''){
+      resEl.innerHTML='<div class="head info">Введи число вариантов и нажми «Проверить».</div>';
+      return;
+    }
+    var v=Number(raw);
+    if(!isFinite(v)){
+      resEl.innerHTML='<div class="head info">Ответ — это число. Введи его цифрами.</div>';
+      return;
+    }
+    var ok=(v===cur.ans);
+    done++; if(ok) right++;
+    scoreEl.textContent='Решено: '+done+' · Верно: '+right;
+    resEl.setAttribute('data-done','1');
+    inpEl.disabled=true;
+    resEl.innerHTML=(ok
+      ? '<div class="head ok">✓ Верно! '+cur.ans+' '+cur.unit+'.</div>'
+      : '<div class="head no">Пока нет. Правильный ответ — '+cur.ans+'. Разбери решение ниже.</div>')+solution();
+  }
+  function show(){
+    if(locked()) return;
+    resEl.setAttribute('data-done','1');
+    inpEl.disabled=true;
+    resEl.innerHTML='<div class="head info">Разбор задачи:</div>'+solution();
+  }
+  document.getElementById('trCheck').addEventListener('click',check);
+  document.getElementById('trShow').addEventListener('click',show);
+  document.getElementById('trNew').addEventListener('click',function(){ newTask(true); });
+  inpEl.addEventListener('keydown',function(e){ if(e.key==='Enter') check(); });
+  newTask(false);
+})();
+</script>
+<!--LESSON-NAV-BOT--><nav class="lnav lnav-bot"><a class="prev" href="./m5-derevo-variantov.html"><span class="dir">← Предыдущая</span><span class="ttl">Дерево возможных вариантов</span></a><a class="to-cat" href="./catalog.html">📚 <span>Все темы</span></a><a class="next" href="./m6-delimost-opredelenie.html"><span class="dir">Следующая →</span><span class="ttl">Делимость, делители и кратные</span></a></nav><!--/LESSON-NAV-BOT-->

@@ -1,0 +1,606 @@
+<!doctype html>
+<!-- humanized: humanizer-ru, 2026-09-04, тире возвращено -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Построение середины отрезка и серединного перпендикуляра, геометрия 7 класс</title>
+<style>
+  :root{
+    --paper:#F6F7F9; --card:#FFFFFF; --ink:#1D2530; --muted:#606B7A; --line:#E3E7EE;
+    --brand:#2E5AAC; --brand-soft:#E4EBF7;
+    --p1:#E27C2C; --p1-soft:#FBEEDF;    /* дуга из A */
+    --p2:#159A8A; --p2-soft:#DEF3F0;    /* дуга из B */
+    --wh:#7B4FBF; --wh-soft:#EEE7FA;    /* прямая PQ */
+    --ok:#1E8E5A; --no:#C23B3B;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper)}
+  .page{max-width:720px;margin:0 auto;padding:clamp(1.4rem,4vw,3rem) clamp(1.1rem,4vw,2rem) 4.5rem;
+    color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:17.5px;line-height:1.68;-webkit-font-smoothing:antialiased}
+  .mono{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-variant-numeric:tabular-nums;font-weight:600}
+
+  .hero{border-bottom:3px solid var(--brand);padding-bottom:1.4rem;margin-bottom:1.8rem}
+  .eyebrow{font-size:.74rem;letter-spacing:.15em;text-transform:uppercase;color:var(--brand);font-weight:700;margin:0 0 .55rem}
+  h1{font-size:clamp(1.75rem,5.4vw,2.6rem);line-height:1.07;margin:0;font-weight:800;letter-spacing:-.02em;text-wrap:balance}
+  .tagline{font-size:1.12rem;color:var(--muted);margin:.85rem 0 0;text-wrap:pretty}
+
+  section{margin-top:2.4rem}
+  h2{font-size:1.5rem;margin:0 0 .3rem;font-weight:780;letter-spacing:-.015em;text-wrap:balance}
+  h2 .em{color:var(--brand)}
+  h3{font-size:1.08rem;margin:1.4rem 0 .2rem;font-weight:750}
+  p{margin:.7rem 0}
+  strong{font-weight:680}
+  .p1w{color:var(--p1);font-weight:800} .p2w{color:var(--p2);font-weight:800} .whw{color:var(--wh);font-weight:800}
+
+  .lead-in{background:var(--brand-soft);border-radius:14px;padding:1.1rem 1.3rem;font-size:1.02rem}
+  .lead-in p{margin:.4rem 0}
+  .lead-in b{color:var(--brand)}
+
+  .formula-box{background:var(--ink);color:#fff;border-radius:14px;padding:1.3rem;text-align:center;margin-top:1rem}
+  .formula-box .eq{font-family:ui-monospace,Menlo,monospace;font-size:clamp(1.1rem,4.2vw,1.6rem);font-weight:700;line-height:1.45}
+  .formula-box .eq .w{color:#C4A9F0} .formula-box .eq .a{color:#F0A45E} .formula-box .eq .b{color:#6FD3C6}
+  .formula-box .note{font-size:.9rem;color:#AEB8C6;margin:.7rem 0 0}
+
+  .note{border-left:4px solid var(--brand);background:var(--brand-soft);border-radius:0 10px 10px 0;padding:.8rem 1.1rem;margin-top:1rem;font-size:.98rem}
+  .note b{color:var(--brand)}
+  .note p{margin:.35rem 0}
+
+  .recall{background:var(--card);border:1px dashed var(--line);border-radius:14px;padding:1rem 1.2rem;margin-top:1rem}
+  .recall ul{margin:.4rem 0 0;padding-left:1.2rem;display:flex;flex-direction:column;gap:.35rem;font-size:.97rem}
+
+  .steps{counter-reset:st;list-style:none;margin:1rem 0 0;padding:0;display:flex;flex-direction:column;gap:.6rem}
+  .steps li{counter-increment:st;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:.85rem 1.05rem .85rem 3rem;position:relative;font-size:.98rem}
+  .steps li::before{content:counter(st);position:absolute;left:.85rem;top:.8rem;width:1.5rem;height:1.5rem;border-radius:50%;
+    background:var(--brand);color:#fff;font-weight:800;font-size:.85rem;display:flex;align-items:center;justify-content:center}
+
+  /* Диаграммы */
+  .diagram{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:1.2rem;margin-top:1rem}
+  .diagram canvas{width:100%;height:auto;display:block;border-radius:8px}
+  .sliders{display:grid;gap:.6rem;margin-top:.9rem}
+  .sliders label{display:flex;align-items:center;gap:.5rem;font-weight:700;font-family:ui-monospace,Menlo,monospace;font-size:.92rem}
+  .sliders input[type=range]{flex:1;min-width:0;accent-color:var(--brand)}
+  .sliders input[type=range]:focus-visible{outline:3px solid var(--brand);outline-offset:3px}
+  .sliders .sval{min-width:6ch;text-align:right}
+  .diag-eq{text-align:center;font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:clamp(.85rem,3.2vw,1rem);margin:.9rem 0 0;line-height:1.6}
+  .diag-eq .yes{color:var(--ok)} .diag-eq .no{color:var(--no)}
+  .navrow{display:flex;gap:.5rem;flex-wrap:wrap;align-items:center;justify-content:center;margin-top:.9rem}
+  .diag-btn{font:inherit;font-weight:700;font-size:.9rem;cursor:pointer;border:1px solid var(--brand);background:transparent;color:var(--brand);border-radius:9px;padding:.5rem .9rem}
+  .diag-btn.solid{background:var(--brand);color:#fff}
+  .diag-btn[disabled]{opacity:.4;cursor:default}
+  .diag-btn:focus-visible{outline:3px solid var(--brand);outline-offset:2px}
+  .stepbadge{font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:.85rem;color:var(--muted);min-width:6ch;text-align:center}
+  .stepcap{margin-top:.8rem;background:var(--brand-soft);border-radius:10px;padding:.75rem 1rem;font-size:.96rem;line-height:1.55;min-height:3.6rem}
+  .stepcap b{color:var(--brand)}
+  .cap{font-size:.9rem;color:var(--muted)}
+
+  .walk{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.15rem 1.3rem;margin-top:1rem}
+  .walk .q{font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1rem;margin:0 0 .9rem;padding-bottom:.7rem;border-bottom:1px solid var(--line);line-height:1.5}
+  .walk ol{margin:0;padding-left:1.2rem;display:flex;flex-direction:column;gap:.55rem}
+  .walk li{font-size:.95rem}
+  .walk .why{color:var(--muted);font-style:italic}
+  .verdict{margin-top:1rem;padding:.7rem 1rem;background:var(--brand-soft);border-radius:10px;font-weight:650;color:var(--brand);font-family:ui-monospace,Menlo,monospace}
+
+  /* Тренажёр */
+  .trainer{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.2rem 1.3rem;margin-top:1rem}
+  .tr-task{font-size:clamp(1rem,4vw,1.1rem);text-align:center;padding:1rem;background:var(--brand-soft);border-radius:10px;font-weight:600;line-height:1.55}
+  .tr-task b{font-family:ui-monospace,Menlo,monospace;color:var(--ink)}
+  .tr-ctl{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:1rem;align-items:center;justify-content:center}
+  .tr-ctl input{flex:1;min-width:110px;max-width:180px;font:inherit;padding:.5rem .7rem;border:1px solid var(--line);border-radius:9px;text-align:center;background:#fff;color:var(--ink)}
+  .tr-ctl button{font:inherit;font-weight:700;font-size:.9rem;cursor:pointer;border:none;border-radius:9px;padding:.55rem .95rem;color:#fff;background:var(--brand)}
+  .tr-ctl button.sec{background:var(--p1)}
+  .tr-ctl button.ghost{background:transparent;color:var(--brand);border:1px solid var(--brand)}
+  .tr-ctl button:focus-visible,.tr-ctl input:focus-visible{outline:3px solid var(--brand);outline-offset:2px}
+  .tr-result{margin-top:.9rem;font-size:.96rem;min-height:1.2rem;text-align:center}
+  .tr-result .ok{color:var(--ok);font-weight:700} .tr-result .bad{color:var(--no);font-weight:700}
+  .tr-result .sol{margin-top:.6rem;padding:.8rem 1rem;background:#FCFDFE;border:1px solid var(--line);border-radius:10px;font-family:ui-monospace,Menlo,monospace;font-size:.9rem;line-height:1.8;text-align:left;overflow-x:auto}
+
+  details{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:.9rem 1.1rem;margin-top:.7rem}
+  details[open]{border-color:var(--brand)}
+  summary{cursor:pointer;font-weight:650;list-style:none;display:flex;justify-content:space-between;gap:1rem;align-items:center}
+  summary::-webkit-details-marker{display:none}
+  summary::after{content:"проверить";font-size:.8rem;color:var(--brand);font-weight:700;white-space:nowrap}
+  details[open] summary::after{content:"скрыть"}
+  summary:focus-visible{outline:3px solid var(--brand);outline-offset:3px;border-radius:6px}
+  .ans{margin-top:.75rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.96rem;color:var(--muted)}
+  .ans b{color:var(--ink)}
+  .drill{display:flex;flex-direction:column;gap:.2rem;margin-top:1rem}
+  .lvl{font-size:.74rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:700;margin:1.3rem 0 .3rem}
+
+  .tablewrap{overflow-x:auto;margin-top:1rem;border:1px solid var(--line);border-radius:11px;background:var(--card)}
+  table{border-collapse:collapse;width:100%;font-size:.95rem}
+  th,td{padding:.6rem .85rem;text-align:left;border-bottom:1px solid var(--line);white-space:nowrap}
+  th{font-weight:700;background:#FAFBFD}
+  tr:last-child td{border-bottom:none}
+
+  ul.traps{list-style:none;margin:1rem 0 0;padding:0;display:flex;flex-direction:column;gap:.7rem}
+  ul.traps li{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:.85rem 1.05rem;padding-left:2.5rem;position:relative;font-size:.97rem}
+  ul.traps li::before{content:"⚠";position:absolute;left:1rem;top:.85rem;color:var(--p1)}
+  ul.traps b{font-weight:700}
+
+  .wrapup{background:var(--brand);color:#fff;border-radius:16px;padding:1.4rem 1.5rem;margin-top:2.4rem}
+  .wrapup h2{color:#fff;margin:0 0 .5rem}
+  .wrapup p{color:#DEE7F5;margin:.4rem 0;font-size:1rem}
+  .wrapup .big-rule{font-size:clamp(.95rem,3.8vw,1.12rem);font-weight:800;color:#fff;margin:.6rem 0;font-family:ui-monospace,Menlo,monospace;line-height:1.6}
+  .wrapup .next{font-size:.95rem;color:#C6D5EE;margin-top:1rem;padding-top:1rem;border-top:1px solid rgba(255,255,255,.2)}
+  .wrapup .next b{color:#fff}
+
+  @media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+<!--LESSON-NAV-TOP--><style>.lnav{--lnav-accent:#3D5AF1}.lnav a{text-decoration:none;font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif}.lnav-top{max-width:820px;margin:0 auto;padding:.75rem clamp(1rem,4vw,1.5rem) .1rem}.lnav-top a{display:inline-flex;align-items:center;gap:.35rem;color:var(--lnav-accent);font-weight:600;font-size:.9rem}.lnav-top a:hover{text-decoration:underline}.lnav-bot{max-width:820px;margin:2.6rem auto 3rem;padding:1.1rem clamp(1rem,4vw,1.5rem) 0;border-top:1px solid #E4E8EF;display:flex;align-items:stretch;gap:.55rem}.lnav-bot a{min-width:0;display:flex;flex-direction:column;justify-content:center;gap:.15rem;border:1px solid #E4E8EF;border-radius:12px;padding:.65rem .85rem;color:#182233;background:#fff;transition:border-color .1s,transform .08s}.lnav-bot a:hover{border-color:var(--lnav-accent);transform:translateY(-1px)}.lnav-bot .prev,.lnav-bot .next{flex:1 1 0}.lnav-bot .next{text-align:right}.lnav-bot .dir{font-size:.72rem;color:#8A93A6;font-weight:600}.lnav-bot .ttl{font-size:.9rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.lnav-bot .to-cat{flex:0 0 auto;flex-direction:row;align-items:center;justify-content:center;color:var(--lnav-accent);font-weight:700;font-size:.85rem;white-space:nowrap}@media(max-width:420px){.lnav-bot .to-cat span{display:none}.lnav-bot .to-cat{padding:.65rem .7rem}}</style><nav class="lnav lnav-top"><a href="./catalog.html">← Все темы</a></nav><!--/LESSON-NAV-TOP-->
+<div class="page">
+
+  <header class="hero">
+    <p class="eyebrow">Геометрия · 7 класс</p>
+    <h1>Построение середины отрезка и серединного перпендикуляра</h1>
+    <p class="tagline">Две одинаковые дуги, одна линейка — и отрезок разделён пополам точно. Без «на глаз» и без делений на линейке.</p>
+  </header>
+
+  <div class="lead-in">
+    <p><b>Где встречается.</b> Иногда отрезок нужно поделить ровно пополам, а линейкой «на глаз» так не сделаешь: она может врать, да и чертежи бывают вообще без чисел. Построение циркулем и линейкой без делений даёт точную середину при любой длине отрезка.</p>
+    <p>Этот навык — основа многих дальнейших построений. Через него находят центр описанной окружности треугольника, строят перпендикуляр к прямой, делят отрезок на равные части. А ещё серединный перпендикуляр — это «множество точек, равноудалённых от двух концов отрезка»; в задачах на геометрическое место точек это выручает.</p>
+  </div>
+
+  <section>
+    <h2>Главный миф: <span class="em">«середину можно поставить на глаз»</span></h2>
+    <p>Скажешь: посмотрел на отрезок, ткнул примерно посередине — вот и середина. Или измерил линейкой и поделил длину пополам. Для аккуратного чертежа этого мало.</p>
+    <p>Нужна <strong>точная конструкция, которую можно доказать</strong>. Не «похоже на середину», а точка, про которую мы объясним, почему обе половины обязаны быть равны. Такую конструкцию и даёт циркуль.</p>
+  </section>
+
+  <section>
+    <h2>Что нужно вспомнить</h2>
+    <div class="recall">
+      <ul>
+        <li><strong>Середина отрезка</strong> — точка <span class="mono">M</span> на отрезке <span class="mono">AB</span>, для которой <span class="mono">AM = MB</span>. Это то, что мы будем получать в конце построения.</li>
+        <li><strong>Задача на построение</strong> решается двумя инструментами: циркулем и линейкой <strong>без делений</strong>. Линейка тут нужна только чтобы проводить прямую, измерять ею нельзя.</li>
+        <li><strong>Циркуль рисует окружность</strong>: все её точки удалены от центра на один и тот же радиус — на раствор циркуля.</li>
+        <li><strong>Перпендикулярные прямые</strong> — прямые, которые пересекаются под прямым углом.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section>
+    <h2>Суть: <span class="em">почему две дуги дают середину</span></h2>
+    <p>Возьмём отрезок <span class="mono">AB</span>. Проведём из точки <span class="mono">A</span> и из точки <span class="mono">B</span> окружности <strong>одинакового радиуса</strong> — раствор циркуля берём больше половины <span class="mono">AB</span>. Такие окружности пересекутся в двух точках.</p>
+    <p>Каждая из этих двух точек одинаково удалена и от <span class="mono">A</span>, и от <span class="mono">B</span> — именно потому, что радиусы были равны. Прямая, проходящая через них, пересекает отрезок ровно в его середине и при этом перпендикулярна отрезку.</p>
+    <p>Если коротко: середину мы не угадываем, а <strong>получаем её как пересечение двух одинаковых дуг</strong>. Равные радиусы гарантируют, что точки пересечения равноудалены от концов, поэтому линия через них честно делит отрезок пополам.</p>
+  </section>
+
+  <section>
+    <h2>Ядро темы</h2>
+
+    <h3>Определение</h3>
+    <p><strong>Серединный перпендикуляр к отрезку <span class="mono">AB</span></strong> — это прямая, перпендикулярная <span class="mono">AB</span> и проходящая через его середину <span class="mono">M</span>.</p>
+    <div class="formula-box">
+      <div class="eq"><span class="w">PQ</span> ⊥ <span class="a">AB</span>,&nbsp; <span class="w">PQ</span> проходит через <span class="b">M</span></div>
+      <div class="note"><span class="w">PQ</span> — серединный перпендикуляр, <span class="b">M</span> — середина отрезка <span class="a">AB</span></div>
+    </div>
+    <p>Два слова в названии — два условия сразу. «Серединный» — значит проходит через середину. «Перпендикуляр» — значит под прямым углом. Одного условия мало, нужны оба.</p>
+
+    <h3>Свойство: почему всё работает</h3>
+    <div class="note">
+      <p><b>Точка равноудалена от концов отрезка тогда и только тогда, когда она лежит на серединном перпендикуляре к этому отрезку.</b></p>
+      <p>Отсюда и растёт построение: точки пересечения дуг равноудалены от <span class="mono">A</span> и <span class="mono">B</span>, значит они обязаны лежать на серединном перпендикуляре. А две точки задают прямую — вот мы её и проводим.</p>
+    </div>
+
+    <h3>Алгоритм построения циркулем и линейкой</h3>
+    <ol class="steps">
+      <li>Поставить ножку циркуля в точку <span class="mono">A</span>, взять раствор <strong>больше половины</strong> отрезка <span class="mono">AB</span> и провести дугу.</li>
+      <li>С тем же <strong>(не меняя!)</strong> раствором поставить ножку в точку <span class="mono">B</span> и провести дугу. Две дуги пересекутся в двух точках — назовём их <span class="mono">P</span> и <span class="mono">Q</span>.</li>
+      <li>Линейкой провести прямую <span class="mono">PQ</span>. Это и есть серединный перпендикуляр.</li>
+      <li>Точка <span class="mono">M</span>, где прямая <span class="mono">PQ</span> пересекает отрезок <span class="mono">AB</span>, — середина отрезка: <span class="mono">AM = MB</span>.</li>
+    </ol>
+
+    <div class="tablewrap">
+      <table>
+        <tr><th>Обозначение</th><th>Что значит</th></tr>
+        <tr><td><b>A, B</b></td><td>концы отрезка</td></tr>
+        <tr><td><b>M</b></td><td>середина отрезка</td></tr>
+        <tr><td><b>P, Q</b></td><td>точки пересечения дуг</td></tr>
+        <tr><td><b>PQ</b></td><td>серединный перпендикуляр</td></tr>
+      </table>
+    </div>
+
+    <div class="note">
+      <p><b>Когда это работает.</b> Раствор циркуля обязательно должен быть <strong>больше половины</strong> длины <span class="mono">AB</span> — иначе дуги просто не встретятся.</p>
+      <p>Радиусы из <span class="mono">A</span> и из <span class="mono">B</span> должны быть <strong>равны</strong>. А линейка используется без делений: только чтобы проводить прямую.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Смотри, как это строится: <span class="em">шаг за шагом</span></h2>
+    <p>Нажимай «шаг вперёд» и смотри, что появляется на чертеже. Захотел вернуться — «шаг назад». Ползунком можно менять раствор циркуля и проверить главное условие: что будет, если взять раствор меньше половины отрезка? Сначала <strong>предскажи</strong>, потом проверь.</p>
+    <div class="diagram">
+      <canvas id="cvBuild" width="640" height="440" aria-label="Пошаговое построение серединного перпендикуляра к отрезку AB циркулем и линейкой"></canvas>
+      <div class="sliders">
+        <label for="sr">раствор R <span id="vr" class="sval">4 см</span><input id="sr" type="range" min="2" max="4.5" step="0.25" value="4" aria-label="Раствор циркуля в сантиметрах"></label>
+      </div>
+      <div class="navrow">
+        <button id="bPrev" class="diag-btn" type="button">← шаг назад</button>
+        <span class="stepbadge" id="bBadge">шаг 0 / 4</span>
+        <button id="bNext" class="diag-btn solid" type="button">шаг вперёд →</button>
+        <button id="bReset" class="diag-btn" type="button">сначала</button>
+      </div>
+      <div class="stepcap" id="bCap"></div>
+    </div>
+    <p class="cap">Отрезок <span class="mono">AB = 6</span> см, значит половина — 3 см. Дуга из <span class="mono">A</span> — <span class="p1w">оранжевая</span>, дуга из <span class="mono">B</span> — <span class="p2w">бирюзовая</span>, прямая <span class="mono">PQ</span> — <span class="whw">фиолетовая</span>. Разный цвет дуг помогает увидеть, что радиусы одинаковые, а точки <span class="mono">P</span> и <span class="mono">Q</span> расположены зеркально относительно отрезка. Из этой зеркальности и следует прямой угол.</p>
+  </section>
+
+  <section>
+    <h2>Разбираем вместе</h2>
+
+    <div class="walk">
+      <p class="q">Пример 1. Дан отрезок AB длиной 6 см. Построить его середину.</p>
+      <ol>
+        <li>Прикидываем половину: <span class="mono">6 : 2 = 3</span> см. Значит, раствор циркуля берём больше 3 см, например <span class="mono">4</span> см. <span class="why">Почему: при растворе меньше половины дуги не пересекутся.</span></li>
+        <li>Из точки <span class="mono">A</span> раствором 4 см проводим дугу выше и ниже отрезка. <span class="why">Почему: нам нужны точки и сверху, и снизу, чтобы получить две точки пересечения.</span></li>
+        <li>Не меняя раствор (ровно 4 см!), из точки <span class="mono">B</span> проводим вторую дугу. <span class="why">Почему: равные радиусы дают точки, равноудалённые от A и B.</span></li>
+        <li>Отмечаем пересечения дуг — точки <span class="mono">P</span> (сверху) и <span class="mono">Q</span> (снизу). Проводим линейкой прямую <span class="mono">PQ</span>.</li>
+        <li>Точка <span class="mono">M</span> — пересечение <span class="mono">PQ</span> и <span class="mono">AB</span> — середина. Проверка: <span class="mono">AM = MB = 3</span> см. <span class="why">Почему: PQ — серединный перпендикуляр, он делит AB пополам.</span></li>
+      </ol>
+      <div class="verdict">Ответ: M — середина AB, AM = MB = 3 см</div>
+    </div>
+
+    <div class="walk" style="margin-top:.8rem">
+      <p class="q">Пример 2. Дан отрезок CD длиной 8 см. Найди пропущенный шаг.</p>
+      <p style="margin-top:0">Ученик записал построение так, но один шаг потерялся. Восстанови его сам, потом сверься.</p>
+      <ol>
+        <li>Половина: <span class="mono">8 : 2 = 4</span> см. Берём раствор 5 см.</li>
+        <li>Из <span class="mono">C</span> провёл дугу сверху и снизу.</li>
+        <li><span class="mono">________________________</span> &nbsp;← <span class="why">впиши пропущенный шаг.</span></li>
+        <li>Провёл прямую через две точки пересечения дуг — получил серединный перпендикуляр и середину.</li>
+      </ol>
+      <details style="margin-top:.5rem"><summary>Сверить свой ответ</summary><div class="ans">Пропущенный шаг: <b>«Тем же раствором 5 см из точки D провёл вторую дугу сверху и снизу»</b>. Без второй дуги пересекаться нечему — одной дуги для построения мало.</div></details>
+    </div>
+
+    <div class="walk" style="margin-top:.8rem">
+      <p class="q">Пример 3. Дан отрезок KL длиной 10 см. Какой наименьший целый раствор циркуля (в см) ещё годится для построения середины?</p>
+      <p style="margin-top:0">Эта задача целиком твоя. Подсказка: сначала найди половину, а потом подумай про слово «больше».</p>
+      <details style="margin-top:.5rem"><summary>Показать ответ</summary><div class="ans">Половина равна <span class="mono">10 : 2 = 5</span> см, раствор должен быть <b>больше</b> 5 см, поэтому наименьший целый годный раствор — <b>6 см</b>. Ровно 5 см не подходит: дуги коснутся в одной точке на самом отрезке, и две разные точки <span class="mono">P</span> и <span class="mono">Q</span> не получатся.</div></details>
+    </div>
+  </section>
+
+  <section>
+    <h2>Тренажёр · раствор циркуля и построение</h2>
+    <p>Задания генерируются заново каждый раз. Прочитай условие, посчитай, впиши ответ. Где спрашивают «да или нет» — так словом и пиши, где спрашивают число — пиши число.</p>
+    <div class="trainer">
+      <div class="tr-task" id="trTask">Отрезок <b>AB = 10 см</b>. Какой наименьший <b>целый</b> раствор циркуля (в см) годится для построения середины?</div>
+      <div class="tr-ctl">
+        <button id="trNew" type="button">🎲 Новая</button>
+        <input id="trAns" type="text" placeholder="ответ" aria-label="Ответ">
+        <button id="trCheck" type="button" class="sec">Проверить</button>
+        <button id="trShow" type="button" class="ghost">Решение</button>
+      </div>
+      <div id="trResult" class="tr-result"></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Проверь себя</h2>
+
+    <p class="lvl">Уровень 1 · понимание</p>
+    <div class="drill">
+      <details><summary>1) Что такое серединный перпендикуляр к отрезку? Под каким углом он пересекает отрезок и через какую его точку проходит?</summary><div class="ans">Это <b>прямая, перпендикулярная отрезку и проходящая через его середину</b>. Пересекает отрезок под углом <b>90°</b>, проходит через <b>середину</b> <span class="mono">M</span>.</div></details>
+      <details><summary>2) Каким должен быть раствор циркуля по сравнению с длиной отрезка, чтобы дуги пересеклись?</summary><div class="ans"><b>Больше половины</b> длины отрезка. Если раствор меньше половины, дуги из <span class="mono">A</span> и из <span class="mono">B</span> не дотянутся друг до друга.</div></details>
+      <details><summary>3) Из скольких точек отрезка нужно проводить дуги и почему?</summary><div class="ans">Из <b>двух</b> — из обоих концов <span class="mono">A</span> и <span class="mono">B</span>. Одной дуги мало: пересекаться будет не с чем, а нам нужны именно точки пересечения двух дуг.</div></details>
+    </div>
+
+    <p class="lvl">Уровень 2 · применение</p>
+    <div class="drill">
+      <details><summary>4) Дан отрезок AB = 7 см. Построй его середину циркулем и линейкой. Какой раствор циркуля ты возьмёшь и почему?</summary><div class="ans">Половина: <span class="mono">7 : 2 = 3,5</span> см. Раствор берём больше 3,5 см — например, <b>5 см</b>: с запасом и удобно отмерить. Дальше по алгоритму: дуга из <span class="mono">A</span>, тем же раствором дуга из <span class="mono">B</span>, прямая через точки пересечения <span class="mono">P</span> и <span class="mono">Q</span>, а <span class="mono">M</span> на отрезке — середина.</div></details>
+      <details><summary>5) Чем середина отрезка отличается от серединного перпендикуляра?</summary><div class="ans">Середина — это <b>точка</b> на самом отрезке. Серединный перпендикуляр — это <b>целая прямая</b> поперёк отрезка. Проговори себе: «прямая <span class="mono">PQ</span> — перпендикуляр, точка <span class="mono">M</span> на отрезке — середина».</div></details>
+    </div>
+
+    <p class="lvl">Уровень 3 · анализ</p>
+    <div class="drill">
+      <details><summary>6) Найди ошибку. Ученик взял раствор циркуля 2 см для отрезка длиной 6 см и удивился, что дуги не пересеклись. В чём дело и что менять?</summary><div class="ans">Половина отрезка равна <span class="mono">6 : 2 = 3</span> см, а раствор он взял <span class="mono">2</span> см — <b>меньше половины</b>. Дуги из <span class="mono">A</span> и из <span class="mono">B</span> просто не дотягиваются друг до друга. Нужно <b>увеличить раствор</b> и взять его заведомо больше 3 см, например 4 см.</div></details>
+      <details><summary>7) Что изменится в построении, если взять раствор ровно равный половине отрезка?</summary><div class="ans">Дуги <b>коснутся в одной точке</b> — и эта точка окажется на самом отрезке, ровно в его середине. Двух разных точек <span class="mono">P</span> и <span class="mono">Q</span> не получится, а по одной точке прямую не проведёшь. Поэтому в алгоритме и написано «больше половины», а не «не меньше половины».</div></details>
+      <details><summary>8) Найди ошибку. Ученик провёл дугу из A раствором 4 см, а потом подкрутил циркуль и провёл дугу из B раствором 5 см. Дуги пересеклись. Годится ли такое построение?</summary><div class="ans"><b>Нет.</b> Дуги-то пересеклись, но радиусы были <b>разные</b>, значит точки пересечения уже не равноудалены от <span class="mono">A</span> и <span class="mono">B</span>. По свойству серединного перпендикуляра на нём лежат только равноудалённые точки — а эти не такие. Прямая через них через середину не пройдёт. Правило простое: провёл первую дугу — раствор не трогай.</div></details>
+      <details><summary>9) Почему получившаяся прямая обязательно перпендикулярна отрезку?</summary><div class="ans">Из <b>симметрии</b> картинки. Две дуги одинакового радиуса дают точки <span class="mono">P</span> и <span class="mono">Q</span>, расположенные зеркально относительно прямой <span class="mono">PQ</span>: и <span class="mono">A</span>, и <span class="mono">B</span> удалены от каждой из них одинаково. Такая зеркально-симметричная фигура и даёт прямой угол в точке <span class="mono">M</span>.</div></details>
+    </div>
+  </section>
+
+  <section>
+    <h2>Ловушки</h2>
+    <ul class="traps">
+      <li><b>Берут раствор меньше половины отрезка.</b> Тогда дуги из <span class="mono">A</span> и из <span class="mono">B</span> не дотягиваются друг до друга и не пересекаются. <i>Как избежать:</i> сначала прикинь половину длины и бери раствор заведомо больше неё.</li>
+      <li><b>Меняют раствор циркуля между дугами.</b> Если из <span class="mono">A</span> радиус один, а из <span class="mono">B</span> другой, точки пересечения уже не будут равноудалены от концов, и прямая не пройдёт через середину. <i>Как избежать:</i> провёл первую дугу — не трогай винт и раствор циркуля, сразу строй вторую.</li>
+      <li><b>Строят дугу только из одного конца.</b> Одной дуги мало: нужны дуги и из <span class="mono">A</span>, и из <span class="mono">B</span>, чтобы получить точки пересечения. <i>Как избежать:</i> помни — две дуги, из обоих концов.</li>
+      <li><b>Путают середину и серединный перпендикуляр.</b> Середина — это точка на отрезке; серединный перпендикуляр — это целая прямая поперёк отрезка. <i>Как избежать:</i> проговори вслух: «прямая <span class="mono">PQ</span> — перпендикуляр, точка <span class="mono">M</span> на отрезке — середина».</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Объясни своими словами</h2>
+    <p>Закрой урок и ответь вслух: себе, родителю или чат-боту. Сказал связно — тема твоя.</p>
+    <div class="drill">
+      <details><summary>Каким должен быть раствор циркуля по сравнению с длиной отрезка, чтобы дуги пересеклись?</summary><div class="ans">Больше половины длины отрезка.</div></details>
+      <details><summary>Из скольких точек отрезка нужно проводить дуги и почему?</summary><div class="ans">Из двух — из обоих концов. Нужны точки пересечения двух дуг, одной дуги для этого мало.</div></details>
+      <details><summary>Чем отличается середина отрезка от серединного перпендикуляра?</summary><div class="ans">Середина — точка на отрезке. Серединный перпендикуляр — прямая, которая проходит через эту точку под прямым углом к отрезку.</div></details>
+    </div>
+  </section>
+
+  <div class="wrapup">
+    <h2>Запомни главное</h2>
+    <p class="big-rule">две равные дуги из A и B (R &gt; AB : 2) → точки P и Q → прямая PQ ⊥ AB через середину M</p>
+    <p>Две равные дуги из концов отрезка (раствор больше половины) дают две точки, а прямая через них делит отрезок пополам под прямым углом.</p>
+    <p class="next">👉 Дальше — <b>построение перпендикуляра к прямой</b>. Идея там та же самая: две равные дуги дают две равноудалённые точки, а прямая через них встаёт под прямым углом. Так что этот приём ты уже наполовину знаешь.</p>
+  </div>
+
+</div>
+
+<script>
+/* ── Пошаговое построение серединного перпендикуляра ───────────── */
+(function(){
+  var cv=document.getElementById('cvBuild'); if(!cv) return;
+  var ctx=cv.getContext('2d'),
+      sr=document.getElementById('sr'), vr=document.getElementById('vr'),
+      cap=document.getElementById('bCap'), badge=document.getElementById('bBadge'),
+      bPrev=document.getElementById('bPrev'), bNext=document.getElementById('bNext'), bReset=document.getElementById('bReset');
+  var AB=6;                       /* длина отрезка в «см» */
+  var MAXSTEP=4, step=0, prog=1, raf=null;
+  var W=640,H=440,dpr=1;
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  var CAPS=[
+    '<b>Дано.</b> Отрезок AB длиной 6 см. Половина — 3 см, значит раствор циркуля берём больше 3 см.',
+    '<b>Шаг 1.</b> Ножку циркуля в точку A, раствор R — и проводим дугу выше и ниже отрезка.',
+    '<b>Шаг 2.</b> Не меняя раствор, ставим ножку в точку B и проводим вторую дугу. Дуги пересеклись в точках P и Q.',
+    '<b>Шаг 3.</b> Линейкой проводим прямую через P и Q. Это и есть серединный перпендикуляр к AB.',
+    '<b>Шаг 4.</b> Точка M — пересечение PQ и AB. Это середина: AM = MB = 3 см, а угол в точке M прямой.'
+  ];
+  var CAPS_FAIL=[
+    '<b>Дано.</b> Отрезок AB длиной 6 см. Половина — 3 см, а раствор сейчас меньше: смотри, что выйдет.',
+    '<b>Шаг 1.</b> Дуга из точки A проведена, но радиус мал — она не дотягивается до середины.',
+    '<b>Шаг 2.</b> Дуга из B тоже проведена, но <b>дуги не пересеклись</b>: раствор меньше половины отрезка. Увеличь R ползунком.',
+    '<b>Шаг 3.</b> Проводить нечего: точек P и Q нет. Построение остановилось.',
+    '<b>Шаг 4.</b> Середину так не получить. Раствор обязан быть больше половины отрезка — это условие построения.'
+  ];
+
+  function css(v){ return getComputedStyle(document.documentElement).getPropertyValue(v).trim(); }
+  function numR(x){ var s=(Math.round(x*100)/100).toString(); return s.replace('.',','); }
+
+  function resize(){
+    var c=cv.clientWidth||640;
+    dpr=Math.min(window.devicePixelRatio||1,2);
+    W=c; H=Math.round(Math.max(280,c*0.66));
+    cv.width=W*dpr; cv.height=H*dpr; cv.style.height=H+'px';
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+  }
+
+  function dot(x,y,color,label,dx,dy,fs){
+    ctx.beginPath(); ctx.arc(x,y,5,0,6.284); ctx.fillStyle=color; ctx.fill();
+    ctx.fillStyle=color; ctx.font='700 '+(fs+2)+'px ui-monospace,Menlo,monospace';
+    ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.fillText(label,x+dx,y+dy);
+  }
+
+  function draw(){
+    var R=+sr.value;
+    vr.textContent=numR(R)+' см';
+    var half=AB/2, ok=(R>half+1e-9), touch=(Math.abs(R-half)<1e-9);
+    var d=W*0.46, u=d/AB;                       /* пикселей в одном «см» */
+    var cx=W/2, cy=H/2;
+    var xA=cx-d/2, xB=cx+d/2;
+    var fs=Math.max(10,Math.min(14,W*0.023));
+    var h = ok ? Math.sqrt(R*R-half*half)*u : 0;   /* высота точек P и Q в px */
+    var alpha = ok ? Math.acos(half/R) : 0;        /* угол до точки пересечения */
+    var spread = 0.55;                             /* насколько дуга длиннее пересечения */
+
+    ctx.clearRect(0,0,W,H);
+    ctx.lineJoin='round'; ctx.lineCap='round';
+
+    /* сам отрезок AB — виден всегда */
+    ctx.strokeStyle=css('--ink'); ctx.lineWidth=4;
+    ctx.beginPath(); ctx.moveTo(xA,cy); ctx.lineTo(xB,cy); ctx.stroke();
+    ctx.lineWidth=1;
+    dot(xA,cy,css('--ink'),'A',-14,-14,fs);
+    dot(xB,cy,css('--ink'),'B',14,-14,fs);
+
+    /* подпись длины — у нижнего края, чтобы не мешать точке M */
+    ctx.fillStyle=css('--muted'); ctx.font=fs+'px ui-monospace,Menlo,monospace';
+    ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.fillText('AB = 6 см', cx, H-12);
+
+    /* какая часть текущего шага уже нарисована */
+    function pOf(s){ return step>s ? 1 : (step===s ? prog : 0); }
+
+    /* шаг 1: дуга из A */
+    var a1=pOf(1);
+    if(a1>0){
+      var sweepA = ok ? (alpha+spread) : 1.0;
+      ctx.strokeStyle=css('--p1'); ctx.lineWidth=2.5;
+      ctx.beginPath(); ctx.arc(xA,cy,R*u,-sweepA*a1,sweepA*a1); ctx.stroke();
+      /* радиус пунктиром */
+      ctx.setLineDash([4,4]); ctx.lineWidth=1.2;
+      ctx.beginPath(); ctx.moveTo(xA,cy); ctx.lineTo(xA+R*u*Math.cos(-sweepA*a1),cy+R*u*Math.sin(-sweepA*a1)); ctx.stroke();
+      ctx.setLineDash([]);
+      if(a1>0.6){
+        ctx.fillStyle=css('--p1'); ctx.font='700 '+fs+'px ui-monospace,Menlo,monospace';
+        ctx.textAlign='left';
+        ctx.fillText('R = '+numR(R), xA+8, cy-R*u*0.45);
+      }
+    }
+
+    /* шаг 2: дуга из B */
+    var a2=pOf(2);
+    if(a2>0){
+      var sweepB = ok ? (alpha+spread) : 1.0;
+      ctx.strokeStyle=css('--p2'); ctx.lineWidth=2.5;
+      ctx.beginPath(); ctx.arc(xB,cy,R*u,Math.PI-sweepB*a2,Math.PI+sweepB*a2); ctx.stroke();
+      ctx.setLineDash([4,4]); ctx.lineWidth=1.2;
+      ctx.beginPath(); ctx.moveTo(xB,cy); ctx.lineTo(xB+R*u*Math.cos(Math.PI+sweepB*a2),cy+R*u*Math.sin(Math.PI+sweepB*a2)); ctx.stroke();
+      ctx.setLineDash([]);
+      if(a2>0.6){
+        ctx.fillStyle=css('--p2'); ctx.font='700 '+fs+'px ui-monospace,Menlo,monospace';
+        ctx.textAlign='right';
+        ctx.fillText('R = '+numR(R), xB-8, cy-R*u*0.45);
+      }
+      /* точки P и Q появляются, когда дуги реально пересеклись */
+      if(a2>=1 && ok){
+        ctx.lineWidth=1;
+        dot(cx,cy-h,css('--wh'),'P',0,-16,fs);
+        dot(cx,cy+h,css('--wh'),'Q',0,16,fs);
+      }
+      if(a2>=1 && !ok){
+        ctx.fillStyle=css('--no'); ctx.font='700 '+fs+'px ui-monospace,Menlo,monospace';
+        ctx.textAlign='center';
+        ctx.fillText(touch?'дуги лишь коснулись — точка одна':'дуги не пересеклись', cx, 16);
+      }
+    }
+
+    /* шаг 3: прямая PQ */
+    var a3=pOf(3);
+    if(a3>0 && ok){
+      var top=cy-h, bot=cy+h, ext=Math.min(34,H*0.09);
+      var y1=top-ext, y2=bot+ext;
+      var yy=y1+(y2-y1)*a3;
+      ctx.strokeStyle=css('--wh'); ctx.lineWidth=2.5;
+      ctx.beginPath(); ctx.moveTo(cx,y1); ctx.lineTo(cx,yy); ctx.stroke();
+      ctx.lineWidth=1;
+      dot(cx,cy-h,css('--wh'),'P',0,-16,fs);
+      dot(cx,cy+h,css('--wh'),'Q',0,16,fs);
+    }
+
+    /* шаг 4: середина M, прямой угол, равные половины */
+    var a4=pOf(4);
+    if(a4>0 && ok){
+      var sq=Math.max(9,fs);
+      ctx.strokeStyle=css('--ok'); ctx.lineWidth=1.8;
+      ctx.beginPath(); ctx.moveTo(cx+sq,cy); ctx.lineTo(cx+sq,cy-sq); ctx.lineTo(cx,cy-sq); ctx.stroke();
+      /* штрихи равенства половин */
+      function tick(x){
+        ctx.beginPath(); ctx.moveTo(x-3,cy-8); ctx.lineTo(x+3,cy+8); ctx.stroke();
+      }
+      ctx.lineWidth=2.4; ctx.strokeStyle=css('--ok');
+      tick((xA+cx)/2); tick((cx+xB)/2);
+      ctx.lineWidth=1;
+      dot(cx,cy,css('--ok'),'M',-16,20,fs);
+      if(a4>=1){
+        ctx.fillStyle=css('--ok'); ctx.font='700 '+fs+'px ui-monospace,Menlo,monospace';
+        ctx.textAlign='center';
+        ctx.fillText('AM = MB = 3 см', cx, 16);
+      }
+    }
+
+    /* подпись шага */
+    var arr = ok ? CAPS : CAPS_FAIL;
+    cap.innerHTML = arr[step];
+    badge.textContent='шаг '+step+' / '+MAXSTEP;
+    bPrev.disabled=(step===0);
+    bNext.disabled=(step===MAXSTEP);
+  }
+
+  function animateTo(){
+    if(raf) cancelAnimationFrame(raf);
+    if(reduce){ prog=1; draw(); return; }
+    prog=0;
+    var t0=null;
+    function tick(ts){
+      if(t0===null) t0=ts;
+      prog=Math.min(1,(ts-t0)/520);
+      draw();
+      if(prog<1) raf=requestAnimationFrame(tick); else raf=null;
+    }
+    raf=requestAnimationFrame(tick);
+  }
+
+  bNext.addEventListener('click',function(){ if(step<MAXSTEP){ step++; animateTo(); } });
+  bPrev.addEventListener('click',function(){ if(step>0){ step--; prog=1; draw(); } });
+  bReset.addEventListener('click',function(){ step=0; prog=1; draw(); });
+  sr.addEventListener('input',function(){ prog=1; draw(); });
+  window.addEventListener('resize',function(){ resize(); draw(); });
+  resize(); draw();
+})();
+</script>
+
+<script>
+/* ── Тренажёр ──────────────────────────────────────────────────── */
+(function(){
+  var taskEl=document.getElementById('trTask'), ansEl=document.getElementById('trAns'), resEl=document.getElementById('trResult');
+  if(!taskEl) return;
+  function ri(a,b){ return Math.floor(Math.random()*(b-a+1))+a; }
+  function num(x){ var s=(Math.round(x*100)/100).toString(); return s.replace('-','−').replace('.',','); }
+  var cur=null;
+
+  function generate(){
+    var r=Math.random(), n, R, half;
+    if(r<0.26){                                     /* наименьший целый годный раствор */
+      n=ri(4,20);
+      cur={type:'minR',n:n,ans:Math.floor(n/2)+1};
+      taskEl.innerHTML='Отрезок <b>AB = '+n+' см</b>. Какой наименьший <b>целый</b> раствор циркуля (в см) годится для построения середины?';
+    } else if(r<0.52){                              /* годится ли данный раствор */
+      n=ri(4,20); half=n/2;
+      R=(Math.random()<0.34)? Math.round(half*2)/2 : ri(1,14);
+      cur={type:'fit',n:n,R:R,ans:(R>half)};
+      taskEl.innerHTML='Отрезок <b>AB = '+n+' см</b>, ученик взял раствор циркуля <b>'+num(R)+' см</b>. Годится ли такой раствор для построения середины? Ответь «да» или «нет».';
+    } else if(r<0.74){                              /* сколько точек пересечения */
+      n=ri(4,20); half=n/2;
+      var pick=Math.random();
+      R = pick<0.3 ? Math.round(half*2)/2 : (pick<0.65 ? half+ri(1,5) : Math.max(1,half-ri(1,3)));
+      cur={type:'cross',n:n,R:R,ans:(R>half?2:(R===half?1:0))};
+      taskEl.innerHTML='Отрезок <b>AB = '+n+' см</b>, обе дуги проведены одним раствором <b>'+num(R)+' см</b>. Сколько точек пересечения дуг получится? Ответь числом.';
+    } else if(r<0.9){                               /* половины после построения */
+      n=ri(2,14)*2;
+      cur={type:'half',n:n,ans:n/2};
+      taskEl.innerHTML='Серединный перпендикуляр к отрезку <b>AB = '+n+' см</b> построен и пересёк отрезок в точке <b>M</b>. Чему равно <b>AM</b> (в см)?';
+    } else {                                        /* краевой: разные радиусы */
+      n=ri(4,16); var r1=Math.floor(n/2)+1, r2=r1+ri(1,3);
+      cur={type:'diff',n:n,r1:r1,r2:r2,ans:false};
+      taskEl.innerHTML='Отрезок <b>AB = '+n+' см</b>. Дугу из <b>A</b> провели раствором <b>'+r1+' см</b>, а дугу из <b>B</b> — раствором <b>'+r2+' см</b>. Пройдёт ли прямая через их пересечения через середину отрезка? Ответь «да» или «нет».';
+    }
+    resEl.innerHTML=''; ansEl.value='';
+  }
+
+  function solHTML(){
+    var q=cur, h='<div class="sol">';
+    if(q.type==='minR'){
+      h+='Половина отрезка: '+q.n+' : 2 = '+num(q.n/2)+' см<br>';
+      h+='Раствор должен быть строго больше половины<br>';
+      h+='Наименьшее целое, которое больше '+num(q.n/2)+', это <b>'+q.ans+'</b> см';
+    } else if(q.type==='fit'){
+      h+='Половина отрезка: '+q.n+' : 2 = '+num(q.n/2)+' см<br>';
+      h+='Сравниваем: '+num(q.R)+(q.R>q.n/2?' > ':(q.R===q.n/2?' = ':' < '))+num(q.n/2)+'<br>';
+      h+= q.ans ? 'раствор больше половины → <b>да, годится</b>'
+                : (q.R===q.n/2 ? 'раствор ровно половина → дуги лишь коснутся в одной точке, двух точек P и Q не будет → <b>нет, не годится</b>'
+                               : 'раствор меньше половины → дуги не дотянутся друг до друга → <b>нет, не годится</b>');
+    } else if(q.type==='cross'){
+      h+='Половина отрезка: '+q.n+' : 2 = '+num(q.n/2)+' см<br>';
+      h+='Сравниваем раствор с половиной: '+num(q.R)+(q.R>q.n/2?' > ':(q.R===q.n/2?' = ':' < '))+num(q.n/2)+'<br>';
+      h+= q.ans===2 ? 'раствор больше половины → дуги пересекаются в <b>2</b> точках (это P и Q)'
+        : q.ans===1 ? 'раствор ровно половина → дуги касаются в <b>1</b> точке, на самом отрезке'
+                    : 'раствор меньше половины → дуги не встретятся, точек пересечения <b>0</b>';
+    } else if(q.type==='half'){
+      h+='Серединный перпендикуляр проходит через середину отрезка<br>';
+      h+='Значит M — середина, и AM = MB = AB : 2<br>';
+      h+='AM = '+q.n+' : 2 = <b>'+num(q.ans)+'</b> см';
+    } else {
+      h+='Радиусы разные: '+q.r1+' см и '+q.r2+' см<br>';
+      h+='Точки пересечения равноудалены от концов только при равных радиусах<br>';
+      h+='Здесь равенства нет → прямая через середину не пройдёт → <b>нет</b><br>';
+      h+='Правило: провёл первую дугу — раствор не меняй.';
+    }
+    return h+'</div>';
+  }
+
+  function check(){
+    var raw=ansEl.value.trim();
+    if(raw===''){ resEl.innerHTML='<span class="bad">Впиши ответ или нажми «Решение».</span>'; return; }
+    var good;
+    if(cur.type==='fit'||cur.type==='diff'){
+      var yes=/^\s*(да|верно|годится|пройдёт|проидет)/i.test(raw), no=/^\s*(нет|не\b)/i.test(raw);
+      good=(cur.ans && yes) || (!cur.ans && no);
+    } else {
+      var got=parseFloat(raw.replace(/−/g,'-').replace(',','.').replace(/\s/g,''));
+      good=(!isNaN(got) && Math.abs(got-cur.ans)<0.001);
+    }
+    resEl.innerHTML=(good?'<span class="ok">✓ Верно!</span>':'<span class="bad">✗ Пока не то — посмотри решение.</span>')+solHTML();
+  }
+
+  document.getElementById('trNew').addEventListener('click',function(){ generate(); ansEl.focus(); });
+  document.getElementById('trCheck').addEventListener('click',check);
+  document.getElementById('trShow').addEventListener('click',function(){ resEl.innerHTML=solHTML(); });
+  ansEl.addEventListener('keydown',function(e){ if(e.key==='Enter') check(); });
+  cur={type:'minR',n:10,ans:6};                    /* совпадает со стартовым условием */
+})();
+</script>
+<!--LESSON-NAV-BOT--><nav class="lnav lnav-bot"><a class="prev" href="./geo7-postroenie-bissektrisy.html"><span class="dir">← Предыдущая</span><span class="ttl">Построение биссектрисы угла</span></a><a class="to-cat" href="./catalog.html">📚 <span>Все темы</span></a><a class="next" href="./geo7-postroenie-perpendikulyara.html"><span class="dir">Следующая →</span><span class="ttl">Построение перпендикуляра к прямой</span></a></nav><!--/LESSON-NAV-BOT-->

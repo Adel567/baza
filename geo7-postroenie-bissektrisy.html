@@ -1,0 +1,765 @@
+<!doctype html>
+<!-- humanized: humanizer-ru, 2026-09-04, тире возвращено -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Построение биссектрисы угла, геометрия 7 класс</title>
+<style>
+  :root{
+    --paper:#F6F7F9; --card:#FFFFFF; --ink:#1D2530; --muted:#606B7A; --line:#E3E7EE;
+    --brand:#2E5AAC; --brand-soft:#E4EBF7;
+    --p1:#E27C2C; --p1-soft:#FBEEDF;    /* всё, что связано с точкой A */
+    --p2:#159A8A; --p2-soft:#DEF3F0;    /* всё, что связано с точкой B */
+    --acc:#7A4FBF; --acc-soft:#EDE6F8;  /* биссектриса OC */
+    --ok:#1E8E5A; --no:#C23B3B;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper)}
+  .page{max-width:720px;margin:0 auto;padding:clamp(1.4rem,4vw,3rem) clamp(1.1rem,4vw,2rem) 4.5rem;
+    color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:17.5px;line-height:1.68;-webkit-font-smoothing:antialiased}
+  .mono{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-variant-numeric:tabular-nums;font-weight:600}
+
+  .hero{border-bottom:3px solid var(--brand);padding-bottom:1.4rem;margin-bottom:1.8rem}
+  .eyebrow{font-size:.74rem;letter-spacing:.15em;text-transform:uppercase;color:var(--brand);font-weight:700;margin:0 0 .55rem}
+  h1{font-size:clamp(1.9rem,6vw,2.8rem);line-height:1.05;margin:0;font-weight:800;letter-spacing:-.02em;text-wrap:balance}
+  .tagline{font-size:1.12rem;color:var(--muted);margin:.85rem 0 0;text-wrap:pretty}
+
+  section{margin-top:2.4rem}
+  h2{font-size:1.5rem;margin:0 0 .3rem;font-weight:780;letter-spacing:-.015em;text-wrap:balance}
+  h2 .em{color:var(--brand)}
+  h3{font-size:1.08rem;margin:1.4rem 0 .2rem;font-weight:750}
+  p{margin:.7rem 0}
+  strong{font-weight:680}
+  .aw{color:var(--p1);font-weight:800} .bw{color:var(--p2);font-weight:800} .cw{color:var(--acc);font-weight:800}
+
+  .lead-in{background:var(--brand-soft);border-radius:14px;padding:1.1rem 1.3rem;font-size:1.02rem}
+  .lead-in p{margin:.4rem 0}
+  .lead-in b{color:var(--brand)}
+
+  .formula-box{background:var(--ink);color:#fff;border-radius:14px;padding:1.3rem;text-align:center;margin-top:1rem}
+  .formula-box .eq{font-family:ui-monospace,Menlo,monospace;font-size:clamp(1.05rem,4.2vw,1.6rem);font-weight:700;line-height:1.5}
+  .formula-box .eq .a{color:#F0A45E} .formula-box .eq .b{color:#6FD3C6} .formula-box .eq .c{color:#B79BE8}
+  .formula-box .note{font-size:.9rem;color:#AEB8C6;margin:.7rem 0 0}
+
+  .note{border-left:4px solid var(--brand);background:var(--brand-soft);border-radius:0 10px 10px 0;padding:.8rem 1.1rem;margin-top:1rem;font-size:.98rem}
+  .note b{color:var(--brand)}
+  .note p{margin:.35rem 0}
+
+  .recall{background:var(--card);border:1px dashed var(--line);border-radius:14px;padding:1rem 1.2rem;margin-top:1rem}
+  .recall ul{margin:.4rem 0 0;padding-left:1.2rem;display:flex;flex-direction:column;gap:.35rem;font-size:.97rem}
+
+  /* Алгоритм */
+  ol.algo{counter-reset:st;list-style:none;margin:1rem 0 0;padding:0;display:flex;flex-direction:column;gap:.6rem}
+  ol.algo li{counter-increment:st;background:var(--card);border:1px solid var(--line);border-radius:12px;
+    padding:.85rem 1.05rem .85rem 3.1rem;position:relative;font-size:.99rem}
+  ol.algo li::before{content:counter(st);position:absolute;left:.85rem;top:.8rem;width:1.6rem;height:1.6rem;
+    border-radius:50%;background:var(--brand);color:#fff;font-weight:800;font-size:.85rem;
+    display:flex;align-items:center;justify-content:center}
+  ol.algo li b{font-weight:750}
+
+  /* Диаграмма / анимация */
+  .diagram{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:1.2rem;margin-top:1rem}
+  .diagram canvas{width:100%;height:auto;display:block;border-radius:8px}
+  .stepbar{display:flex;gap:.5rem;flex-wrap:wrap;align-items:center;justify-content:center;margin-top:.9rem}
+  .stepbar button{font:inherit;font-weight:700;font-size:.9rem;cursor:pointer;border:1px solid var(--brand);
+    background:transparent;color:var(--brand);border-radius:9px;padding:.5rem .9rem}
+  .stepbar button.solid{background:var(--brand);color:#fff}
+  .stepbar button[disabled]{opacity:.38;cursor:default}
+  .stepbar button:focus-visible{outline:3px solid var(--brand);outline-offset:2px}
+  .stepnum{font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:.9rem;color:var(--muted);min-width:5ch;text-align:center}
+  .dots{display:flex;gap:.35rem;justify-content:center;margin-top:.7rem}
+  .dots i{width:9px;height:9px;border-radius:50%;background:var(--line);display:block}
+  .dots i.on{background:var(--brand)}
+  .steptext{margin:.9rem 0 0;background:var(--brand-soft);border-radius:10px;padding:.75rem 1rem;font-size:.97rem;min-height:3.4rem}
+  .steptext b{color:var(--brand)}
+  .cap{font-size:.9rem;color:var(--muted)}
+
+  .walk{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.15rem 1.3rem;margin-top:1rem}
+  .walk .q{font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1rem;margin:0 0 .9rem;padding-bottom:.7rem;border-bottom:1px solid var(--line);line-height:1.5}
+  .walk ol{margin:0;padding-left:1.2rem;display:flex;flex-direction:column;gap:.55rem}
+  .walk li{font-size:.95rem}
+  .walk .why{color:var(--muted);font-style:italic}
+  .verdict{margin-top:1rem;padding:.7rem 1rem;background:var(--brand-soft);border-radius:10px;font-weight:650;color:var(--brand);font-family:ui-monospace,Menlo,monospace}
+
+  /* Тренажёр */
+  .trainer{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.2rem 1.3rem;margin-top:1rem}
+  .tr-task{font-size:clamp(1rem,4vw,1.08rem);padding:1rem;background:var(--brand-soft);border-radius:10px;font-weight:600;line-height:1.55}
+  .tr-task .st{display:block;font-weight:700;color:var(--brand);font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;margin-bottom:.35rem}
+  .tr-opts{display:flex;flex-direction:column;gap:.5rem;margin-top:.9rem}
+  .tr-opts button{font:inherit;font-size:.95rem;text-align:left;cursor:pointer;border:1px solid var(--line);
+    background:#FCFDFE;color:var(--ink);border-radius:10px;padding:.65rem .9rem;line-height:1.5}
+  .tr-opts button:hover{border-color:var(--brand)}
+  .tr-opts button:focus-visible{outline:3px solid var(--brand);outline-offset:2px}
+  .tr-opts button.good{border-color:var(--ok);background:#EAF6F0;font-weight:650}
+  .tr-opts button.bad{border-color:var(--no);background:#FBEDED}
+  .tr-opts button[disabled]{cursor:default}
+  .tr-ctl{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:1rem;align-items:center;justify-content:center}
+  .tr-ctl button{font:inherit;font-weight:700;font-size:.9rem;cursor:pointer;border:none;border-radius:9px;padding:.55rem .95rem;color:#fff;background:var(--brand)}
+  .tr-ctl button.ghost{background:transparent;color:var(--brand);border:1px solid var(--brand)}
+  .tr-ctl button:focus-visible{outline:3px solid var(--brand);outline-offset:2px}
+  .tr-result{margin-top:.9rem;font-size:.96rem;min-height:1.2rem}
+  .tr-result .ok{color:var(--ok);font-weight:700} .tr-result .bad{color:var(--no);font-weight:700}
+  .tr-result .sol{margin-top:.6rem;padding:.8rem 1rem;background:#FCFDFE;border:1px solid var(--line);border-radius:10px;font-size:.93rem;line-height:1.7}
+  .tr-score{text-align:center;font-size:.86rem;color:var(--muted);margin-top:.7rem;font-family:ui-monospace,Menlo,monospace}
+
+  details{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:.9rem 1.1rem;margin-top:.7rem}
+  details[open]{border-color:var(--brand)}
+  summary{cursor:pointer;font-weight:650;list-style:none;display:flex;justify-content:space-between;gap:1rem;align-items:center}
+  summary::-webkit-details-marker{display:none}
+  summary::after{content:"проверить";font-size:.8rem;color:var(--brand);font-weight:700;white-space:nowrap}
+  details[open] summary::after{content:"скрыть"}
+  summary:focus-visible{outline:3px solid var(--brand);outline-offset:3px;border-radius:6px}
+  .ans{margin-top:.75rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.96rem;color:var(--muted)}
+  .ans b{color:var(--ink)}
+  .drill{display:flex;flex-direction:column;gap:.2rem;margin-top:1rem}
+  .lvl{font-size:.74rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:700;margin:1.3rem 0 .3rem}
+
+  .tablewrap{overflow-x:auto;margin-top:1rem;border:1px solid var(--line);border-radius:11px;background:var(--card)}
+  table{border-collapse:collapse;width:100%;font-size:.95rem}
+  th,td{padding:.6rem .85rem;text-align:left;border-bottom:1px solid var(--line);white-space:nowrap}
+  th{font-weight:700;background:#FAFBFD}
+  tr:last-child td{border-bottom:none}
+
+  ul.traps{list-style:none;margin:1rem 0 0;padding:0;display:flex;flex-direction:column;gap:.7rem}
+  ul.traps li{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:.85rem 1.05rem;padding-left:2.5rem;position:relative;font-size:.97rem}
+  ul.traps li::before{content:"⚠";position:absolute;left:1rem;top:.85rem;color:var(--p1)}
+  ul.traps b{font-weight:700}
+
+  .wrapup{background:var(--brand);color:#fff;border-radius:16px;padding:1.4rem 1.5rem;margin-top:2.4rem}
+  .wrapup h2{color:#fff;margin:0 0 .5rem}
+  .wrapup p{color:#DEE7F5;margin:.4rem 0;font-size:1rem}
+  .wrapup .big-rule{font-size:clamp(.95rem,4vw,1.15rem);font-weight:800;color:#fff;margin:.6rem 0;font-family:ui-monospace,Menlo,monospace}
+  .wrapup .next{font-size:.95rem;color:#C6D5EE;margin-top:1rem;padding-top:1rem;border-top:1px solid rgba(255,255,255,.2)}
+  .wrapup .next b{color:#fff}
+
+  @media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+<!--LESSON-NAV-TOP--><style>.lnav{--lnav-accent:#3D5AF1}.lnav a{text-decoration:none;font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif}.lnav-top{max-width:820px;margin:0 auto;padding:.75rem clamp(1rem,4vw,1.5rem) .1rem}.lnav-top a{display:inline-flex;align-items:center;gap:.35rem;color:var(--lnav-accent);font-weight:600;font-size:.9rem}.lnav-top a:hover{text-decoration:underline}.lnav-bot{max-width:820px;margin:2.6rem auto 3rem;padding:1.1rem clamp(1rem,4vw,1.5rem) 0;border-top:1px solid #E4E8EF;display:flex;align-items:stretch;gap:.55rem}.lnav-bot a{min-width:0;display:flex;flex-direction:column;justify-content:center;gap:.15rem;border:1px solid #E4E8EF;border-radius:12px;padding:.65rem .85rem;color:#182233;background:#fff;transition:border-color .1s,transform .08s}.lnav-bot a:hover{border-color:var(--lnav-accent);transform:translateY(-1px)}.lnav-bot .prev,.lnav-bot .next{flex:1 1 0}.lnav-bot .next{text-align:right}.lnav-bot .dir{font-size:.72rem;color:#8A93A6;font-weight:600}.lnav-bot .ttl{font-size:.9rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.lnav-bot .to-cat{flex:0 0 auto;flex-direction:row;align-items:center;justify-content:center;color:var(--lnav-accent);font-weight:700;font-size:.85rem;white-space:nowrap}@media(max-width:420px){.lnav-bot .to-cat span{display:none}.lnav-bot .to-cat{padding:.65rem .7rem}}</style><nav class="lnav lnav-top"><a href="./catalog.html">← Все темы</a></nav><!--/LESSON-NAV-TOP-->
+<div class="page">
+
+  <header class="hero">
+    <p class="eyebrow">Геометрия · 7 класс</p>
+    <h1>Построение биссектрисы угла</h1>
+    <p class="tagline">Разделить угол ровно пополам без транспортира: три дуги циркулем, одна линия линейкой. За точность тут отвечают равные треугольники.</p>
+  </header>
+
+  <div class="lead-in">
+    <p><b>Где встречается.</b> Биссектриса — это луч, который делит угол ровно пополам. Построить её циркулем и линейкой — базовый навык геометрии, без него дальше никуда.</p>
+    <p>Тот же приём пойдёт дальше: построение треугольника по заданным элементам, вписанная окружность, черчение, инженерные эскизы. Выучил четыре шага один раз — пользуешься ими весь курс.</p>
+  </div>
+
+  <section>
+    <h2>Главный миф: <span class="em">«померил транспортиром — взял половину»</span></h2>
+    <p>Звучит логично: измерил угол, разделил градусы на два, отложил. И оно правда работает… примерно. Транспортир даёт <strong>погрешность измерения</strong>: градусы ты читаешь на глаз, откладываешь тоже на глаз, ошибки складываются.</p>
+    <p>А угол ещё и «грязный» попадается. Пусть он равен 47°. Половина — 23,5°. Попробуй отложить эти полградуса транспортиром аккуратно.</p>
+    <p>Построение циркулем и линейкой делит угол пополам <strong>ТОЧНО</strong> и вообще без градусов. Ты угол не меришь, ты строишь симметричную картинку — а симметрия дальше сама режет его ровно надвое.</p>
+  </section>
+
+  <section>
+    <h2>Что нужно вспомнить</h2>
+    <div class="recall">
+      <ul>
+        <li><strong>Угол и его вершина.</strong> Угол — это два луча из одной точки. Саму точку называют вершиной, обозначим её <span class="mono">O</span>, а лучи — это стороны угла.</li>
+        <li><strong>Биссектриса.</strong> Это луч, выходящий <b>из вершины</b> и делящий угол на два <b>равных</b> угла. Слово «равных» тут главное.</li>
+        <li><strong>Циркуль рисует окружность одного радиуса.</strong> Пока винт циркуля не тронут, все точки дуги лежат на одинаковом расстоянии от ножки. На этом всё построение и держится.</li>
+        <li><strong>Равенство треугольников по трём сторонам.</strong> Если у двух треугольников попарно равны все три стороны, то треугольники равны, а вместе с ними равны и все соответственные углы. Это понадобится в доказательстве.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section>
+    <h2>Ядро темы</h2>
+
+    <h3>Идея построения</h3>
+    <p>Мы строим <strong>вспомогательную симметричную картинку</strong>. Сначала отмечаем на обеих сторонах угла две точки, одинаково удалённые от вершины. Потом из этих двух точек проводим две дуги <strong>одинакового радиуса</strong> — они пересекаются внутри угла в одной точке. Эта точка одинаково «привязана» к обеим сторонам, поэтому луч из вершины через неё и режет угол пополам.</p>
+    <p>Символически: дан угол с вершиной <span class="mono">O</span>. Строим точки <span class="mono aw">A</span> и <span class="mono bw">B</span> на сторонах так, что <span class="mono">OA = OB</span>. Находим точку <span class="mono cw">C</span> внутри угла так, что <span class="mono">AC = BC</span>. Тогда луч <span class="mono cw">OC</span> — биссектриса.</p>
+    <div class="formula-box">
+      <div class="eq">O<span class="a">A</span> = O<span class="b">B</span> &nbsp;и&nbsp; <span class="a">A</span><span class="c">C</span> = <span class="b">B</span><span class="c">C</span> &nbsp;→&nbsp; ∠<span class="a">A</span>O<span class="c">C</span> = ∠<span class="b">B</span>O<span class="c">C</span></div>
+      <div class="note">два равенства расстояний дают равенство углов — в этом весь фокус</div>
+    </div>
+
+    <h3>Алгоритм построения биссектрисы угла O</h3>
+    <ol class="algo">
+      <li>Поставь ножку циркуля в вершину <span class="mono">O</span>. Проведи дугу <b>произвольного радиуса r</b> — она пересечёт стороны угла в точках <span class="mono aw">A</span> и <span class="mono bw">B</span>. Теперь <span class="mono">OA = OB = r</span>.</li>
+      <li>Поставь ножку циркуля в точку <span class="mono aw">A</span> и проведи дугу <b>радиусом R</b> внутри угла.</li>
+      <li><b>НЕ меняя раствор циркуля</b> (тем же радиусом <span class="mono">R</span>) поставь ножку в точку <span class="mono bw">B</span> и проведи вторую дугу. Дуги пересекутся в точке <span class="mono cw">C</span>.</li>
+      <li>Проведи линейкой луч <span class="mono cw">OC</span>. Это и есть биссектриса.</li>
+    </ol>
+
+    <div class="tablewrap">
+      <table>
+        <tr><th>Обозначение</th><th>Что значит</th></tr>
+        <tr><td><b>O</b></td><td>вершина угла</td></tr>
+        <tr><td><b>A, B</b></td><td>точки на сторонах угла</td></tr>
+        <tr><td><b>r</b></td><td>радиус первой дуги (из O)</td></tr>
+        <tr><td><b>R</b></td><td>радиус двух одинаковых дуг (из A и из B)</td></tr>
+        <tr><td><b>C</b></td><td>точка пересечения этих двух дуг</td></tr>
+      </table>
+    </div>
+
+    <div class="note">
+      <p><b>Когда это работает.</b> Радиус <span class="mono">r</span> — любой удобный, лишь бы дуга пересекла <strong>обе</strong> стороны угла. Радиус <span class="mono">R</span> должен быть достаточно большим, чтобы дуги вообще пересеклись — примерно больше половины расстояния <span class="mono">AB</span>.</p>
+      <p><b>Главное правило:</b> дуги из <span class="mono aw">A</span> и из <span class="mono bw">B</span> проводятся ОДНИМ И ТЕМ ЖЕ раствором циркуля.</p>
+    </div>
+
+    <h3>Почему луч OC делит угол пополам</h3>
+    <p>Тут ничего не «на глаз», тут всё доказывается. Соедини <span class="mono cw">C</span> с <span class="mono aw">A</span> и с <span class="mono bw">B</span> и посмотри на два получившихся треугольника <span class="mono">OAC</span> и <span class="mono">OBC</span>:</p>
+    <div class="formula-box">
+      <div class="eq">O<span class="a">A</span> = O<span class="b">B</span> &nbsp;(радиус r)<br>
+      <span class="a">A</span><span class="c">C</span> = <span class="b">B</span><span class="c">C</span> &nbsp;(радиус R)<br>
+      O<span class="c">C</span> — общая сторона</div>
+      <div class="note">три стороны одного равны трём сторонам другого → треугольники равны</div>
+    </div>
+    <p>Из равенства треугольников следует равенство соответственных углов, в том числе <span class="mono">∠AOC = ∠BOC</span>. А это ровно и означает, что <span class="mono cw">OC</span> — биссектриса. Точность держится на <strong>равенстве треугольников</strong>, а рука тут ни при чём.</p>
+  </section>
+
+  <section>
+    <h2>Увидь глазами: <span class="em">построение по шагам</span></h2>
+    <p>Прогони построение кнопками «шаг вперёд» и «шаг назад» столько раз, сколько нужно. На каждом шаге спрашивай себя: где сейчас стоит ножка циркуля и трогал ли я винт?</p>
+    <div class="diagram">
+      <canvas id="cvBuild" width="640" height="420" aria-label="Пошаговое построение биссектрисы угла циркулем и линейкой"></canvas>
+      <div class="stepbar">
+        <button id="bPrev" type="button">← шаг назад</button>
+        <span class="stepnum" id="bNum">0 / 5</span>
+        <button id="bNext" type="button" class="solid">шаг вперёд →</button>
+        <button id="bReset" type="button">сначала</button>
+      </div>
+      <div class="dots" id="bDots" aria-hidden="true"></div>
+      <p class="steptext" id="bText"></p>
+    </div>
+    <p class="cap">Цвета: <span class="aw">оранжевое</span> — всё, что связано с точкой A, <span class="bw">бирюзовое</span> — с точкой B, <span class="cw">фиолетовое</span> — сама биссектриса. Одна засечка на отрезке значит «эти отрезки равны между собой», две засечки — «а эти равны между собой».</p>
+  </section>
+
+  <section>
+    <h2>Разбираем вместе</h2>
+
+    <div class="walk">
+      <p class="q">Дан угол MON. Построить его биссектрису.</p>
+      <ol>
+        <li>Ставлю циркуль в <span class="mono">O</span>, провожу дугу — она пересекает луч <span class="mono">OM</span> в точке <span class="mono aw">A</span> и луч <span class="mono">ON</span> в точке <span class="mono bw">B</span>. <span class="why">Почему: так получаю две точки на одинаковом расстоянии от вершины, OA = OB.</span></li>
+        <li>Из <span class="mono aw">A</span> провожу дугу радиусом <span class="mono">R</span> внутрь угла. <span class="why">Почему: готовлю одну из двух симметричных дуг.</span></li>
+        <li>Тем же раствором <span class="mono">R</span> из <span class="mono bw">B</span> провожу вторую дугу; они пересеклись в точке <span class="mono cw">C</span>. <span class="why">Почему: раствор не меняю, поэтому AC = BC — картинка симметрична.</span></li>
+        <li>Провожу луч <span class="mono cw">OC</span>. <span class="why">Почему: треугольники OAC и OBC равны по трём сторонам, значит ∠MOC = ∠NOC, луч делит угол пополам.</span></li>
+      </ol>
+      <div class="verdict">OC — биссектриса угла MON</div>
+    </div>
+
+    <div class="walk" style="margin-top:.8rem">
+      <p class="q">Допиши пропущенный шаг</p>
+      <p style="margin-top:0">Построение начато: из <span class="mono">O</span> провели дугу, получили точки <span class="mono aw">A</span> и <span class="mono bw">B</span> на сторонах. Дальше ученик написал: «из <span class="mono">A</span> провожу дугу радиусом <span class="mono">R</span>, получаю точку <span class="mono">C</span>; провожу <span class="mono">OC</span>».</p>
+      <p style="margin-top:.3rem">Чего не хватает? Подумай сам, потом раскрой.</p>
+      <details style="margin-top:.5rem"><summary>Показать пропущенный шаг</summary><div class="ans">Нужна <b>ВТОРАЯ дуга</b> — тем же раствором <span class="mono">R</span> из точки <span class="mono bw">B</span>. Точка <span class="mono cw">C</span> — это пересечение <b>ДВУХ</b> дуг (из A и из B), а не конец одной дуги. Без второй дуги положение <span class="mono">C</span> просто не определено: на дуге из A точек бесконечно много, какую брать?</div></details>
+    </div>
+
+    <div class="walk" style="margin-top:.8rem">
+      <p class="q">Реши сам</p>
+      <p style="margin-top:0">Угол равен 60°. Построй его биссектрису и определи, чему равны два получившихся угла. Можно ли это проверить транспортиром?</p>
+      <details style="margin-top:.5rem"><summary>Показать ответ</summary><div class="ans">Каждый из двух углов равен <b>30°</b>, потому что <span class="mono">60° : 2 = 30°</span>. Транспортир должен показать примерно 30° у каждого — это <b>проверка</b>, но само построение точное и без транспортира.</div></details>
+    </div>
+  </section>
+
+  <section>
+    <h2>Тренажёр · шаги построения</h2>
+    <p>Задания собираются заново каждый раз: то «какой шаг следующий», то «верно или нет», то «что делают раньше». Выбери вариант — сразу увидишь разбор.</p>
+    <div class="trainer">
+      <div class="tr-task" id="trTask"></div>
+      <div class="tr-opts" id="trOpts"></div>
+      <div class="tr-ctl">
+        <button id="trNew" type="button">🎲 Новое задание</button>
+        <button id="trShow" type="button" class="ghost">Показать разбор</button>
+      </div>
+      <div id="trResult" class="tr-result"></div>
+      <div id="trScore" class="tr-score"></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Проверь себя</h2>
+
+    <p class="lvl">Уровень 1 · понимание</p>
+    <div class="drill">
+      <details><summary>1) Что такое биссектриса угла?</summary><div class="ans">Луч, выходящий из вершины угла и делящий угол <b>ровно пополам</b>, то есть на два равных угла.</div></details>
+      <details><summary>2) Почему при построении двух дуг нельзя менять раствор циркуля между точками A и B?</summary><div class="ans">Раствор циркуля — это радиус <span class="mono">R</span>. Если он одинаковый, то <span class="mono">AC = BC</span>, и картинка симметрична. Если разный, то <span class="mono">AC ≠ BC</span>, симметрия ломается, и треугольники <span class="mono">OAC</span> и <span class="mono">OBC</span> уже не равны — значит и углы не равны.</div></details>
+      <details><summary>3) Сколько дуг и из каких центров нужно провести?</summary><div class="ans">Три дуги: <b>одну из O</b> — она даёт точки <span class="mono">A</span> и <span class="mono">B</span>, и <b>две одинаковые</b> — из <span class="mono">A</span> и из <span class="mono">B</span>, они дают точку <span class="mono">C</span>.</div></details>
+    </div>
+
+    <p class="lvl">Уровень 2 · применение</p>
+    <div class="drill">
+      <details><summary>4) Начерти острый угол и построй его биссектрису циркулем и линейкой. Какие четыре действия ты выполнил?</summary><div class="ans">1) дуга из <span class="mono">O</span> радиусом <span class="mono">r</span> → точки <span class="mono">A</span> и <span class="mono">B</span>; 2) дуга из <span class="mono">A</span> радиусом <span class="mono">R</span>; 3) дуга из <span class="mono">B</span> тем же <span class="mono">R</span> → точка <span class="mono">C</span>; 4) луч <span class="mono">OC</span> по линейке.</div></details>
+      <details><summary>5) Теперь построй биссектрису тупого угла. Алгоритм тот же?</summary><div class="ans"><b>Да, тот же самый.</b> Ни один шаг не меняется: вид угла на построение не влияет. Просто у тупого угла точки <span class="mono">A</span> и <span class="mono">B</span> разойдутся дальше друг от друга, поэтому радиус <span class="mono">R</span> придётся взять побольше — чтобы дуги успели пересечься.</div></details>
+      <details><summary>6) Какое равенство в построении гарантирует, что угол поделён точно пополам?</summary><div class="ans">Равенство треугольников <span class="mono">OAC</span> и <span class="mono">OBC</span> по трём сторонам: <span class="mono">OA = OB</span>, <span class="mono">AC = BC</span>, <span class="mono">OC</span> — общая.</div></details>
+    </div>
+
+    <p class="lvl">Уровень 3 · анализ</p>
+    <div class="drill">
+      <details><summary>7) Найди ошибку. Ученик из A провёл дугу радиусом 3 см, а из B — радиусом 4 см и соединил точку пересечения с O. Будет ли луч биссектрисой?</summary><div class="ans"><b>Нет.</b> Радиусы разные, значит <span class="mono">AC = 3</span> см, а <span class="mono">BC = 4</span> см, то есть <span class="mono">AC ≠ BC</span>. Третьего равенства сторон нет — треугольники <span class="mono">OAC</span> и <span class="mono">OBC</span> не равны, и вывод <span class="mono">∠AOC = ∠BOC</span> сделать нельзя. Картинка перестала быть симметричной, точка <span class="mono">C</span> «уехала» в сторону меньшей дуги.</div></details>
+      <details><summary>8) Обратная задача. Дан луч OC, делящий угол пополам. Как построением проверить, что OA = OB и AC = BC?</summary><div class="ans">Повтори построение в обратную сторону. Поставь циркуль в <span class="mono">O</span> и одним раствором сделай засечки на обеих сторонах — получишь <span class="mono">A</span> и <span class="mono">B</span>, для которых <span class="mono">OA = OB</span> по построению. Затем измерь циркулем расстояние <span class="mono">AC</span> и, не меняя раствор, приложи его от <span class="mono">B</span> к <span class="mono">C</span>: если раствор лёг точно, то <span class="mono">AC = BC</span>.</div></details>
+      <details><summary>9) Что изменится, если взять очень маленький радиус R?</summary><div class="ans">Дуги из <span class="mono">A</span> и из <span class="mono">B</span> <b>просто не пересекутся</b> — они не дотянутся друг до друга. Точки <span class="mono">C</span> не будет, и проводить луч будет не через что. Поэтому <span class="mono">R</span> берут больше половины расстояния <span class="mono">AB</span>. Лечится в одно движение: раздвинь циркуль пошире и перечерти обе дуги (обе, а не одну!).</div></details>
+      <details><summary>10) Что изменится, если взять другой радиус первой дуги r — биссектриса получится другая?</summary><div class="ans"><b>Нет, та же самая.</b> Радиус <span class="mono">r</span> в условии назван произвольным: он лишь задаёт, где именно на сторонах окажутся <span class="mono">A</span> и <span class="mono">B</span>. Но при любом <span class="mono">r</span> остаётся верным <span class="mono">OA = OB</span>, а вместе со вторым равенством <span class="mono">AC = BC</span> это снова даёт равные треугольники и равные углы. Луч ляжет туда же.</div></details>
+    </div>
+  </section>
+
+  <section>
+    <h2>Ловушки</h2>
+    <ul class="traps">
+      <li><b>Меняют радиус дуг на сторонах угла.</b> Из <span class="mono">A</span> провели одним раствором, из <span class="mono">B</span> — другим. Тогда <span class="mono">AC ≠ BC</span>, симметрия нарушена, и луч НЕ делит угол пополам. <i>Как избежать:</i> наметил раствор <span class="mono">R</span> — не трогай винт циркуля до конца второй дуги.</li>
+      <li><b>Соединяют не ту точку пересечения с вершиной.</b> Дуги могут пересечься и снаружи угла, и в «лишней» точке. <i>Как избежать:</i> бери ту точку <span class="mono">C</span>, что лежит ВНУТРИ угла, между сторонами.</li>
+      <li><b>Не обосновывают деление пополам.</b> Думают, что «дуги поделили на глаз». <i>Как избежать:</i> помни доказательство — равенство треугольников <span class="mono">OAC</span> и <span class="mono">OBC</span> по трём сторонам. Точность держится именно на нём.</li>
+      <li><b>Путают первую дугу со второй.</b> Первая дуга (из <span class="mono">O</span>) задаёт точки <span class="mono">A</span> и <span class="mono">B</span>. Вторые две дуги (из <span class="mono">A</span> и из <span class="mono">B</span>) задают точку <span class="mono">C</span>. Это разные шаги и разные центры — не сливай их в один.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Объясни своими словами</h2>
+    <p>Закрой урок и ответь вслух — себе, родителю или чат-боту. Сказал связно, значит тема твоя.</p>
+    <div class="drill">
+      <details><summary>Сколько дуг и из каких центров нужно провести, чтобы построить биссектрису?</summary><div class="ans">Одну из <span class="mono">O</span> — для точек <span class="mono">A</span> и <span class="mono">B</span>, и две одинаковые — из <span class="mono">A</span> и из <span class="mono">B</span>.</div></details>
+      <details><summary>Какое равенство гарантирует, что угол поделён точно пополам?</summary><div class="ans">Равенство треугольников <span class="mono">OAC</span> и <span class="mono">OBC</span> по трём сторонам.</div></details>
+      <details><summary>Почему нельзя менять раствор циркуля между дугами из A и из B?</summary><div class="ans">Потому что тогда <span class="mono">AC ≠ BC</span>, пропадает третье равенство сторон, треугольники перестают быть равными — и луч уже не делит угол пополам.</div></details>
+    </div>
+  </section>
+
+  <div class="wrapup">
+    <h2>Запомни главное</h2>
+    <p class="big-rule">OA = OB, &nbsp;AC = BC &nbsp;→&nbsp; ∠AOC = ∠BOC</p>
+    <p>Биссектрису строят циркулем и линейкой через две равные дуги, а правильность построения доказывает равенство двух треугольников по трём сторонам. Дуга из вершины даёт <span style="color:#F0A45E;font-weight:700">A</span> и <span style="color:#6FD3C6;font-weight:700">B</span>, две одинаковые дуги дают <span style="color:#B79BE8;font-weight:700">C</span>, линейка проводит луч.</p>
+    <p class="next">👉 Дальше — <b>построение треугольника</b> по заданным элементам. Там ты снова ставишь циркуль в точку и ловишь пересечение двух дуг, только искать будешь уже вершину треугольника.</p>
+  </div>
+
+</div>
+
+<script>
+/* ── Пошаговая анимация построения ─────────────────────────────── */
+(function(){
+  var cv=document.getElementById('cvBuild'); if(!cv) return;
+  var ctx=cv.getContext('2d');
+  var bPrev=document.getElementById('bPrev'), bNext=document.getElementById('bNext'),
+      bReset=document.getElementById('bReset'), bNum=document.getElementById('bNum'),
+      bText=document.getElementById('bText'), bDots=document.getElementById('bDots');
+
+  var TEXTS=[
+    '<b>Шаг 0. Дано.</b> Угол с вершиной O и двумя сторонами. Циркуль пока не трогали.',
+    '<b>Шаг 1.</b> Ножка циркуля в вершине O, раствор произвольный — радиус r. Дуга пересекает стороны угла в точках A и B. Теперь OA = OB = r.',
+    '<b>Шаг 2.</b> Переставляем ножку в точку A, берём радиус R и проводим дугу внутрь угла. Это первая из двух симметричных дуг.',
+    '<b>Шаг 3.</b> Винт циркуля не трогаем! Тем же радиусом R ставим ножку в B и проводим вторую дугу. Дуги пересеклись внутри угла — это точка C, и AC = BC.',
+    '<b>Шаг 4.</b> Берём линейку и проводим луч OC. Построение закончено: OC — биссектриса.',
+    '<b>Шаг 5. Почему пополам.</b> Соединим C с A и с B. В треугольниках OAC и OBC: OA = OB (одна засечка), AC = BC (две засечки), OC — общая сторона. Треугольники равны по трём сторонам, значит ∠AOC = ∠BOC.'
+  ];
+  var LAST=TEXTS.length-1;
+
+  var reduce=false;
+  try{ reduce=window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches; }catch(e){}
+
+  var cur=0, prog=1, raf=null, W=640, H=420, dpr=1;
+
+  function css(v){ return getComputedStyle(document.documentElement).getPropertyValue(v).trim(); }
+
+  /* геометрия угла: математические углы, y вверх */
+  var T1=8*Math.PI/180, T2=68*Math.PI/180, TB=(T1+T2)/2;
+
+  function geo(){
+    var pad=Math.max(30,W*0.075);
+    var r=Math.min((W-2*pad)/1.95, (H-2*pad)/1.80);
+    var span=1.92*r*Math.cos(T1);                  /* ширина рисунка вправо от O */
+    var O={x:Math.max(pad,(W-span)/2), y:H-pad*0.85};
+    function P(t,d){ return {x:O.x+d*Math.cos(t), y:O.y-d*Math.sin(t)}; }
+    var A=P(T1,r), B=P(T2,r);
+    var R=0.80*r;                                  /* радиус вторых дуг */
+    var ab=Math.hypot(B.x-A.x,B.y-A.y);            /* AB */
+    var om=r*Math.cos((T2-T1)/2);                  /* от O до середины AB */
+    var mc=Math.sqrt(Math.max(R*R-ab*ab/4,1));     /* от середины AB до C */
+    var oc=om+mc;
+    var C=P(TB,oc);
+    return {O:O,A:A,B:B,C:C,r:r,R:R,oc:oc,L:1.92*r,pad:pad};
+  }
+
+  function arc(cx,cy,rad,t1,t2,p){
+    var n=64,i,t,x,y;
+    ctx.beginPath();
+    for(i=0;i<=n;i++){
+      t=t1+(t2-t1)*(i/n)*p;
+      x=cx+rad*Math.cos(t); y=cy-rad*Math.sin(t);
+      if(i) ctx.lineTo(x,y); else ctx.moveTo(x,y);
+    }
+    ctx.stroke();
+  }
+  function seg(p1,p2,p){
+    ctx.beginPath(); ctx.moveTo(p1.x,p1.y);
+    ctx.lineTo(p1.x+(p2.x-p1.x)*p, p1.y+(p2.y-p1.y)*p); ctx.stroke();
+  }
+  function dot(p,color,label,dx,dy,fs){
+    ctx.beginPath(); ctx.arc(p.x,p.y,5,0,6.284); ctx.fillStyle=color; ctx.fill();
+    if(label){
+      ctx.fillStyle=color; ctx.font='700 '+(fs+3)+'px ui-monospace,Menlo,monospace';
+      ctx.textAlign='center'; ctx.textBaseline='middle';
+      ctx.fillText(label,p.x+dx,p.y+dy);
+    }
+  }
+  function ticks(p1,p2,n,color,size){
+    var mx=(p1.x+p2.x)/2, my=(p1.y+p2.y)/2;
+    var dx=p2.x-p1.x, dy=p2.y-p1.y, len=Math.hypot(dx,dy)||1;
+    var ux=dx/len, uy=dy/len, nx=-uy, ny=ux, i, off;
+    ctx.strokeStyle=color; ctx.lineWidth=2;
+    for(i=0;i<n;i++){
+      off=(i-(n-1)/2)*5;
+      ctx.beginPath();
+      ctx.moveTo(mx+ux*off-nx*size, my+uy*off-ny*size);
+      ctx.lineTo(mx+ux*off+nx*size, my+uy*off+ny*size);
+      ctx.stroke();
+    }
+  }
+
+  function resize(){
+    var c=cv.clientWidth||640;
+    dpr=Math.min(window.devicePixelRatio||1,2);
+    W=c; H=Math.round(Math.max(280,Math.min(430,c*0.66)));
+    cv.width=W*dpr; cv.height=H*dpr; cv.style.height=H+'px';
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+  }
+
+  function draw(){
+    var g=geo(), fs=Math.max(10,Math.min(14,W*0.023));
+    var ink=css('--ink'), muted=css('--muted'), brand=css('--brand'),
+        cA=css('--p1'), cB=css('--p2'), cC=css('--acc');
+    var p=prog;
+    ctx.clearRect(0,0,W,H);
+    ctx.lineCap='round'; ctx.lineJoin='round';
+    ctx.textAlign='center'; ctx.textBaseline='middle';
+
+    /* шаг 5: подсветка треугольников — рисуем в самом низу слоя */
+    if(cur>=5){
+      ctx.globalAlpha=0.55*(cur===5?p:1);
+      ctx.fillStyle=css('--p1-soft');
+      ctx.beginPath(); ctx.moveTo(g.O.x,g.O.y); ctx.lineTo(g.A.x,g.A.y); ctx.lineTo(g.C.x,g.C.y); ctx.closePath(); ctx.fill();
+      ctx.fillStyle=css('--p2-soft');
+      ctx.beginPath(); ctx.moveTo(g.O.x,g.O.y); ctx.lineTo(g.B.x,g.B.y); ctx.lineTo(g.C.x,g.C.y); ctx.closePath(); ctx.fill();
+      ctx.globalAlpha=1;
+    }
+
+    /* стороны угла — есть всегда */
+    ctx.strokeStyle=ink; ctx.lineWidth=2.5;
+    ctx.beginPath();
+    ctx.moveTo(g.O.x+g.L*Math.cos(T1), g.O.y-g.L*Math.sin(T1));
+    ctx.lineTo(g.O.x,g.O.y);
+    ctx.lineTo(g.O.x+g.L*Math.cos(T2), g.O.y-g.L*Math.sin(T2));
+    ctx.stroke();
+
+    /* шаг 1: дуга из O */
+    if(cur>=1){
+      var p1=(cur===1?p:1);
+      ctx.strokeStyle=brand; ctx.lineWidth=2; ctx.setLineDash([]);
+      arc(g.O.x,g.O.y,g.r,T1-0.12,T2+0.12,p1);
+      if(p1>0.55){
+        dot(g.A,cA,'A',fs+6,fs+2,fs);
+        dot(g.B,cB,'B',-fs-4,-fs+2,fs);
+      }
+    }
+
+    /* шаг 2: дуга из A */
+    var tAC=Math.atan2(g.A.y-g.C.y, g.C.x-g.A.x);
+    var tBC=Math.atan2(g.B.y-g.C.y, g.C.x-g.B.x);
+    if(cur>=2){
+      ctx.strokeStyle=cA; ctx.lineWidth=2;
+      arc(g.A.x,g.A.y,g.R,tAC-0.55,tAC+0.55,(cur===2?p:1));
+    }
+    /* шаг 3: дуга из B + точка C */
+    if(cur>=3){
+      var p3=(cur===3?p:1);
+      ctx.strokeStyle=cB; ctx.lineWidth=2;
+      arc(g.B.x,g.B.y,g.R,tBC-0.55,tBC+0.55,p3);
+      if(p3>0.75) dot(g.C,cC,'C',fs+7,-fs+1,fs);
+    }
+    /* шаг 4: луч OC */
+    if(cur>=4){
+      var p4=(cur===4?p:1);
+      ctx.strokeStyle=cC; ctx.lineWidth=3;
+      seg(g.O,{x:g.O.x+g.L*0.98*Math.cos(TB), y:g.O.y-g.L*0.98*Math.sin(TB)},p4);
+      dot(g.C,cC,'C',fs+7,-fs+1,fs);
+      if(p4>0.9){
+        ctx.fillStyle=cC; ctx.font='700 '+fs+'px ui-monospace,Menlo,monospace';
+        var lx=g.O.x+g.L*0.99*Math.cos(TB), ly=g.O.y-g.L*0.99*Math.sin(TB);
+        ctx.fillText('биссектриса', Math.min(lx, W-52), ly-fs-4);
+      }
+    }
+    /* шаг 5: отрезки AC, BC, засечки, равные углы */
+    if(cur>=5){
+      var p5=(cur===5?p:1);
+      ctx.strokeStyle=cA; ctx.lineWidth=2; seg(g.A,g.C,p5);
+      ctx.strokeStyle=cB; ctx.lineWidth=2; seg(g.B,g.C,p5);
+      if(p5>0.85){
+        ticks(g.O,g.A,1,cA,6); ticks(g.O,g.B,1,cB,6);
+        ticks(g.A,g.C,2,cA,6); ticks(g.B,g.C,2,cB,6);
+        ctx.strokeStyle=cC; ctx.lineWidth=1.8;
+        arc(g.O.x,g.O.y,g.r*0.33,T1,TB,1);
+        arc(g.O.x,g.O.y,g.r*0.40,TB,T2,1);
+      }
+    }
+
+    /* вершина O — поверх всего */
+    dot(g.O,ink,'O',-fs-4,fs,fs);
+
+    /* подпись ножки циркуля */
+    var leg=null;
+    if(cur===1) leg=g.O; else if(cur===2) leg=g.A; else if(cur===3) leg=g.B;
+    if(leg){
+      ctx.strokeStyle=muted; ctx.lineWidth=1.5; ctx.setLineDash([4,4]);
+      ctx.beginPath(); ctx.arc(leg.x,leg.y,11,0,6.284); ctx.stroke();
+      ctx.setLineDash([]);
+    }
+  }
+
+  function animate(){
+    if(raf) cancelAnimationFrame(raf);
+    if(reduce){ prog=1; draw(); return; }
+    prog=0;
+    var t0=null;
+    function frame(ts){
+      if(t0===null) t0=ts;
+      prog=Math.min(1,(ts-t0)/650);
+      draw();
+      if(prog<1) raf=requestAnimationFrame(frame); else raf=null;
+    }
+    raf=requestAnimationFrame(frame);
+  }
+
+  function dots(){
+    var h='',i;
+    for(i=0;i<=LAST;i++) h+='<i class="'+(i<=cur?'on':'')+'"></i>';
+    bDots.innerHTML=h;
+  }
+  function sync(){
+    bNum.textContent=cur+' / '+LAST;
+    bText.innerHTML=TEXTS[cur];
+    bPrev.disabled=(cur===0);
+    bNext.disabled=(cur===LAST);
+    dots();
+  }
+  function go(n,anim){
+    n=Math.max(0,Math.min(LAST,n));
+    if(n===cur && anim!==true) { return; }
+    cur=n; sync();
+    if(anim===false){ prog=1; draw(); } else animate();
+  }
+
+  bNext.addEventListener('click',function(){ go(cur+1); });
+  bPrev.addEventListener('click',function(){ if(cur>0){ cur--; sync(); prog=1; draw(); } });
+  bReset.addEventListener('click',function(){ cur=0; sync(); prog=1; draw(); });
+  window.addEventListener('resize',function(){ resize(); draw(); });
+
+  resize(); sync(); prog=1; draw();
+})();
+</script>
+
+<script>
+/* ── Тренажёр: шаги построения ─────────────────────────────────── */
+(function(){
+  var taskEl=document.getElementById('trTask'), optsEl=document.getElementById('trOpts'),
+      resEl=document.getElementById('trResult'), scoreEl=document.getElementById('trScore');
+  if(!taskEl) return;
+
+  var STEPS=[
+    'Поставить ножку циркуля в вершину O и провести дугу радиусом r — она пересечёт стороны угла в точках A и B',
+    'Поставить ножку циркуля в точку A и провести дугу радиусом R внутри угла',
+    'Не меняя раствор, поставить ножку в точку B и провести дугу тем же радиусом R — дуги пересекутся в точке C',
+    'Провести линейкой луч OC'
+  ];
+  var DONE=[
+    'пока ничего не построено, есть только угол с вершиной O и циркуль в руках',
+    'из O проведена дуга радиусом r, на сторонах угла отмечены точки A и B',
+    'из O проведена дуга (есть точки A и B), из A проведена дуга радиусом R',
+    'проведены все три дуги, точка пересечения C внутри угла найдена'
+  ];
+  var WHY=[
+    'Начинают всегда с дуги из вершины: она даёт две точки A и B, одинаково удалённые от O (OA = OB = r).',
+    'Точки A и B уже есть — теперь из A проводим дугу радиусом R внутрь угла. Это первая из двух симметричных дуг.',
+    'Одной дуги мало: точка C — это пересечение ДВУХ дуг. Вторую проводим из B тем же самым раствором R, иначе AC ≠ BC.',
+    'Точка C найдена, остаётся соединить её с вершиной по линейке — луч OC и есть биссектриса.'
+  ];
+  var WRONG=[
+    'Измерить угол транспортиром и отложить половину градусов',
+    'Провести дугу из B радиусом чуть больше, чем из A — так дуги точно пересекутся',
+    'Взять конец дуги, проведённой из A, за точку C и сразу провести OC',
+    'Взять точку пересечения дуг снаружи угла и соединить её с вершиной O',
+    'Провести луч из O через точку A',
+    'Изменить раствор циркуля и заново провести дугу из вершины O'
+  ];
+  var WRONGWHY=[
+    'транспортир даёт погрешность, а построение циркулем и линейкой обходится вообще без градусов',
+    'радиусы дуг из A и из B обязаны быть ОДИНАКОВЫМИ, иначе AC ≠ BC и симметрия ломается',
+    'C — это точка пересечения двух дуг, а не конец одной; без второй дуги её положение не определено',
+    'брать нужно ту точку пересечения, что лежит ВНУТРИ угла, между сторонами',
+    'луч OA — это сторона угла, он ничего пополам не делит',
+    'дугу из вершины уже провели, точки A и B получены; менять r посреди построения незачем'
+  ];
+
+  var FACTS=[
+    ['Радиус первой дуги r можно взять любой, лишь бы дуга пересекла обе стороны угла.',true,
+     'Верно. В алгоритме прямо сказано: радиус r произвольный. Единственное условие — дуга должна пересечь ОБЕ стороны, иначе не получится ни точки A, ни точки B.'],
+    ['Раствор циркуля между дугой из A и дугой из B можно немного изменить — главное, чтобы дуги пересеклись.',false,
+     'Неверно. Это как раз самая частая ошибка. Если радиусы разные, то AC ≠ BC, третьего равенства сторон нет, треугольники OAC и OBC не равны — и луч не делит угол пополам.'],
+    ['Точка C — это конец дуги, проведённой из точки A.',false,
+     'Неверно. C — это точка пересечения ДВУХ дуг: из A и из B. На дуге из A точек бесконечно много, без второй дуги непонятно, какую брать.'],
+    ['Из точек пересечения дуг берут ту, что лежит внутри угла.',true,
+     'Верно. Дуги могут пересечься и снаружи угла. Нужная точка C лежит ВНУТРИ угла, между его сторонами.'],
+    ['Правильность построения доказывается равенством треугольников OAC и OBC по трём сторонам.',true,
+     'Верно. OA = OB (радиус r), AC = BC (радиус R), OC — общая сторона. Отсюда ∠AOC = ∠BOC.'],
+    ['Если радиус R взять слишком маленьким, дуги не пересекутся и точки C просто не будет.',true,
+     'Верно. Поэтому R берут примерно больше половины расстояния AB. Не пересеклись — раздвинь циркуль и перечерти обе дуги.'],
+    ['Чтобы построить биссектрису, обязательно нужен транспортир.',false,
+     'Неверно. Хватает циркуля и линейки, причём такое построение ТОЧНОЕ. Транспортиром можно только проверить результат.'],
+    ['После первого шага OA = OB, потому что это радиусы одной и той же дуги из вершины O.',true,
+     'Верно. Пока винт циркуля не тронут, все точки дуги удалены от ножки на одно и то же расстояние r.'],
+    ['Для тупого угла нужен какой-то другой алгоритм построения биссектрисы.',false,
+     'Неверно. Алгоритм тот же самый, все четыре шага сохраняются. Меняется только удобный размер радиуса R, потому что точки A и B разошлись дальше.'],
+    ['Луч OC обязан выходить из вершины угла.',true,
+     'Верно. Биссектриса по определению — луч из вершины. Поэтому последний шаг соединяет именно O и C.']
+  ];
+
+  var cur=null, answered=false, right=0, total=0;
+
+  function ri(a,b){ return Math.floor(Math.random()*(b-a+1))+a; }
+  function shuffle(arr){
+    var i,j,t;
+    for(i=arr.length-1;i>0;i--){ j=Math.floor(Math.random()*(i+1)); t=arr[i]; arr[i]=arr[j]; arr[j]=t; }
+    return arr;
+  }
+  function pickIdx(n,k,skip){
+    var pool=[],i,out=[];
+    for(i=0;i<n;i++) if(skip.indexOf(i)<0) pool.push(i);
+    shuffle(pool);
+    for(i=0;i<k && i<pool.length;i++) out.push(pool[i]);
+    return out;
+  }
+
+  function makeNext(){
+    var k=ri(0,3);
+    var opts=[{t:STEPS[k],ok:true,why:WHY[k]}];
+    var used=[k];
+    if(k<3){ opts.push({t:STEPS[k+1],ok:false,why:'это более поздний шаг, сначала нужно выполнить предыдущий'}); used.push(k+1); }
+    if(k>0){ opts.push({t:STEPS[k-1],ok:false,why:'этот шаг уже сделан — перечитай, что построено'}); used.push(k-1); }
+    var w=pickIdx(WRONG.length,4-opts.length,[]);
+    w.forEach(function(i){ opts.push({t:WRONG[i],ok:false,why:WRONGWHY[i]}); });
+    return {
+      kind:'Какой шаг следующий?',
+      q:'Построение биссектрисы угла O. Сейчас '+DONE[k]+'. <b>Что делаем дальше?</b>',
+      opts:shuffle(opts.slice(0,4)),
+      sol:'Правильный шаг: «'+STEPS[k]+'».<br>'+WHY[k]
+    };
+  }
+
+  function makeOrder(){
+    var i=ri(0,2), j=ri(i+1,3);
+    var opts=[{t:STEPS[i],ok:true,why:'этот шаг идёт раньше'},{t:STEPS[j],ok:false,why:'этот шаг идёт позже'}];
+    return {
+      kind:'Что делают раньше?',
+      q:'Два действия из алгоритма. <b>Какое из них выполняют раньше?</b>',
+      opts:shuffle(opts),
+      sol:'Раньше идёт: «'+STEPS[i]+'».<br>Порядок такой: дуга из вершины O → дуга из A → дуга из B тем же радиусом → луч OC.'
+    };
+  }
+
+  function makeFact(){
+    var k=ri(0,FACTS.length-1), f=FACTS[k];
+    var opts=[
+      {t:'Верно',ok:f[1]===true,why:''},
+      {t:'Неверно',ok:f[1]===false,why:''}
+    ];
+    return {
+      kind:'Верно или нет?',
+      q:'«'+f[0]+'»',
+      opts:opts,
+      sol:f[2]
+    };
+  }
+
+  function makeHalf(){
+    var ang=2*ri(8,58);            /* чётный угол, чтобы половина была целой */
+    var half=ang/2;
+    var d4=(90-half===half || 90-half===ang || 90-half<=0) ? half+10 : 90-half;
+    var opts=[
+      {t:half+'°',ok:true,why:''},
+      {t:ang+'°',ok:false,why:'это весь угол целиком, а не половина'},
+      {t:(ang*2)+'°',ok:false,why:'угол удвоили вместо деления пополам'},
+      {t:d4+'°',ok:false,why:'такое число из деления пополам не получается'}
+    ];
+    return {
+      kind:'Посчитай',
+      q:'Угол равен <b>'+ang+'°</b>. Провели биссектрису. <b>Чему равен каждый из двух получившихся углов?</b>',
+      opts:shuffle(opts),
+      sol:'Биссектриса делит угол ровно пополам: '+ang+'° : 2 = <b>'+half+'°</b>. Проверка: '+half+'° + '+half+'° = '+ang+'°.'
+    };
+  }
+
+  function makeCount(){
+    var v=[
+      ['Сколько всего дуг нужно провести, чтобы построить биссектрису?', '3',
+       ['1','2','4'],
+       'Три дуги: одна из вершины O (даёт точки A и B) и две одинаковые — из A и из B (дают точку C).'],
+      ['В скольких разных точках приходится ставить ножку циркуля?', '3',
+       ['1','2','4'],
+       'В трёх: сначала в вершине O, потом в точке A, потом в точке B.'],
+      ['Сколько равных треугольников получается в доказательстве?', '2',
+       ['1','3','4'],
+       'Два: OAC и OBC. Они равны по трём сторонам, отсюда и следует ∠AOC = ∠BOC.']
+    ];
+    var q=v[ri(0,v.length-1)];
+    var opts=[{t:q[1],ok:true,why:''}];
+    q[2].forEach(function(x){ opts.push({t:x,ok:false,why:''}); });
+    return { kind:'Посчитай', q:'<b>'+q[0]+'</b>', opts:shuffle(opts), sol:q[3] };
+  }
+
+  function generate(){
+    var r=Math.random();
+    if(r<0.34) cur=makeNext();
+    else if(r<0.52) cur=makeOrder();
+    else if(r<0.76) cur=makeFact();
+    else if(r<0.90) cur=makeHalf();
+    else cur=makeCount();
+    answered=false;
+    taskEl.innerHTML='<span class="st">'+cur.kind+'</span>'+cur.q;
+    optsEl.innerHTML='';
+    cur.opts.forEach(function(o,i){
+      var b=document.createElement('button');
+      b.type='button'; b.textContent=o.t; b.setAttribute('data-i',i);
+      b.addEventListener('click',function(){ answer(i,b); });
+      optsEl.appendChild(b);
+    });
+    resEl.innerHTML='';
+  }
+
+  function lockAll(){
+    var bs=optsEl.querySelectorAll('button'), i;
+    for(i=0;i<bs.length;i++) bs[i].disabled=true;
+  }
+
+  function markCorrect(){
+    var bs=optsEl.querySelectorAll('button'), i;
+    for(i=0;i<bs.length;i++) if(cur.opts[+bs[i].getAttribute('data-i')].ok) bs[i].classList.add('good');
+  }
+
+  function answer(i,btn){
+    if(answered) return;
+    answered=true; total++;
+    var o=cur.opts[i], good=o.ok;
+    if(good) right++;
+    btn.classList.add(good?'good':'bad');
+    markCorrect(); lockAll();
+    var h=good ? '<span class="ok">✓ Верно!</span>' : '<span class="bad">✗ Не то.</span>';
+    if(!good && o.why) h+=' Этот вариант не подходит: '+o.why+'.';
+    h+='<div class="sol">'+cur.sol+'</div>';
+    resEl.innerHTML=h;
+    scoreEl.textContent='верно '+right+' из '+total;
+  }
+
+  function showSol(){
+    if(!answered){ answered=true; total++; markCorrect(); lockAll(); }
+    resEl.innerHTML='<div class="sol">'+cur.sol+'</div>';
+    scoreEl.textContent='верно '+right+' из '+total;
+  }
+
+  document.getElementById('trNew').addEventListener('click',generate);
+  document.getElementById('trShow').addEventListener('click',showSol);
+  generate();
+})();
+</script>
+<!--LESSON-NAV-BOT--><nav class="lnav lnav-bot"><a class="prev" href="./geo7-postroenie-ugla.html"><span class="dir">← Предыдущая</span><span class="ttl">Построение угла, равного данному</span></a><a class="to-cat" href="./catalog.html">📚 <span>Все темы</span></a><a class="next" href="./geo7-postroenie-serediny.html"><span class="dir">Следующая →</span><span class="ttl">Построение середины отрезка и серединного перпендикуляра</span></a></nav><!--/LESSON-NAV-BOT-->

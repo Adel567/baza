@@ -1,0 +1,654 @@
+<!doctype html>
+<!-- humanized: humanizer-ru, 2026-09-04, тире возвращено -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Перебор вариантов и систематический поиск — 5 класс</title>
+<style>
+  :root{
+    --paper:#FBF9F5;
+    --card:#FFFFFF;
+    --ink:#26202E;
+    --muted:#6B6473;
+    --line:#E7E2E8;
+    --brand:#6A3EA1;
+    --brand-soft:#EFE7F6;
+    --order:#3A5AA0;        /* порядок / система */
+    --order-soft:#E5EBF6;
+    --order-line:#C6D3EC;
+    --chaos:#CF5A34;        /* перебор как попало */
+    --chaos-soft:#FBEADF;
+    --chaos-line:#F0CDB8;
+    --ok:#2E8B57;
+    --ok-soft:#E7F4EC;
+    --no:#C23B3B;
+    --no-soft:#FBEAEA;
+    --g1:#6A3EA1;
+    --g2:#2E8B57;
+    --g3:#CF5A34;
+    --g4:#3A5AA0;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper)}
+  .page{
+    max-width:720px;margin:0 auto;
+    padding:clamp(1.4rem,4vw,3rem) clamp(1.1rem,4vw,2rem) 4.5rem;
+    color:var(--ink);
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    font-size:17.5px;line-height:1.68;-webkit-font-smoothing:antialiased;
+  }
+  .mono{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-variant-numeric:tabular-nums;font-weight:600}
+
+  .hero{border-bottom:3px solid var(--brand);padding-bottom:1.4rem;margin-bottom:1.8rem}
+  .eyebrow{font-size:.74rem;letter-spacing:.15em;text-transform:uppercase;color:var(--brand);font-weight:700;margin:0 0 .55rem}
+  h1{font-size:clamp(2rem,6.5vw,3rem);line-height:1.03;margin:0;font-weight:800;letter-spacing:-.02em;text-wrap:balance}
+  .tagline{font-size:1.12rem;color:var(--muted);margin:.85rem 0 0;text-wrap:pretty}
+
+  section{margin-top:2.4rem}
+  h2{font-size:1.5rem;margin:0 0 .3rem;font-weight:780;letter-spacing:-.015em;text-wrap:balance}
+  h2 .em{color:var(--brand)}
+  h3{font-size:1.1rem;margin:1.4rem 0 .2rem;font-weight:760}
+  p{margin:.7rem 0}
+  strong{font-weight:680}
+
+  .lead-in{background:var(--brand-soft);border-radius:14px;padding:1.1rem 1.3rem;font-size:1.02rem}
+  .lead-in p{margin:.4rem 0}
+  .lead-in b{color:var(--brand)}
+
+  .qlist{list-style:none;margin:.8rem 0 0;padding:0;display:flex;flex-direction:column;gap:.5rem}
+  .qlist li{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:.7rem 1rem;font-size:.97rem}
+  .qlist li::before{content:"?";display:inline-flex;align-items:center;justify-content:center;width:1.4rem;height:1.4rem;border-radius:50%;background:var(--brand-soft);color:var(--brand);font-weight:800;font-size:.85rem;margin-right:.6rem;vertical-align:-.25rem}
+
+  /* Развилка «как попало» / «по порядку» */
+  .split{display:grid;gap:.9rem;margin-top:1rem}
+  @media(min-width:600px){.split{grid-template-columns:1fr 1fr}}
+  .path{border-radius:16px;padding:1.2rem 1.3rem;border:2px solid}
+  .path.chaos{background:var(--chaos-soft);border-color:var(--chaos-line)}
+  .path.order{background:var(--order-soft);border-color:var(--order-line)}
+  .path .cap{font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;font-weight:700;margin:0}
+  .path.chaos .cap{color:var(--chaos)} .path.order .cap{color:var(--order)}
+  .path h3{margin:.2rem 0 .5rem;font-size:1.3rem;font-weight:800}
+  .path p{margin:.3rem 0;font-size:.97rem}
+  .path .sample{font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1rem;margin-top:.5rem;display:block}
+  .path.chaos .sample{color:var(--chaos)} .path.order .sample{color:var(--order)}
+
+  /* Опора / повторить */
+  .recall{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--order);border-radius:0 12px 12px 0;padding:.9rem 1.15rem;margin-top:1rem;font-size:.97rem}
+  .recall b{color:var(--order)}
+
+  /* Алгоритм — крупные шаги */
+  ol.algo{list-style:none;counter-reset:st;margin:1rem 0 0;padding:0;display:flex;flex-direction:column;gap:.6rem}
+  ol.algo li{counter-increment:st;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:.85rem 1.05rem .85rem 3.1rem;position:relative;font-size:.98rem}
+  ol.algo li::before{content:counter(st);position:absolute;left:.85rem;top:.85rem;width:1.6rem;height:1.6rem;border-radius:50%;background:var(--brand);color:#fff;font-weight:800;font-size:.9rem;display:flex;align-items:center;justify-content:center}
+  ol.algo b{font-weight:720}
+
+  .ways{display:flex;flex-direction:column;gap:.6rem;margin-top:1rem}
+  .way{display:flex;gap:.9rem;align-items:flex-start;background:var(--order-soft);border:1px solid var(--order-line);border-radius:12px;padding:.8rem 1rem}
+  .way .ic{font-size:1.2rem;flex:none;line-height:1.4}
+  .way .tx{font-size:.97rem}
+  .way .tx b{color:var(--order)}
+
+  .note{border-left:4px solid var(--brand);background:var(--brand-soft);border-radius:0 10px 10px 0;padding:.8rem 1.1rem;margin-top:1rem;font-size:.98rem}
+  .note b{color:var(--brand)}
+
+  /* Пошаговый разбор */
+  .walk{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.15rem 1.3rem;margin-top:1rem}
+  .walk .q{font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.02rem;margin:0 0 .9rem;padding-bottom:.7rem;border-bottom:1px solid var(--line);line-height:1.5}
+  .steps{display:flex;flex-direction:column;gap:.55rem;min-height:1px}
+  .step{font-size:.97rem;background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:.6rem .85rem}
+  .step .lb{font-size:.68rem;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:.15rem}
+  .step .why{color:var(--muted);font-size:.9rem;display:block;margin-top:.2rem}
+  .step.found{background:var(--ok-soft);border-color:#BFE0CC}
+  .step.done{background:var(--brand-soft);border-color:#D8C7EA}
+  .found-line{margin-top:.9rem;padding-top:.8rem;border-top:1px dashed var(--line);font-size:.95rem}
+  .found-line .lbl{color:var(--muted);font-size:.85rem;display:block;margin-bottom:.35rem}
+  .pills{display:flex;flex-wrap:wrap;gap:.35rem}
+  .pill{font-family:ui-monospace,Menlo,monospace;font-weight:800;border-radius:8px;padding:.15rem .55rem;font-size:.95rem;color:#fff}
+  .pill.c1{background:var(--g1)} .pill.c2{background:var(--g2)} .pill.c3{background:var(--g3)} .pill.c4{background:var(--g4)}
+  .btnrow{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:1rem}
+  button{font:inherit;font-weight:700;font-size:.92rem;border-radius:10px;padding:.55rem 1.1rem;cursor:pointer;border:1px solid transparent}
+  button:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+  .go{background:var(--brand);color:#fff}
+  .sh{background:var(--paper);border:1px solid var(--line);color:var(--ink)}
+  .nw{background:var(--brand-soft);color:var(--brand)}
+  button[disabled]{opacity:.45;cursor:default}
+  .verdict{margin-top:1rem;padding:.75rem 1rem;background:var(--brand-soft);border-radius:10px;font-weight:650;color:var(--brand);font-size:1rem}
+
+  /* Столбики по группам */
+  .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(90px,1fr));gap:.6rem;margin-top:1rem}
+  .col{border:1px solid var(--line);border-radius:12px;background:var(--card);padding:.7rem .6rem;text-align:center}
+  .col .hd{font-family:ui-monospace,Menlo,monospace;font-weight:800;font-size:1.05rem;padding-bottom:.4rem;margin-bottom:.4rem;border-bottom:1px solid var(--line)}
+  .col.k1 .hd{color:var(--g1)} .col.k2 .hd{color:var(--g2)} .col.k3 .hd{color:var(--g3)}
+  .col .it{font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1rem;margin:.2rem 0}
+
+  /* Интерактивная таблица пар */
+  .gridwrap{overflow-x:auto;margin-top:1rem}
+  table.pairs{border-collapse:collapse;min-width:340px;width:100%;font-size:.95rem}
+  table.pairs th,table.pairs td{border:1px solid var(--line);padding:.55rem .5rem;text-align:center}
+  table.pairs thead th{background:#F7F5F9;font-weight:700;font-size:.9rem}
+  table.pairs tbody th{background:#F7F5F9;font-weight:700;text-align:left;font-size:.9rem;white-space:nowrap}
+  table.pairs td.cell{cursor:pointer;color:var(--muted);font-size:.85rem;transition:background .1s}
+  table.pairs td.cell:hover{background:var(--brand-soft)}
+  table.pairs td.cell:focus-visible{outline:2px solid var(--brand);outline-offset:-2px}
+  table.pairs td.cell.on{background:var(--ok-soft);color:var(--ok);font-weight:700}
+  .cellnote{margin-top:.75rem;font-size:.95rem;color:var(--muted)}
+  .cellnote b{color:var(--ink)}
+  .cellnote.full{color:var(--ok);font-weight:650}
+
+  /* Практика */
+  .drill{display:flex;flex-direction:column;gap:.7rem;margin-top:1rem}
+  details{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:.9rem 1.1rem}
+  details[open]{border-color:var(--brand)}
+  summary{cursor:pointer;font-weight:650;list-style:none;display:flex;justify-content:space-between;gap:1rem;align-items:center}
+  summary::-webkit-details-marker{display:none}
+  summary:focus-visible{outline:2px solid var(--brand);outline-offset:2px;border-radius:6px}
+  summary .q{font-size:1rem}
+  summary::after{content:"проверить";font-size:.8rem;color:var(--brand);font-weight:700;white-space:nowrap}
+  details[open] summary::after{content:"скрыть"}
+  .ans{margin-top:.75rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.96rem;color:var(--muted)}
+  .ans b{color:var(--ink)}
+  .lvl{font-size:.66rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--brand);background:var(--brand-soft);border-radius:5px;padding:.1rem .45rem;margin-right:.45rem;vertical-align:.08rem}
+
+  /* Ловушки */
+  ul.traps{list-style:none;margin:1rem 0 0;padding:0;display:flex;flex-direction:column;gap:.7rem}
+  ul.traps li{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:.85rem 1.05rem;padding-left:2.5rem;position:relative;font-size:.97rem}
+  ul.traps li::before{content:"⚠";position:absolute;left:1rem;top:.85rem;color:var(--chaos);font-size:1.05rem}
+  ul.traps b{font-weight:700}
+  ul.traps .fix{display:block;margin-top:.3rem;color:var(--ok);font-size:.92rem}
+
+  .wrapup{background:var(--brand);color:#fff;border-radius:16px;padding:1.4rem 1.5rem;margin-top:2.4rem}
+  .wrapup h2{color:#fff;margin:0 0 .5rem}
+  .wrapup p{color:#EEE6F6;margin:.4rem 0;font-size:1rem}
+  .wrapup .big-rule{font-size:1.1rem;font-weight:700;color:#fff;margin:.6rem 0}
+  .wrapup .next{font-size:.95rem;color:#D9C9EC;margin-top:1rem;padding-top:1rem;border-top:1px solid rgba(255,255,255,.2)}
+
+  /* Тренажёр */
+  .trainer{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:1.3rem;margin-top:1rem}
+  .tr-task{font-size:1.05rem;font-weight:650;line-height:1.55;margin:0 0 .5rem}
+  .tr-sub{color:var(--muted);font-size:.9rem;margin:0 0 1rem}
+  .tr-in{display:flex;gap:.5rem;flex-wrap:wrap;align-items:center;margin-bottom:.9rem}
+  .tr-in label{font-size:.95rem;color:var(--muted)}
+  .tr-in input{font:inherit;font-family:ui-monospace,Menlo,monospace;font-weight:700;width:6rem;padding:.5rem .7rem;border:2px solid var(--line);border-radius:10px;background:var(--paper);color:var(--ink)}
+  .tr-in input:focus-visible{outline:2px solid var(--brand);outline-offset:1px;border-color:var(--brand)}
+  .tr-btns{display:flex;gap:.5rem;flex-wrap:wrap}
+  .tr-res{margin-top:1.1rem;font-size:.97rem}
+  .tr-res .head{font-weight:700;padding:.6rem .9rem;border-radius:9px;margin-bottom:.7rem}
+  .tr-res .head.ok{background:var(--ok-soft);color:var(--ok)}
+  .tr-res .head.no{background:var(--no-soft);color:var(--no)}
+  .tr-res .head.info{background:var(--brand-soft);color:var(--brand)}
+  .tr-sol{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:.85rem 1rem}
+  .tr-sol .grp{font-weight:700;margin-top:.6rem;font-size:.94rem}
+  .tr-sol .grp:first-child{margin-top:0}
+  .tr-sol .grp.k0{color:var(--g1)} .tr-sol .grp.k1{color:var(--g2)} .tr-sol .grp.k2{color:var(--g3)} .tr-sol .grp.k3{color:var(--g4)}
+  .tr-sol .row{margin:.15rem 0 0;font-size:.94rem;font-family:ui-monospace,Menlo,monospace}
+  .tr-sol .tot{margin-top:.8rem;padding-top:.6rem;border-top:1px dashed var(--line);font-weight:700}
+
+  .oge-tip{display:flex;gap:.8rem;align-items:flex-start;background:#FFF8E7;border:1px solid #F0D98A;border-left:4px solid #E0A315;border-radius:10px;padding:.85rem 1.05rem;margin:1.5rem 0}
+  .oge-tip .b{font-size:.72rem;font-weight:800;letter-spacing:.03em;color:#8A6A15;white-space:nowrap;text-transform:uppercase;padding-top:.15rem}
+  .oge-tip .x{font-size:.95rem;line-height:1.5}
+
+  .selfcheck{list-style:none;margin:1rem 0 0;padding:0;display:flex;flex-direction:column;gap:.6rem;counter-reset:sc}
+  .selfcheck li{counter-increment:sc;background:var(--card);border:1px solid var(--line);border-radius:11px;padding:.8rem 1rem .8rem 2.8rem;position:relative;font-size:.97rem}
+  .selfcheck li::before{content:counter(sc);position:absolute;left:.85rem;top:.8rem;width:1.4rem;height:1.4rem;border-radius:50%;background:var(--order-soft);color:var(--order);font-weight:800;font-size:.85rem;display:flex;align-items:center;justify-content:center}
+
+  @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<!--LESSON-NAV-TOP--><style>.lnav{--lnav-accent:#3D5AF1}.lnav a{text-decoration:none;font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif}.lnav-top{max-width:820px;margin:0 auto;padding:.75rem clamp(1rem,4vw,1.5rem) .1rem}.lnav-top a{display:inline-flex;align-items:center;gap:.35rem;color:var(--lnav-accent);font-weight:600;font-size:.9rem}.lnav-top a:hover{text-decoration:underline}.lnav-bot{max-width:820px;margin:2.6rem auto 3rem;padding:1.1rem clamp(1rem,4vw,1.5rem) 0;border-top:1px solid #E4E8EF;display:flex;align-items:stretch;gap:.55rem}.lnav-bot a{min-width:0;display:flex;flex-direction:column;justify-content:center;gap:.15rem;border:1px solid #E4E8EF;border-radius:12px;padding:.65rem .85rem;color:#182233;background:#fff;transition:border-color .1s,transform .08s}.lnav-bot a:hover{border-color:var(--lnav-accent);transform:translateY(-1px)}.lnav-bot .prev,.lnav-bot .next{flex:1 1 0}.lnav-bot .next{text-align:right}.lnav-bot .dir{font-size:.72rem;color:#8A93A6;font-weight:600}.lnav-bot .ttl{font-size:.9rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.lnav-bot .to-cat{flex:0 0 auto;flex-direction:row;align-items:center;justify-content:center;color:var(--lnav-accent);font-weight:700;font-size:.85rem;white-space:nowrap}@media(max-width:420px){.lnav-bot .to-cat span{display:none}.lnav-bot .to-cat{padding:.65rem .7rem}}</style><nav class="lnav lnav-top"><a href="./catalog.html">← Все темы</a></nav><!--/LESSON-NAV-TOP-->
+<div class="page">
+
+  <header class="hero">
+    <p class="eyebrow">Математика · 5 класс</p>
+    <h1>Перебор вариантов<br>и систематический поиск</h1>
+    <p class="tagline">Как найти <em>все</em> варианты и не потерять ни одного. Секрет один: навести порядок в переборе.</p>
+  </header>
+
+  <div class="lead-in">
+    <p><b>Зачем это уметь.</b> Сплошь и рядом попадаются вопросы вида «сколькими способами это можно сделать?» и «какие вообще бывают варианты?».</p>
+    <p>Чтобы ответить, надо <strong>найти и пересчитать все варианты</strong>. Тут и поджидает главная ловушка: перебираешь наугад — и легко что-то <strong>пропустить</strong> или посчитать одно и то же <strong>дважды</strong>.</p>
+  </div>
+
+  <section>
+    <h2>Где это встречается</h2>
+    <p>Вот типичные вопросы, на которые без перебора не ответишь:</p>
+    <ul class="qlist">
+      <li>Сколько разных нарядов получится из 3 футболок и 2 шорт?</li>
+      <li>Какие двузначные числа можно составить из цифр 1, 2 и 3?</li>
+      <li>Сколькими способами три друга могут встать в очередь?</li>
+    </ul>
+    <p>Скажешь: да тут достаточно посидеть и повспоминать все варианты. Вот это и есть <strong>главное заблуждение темы</strong>. Память подводит. Нужен порядок, а не везение.</p>
+
+    <div class="split">
+      <div class="path chaos">
+        <p class="cap">Как обычно делают</p>
+        <h3>🟠 Как попало</h3>
+        <p>Пишешь варианты в том порядке, в каком они вспомнились. Потом смотришь на список и не понимаешь: всё нашёл или нет?</p>
+        <span class="sample">53, 37, 75, 35, 37…</span>
+      </div>
+      <div class="path order">
+        <p class="cap">Как надо</p>
+        <h3>🔵 По порядку</h3>
+        <p>Выбираешь одно правило обхода и держишься его до конца. Всегда видно, где ты остановился и всё ли выписано.</p>
+        <span class="sample">35, 37, 53, 57, 73, 75</span>
+      </div>
+    </div>
+    <p>Это первый шаг в комбинаторику — раздел математики про то, «сколькими способами».</p>
+  </section>
+
+  <section>
+    <h2>Что понадобится вспомнить</h2>
+    <div class="recall">
+      <p><b>Аккуратный счёт.</b> Всё, что нужно из прошлых тем, — уметь считать и складывать натуральные числа. Никаких новых формул тут нет: варианты мы будем просто выписывать и пересчитывать.</p>
+      <p>А ещё пригодится привычка <b>перечитывать условие</b>: от одного слова («цифры можно повторять» или «нельзя») ответ меняется полностью.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Ядро: два слова, которые надо развести</h2>
+    <p><strong>Перебор вариантов</strong> — это выписывание всех возможных случаев, которые подходят под условие задачи.</p>
+    <p><strong>Систематический поиск</strong> — это когда мы перебираем варианты по заранее выбранному порядку, а не случайно. Порядок выбираем сами, но потом уже не меняем.</p>
+
+    <h3>Удобные правила обхода</h3>
+    <div class="ways">
+      <div class="way"><span class="ic">📈</span><span class="tx"><b>По возрастанию.</b> Сначала самые маленькие числа, потом больше.</span></div>
+      <div class="way"><span class="ic">📌</span><span class="tx"><b>Закрепить первый элемент.</b> Держим первое неизменным и меняем только остальные, потом переходим к следующему первому.</span></div>
+      <div class="way"><span class="ic">➡️</span><span class="tx"><b>Слева направо</b>, как при чтении.</span></div>
+    </div>
+    <div class="note">
+      <p><b>Зачем этот порядок.</b> Когда порядок чёткий, ты всегда видишь, на чём остановился, и легко проверяешь — все ли варианты выписаны.</p>
+    </div>
+
+    <h3>Алгоритм систематического перебора</h3>
+    <p>Формул в этой теме нет — тема понятийная. Вместо формулы работает порядок действий:</p>
+    <ol class="algo">
+      <li>Пойми, <b>что именно</b> надо перебрать: числа, пары, наборы, расстановки.</li>
+      <li>Выбери <b>порядок перебора</b> и зафиксируй его. Например: по возрастанию или «закрепляем первую цифру».</li>
+      <li>Выписывай варианты <b>строго по этому порядку</b>, ничего не пропуская.</li>
+      <li>Каждый новый вариант <b>сравнивай с уже записанными</b> — нет ли повтора.</li>
+      <li>Когда варианты по выбранному порядку закончились — <b>пересчитай</b> их.</li>
+    </ol>
+    <div class="note">
+      <p><b>Как записывать.</b> Варианты удобно писать в строчку через запятую или столбиком. Пары и наборы — в скобках или подряд: например, пара «красная футболка + синие шорты» — это <span class="mono">(К, С)</span>.</p>
+      <p><b>Когда перебор уместен.</b> Он хорош, пока вариантов <strong>немного</strong> и их реально выписать руками — обычно до 20–30 штук. Если вариантов очень много, позже поможет правило умножения.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Эталонный разбор — <span class="em">думаю вслух</span></h2>
+    <p>Задача: сколько двузначных чисел можно составить из цифр 3, 5, 7, если цифры в числе <strong>не повторяются</strong>?</p>
+    <p>Нажимай «Следующий шаг». Следи за тем, <em>что</em> я делаю, и главное — за тем, <em>почему</em>.</p>
+    <div class="walk">
+      <p class="q">Сколько двузначных чисел из цифр 3, 5, 7 без повторения цифр?</p>
+      <div class="steps" id="wSteps"></div>
+      <div class="found-line">
+        <span class="lbl">Уже выписано:</span>
+        <div class="pills" id="wFound"><span style="color:var(--muted);font-size:.9rem">пока пусто</span></div>
+      </div>
+      <div class="btnrow">
+        <button class="go" id="wNext" type="button">Следующий шаг</button>
+        <button class="sh" id="wAll" type="button">Показать всё</button>
+        <button class="nw" id="wReset" type="button">↺ Сначала</button>
+      </div>
+      <div class="verdict" id="wVerdict" hidden>Ответ: 6 чисел.</div>
+    </div>
+    <p>Посмотри на шаг 3: числа <span class="mono">33</span> в списке нет — цифры повторять нельзя. Вот тот самый момент, где надо перечитать условие.</p>
+  </section>
+
+  <section>
+    <h2>Наглядность</h2>
+
+    <h3>1. Столбики с закреплённой первой цифрой</h3>
+    <p>Тот же перебор, но сгруппированный: сначала всё, что начинается на 3, потом на 5, потом на 7. Сразу видно, что ни одна группа не забыта и в каждой поровну.</p>
+    <div class="cols">
+      <div class="col k1"><div class="hd">3 _</div><div class="it">35</div><div class="it">37</div></div>
+      <div class="col k2"><div class="hd">5 _</div><div class="it">53</div><div class="it">57</div></div>
+      <div class="col k3"><div class="hd">7 _</div><div class="it">73</div><div class="it">75</div></div>
+    </div>
+    <p class="cellnote">Такая запись — уже зародыш <strong>дерева вариантов</strong>, к которому мы перейдём в следующей теме.</p>
+
+    <h3>2. Таблица для пар</h3>
+    <p>Маша выбирает мороженое: форма — рожок или стаканчик, вкус — ваниль, шоколад или клубника. Каждая клетка таблицы — один вариант «форма + вкус».</p>
+    <p>Кликай по клеткам и закрашивай найденные варианты. Задача — не оставить ни одной пустой.</p>
+    <div class="gridwrap">
+      <table class="pairs">
+        <thead>
+          <tr><th></th><th>ваниль</th><th>шоколад</th><th>клубника</th></tr>
+        </thead>
+        <tbody id="pairsBody"></tbody>
+      </table>
+    </div>
+    <p class="cellnote" id="pairsNote">Закрашено: <b>0</b> из 6.</p>
+    <div class="btnrow"><button class="nw" id="pairsReset" type="button">↺ Очистить</button></div>
+    <div class="note">
+      <p><b>Почему таблица помогает.</b> В ней 2 строки и 3 столбца, а значит ровно 6 клеток. Пустая клетка — это пропущенный вариант, а дважды закрасить одну клетку не получится. Таблица сама не даёт ни потерять, ни продублировать.</p>
+    </div>
+
+    <h3>3. Приём «предскажи → проверь → объясни»</h3>
+    <p>Прежде чем перебирать, угадай: сколько получится двузначных чисел из трёх цифр без повторения? Запиши догадку, потом перебери по порядку и сравни. Не совпало — вот тебе и ответ, зачем нужен аккуратный перебор.</p>
+  </section>
+
+  <div class="oge-tip"><div class="b">🎯 В ОГЭ</div><div class="x">Умение выписать все варианты и ничего не потерять пригодится в <b>задании 10</b> — там надо пересчитать все возможные исходы. Навык, который ты тренируешь сейчас, работает до самого экзамена.</div></div>
+
+  <section>
+    <h2>Тренажёр — <span class="em">считай варианты</span></h2>
+    <p>Задачи генерируются заново каждый раз. Прочитай условие, <strong>выпиши варианты на черновике по порядку</strong>, введи их количество и проверь себя. В разборе увидишь полный список, сгруппированный по первому элементу.</p>
+    <div class="trainer">
+      <p class="tr-task" id="trTask">—</p>
+      <p class="tr-sub" id="trSub"></p>
+      <div class="tr-in">
+        <label for="trAns">Сколько вариантов?</label>
+        <input id="trAns" type="text" inputmode="numeric" autocomplete="off" placeholder="?">
+      </div>
+      <div class="tr-btns">
+        <button class="go" id="trCheck" type="button">Проверить</button>
+        <button class="sh" id="trShow" type="button">Показать разбор</button>
+        <button class="nw" id="trNew" type="button">🎲 Новая задача</button>
+      </div>
+      <div class="tr-res" id="trRes"></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Практика — реши сам</h2>
+    <p>Сначала решай на бумаге, и только потом раскрывай ответ. Подглядывать раньше времени — обманывать себя 🙂</p>
+    <div class="drill">
+      <details>
+        <summary><span class="q"><span class="lvl">понимание</span>1) Что значит «систематический перебор» и чем он лучше перебора «как попало»?</span></summary>
+        <div class="ans">Систематический перебор — это выписывание всех вариантов по заранее выбранному порядку (например, по возрастанию или с закреплённой первой цифрой). Он лучше тем, что при чётком порядке <b>ничего не теряется и не повторяется</b>: всегда видно, на чём ты остановился, и легко проверить, все ли варианты найдены.</div>
+      </details>
+      <details>
+        <summary><span class="q"><span class="lvl">применение</span>2) Выпиши все двузначные числа из цифр 1, 2, 4 без повторения цифр и посчитай их.</span></summary>
+        <div class="ans">Закрепляем первую цифру: на 1 начинаются <b>12, 14</b>; на 2 — <b>21, 24</b>; на 4 — <b>41, 42</b>. Всего: 12, 14, 21, 24, 41, 42 — <b>6 чисел</b>.</div>
+      </details>
+      <details>
+        <summary><span class="q"><span class="lvl">применение</span>3) Допиши перебор. Маша выбирает мороженое: рожок или стаканчик, вкус — ваниль, шоколад или клубника. Для формы «рожок» варианты такие: (рожок, ваниль), (рожок, шоколад), (рожок, клубника). Выпиши три варианта для стаканчика и скажи, сколько получилось всего.</span></summary>
+        <div class="ans">Закрепляем вторую форму: <b>(стаканчик, ваниль), (стаканчик, шоколад), (стаканчик, клубника)</b>. Вместе с тремя вариантами рожка получается <b>6 вариантов</b>.</div>
+      </details>
+      <details>
+        <summary><span class="q"><span class="lvl">применение</span>4) Сколькими способами можно расставить в ряд буквы А, Б, В (все три, без повторов)?</span></summary>
+        <div class="ans">Закрепляем первую букву. На А: <b>АБВ, АВБ</b>. На Б: <b>БАВ, БВА</b>. На В: <b>ВАБ, ВБА</b>. Итого <b>6 способов</b>.</div>
+      </details>
+      <details>
+        <summary><span class="q"><span class="lvl">анализ</span>5) Найди ошибку. Для пар из цветов {красный, синий} и фигур {круг, квадрат} ученик выписал: (красный, круг), (синий, квадрат), (красный, круг). Что не так и сколько пар должно быть на самом деле?</span></summary>
+        <div class="ans">Сразу две беды. Во-первых, пара <b>(красный, круг) записана дважды</b> — это повтор. Во-вторых, <b>пропущены две пары</b>: (красный, квадрат) и (синий, круг). Правильный список: (красный, круг), (красный, квадрат), (синий, круг), (синий, квадрат) — <b>всего 4 пары</b>. Оба сбоя лечатся одним приёмом: закрепи цвет и перебери к нему обе фигуры.</div>
+      </details>
+      <details>
+        <summary><span class="q"><span class="lvl">анализ</span>6) Что изменится, если… Сколько станет двузначных чисел из цифр 3, 5, 7, если цифры <b>разрешено</b> повторять?</span></summary>
+        <div class="ans">К прежним шести (35, 37, 53, 57, 73, 75) добавятся числа с одинаковыми цифрами: <b>33, 55, 77</b>. Получится <b>9 чисел</b>. Одно слово в условии — и ответ другой, поэтому условие и надо перечитывать.</div>
+      </details>
+      <details>
+        <summary><span class="q"><span class="lvl">анализ</span>7) Обратная задача. Получилось ровно 6 вариантов «форма + вкус». Сколько могло быть форм и сколько вкусов?</span></summary>
+        <div class="ans">Ответ не один. Например: <b>2 формы и 3 вкуса</b>, или <b>3 формы и 2 вкуса</b>, или <b>6 форм и 1 вкус</b>, или <b>1 форма и 6 вкусов</b>. Проверить любой вариант можно таблицей: строки — формы, столбцы — вкусы, клеток должно получиться 6.</div>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <h2>Ловушки — не попадись</h2>
+    <ul class="traps">
+      <li><b>Пропускают варианты.</b> Из-за беспорядочного перебора часть случаев просто теряется.
+        <span class="fix">Лечение: выбери один порядок — по возрастанию или «закрепи первый элемент» — и держись его до конца.</span></li>
+      <li><b>Дублируют варианты.</b> Один и тот же случай записан дважды. Особенно легко это выходит при перестановках: написал 35, отвлёкся, написал 35 снова.
+        <span class="fix">Лечение: каждый новый вариант сверяй с уже выписанными.</span></li>
+      <li><b>Перебирают без системы.</b> Пишут варианты как вспомнятся, а потом не понимают, всё ли нашли.
+        <span class="fix">Лечение: сначала правило обхода — потом запись. Не наоборот.</span></li>
+      <li><b>Не учитывают условие про повторы.</b> Путают «цифры можно повторять» и «нельзя».
+        <span class="fix">Лечение: перечитай условие перед перебором и реши, входит ли, например, 33.</span></li>
+      <li><b>Считают (А, Б) и (Б, А) одинаковыми там, где порядок важен</b> — или наоборот.
+        <span class="fix">Лечение: спроси себя «важен ли порядок в этой задаче?». В расстановках в ряд порядок важен, а при выборе пары «вкус + форма» — нет.</span></li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Проверь понимание</h2>
+    <p>Ответь вслух, своими словами — как будто объясняешь другу или боту. Формулируется тяжело — значит, стоит вернуться к началу.</p>
+    <ol class="selfcheck">
+      <li>Зачем перебирать варианты по порядку, а не как попало?</li>
+      <li>Сколько двузначных чисел без повтора цифр можно составить из 1, 2, 3?</li>
+      <li>Назови один удобный способ навести порядок в переборе.</li>
+    </ol>
+    <details style="margin-top:.9rem">
+      <summary><span class="q">Подсказки к ответам</span></summary>
+      <div class="ans"><b>1.</b> Чтобы ничего не пропустить и не посчитать дважды. <b>2.</b> Шесть: 12, 13, 21, 23, 31, 32. <b>3.</b> Например, закрепить первую цифру и менять остальные.</div>
+    </details>
+  </section>
+
+  <div class="wrapup">
+    <h2>Запомни главное</h2>
+    <p class="big-rule">Систематический перебор — это поиск всех вариантов по чёткому порядку, чтобы ни один не потерять и не посчитать дважды.</p>
+    <p>Сначала выбираешь правило обхода, потом выписываешь, потом пересчитываешь. Порядок важнее скорости.</p>
+    <p class="next">👉 Дальше эта же идея превратится в <strong>дерево вариантов</strong> — наглядную схему перебора, а потом в <strong>правило умножения</strong>, которое позволит считать число вариантов быстро, вообще не выписывая каждый.</p>
+  </div>
+
+</div>
+
+<script>
+(function(){
+  /* ---------- 1. Пошаговый эталонный разбор ---------- */
+  var STEPS = [
+    {lb:'Шаг 1', tx:'Что перебираем — двузначные числа из цифр 3, 5, 7.', why:'Почему: сначала надо понять объект перебора, иначе непонятно, что вообще выписывать.'},
+    {lb:'Шаг 2', tx:'Порядок — закрепим первую цифру и переберём вторую.', why:'Почему: так ни один вариант не потеряется.'},
+    {lb:'Шаг 3', tx:'Первая цифра 3: числа 35, 37.', why:'Почему 33 нет: цифры не повторяются.', add:['35','37'], k:1, found:true},
+    {lb:'Шаг 4', tx:'Первая цифра 5: числа 53, 57.', add:['53','57'], k:2, found:true},
+    {lb:'Шаг 5', tx:'Первая цифра 7: числа 73, 75.', add:['73','75'], k:3, found:true},
+    {lb:'Шаг 6', tx:'Выписали по порядку: 35, 37, 53, 57, 73, 75. Повторов нет.', why:'Почему: сравнили каждый новый вариант с уже записанными.'},
+    {lb:'Шаг 7', tx:'Считаем: получилось 6 чисел.', done:true}
+  ];
+  var wSteps=document.getElementById('wSteps');
+  var wFound=document.getElementById('wFound');
+  var wVerdict=document.getElementById('wVerdict');
+  var wNext=document.getElementById('wNext');
+  var wi=0, wPills=[];
+
+  function renderPills(){
+    if(!wPills.length){ wFound.innerHTML='<span style="color:var(--muted);font-size:.9rem">пока пусто</span>'; return; }
+    wFound.innerHTML = wPills.map(function(p){ return '<span class="pill c'+p.k+'">'+p.v+'</span>'; }).join('');
+  }
+  function drawStep(s){
+    var d=document.createElement('div');
+    d.className='step'+(s.found?' found':'')+(s.done?' done':'');
+    var h='<span class="lb">'+s.lb+'</span>'+s.tx;
+    if(s.why) h+='<span class="why">'+s.why+'</span>';
+    d.innerHTML=h;
+    wSteps.appendChild(d);
+    if(s.add) s.add.forEach(function(v){ wPills.push({v:v,k:s.k}); });
+    renderPills();
+    if(s.done) wVerdict.hidden=false;
+  }
+  function stepNext(){
+    if(wi>=STEPS.length) return;
+    drawStep(STEPS[wi]); wi++;
+    if(wi>=STEPS.length){ wNext.disabled=true; wNext.textContent='Разбор закончен'; }
+  }
+  function stepAll(){ while(wi<STEPS.length) stepNext(); }
+  function stepReset(){
+    wi=0; wPills=[]; wSteps.innerHTML=''; wVerdict.hidden=true;
+    wNext.disabled=false; wNext.textContent='Следующий шаг'; renderPills();
+  }
+  wNext.addEventListener('click',stepNext);
+  document.getElementById('wAll').addEventListener('click',stepAll);
+  document.getElementById('wReset').addEventListener('click',stepReset);
+  stepReset();
+
+  /* ---------- 2. Таблица пар ---------- */
+  var FORMS=['рожок','стаканчик'];
+  var TASTES=['ваниль','шоколад','клубника'];
+  var body=document.getElementById('pairsBody');
+  var note=document.getElementById('pairsNote');
+  var TOTAL=FORMS.length*TASTES.length;
+
+  function countOn(){ return body.querySelectorAll('td.cell.on').length; }
+  function updNote(){
+    var n=countOn();
+    if(n===TOTAL){
+      note.className='cellnote full';
+      note.innerHTML='Закрашено: <b>'+n+'</b> из '+TOTAL+'. Пустых клеток не осталось — значит, найдены все варианты.';
+    } else {
+      note.className='cellnote';
+      note.innerHTML='Закрашено: <b>'+n+'</b> из '+TOTAL+'. Пустая клетка — это вариант, который ты ещё не нашёл.';
+    }
+  }
+  function buildPairs(){
+    body.innerHTML='';
+    FORMS.forEach(function(f){
+      var tr=document.createElement('tr');
+      var th=document.createElement('th'); th.scope='row'; th.textContent=f; tr.appendChild(th);
+      TASTES.forEach(function(t){
+        var td=document.createElement('td');
+        td.className='cell'; td.tabIndex=0; td.textContent='·';
+        td.addEventListener('click',function(){
+          var on=td.classList.toggle('on');
+          td.textContent = on ? '('+f[0].toUpperCase()+', '+t[0].toUpperCase()+')' : '·';
+          updNote();
+        });
+        td.addEventListener('keydown',function(e){
+          if(e.key==='Enter'||e.key===' '){ e.preventDefault(); td.click(); }
+        });
+        tr.appendChild(td);
+      });
+      body.appendChild(tr);
+    });
+    updNote();
+  }
+  document.getElementById('pairsReset').addEventListener('click',buildPairs);
+  buildPairs();
+
+  /* ---------- 3. Тренажёр-генератор ---------- */
+  var taskEl=document.getElementById('trTask');
+  var subEl=document.getElementById('trSub');
+  var ansEl=document.getElementById('trAns');
+  var resEl=document.getElementById('trRes');
+  var CUR=null;
+
+  function ri(a,b){ return Math.floor(Math.random()*(b-a+1))+a; }
+  function pickN(arr,n){
+    var c=arr.slice(), out=[];
+    for(var i=0;i<n;i++){ out.push(c.splice(Math.floor(Math.random()*c.length),1)[0]); }
+    return out;
+  }
+  function listRu(arr){ return arr.join(', '); }
+
+  var CLOTHES=[
+    {a:'футболка', ap:'футболки', A:['белая','синяя','красная','зелёная','жёлтая'],
+     b:'шорты', bp:'пары шорт', B:['джинсовые','спортивные','серые','чёрные']},
+    {a:'мороженое', ap:'вида мороженого', A:['ваниль','шоколад','клубника','фисташка'],
+     b:'посыпка', bp:'посыпки', B:['орехи','кокос','карамель']},
+    {a:'тетрадь', ap:'тетради', A:['в клетку','в линейку','в косую линейку'],
+     b:'обложка', bp:'обложки', B:['синяя','красная','прозрачная','зелёная']},
+    {a:'сок', ap:'сока', A:['яблочный','вишнёвый','апельсиновый'],
+     b:'пирожное', bp:'пирожных', B:['эклер','корзинка','трубочка','кекс']}
+  ];
+  var NAMES=['Аня','Боря','Вика','Гоша','Даша'];
+  var LETTERS=['А','Б','В','Г','Д'];
+
+  function genDigits(){
+    var k=ri(2,4);
+    var ds=pickN([1,2,3,4,5,6,7,8,9],k).sort(function(x,y){ return x-y; });
+    var rep=Math.random()<0.4;
+    var groups=[], all=[];
+    ds.forEach(function(a){
+      var items=[];
+      ds.forEach(function(b){
+        if(!rep && a===b) return;
+        items.push(''+a+b);
+      });
+      groups.push({head:'Первая цифра '+a+':', items:items});
+      all=all.concat(items);
+    });
+    return {
+      task:'Сколько двузначных чисел можно составить из цифр '+listRu(ds)+', если цифры '+(rep?'<b>разрешено повторять</b>':'<b>не повторяются</b>')+'?',
+      sub:'Порядок обхода: закрепляем первую цифру и перебираем вторую.',
+      groups:groups, all:all, n:all.length,
+      unit:'чисел'
+    };
+  }
+  function genPairs(){
+    var th=CLOTHES[Math.floor(Math.random()*CLOTHES.length)];
+    var nA=ri(2,Math.min(3,th.A.length)), nB=ri(2,Math.min(4,th.B.length));
+    var A=pickN(th.A,nA), B=pickN(th.B,nB);
+    var groups=[], all=[];
+    A.forEach(function(a){
+      var items=[];
+      B.forEach(function(b){ items.push('('+a+', '+b+')'); });
+      groups.push({head:'Закрепили «'+a+'»:', items:items});
+      all=all.concat(items);
+    });
+    return {
+      task:'Есть '+nA+' '+th.ap+' ('+listRu(A)+') и '+nB+' '+th.bp+' ('+listRu(B)+'). Сколько разных наборов «'+th.a+' + '+th.b+'» можно составить?',
+      sub:'Порядок обхода: закрепляем первый предмет и перебираем к нему все вторые.',
+      groups:groups, all:all, n:all.length,
+      unit:'наборов'
+    };
+  }
+  function genPerm(){
+    var useNames=Math.random()<0.5;
+    var src=useNames?NAMES:LETTERS;
+    var it=pickN(src,3);
+    var groups=[], all=[];
+    it.forEach(function(x){
+      var rest=it.filter(function(y){ return y!==x; });
+      var items=[
+        useNames ? x+' — '+rest[0]+' — '+rest[1] : x+rest[0]+rest[1],
+        useNames ? x+' — '+rest[1]+' — '+rest[0] : x+rest[1]+rest[0]
+      ];
+      groups.push({head:(useNames?'Первым стоит ':'Первая буква ')+x+':', items:items});
+      all=all.concat(items);
+    });
+    return {
+      task: useNames
+        ? 'Сколькими способами '+it[0]+', '+it[1]+' и '+it[2]+' могут встать в очередь друг за другом?'
+        : 'Сколькими способами можно расставить в ряд буквы '+listRu(it)+' (все три, без повторов)?',
+      sub:'Порядок важен: перестановка — это другой вариант. Закрепляем, кто стоит первым.',
+      groups:groups, all:all, n:all.length,
+      unit:useNames?'способов':'способов'
+    };
+  }
+
+  function newTask(kind){
+    var r=Math.random();
+    var t = kind==='digits' ? genDigits()
+          : kind==='pairs'  ? genPairs()
+          : kind==='perm'   ? genPerm()
+          : (r<0.4 ? genDigits() : r<0.75 ? genPairs() : genPerm());
+    CUR=t;
+    taskEl.innerHTML=t.task;
+    subEl.textContent=t.sub;
+    ansEl.value='';
+    resEl.innerHTML='';
+    resEl.removeAttribute('data-done');
+  }
+  function solution(){
+    var h='<div class="tr-sol">';
+    CUR.groups.forEach(function(g,i){
+      h+='<div class="grp k'+(i%4)+'">'+g.head+'</div>';
+      h+='<div class="row">'+(g.items.length?g.items.join(',  '):'вариантов нет')+'</div>';
+    });
+    h+='<div class="tot">Пересчитываем всё, что выписали: <b>'+CUR.n+'</b> '+CUR.unit+'.</div>';
+    return h+'</div>';
+  }
+  function check(){
+    if(resEl.getAttribute('data-done')==='1') return;
+    var raw=(ansEl.value||'').replace(/\s+/g,'').replace(',','.');
+    if(raw===''){
+      resEl.innerHTML='<div class="head info">Сначала выпиши варианты и введи их количество.</div>';
+      return;
+    }
+    var v=Number(raw);
+    var ok=isFinite(v) && v===CUR.n;
+    resEl.setAttribute('data-done','1');
+    resEl.innerHTML=(ok
+      ? '<div class="head ok">✓ Верно! Ровно '+CUR.n+'. Сверь свой список с разбором — важно, чтобы совпал не только счёт, но и сами варианты.</div>'
+      : '<div class="head no">Не сходится. У тебя '+raw+', а вариантов '+CUR.n+'. Смотри, где список разошёлся: пропуск или повтор?</div>')+solution();
+  }
+  function show(){
+    if(resEl.getAttribute('data-done')==='1') return;
+    resEl.setAttribute('data-done','1');
+    resEl.innerHTML='<div class="head info">Полный перебор по порядку:</div>'+solution();
+  }
+  document.getElementById('trCheck').addEventListener('click',check);
+  document.getElementById('trShow').addEventListener('click',show);
+  document.getElementById('trNew').addEventListener('click',function(){ newTask(); ansEl.focus(); });
+  ansEl.addEventListener('keydown',function(e){ if(e.key==='Enter'){ e.preventDefault(); check(); } });
+  newTask('digits');
+})();
+</script>
+<!--LESSON-NAV-BOT--><nav class="lnav lnav-bot"><a class="prev" href="./m5-zadachi-perebor-uravnivanie.html"><span class="dir">← Предыдущая</span><span class="ttl">Задачи на уравнивание и логику</span></a><a class="to-cat" href="./catalog.html">📚 <span>Все темы</span></a><a class="next" href="./m5-derevo-variantov.html"><span class="dir">Следующая →</span><span class="ttl">Дерево возможных вариантов</span></a></nav><!--/LESSON-NAV-BOT-->

@@ -1,0 +1,690 @@
+<!doctype html>
+<!-- humanized: humanizer-ru, 2026-09-04, тире возвращено -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Построение угла, равного данному — геометрия 7 класс</title>
+<style>
+  :root{
+    --paper:#F6F7F9; --card:#FFFFFF; --ink:#1D2530; --muted:#606B7A; --line:#E3E7EE;
+    --brand:#2E5AAC; --brand-soft:#E4EBF7;
+    --giv:#E27C2C; --giv-soft:#FBEEDF;      /* данный угол A */
+    --new:#159A8A; --new-soft:#DEF3F0;      /* построенный угол при луче OM */
+    --rad:#2E5AAC; --rad-soft:#E4EBF7;      /* радиус r и дуги */
+    --chord:#7B4FBF; --chord-soft:#EFE7FA;  /* хорда BC = DE */
+    --ok:#1E8E5A; --no:#C23B3B;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper)}
+  .page{max-width:720px;margin:0 auto;padding:clamp(1.4rem,4vw,3rem) clamp(1.1rem,4vw,2rem) 4.5rem;
+    color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:17.5px;line-height:1.68;-webkit-font-smoothing:antialiased}
+  .mono{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-variant-numeric:tabular-nums;font-weight:600}
+
+  .hero{border-bottom:3px solid var(--brand);padding-bottom:1.4rem;margin-bottom:1.8rem}
+  .eyebrow{font-size:.74rem;letter-spacing:.15em;text-transform:uppercase;color:var(--brand);font-weight:700;margin:0 0 .55rem}
+  h1{font-size:clamp(1.9rem,6vw,2.8rem);line-height:1.05;margin:0;font-weight:800;letter-spacing:-.02em;text-wrap:balance}
+  .tagline{font-size:1.12rem;color:var(--muted);margin:.85rem 0 0;text-wrap:pretty}
+
+  section{margin-top:2.4rem}
+  h2{font-size:1.5rem;margin:0 0 .3rem;font-weight:780;letter-spacing:-.015em;text-wrap:balance}
+  h2 .em{color:var(--brand)}
+  h3{font-size:1.08rem;margin:1.4rem 0 .2rem;font-weight:750}
+  p{margin:.7rem 0}
+  strong{font-weight:680}
+  .givw{color:var(--giv);font-weight:800} .neww{color:var(--new);font-weight:800}
+  .radw{color:var(--rad);font-weight:800} .chw{color:var(--chord);font-weight:800}
+
+  .lead-in{background:var(--brand-soft);border-radius:14px;padding:1.1rem 1.3rem;font-size:1.02rem}
+  .lead-in p{margin:.4rem 0}
+  .lead-in b{color:var(--brand)}
+
+  .formula-box{background:var(--ink);color:#fff;border-radius:14px;padding:1.3rem;text-align:center;margin-top:1rem}
+  .formula-box .eq{font-family:ui-monospace,Menlo,monospace;font-size:clamp(1.1rem,4.4vw,1.7rem);font-weight:700;line-height:1.5}
+  .formula-box .eq .g{color:#F0A45E} .formula-box .eq .n{color:#6FD3C6} .formula-box .eq .c{color:#BFA3EE}
+  .formula-box .note{font-size:.9rem;color:#AEB8C6;margin:.7rem 0 0}
+
+  .note{border-left:4px solid var(--brand);background:var(--brand-soft);border-radius:0 10px 10px 0;padding:.8rem 1.1rem;margin-top:1rem;font-size:.98rem}
+  .note b{color:var(--brand)}
+  .note p{margin:.35rem 0}
+
+  .recall{background:var(--card);border:1px dashed var(--line);border-radius:14px;padding:1rem 1.2rem;margin-top:1rem}
+  .recall ul{margin:.4rem 0 0;padding-left:1.2rem;display:flex;flex-direction:column;gap:.35rem;font-size:.97rem}
+
+  .steps{counter-reset:st;list-style:none;margin:1rem 0 0;padding:0;display:flex;flex-direction:column;gap:.65rem}
+  .steps li{counter-increment:st;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:.85rem 1.05rem .85rem 3.1rem;position:relative;font-size:.99rem}
+  .steps li::before{content:counter(st);position:absolute;left:.85rem;top:.8rem;width:1.6rem;height:1.6rem;border-radius:50%;
+    background:var(--brand);color:#fff;font-weight:800;font-size:.9rem;display:flex;align-items:center;justify-content:center}
+  .steps .why{display:block;color:var(--muted);font-style:italic;font-size:.93rem;margin-top:.25rem}
+
+  /* Диаграммы */
+  .diagram{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:1.2rem;margin-top:1rem}
+  .diagram canvas{width:100%;height:auto;display:block;border-radius:8px}
+  .diag-btn{font:inherit;font-weight:700;font-size:.9rem;cursor:pointer;border:1px solid var(--brand);background:transparent;color:var(--brand);border-radius:9px;padding:.5rem .9rem}
+  .diag-btn[disabled]{opacity:.4;cursor:default}
+  .diag-btn.solid{background:var(--brand);color:#fff}
+  .diag-btn:focus-visible{outline:3px solid var(--brand);outline-offset:2px}
+  .stepbar{display:flex;gap:.5rem;flex-wrap:wrap;align-items:center;justify-content:center;margin-top:.9rem}
+  .stepbar .cnt{font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:.9rem;color:var(--muted);min-width:9ch;text-align:center}
+  .dots{display:flex;gap:.35rem;justify-content:center;margin-top:.7rem}
+  .dots i{width:.55rem;height:.55rem;border-radius:50%;background:var(--line);display:block}
+  .dots i.on{background:var(--brand)}
+  .stepcap{margin:.9rem 0 0;background:var(--brand-soft);border-radius:10px;padding:.75rem 1rem;font-size:.97rem;line-height:1.55;min-height:4.6rem}
+  .stepcap b{color:var(--brand)}
+  .cap{font-size:.9rem;color:var(--muted)}
+  .legend{display:flex;flex-wrap:wrap;gap:.5rem .9rem;margin-top:.8rem;font-size:.88rem;color:var(--muted)}
+  .legend span{display:inline-flex;align-items:center;gap:.35rem}
+  .legend i{width:.8rem;height:.8rem;border-radius:3px;display:block}
+
+  .walk{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.15rem 1.3rem;margin-top:1rem}
+  .walk .q{font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1rem;margin:0 0 .9rem;padding-bottom:.7rem;border-bottom:1px solid var(--line);line-height:1.5}
+  .walk ol{margin:0;padding-left:1.2rem;display:flex;flex-direction:column;gap:.55rem}
+  .walk li{font-size:.95rem}
+  .walk .why{color:var(--muted);font-style:italic}
+  .verdict{margin-top:1rem;padding:.7rem 1rem;background:var(--brand-soft);border-radius:10px;font-weight:650;color:var(--brand);font-family:ui-monospace,Menlo,monospace}
+
+  /* Тренажёр */
+  .trainer{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.2rem 1.3rem;margin-top:1rem}
+  .tr-task{font-size:clamp(.97rem,3.6vw,1.04rem);padding:1rem;background:var(--brand-soft);border-radius:10px;line-height:1.55}
+  .tr-task .tr-q{font-weight:700}
+  .tr-task ol.tr-opts{margin:.7rem 0 0;padding-left:1.5rem;display:flex;flex-direction:column;gap:.4rem}
+  .tr-task ol.tr-opts li{padding-left:.2rem}
+  .tr-task ul.tr-done{list-style:none;margin:.6rem 0 .8rem;padding:0;display:flex;flex-direction:column;gap:.35rem;font-size:.95rem;color:var(--muted)}
+  .tr-task ul.tr-done li{padding-left:1.4rem;position:relative}
+  .tr-task ul.tr-done li::before{content:"✓";position:absolute;left:0;color:var(--ok);font-weight:800}
+  .tr-ctl{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:1rem;align-items:center;justify-content:center}
+  .tr-ctl input{flex:1;min-width:110px;max-width:180px;font:inherit;padding:.5rem .7rem;border:1px solid var(--line);border-radius:9px;text-align:center;background:#fff;color:var(--ink)}
+  .tr-ctl button{font:inherit;font-weight:700;font-size:.9rem;cursor:pointer;border:none;border-radius:9px;padding:.55rem .95rem;color:#fff;background:var(--brand)}
+  .tr-ctl button.sec{background:var(--giv)}
+  .tr-ctl button.ghost{background:transparent;color:var(--brand);border:1px solid var(--brand)}
+  .tr-ctl button:focus-visible,.tr-ctl input:focus-visible{outline:3px solid var(--brand);outline-offset:2px}
+  .tr-result{margin-top:.9rem;font-size:.96rem;min-height:1.2rem;text-align:center}
+  .tr-result .ok{color:var(--ok);font-weight:700} .tr-result .bad{color:var(--no);font-weight:700}
+  .tr-result .sol{margin-top:.6rem;padding:.8rem 1rem;background:#FCFDFE;border:1px solid var(--line);border-radius:10px;font-size:.92rem;line-height:1.75;text-align:left;overflow-x:auto}
+
+  details{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:.9rem 1.1rem;margin-top:.7rem}
+  details[open]{border-color:var(--brand)}
+  summary{cursor:pointer;font-weight:650;list-style:none;display:flex;justify-content:space-between;gap:1rem;align-items:center}
+  summary::-webkit-details-marker{display:none}
+  summary::after{content:"проверить";font-size:.8rem;color:var(--brand);font-weight:700;white-space:nowrap}
+  details[open] summary::after{content:"скрыть"}
+  summary:focus-visible{outline:3px solid var(--brand);outline-offset:3px;border-radius:6px}
+  .ans{margin-top:.75rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.96rem;color:var(--muted)}
+  .ans b{color:var(--ink)}
+  .drill{display:flex;flex-direction:column;gap:.2rem;margin-top:1rem}
+  .lvl{font-size:.74rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:700;margin:1.3rem 0 .3rem}
+
+  .tablewrap{overflow-x:auto;margin-top:1rem;border:1px solid var(--line);border-radius:11px;background:var(--card)}
+  table{border-collapse:collapse;width:100%;font-size:.95rem}
+  th,td{padding:.6rem .85rem;text-align:left;border-bottom:1px solid var(--line)}
+  th{font-weight:700;background:#FAFBFD;white-space:nowrap}
+  td:first-child{white-space:nowrap}
+  tr:last-child td{border-bottom:none}
+
+  ul.traps{list-style:none;margin:1rem 0 0;padding:0;display:flex;flex-direction:column;gap:.7rem}
+  ul.traps li{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:.85rem 1.05rem;padding-left:2.5rem;position:relative;font-size:.97rem}
+  ul.traps li::before{content:"⚠";position:absolute;left:1rem;top:.85rem;color:var(--giv)}
+  ul.traps b{font-weight:700}
+
+  .wrapup{background:var(--brand);color:#fff;border-radius:16px;padding:1.4rem 1.5rem;margin-top:2.4rem}
+  .wrapup h2{color:#fff;margin:0 0 .5rem}
+  .wrapup p{color:#DEE7F5;margin:.4rem 0;font-size:1rem}
+  .wrapup .big-rule{font-size:clamp(.95rem,4vw,1.15rem);font-weight:800;color:#fff;margin:.6rem 0;font-family:ui-monospace,Menlo,monospace}
+  .wrapup .next{font-size:.95rem;color:#C6D5EE;margin-top:1rem;padding-top:1rem;border-top:1px solid rgba(255,255,255,.2)}
+  .wrapup .next b{color:#fff}
+
+  @media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+<!--LESSON-NAV-TOP--><style>.lnav{--lnav-accent:#3D5AF1}.lnav a{text-decoration:none;font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif}.lnav-top{max-width:820px;margin:0 auto;padding:.75rem clamp(1rem,4vw,1.5rem) .1rem}.lnav-top a{display:inline-flex;align-items:center;gap:.35rem;color:var(--lnav-accent);font-weight:600;font-size:.9rem}.lnav-top a:hover{text-decoration:underline}.lnav-bot{max-width:820px;margin:2.6rem auto 3rem;padding:1.1rem clamp(1rem,4vw,1.5rem) 0;border-top:1px solid #E4E8EF;display:flex;align-items:stretch;gap:.55rem}.lnav-bot a{min-width:0;display:flex;flex-direction:column;justify-content:center;gap:.15rem;border:1px solid #E4E8EF;border-radius:12px;padding:.65rem .85rem;color:#182233;background:#fff;transition:border-color .1s,transform .08s}.lnav-bot a:hover{border-color:var(--lnav-accent);transform:translateY(-1px)}.lnav-bot .prev,.lnav-bot .next{flex:1 1 0}.lnav-bot .next{text-align:right}.lnav-bot .dir{font-size:.72rem;color:#8A93A6;font-weight:600}.lnav-bot .ttl{font-size:.9rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.lnav-bot .to-cat{flex:0 0 auto;flex-direction:row;align-items:center;justify-content:center;color:var(--lnav-accent);font-weight:700;font-size:.85rem;white-space:nowrap}@media(max-width:420px){.lnav-bot .to-cat span{display:none}.lnav-bot .to-cat{padding:.65rem .7rem}}</style><nav class="lnav lnav-top"><a href="./catalog.html">← Все темы</a></nav><!--/LESSON-NAV-TOP-->
+<div class="page">
+
+  <header class="hero">
+    <p class="eyebrow">Геометрия · 7 класс</p>
+    <h1>Построение угла, равного данному</h1>
+    <p class="tagline">Как скопировать угол точь-в-точь, вообще не зная, сколько в нём градусов. Циркуль, линейка без делений — и доказательство вместо «на глаз».</p>
+  </header>
+
+  <div class="lead-in">
+    <p><b>Где встречается.</b> Угол нередко приходится перенести с одного чертежа на другой, не измеряя его транспортиром. Чертёжник копирует деталь, столяр размечает скос. В геометрии угол «повторяют», когда строят треугольник по двум сторонам и углу между ними.</p>
+    <p>Навык этот — кирпичик. На нём стоят построение биссектрисы и построение треугольника по стороне и двум углам. Разберёшься здесь — дальше пойдёт легче.</p>
+  </div>
+
+  <section>
+    <h2>Главный миф: <span class="em">«точно скопировать угол можно только транспортиром»</span></h2>
+    <p>Звучит логично: чтобы повторить угол, надо же знать, сколько в нём градусов. Только выходит ровно наоборот. <strong>Циркуль и линейка дают абсолютно точную копию — без всякого измерения в градусах.</strong></p>
+    <p>Скажешь: а если транспортир хороший? Всё равно приближение: деления у него конечны, да и глаз ошибается. Ты прикладываешь, щуришься, ставишь метку — и каждый раз чуть-чуть по-разному. Так что классическое построение циркулем <strong>надёжнее измерения</strong>, а не наоборот.</p>
+  </section>
+
+  <section>
+    <h2>Что нужно вспомнить</h2>
+    <div class="recall">
+      <ul>
+        <li><strong>Циркуль и линейка без делений.</strong> Линейкой проводим прямые и лучи, циркулем — окружности и дуги. Мерить ими длины и градусы нельзя, да и не понадобится.</li>
+        <li><strong>Окружность и радиус.</strong> Все точки окружности стоят от центра на одном расстоянии — это радиус. Значит, дуга с центром в вершине угла отрежет на обеих сторонах <em>одинаковые</em> отрезки.</li>
+        <li><strong>Хорда</strong> — отрезок, соединяющий две точки окружности. Здесь это отрезок <span class="mono">BC</span>, и именно его длину мы будем переносить.</li>
+        <li><strong>Признак равенства треугольников по трём сторонам (ССС).</strong> Если три стороны одного треугольника попарно равны трём сторонам другого, треугольники равны. У равных треугольников равны и все соответствующие углы. Без этого признака построение повисает недоказанным.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section>
+    <h2>Суть: <span class="em">переносим не градусы, а форму</span></h2>
+    <p>Дан угол <span class="mono givw">A</span> и дан луч с началом в точке <span class="mono neww">O</span>. Задача: построить от этого луча угол, который в точности равен углу <span class="mono">A</span>.</p>
+    <p>Идея в одну строку: <strong>мы переносим не «градусы», а форму угла</strong>. Циркулем откладываем на сторонах угла <span class="mono">A</span> одинаковые отрезки, между их концами получается «поперечина» — хорда <span class="mono chw">BC</span>. Дальше тем же раствором циркуля повторяем ту же картинку у нового луча.</p>
+    <p>Выходят два треугольника с попарно равными сторонами. Значит, равны и углы между этими сторонами. Фокус вот в чём: равенство углов держится не на твёрдой руке, его <strong>гарантирует равенство треугольников</strong>.</p>
+    <div class="formula-box">
+      <div class="eq"><span class="g">AB</span> = <span class="n">OD</span>, &nbsp; <span class="g">AC</span> = <span class="n">OE</span>, &nbsp; <span class="c">BC</span> = <span class="c">DE</span></div>
+      <div class="note">три пары равных сторон → треугольники <span class="g">ABC</span> и <span class="n">ODE</span> равны по ССС → ∠MOE = ∠A</div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Ядро: пять шагов построения</h2>
+    <p><strong>Дано:</strong> угол <span class="mono">A</span> и луч <span class="mono">OM</span> — он станет одной из сторон нового угла.</p>
+    <ol class="steps">
+      <li>Проводим окружность произвольного радиуса <span class="mono radw">r</span> с центром в вершине <span class="mono">A</span>. Она пересекает стороны угла в точках <span class="mono">B</span> и <span class="mono">C</span>.
+        <span class="why">На сторонах угла легли одинаковые отрезки: AB = AC = r.</span></li>
+      <li>Тем же радиусом <span class="mono radw">r</span> проводим окружность с центром в точке <span class="mono">O</span>. Она пересекает луч <span class="mono">OM</span> в точке <span class="mono">D</span>.
+        <span class="why">У нового угла появилась сторона OD = r, ровно как в данном.</span></li>
+      <li>Измеряем циркулем длину отрезка <span class="mono chw">BC</span>: игла в <span class="mono">B</span>, грифель в <span class="mono">C</span>. Раствор циркуля стал равен <span class="mono">BC</span>.
+        <span class="why">BC — «ширина» данного угла на расстоянии r от вершины. Её и надо повторить.</span></li>
+      <li>Этим раствором проводим окружность радиуса <span class="mono chw">BC</span> с центром в точке <span class="mono">D</span>. Она пересекает построенную ранее окружность в точке <span class="mono">E</span>.
+        <span class="why">Сразу выполняется и DE = BC, и OE = r.</span></li>
+      <li>Проводим луч <span class="mono">OE</span>. Угол <span class="mono neww">MOE</span> и есть искомый: <span class="mono">∠MOE = ∠A</span>.
+        <span class="why">Потому что треугольники ABC и ODE равны по трём сторонам.</span></li>
+    </ol>
+
+    <h3>Обозначения</h3>
+    <div class="tablewrap">
+      <table>
+        <tr><th>Обозначение</th><th>Что значит</th></tr>
+        <tr><td><b class="radw">r</b></td><td>радиус первой окружности; выбираем его сами, и он одинаков для обоих углов</td></tr>
+        <tr><td><b>B, C</b></td><td>концы дуги на сторонах данного угла; <span class="mono">AB = AC = r</span></td></tr>
+        <tr><td><b>D</b></td><td>точка на новом луче; <span class="mono">OD = r</span></td></tr>
+        <tr><td><b class="chw">BC</b></td><td>хорда — отрезок между B и C; её длину мы и переносим</td></tr>
+        <tr><td><b>E</b></td><td>вторая точка нового угла; <span class="mono">OE = r</span>, <span class="mono">DE = BC</span></td></tr>
+      </table>
+    </div>
+
+    <div class="note">
+      <p><b>Условия применимости.</b> Нужны только циркуль и линейка без делений, градусы мерить нельзя. Радиус <span class="mono">r</span> бери не слишком маленьким: иначе точки пересечения выйдут смазанными и построение «поплывёт».</p>
+    </div>
+
+    <h3>Почему получается именно равный угол</h3>
+    <p>Смотрим на треугольники <span class="mono givw">ABC</span> и <span class="mono neww">ODE</span>. Стороны у них попарно равны:</p>
+    <p><span class="mono">AB = OD = r</span> (обе дуги делали одним раствором), <span class="mono">AC = OE = r</span> (тот же радиус), <span class="mono">BC = DE</span> (мы специально перенесли хорду).</p>
+    <p>Три пары равных сторон — это признак ССС, равенство треугольников по трём сторонам. Треугольники равны, а у равных треугольников равны и соответствующие углы. Угол <span class="mono">A</span> лежит против стороны <span class="mono">BC</span>, угол <span class="mono">O</span> — против <span class="mono">DE</span>, они соответственные. Отсюда <span class="mono">∠A = ∠O</span>, то есть <span class="mono">∠MOE = ∠A</span>. Что и требовалось.</p>
+  </section>
+
+  <section>
+    <h2>Увидь глазами: <span class="em">построение по шагам</span></h2>
+    <p>Слева — данный угол <span class="mono givw">A</span>, справа — луч <span class="mono">OM</span>, у которого мы строим копию. Жми «шаг вперёд» и смотри, что появляется на чертеже. Не уловил — вернись назад и прокрути ещё раз.</p>
+    <div class="diagram">
+      <canvas id="cvBuild" width="640" height="340" aria-label="Пошаговое построение угла, равного данному, циркулем и линейкой"></canvas>
+      <div class="dots" id="bDots" aria-hidden="true"></div>
+      <div class="stepbar">
+        <button id="bPrev" class="diag-btn" type="button">← Назад</button>
+        <span class="cnt" id="bCnt">Дано</span>
+        <button id="bNext" class="diag-btn solid" type="button">Шаг вперёд →</button>
+        <button id="bAll" class="diag-btn" type="button">Показать всё</button>
+        <button id="bReset" class="diag-btn" type="button">Сначала</button>
+      </div>
+      <p class="stepcap" id="bCap"></p>
+      <div class="legend">
+        <span><i style="background:var(--rad)"></i>дуги радиуса r</span>
+        <span><i style="background:var(--chord)"></i>хорда BC = DE</span>
+        <span><i style="background:var(--giv)"></i>данный угол A</span>
+        <span><i style="background:var(--new)"></i>построенный угол MOE</span>
+      </div>
+    </div>
+    <p class="cap">Задержись на последнем шаге: одинаковые чёрточки на сторонах — это и есть три пары равных сторон, на которых держится признак ССС. Чертёж и обозначения тут подпирают друг друга, смотри на них вместе.</p>
+
+    <div class="note">
+      <p><b>Предскажи → проверь → объясни.</b> Перед шагом 4 остановись и ответь: где окажется точка <span class="mono">E</span> и почему угол получится равным? Потом открой построение и сверь с догадкой. Такая пауза держится в памяти куда крепче, чем спокойный просмотр.</p>
+    </div>
+
+    <p>И повтори построение руками, циркулем на бумаге. Порядок шагов запоминается пальцами быстрее, чем глазами по готовому чертежу.</p>
+  </section>
+
+  <section>
+    <h2>Разбираем вместе</h2>
+
+    <div class="walk">
+      <p class="q">Дан острый угол A и луч OM. Построить ∠MOE = ∠A.</p>
+      <ol>
+        <li>Окружность радиуса <span class="mono">r</span> с центром <span class="mono">A</span> пересекает стороны в <span class="mono">B</span> и <span class="mono">C</span>. <span class="why">Почему: на сторонах угла легли одинаковые отрезки AB = AC = r.</span></li>
+        <li>Окружность того же радиуса <span class="mono">r</span> с центром <span class="mono">O</span> пересекает луч в <span class="mono">D</span>. <span class="why">Почему: у нового угла появилась сторона OD = r, как в данном.</span></li>
+        <li>Берём раствор циркуля, равный <span class="mono">BC</span>. <span class="why">Почему: BC — «ширина» данного угла на расстоянии r от вершины, её и повторяем.</span></li>
+        <li>Окружностью радиуса <span class="mono">BC</span> из центра <span class="mono">D</span> засекаем точку <span class="mono">E</span> на первой окружности. <span class="why">Почему: тогда сходится и DE = BC, и OE = r.</span></li>
+        <li>Проводим <span class="mono">OE</span>. Треугольники <span class="mono">ABC</span> и <span class="mono">ODE</span> равны по трём сторонам, поэтому <span class="mono">∠MOE = ∠A</span>. <span class="why">Почему: у равных треугольников равны соответствующие углы.</span></li>
+      </ol>
+      <div class="verdict">Ответ: угол построен, ∠MOE = ∠A</div>
+    </div>
+
+    <div class="walk" style="margin-top:.8rem">
+      <p class="q">Дан угол A = 50° и луч OM. Ученик успел сделать часть работы. Допиши недостающий шаг и вывод.</p>
+      <p style="margin-top:0">Уже сделано: окружность радиуса <span class="mono">r</span> из <span class="mono">A</span> дала точки <span class="mono">B</span> и <span class="mono">C</span>; окружность того же <span class="mono">r</span> из <span class="mono">O</span> дала точку <span class="mono">D</span>; раствор циркуля взят равным <span class="mono">BC</span>.</p>
+      <p class="cap" style="margin-top:.7rem">Подсказка: пройдись по списку из пяти шагов и найди, где ученик встал. Циркуль у него раскрыт правильно, осталось им воспользоваться.</p>
+      <details style="margin-top:.5rem"><summary>Сверить свой ответ</summary><div class="ans">Окружностью радиуса <span class="mono">BC</span> из центра <span class="mono">D</span> засечь точку <span class="mono">E</span> на первой окружности и провести луч <span class="mono">OE</span>. Тогда треугольники <span class="mono">ABC</span> и <span class="mono">ODE</span> равны по ССС, значит <b>∠MOE = 50°</b>.</div></details>
+    </div>
+
+    <div class="walk" style="margin-top:.8rem">
+      <p class="q">Дан тупой угол A (около 120°) и луч OM. Построй равный ему угол при луче OM и объясни, на каком признаке равенства треугольников держится доказательство.</p>
+      <p style="margin-top:0">Эта задача целиком твоя. Отвечай честно на главный вопрос: меняется ли хоть что-то в построении из-за того, что угол тупой?</p>
+      <details style="margin-top:.5rem"><summary>Показать ответ</summary><div class="ans">Построение то же самое, шаги 1–5, <b>без единого изменения</b>. Равенство углов обосновывается признаком равенства треугольников по трём сторонам (ССС): <span class="mono">AB = OD</span>, <span class="mono">AC = OE</span>, <span class="mono">BC = DE</span>. У тупого угла хорда <span class="mono">BC</span> просто выходит длиннее, и всё.</div></details>
+    </div>
+  </section>
+
+  <section>
+    <h2>Тренажёр · порядок построения</h2>
+    <p>Задания собираются заново каждый раз. Читай условие и вписывай <strong>номера</strong> — одну цифру или несколько подряд, без пробелов и запятых. Потом жми «Проверить» и загляни в разбор, даже когда ответил верно.</p>
+    <div class="trainer">
+      <div class="tr-task" id="trTask"></div>
+      <div class="tr-ctl">
+        <button id="trNew" type="button">🎲 Новое</button>
+        <input id="trAns" type="text" inputmode="numeric" placeholder="ответ" aria-label="Ответ">
+        <button id="trCheck" type="button" class="sec">Проверить</button>
+        <button id="trShow" type="button" class="ghost">Решение</button>
+      </div>
+      <div id="trResult" class="tr-result"></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Проверь себя</h2>
+
+    <p class="lvl">Уровень 1 · понимание</p>
+    <div class="drill">
+      <details><summary>1) Какой раствор циркуля переносится в этом построении и почему именно он?</summary><div class="ans">Длина хорды <span class="mono">BC</span>. Хорда задаёт <b>«ширину» угла на фиксированном расстоянии r от вершины</b>: шире угол — длиннее хорда. Повторил хорду при том же r, повторил и угол.</div></details>
+      <details><summary>2) Какой раствор циркуля нужно сохранять неизменным при построении первых двух дуг?</summary><div class="ans">Радиус <span class="mono">r</span>. Обе окружности — и с центром <span class="mono">A</span>, и с центром <span class="mono">O</span> — делаются одним и тем же раствором.</div></details>
+      <details><summary>3) Каким признаком равенства треугольников доказывают, что построенный угол равен данному?</summary><div class="ans">Признаком по трём сторонам — <b>ССС</b>. Равны стороны: <span class="mono">AB = OD</span>, <span class="mono">AC = OE</span>, <span class="mono">BC = DE</span>.</div></details>
+    </div>
+
+    <p class="lvl">Уровень 2 · применение</p>
+    <div class="drill">
+      <details><summary>4) Построй угол, равный данному острому углу, при заданном луче. Запиши по шагам, что строишь, и укажи равные отрезки.</summary><div class="ans">Шаги: (1) дуга радиуса <span class="mono">r</span> из <span class="mono">A</span> → точки <span class="mono">B</span>, <span class="mono">C</span>; (2) дуга того же <span class="mono">r</span> из <span class="mono">O</span> → точка <span class="mono">D</span> на луче; (3) раствор циркуля = <span class="mono">BC</span>; (4) дуга радиуса <span class="mono">BC</span> из <span class="mono">D</span> → точка <span class="mono">E</span>; (5) луч <span class="mono">OE</span>.<br>Равные отрезки: <b>AB = AC = OD = OE = r</b> и <b>BC = DE</b>.</div></details>
+      <details><summary>5) Что нужно дописать в конце решения, чтобы построение считалось доказанным, а не просто нарисованным?</summary><div class="ans">Фразу про равенство треугольников: «треугольники <span class="mono">ABC</span> и <span class="mono">ODE</span> равны по трём сторонам, значит <span class="mono">∠MOE = ∠A</span>». Без ссылки на признак это <b>не доказательство</b>.</div></details>
+    </div>
+
+    <p class="lvl">Уровень 3 · анализ</p>
+    <div class="drill">
+      <details><summary>6) Что изменится, если на шаге 4 взять другой раствор циркуля, не равный BC?</summary><div class="ans">Точка <span class="mono">E</span> уедет в другое место, и угол выйдет <b>НЕ равным</b> данному. Равенство треугольников рассыпается: третьей пары равных сторон нет, признак ССС применить не к чему.</div></details>
+      <details><summary>7) Найди ошибку. Ученик отложил OD = r, но дугу из точки D провёл радиусом AB вместо BC.</summary><div class="ans">Тогда <span class="mono">DE = AB = r</span>, а не <span class="mono">BC</span>. То есть <span class="mono">DE ≠ BC</span>, треугольники <b>не равны</b>, и <span class="mono">∠MOE ≠ ∠A</span>. Ученик спутал два разных отрезка: радиус (сторону треугольника из вершины) и хорду (поперечину между B и C).</div></details>
+      <details><summary>8) Обратная задача. Дан уже построенный ∠MOE, про который говорят, что он равен ∠A. Как по чертежу проверить, что построение верно?</summary><div class="ans">Проверять <b>циркулем</b>, транспортир тут не нужен. Убедись, что <span class="mono">AB = AC = OD = OE</span> и <span class="mono">BC = DE</span>. Сошлись все пять отрезков — треугольники равны по ССС, а с ними равны и углы.</div></details>
+      <details><summary>9) Что изменится в построении, если данный угол не острый, а тупой?</summary><div class="ans"><b>Ничего.</b> Те же пять шагов в том же порядке. Хорда <span class="mono">BC</span> станет длиннее — угол ведь шире, — но её циркуль и переносит. Признак ССС работает одинаково для любых треугольников.</div></details>
+    </div>
+  </section>
+
+  <section>
+    <h2>Ловушки</h2>
+    <ul class="traps">
+      <li><b>Меняют раствор циркуля между дугами.</b> На шаге 1 взяли радиус <span class="mono">r</span>, а на шаге 2 случайно чуть другой. Тогда <span class="mono">OD ≠ r</span> и равенство треугольников разваливается. <em>Как не допустить:</em> после первой окружности НЕ сбивай раствор циркуля до конца шага 2, обе дуги радиуса <span class="mono">r</span> делай одним раствором.</li>
+      <li><b>Неверно переносят хорду BC.</b> Берут раствор «на глаз» или тыкают ножкой циркуля не в <span class="mono">B</span> и <span class="mono">C</span>, а куда придётся. <em>Как не допустить:</em> игла строго в точку <span class="mono">B</span>, грифель строго в точку <span class="mono">C</span> — только так раствор равен именно <span class="mono">BC</span>.</li>
+      <li><b>Не обосновывают равенство через признак ССС.</b> Считают, что «и так видно, что угол равный». Без ссылки на равенство треугольников по трём сторонам это угадывание, а не доказательство. <em>Как не допустить:</em> всегда заканчивай словами «треугольники ABC и ODE равны по трём сторонам, значит ∠MOE = ∠A».</li>
+      <li><b>Думают, что нужен транспортир.</b> Лезут его искать, хотя он тут вообще ни при чём. <em>Как не допустить:</em> держи в голове — всё построение идёт циркулем и линейкой без делений, градусы не измеряются ни разу.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Объясни своими словами</h2>
+    <p>Закрой урок и ответь вслух: себе, родителю или чат-боту. Сказал связно, без запинок — тема твоя.</p>
+    <div class="drill">
+      <details><summary>Какой раствор циркуля нужно сохранять неизменным при построении обеих первых дуг?</summary><div class="ans">Радиус <span class="mono">r</span>.</div></details>
+      <details><summary>Длину какого отрезка мы переносим, чтобы повторить «ширину» угла?</summary><div class="ans">Длину хорды <span class="mono">BC</span>.</div></details>
+      <details><summary>Каким признаком равенства треугольников доказывают, что построенный угол равен данному?</summary><div class="ans">Признаком по трём сторонам, <b>ССС</b>.</div></details>
+      <details><summary>Расскажи всё построение целиком, по шагам, ни разу не произнеся слово «градус».</summary><div class="ans">Дуга радиуса <span class="mono">r</span> из вершины <span class="mono">A</span> → точки <span class="mono">B</span> и <span class="mono">C</span>; той же дугой из <span class="mono">O</span> → точка <span class="mono">D</span>; раствор циркуля = <span class="mono">BC</span>; дуга радиуса <span class="mono">BC</span> из <span class="mono">D</span> → точка <span class="mono">E</span>; луч <span class="mono">OE</span>. Треугольники <span class="mono">ABC</span> и <span class="mono">ODE</span> равны по трём сторонам, значит углы равны.</div></details>
+    </div>
+  </section>
+
+  <div class="wrapup">
+    <h2>Запомни главное</h2>
+    <p class="big-rule">AB = AC = OD = OE = r, &nbsp;BC = DE &nbsp;→&nbsp; ССС &nbsp;→&nbsp; ∠MOE = ∠A</p>
+    <p>Чтобы построить угол, равный данному, одним раствором циркуля откладываем одинаковые дуги у обоих углов, переносим хорду <b>BC</b> и получаем треугольники, равные по трём сторонам. Отсюда и равенство углов: они именно равны, а не «похожи».</p>
+    <p class="next">👉 Дальше — <b>построение биссектрисы угла</b>. Там та же механика: дуги одним раствором, равные отрезки и снова признак ССС. Так что этот урок ты потратил не только на копирование углов.</p>
+  </div>
+
+</div>
+
+<script>
+/* ── Пошаговое построение на Canvas ────────────────────────────── */
+(function(){
+  var cv=document.getElementById('cvBuild'); if(!cv) return;
+  var ctx=cv.getContext('2d');
+  var prevBtn=document.getElementById('bPrev'), nextBtn=document.getElementById('bNext'),
+      allBtn=document.getElementById('bAll'), resetBtn=document.getElementById('bReset'),
+      cntEl=document.getElementById('bCnt'), capEl=document.getElementById('bCap'),
+      dotsEl=document.getElementById('bDots');
+  var RAD=Math.PI/180, MAX=5, step=0, L=null, sc=1, dpr=1, timer=null;
+
+  var CAPS=[
+    '<b>Дано.</b> Слева угол A, справа луч OM. Цель: построить у луча OM угол, в точности равный ∠A. Транспортир не понадобится ни разу.',
+    '<b>Шаг 1.</b> Дуга радиуса r с центром в вершине A. Она пересекает стороны угла в точках B и C, поэтому AB = AC = r.',
+    '<b>Шаг 2.</b> Тем же самым раствором — дуга радиуса r с центром O. На луче OM появляется точка D, и OD = r. Раствор менять нельзя!',
+    '<b>Шаг 3.</b> Игла в B, грифель в C: раствор циркуля стал равен хорде BC. Это «ширина» данного угла на расстоянии r от вершины.',
+    '<b>Шаг 4.</b> Этим раствором из точки D засекаем на окружности с центром O точку E. Сразу выполняется и DE = BC, и OE = r.',
+    '<b>Готово.</b> Проводим луч OE. В треугольниках ABC и ODE стороны попарно равны (одна чёрточка, две, три), значит по признаку ССС треугольники равны — а с ними равны и углы: ∠MOE = ∠A.'
+  ];
+
+  function css(v){ return getComputedStyle(document.documentElement).getPropertyValue(v).trim(); }
+
+  function layout(w){
+    var narrow = w < 520;
+    if(narrow){
+      return {VW:360, VH:580, A:[62,180], O:[62,455], r:68,
+              t1:8, t2:63, tM:-8, side:112, ray:238, fs:14,
+              capA:[150,268], capO:[150,548]};
+    }
+    return {VW:640, VH:340, A:[80,232], O:[368,232], r:80,
+            t1:10, t2:65, tM:-10, side:126, ray:216, fs:15,
+            capA:[150,318], capO:[452,318]};
+  }
+
+  function P(c,r,d){ return [c[0]+r*Math.cos(d*RAD), c[1]-r*Math.sin(d*RAD)]; }
+  function line(p,q,color,w,dash){
+    ctx.save(); ctx.setLineDash(dash||[]); ctx.strokeStyle=color; ctx.lineWidth=w; ctx.lineCap='round';
+    ctx.beginPath(); ctx.moveTo(p[0],p[1]); ctx.lineTo(q[0],q[1]); ctx.stroke(); ctx.restore();
+  }
+  function arc(c,r,a1,a2,color,w,dash){
+    ctx.save(); ctx.setLineDash(dash||[]); ctx.strokeStyle=color; ctx.lineWidth=w; ctx.lineCap='round';
+    ctx.beginPath(); ctx.arc(c[0],c[1],r,-a2*RAD,-a1*RAD); ctx.stroke(); ctx.restore();
+  }
+  function dot(p,color,rr){
+    ctx.beginPath(); ctx.arc(p[0],p[1],rr||4,0,6.2832); ctx.fillStyle=color; ctx.fill();
+  }
+  function text(s,p,color,size,weight,align,base){
+    ctx.fillStyle=color; ctx.textAlign=align||'center'; ctx.textBaseline=base||'alphabetic';
+    ctx.font=(weight||'700')+' '+size+'px ui-monospace,Menlo,monospace';
+    ctx.fillText(s,p[0],p[1]);
+  }
+  function label(s,p,color,size){ text(s,p,color,size); }
+  function ticks(p,q,n,color){
+    var dx=q[0]-p[0], dy=q[1]-p[1], len=Math.sqrt(dx*dx+dy*dy);
+    if(!len) return;
+    var ux=dx/len, uy=dy/len, nx=-uy, ny=ux, mx=(p[0]+q[0])/2, my=(p[1]+q[1])/2, h=5, gap=4.5;
+    ctx.save(); ctx.strokeStyle=color; ctx.lineWidth=1.8; ctx.lineCap='round';
+    for(var i=0;i<n;i++){
+      var off=(i-(n-1)/2)*gap;
+      ctx.beginPath();
+      ctx.moveTo(mx+ux*off-nx*h, my+uy*off-ny*h);
+      ctx.lineTo(mx+ux*off+nx*h, my+uy*off+ny*h);
+      ctx.stroke();
+    }
+    ctx.restore();
+  }
+  function poly(pts,fill){
+    ctx.beginPath(); ctx.moveTo(pts[0][0],pts[0][1]);
+    for(var i=1;i<pts.length;i++) ctx.lineTo(pts[i][0],pts[i][1]);
+    ctx.closePath(); ctx.fillStyle=fill; ctx.fill();
+  }
+
+  function resize(){
+    var w=cv.clientWidth||640;
+    L=layout(w);
+    sc=w/L.VW; dpr=Math.min(window.devicePixelRatio||1,2);
+    cv.width=Math.round(w*dpr); cv.height=Math.round(L.VH*sc*dpr);
+    cv.style.height=(L.VH*sc)+'px';
+    ctx.setTransform(dpr*sc,0,0,dpr*sc,0,0);
+  }
+
+  function draw(){
+    var INK=css('--ink'), MUT=css('--muted'), RADC=css('--rad'), CH=css('--chord'),
+        GIV=css('--giv'), NEW=css('--new'), LINE=css('--line');
+    var A=L.A, O=L.O, r=L.r, fs=L.fs;
+    var t1=L.t1, t2=L.t2, tM=L.tM, tE=tM+(t2-t1);
+    var B=P(A,r,t1), C=P(A,r,t2);
+    var D=P(O,r,tM), E=P(O,r,tE);
+    var chord=Math.sqrt((B[0]-C[0])*(B[0]-C[0])+(B[1]-C[1])*(B[1]-C[1]));
+    /* угол направления D→E, чтобы дуга шага 4 прошла через E */
+    var aDE=Math.atan2(-(E[1]-D[1]), E[0]-D[0])/RAD;
+
+    ctx.clearRect(0,0,L.VW,L.VH);
+
+    /* ── заливки треугольников (последний шаг) ── */
+    if(step>=5){
+      poly([A,B,C], css('--giv-soft'));
+      poly([O,D,E], css('--new-soft'));
+    }
+
+    /* ── данный угол A ── */
+    line(A,P(A,L.side,t1),INK,2.4);
+    line(A,P(A,L.side,t2),INK,2.4);
+    dot(A,INK,4.5);
+    label('A',[A[0]-13,A[1]+6],INK,fs+2);
+    text('данный угол',[L.capA[0],L.capA[1]],MUT,fs-2,'600');
+
+    /* ── новый луч OM ── */
+    var Mend=P(O,L.ray,tM);
+    line(O,Mend,INK,2.4);
+    /* стрелка луча */
+    line(Mend,P(Mend,9,tM+152),INK,2);
+    line(Mend,P(Mend,9,tM-152),INK,2);
+    dot(O,INK,4.5);
+    label('O',[O[0]-13,O[1]+6],INK,fs+2);
+    label('M',[Mend[0]-4,Mend[1]+fs+8],INK,fs);
+    text('строим здесь',[L.capO[0],L.capO[1]],MUT,fs-2,'600');
+
+    /* ── шаг 1: дуга радиуса r из A ── */
+    if(step>=1){
+      arc(A,r,t1-14,t2+14,RADC,2);
+      line(A,B,RADC,2.2); line(A,C,RADC,2.2);
+      dot(B,RADC,4); dot(C,RADC,4);
+      label('B',[B[0]+3,B[1]+fs+8],RADC,fs);
+      label('C',[C[0]-11,C[1]-8],RADC,fs);
+      text('r',[(A[0]+C[0])/2-11,(A[1]+C[1])/2-4],RADC,fs-1);
+    }
+
+    /* ── шаг 2: дуга того же r из O ── */
+    if(step>=2){
+      arc(O,r,tM-14,tM+80,RADC,2);
+      line(O,D,RADC,2.2);
+      dot(D,RADC,4);
+      label('D',[D[0]+2,D[1]+fs+9],RADC,fs);
+      text('r',[(O[0]+D[0])/2,(O[1]+D[1])/2-8],RADC,fs-1);
+    }
+
+    /* ── шаг 3: хорда BC = раствор циркуля ── */
+    if(step>=3){
+      line(B,C,CH,3);
+      var mBC=[(B[0]+C[0])/2, (B[1]+C[1])/2];
+      label('BC',[mBC[0]+18,mBC[1]-4],CH,fs);
+    }
+
+    /* ── шаг 4: дуга радиуса BC из D, точка E ── */
+    if(step>=4){
+      arc(D,chord,aDE-22,aDE+22,CH,2,[6,4]);
+      line(D,E,CH,3);
+      dot(E,CH,4);
+      label('E',[E[0]-10,E[1]-9],CH,fs);
+    }
+
+    /* ── шаг 5: луч OE, равенство ── */
+    if(step>=5){
+      var Eend=P(O,L.side,tE);
+      line(O,Eend,NEW,2.6);
+      line(Eend,P(Eend,9,tE+152),NEW,2);
+      line(Eend,P(Eend,9,tE-152),NEW,2);
+      line(B,C,CH,3); line(D,E,CH,3);
+      line(A,B,GIV,2.2); line(A,C,GIV,2.2);
+      line(O,D,NEW,2.2); line(O,E,NEW,2.2);
+      ticks(A,B,1,GIV); ticks(O,D,1,NEW);
+      ticks(A,C,2,GIV); ticks(O,E,2,NEW);
+      ticks(B,C,3,CH);  ticks(D,E,3,CH);
+      arc(A,26,t1,t2,GIV,2.4);
+      arc(O,26,tM,tE,NEW,2.4);
+      label('∠A',P(A,44,(t1+t2)/2),GIV,fs);
+      label('∠MOE',P(O,50,(tM+tE)/2),NEW,fs);
+      dot(E,CH,4);
+    }
+
+    /* ── подписи точек поверх заливок ── */
+    ctx.textBaseline='alphabetic';
+  }
+
+  function render(){
+    draw();
+    capEl.innerHTML=CAPS[step];
+    cntEl.textContent = step===0 ? 'Дано' : ('Шаг '+step+' из '+MAX);
+    prevBtn.disabled = (step===0);
+    nextBtn.disabled = (step===MAX);
+    var html='';
+    for(var i=0;i<=MAX;i++) html+='<i class="'+(i<=step?'on':'')+'"></i>';
+    dotsEl.innerHTML=html;
+  }
+
+  function go(s){
+    if(timer){ clearInterval(timer); timer=null; }
+    step=Math.max(0,Math.min(MAX,s)); render();
+  }
+
+  prevBtn.addEventListener('click',function(){ go(step-1); });
+  nextBtn.addEventListener('click',function(){ go(step+1); });
+  resetBtn.addEventListener('click',function(){ go(0); });
+  allBtn.addEventListener('click',function(){
+    var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if(timer){ clearInterval(timer); timer=null; }
+    if(reduce){ step=MAX; render(); return; }
+    step=0; render();
+    timer=setInterval(function(){
+      if(step>=MAX){ clearInterval(timer); timer=null; return; }
+      step++; render();
+    },1100);
+  });
+  window.addEventListener('resize',function(){ resize(); render(); });
+
+  resize(); render();
+})();
+</script>
+
+<script>
+/* ── Тренажёр: порядок шагов построения ────────────────────────── */
+(function(){
+  var taskEl=document.getElementById('trTask'), ansEl=document.getElementById('trAns'),
+      resEl=document.getElementById('trResult');
+  if(!taskEl) return;
+
+  var STEPS=[
+    'Провести окружность радиуса r с центром в вершине A — она пересечёт стороны угла в точках B и C',
+    'Тем же радиусом r провести окружность с центром в точке O — она пересечёт луч OM в точке D',
+    'Взять раствор циркуля, равный длине хорды BC',
+    'Окружностью радиуса BC с центром в точке D засечь точку E на окружности с центром O',
+    'Провести луч OE — угол MOE и есть искомый'
+  ];
+  var SHORT=[
+    'дуга радиуса r из вершины A → точки B и C',
+    'дуга того же радиуса r из точки O → точка D на луче',
+    'раствор циркуля = хорда BC',
+    'дуга радиуса BC из точки D → точка E',
+    'луч OE, угол MOE = угол A'
+  ];
+
+  var BANK=[
+    { q:'Длину какого отрезка мы переносим циркулем при построении?',
+      o:['Длину хорды BC','Длину радиуса r','Длину стороны угла A'],
+      s:'Переносим <b>хорду BC</b>. Она задаёт «ширину» угла на расстоянии r от вершины: при одном и том же r чем шире угол, тем длиннее хорда. Радиус r мы тоже повторяем, но он на шаге 2 уже отложен; а стороны угла — лучи, у них длины нет.' },
+    { q:'Каким признаком равенства треугольников доказывают, что построенный угол равен данному?',
+      o:['По трём сторонам (ССС)','По двум сторонам и углу между ними','По стороне и двум прилежащим углам'],
+      s:'Признаком <b>по трём сторонам (ССС)</b>. В треугольниках ABC и ODE: AB = OD = r, AC = OE = r, BC = DE. Углы мы вообще не измеряли, поэтому признаки, где нужен угол, тут применить не из чего.' },
+    { q:'Что произойдёт, если на шаге 4 взять раствор циркуля, НЕ равный BC?',
+      o:['Точка E встанет иначе, и угол получится не равным данному','Ничего, угол всё равно получится равным','Угол получится ровно вдвое больше данного'],
+      s:'Точка E встанет в другое место, и <b>угол получится не равным</b> данному. Пропала третья пара равных сторон (DE ≠ BC), значит признак ССС применить нельзя и равенство треугольников разрушается.' },
+    { q:'Какой раствор циркуля нельзя менять между первой и второй дугой?',
+      o:['Радиус r','Хорду BC','Можно менять любой — это не важно'],
+      s:'Нельзя менять <b>радиус r</b>. Обе дуги — из вершины A и из точки O — делаются одним раствором, иначе OD ≠ r и равенство треугольников разрушается. Хорда BC берётся позже, уже на шаге 3.' },
+    { q:'Ученик отложил OD = r, но дугу из точки D провёл радиусом AB вместо BC. Почему угол получится неверным?',
+      o:['Потому что тогда DE ≠ BC, треугольники не равны и ∠MOE ≠ ∠A','Потому что дугу вообще нельзя проводить из точки D','Потому что радиус AB не равен r'],
+      s:'Потому что тогда <b>DE ≠ BC</b>: треугольники ABC и ODE не равны, и ∠MOE ≠ ∠A. Ученик перепутал два разных отрезка — радиус AB (сторона из вершины) и хорду BC (поперечину между B и C). Кстати, AB как раз равен r, ошибка не в этом.' },
+    { q:'Какие инструменты нужны для этого построения?',
+      o:['Циркуль и линейка без делений','Транспортир и линейка с делениями','Только транспортир'],
+      s:'Только <b>циркуль и линейка без делений</b>. Градусы в этом построении не измеряются ни разу — в том и смысл, что копия получается точной без транспортира.' },
+    { q:'Как по готовому чертежу проверить, что угол построен верно?',
+      o:['Циркулем сравнить AB = AC = OD = OE и BC = DE','Транспортиром измерить оба угла и сравнить','Никак: правильность построения проверить нельзя'],
+      s:'Проверять надо <b>циркулем</b>: AB = AC = OD = OE и BC = DE. Если эти отрезки совпали, то по ССС треугольники равны, а значит равны и углы. Транспортир дал бы лишь приближённое значение — это не проверка.' },
+    { q:'Данный угол — тупой, около 120°. Что меняется в построении?',
+      o:['Ничего: те же пять шагов в том же порядке','Порядок шагов надо изменить','Для тупого угла понадобится транспортир'],
+      s:'<b>Ничего не меняется</b>: те же пять шагов. Хорда BC у тупого угла просто длиннее, чем у острого, — и именно эта длина переносится циркулем. Признак ССС работает для любых треугольников.' }
+  ];
+
+  function ri(a,b){ return Math.floor(Math.random()*(b-a+1))+a; }
+  function shuffle(a){
+    for(var i=a.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)), t=a[i]; a[i]=a[j]; a[j]=t; }
+    return a;
+  }
+  function olist(items){
+    var h='<ol class="tr-opts">';
+    for(var i=0;i<items.length;i++) h+='<li>'+items[i]+'</li>';
+    return h+'</ol>';
+  }
+
+  var cur=null;
+
+  function genOrder(){
+    var perm=shuffle([0,1,2,3,4]);
+    var shown=[], i;
+    for(i=0;i<5;i++) shown.push(STEPS[perm[i]]);
+    taskEl.innerHTML='<div class="tr-q">Шаги построения перепутаны. Запиши их номера в правильном порядке — пять цифр подряд, например 24135.</div>'+olist(shown);
+    var seq=[];
+    for(i=0;i<5;i++) seq.push(perm.indexOf(i)+1);
+    var ans=seq.join('');
+    var sol='<div class="sol">Правильный порядок: <b>'+ans+'</b><br>';
+    for(i=0;i<5;i++) sol+='&nbsp;&nbsp;'+(i+1)+') номер '+seq[i]+' — '+SHORT[i]+'<br>';
+    sol+='Логика простая: сначала обе дуги одним раствором r, потом переносим хорду BC, и только в конце — луч OE.</div>';
+    cur={ans:ans, sol:sol, len:5};
+  }
+
+  function genNext(){
+    var k=ri(1,4), i;
+    var done='<ul class="tr-done">';
+    for(i=0;i<k;i++) done+='<li>'+STEPS[i]+'</li>';
+    done+='</ul>';
+    var pool=[];
+    for(i=0;i<5;i++) if(i!==k) pool.push(i);
+    shuffle(pool);
+    var opts=[k,pool[0],pool[1]];
+    shuffle(opts);
+    var texts=[];
+    for(i=0;i<3;i++) texts.push(STEPS[opts[i]]);
+    var pos=opts.indexOf(k)+1;
+    taskEl.innerHTML='<div class="tr-q">Построение дошло до этого места:</div>'+done+
+      '<div class="tr-q">Какой шаг следующий? Запиши его номер.</div>'+olist(texts);
+    cur={ans:String(pos), len:1,
+      sol:'<div class="sol">Сделано шагов: '+k+'. По порядку дальше идёт <b>'+SHORT[k]+'</b> — это вариант <b>'+pos+'</b>.<br>Весь порядок целиком: 1) '+SHORT[0]+'; 2) '+SHORT[1]+'; 3) '+SHORT[2]+'; 4) '+SHORT[3]+'; 5) '+SHORT[4]+'.</div>'};
+  }
+
+  function genWhy(){
+    var q=BANK[ri(0,BANK.length-1)];
+    var idx=shuffle([0,1,2]), texts=[], i;
+    for(i=0;i<3;i++) texts.push(q.o[idx[i]]);
+    var pos=idx.indexOf(0)+1;
+    taskEl.innerHTML='<div class="tr-q">'+q.q+'</div>'+olist(texts)+
+      '<div class="tr-q" style="font-weight:600;margin-top:.7rem">Запиши номер верного варианта.</div>';
+    cur={ans:String(pos), len:1,
+      sol:'<div class="sol">Верный вариант — <b>'+pos+'</b>: '+q.o[0]+'.<br>'+q.s+'</div>'};
+  }
+
+  function generate(){
+    var r=Math.random();
+    if(r<0.34) genOrder();
+    else if(r<0.64) genNext();
+    else genWhy();
+    resEl.innerHTML=''; ansEl.value='';
+  }
+
+  function check(){
+    var raw=(ansEl.value||'').replace(/[^0-9]/g,'');
+    if(raw===''){ resEl.innerHTML='<span class="bad">Впиши номер (или пять номеров подряд) либо нажми «Решение».</span>'; return; }
+    if(raw.length!==cur.len){
+      resEl.innerHTML='<span class="bad">'+(cur.len===1?'Здесь нужна одна цифра — номер варианта.':'Здесь нужны пять цифр подряд, например 24135.')+'</span>';
+      return;
+    }
+    var good=(raw===cur.ans);
+    resEl.innerHTML=(good?'<span class="ok">✓ Верно!</span>':'<span class="bad">✗ Пока не то — смотри разбор.</span>')+cur.sol;
+  }
+
+  document.getElementById('trNew').addEventListener('click',function(){ generate(); ansEl.focus(); });
+  document.getElementById('trCheck').addEventListener('click',check);
+  document.getElementById('trShow').addEventListener('click',function(){ resEl.innerHTML=cur.sol; });
+  ansEl.addEventListener('keydown',function(e){ if(e.key==='Enter') check(); });
+
+  generate();
+})();
+</script>
+<!--LESSON-NAV-BOT--><nav class="lnav lnav-bot"><a class="prev" href="./geo7-zadachi-na-postroenie.html"><span class="dir">← Предыдущая</span><span class="ttl">Понятие о задачах на построение</span></a><a class="to-cat" href="./catalog.html">📚 <span>Все темы</span></a><a class="next" href="./geo7-postroenie-bissektrisy.html"><span class="dir">Следующая →</span><span class="ttl">Построение биссектрисы угла</span></a></nav><!--/LESSON-NAV-BOT-->

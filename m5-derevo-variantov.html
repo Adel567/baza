@@ -1,0 +1,869 @@
+<!doctype html>
+<!-- humanized: humanizer-ru, 2026-09-04, тире возвращено -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Дерево возможных вариантов — 5 класс</title>
+<style>
+  :root{
+    --paper:#FBF9F5;
+    --card:#FFFFFF;
+    --ink:#26202E;
+    --muted:#6B6473;
+    --line:#E7E2E8;
+    --brand:#6A3EA1;
+    --brand-soft:#EFE7F6;
+    --l1:#CF5A34;          /* шаг 1 */
+    --l1-soft:#FBEADF;
+    --l1-line:#F0CDB8;
+    --l2:#3A5AA0;          /* шаг 2 */
+    --l2-soft:#E5EBF6;
+    --l2-line:#C6D3EC;
+    --l3:#2E8B57;          /* шаг 3 */
+    --l3-soft:#E4F2EA;
+    --l3-line:#BFDFCD;
+    --ok:#2E8B57;
+    --no:#C23B3B;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper)}
+  .page{
+    max-width:720px;margin:0 auto;
+    padding:clamp(1.4rem,4vw,3rem) clamp(1.1rem,4vw,2rem) 4.5rem;
+    color:var(--ink);
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    font-size:17.5px;line-height:1.68;-webkit-font-smoothing:antialiased;
+  }
+  .mono{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-variant-numeric:tabular-nums;font-weight:600}
+
+  .hero{border-bottom:3px solid var(--brand);padding-bottom:1.4rem;margin-bottom:1.8rem}
+  .eyebrow{font-size:.74rem;letter-spacing:.15em;text-transform:uppercase;color:var(--brand);font-weight:700;margin:0 0 .55rem}
+  h1{font-size:clamp(2rem,6.5vw,3rem);line-height:1.03;margin:0;font-weight:800;letter-spacing:-.02em;text-wrap:balance}
+  .tagline{font-size:1.12rem;color:var(--muted);margin:.85rem 0 0;text-wrap:pretty}
+
+  section{margin-top:2.4rem}
+  h2{font-size:1.5rem;margin:0 0 .3rem;font-weight:780;letter-spacing:-.015em;text-wrap:balance}
+  h2 .em{color:var(--brand)}
+  p{margin:.7rem 0}
+  strong{font-weight:680}
+
+  .lead-in{background:var(--brand-soft);border-radius:14px;padding:1.1rem 1.3rem;font-size:1.02rem}
+  .lead-in p{margin:.4rem 0}
+  .lead-in b{color:var(--brand)}
+
+  .recall{border-left:4px solid var(--l2);background:var(--l2-soft);border-radius:0 12px 12px 0;padding:.9rem 1.15rem;margin-top:1rem;font-size:.99rem}
+  .recall b{color:var(--l2)}
+
+  /* Части дерева */
+  .parts{display:flex;flex-direction:column;gap:.7rem;margin-top:1rem}
+  .part{display:flex;align-items:flex-start;gap:1rem;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:.9rem 1.05rem}
+  .part .ic{font-size:1.5rem;flex:none;width:2.2rem;text-align:center;line-height:1.3}
+  .part .txt{flex:1}
+  .part .txt b{font-weight:750}
+  .part.root .txt b{color:var(--brand)}
+  .part.branch .txt b{color:var(--l1)}
+  .part.leaf .txt b{color:var(--l3)}
+  .part .ex{font-size:.88rem;color:var(--muted);margin-top:.25rem}
+
+  .core{background:var(--brand);color:#fff;border-radius:16px;padding:1.2rem 1.4rem;margin-top:1.2rem;text-align:center}
+  .core .k{font-size:.72rem;letter-spacing:.13em;text-transform:uppercase;color:#D9C9EC;font-weight:700;margin:0}
+  .core .r{font-size:clamp(1.15rem,4.6vw,1.5rem);font-weight:800;margin:.5rem 0 0;line-height:1.35}
+  .core .s{font-size:.95rem;color:#EEE6F6;margin:.6rem 0 0}
+
+  .note{border-left:4px solid var(--brand);background:var(--brand-soft);border-radius:0 10px 10px 0;padding:.8rem 1.1rem;margin-top:1rem;font-size:.98rem}
+  .note b{color:var(--brand)}
+
+  /* Разбор по шагам */
+  .walk{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.15rem 1.3rem;margin-top:1rem}
+  .walk .q{font-weight:700;font-size:1.05rem;margin:0 0 .9rem;padding-bottom:.7rem;border-bottom:1px solid var(--line)}
+  .walk .st{margin:.9rem 0 0}
+  .walk .st:first-of-type{margin-top:0}
+  .walk .lbl{font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;font-weight:800;margin:0 0 .15rem}
+  .walk .st.a .lbl{color:var(--l1)} .walk .st.b .lbl{color:var(--l2)} .walk .st.c .lbl{color:var(--l3)}
+  .walk .st p{margin:.15rem 0;font-size:.98rem}
+  .walk .why{font-size:.9rem;color:var(--muted);font-style:italic}
+  .paths{display:flex;flex-wrap:wrap;gap:.4rem;margin:.7rem 0 0}
+  .paths span{font-family:ui-monospace,Menlo,monospace;font-weight:700;background:var(--l3-soft);border:1px solid var(--l3-line);color:var(--l3);border-radius:8px;padding:.14rem .55rem;font-size:.95rem}
+  .verdict{margin-top:1rem;padding:.75rem 1rem;background:var(--brand-soft);border-radius:10px;font-weight:650;color:var(--brand);font-size:1rem}
+
+  /* Визуализация */
+  .viz{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:1.1rem 1.1rem 1.2rem;margin-top:1rem}
+  .viz-tabs{display:flex;flex-wrap:wrap;gap:.45rem;justify-content:center}
+  .viz-tabs button{font:inherit;font-size:.86rem;font-weight:700;border:2px solid var(--line);background:var(--paper);color:var(--muted);border-radius:10px;padding:.4rem .8rem;cursor:pointer}
+  .viz-tabs button[aria-pressed="true"]{border-color:var(--brand);background:var(--brand-soft);color:var(--brand)}
+  .viz-tabs button:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+  canvas{display:block;width:100%;margin:.9rem auto 0}
+  .viz-cap{margin:.7rem 0 0;font-size:1rem;text-align:center;font-weight:650;min-height:2.6em}
+  .viz-cap b{color:var(--brand)}
+  .legend{display:flex;flex-wrap:wrap;gap:.5rem .9rem;justify-content:center;margin-top:.7rem;font-size:.85rem;color:var(--muted)}
+  .legend i{font-style:normal;font-weight:800;color:var(--ink)}
+  .viz-btns{display:flex;gap:.5rem;justify-content:center;margin-top:.9rem}
+  .viz-btns button{font:inherit;font-weight:700;font-size:.9rem;border-radius:10px;padding:.5rem 1rem;cursor:pointer;border:1px solid var(--line);background:var(--paper);color:var(--ink)}
+  .viz-btns button:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+
+  .tblwrap{overflow-x:auto;margin-top:1rem}
+  table{border-collapse:collapse;width:100%;min-width:320px;font-size:.96rem}
+  th,td{border:1px solid var(--line);padding:.6rem .75rem;text-align:center}
+  thead th{background:#F7F5F9;font-weight:700}
+  tbody th{background:#F7F5F9;font-weight:700}
+  td.cell{font-family:ui-monospace,Menlo,monospace;font-weight:700;color:var(--l3);background:var(--l3-soft)}
+
+  /* Тренажёр */
+  .trainer{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:1.3rem 1.3rem 1.2rem;margin-top:1rem}
+  .tr-task{font-size:1.05rem;line-height:1.6;margin:0 0 1rem}
+  .tr-task b{font-weight:750}
+  .tr-steps{display:flex;flex-direction:column;gap:.45rem;margin:0 0 1.1rem}
+  .tr-step{display:flex;gap:.6rem;align-items:baseline;font-size:.95rem;background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:.45rem .75rem}
+  .tr-step .n{font-size:.66rem;font-weight:800;letter-spacing:.03em;padding:.1rem .42rem;border-radius:5px;flex:none}
+  .tr-step.a .n{background:var(--l1-soft);color:var(--l1)}
+  .tr-step.b .n{background:var(--l2-soft);color:var(--l2)}
+  .tr-step.c .n{background:var(--l3-soft);color:var(--l3)}
+  .tr-in{display:flex;gap:.5rem;align-items:center;justify-content:center;flex-wrap:wrap;margin-bottom:1rem}
+  .tr-in label{font-size:.95rem;color:var(--muted)}
+  .tr-in input{font:inherit;font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1.15rem;width:5.5rem;text-align:center;padding:.45rem .5rem;border:2px solid var(--line);border-radius:10px;background:var(--paper);color:var(--ink)}
+  .tr-in input:focus-visible{outline:2px solid var(--brand);outline-offset:1px;border-color:var(--brand)}
+  .tr-btns{display:flex;gap:.5rem;flex-wrap:wrap;justify-content:center}
+  .tr-btns button{font:inherit;font-weight:700;font-size:.92rem;border-radius:10px;padding:.55rem 1.1rem;cursor:pointer;border:1px solid transparent}
+  .tr-btns .go{background:var(--brand);color:#fff}
+  .tr-btns .sh{background:var(--paper);border:1px solid var(--line);color:var(--ink)}
+  .tr-btns .nw{background:var(--brand-soft);color:var(--brand)}
+  .tr-btns button:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+  .tr-res{margin-top:1.1rem;font-size:.97rem}
+  .tr-res .head{font-weight:700;padding:.6rem .9rem;border-radius:9px;margin-bottom:.7rem}
+  .tr-res .head.ok{background:#E7F4EC;color:var(--ok)}
+  .tr-res .head.no{background:#FBEAEA;color:var(--no)}
+  .tr-res .head.info{background:var(--brand-soft);color:var(--brand)}
+  .tr-sol{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:.85rem 1rem}
+  .tr-sol .row{margin:.35rem 0;font-size:.94rem}
+  .tr-sol .row b{font-weight:750}
+  .tr-sol .fin{margin-top:.6rem;padding-top:.6rem;border-top:1px dashed var(--line);font-weight:700;color:var(--brand)}
+  .tr-hint{text-align:center;color:var(--muted);font-size:.88rem;margin:1rem 0 0}
+
+  /* Практика */
+  .lvl{font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:800;margin:1.5rem 0 .6rem}
+  .drill{display:flex;flex-direction:column;gap:.7rem}
+  details{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:.9rem 1.1rem}
+  details[open]{border-color:var(--brand)}
+  summary{cursor:pointer;font-weight:650;list-style:none;display:flex;justify-content:space-between;gap:1rem;align-items:center}
+  summary::-webkit-details-marker{display:none}
+  summary:focus-visible{outline:2px solid var(--brand);outline-offset:3px;border-radius:6px}
+  summary .q{font-size:1rem}
+  summary::after{content:"проверить";font-size:.8rem;color:var(--brand);font-weight:700;white-space:nowrap}
+  details[open] summary::after{content:"скрыть"}
+  .ans{margin-top:.75rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.96rem;color:var(--muted)}
+  .ans b{color:var(--ink)}
+
+  /* Ловушки */
+  ul.traps{list-style:none;margin:1rem 0 0;padding:0;display:flex;flex-direction:column;gap:.7rem}
+  ul.traps li{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:.85rem 1.05rem;padding-left:2.5rem;position:relative;font-size:.97rem}
+  ul.traps li::before{content:"⚠";position:absolute;left:1rem;top:.85rem;color:var(--l1);font-size:1.05rem}
+  ul.traps b{font-weight:700}
+  ul.traps .fix{display:block;margin-top:.3rem;color:var(--muted);font-size:.92rem}
+
+  .selfcheck{background:var(--card);border:2px dashed var(--brand-soft);border-radius:14px;padding:1.1rem 1.3rem;margin-top:1rem}
+  .selfcheck ol{margin:.4rem 0 0;padding-left:1.2rem}
+  .selfcheck li{margin:.4rem 0;font-size:1rem}
+
+  .wrapup{background:var(--brand);color:#fff;border-radius:16px;padding:1.4rem 1.5rem;margin-top:2.4rem}
+  .wrapup h2{color:#fff;margin:0 0 .5rem}
+  .wrapup p{color:#EEE6F6;margin:.4rem 0;font-size:1rem}
+  .wrapup .big-rule{font-size:1.1rem;font-weight:700;color:#fff;margin:.6rem 0}
+  .wrapup .next{font-size:.95rem;color:#D9C9EC;margin-top:1rem;padding-top:1rem;border-top:1px solid rgba(255,255,255,.2)}
+
+  @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+<!--LESSON-NAV-TOP--><style>.lnav{--lnav-accent:#3D5AF1}.lnav a{text-decoration:none;font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif}.lnav-top{max-width:820px;margin:0 auto;padding:.75rem clamp(1rem,4vw,1.5rem) .1rem}.lnav-top a{display:inline-flex;align-items:center;gap:.35rem;color:var(--lnav-accent);font-weight:600;font-size:.9rem}.lnav-top a:hover{text-decoration:underline}.lnav-bot{max-width:820px;margin:2.6rem auto 3rem;padding:1.1rem clamp(1rem,4vw,1.5rem) 0;border-top:1px solid #E4E8EF;display:flex;align-items:stretch;gap:.55rem}.lnav-bot a{min-width:0;display:flex;flex-direction:column;justify-content:center;gap:.15rem;border:1px solid #E4E8EF;border-radius:12px;padding:.65rem .85rem;color:#182233;background:#fff;transition:border-color .1s,transform .08s}.lnav-bot a:hover{border-color:var(--lnav-accent);transform:translateY(-1px)}.lnav-bot .prev,.lnav-bot .next{flex:1 1 0}.lnav-bot .next{text-align:right}.lnav-bot .dir{font-size:.72rem;color:#8A93A6;font-weight:600}.lnav-bot .ttl{font-size:.9rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.lnav-bot .to-cat{flex:0 0 auto;flex-direction:row;align-items:center;justify-content:center;color:var(--lnav-accent);font-weight:700;font-size:.85rem;white-space:nowrap}@media(max-width:420px){.lnav-bot .to-cat span{display:none}.lnav-bot .to-cat{padding:.65rem .7rem}}</style><nav class="lnav lnav-top"><a href="./catalog.html">← Все темы</a></nav><!--/LESSON-NAV-TOP-->
+<div class="page">
+
+  <header class="hero">
+    <p class="eyebrow">Математика · 5 класс</p>
+    <h1>Дерево возможных вариантов</h1>
+    <p class="tagline">Одна картинка, по которой видно <em>все</em> варианты — и ни один не теряется.</p>
+  </header>
+
+  <div class="lead-in">
+    <p><b>Зачем это нужно.</b> Считать «а сколькими способами?» приходится чаще, чем кажется.</p>
+    <p>Сколько разных бутербродов получится из 2 видов хлеба и 3 начинок? Сколько нарядов из 2 футболок и 2 штанов? Сколько трёхзначных «кодов» можно составить из заданных цифр? Скажешь: да это же в уме перебирается. Попробуй — пара вариантов обязательно потеряется или посчитается дважды.</p>
+    <p><b>Дерево возможных вариантов</b> — способ перечислить ВСЕ варианты по порядку, ничего не потеряв и не повторив. Каждый выбор оно показывает отдельной веточкой.</p>
+  </div>
+
+  <div class="recall">
+    <p><b>Вспомни перед стартом.</b> Ты уже перебирал варианты списком: выписывал их подряд и следил, чтобы ничего не пропустить. Дерево — тот же перебор, только не в столбик, а картинкой. Картинка и не даёт сбиться.</p>
+  </div>
+
+  <section>
+    <h2>Суть: выбор делается <span class="em">по шагам</span></h2>
+    <p>Выбирай не всё сразу, а по шагам. Сначала один шаг, потом другой. На каждом шаге у тебя несколько возможностей.</p>
+    <p>Дерево рисует эти шаги один за другим: из одной точки выходит несколько линий-ветвей (ровно столько, сколько возможностей на этом шаге), потом из каждого конца снова выходят ветви следующего шага. И так, пока шаги не кончатся.</p>
+
+    <div class="parts">
+      <div class="part root">
+        <div class="ic">🟣</div>
+        <div class="txt">
+          <b>Корень</b> — точка, откуда всё начинается.
+          <div class="ex">Рисуют его вверху или слева. Из корня выходят ветви первого шага.</div>
+        </div>
+      </div>
+      <div class="part branch">
+        <div class="ic">🌿</div>
+        <div class="txt">
+          <b>Ветви</b> — линии выбора на каждом шаге.
+          <div class="ex">Одна ветвь = одна возможность. Выбираешь из трёх начинок — рисуешь три ветви.</div>
+        </div>
+      </div>
+      <div class="part leaf">
+        <div class="ic">🍃</div>
+        <div class="txt">
+          <b>Листья</b> — крайние концы дерева.
+          <div class="ex">Каждый лист — это один полный набор выборов, то есть один готовый вариант.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="core">
+      <p class="k">Главное правило</p>
+      <p class="r">Сколько листьев —<br>столько и разных вариантов</p>
+      <p class="s">Дерево превращает путаный перебор в картинку, которую видно целиком.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Что нужно знать точно</h2>
+    <div class="parts">
+      <div class="part">
+        <div class="ic">📐</div>
+        <div class="txt"><b>Дерево возможных вариантов</b> — это схема, в которой каждый шаг выбора показан ветвями, а каждый полный путь от корня до листа задаёт один вариант.</div>
+      </div>
+      <div class="part">
+        <div class="ic">🪜</div>
+        <div class="txt"><b>Один уровень дерева = один шаг выбора.</b><div class="ex">Сначала выбираем хлеб, потом начинку — это два разных уровня.</div></div>
+      </div>
+      <div class="part">
+        <div class="ic">🔢</div>
+        <div class="txt"><b>Число вариантов = число листьев</b> (то есть число всех путей от корня до самого края).</div>
+      </div>
+      <div class="part">
+        <div class="ic">✅</div>
+        <div class="txt"><b>Чтобы дерево было правильным:</b> на каждом шаге рисуй ветвь для КАЖДОЙ возможности и не путай, какой шаг где.<div class="ex">Один и тот же выбор не должен встречаться на одном пути дважды, если по условию повторять нельзя.</div></div>
+      </div>
+    </div>
+    <div class="note">
+      <p><b>Единицы измерения тут не нужны.</b> Считаем штуки: число способов, число вариантов. Всегда целое число.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Эталонный разбор — <span class="em">думаю вслух</span></h2>
+    <p>У Маши 2 футболки (белая <span class="mono">Б</span>, красная <span class="mono">К</span>) и 2 юбки (синяя <span class="mono">С</span>, зелёная <span class="mono">З</span>). Сколько разных нарядов «футболка + юбка» можно собрать?</p>
+    <div class="walk">
+      <p class="q">Наряд = футболка + юбка. Шага, значит, два.</p>
+
+      <div class="st a">
+        <p class="lbl">Шаг 1 · футболка</p>
+        <p>Из корня рисую <b>2 ветви</b>: <span class="mono">Б</span> и <span class="mono">К</span>.</p>
+        <p class="why">Почему 2: футболок ровно две.</p>
+      </div>
+
+      <div class="st b">
+        <p class="lbl">Шаг 2 · юбка</p>
+        <p>К каждой футболке подбираю юбку. От <span class="mono">Б</span> рисую 2 ветви (<span class="mono">С</span> и <span class="mono">З</span>), от <span class="mono">К</span> тоже 2 ветви (<span class="mono">С</span> и <span class="mono">З</span>).</p>
+        <p class="why">Почему по 2: для любой футболки юбок снова две.</p>
+      </div>
+
+      <div class="st c">
+        <p class="lbl">Считаю листья</p>
+        <p>Веду пальцем по каждому пути от корня до края и выписываю:</p>
+        <div class="paths"><span>Б-С</span><span>Б-З</span><span>К-С</span><span>К-З</span></div>
+        <p class="why">Почему считаем листья: каждый лист и есть один готовый наряд.</p>
+      </div>
+
+      <div class="verdict">Листьев получилось 4 → нарядов <strong>4</strong>.</div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Смотри, как дерево <span class="em">растёт</span></h2>
+    <p>Выбери задачу и нажми «Построить». Дерево вырастет по шагам — ровно так, как ты рисовал бы его в тетради.</p>
+    <div class="viz">
+      <div class="viz-tabs" id="vizTabs"></div>
+      <canvas id="vizCv" role="img" aria-label="Дерево возможных вариантов для выбранной задачи"></canvas>
+      <p class="viz-cap" id="vizCap"></p>
+      <div class="legend" id="vizLeg"></div>
+      <div class="viz-btns">
+        <button type="button" id="vizGo">▶ Построить</button>
+        <button type="button" id="vizAll">Показать целиком</button>
+      </div>
+    </div>
+    <p>Ветви одного цвета — это один шаг выбора. Зелёные подписи справа — листья, готовые варианты.</p>
+  </section>
+
+  <section>
+    <h2>То же самое — <span class="em">таблицей</span></h2>
+    <p>Дерево тут не единственная картинка. Наряды Маши раскладываются и в табличку 2 на 2: строки — футболки, столбцы — юбки, каждая клетка — один наряд.</p>
+    <div class="tblwrap">
+      <table>
+        <thead><tr><th></th><th>синяя юбка</th><th>зелёная юбка</th></tr></thead>
+        <tbody>
+          <tr><th>белая футболка</th><td class="cell">Б-С</td><td class="cell">Б-З</td></tr>
+          <tr><th>красная футболка</th><td class="cell">К-С</td><td class="cell">К-З</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="note">
+      <p><b>Вопрос на подумать.</b> Сколько клеток в таблице и сколько листьев в дереве? Почему поровну?</p>
+      <p>Потому что клетка и лист — одно и то же: пара «футболка + юбка». Просто нарисованы по-разному.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Тренажёр — <span class="em">задания не кончаются</span></h2>
+    <p>Каждый раз новая задача про выбор по шагам. Сначала прикинь сам, запиши число вариантов и только потом проверяй. Не сошлось — жми «Показать решение»: там будет и дерево, и все листья.</p>
+    <div class="trainer">
+      <p class="tr-task" id="trTask">Загружаю задание…</p>
+      <div class="tr-steps" id="trSteps"></div>
+      <div class="tr-in">
+        <label for="trAns">Вариантов:</label>
+        <input id="trAns" type="text" inputmode="numeric" autocomplete="off" aria-label="Число вариантов">
+      </div>
+      <div class="tr-btns">
+        <button class="go" id="trCheck" type="button">Проверить</button>
+        <button class="sh" id="trShow" type="button">Показать решение</button>
+        <button class="nw" id="trNew" type="button">🎲 Новое задание</button>
+      </div>
+      <div class="tr-res" id="trRes"></div>
+      <p class="tr-hint">Считай листья, а не ветви. Ответ — это число концов дерева.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Проверь себя</h2>
+    <p>Сначала реши сам, потом раскрывай ответ. Не подглядывай раньше времени 🙂</p>
+
+    <p class="lvl">Уровень 1 · понять</p>
+    <div class="drill">
+      <details>
+        <summary><span class="q">1) Что такое лист в дереве вариантов и что он показывает?</span></summary>
+        <div class="ans">Лист — это <b>крайний конец</b> дерева, конец полного пути от корня. Он показывает <b>один готовый вариант</b>: все выборы уже сделаны, на каждом шаге по одному.</div>
+      </details>
+      <details>
+        <summary><span class="q">2) Сколько уровней (шагов) в дереве, где сначала выбирают цвет, а потом размер?</span></summary>
+        <div class="ans"><b>Два.</b> Уровень 1 — цвет, уровень 2 — размер. Каждый шаг выбора даёт ровно один уровень дерева.</div>
+      </details>
+      <details>
+        <summary><span class="q">3) Допиши разбор. В кафе 3 вида хлеба (пшеничный <span class="mono">П</span>, ржаной <span class="mono">Р</span>, цельный <span class="mono">Ц</span>) и 2 начинки (сыр <span class="mono">С</span>, ветчина <span class="mono">В</span>). Шаг 1 — рисуем ___ ветви хлеба. Шаг 2 — от каждого хлеба ___ ветви начинки. Листья: П-С, П-В, Р-С, Р-В, ___ , ___ . Сколько всего?</span></summary>
+        <div class="ans">Шаг 1 — <b>3</b> ветви (хлеба три). Шаг 2 — от каждого по <b>2</b> ветви (начинки две). Недостающие листья: <b>Ц-С</b> и <b>Ц-В</b>. Всего листьев <b>6</b> → бутербродов <b>6</b>.</div>
+      </details>
+    </div>
+
+    <p class="lvl">Уровень 2 · применить</p>
+    <div class="drill">
+      <details>
+        <summary><span class="q">4) Подбрасывают монету (орёл <span class="mono">О</span> или решка <span class="mono">Р</span>) два раза подряд. Построй дерево и найди число разных исходов «первый бросок + второй бросок».</span></summary>
+        <div class="ans"><b>4 исхода:</b> О-О, О-Р, Р-О, Р-Р. Шаг 1 — 2 ветви (О и Р), от каждой снова по 2 ветви второго броска. Листьев: 2 и 2 → <b>4</b>.</div>
+      </details>
+      <details>
+        <summary><span class="q">5) На завтрак можно выбрать 1 напиток из 2 (чай, какао) и 1 блюдо из 3 (каша, омлет, блины). Построй дерево и найди число разных завтраков.</span></summary>
+        <div class="ans">Шаг 1 — 2 ветви напитка. Шаг 2 — от каждой по 3 ветви блюда. Получается 2 группы по 3 листа: 3 + 3 = <b>6 завтраков</b>. Например: чай-каша, чай-омлет, чай-блины, какао-каша, какао-омлет, какао-блины.</div>
+      </details>
+    </div>
+
+    <p class="lvl">Уровень 3 · разобраться глубже</p>
+    <div class="drill">
+      <details>
+        <summary><span class="q">6) Что изменится, если… к двум броскам монеты добавить ещё один, третий бросок? Насколько больше станет листьев?</span></summary>
+        <div class="ans">Появится <b>третий уровень</b>: из каждого листа старого дерева вырастут ещё 2 ветви. Было 4 листа, у каждого по 2 продолжения → <b>станет 8 вместо 4</b>, то есть вдвое больше. Каждый новый шаг выбора удлиняет пути и умножает концы.</div>
+      </details>
+      <details>
+        <summary><span class="q">7) Найди ошибку. Петя выбирает «2 шапки и 3 шарфа». На втором уровне он нарисовал только 2 ветви вместо 3 и получил 4 варианта. Где ошибка и сколько вариантов на самом деле?</span></summary>
+        <div class="ans">Петя <b>потерял ветвь шарфа</b>: шарфов три, значит от каждой шапки должно выходить по <b>3</b> ветви, а не по 2. Правильно: 2 группы по 3 листа → 3 + 3 = <b>6 вариантов</b>. Это самая частая ошибка: нарисовать не все возможности шага.</div>
+      </details>
+      <details>
+        <summary><span class="q">8) Обратная задача. В дереве получилось 6 листьев, а на первом шаге было 2 ветви. Сколько ветвей выходило из каждой на втором шаге?</span></summary>
+        <div class="ans">Из каждой ветви первого шага выходит поровну. Две группы вместе дают 6 листьев, значит в каждой группе по <b>3</b> листа. Значит на втором шаге из каждой точки выходило <b>по 3 ветви</b>.</div>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <h2>Ловушки — не попадись</h2>
+    <ul class="traps">
+      <li><b>Теряют ветви.</b> Рисуют не все возможности шага: например, забывают одну начинку.
+        <span class="fix">Как избежать: до рисования выпиши списком все возможности каждого шага и пересчитай, чтобы из каждой точки выходило ровно столько ветвей.</span></li>
+      <li><b>Неверно считают листья.</b> Считают ветви или развилки вместо крайних концов.
+        <span class="fix">Как избежать: ответ — число концов-листьев, то есть число полных путей от корня. Проведи пальцем каждый путь до края и ставь галочку.</span></li>
+      <li><b>Смешивают уровни выбора.</b> Путают, какой шаг первый: то начинка, то хлеб — и варианты дублируются.
+        <span class="fix">Как избежать: сразу подпиши «уровень 1 — хлеб, уровень 2 — начинка» и держись этого порядка на всех ветвях.</span></li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Объясни своими словами</h2>
+    <p>Тут проверяется понимание, а не память. Ответь вслух — себе, другу или родителям:</p>
+    <div class="selfcheck">
+      <ol>
+        <li>Что показывает один лист дерева вариантов?</li>
+        <li>Как по дереву узнать число всех вариантов?</li>
+        <li>Если на первом шаге 3 ветви, а из каждой выходит по 2 ветви, сколько будет листьев?</li>
+      </ol>
+    </div>
+    <p>Сказал на третий вопрос <strong>6</strong> и объяснил почему — тема взята.</p>
+  </section>
+
+  <div class="wrapup">
+    <h2>Запомни главное</h2>
+    <p class="big-rule">Выбор по шагам → уровни дерева.<br>Сколько листьев — столько вариантов.</p>
+    <p>Дерево перебирает все выборы по шагам, и число его листьев равно числу вариантов.</p>
+    <p class="next">👉 Дальше ты заметишь закономерность: 2 ветви и по 2 — четыре листа, 3 ветви и по 2 — шесть. Рисовать дерево каждый раз не придётся: появится короткий путь — <strong>правило умножения</strong>.</p>
+  </div>
+
+</div>
+
+<script>
+(function(){
+  'use strict';
+
+  /* ---------- задачи для визуализации ---------- */
+
+  var CASES = [
+    {
+      tab:'Наряды → 4',
+      title:'2 футболки и 2 юбки',
+      steps:[
+        {name:'футболка', items:[{c:'Б',t:'белая футболка'},{c:'К',t:'красная футболка'}]},
+        {name:'юбка',     items:[{c:'С',t:'синяя юбка'},{c:'З',t:'зелёная юбка'}]}
+      ],
+      cap:'2 ветви футболок, от каждой по 2 ветви юбок → <b>4 листа</b>, значит 4 наряда.'
+    },
+    {
+      tab:'Бутерброды → 6',
+      title:'3 вида хлеба и 2 начинки',
+      steps:[
+        {name:'хлеб',    items:[{c:'П',t:'пшеничный'},{c:'Р',t:'ржаной'},{c:'Ц',t:'цельный'}]},
+        {name:'начинка', items:[{c:'С',t:'сыр'},{c:'В',t:'ветчина'}]}
+      ],
+      cap:'3 ветви хлеба, от каждой по 2 ветви начинки → <b>6 листьев</b>, значит 6 бутербродов.'
+    },
+    {
+      tab:'Монета 2 раза → 4',
+      title:'два броска монеты',
+      steps:[
+        {name:'1-й бросок', items:[{c:'О',t:'орёл'},{c:'Р',t:'решка'}]},
+        {name:'2-й бросок', items:[{c:'О',t:'орёл'},{c:'Р',t:'решка'}]}
+      ],
+      cap:'2 ветви первого броска, от каждой по 2 ветви второго → <b>4 листа</b>, значит 4 исхода.'
+    },
+    {
+      tab:'Монета 3 раза → 8',
+      title:'три броска монеты',
+      steps:[
+        {name:'1-й бросок', items:[{c:'О',t:'орёл'},{c:'Р',t:'решка'}]},
+        {name:'2-й бросок', items:[{c:'О',t:'орёл'},{c:'Р',t:'решка'}]},
+        {name:'3-й бросок', items:[{c:'О',t:'орёл'},{c:'Р',t:'решка'}]}
+      ],
+      cap:'Добавили третий уровень — из каждого прежнего листа выросли ещё 2 ветви → <b>8 листьев</b> вместо 4.'
+    }
+  ];
+
+  var LC = [
+    {line:'#CF5A34', fill:'#FBEADF', bd:'#F0CDB8'},
+    {line:'#3A5AA0', fill:'#E5EBF6', bd:'#C6D3EC'},
+    {line:'#2E8B57', fill:'#E4F2EA', bd:'#BFDFCD'}
+  ];
+  var INK='#26202E', MUTED='#6B6473', BRAND='#6A3EA1', BRAND_SOFT='#EFE7F6', BRAND_LINE='#D6C4EA';
+
+  function lvlColor(i){ return LC[i % LC.length]; }
+
+  /* все листья: массив путей, путь — массив индексов выбранных возможностей */
+  function buildLeaves(steps){
+    var res=[[]];
+    steps.forEach(function(st){
+      var out=[];
+      res.forEach(function(p){
+        st.items.forEach(function(it,i){ out.push(p.concat([i])); });
+      });
+      res=out;
+    });
+    return res;
+  }
+
+  function pathCodes(steps, p){
+    return p.map(function(idx,l){ return steps[l].items[idx].c; });
+  }
+
+  /* узлы уровня L (1..steps.length) */
+  function nodesAt(leaves, L){
+    var map={}, order=[];
+    leaves.forEach(function(p,j){
+      var key=p.slice(0,L).join(',');
+      if(!map[key]){
+        map[key]={key:key, parent:p.slice(0,L-1).join(','), idx:p[L-1], ys:[]};
+        order.push(map[key]);
+      }
+      map[key].ys.push(j);
+    });
+    return order;
+  }
+
+  function roundRect(ctx,x,y,w,h,r){
+    ctx.beginPath();
+    ctx.moveTo(x+r,y);
+    ctx.lineTo(x+w-r,y); ctx.quadraticCurveTo(x+w,y,x+w,y+r);
+    ctx.lineTo(x+w,y+h-r); ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);
+    ctx.lineTo(x+r,y+h); ctx.quadraticCurveTo(x,y+h,x,y+h-r);
+    ctx.lineTo(x,y+r); ctx.quadraticCurveTo(x,y,x+r,y);
+    ctx.closePath();
+  }
+
+  /* ---------- отрисовка дерева ---------- */
+  /* shown — сколько уровней уже показать (0 = только корень) */
+  function drawTree(cv, steps, shown){
+    var wrap = cv.parentNode;
+    var w = Math.max(280, Math.min(cv.clientWidth || wrap.clientWidth || 560, 640));
+    var leaves = buildLeaves(steps);
+    var n = leaves.length;
+    var rowH = n<=4 ? 46 : (n<=6 ? 38 : (n<=9 ? 32 : 27));
+    var topPad = 16, botPad = 16;
+    var h = Math.max(170, topPad + botPad + n*rowH);
+
+    var dpr = Math.min(window.devicePixelRatio || 1, 2);
+    cv.style.height = h + 'px';
+    cv.width = Math.round(w*dpr); cv.height = Math.round(h*dpr);
+    var ctx = cv.getContext('2d');
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+    ctx.clearRect(0,0,w,h);
+
+    var L = steps.length;
+    var labFont = (w < 420 ? 12 : 14);
+    ctx.font = '700 ' + labFont + 'px ui-monospace, Menlo, monospace';
+    var maxLab = 0;
+    leaves.forEach(function(p){
+      maxLab = Math.max(maxLab, ctx.measureText(pathCodes(steps,p).join('-')).width);
+    });
+
+    var chipFont = (w < 420 ? 12 : 13);
+    var chipH = (w < 420 ? 20 : 22);
+    var leftPad = 14, rightPad = maxLab + 22;
+    var usable = Math.max(60, w - leftPad - rightPad - 26);
+    var xs = [leftPad + 13];
+    for (var i=1;i<=L;i++) xs.push(leftPad + 26 + usable*i/L);
+
+    function leafY(j){ return topPad + (j+0.5)*rowH; }
+
+    /* позиции узлов по уровням */
+    var pos = [{}];
+    pos[0][''] = {x: xs[0], y: (topPad + h - botPad)/2};
+    for (var l=1;l<=L;l++){
+      pos[l] = {};
+      nodesAt(leaves, l).forEach(function(nd){
+        var s=0; nd.ys.forEach(function(j){ s+=leafY(j); });
+        pos[l][nd.key] = {x: xs[l], y: s/nd.ys.length, idx: nd.idx, parent: nd.parent};
+      });
+    }
+
+    /* ветви и узлы по уровням */
+    for (var lv=1; lv<=Math.min(shown, L); lv++){
+      var col = lvlColor(lv-1);
+      var keys = Object.keys(pos[lv]);
+      /* сначала ветви */
+      ctx.strokeStyle = col.line; ctx.lineWidth = 1.8; ctx.lineCap='round';
+      keys.forEach(function(k){
+        var nd = pos[lv][k], pa = pos[lv-1][nd.parent];
+        var x1 = pa.x + 12, y1 = pa.y, x2 = nd.x - 12, y2 = nd.y;
+        var mx = (x1+x2)/2;
+        ctx.beginPath();
+        ctx.moveTo(x1,y1);
+        ctx.bezierCurveTo(mx,y1,mx,y2,x2,y2);
+        ctx.stroke();
+      });
+      /* затем фишки-узлы */
+      ctx.font = '800 ' + chipFont + 'px system-ui, -apple-system, "Segoe UI", Roboto, sans-serif';
+      keys.forEach(function(k){
+        var nd = pos[lv][k];
+        var txt = steps[lv-1].items[nd.idx].c;
+        var tw = Math.max(ctx.measureText(txt).width + 14, chipH);
+        ctx.fillStyle = col.fill; ctx.strokeStyle = col.bd; ctx.lineWidth = 1.5;
+        roundRect(ctx, nd.x - tw/2, nd.y - chipH/2, tw, chipH, 7);
+        ctx.fill(); ctx.stroke();
+        ctx.fillStyle = col.line; ctx.textAlign='center'; ctx.textBaseline='middle';
+        ctx.fillText(txt, nd.x, nd.y + 0.5);
+      });
+    }
+
+    /* корень */
+    ctx.font = '800 ' + chipFont + 'px system-ui, -apple-system, "Segoe UI", Roboto, sans-serif';
+    ctx.fillStyle = BRAND_SOFT; ctx.strokeStyle = BRAND_LINE; ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.arc(pos[0][''].x, pos[0][''].y, 11, 0, Math.PI*2);
+    ctx.fill(); ctx.stroke();
+    ctx.fillStyle = BRAND; ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.fillText('●', pos[0][''].x, pos[0][''].y + 0.5);
+
+    /* листья-подписи */
+    if (shown >= L){
+      ctx.font = '700 ' + labFont + 'px ui-monospace, Menlo, monospace';
+      ctx.textAlign='left'; ctx.textBaseline='middle';
+      leaves.forEach(function(p,j){
+        ctx.fillStyle = LC[2].line;
+        ctx.fillText(pathCodes(steps,p).join('-'), xs[L] + 15, leafY(j));
+      });
+    }
+    return n;
+  }
+
+  function reduced(){
+    return window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  }
+
+  /* ---------- блок «смотри, как растёт» ---------- */
+
+  var vizCv = document.getElementById('vizCv');
+  var vizCap = document.getElementById('vizCap');
+  var vizLeg = document.getElementById('vizLeg');
+  var vizTabs = document.getElementById('vizTabs');
+  var cur = 0, shown = 0, timers = [];
+
+  function clearTimers(){ timers.forEach(clearTimeout); timers = []; }
+
+  function renderLegend(cs){
+    var seen = {}, out = [];
+    cs.steps.forEach(function(st, l){
+      st.items.forEach(function(it){
+        var k = it.c + '|' + it.t;
+        if (seen[k]) return; seen[k] = 1;
+        out.push('<span><i>' + it.c + '</i> — ' + it.t + '</span>');
+      });
+    });
+    vizLeg.innerHTML = out.join('');
+  }
+
+  function paintViz(){
+    var cs = CASES[cur];
+    var n = drawTree(vizCv, cs.steps, shown);
+    if (shown >= cs.steps.length){
+      vizCap.innerHTML = cs.cap;
+    } else if (shown === 0){
+      vizCap.innerHTML = 'Задача: <b>' + cs.title + '</b>. Пока есть только корень.';
+    } else {
+      vizCap.innerHTML = 'Шаг ' + shown + ' — ' + cs.steps[shown-1].name + '. Дерево ещё растёт…';
+    }
+    return n;
+  }
+
+  function grow(){
+    clearTimers();
+    var cs = CASES[cur];
+    shown = 0; paintViz();
+    if (reduced()){ shown = cs.steps.length; paintViz(); return; }
+    for (var l=1; l<=cs.steps.length; l++){
+      (function(k){
+        timers.push(setTimeout(function(){ shown = k; paintViz(); }, 520*k));
+      })(l);
+    }
+  }
+
+  function selectCase(i, animate){
+    cur = i;
+    Array.prototype.forEach.call(vizTabs.children, function(b, k){
+      b.setAttribute('aria-pressed', k===i ? 'true' : 'false');
+    });
+    renderLegend(CASES[i]);
+    if (animate) grow();
+    else { clearTimers(); shown = CASES[i].steps.length; paintViz(); }
+  }
+
+  CASES.forEach(function(cs, i){
+    var b = document.createElement('button');
+    b.type='button'; b.textContent = cs.tab; b.setAttribute('aria-pressed','false');
+    b.addEventListener('click', function(){ selectCase(i, true); });
+    vizTabs.appendChild(b);
+  });
+  document.getElementById('vizGo').addEventListener('click', grow);
+  document.getElementById('vizAll').addEventListener('click', function(){
+    clearTimers(); shown = CASES[cur].steps.length; paintViz();
+  });
+  selectCase(0, false);
+
+  var rt;
+  window.addEventListener('resize', function(){
+    clearTimeout(rt);
+    rt = setTimeout(function(){
+      paintViz();
+      var tc = document.getElementById('trSolCv');
+      if (tc && tc.__task) drawTree(tc, tc.__task.steps, tc.__task.steps.length);
+    }, 150);
+  });
+
+  /* ---------- тренажёр ---------- */
+
+  /* noun — форма для чисел 2–4: «2 футболки», «3 начинки» */
+  var THEMES = [
+    {
+      ask:'Сколько разных нарядов «футболка + юбка» можно собрать?',
+      steps:[
+        {name:'футболка', noun:'футболки', pool:[{c:'Б',t:'белая'},{c:'К',t:'красная'},{c:'Ж',t:'жёлтая'},{c:'З',t:'зелёная'}]},
+        {name:'юбка', noun:'юбки', pool:[{c:'С',t:'синяя'},{c:'Ч',t:'чёрная'},{c:'Р',t:'розовая'}]}
+      ]
+    },
+    {
+      ask:'Сколько разных бутербродов «хлеб + начинка» можно составить?',
+      steps:[
+        {name:'хлеб', noun:'вида хлеба', pool:[{c:'П',t:'пшеничный'},{c:'Р',t:'ржаной'},{c:'Ц',t:'цельный'},{c:'Б',t:'батон'}]},
+        {name:'начинка', noun:'начинки', pool:[{c:'С',t:'сыр'},{c:'В',t:'ветчина'},{c:'Д',t:'джем'}]}
+      ]
+    },
+    {
+      ask:'Сколько разных завтраков «напиток + блюдо» можно выбрать?',
+      steps:[
+        {name:'напиток', noun:'напитка', pool:[{c:'Ч',t:'чай'},{c:'К',t:'какао'},{c:'М',t:'молоко'},{c:'С',t:'сок'}]},
+        {name:'блюдо', noun:'блюда', pool:[{c:'К',t:'каша'},{c:'О',t:'омлет'},{c:'Б',t:'блины'}]}
+      ]
+    },
+    {
+      ask:'Сколько разных вариантов «шапка + шарф» получится?',
+      steps:[
+        {name:'шапка', noun:'шапки', pool:[{c:'С',t:'серая'},{c:'К',t:'красная'},{c:'Ч',t:'чёрная'}]},
+        {name:'шарф', noun:'шарфа', pool:[{c:'П',t:'полосатый'},{c:'З',t:'зелёный'},{c:'Б',t:'белый'}]}
+      ]
+    }
+  ];
+
+  var DIGITS = [{c:'1',t:'единица'},{c:'2',t:'двойка'},{c:'3',t:'тройка'},{c:'4',t:'четвёрка'}];
+
+  var COINS = {
+    ask:'Сколько разных исходов может получиться?',
+    steps:[
+      {name:'1-й бросок', noun:'исхода', pool:[{c:'О',t:'орёл'},{c:'Р',t:'решка'}]},
+      {name:'2-й бросок', noun:'исхода', pool:[{c:'О',t:'орёл'},{c:'Р',t:'решка'}]},
+      {name:'3-й бросок', noun:'исхода', pool:[{c:'О',t:'орёл'},{c:'Р',t:'решка'}]}
+    ]
+  };
+
+  var taskEl  = document.getElementById('trTask');
+  var stepsEl = document.getElementById('trSteps');
+  var ansEl   = document.getElementById('trAns');
+  var resEl   = document.getElementById('trRes');
+  var task = null;
+
+  function ri(a,b){ return Math.floor(Math.random()*(b-a+1))+a; }
+  function locked(){ return resEl.getAttribute('data-done')==='1'; }
+  function listNames(items){ return items.map(function(it){ return it.t + ' (' + it.c + ')'; }).join(', '); }
+
+  function makeTask(){
+    var roll = Math.random();
+    /* примерно каждое пятое задание — броски монеты (иногда три уровня) */
+    if (roll < 0.2){
+      var k = ri(2,3);
+      var st = COINS.steps.slice(0,k).map(function(s){
+        return {name:s.name, noun:s.noun, items:s.pool.slice()};
+      });
+      return {
+        text:'Монету подбрасывают <b>' + (k===2 ? 'два' : 'три') + ' раза</b> подряд. Каждый раз выпадает орёл (О) или решка (Р). ' + COINS.ask,
+        steps: st
+      };
+    }
+    /* задача про код из цифр: на обоих местах один и тот же набор цифр */
+    if (roll < 0.35){
+      var d = ri(2,3);
+      var digs = DIGITS.slice(0, d);
+      var codes = digs.map(function(it){ return it.c; }).join(', ');
+      return {
+        text:'Код состоит из <b>двух цифр</b>. На каждое место можно поставить любую из цифр <b>' + codes +
+             '</b>, повторять цифры разрешено. Сколько разных кодов можно составить?',
+        steps:[
+          {name:'первая цифра', noun:'цифры', items:digs.slice()},
+          {name:'вторая цифра', noun:'цифры', items:digs.slice()}
+        ]
+      };
+    }
+    var th = THEMES[ri(0, THEMES.length-1)];
+    var st2 = th.steps.map(function(s){
+      var k = ri(2, Math.min(s.pool.length, 3));
+      var pool = s.pool.slice(), items=[];
+      for (var i=0;i<k;i++) items.push(pool.splice(ri(0,pool.length-1),1)[0]);
+      return {name:s.name, noun:s.noun, items:items};
+    });
+    /* держим дерево читаемым: не больше 9 листьев */
+    while (st2[0].items.length * st2[1].items.length > 9) st2[1].items.pop();
+    var intro = 'Выбираем по шагам. ' + st2.map(function(s){
+      return '<b>' + s.items.length + ' ' + s.noun + '</b>: ' + listNames(s.items);
+    }).join('; ') + '. ';
+    return { text: intro + th.ask, steps: st2 };
+  }
+
+  function total(t){ return t.steps.reduce(function(a,s){ return a*s.items.length; },1); }
+
+  function renderTask(){
+    taskEl.innerHTML = task.text;
+    stepsEl.innerHTML = task.steps.map(function(s,i){
+      var cls = ['a','b','c'][i] || 'a';
+      return '<div class="tr-step ' + cls + '"><span class="n">ШАГ ' + (i+1) + '</span><span>' +
+             s.name.charAt(0).toUpperCase() + s.name.slice(1) + ' — возможностей: <b>' + s.items.length + '</b></span></div>';
+    }).join('');
+  }
+
+  function solution(){
+    var t = task, L = t.steps.length, run = t.steps[0].items.length;
+    var h = '<div class="tr-sol">';
+    h += '<div class="row"><b>Шаг 1 — ' + t.steps[0].name + '.</b> Возможностей ' + run +
+         ' → из корня выходит ' + run + ' ветви. Концов пока ' + run + '.</div>';
+    for (var l=1; l<L; l++){
+      var k = t.steps[l].items.length, was = run;
+      run = was * k;
+      var grp = (was % 10 >= 2 && was % 10 <= 4 && (was < 12 || was > 14)) ? 'группы' : 'групп';
+      h += '<div class="row"><b>Шаг ' + (l+1) + ' — ' + t.steps[l].name + '.</b> К каждому из ' + was +
+           ' концов пририсовали по ' + k + ' ветви: ' + was + ' ' + grp + ' по ' + k +
+           ' → ' + new Array(was+1).join(k + ' + ').slice(0,-3) + ' = ' + run + ' концов.</div>';
+    }
+    var leaves = buildLeaves(t.steps).map(function(p){ return pathCodes(t.steps,p).join('-'); });
+    h += '<div class="row"><b>Листья:</b> ' + leaves.join(', ') + '.</div>';
+    h += '<div class="fin">Листьев ' + run + ' → вариантов ' + run + '.</div>';
+    h += '<canvas id="trSolCv" role="img" aria-label="Дерево вариантов к этой задаче"></canvas>';
+    return h + '</div>';
+  }
+
+  function paintSolCanvas(){
+    var c = document.getElementById('trSolCv');
+    if (!c) return;
+    c.__task = task;
+    drawTree(c, task.steps, task.steps.length);
+  }
+
+  function finish(headHtml){
+    resEl.setAttribute('data-done','1');
+    resEl.innerHTML = headHtml + solution();
+    paintSolCanvas();
+  }
+
+  function check(){
+    if (locked()) return;
+    var raw = (ansEl.value || '').replace(',','.').trim();
+    if (!/^\d+$/.test(raw)){
+      resEl.innerHTML = '<div class="head info">Впиши число вариантов — целое, без единиц измерения.</div>';
+      return;
+    }
+    var ok = (+raw === total(task));
+    finish(ok
+      ? '<div class="head ok">✓ Верно! Листьев ровно ' + total(task) + '.</div>'
+      : '<div class="head no">Не сходится. Твой ответ ' + raw + ', а листьев ' + total(task) + ' — смотри разбор.</div>');
+  }
+
+  function show(){
+    if (locked()) return;
+    finish('<div class="head info">Разбор по шагам:</div>');
+  }
+
+  function newTask(focus){
+    task = makeTask();
+    resEl.innerHTML=''; resEl.removeAttribute('data-done');
+    ansEl.value='';
+    renderTask();
+    if (focus) ansEl.focus();
+  }
+
+  document.getElementById('trCheck').addEventListener('click', check);
+  document.getElementById('trShow').addEventListener('click', show);
+  document.getElementById('trNew').addEventListener('click', function(){ newTask(true); });
+  ansEl.addEventListener('keydown', function(e){ if (e.key === 'Enter') check(); });
+
+  newTask(false);
+})();
+</script>
+<!--LESSON-NAV-BOT--><nav class="lnav lnav-bot"><a class="prev" href="./m5-perebor-variantov.html"><span class="dir">← Предыдущая</span><span class="ttl">Перебор вариантов и систематический поиск</span></a><a class="to-cat" href="./catalog.html">📚 <span>Все темы</span></a><a class="next" href="./m5-pravilo-umnozheniya-vvedenie.html"><span class="dir">Следующая →</span><span class="ttl">Комбинаторное правило умножения (введение)</span></a></nav><!--/LESSON-NAV-BOT-->

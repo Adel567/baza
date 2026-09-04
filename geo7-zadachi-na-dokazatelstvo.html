@@ -1,0 +1,704 @@
+<!doctype html>
+<!-- humanized: humanizer-ru, 2026-09-04, тире возвращено -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Решение задач на признаки равенства треугольников (геометрия, 7 класс)</title>
+<style>
+  @font-face{font-family:PllFix;src:local("STIXGeneral"),local("Cambria Math"),local("Segoe UI Symbol"),local("Arial Unicode MS"),local("DejaVu Sans");unicode-range:U+2225}
+  :root{
+    --paper:#F6F7F9; --card:#FFFFFF; --ink:#1D2530; --muted:#606B7A; --line:#E3E7EE;
+    --brand:#2E5AAC; --brand-soft:#E4EBF7;
+    --t1:#C23B3B; --t1-soft:#FAE6E6;    /* первый треугольник — красный */
+    --t2:#2E5AAC; --t2-soft:#E4EBF7;    /* второй треугольник — синий  */
+    --mark:#1E8E5A;                     /* чёрточки на равных сторонах */
+    --arc:#E27C2C;                      /* дужки на равных углах       */
+    --common:#7A4FBF;                   /* общая сторона               */
+    --warn:#E27C2C; --warn-soft:#FBEEDF;
+    --p1:#2E5AAC; --p2:#1E8E5A; --p3:#7A4FBF; --no:#C23B3B;
+    --ok:#1E8E5A;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper)}
+  .page{max-width:720px;margin:0 auto;padding:clamp(1.4rem,4vw,3rem) clamp(1.1rem,4vw,2rem) 4.5rem;
+    color:var(--ink);font-family:PllFix,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:17.5px;line-height:1.68;-webkit-font-smoothing:antialiased}
+  .mono{font-family:PllFix,ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-variant-numeric:tabular-nums;font-weight:600}
+
+  .hero{border-bottom:3px solid var(--brand);padding-bottom:1.4rem;margin-bottom:1.8rem}
+  .eyebrow{font-size:.74rem;letter-spacing:.15em;text-transform:uppercase;color:var(--brand);font-weight:700;margin:0 0 .55rem}
+  h1{font-size:clamp(1.7rem,5.2vw,2.5rem);line-height:1.06;margin:0;font-weight:800;letter-spacing:-.02em;text-wrap:balance}
+  .tagline{font-size:1.12rem;color:var(--muted);margin:.85rem 0 0;text-wrap:pretty}
+
+  section{margin-top:2.4rem}
+  h2{font-size:1.5rem;margin:0 0 .3rem;font-weight:780;letter-spacing:-.015em;text-wrap:balance}
+  h2 .em{color:var(--brand)}
+  h3{font-size:1.06rem;margin:1.4rem 0 .2rem;font-weight:750}
+  p{margin:.7rem 0}
+  strong{font-weight:680}
+
+  .lead-in{background:var(--brand-soft);border-radius:14px;padding:1.1rem 1.3rem;font-size:1.02rem}
+  .lead-in p{margin:.4rem 0}
+  .lead-in b{color:var(--brand)}
+
+  .recall{background:var(--card);border:1px dashed var(--line);border-radius:14px;padding:1rem 1.2rem;margin-top:1rem;font-size:.98rem}
+  .recall ul{margin:.5rem 0 0;padding-left:1.15rem;display:flex;flex-direction:column;gap:.45rem}
+
+  .steps{counter-reset:st;margin-top:1rem;display:flex;flex-direction:column;gap:.7rem;padding:0;list-style:none}
+  .steps li{counter-increment:st;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:.9rem 1.1rem .9rem 3.1rem;position:relative;font-size:.99rem}
+  .steps li::before{content:counter(st);position:absolute;left:.95rem;top:.85rem;width:1.55rem;height:1.55rem;border-radius:50%;
+    background:var(--brand);color:#fff;font-weight:800;font-size:.85rem;display:flex;align-items:center;justify-content:center}
+
+  .formula-box{background:var(--ink);color:#fff;border-radius:14px;padding:1.3rem;text-align:center;margin-top:1rem}
+  .formula-box .eq{font-family:PllFix,ui-monospace,Menlo,monospace;font-size:clamp(.98rem,3.6vw,1.28rem);font-weight:700;line-height:1.6}
+  .formula-box .eq .g{color:#6FD3A6}
+  .formula-box .note{font-size:.9rem;color:#AEB8C6;margin:.7rem 0 0}
+
+  .note{border-left:4px solid var(--brand);background:var(--brand-soft);border-radius:0 10px 10px 0;padding:.8rem 1.1rem;margin-top:1rem;font-size:.98rem}
+  .note b{color:var(--brand)}
+  .note.w{border-left-color:var(--warn);background:var(--warn-soft)}
+  .note.w b{color:#9A5210}
+
+  .tbl{overflow-x:auto;margin-top:1rem;border:1px solid var(--line);border-radius:12px;background:var(--card)}
+  table{border-collapse:collapse;width:100%;font-size:.94rem}
+  th,td{padding:.6rem .8rem;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
+  th{font-weight:750;background:#FAFBFD;font-size:.85rem;color:var(--muted)}
+  tr:last-child td{border-bottom:none}
+  td.m{font-family:PllFix,ui-monospace,Menlo,monospace;font-weight:650;white-space:nowrap}
+  .b1{color:var(--p1);font-weight:800} .b2{color:var(--p2);font-weight:800} .b3{color:var(--p3);font-weight:800}
+
+  /* Чертёж */
+  .diagram{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:1.2rem;margin-top:1rem}
+  .diagram canvas{width:100%;height:auto;display:block;border-radius:8px;background:#FCFDFE}
+  .tabs{display:flex;flex-wrap:wrap;gap:.4rem;margin-bottom:.9rem}
+  .tabs button{font:inherit;font-size:.84rem;font-weight:700;cursor:pointer;border:1px solid var(--line);background:#fff;
+    color:var(--muted);border-radius:999px;padding:.4rem .85rem}
+  .tabs button[aria-selected=true]{background:var(--brand);border-color:var(--brand);color:#fff}
+  .tabs button:focus-visible{outline:3px solid var(--brand);outline-offset:2px}
+  .legend{display:flex;flex-wrap:wrap;gap:.5rem .95rem;margin-top:.85rem;font-size:.85rem;color:var(--muted)}
+  .legend span{display:inline-flex;align-items:center;gap:.35rem}
+  .legend i{width:.85rem;height:.85rem;border-radius:3px;display:inline-block}
+  .cap{font-size:.9rem;color:var(--muted);margin-top:.6rem}
+  .cap b{color:var(--ink)}
+
+  .walk{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.15rem 1.3rem;margin-top:1rem}
+  .walk .q{font-family:PllFix,ui-monospace,Menlo,monospace;font-weight:700;font-size:.98rem;margin:0 0 .9rem;padding-bottom:.7rem;border-bottom:1px solid var(--line)}
+  .walk ol{margin:0;padding-left:1.2rem;display:flex;flex-direction:column;gap:.6rem}
+  .walk li{font-size:.96rem}
+  .walk .why{color:var(--muted);font-style:italic;font-size:.9rem;display:block;margin-top:.15rem}
+  .verdict{margin-top:1rem;padding:.7rem 1rem;background:var(--brand-soft);border-radius:10px;font-weight:650;color:var(--brand);font-family:PllFix,ui-monospace,Menlo,monospace;font-size:.95rem}
+
+  /* Тренажёр */
+  .trainer{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.2rem 1.3rem;margin-top:1rem}
+  .tr-task{font-size:clamp(.98rem,3.6vw,1.08rem);text-align:center;padding:1rem;background:var(--brand-soft);border-radius:10px;font-weight:600;line-height:1.6}
+  .tr-task .g{font-family:PllFix,ui-monospace,Menlo,monospace;font-weight:700;color:var(--ink)}
+  .trainer canvas{width:100%;height:auto;display:block;margin-top:.9rem;border-radius:8px;background:#FCFDFE;border:1px solid var(--line)}
+  .tr-ctl{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:1rem;align-items:center;justify-content:center}
+  .tr-ctl button{font:inherit;font-weight:700;font-size:.88rem;cursor:pointer;border:none;border-radius:9px;padding:.55rem .9rem;color:#fff;background:var(--brand)}
+  .tr-ctl button.a1{background:var(--p1)} .tr-ctl button.a2{background:var(--p2)}
+  .tr-ctl button.a3{background:var(--p3)} .tr-ctl button.a0{background:var(--no)}
+  .tr-ctl button.ghost{background:transparent;color:var(--brand);border:1px solid var(--brand)}
+  .tr-ctl button.sec{background:#fff;color:var(--ink);border:1px solid var(--line)}
+  .tr-ctl button:focus-visible{outline:3px solid var(--brand);outline-offset:2px}
+  .tr-result{margin-top:.9rem;font-size:.96rem;min-height:1.2rem;text-align:center}
+  .tr-result .ok{color:var(--ok);font-weight:700} .tr-result .bad{color:var(--no);font-weight:700}
+  .tr-result .sol{margin-top:.6rem;padding:.8rem 1rem;background:#FCFDFE;border:1px solid var(--line);border-radius:10px;
+    font-family:PllFix,ui-monospace,Menlo,monospace;font-size:.88rem;line-height:1.8;text-align:left;overflow-x:auto}
+
+  details{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:.9rem 1.1rem;margin-top:.7rem}
+  details[open]{border-color:var(--brand)}
+  summary{cursor:pointer;font-weight:650;list-style:none;display:flex;justify-content:space-between;gap:1rem;align-items:center}
+  summary::-webkit-details-marker{display:none}
+  summary::after{content:"проверить";font-size:.8rem;color:var(--brand);font-weight:700;white-space:nowrap}
+  details[open] summary::after{content:"скрыть"}
+  summary:focus-visible{outline:3px solid var(--brand);outline-offset:3px;border-radius:6px}
+  .ans{margin-top:.75rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.96rem;color:var(--muted)}
+  .ans b{color:var(--ink)}
+  .drill{display:flex;flex-direction:column;gap:.2rem;margin-top:1rem}
+  .lvl{font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:700;margin:1.3rem 0 .3rem}
+
+  ul.traps{list-style:none;margin:1rem 0 0;padding:0;display:flex;flex-direction:column;gap:.7rem}
+  ul.traps li{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:.85rem 1.05rem;padding-left:2.5rem;position:relative;font-size:.97rem}
+  ul.traps li::before{content:"⚠";position:absolute;left:1rem;top:.85rem;color:var(--warn)}
+  ul.traps b{font-weight:700}
+
+  .selfcheck{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.1rem 1.3rem;margin-top:1rem}
+  .selfcheck ol{margin:.4rem 0 0;padding-left:1.2rem;display:flex;flex-direction:column;gap:.5rem;font-size:.98rem}
+
+  .wrapup{background:var(--brand);color:#fff;border-radius:16px;padding:1.4rem 1.5rem;margin-top:2.4rem}
+  .wrapup h2{color:#fff;margin:0 0 .5rem}
+  .wrapup p{color:#DEE7F5;margin:.4rem 0;font-size:1rem}
+  .wrapup .big-rule{font-size:clamp(.95rem,3.6vw,1.1rem);font-weight:800;color:#fff;margin:.6rem 0;font-family:PllFix,ui-monospace,Menlo,monospace;line-height:1.6}
+  .wrapup .next{font-size:.95rem;color:#C6D5EE;margin-top:1rem;padding-top:1rem;border-top:1px solid rgba(255,255,255,.2)}
+  .wrapup .next b{color:#fff}
+
+  @media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+
+<!--LESSON-NAV-TOP--><style>.lnav{--lnav-accent:#3D5AF1}.lnav a{text-decoration:none;font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif}.lnav-top{max-width:820px;margin:0 auto;padding:.75rem clamp(1rem,4vw,1.5rem) .1rem}.lnav-top a{display:inline-flex;align-items:center;gap:.35rem;color:var(--lnav-accent);font-weight:600;font-size:.9rem}.lnav-top a:hover{text-decoration:underline}.lnav-bot{max-width:820px;margin:2.6rem auto 3rem;padding:1.1rem clamp(1rem,4vw,1.5rem) 0;border-top:1px solid #E4E8EF;display:flex;align-items:stretch;gap:.55rem}.lnav-bot a{min-width:0;display:flex;flex-direction:column;justify-content:center;gap:.15rem;border:1px solid #E4E8EF;border-radius:12px;padding:.65rem .85rem;color:#182233;background:#fff;transition:border-color .1s,transform .08s}.lnav-bot a:hover{border-color:var(--lnav-accent);transform:translateY(-1px)}.lnav-bot .prev,.lnav-bot .next{flex:1 1 0}.lnav-bot .next{text-align:right}.lnav-bot .dir{font-size:.72rem;color:#8A93A6;font-weight:600}.lnav-bot .ttl{font-size:.9rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.lnav-bot .to-cat{flex:0 0 auto;flex-direction:row;align-items:center;justify-content:center;color:var(--lnav-accent);font-weight:700;font-size:.85rem;white-space:nowrap}@media(max-width:420px){.lnav-bot .to-cat span{display:none}.lnav-bot .to-cat{padding:.65rem .7rem}}</style><nav class="lnav lnav-top"><a href="./catalog.html">← Все темы</a></nav><!--/LESSON-NAV-TOP-->
+<div class="page">
+
+  <header class="hero">
+    <p class="eyebrow">Геометрия · 7 класс</p>
+    <h1>Решение задач на признаки равенства треугольников</h1>
+    <p class="tagline">Три признака ты знаешь. Дальше начинается работа: выбрать нужный, собрать три равных элемента, довести до вывода — и всё это сам.</p>
+  </header>
+
+  <div class="lead-in">
+    <p><b>Где встречается.</b> В задаче никто не подпишет: «здесь применяй первый признак». Тебе дают чертёж и просят доказать, что какие-то два отрезка равны или два угла равны. Ты сам смотришь, какие два треугольника надо сравнить, доказываешь их равенство — и из этого получаешь то, что просили.</p>
+    <p>Это главный рабочий инструмент всей геометрии 7 класса: на нём держатся свойства равнобедренного треугольника, признаки параллельности прямых, многие построения. Не освоишь — дальше встанешь.</p>
+  </div>
+
+  <div class="note w">
+    <p><b>Сразу ломаем главный миф:</b> «доказать — это нарисовать поточнее и измерить линейкой». Нет. Измерение ничего не доказывает: линейка врёт, а твой чертёж может оказаться частным случаем. Доказательство — это цепочка рассуждений, верная для <strong>любого</strong> такого чертежа.</p>
+  </div>
+
+  <section>
+    <h2>Что нужно вспомнить</h2>
+    <div class="recall">
+      <p>Опираться будем вот на что — три признака равенства и одно следствие:</p>
+      <ul>
+        <li><b class="b1">1-й признак (по двум сторонам и углу между ними).</b> Если две стороны и угол <strong>между ними</strong> одного треугольника равны двум сторонам и углу между ними другого — треугольники равны.</li>
+        <li><b class="b2">2-й признак (по стороне и двум прилежащим углам).</b> Если сторона и два <strong>прилежащих</strong> к ней угла одного треугольника равны стороне и двум прилежащим углам другого — треугольники равны.</li>
+        <li><b class="b3">3-й признак (по трём сторонам).</b> Если три стороны одного треугольника равны трём сторонам другого — треугольники равны.</li>
+        <li><strong>Следствие.</strong> У равных треугольников равны <strong>все</strong> соответственные стороны и углы. Три равенства ты доказываешь, а остальные шесть получаешь бесплатно.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section>
+    <h2>Суть: <span class="em">три действия — и доказательство готово</span></h2>
+    <p>Любая задача «докажи, что эти отрезки (или углы) равны» решается по одной схеме. Три шага:</p>
+
+    <ol class="steps">
+      <li><strong>Выдели два конкретных треугольника.</strong> Не любых, а тех, равенство которых даст нам то, что просят. Ищи их так: посмотри, <em>где лежит</em> то, что надо доказать, и подбирай треугольники под это.</li>
+      <li><strong>Набери три равных элемента</strong> в одной из рабочих комбинаций: сторона-сторона-сторона; сторона-угол-сторона (угол между сторонами); сторона и два прилежащих к ней угла. И сошлись на нужный признак.</li>
+      <li><strong>Вытащи то, что просили.</strong> Из равенства треугольников выведи равенство нужных соответственных элементов. Всё, доказано.</li>
+    </ol>
+
+    <p>Скажешь: доказали-то мы всего три равенства, откуда берутся остальные? Оттуда: равные треугольники можно совместить наложением. А раз совмещаются — совпадает всё, все три стороны и все три угла. Три элемента доказываем, остальные шесть получаем даром.</p>
+
+    <div class="formula-box">
+      <div class="eq">3 равных элемента в нужной комбинации <span class="g">⟹</span> треугольники равны <span class="g">⟹</span> равны все соответственные стороны и углы</div>
+      <div class="note">вот вся логика задачи на доказательство, от первой строки до «что и требовалось»</div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Правило: <span class="em">что можно писать, а что нельзя</span></h2>
+
+    <h3>Откуда берутся равные элементы</h3>
+    <p>Каждое равенство в доказательстве обязано иметь <strong>причину</strong>. Причин ровно четыре:</p>
+    <div class="tbl">
+      <table>
+        <tr><th>Что пишем</th><th>Причина</th></tr>
+        <tr><td class="m">AO = BO</td><td>из условия (так дано в задаче)</td></tr>
+        <tr><td class="m">AC = AC</td><td>общая сторона двух треугольников — она равна сама себе</td></tr>
+        <tr><td class="m">∠AOC = ∠BOD</td><td>вертикальные углы, а они равны</td></tr>
+        <tr><td class="m">любой факт</td><td>доказан ранее (в этой же задаче или как теорема)</td></tr>
+      </table>
+    </div>
+    <p>Ничего другого в столбик причин не попадает. «Видно на чертеже», «похоже на прямой угол», «я измерил» — это не причины.</p>
+
+    <h3>Как читается запись равенства</h3>
+    <p>Запись <span class="mono">△ABC = △A₁B₁C₁</span> читается <strong>строго по порядку букв</strong>: A↔A₁, B↔B₁, C↔C₁. Отсюда сразу AB = A₁B₁, ∠A = ∠A₁ и так далее. Порядок букв не случаен — именно он задаёт соответствие вершин, и менять его нельзя.</p>
+
+    <div class="note">
+      <p><b>Условие применимости — самое частое место, где режутся.</b> Для 1-го признака угол обязан быть <strong>между</strong> теми самыми двумя сторонами. Для 2-го — оба угла обязаны быть <strong>прилежащими</strong> к той самой стороне. Нельзя взять угол, лежащий напротив стороны, и назвать это первым признаком: это уже не признак, это выдумка.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Увидь глазами: <span class="em">четыре типовые конфигурации</span></h2>
+    <p>Почти все школьные задачи собраны из нескольких одинаковых картинок. Полистай вкладки: один треугольник обведён <span style="color:var(--t1);font-weight:800">красным</span>, второй — <span style="color:var(--t2);font-weight:800">синим</span>. Одинаковыми чёрточками помечены равные стороны, одинаковыми дужками — равные углы. Отметь на рисунке всё, что известно, — и нужный признак часто становится виден глазами.</p>
+
+    <div class="diagram">
+      <div class="tabs" role="tablist" aria-label="Типовые конфигурации">
+        <button type="button" role="tab" data-i="0" aria-selected="true">Вертикальные углы</button>
+        <button type="button" role="tab" data-i="1" aria-selected="false">Общая сторона + углы</button>
+        <button type="button" role="tab" data-i="2" aria-selected="false">Общая сторона + стороны</button>
+        <button type="button" role="tab" data-i="3" aria-selected="false">Середина + перпендикуляр</button>
+      </div>
+      <canvas id="cfg" width="640" height="400" aria-label="Чертёж типовой конфигурации: два треугольника с помеченными равными сторонами и углами"></canvas>
+      <div class="legend">
+        <span><i style="background:var(--t1)"></i> первый треугольник</span>
+        <span><i style="background:var(--t2)"></i> второй треугольник</span>
+        <span><i style="background:var(--mark)"></i> равные стороны</span>
+        <span><i style="background:var(--arc)"></i> равные углы</span>
+        <span><i style="background:var(--common)"></i> общая сторона</span>
+      </div>
+      <p class="cap" id="cfgCap"></p>
+    </div>
+
+    <div class="note">
+      <p><b>Приём «два цвета».</b> На своём чертеже обведи один треугольник красным, второй синим. Место, где красный и синий встречаются, — это и есть общая сторона или пара вертикальных углов, то есть твой третий равный элемент. Он почти никогда не написан в условии, его надо увидеть.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Эталонный разбор</h2>
+    <p>Разбираю вслух, по шагам, с объяснением каждого «почему». Рассуждай так же — и записывай так же.</p>
+
+    <div class="walk">
+      <p class="q">Дано: отрезки AB и CD пересекаются в точке O, причём O — середина каждого из них. Доказать: AC = BD.</p>
+      <ol>
+        <li>Рассмотрим <span class="mono">△AOC</span> и <span class="mono">△BOD</span>.
+          <span class="why">Почему именно эти два: мне надо сравнить отрезки AC и BD, а они как раз лежат сторонами в этих треугольниках. Шаг 1 схемы — нашёл, где лежит требуемое, и взял треугольники под это.</span></li>
+        <li><span class="mono">AO = BO</span>, потому что O — середина AB.
+          <span class="why">Причина: из условия. Середина делит отрезок пополам, значит две половинки равны.</span></li>
+        <li><span class="mono">CO = DO</span>, потому что O — середина CD.
+          <span class="why">Причина: тоже из условия. Уже два равных элемента, оба — стороны.</span></li>
+        <li><span class="mono">∠AOC = ∠BOD</span> как вертикальные углы.
+          <span class="why">Причина: вертикальные углы равны. И главное: этот угол лежит <b>между</b> сторонами AO и CO — ровно то, что нужно для первого признака. Проверяю пальцем: стороны угла AOC — это луч OA и луч OC, то есть те самые отрезки.</span></li>
+        <li>Значит <span class="mono">△AOC = △BOD</span> по 1-му признаку (по двум сторонам и углу между ними).
+          <span class="why">Три элемента в комбинации сторона-угол-сторона собраны, признак назван. Шаг 2 закрыт.</span></li>
+        <li>Следовательно <span class="mono">AC = BD</span> как соответственные стороны равных треугольников.
+          <span class="why">Шаг 3: из равенства треугольников вытаскиваю ровно то, что просили. Смотрю по буквам: A↔B, O↔O, C↔D, значит стороне AC соответствует BD.</span></li>
+      </ol>
+      <div class="verdict">Что и требовалось доказать: AC = BD</div>
+    </div>
+
+    <div class="walk" style="margin-top:.8rem">
+      <p class="q">Теперь допиши сам. Дано: ∠BAC = ∠DAC, AC — общая сторона, ∠BCA = ∠DCA. Доказать: AB = AD.</p>
+      <ol>
+        <li>Рассмотрим <span class="mono">△ABC</span> и <span class="mono">△ADC</span>.</li>
+        <li><span class="mono">∠BAC = ∠DAC</span> — из условия.</li>
+        <li><span class="mono">AC = AC</span> — <span class="mono">____________</span>. <em>(впиши: почему эта сторона равна сама себе и что это за сторона для наших двух треугольников)</em></li>
+        <li><span class="mono">∠BCA = ∠DCA</span> — из условия.</li>
+        <li><span class="mono">△ABC = △ADC</span> по 2-му признаку (сторона AC и два прилежащих к ней угла).</li>
+        <li><span class="mono">AB = AD</span> как соответственные стороны.</li>
+      </ol>
+      <details style="margin-top:.9rem"><summary>Проверить пропущенный шаг</summary><div class="ans">AC — <b>общая сторона</b> треугольников ABC и ADC, поэтому она равна сама себе. Это и есть тот третий элемент, которого нет в условии: его надо увидеть на чертеже. Оба данных угла (при вершинах A и C) прилежат именно к стороне AC — значит, работает второй признак.</div></details>
+    </div>
+
+    <div class="walk" style="margin-top:.8rem">
+      <p class="q">А это попробуй целиком сам. Дано: AB = AD, CB = CD. Доказать: ∠B = ∠D.</p>
+      <p style="font-size:.94rem;color:var(--muted);margin:0">Подсказка, если застрял: сравнивай △ABC и △ADC, у них есть общая сторона AC. Сколько равных сторон получается?</p>
+      <details style="margin-top:.9rem"><summary>Показать решение</summary><div class="ans">
+        Рассмотрим △ABC и △ADC. AB = AD — из условия. CB = CD — из условия. AC = AC — общая сторона. Три пары равных сторон, значит <b>△ABC = △ADC по 3-му признаку</b> (по трём сторонам). Отсюда <b>∠B = ∠D</b> как соответственные углы равных треугольников.
+      </div></details>
+    </div>
+  </section>
+
+  <section>
+    <h2>Тренажёр · <span class="em">какой признак сработает</span></h2>
+    <p>Труднее всего не запись, а выбор признака. Его и тренируем. Тебе дают три пары равных элементов треугольников <span class="mono">△ABC</span> и <span class="mono">△A₁B₁C₁</span>; на чертеже они помечены чёрточками и дужками. Реши, какой признак применим — или что этих данных не хватает ни на один. Заданий бесконечно много.</p>
+
+    <div class="trainer">
+      <div class="tr-task" id="trTask"></div>
+      <canvas id="trCv" width="560" height="300" aria-label="Треугольник ABC с помеченными данными: чёрточки на равных сторонах, дужки на равных углах"></canvas>
+      <div class="tr-ctl">
+        <button type="button" class="a1" data-a="1">1-й признак</button>
+        <button type="button" class="a2" data-a="2">2-й признак</button>
+        <button type="button" class="a3" data-a="3">3-й признак</button>
+        <button type="button" class="a0" data-a="0">Нельзя</button>
+      </div>
+      <div class="tr-ctl">
+        <button type="button" id="trNew" class="sec">🎲 Новое задание</button>
+        <button type="button" id="trShow" class="ghost">Решение</button>
+      </div>
+      <div id="trResult" class="tr-result"></div>
+    </div>
+    <p class="cap">Сначала <b>предскажи</b> ответ, потом жми кнопку и <b>проверь</b>. Если промахнулся — прочитай разбор и <b>объясни</b> себе, где именно лежал данный угол: между сторонами или напротив.</p>
+  </section>
+
+  <section>
+    <h2>Проверь себя</h2>
+
+    <p class="lvl">Уровень 1 · понимание</p>
+    <div class="drill">
+      <details><summary>1) Дана запись △MNK = △PQR. Какой стороне равна сторона MN и какому углу равен ∠N?</summary><div class="ans">Читаем по порядку букв: M↔P, N↔Q, K↔R. Значит <b>MN = PQ</b> (первая и вторая буквы) и <b>∠N = ∠Q</b> (вторая буква).</div></details>
+      <details><summary>2) Сколько и какие именно равные элементы нужно набрать, чтобы применить признак?</summary><div class="ans">Всегда <b>три</b>, и только в одной из трёх комбинаций: три стороны; две стороны и угол <b>между</b> ними; сторона и два <b>прилежащих</b> к ней угла. Других рабочих наборов у нас нет.</div></details>
+      <details><summary>3) В △ABC и △ADC сторона AC — общая. Какую причину для равенства AC = AC записывают в доказательстве?</summary><div class="ans">«AC — <b>общая сторона</b>», то есть один и тот же отрезок в обоих треугольниках, а значит он равен сам себе. В условии этого не пишут — увидеть общую сторону надо самому по чертежу.</div></details>
+    </div>
+
+    <p class="lvl">Уровень 2 · применение</p>
+    <div class="drill">
+      <details><summary>4) Дано: точка O — середина BC, AO ⊥ BC. Доказать, что AB = AC.</summary><div class="ans">
+        Сравниваем <b>△ABO и △ACO</b> — именно в них лежат отрезки AB и AC.<br>
+        BO = CO — из условия (O — середина BC).<br>
+        ∠AOB = ∠AOC = 90° — из условия (AO ⊥ BC), и этот угол лежит между сторонами AO и BO (соответственно AO и CO).<br>
+        AO = AO — общая сторона.<br>
+        Значит <b>△ABO = △ACO по 1-му признаку</b> (две стороны и угол между ними). Отсюда <b>AB = AC</b> как соответственные стороны.
+      </div></details>
+      <details><summary>5) Дано: AB = AD, CB = CD. Доказать, что ∠B = ∠D.</summary><div class="ans">
+        Сравниваем <b>△ABC и △ADC</b>: углы B и D лежат в них.<br>
+        AB = AD — из условия. CB = CD — из условия. AC = AC — общая сторона.<br>
+        Три пары сторон, значит <b>△ABC = △ADC по 3-му признаку</b>. Отсюда <b>∠B = ∠D</b> как соответственные углы.
+      </div></details>
+    </div>
+
+    <p class="lvl">Уровень 3 · анализ</p>
+    <div class="drill">
+      <details><summary>6) Что изменится, если… В эталонной задаче известно только AO = BO и ∠AOC = ∠BOD, а про CO и DO ничего не сказано. Можно ли доказать AC = BD?</summary><div class="ans">
+        <b>Нет.</b> Равных элементов всего два — сторона и угол. Трёх элементов в нужной комбинации не набирается, поэтому ни один признак применить нельзя. А без равенства треугольников и вывода AC = BD не сделать. Это как раз тот случай, когда правильный ответ — «данных не хватает».
+      </div></details>
+      <details><summary>7) Найди ошибку. Ученик написал: «△AOC = △BOD, потому что у них по два равных угла». Почему этого мало?</summary><div class="ans">
+        Два угла без равной стороны равенства <b>не дают</b>. Такие треугольники могут иметь одинаковую форму, но разный размер — то есть быть подобными, а не равными. В каждой рабочей комбинации обязательно есть хотя бы одна равная <b>сторона</b>: она задаёт размер. Ученику нужно было добавить третий элемент — сторону.
+      </div></details>
+      <details><summary>8) Найди ошибку. Из записи △ABC = △DEF ученик вывел, что AB = DF. В чём он не прав?</summary><div class="ans">
+        Он сопоставил буквы наугад. Соответствие читается строго по порядку: A↔D, B↔E, C↔F. Сторона AB — это первая и вторая буквы, значит ей соответствуют первая и вторая буквы второго треугольника: <b>AB = DE</b>. А DF (первая и третья) равна AC.
+      </div></details>
+    </div>
+  </section>
+
+  <section>
+    <h2>Ловушки</h2>
+    <ul class="traps">
+      <li><b>Выбирают неподходящий признак.</b> Берут угол, который лежит <em>напротив</em> известной стороны, и называют это первым признаком. <em>Как избежать:</em> для 1-го признака угол обязан быть <b>между</b> двумя сторонами — ткни пальцем и проверь, что стороны этого угла и есть те самые отрезки.</li>
+      <li><b>Используют недоказанные факты.</b> Пишут «AB = CD, потому что так на чертеже видно» или «угол прямой, потому что похоже». <em>Как избежать:</em> у каждого равного элемента должна быть причина — «из условия», «вертикальные», «общая сторона», «доказано ранее». Нет причины — писать нельзя.</li>
+      <li><b>Не выделяют нужные пары треугольников.</b> Доказывают равенство «не тех» треугольников, в которых требуемого отрезка вообще нет. <em>Как избежать:</em> сначала найди на чертеже, <b>где лежит</b> то, что просят доказать, и подбирай треугольники под это.</li>
+      <li><b>Путают соответствие вершин.</b> Из △ABC = △DEF делают вывод AB = DF. <em>Как избежать:</em> соответствие читается строго по порядку букв: A↔D, B↔E, C↔F, поэтому AB = DE.</li>
+      <li><b>«Доказал» измерением.</b> Померил линейкой и написал «равны». <em>Как избежать:</em> измерение — это проверка, а не доказательство. Нужна цепочка рассуждений, верная для любого чертежа.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Объясни своими словами</h2>
+    <div class="selfcheck">
+      <p>Закрой конспект и ответь вслух. Отвечаешь без запинки — тема твоя:</p>
+      <ol>
+        <li>Сколько и какие именно равные элементы нужно найти, чтобы применить признак?</li>
+        <li>Из равенства треугольников что мы имеем право вывести?</li>
+        <li>Можно ли вместо доказательства просто измерить и убедиться, что отрезки равны? Почему?</li>
+      </ol>
+      <details style="margin-top:.9rem"><summary>Сверить ответы</summary><div class="ans">
+        1) Три, в одной из комбинаций: ССС; СУС с углом между сторонами; сторона и два прилежащих к ней угла.<br>
+        2) Равенство любых соответственных сторон и углов — всех шести оставшихся элементов.<br>
+        3) Нет. Измерение не доказывает: линейка неточна, а чертёж может оказаться частным случаем. Нужна цепочка рассуждений.
+      </div></details>
+      <p style="margin-top:1rem;font-size:.94rem;color:var(--muted)">И ещё одна проверка, самая честная: возьми любую задачу выше и попробуй начать словами «Рассмотрим треугольники … и …», ткнув в них пальцем на чертеже. Пока не ткнул — доказательство ещё не началось.</p>
+    </div>
+  </section>
+
+  <div class="wrapup">
+    <h2>Запомни главное</h2>
+    <p class="big-rule">найди два треугольника → набери три равных элемента с причинами → сошлись на признак → выведи требуемое</p>
+    <p>Схема одна на все задачи: нашёл на чертеже два треугольника, в которых лежит требуемое, набрал три равных элемента в правильной комбинации, сослался на признак — вывел ответ как равенство соответственных элементов. Третий элемент чаще всего в условии не написан: это общая сторона или вертикальные углы.</p>
+    <p class="next">👉 Дальше — <b>свойства равнобедренного треугольника</b>. Там ты увидишь, как этой самой схемой доказывают первую настоящую теорему: почему углы при основании равны.</p>
+  </div>
+
+</div>
+
+<script>
+/* ── Чертёж: четыре типовые конфигурации ─────────────────────── */
+(function(){
+  var cv=document.getElementById('cfg'); if(!cv) return;
+  var ctx=cv.getContext('2d'), capEl=document.getElementById('cfgCap');
+  var W=640,H=400,dpr=1,cur=0;
+  function css(v){ return getComputedStyle(document.documentElement).getPropertyValue(v).trim(); }
+
+  var SCENES=[
+    { pts:{A:[-70,52],B:[70,-52],C:[-58,-44],D:[58,44],O:[0,0]},
+      tris:[['A','O','C'],['B','O','D']],
+      ticks:[['A','O',1],['B','O',1],['C','O',2],['D','O',2]],
+      arcs:[['O','A','C',1],['O','B','D',1]],
+      hl:[['A','C'],['B','D']],
+      cap:'Отрезки AB и CD пересекаются в O, и O — середина каждого. Половинки помечены чёрточками, вертикальные углы при O — дужками. Собралось две стороны и угол <b>между</b> ними: <b>1-й признак</b>, △AOC = △BOD, отсюда AC = BD.' },
+
+    { pts:{A:[0,72],B:[-62,0],C:[0,-72],D:[62,0]},
+      tris:[['A','B','C'],['A','D','C']],
+      common:['A','C'],
+      arcs:[['A','B','C',1],['A','D','C',1],['C','B','A',2],['C','D','A',2]],
+      hl:[['A','B'],['A','D']],
+      cap:'Дано ∠BAC = ∠DAC и ∠BCA = ∠DCA. Третий элемент в условии не написан — его видно на чертеже: AC у треугольников ABC и ADC <b>общая</b>. Оба угла прилежат к ней, значит <b>2-й признак</b>, △ABC = △ADC, отсюда AB = AD.' },
+
+    { pts:{A:[0,72],B:[-62,0],C:[0,-72],D:[62,0]},
+      tris:[['A','B','C'],['A','D','C']],
+      common:['A','C'],
+      ticks:[['A','B',1],['A','D',1],['C','B',2],['C','D',2]],
+      hlv:['B','D'],
+      cap:'Та же картинка, но дано другое: AB = AD и CB = CD. Плюс общая сторона AC — получается три пары сторон, то есть <b>3-й признак</b>. Из △ABC = △ADC следует ∠B = ∠D (кружками отмечены как раз эти углы).' },
+
+    { pts:{A:[0,86],B:[-72,0],C:[72,0],O:[0,0]},
+      tris:[['A','B','O'],['A','C','O']],
+      common:['A','O'],
+      ticks:[['B','O',1],['C','O',1]],
+      right:[['O','A','B'],['O','A','C']],
+      hl:[['A','B'],['A','C']],
+      cap:'O — середина BC, и AO ⊥ BC. Половинки BO и CO равны, оба угла при O прямые, сторона AO общая. Угол лежит <b>между</b> сторонами AO и BO — работает <b>1-й признак</b>: △ABO = △ACO, отсюда AB = AC.' }
+  ];
+
+  function resize(){
+    var c=cv.clientWidth||640; dpr=Math.min(window.devicePixelRatio||1,2);
+    W=c; H=Math.round(Math.max(230,Math.min(400,c*0.62)));
+    cv.width=Math.round(W*dpr); cv.height=Math.round(H*dpr);
+    cv.style.height=H+'px'; ctx.setTransform(dpr,0,0,dpr,0,0);
+  }
+
+  function ticks(P,Q,count,color){
+    var dx=Q[0]-P[0], dy=Q[1]-P[1], L=Math.hypot(dx,dy)||1; dx/=L; dy/=L;
+    var px=-dy, py=dx, mx=(P[0]+Q[0])/2, my=(P[1]+Q[1])/2, tl=6, sp=5;
+    ctx.strokeStyle=color; ctx.lineWidth=2.4; ctx.lineCap='round';
+    for(var i=0;i<count;i++){
+      var t=(i-(count-1)/2)*sp, cx=mx+dx*t, cy=my+dy*t;
+      ctx.beginPath(); ctx.moveTo(cx-px*tl,cy-py*tl); ctx.lineTo(cx+px*tl,cy+py*tl); ctx.stroke();
+    }
+  }
+  function angleArc(V,P,Q,color,r,count){
+    var a1=Math.atan2(P[1]-V[1],P[0]-V[0]), a2=Math.atan2(Q[1]-V[1],Q[0]-V[0]);
+    var d=a2-a1; while(d>Math.PI)d-=2*Math.PI; while(d<-Math.PI)d+=2*Math.PI;
+    ctx.strokeStyle=color; ctx.lineWidth=2.2;
+    for(var i=0;i<count;i++){
+      ctx.beginPath(); ctx.arc(V[0],V[1],r+i*5,a1,a1+d,d<0); ctx.stroke();
+    }
+  }
+  function rightMark(V,P,Q,color){
+    var ux=P[0]-V[0], uy=P[1]-V[1], lu=Math.hypot(ux,uy)||1; ux/=lu; uy/=lu;
+    var vx=Q[0]-V[0], vy=Q[1]-V[1], lv=Math.hypot(vx,vy)||1; vx/=lv; vy/=lv;
+    var d=13;
+    ctx.strokeStyle=color; ctx.lineWidth=2;
+    ctx.beginPath();
+    ctx.moveTo(V[0]+ux*d, V[1]+uy*d);
+    ctx.lineTo(V[0]+ux*d+vx*d, V[1]+uy*d+vy*d);
+    ctx.lineTo(V[0]+vx*d, V[1]+vy*d);
+    ctx.stroke();
+  }
+
+  function draw(){
+    var sc=SCENES[cur], P=sc.pts, names=Object.keys(P);
+    var xs=names.map(function(n){return P[n][0];}), ys=names.map(function(n){return P[n][1];});
+    var minx=Math.min.apply(null,xs), maxx=Math.max.apply(null,xs);
+    var miny=Math.min.apply(null,ys), maxy=Math.max.apply(null,ys);
+    var pad=40, k=Math.min((W-pad*2)/((maxx-minx)||1),(H-pad*2)/((maxy-miny)||1));
+    var ox=(W-(maxx-minx)*k)/2, oy=(H-(maxy-miny)*k)/2;
+    function S(n){ var p=P[n]; return [ox+(p[0]-minx)*k, oy+(maxy-p[1])*k]; }
+
+    ctx.clearRect(0,0,W,H);
+    var TC=[css('--t1'),css('--t2')], TF=[css('--t1-soft'),css('--t2-soft')];
+
+    // подсветка того, что доказываем
+    if(sc.hl) sc.hl.forEach(function(seg){
+      var a=S(seg[0]), b=S(seg[1]);
+      ctx.save(); ctx.strokeStyle='rgba(226,124,44,0.30)'; ctx.lineWidth=11; ctx.lineCap='round';
+      ctx.beginPath(); ctx.moveTo(a[0],a[1]); ctx.lineTo(b[0],b[1]); ctx.stroke(); ctx.restore();
+    });
+    if(sc.hlv) sc.hlv.forEach(function(n){
+      var a=S(n);
+      ctx.save(); ctx.fillStyle='rgba(226,124,44,0.28)';
+      ctx.beginPath(); ctx.arc(a[0],a[1],13,0,Math.PI*2); ctx.fill(); ctx.restore();
+    });
+
+    // треугольники
+    sc.tris.forEach(function(tr,ti){
+      var pts=tr.map(S);
+      ctx.beginPath();
+      pts.forEach(function(q,i){ i?ctx.lineTo(q[0],q[1]):ctx.moveTo(q[0],q[1]); });
+      ctx.closePath();
+      ctx.fillStyle=TF[ti]; ctx.globalAlpha=.62; ctx.fill(); ctx.globalAlpha=1;
+      ctx.strokeStyle=TC[ti]; ctx.lineWidth=2.6; ctx.lineJoin='round'; ctx.stroke();
+    });
+
+    // общая сторона
+    if(sc.common){
+      var a=S(sc.common[0]), b=S(sc.common[1]);
+      ctx.strokeStyle=css('--common'); ctx.lineWidth=3.4; ctx.lineCap='round';
+      ctx.beginPath(); ctx.moveTo(a[0],a[1]); ctx.lineTo(b[0],b[1]); ctx.stroke();
+    }
+
+    if(sc.ticks) sc.ticks.forEach(function(t){ ticks(S(t[0]),S(t[1]),t[2],css('--mark')); });
+    if(sc.arcs) sc.arcs.forEach(function(a){
+      var V=S(a[0]), Pp=S(a[1]), Q=S(a[2]);
+      var r=Math.min(24,Math.min(Math.hypot(V[0]-Pp[0],V[1]-Pp[1]),Math.hypot(V[0]-Q[0],V[1]-Q[1]))*0.30);
+      angleArc(V,Pp,Q,css('--arc'),r,a[3]);
+    });
+    if(sc.right) sc.right.forEach(function(r){ rightMark(S(r[0]),S(r[1]),S(r[2]),css('--arc')); });
+
+    // подписи вершин — наружу от центра всех точек
+    var gx=0, gy=0;
+    names.forEach(function(n){ var q=S(n); gx+=q[0]; gy+=q[1]; });
+    gx/=names.length; gy/=names.length;
+    ctx.font='800 15px PllFix,system-ui,-apple-system,sans-serif';
+    ctx.textAlign='center'; ctx.textBaseline='middle';
+    names.forEach(function(n){
+      var q=S(n), dx=q[0]-gx, dy=q[1]-gy, L=Math.hypot(dx,dy);
+      if(L<1){ dx=0; dy=-1; L=1; }
+      ctx.fillStyle=css('--ink');
+      ctx.beginPath(); ctx.arc(q[0],q[1],3,0,Math.PI*2); ctx.fill();
+      ctx.fillText(n, q[0]+dx/L*17, q[1]+dy/L*17);
+    });
+
+    capEl.innerHTML=sc.cap;
+  }
+
+  var tabs=[].slice.call(document.querySelectorAll('.tabs button'));
+  tabs.forEach(function(b){
+    b.addEventListener('click',function(){
+      cur=+b.getAttribute('data-i');
+      tabs.forEach(function(x){ x.setAttribute('aria-selected', x===b?'true':'false'); });
+      draw();
+    });
+  });
+  window.addEventListener('resize',function(){ resize(); draw(); });
+  resize(); draw();
+})();
+</script>
+
+<script>
+/* ── Тренажёр: какой признак применим ────────────────────────── */
+(function(){
+  var taskEl=document.getElementById('trTask'), resEl=document.getElementById('trResult');
+  var cv=document.getElementById('trCv');
+  if(!taskEl||!cv) return;
+  var ctx=cv.getContext('2d'), W=560,H=300,dpr=1;
+  var cur=null;
+
+  var SIDES=[{n:'AB',v:['A','B']},{n:'BC',v:['B','C']},{n:'AC',v:['A','C']}];
+  var VERT=['A','B','C'];
+  var TP={A:[0,0],B:[150,0],C:[46,100]};   // опорный треугольник для чертежа
+
+  function css(v){ return getComputedStyle(document.documentElement).getPropertyValue(v).trim(); }
+  function ri(a,b){ return Math.floor(Math.random()*(b-a+1))+a; }
+  function sub(s){ return s.split('').map(function(c){ return c+'₁'; }).join(''); }
+  function sideByName(n){ for(var i=0;i<SIDES.length;i++) if(SIDES[i].n===n) return SIDES[i]; return null; }
+  function shared(a,b){ for(var i=0;i<a.v.length;i++) if(b.v.indexOf(a.v[i])>-1) return a.v[i]; return null; }
+  function third(a,b){ for(var i=0;i<VERT.length;i++) if(VERT[i]!==a&&VERT[i]!==b) return VERT[i]; return null; }
+  function opposite(sideName){ return third(sideByName(sideName).v[0], sideByName(sideName).v[1]); }
+
+  /* ── генерация задания ────────────────────────────────────── */
+  function generate(){
+    var k=ri(1,6), s, s1, s2, sh, ang, other;
+    if(k===1){                       // ССС → 3-й признак
+      cur={sides:['AB','BC','AC'],angles:[],ans:3,kind:'sss'};
+    } else if(k===2){                // две стороны + угол между → 1-й
+      var i=ri(0,2), j; do{ j=ri(0,2); }while(j===i);
+      s1=SIDES[i]; s2=SIDES[j]; sh=shared(s1,s2);
+      cur={sides:[s1.n,s2.n],angles:[sh],ans:1,kind:'sas',sh:sh};
+    } else if(k===3){                // две стороны + угол НЕ между → нельзя
+      var i2=ri(0,2), j2; do{ j2=ri(0,2); }while(j2===i2);
+      s1=SIDES[i2]; s2=SIDES[j2]; sh=shared(s1,s2);
+      var rest=VERT.filter(function(x){ return x!==sh; });
+      ang=rest[ri(0,rest.length-1)];
+      cur={sides:[s1.n,s2.n],angles:[ang],ans:0,kind:'ssa',sh:sh,bad:ang};
+    } else if(k===4){                // сторона + два прилежащих угла → 2-й
+      s=SIDES[ri(0,2)];
+      cur={sides:[s.n],angles:[s.v[0],s.v[1]],ans:2,kind:'asa'};
+    } else if(k===5){                // сторона + прилежащий и противолежащий → нельзя
+      s=SIDES[ri(0,2)];
+      var opp=opposite(s.n), adj=s.v[ri(0,1)];
+      cur={sides:[s.n],angles:[adj,opp],ans:0,kind:'aas',adj:adj,opp:opp};
+    } else {                         // три угла → нельзя
+      cur={sides:[],angles:['A','B','C'],ans:0,kind:'aaa'};
+    }
+    render();
+  }
+
+  function render(){
+    var q=cur, parts=[];
+    q.sides.forEach(function(n){ parts.push('<span class="g">'+n+' = '+sub(n)+'</span>'); });
+    q.angles.forEach(function(v){ parts.push('<span class="g">∠'+v+' = ∠'+v+'₁</span>'); });
+    taskEl.innerHTML='В △ABC и △A₁B₁C₁ известно:<br>'+parts.join(', &nbsp;')+
+      '.<br>Какой признак равенства здесь работает?';
+    resEl.innerHTML='';
+    draw();
+  }
+
+  /* ── чертёж данных ────────────────────────────────────────── */
+  function resize(){
+    var c=cv.clientWidth||560; dpr=Math.min(window.devicePixelRatio||1,2);
+    W=c; H=Math.round(Math.max(180,Math.min(300,c*0.52)));
+    cv.width=Math.round(W*dpr); cv.height=Math.round(H*dpr);
+    cv.style.height=H+'px'; ctx.setTransform(dpr,0,0,dpr,0,0);
+  }
+  function ticksOn(P,Q,count,color){
+    var dx=Q[0]-P[0], dy=Q[1]-P[1], L=Math.hypot(dx,dy)||1; dx/=L; dy/=L;
+    var px=-dy, py=dx, mx=(P[0]+Q[0])/2, my=(P[1]+Q[1])/2, tl=6, sp=5;
+    ctx.strokeStyle=color; ctx.lineWidth=2.4; ctx.lineCap='round';
+    for(var i=0;i<count;i++){
+      var t=(i-(count-1)/2)*sp, cx=mx+dx*t, cy=my+dy*t;
+      ctx.beginPath(); ctx.moveTo(cx-px*tl,cy-py*tl); ctx.lineTo(cx+px*tl,cy+py*tl); ctx.stroke();
+    }
+  }
+  function arcOn(V,P,Q,color,r,count){
+    var a1=Math.atan2(P[1]-V[1],P[0]-V[0]), a2=Math.atan2(Q[1]-V[1],Q[0]-V[0]);
+    var d=a2-a1; while(d>Math.PI)d-=2*Math.PI; while(d<-Math.PI)d+=2*Math.PI;
+    ctx.strokeStyle=color; ctx.lineWidth=2.2;
+    for(var i=0;i<count;i++){ ctx.beginPath(); ctx.arc(V[0],V[1],r+i*5,a1,a1+d,d<0); ctx.stroke(); }
+  }
+  function draw(){
+    if(!cur) return;
+    var q=cur;
+    var xs=VERT.map(function(n){return TP[n][0];}), ys=VERT.map(function(n){return TP[n][1];});
+    var minx=Math.min.apply(null,xs), maxx=Math.max.apply(null,xs);
+    var miny=Math.min.apply(null,ys), maxy=Math.max.apply(null,ys);
+    var pad=38, k=Math.min((W-pad*2)/((maxx-minx)||1),(H-pad*2)/((maxy-miny)||1));
+    var ox=(W-(maxx-minx)*k)/2, oy=(H-(maxy-miny)*k)/2;
+    function S(n){ var p=TP[n]; return [ox+(p[0]-minx)*k, oy+(maxy-p[1])*k]; }
+
+    ctx.clearRect(0,0,W,H);
+    var A=S('A'), B=S('B'), C=S('C');
+    ctx.beginPath(); ctx.moveTo(A[0],A[1]); ctx.lineTo(B[0],B[1]); ctx.lineTo(C[0],C[1]); ctx.closePath();
+    ctx.fillStyle=css('--t2-soft'); ctx.globalAlpha=.55; ctx.fill(); ctx.globalAlpha=1;
+    ctx.strokeStyle=css('--ink'); ctx.lineWidth=2.4; ctx.lineJoin='round'; ctx.stroke();
+
+    q.sides.forEach(function(n,idx){
+      var sd=sideByName(n);
+      ticksOn(S(sd.v[0]),S(sd.v[1]),idx+1,css('--mark'));
+    });
+    q.angles.forEach(function(v,idx){
+      var rest=VERT.filter(function(x){ return x!==v; });
+      var V=S(v), P1=S(rest[0]), P2=S(rest[1]);
+      var r=Math.min(24,Math.min(Math.hypot(V[0]-P1[0],V[1]-P1[1]),Math.hypot(V[0]-P2[0],V[1]-P2[1]))*0.30);
+      arcOn(V,P1,P2,css('--arc'),r,idx+1);
+    });
+
+    var gx=(A[0]+B[0]+C[0])/3, gy=(A[1]+B[1]+C[1])/3;
+    ctx.font='800 15px PllFix,system-ui,-apple-system,sans-serif';
+    ctx.textAlign='center'; ctx.textBaseline='middle';
+    [['A',A],['B',B],['C',C]].forEach(function(pair){
+      var P=pair[1], dx=P[0]-gx, dy=P[1]-gy, L=Math.hypot(dx,dy)||1;
+      ctx.fillStyle=css('--ink');
+      ctx.beginPath(); ctx.arc(P[0],P[1],3,0,Math.PI*2); ctx.fill();
+      ctx.fillText(pair[0], P[0]+dx/L*17, P[1]+dy/L*17);
+    });
+    ctx.font='600 12px PllFix,system-ui,-apple-system,sans-serif';
+    ctx.fillStyle=css('--muted');
+    ctx.textAlign='left'; ctx.textBaseline='top';
+    ctx.fillText('данные отмечены на △ABC; в △A₁B₁C₁ то же самое', 10, 8);
+  }
+
+  /* ── разбор ───────────────────────────────────────────────── */
+  function solHTML(){
+    var q=cur, h='<div class="sol">';
+    if(q.kind==='sss'){
+      h+='Даны все три стороны: AB, BC и AC. Это чистая комбинация сторона-сторона-сторона.<br>'+
+         '<b>Ответ: 3-й признак</b> (по трём сторонам), △ABC = △A₁B₁C₁.';
+    } else if(q.kind==='sas'){
+      h+='Стороны '+q.sides[0]+' и '+q.sides[1]+' имеют общую вершину <b>'+q.sh+'</b>, значит между ними лежит именно <b>∠'+q.sh+'</b>.<br>'+
+         'И дан как раз ∠'+q.sh+' — угол <b>между</b> данными сторонами.<br>'+
+         '<b>Ответ: 1-й признак</b> (две стороны и угол между ними), △ABC = △A₁B₁C₁.';
+    } else if(q.kind==='ssa'){
+      h+='Стороны '+q.sides[0]+' и '+q.sides[1]+' имеют общую вершину <b>'+q.sh+'</b>, поэтому между ними лежит ∠'+q.sh+'.<br>'+
+         'А дан ∠'+q.bad+' — он <b>не</b> между этими сторонами. Для 1-го признака такой угол не годится, а других данных нет.<br>'+
+         '<b>Ответ: нельзя</b> — трёх элементов в рабочей комбинации не набирается.';
+    } else if(q.kind==='asa'){
+      h+='Сторона '+q.sides[0]+' соединяет вершины '+q.angles[0]+' и '+q.angles[1]+', значит оба данных угла ∠'+q.angles[0]+' и ∠'+q.angles[1]+' <b>прилежат</b> к ней.<br>'+
+         '<b>Ответ: 2-й признак</b> (сторона и два прилежащих угла), △ABC = △A₁B₁C₁.';
+    } else if(q.kind==='aas'){
+      h+='∠'+q.adj+' прилежит к стороне '+q.sides[0]+', это хорошо. А вот ∠'+q.opp+' лежит <b>напротив</b> стороны '+q.sides[0]+', а не при ней.<br>'+
+         'Для 2-го признака нужны <b>оба</b> угла прилежащие, поэтому применить его нельзя.<br>'+
+         '<b>Ответ: нельзя</b> — комбинация не та.';
+    } else {
+      h+='Даны три угла и ни одной стороны. Углы задают форму, но не размер: треугольники могут оказаться разными по величине.<br>'+
+         'В каждой рабочей комбинации обязательно есть хотя бы одна сторона.<br>'+
+         '<b>Ответ: нельзя</b> — по трём углам равенство не доказывается.';
+    }
+    return h+'</div>';
+  }
+  function answer(a){
+    var right=(a===cur.ans);
+    resEl.innerHTML=(right?'<span class="ok">✓ Верно!</span>':'<span class="bad">✗ Не так — смотри разбор.</span>')+solHTML();
+  }
+
+  [].slice.call(document.querySelectorAll('.tr-ctl button[data-a]')).forEach(function(b){
+    b.addEventListener('click',function(){ answer(+b.getAttribute('data-a')); });
+  });
+  document.getElementById('trNew').addEventListener('click',generate);
+  document.getElementById('trShow').addEventListener('click',function(){ resEl.innerHTML=solHTML(); });
+  window.addEventListener('resize',function(){ resize(); draw(); });
+
+  resize();
+  cur={sides:['AB','AC'],angles:['A'],ans:1,kind:'sas',sh:'A'};
+  render();
+})();
+</script>
+<!--LESSON-NAV-BOT--><nav class="lnav lnav-bot"><a class="prev" href="./geo7-priznak-ravenstva-3.html"><span class="dir">← Предыдущая</span><span class="ttl">Третий признак равенства треугольников (ССС)</span></a><a class="to-cat" href="./catalog.html">📚 <span>Все темы</span></a><a class="next" href="./geo7-mediana.html"><span class="dir">Следующая →</span><span class="ttl">Медиана треугольника</span></a></nav><!--/LESSON-NAV-BOT-->

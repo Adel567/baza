@@ -1,0 +1,550 @@
+<!doctype html>
+<!-- humanized: humanizer-ru, 2026-09-04, тире возвращено -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Середина отрезка, геометрия 7 класс</title>
+<style>
+  :root{
+    --paper:#F6F7F9; --card:#FFFFFF; --ink:#1D2530; --muted:#606B7A; --line:#E3E7EE;
+    --brand:#2E5AAC; --brand-soft:#E4EBF7;
+    --p1:#E27C2C; --p1-soft:#FBEEDF;    /* половина AM */
+    --p2:#159A8A; --p2-soft:#DEF3F0;    /* половина MB */
+    --wh:#2E5AAC; --wh-soft:#E4EBF7;    /* целое AB */
+    --ok:#1E8E5A; --no:#C23B3B;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper)}
+  .page{max-width:720px;margin:0 auto;padding:clamp(1.4rem,4vw,3rem) clamp(1.1rem,4vw,2rem) 4.5rem;
+    color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:17.5px;line-height:1.68;-webkit-font-smoothing:antialiased}
+  .mono{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-variant-numeric:tabular-nums;font-weight:600}
+
+  .hero{border-bottom:3px solid var(--brand);padding-bottom:1.4rem;margin-bottom:1.8rem}
+  .eyebrow{font-size:.74rem;letter-spacing:.15em;text-transform:uppercase;color:var(--brand);font-weight:700;margin:0 0 .55rem}
+  h1{font-size:clamp(1.9rem,6vw,2.8rem);line-height:1.05;margin:0;font-weight:800;letter-spacing:-.02em;text-wrap:balance}
+  .tagline{font-size:1.12rem;color:var(--muted);margin:.85rem 0 0;text-wrap:pretty}
+
+  section{margin-top:2.4rem}
+  h2{font-size:1.5rem;margin:0 0 .3rem;font-weight:780;letter-spacing:-.015em;text-wrap:balance}
+  h2 .em{color:var(--brand)}
+  h3{font-size:1.08rem;margin:1.4rem 0 .2rem;font-weight:750}
+  p{margin:.7rem 0}
+  strong{font-weight:680}
+  .p1w{color:var(--p1);font-weight:800} .p2w{color:var(--p2);font-weight:800} .whw{color:var(--wh);font-weight:800}
+
+  .lead-in{background:var(--brand-soft);border-radius:14px;padding:1.1rem 1.3rem;font-size:1.02rem}
+  .lead-in p{margin:.4rem 0}
+  .lead-in b{color:var(--brand)}
+
+  .formula-box{background:var(--ink);color:#fff;border-radius:14px;padding:1.3rem;text-align:center;margin-top:1rem}
+  .formula-box .eq{font-family:ui-monospace,Menlo,monospace;font-size:clamp(1.35rem,5vw,2rem);font-weight:700;line-height:1.4}
+  .formula-box .eq .w{color:#8FB2E6} .formula-box .eq .a{color:#F0A45E} .formula-box .eq .b{color:#6FD3C6}
+  .formula-box .note{font-size:.9rem;color:#AEB8C6;margin:.7rem 0 0}
+
+  .note{border-left:4px solid var(--brand);background:var(--brand-soft);border-radius:0 10px 10px 0;padding:.8rem 1.1rem;margin-top:1rem;font-size:.98rem}
+  .note b{color:var(--brand)}
+  .note p{margin:.35rem 0}
+
+  .recall{background:var(--card);border:1px dashed var(--line);border-radius:14px;padding:1rem 1.2rem;margin-top:1rem}
+  .recall ul{margin:.4rem 0 0;padding-left:1.2rem;display:flex;flex-direction:column;gap:.35rem;font-size:.97rem}
+
+  /* Диаграммы */
+  .diagram{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:1.2rem;margin-top:1rem}
+  .diagram canvas{width:100%;height:auto;display:block;border-radius:8px}
+  .sliders{display:grid;gap:.6rem;margin-top:.9rem}
+  .sliders label{display:flex;align-items:center;gap:.5rem;font-weight:700;font-family:ui-monospace,Menlo,monospace;font-size:.92rem}
+  .sliders input[type=range]{flex:1;min-width:0;accent-color:var(--brand)}
+  .sliders input[type=range]:focus-visible{outline:3px solid var(--brand);outline-offset:3px}
+  .sliders .sval{min-width:5ch;text-align:right}
+  .diag-eq{text-align:center;font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:clamp(.9rem,3.4vw,1.06rem);margin:.9rem 0 0;line-height:1.6}
+  .diag-eq .a{color:var(--p1)} .diag-eq .b{color:var(--p2)} .diag-eq .w{color:var(--wh)}
+  .diag-eq .yes{color:var(--ok)} .diag-eq .no{color:var(--no)}
+  .diag-btn{font:inherit;font-weight:700;font-size:.9rem;cursor:pointer;border:1px solid var(--brand);background:transparent;color:var(--brand);border-radius:9px;padding:.5rem .9rem;margin-top:.9rem}
+  .diag-btn:focus-visible{outline:3px solid var(--brand);outline-offset:2px}
+  .cap{font-size:.9rem;color:var(--muted)}
+
+  .walk{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.15rem 1.3rem;margin-top:1rem}
+  .walk .q{font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:1rem;margin:0 0 .9rem;padding-bottom:.7rem;border-bottom:1px solid var(--line);line-height:1.5}
+  .walk ol{margin:0;padding-left:1.2rem;display:flex;flex-direction:column;gap:.55rem}
+  .walk li{font-size:.95rem}
+  .walk .why{color:var(--muted);font-style:italic}
+  .verdict{margin-top:1rem;padding:.7rem 1rem;background:var(--brand-soft);border-radius:10px;font-weight:650;color:var(--brand);font-family:ui-monospace,Menlo,monospace}
+
+  /* Тренажёр */
+  .trainer{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.2rem 1.3rem;margin-top:1rem}
+  .tr-task{font-size:clamp(1rem,4vw,1.1rem);text-align:center;padding:1rem;background:var(--brand-soft);border-radius:10px;font-weight:600;line-height:1.55}
+  .tr-task b{font-family:ui-monospace,Menlo,monospace;color:var(--ink)}
+  .tr-ctl{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:1rem;align-items:center;justify-content:center}
+  .tr-ctl input{flex:1;min-width:110px;max-width:180px;font:inherit;padding:.5rem .7rem;border:1px solid var(--line);border-radius:9px;text-align:center;background:#fff;color:var(--ink)}
+  .tr-ctl button{font:inherit;font-weight:700;font-size:.9rem;cursor:pointer;border:none;border-radius:9px;padding:.55rem .95rem;color:#fff;background:var(--brand)}
+  .tr-ctl button.sec{background:var(--p1)}
+  .tr-ctl button.ghost{background:transparent;color:var(--brand);border:1px solid var(--brand)}
+  .tr-ctl button:focus-visible,.tr-ctl input:focus-visible{outline:3px solid var(--brand);outline-offset:2px}
+  .tr-result{margin-top:.9rem;font-size:.96rem;min-height:1.2rem;text-align:center}
+  .tr-result .ok{color:var(--ok);font-weight:700} .tr-result .bad{color:var(--no);font-weight:700}
+  .tr-result .sol{margin-top:.6rem;padding:.8rem 1rem;background:#FCFDFE;border:1px solid var(--line);border-radius:10px;font-family:ui-monospace,Menlo,monospace;font-size:.9rem;line-height:1.8;text-align:left;overflow-x:auto}
+
+  details{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:.9rem 1.1rem;margin-top:.7rem}
+  details[open]{border-color:var(--brand)}
+  summary{cursor:pointer;font-weight:650;list-style:none;display:flex;justify-content:space-between;gap:1rem;align-items:center}
+  summary::-webkit-details-marker{display:none}
+  summary::after{content:"проверить";font-size:.8rem;color:var(--brand);font-weight:700;white-space:nowrap}
+  details[open] summary::after{content:"скрыть"}
+  summary:focus-visible{outline:3px solid var(--brand);outline-offset:3px;border-radius:6px}
+  .ans{margin-top:.75rem;padding-top:.7rem;border-top:1px dashed var(--line);font-size:.96rem;color:var(--muted)}
+  .ans b{color:var(--ink)}
+  .drill{display:flex;flex-direction:column;gap:.2rem;margin-top:1rem}
+  .lvl{font-size:.74rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:700;margin:1.3rem 0 .3rem}
+
+  .tablewrap{overflow-x:auto;margin-top:1rem;border:1px solid var(--line);border-radius:11px;background:var(--card)}
+  table{border-collapse:collapse;width:100%;font-size:.95rem}
+  th,td{padding:.6rem .85rem;text-align:left;border-bottom:1px solid var(--line);white-space:nowrap}
+  th{font-weight:700;background:#FAFBFD}
+  tr:last-child td{border-bottom:none}
+
+  ul.traps{list-style:none;margin:1rem 0 0;padding:0;display:flex;flex-direction:column;gap:.7rem}
+  ul.traps li{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:.85rem 1.05rem;padding-left:2.5rem;position:relative;font-size:.97rem}
+  ul.traps li::before{content:"⚠";position:absolute;left:1rem;top:.85rem;color:var(--p1)}
+  ul.traps b{font-weight:700}
+
+  .wrapup{background:var(--brand);color:#fff;border-radius:16px;padding:1.4rem 1.5rem;margin-top:2.4rem}
+  .wrapup h2{color:#fff;margin:0 0 .5rem}
+  .wrapup p{color:#DEE7F5;margin:.4rem 0;font-size:1rem}
+  .wrapup .big-rule{font-size:clamp(1rem,4.4vw,1.2rem);font-weight:800;color:#fff;margin:.6rem 0;font-family:ui-monospace,Menlo,monospace}
+  .wrapup .next{font-size:.95rem;color:#C6D5EE;margin-top:1rem;padding-top:1rem;border-top:1px solid rgba(255,255,255,.2)}
+  .wrapup .next b{color:#fff}
+
+  @media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+<!--LESSON-NAV-TOP--><style>.lnav{--lnav-accent:#3D5AF1}.lnav a{text-decoration:none;font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif}.lnav-top{max-width:820px;margin:0 auto;padding:.75rem clamp(1rem,4vw,1.5rem) .1rem}.lnav-top a{display:inline-flex;align-items:center;gap:.35rem;color:var(--lnav-accent);font-weight:600;font-size:.9rem}.lnav-top a:hover{text-decoration:underline}.lnav-bot{max-width:820px;margin:2.6rem auto 3rem;padding:1.1rem clamp(1rem,4vw,1.5rem) 0;border-top:1px solid #E4E8EF;display:flex;align-items:stretch;gap:.55rem}.lnav-bot a{min-width:0;display:flex;flex-direction:column;justify-content:center;gap:.15rem;border:1px solid #E4E8EF;border-radius:12px;padding:.65rem .85rem;color:#182233;background:#fff;transition:border-color .1s,transform .08s}.lnav-bot a:hover{border-color:var(--lnav-accent);transform:translateY(-1px)}.lnav-bot .prev,.lnav-bot .next{flex:1 1 0}.lnav-bot .next{text-align:right}.lnav-bot .dir{font-size:.72rem;color:#8A93A6;font-weight:600}.lnav-bot .ttl{font-size:.9rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.lnav-bot .to-cat{flex:0 0 auto;flex-direction:row;align-items:center;justify-content:center;color:var(--lnav-accent);font-weight:700;font-size:.85rem;white-space:nowrap}@media(max-width:420px){.lnav-bot .to-cat span{display:none}.lnav-bot .to-cat{padding:.65rem .7rem}}</style><nav class="lnav lnav-top"><a href="./catalog.html">← Все темы</a></nav><!--/LESSON-NAV-TOP-->
+<div class="page">
+
+  <header class="hero">
+    <p class="eyebrow">Геометрия · 7 класс</p>
+    <h1>Середина отрезка</h1>
+    <p class="tagline">Разделить пополам ровно, а не «примерно». Одна точка, одно равенство — и из этого потом вырастают медиана и построения циркулем.</p>
+  </header>
+
+  <div class="lead-in">
+    <p><b>Где встречается.</b> Найти середину — значит разделить что-то ровно пополам. Дело житейское: повесить картину по центру стены, распилить доску на две одинаковые части, найти центр круга или отрезка на чертеже.</p>
+    <p>А в геометрии с середины начинается много чего. Середина стороны треугольника задаёт медиану, и без середин сторон не обходятся построения циркулем и линейкой.</p>
+  </div>
+
+  <section>
+    <h2>Главный миф: <span class="em">«середина — это где-то примерно по центру»</span></h2>
+    <p>В обычной речи «посередине» — это «примерно там, на глаз». Геометрия такой вольности не терпит. <strong>Середина — строго определённая точка</strong>: расстояния от неё до концов отрезка обязаны быть <strong>равны</strong> до миллиметра, а не «похоже».</p>
+    <p>Разница огромная. «Похоже на середину» — ощущение, и у каждого оно своё. «AM = MB» — проверяемый факт: измерил обе части, сравнил числа.</p>
+  </section>
+
+  <section>
+    <h2>Что нужно вспомнить</h2>
+    <div class="recall">
+      <ul>
+        <li><strong>Отрезок и его концы.</strong> Отрезок обозначаем двумя буквами: <span class="mono">AB</span>. Той же записью обозначают и его длину.</li>
+        <li><strong>Точка лежит между.</strong> Если точка стоит на отрезке между его концами, она делит отрезок на две части.</li>
+        <li><strong>Целое равно сумме частей.</strong> Если <span class="mono">M</span> лежит между <span class="mono">A</span> и <span class="mono">B</span>, то <span class="mono">AM + MB = AB</span>. Именно отсюда возьмётся деление на 2.</li>
+        <li><strong>Равные отрезки</strong> — это отрезки одинаковой длины. Сравнивают их измерением или наложением, а не на глаз.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section>
+    <h2>Ядро темы</h2>
+
+    <h3>Определение</h3>
+    <p>Словами: <strong>середина отрезка — это точка внутри отрезка, которая делит его на две равные части</strong>. Главное слово тут — «равные». Не всякая точка между концами годится: только та единственная, что одинаково удалена от обоих концов.</p>
+    <p>Символьно: пусть дан отрезок <span class="mono">AB</span> и точка <span class="mono">M</span> лежит на нём. Точка <span class="mono">M</span> — середина <span class="mono">AB</span>, если <span class="mono">AM = MB</span>.</p>
+    <div class="formula-box">
+      <div class="eq"><span class="a">AM</span> = <span class="b">MB</span></div>
+      <div class="note"><span class="a">AM</span> и <span class="b">MB</span> — две половины, на которые точка M разбила отрезок</div>
+    </div>
+    <div class="note">
+      <p><b>Два условия сразу.</b> Середина одновременно делает две вещи: <strong>лежит на отрезке</strong> (между <span class="mono">A</span> и <span class="mono">B</span>) и <strong>делит его пополам</strong>. Оба условия обязательны, одного мало.</p>
+    </div>
+
+    <h3>Следствие про длину</h3>
+    <p>Раз обе половины равны и вместе дают весь отрезок, каждая половина — это ровно половина длины:</p>
+    <div class="formula-box">
+      <div class="eq"><span class="a">AM</span> = <span class="b">MB</span> = <span class="w">AB</span> : 2</div>
+      <div class="note">и наоборот: <span class="w">AB</span> = 2 · <span class="a">AM</span></div>
+    </div>
+    <p>Читается это в обе стороны, и обратный ход спрашивают не реже прямого. Знаешь весь отрезок — дели на 2, получишь половину. Знаешь половину — умножай на 2, получишь целое.</p>
+
+    <h3>Координата середины</h3>
+    <p>Если точки стоят на координатной прямой, середину можно не измерять, а <strong>посчитать</strong>. Пусть <span class="mono">A</span> имеет координату <span class="mono">a</span>, а <span class="mono">B</span> — координату <span class="mono">b</span>. Тогда координата середины <span class="mono">M</span>:</p>
+    <div class="formula-box">
+      <div class="eq">m = (a + b) : 2</div>
+      <div class="note">это «среднее» двух чисел: сложили и разделили пополам</div>
+    </div>
+    <p>Складываем, а не вычитаем — вот тут спотыкаются чаще всего. Середина — среднее двух координат, значит сначала <span class="mono">a + b</span>, потом деление на 2.</p>
+
+    <div class="tablewrap">
+      <table>
+        <tr><th>Обозначение</th><th>Что значит</th></tr>
+        <tr><td><b>A, B</b></td><td>концы отрезка</td></tr>
+        <tr><td><b>M</b></td><td>середина отрезка</td></tr>
+        <tr><td><b>AB</b></td><td>длина отрезка</td></tr>
+        <tr><td><b>a, b</b></td><td>координаты концов</td></tr>
+        <tr><td><b>m</b></td><td>координата середины</td></tr>
+      </table>
+    </div>
+
+    <div class="note">
+      <p><b>Когда это работает.</b> Точка <span class="mono">M</span> обязана лежать <strong>на</strong> отрезке <span class="mono">AB</span>, между концами. Длины должны быть в одних единицах (см с см, мм с мм).</p>
+      <p>А формула <span class="mono">m = (a + b) : 2</span> на координатной прямой работает при любом расположении <span class="mono">a</span> и <span class="mono">b</span> — складывать их можно в любом порядке.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Увидь глазами: <span class="em">когда точка становится серединой</span></h2>
+    <p>Отрезок <span class="mono">AB = 10</span> см. Двигай точку <span class="mono">M</span> и следи за двумя половинами. Внутренних точек много, а середина среди них <strong>ровно одна</strong> — та, где обе полосы стали одинаковыми.</p>
+    <div class="diagram">
+      <canvas id="cvMid" width="640" height="300" aria-label="Отрезок AB, точка M делит его на части AM и MB"></canvas>
+      <div class="sliders">
+        <label for="sm">точка M <span id="vm" class="sval">3 см</span><input id="sm" type="range" min="5" max="95" step="5" value="30" aria-label="Положение точки M на отрезке"></label>
+      </div>
+      <button id="btnMid" class="diag-btn" type="button">Поставить точно в середину</button>
+      <p class="diag-eq" id="eqMid"></p>
+    </div>
+    <p class="cap">Оранжевая полоса — <span class="p1w">AM</span>, бирюзовая — <span class="p2w">MB</span>. Сдвинул <span class="mono">M</span> к концу — одна часть стала длиннее другой, и это уже не середина, хотя точка по-прежнему внутри отрезка.</p>
+
+    <h3>Теперь на координатной прямой</h3>
+    <p>Сначала угадай, потом проверь. Поставь <span class="mono">A</span> и <span class="mono">B</span>, <strong>предскажи глазами</strong>, где окажется середина, и только после этого смотри на счёт по формуле. Заодно глянь: что случится с серединой, если сдвинуть <span class="mono">B</span> правее?</p>
+    <div class="diagram">
+      <canvas id="cvLine" width="640" height="260" aria-label="Координатная прямая с точками A, B и серединой M"></canvas>
+      <div class="sliders">
+        <label for="sa">A(<span id="va" class="sval">2</span>)<input id="sa" type="range" min="-6" max="2" step="1" value="2" aria-label="Координата точки A"></label>
+        <label for="sb">B(<span id="vb" class="sval">10</span>)<input id="sb" type="range" min="6" max="12" step="1" value="10" aria-label="Координата точки B"></label>
+      </div>
+      <p class="diag-eq" id="eqLine"></p>
+    </div>
+    <p class="cap">Две дуги сверху всегда одинаковые: от <span class="mono">A</span> до <span class="mono">M</span> столько же, сколько от <span class="mono">M</span> до <span class="mono">B</span>. Сдвинешь <span class="mono">B</span> вправо — середина тоже уползёт вправо, но ровно на половину сдвига.</p>
+  </section>
+
+  <section>
+    <h2>Разбираем вместе</h2>
+
+    <div class="walk">
+      <p class="q">Отрезок AB = 12 см. M — его середина. Найди AM и MB.</p>
+      <ol>
+        <li><span class="mono">M</span> — середина, значит по определению <span class="mono">AM = MB</span>. <span class="why">Почему: середина делит отрезок на равные части, это и есть её определение.</span></li>
+        <li>Вместе <span class="mono">AM</span> и <span class="mono">MB</span> дают весь отрезок: <span class="mono">AM + MB = AB = 12</span>. <span class="why">Почему: M лежит между A и B, а целое равно сумме частей.</span></li>
+        <li>Части равны, значит каждая — половина целого: <span class="mono">12 : 2 = 6</span>. <span class="why">Почему: два одинаковых числа в сумме дают 12, каждое равно 12 : 2.</span></li>
+      </ol>
+      <div class="verdict">Ответ: AM = MB = 6 см</div>
+    </div>
+
+    <div class="walk" style="margin-top:.8rem">
+      <p class="q">На координатной прямой A(2) и B(10). Найди координату середины M.</p>
+      <p style="margin-top:0">Тут точки заданы координатами, значит работает формула. Один шаг я оставил тебе.</p>
+      <ol>
+        <li>Используем формулу середины: <span class="mono">m = (a + b) : 2</span>.</li>
+        <li>Подставляем: <span class="mono">m = (2 + 10) : 2 = ____ : 2</span>.</li>
+        <li><span class="mono">m = ____</span> &nbsp;← <span class="why">впиши число.</span></li>
+      </ol>
+      <p class="cap" style="margin-top:.7rem">Подсказка: сначала сложи 2 и 10, потом раздели результат на 2.</p>
+      <details style="margin-top:.5rem"><summary>Сверить свой ответ</summary><div class="ans"><span class="mono">m = (2 + 10) : 2 = 12 : 2 = 6</span>. Ответ: <b>M(6)</b>.</div></details>
+    </div>
+
+    <div class="walk" style="margin-top:.8rem">
+      <p class="q">Точка M — середина отрезка CD, причём CM = 4,5 см. Чему равна длина всего отрезка CD?</p>
+      <p style="margin-top:0">Обратный ход: известна половина, ищем целое. Эта задача целиком твоя.</p>
+      <details style="margin-top:.5rem"><summary>Показать ответ</summary><div class="ans"><span class="mono">M</span> — середина, значит <span class="mono">CD = 2 · CM = 2 · 4,5 = 9</span>. Ответ: <b>CD = 9 см</b>.</div></details>
+    </div>
+  </section>
+
+  <section>
+    <h2>Тренажёр · середина отрезка</h2>
+    <p>Задания каждый раз новые. Прочитай условие, посчитай, впиши ответ числом (десятичную часть через запятую). Спрашивают «да или нет» — так словом и пиши.</p>
+    <div class="trainer">
+      <div class="tr-task" id="trTask">Отрезок <b>AB = 12 см</b>, точка <b>M</b> — его середина. Найди <b>AM</b> (в см).</div>
+      <div class="tr-ctl">
+        <button id="trNew" type="button">🎲 Новая</button>
+        <input id="trAns" type="text" placeholder="ответ" aria-label="Ответ">
+        <button id="trCheck" type="button" class="sec">Проверить</button>
+        <button id="trShow" type="button" class="ghost">Решение</button>
+      </div>
+      <div id="trResult" class="tr-result"></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Проверь себя</h2>
+
+    <p class="lvl">Уровень 1 · понимание</p>
+    <div class="drill">
+      <details><summary>1) Какое равенство должно выполняться, чтобы точка M была серединой отрезка AB?</summary><div class="ans"><span class="mono">AM = MB</span>. Плюс сама точка <span class="mono">M</span> должна лежать на отрезке между <span class="mono">A</span> и <span class="mono">B</span>.</div></details>
+      <details><summary>2) Отрезок равен 20 см. Чему равна каждая его половина?</summary><div class="ans"><span class="mono">20 : 2 = 10</span>. Каждая половина — <b>10 см</b>.</div></details>
+      <details><summary>3) Чем середина отрезка отличается от биссектрисы угла?</summary><div class="ans">Середина делит пополам <b>длину отрезка</b>, биссектриса — <b>величину угла</b>. Разные объекты, разные величины.</div></details>
+    </div>
+
+    <p class="lvl">Уровень 2 · применение</p>
+    <div class="drill">
+      <details><summary>4) Отрезок KL = 18 мм, точка P — его середина. Найди KP и PL.</summary><div class="ans"><span class="mono">P</span> — середина, значит <span class="mono">KP = PL = KL : 2 = 18 : 2 = 9</span>. Ответ: <b>по 9 мм</b>.</div></details>
+      <details><summary>5) На координатной прямой A(4) и B(8). Найди координату середины.</summary><div class="ans"><span class="mono">m = (4 + 8) : 2 = 12 : 2 = 6</span>. Ответ: <b>M(6)</b>.</div></details>
+    </div>
+
+    <p class="lvl">Уровень 3 · анализ</p>
+    <div class="drill">
+      <details><summary>6) Точка M делит отрезок AB так, что AM = 5 см, MB = 7 см. Является ли M серединой? Почему?</summary><div class="ans"><b>Нет.</b> Точка внутри отрезка — этого мало. Проверяем главное равенство: <span class="mono">5 ≠ 7</span>, части не равны, значит середина тут ни при чём.</div></details>
+      <details><summary>7) Обратная задача. M — середина AB, AM = 6 см. Найди AB.</summary><div class="ans">Половина известна, ищем целое: <span class="mono">AB = 2 · AM = 2 · 6 = 12</span>. Ответ: <b>AB = 12 см</b>.</div></details>
+      <details><summary>8) Найди ошибку. Ученик пишет: «координата середины A(4) и B(8) равна 4, потому что 8 − 4 = 4».</summary><div class="ans">Ошибка в действии: ученик посчитал <b>разность</b>, а координата середины — это <b>среднее</b>. Правильно: <span class="mono">m = (4 + 8) : 2 = 6</span>. Проверка на здравый смысл: середина обязана лежать <b>между</b> 4 и 8, а число 4 — это сама точка <span class="mono">A</span>.</div></details>
+      <details><summary>9) Что изменится, если точку B сдвинуть правее?</summary><div class="ans">Середина <b>тоже сместится вправо</b>: в формуле <span class="mono">m = (a + b) : 2</span> выросло <span class="mono">b</span>, значит вырастет и <span class="mono">m</span>. Но сдвинется она на половину: отодвинул <span class="mono">B</span> на 4 — середина уехала на 2.</div></details>
+    </div>
+  </section>
+
+  <section>
+    <h2>Ловушки</h2>
+    <ul class="traps">
+      <li><b>Серединой считают любую внутреннюю точку.</b> Скажешь: точка ведь между <span class="mono">A</span> и <span class="mono">B</span>, значит делит отрезок на две части. Делит, спору нет, только равными эти части будут у одной-единственной точки. Проверяй равенство <span class="mono">AM = MB</span>, а не «точка внутри».</li>
+      <li><b>Делят «на глаз».</b> Середину ставят примерно по центру, и <span class="mono">AM</span> выходит не равно <span class="mono">MB</span>. Половину считай через <span class="mono">AB : 2</span>, а на чертеже строй середину циркулем, а не прикидкой.</li>
+      <li><b>Путают с биссектрисой угла.</b> Середина — это про <b>отрезок</b> (делит длину пополам), биссектриса — про <b>угол</b> (делит угол пополам). Спроси себя: что тут делят пополам — длину отрезка или градусную меру угла?</li>
+      <li><b>Вместо среднего берут разность.</b> Пишут <span class="mono">(b − a)</span> вместо <span class="mono">(a + b) : 2</span>. Координата середины — это <b>среднее</b> двух чисел, значит складываем и делим на 2.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Объясни своими словами</h2>
+    <p>Закрой урок и ответь вслух — себе, родителю или чат-боту. Сказал связно, без «ну это как бы» — тема твоя.</p>
+    <div class="drill">
+      <details><summary>Какое равенство означает, что точка M — середина отрезка AB?</summary><div class="ans"><span class="mono">AM = MB</span>.</div></details>
+      <details><summary>Отрезок равен 20 см. Чему равна каждая его половина, если провести через середину?</summary><div class="ans"><b>10 см</b>, потому что <span class="mono">20 : 2 = 10</span>.</div></details>
+      <details><summary>Чем середина отрезка отличается от биссектрисы угла?</summary><div class="ans">Середина делит пополам длину отрезка, биссектриса — величину угла.</div></details>
+    </div>
+  </section>
+
+  <div class="wrapup">
+    <h2>Запомни главное</h2>
+    <p class="big-rule">AM = MB = AB : 2,&nbsp; m = (a + b) : 2</p>
+    <p>Середина отрезка — единственная точка на нём, у которой обе половины равны. Знаешь целое — дели на 2, знаешь половину — умножай на 2. А на координатной прямой её просто считают: среднее двух координат.</p>
+    <p class="next">👉 Дальше — <b>медиана треугольника</b>: отрезок из вершины в середину противоположной стороны, тут середина сразу пойдёт в работу. И <b>построение середины отрезка</b> циркулем и линейкой, чтобы делить пополам точно, а не на глаз.</p>
+  </div>
+
+</div>
+
+<script>
+/* ── Диаграмма 1: точка M на отрезке, две половины ─────────────── */
+(function(){
+  var cv=document.getElementById('cvMid'); if(!cv) return;
+  var ctx=cv.getContext('2d'), sm=document.getElementById('sm'),
+      vm=document.getElementById('vm'), eq=document.getElementById('eqMid'),
+      btn=document.getElementById('btnMid');
+  var TOTAL=100;                       /* AB = 10 см, всё считаем в миллиметрах */
+  var W=640,H=300,dpr=1;
+  function css(v){ return getComputedStyle(document.documentElement).getPropertyValue(v).trim(); }
+  function fmt(mm){ var s=(mm/10).toFixed(1); if(s.slice(-2)==='.0') s=s.slice(0,-2); return s.replace('.',','); }
+  function resize(){ var c=cv.clientWidth||640; dpr=Math.min(window.devicePixelRatio||1,2);
+    W=c; H=Math.round(Math.max(230,Math.min(300,c*0.47)));
+    cv.width=W*dpr; cv.height=H*dpr; cv.style.height=H+'px'; ctx.setTransform(dpr,0,0,dpr,0,0); }
+  function draw(){
+    var m=+sm.value; vm.textContent=fmt(m)+' см';
+    var mid=(m===TOTAL/2);
+    var pad=Math.max(22,W*0.07), k=(W-2*pad)/TOTAL;
+    function X(mm){ return pad+mm*k; }
+    var fs=Math.max(10,Math.min(14,W*0.023));
+    ctx.clearRect(0,0,W,H);
+
+    /* сам отрезок AB с точкой M */
+    var yS=H*0.26;
+    ctx.strokeStyle=css('--ink'); ctx.lineWidth=4; ctx.lineCap='round';
+    ctx.beginPath(); ctx.moveTo(X(0),yS); ctx.lineTo(X(TOTAL),yS); ctx.stroke();
+    ctx.lineWidth=1; ctx.textAlign='center'; ctx.textBaseline='alphabetic';
+    [[0,'A',css('--ink')],[m,'M',mid?css('--ok'):css('--no')],[TOTAL,'B',css('--ink')]].forEach(function(p){
+      ctx.beginPath(); ctx.arc(X(p[0]),yS,5,0,6.284); ctx.fillStyle=p[2]; ctx.fill();
+      ctx.fillStyle=p[2]; ctx.font='700 '+(fs+2)+'px ui-monospace,Menlo,monospace';
+      ctx.fillText(p[1],X(p[0]),yS-12);
+    });
+
+    /* полосы половин */
+    var yB=H*0.50, hB=Math.max(20,H*0.11);
+    function bar(x1,x2,y,fill,stroke,txt){
+      ctx.fillStyle=fill; ctx.strokeStyle=stroke; ctx.lineWidth=1.5;
+      ctx.beginPath(); ctx.rect(X(x1),y,X(x2)-X(x1),hB); ctx.fill(); ctx.stroke();
+      ctx.fillStyle=stroke; ctx.font='700 '+fs+'px ui-monospace,Menlo,monospace';
+      ctx.textAlign='center'; ctx.textBaseline='middle';
+      var wBar=X(x2)-X(x1);
+      if(ctx.measureText(txt).width+10<=wBar) ctx.fillText(txt,(X(x1)+X(x2))/2,y+hB/2);
+      ctx.textBaseline='alphabetic';
+    }
+    bar(0,m,yB,css('--p1-soft'),css('--p1'),'AM = '+fmt(m));
+    bar(m,TOTAL,yB,css('--p2-soft'),css('--p2'),'MB = '+fmt(TOTAL-m));
+    bar(0,TOTAL,yB+hB+12,css('--wh-soft'),css('--wh'),'AB = '+fmt(TOTAL));
+
+    /* пунктир истинной середины */
+    ctx.strokeStyle=css('--ok'); ctx.lineWidth=1.5; ctx.setLineDash([5,5]);
+    ctx.beginPath(); ctx.moveTo(X(TOTAL/2),yS-fs-18); ctx.lineTo(X(TOTAL/2),yB+2*hB+16); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle=css('--ok'); ctx.font='700 '+(fs-1)+'px ui-monospace,Menlo,monospace';
+    ctx.textAlign='center';
+    ctx.fillText('середина', X(TOTAL/2), H-6);
+
+    eq.innerHTML = mid
+      ? '<span class="a">AM</span> = <span class="b">MB</span> = <span class="a">'+fmt(m)+'</span> см &nbsp;→&nbsp; <span class="yes">M — середина AB</span>'
+      : '<span class="a">AM = '+fmt(m)+'</span> ≠ <span class="b">MB = '+fmt(TOTAL-m)+'</span> (см) &nbsp;→&nbsp; <span class="no">M не середина</span>';
+  }
+  btn.addEventListener('click',function(){ sm.value=TOTAL/2; draw(); });
+  sm.addEventListener('input',draw);
+  window.addEventListener('resize',function(){ resize(); draw(); });
+  resize(); draw();
+})();
+</script>
+
+<script>
+/* ── Диаграмма 2: координатная прямая и середина ───────────────── */
+(function(){
+  var cv=document.getElementById('cvLine'); if(!cv) return;
+  var ctx=cv.getContext('2d'), sa=document.getElementById('sa'), sb=document.getElementById('sb'),
+      va=document.getElementById('va'), vb=document.getElementById('vb'), eq=document.getElementById('eqLine');
+  var LO=-7, HI=13;
+  var W=640,H=260,dpr=1;
+  var MIN='−';                     /* настоящий минус U+2212 */
+  function css(v){ return getComputedStyle(document.documentElement).getPropertyValue(v).trim(); }
+  function num(x){ var s=(Math.round(x*10)/10).toString(); return s.replace('-',MIN).replace('.',','); }
+  function resize(){ var c=cv.clientWidth||640; dpr=Math.min(window.devicePixelRatio||1,2);
+    W=c; H=Math.round(Math.max(200,Math.min(260,c*0.40)));
+    cv.width=W*dpr; cv.height=H*dpr; cv.style.height=H+'px'; ctx.setTransform(dpr,0,0,dpr,0,0); }
+  function draw(){
+    var a=+sa.value, b=+sb.value, m=(a+b)/2;
+    va.textContent=num(a); vb.textContent=num(b);
+    var pad=Math.max(16,W*0.05), k=(W-2*pad)/(HI-LO);
+    function X(t){ return pad+(t-LO)*k; }
+    var fs=Math.max(9,Math.min(13,W*0.021));
+    ctx.clearRect(0,0,W,H);
+    var y=H*0.62;
+
+    /* ось */
+    ctx.strokeStyle=css('--muted'); ctx.lineWidth=1.5; ctx.lineCap='butt';
+    ctx.beginPath(); ctx.moveTo(X(LO),y); ctx.lineTo(X(HI),y); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(X(HI),y); ctx.lineTo(X(HI)-9,y-5); ctx.moveTo(X(HI),y); ctx.lineTo(X(HI)-9,y+5); ctx.stroke();
+    ctx.textAlign='center'; ctx.textBaseline='alphabetic';
+    ctx.font=fs+'px ui-monospace,Menlo,monospace';
+    for(var i=LO+1;i<HI;i++){
+      ctx.strokeStyle=css('--line'); ctx.lineWidth=1;
+      ctx.beginPath(); ctx.moveTo(X(i),y-5); ctx.lineTo(X(i),y+5); ctx.stroke();
+      if(i%2===0){ ctx.fillStyle=css('--muted'); ctx.fillText(num(i),X(i),y+fs+10); }
+    }
+
+    /* отрезок AB */
+    ctx.strokeStyle=css('--wh'); ctx.lineWidth=4; ctx.lineCap='round';
+    ctx.beginPath(); ctx.moveTo(X(a),y); ctx.lineTo(X(b),y); ctx.stroke();
+
+    /* дуги половин — плоские, фиксированной высоты */
+    var rx=(X(m)-X(a))/2, ry=Math.min(rx,24);
+    ctx.lineWidth=2;
+    ctx.strokeStyle=css('--p1');
+    ctx.beginPath(); ctx.ellipse((X(a)+X(m))/2,y,rx,ry,0,Math.PI,0); ctx.stroke();
+    ctx.strokeStyle=css('--p2');
+    ctx.beginPath(); ctx.ellipse((X(m)+X(b))/2,y,rx,ry,0,Math.PI,0); ctx.stroke();
+    ctx.font='700 '+fs+'px ui-monospace,Menlo,monospace';
+    var half=(b-a)/2;
+    if(2*rx>40){
+      ctx.fillStyle=css('--p1'); ctx.fillText(num(half),(X(a)+X(m))/2,y-ry-7);
+      ctx.fillStyle=css('--p2'); ctx.fillText(num(half),(X(m)+X(b))/2,y-ry-7);
+    }
+
+    /* точки */
+    ctx.lineWidth=1;
+    [[a,'A',css('--wh'),10],[b,'B',css('--wh'),10],[m,'M',css('--ok'),ry+24]].forEach(function(p){
+      ctx.beginPath(); ctx.arc(X(p[0]),y,5,0,6.284); ctx.fillStyle=p[2]; ctx.fill();
+      ctx.fillStyle=p[2]; ctx.font='700 '+(fs+3)+'px ui-monospace,Menlo,monospace';
+      ctx.fillText(p[1]+'('+num(p[0])+')',X(p[0]),y-p[3]);
+    });
+
+    eq.innerHTML='m = (a + b) : 2 = ('+num(a)+' + '+num(b)+') : 2 = '+num(a+b)+' : 2 = <span class="yes">'+num(m)+'</span>';
+  }
+  sa.addEventListener('input',draw);
+  sb.addEventListener('input',draw);
+  window.addEventListener('resize',function(){ resize(); draw(); });
+  resize(); draw();
+})();
+</script>
+
+<script>
+/* ── Тренажёр ──────────────────────────────────────────────────── */
+(function(){
+  var taskEl=document.getElementById('trTask'), ansEl=document.getElementById('trAns'), resEl=document.getElementById('trResult');
+  if(!taskEl) return;
+  var MIN='−';                             /* настоящий минус U+2212 */
+  function ri(a,b){ return Math.floor(Math.random()*(b-a+1))+a; }
+  function fmt(mm){ var s=(mm/10).toFixed(1); if(s.slice(-2)==='.0') s=s.slice(0,-2); return s.replace('.',','); }
+  function num(x){ var s=(Math.round(x*10)/10).toString(); return s.replace('-',MIN).replace('.',','); }
+  var cur=null;
+
+  function generate(){
+    var r=Math.random(), ab, am, a, b, u, p1, p2;
+    if(r<0.24){                                       /* половина по целому */
+      ab=ri(2,24)*10; u=(Math.random()<0.25)?'мм':'см';
+      cur={type:'half',ab:ab,u:u,ans:ab/2};
+      taskEl.innerHTML='Отрезок <b>AB = '+(u==='см'?fmt(ab):ab)+' '+u+'</b>, точка <b>M</b> — его середина. Найди <b>AM</b> (в '+u+').';
+    } else if(r<0.46){                                /* целое по половине */
+      am=ri(2,24)*5; u=(Math.random()<0.25)?'мм':'см';
+      cur={type:'whole',am:am,u:u,ans:2*am};
+      taskEl.innerHTML='Точка <b>M</b> — середина отрезка <b>CD</b>, причём <b>CM = '+(u==='см'?fmt(am):am)+' '+u+'</b>. Найди длину всего отрезка <b>CD</b> (в '+u+').';
+    } else if(r<0.74){                                /* координата середины */
+      a=ri(-8,6); b=a+ri(2,12);
+      cur={type:'coord',a:a,b:b,ans:(a+b)/2};
+      taskEl.innerHTML='На координатной прямой <b>A('+num(a)+')</b> и <b>B('+num(b)+')</b>. Найди координату середины <b>M</b>.';
+    } else if(r<0.90){                                /* середина или нет */
+      p1=ri(2,20)*5;
+      p2=(Math.random()<0.4)?p1:p1+ri(1,8)*5*(Math.random()<0.5?1:-1);
+      if(p2<=0) p2=p1+15;
+      cur={type:'check',p1:p1,p2:p2,ans:(p1===p2)};
+      taskEl.innerHTML='Точка <b>M</b> лежит на отрезке <b>AB</b>, причём <b>AM = '+fmt(p1)+' см</b>, <b>MB = '+fmt(p2)+' см</b>. Является ли <b>M</b> серединой? Ответь «да» или «нет».';
+    } else {                                          /* краевой: M совпала с концом */
+      ab=ri(3,15)*10;
+      cur={type:'edge',ab:ab,ans:false};
+      taskEl.innerHTML='Отрезок <b>AB = '+fmt(ab)+' см</b>. Точка <b>M</b> поставлена так, что <b>AM = 0</b>, то есть совпала с точкой <b>A</b>. Является ли <b>M</b> серединой? Ответь «да» или «нет».';
+    }
+    resEl.innerHTML=''; ansEl.value='';
+  }
+
+  function solHTML(){
+    var q=cur, h='<div class="sol">', un;
+    if(q.type==='half'){
+      un=q.u; var v=(un==='см')?fmt(q.ab):q.ab, w=(un==='см')?fmt(q.ans):q.ans;
+      h+='M — середина → AM = MB = AB : 2<br>';
+      h+='AM = '+v+' : 2 = <b>'+w+'</b> '+un;
+    } else if(q.type==='whole'){
+      un=q.u; var c1=(un==='см')?fmt(q.am):q.am, c2=(un==='см')?fmt(q.ans):q.ans;
+      h+='M — середина → CM = MD, а всё CD = 2 · CM<br>';
+      h+='CD = 2 · '+c1+' = <b>'+c2+'</b> '+un;
+    } else if(q.type==='coord'){
+      h+='Координата середины — это среднее двух координат<br>';
+      h+='m = (a + b) : 2 = ('+num(q.a)+' + '+num(q.b)+') : 2<br>';
+      h+='m = '+num(q.a+q.b)+' : 2 = <b>'+num(q.ans)+'</b>';
+    } else if(q.type==='check'){
+      h+='Проверяем главное равенство: AM = MB?<br>';
+      h+=fmt(q.p1)+' и '+fmt(q.p2)+' → ';
+      h+= q.ans ? 'числа равны → <b>да, M — середина</b>'
+                : 'числа разные ('+fmt(q.p1)+' ≠ '+fmt(q.p2)+') → <b>нет, не середина</b><br>Точка внутри отрезка — этого мало, нужны равные части.';
+    } else {
+      h+='M совпала с концом A, значит AM = 0, а MB = '+fmt(q.ab)+' см.<br>';
+      h+='0 ≠ '+fmt(q.ab)+', части не равны → <b>нет, не середина</b><br>';
+      h+='Середина обязана лежать внутри отрезка, а не в его конце.';
+    }
+    return h+'</div>';
+  }
+
+  function check(){
+    var raw=ansEl.value.trim();
+    if(raw===''){ resEl.innerHTML='<span class="bad">Впиши ответ или нажми «Решение».</span>'; return; }
+    var good;
+    if(cur.type==='check'||cur.type==='edge'){
+      var yes=/^\s*(да|верно|является)/i.test(raw), no=/^\s*(нет|не\b)/i.test(raw);
+      good=(cur.ans && yes) || (!cur.ans && no);
+    } else {
+      var got=parseFloat(raw.replace(/−/g,'-').replace(',','.').replace(/\s/g,''));
+      var right=(cur.type==='coord')?cur.ans:((cur.u==='см')?cur.ans/10:cur.ans);
+      good=(!isNaN(got) && Math.abs(got-right)<0.001);
+    }
+    resEl.innerHTML=(good?'<span class="ok">✓ Верно!</span>':'<span class="bad">✗ Пока не то — посмотри решение.</span>')+solHTML();
+  }
+
+  document.getElementById('trNew').addEventListener('click',function(){ generate(); ansEl.focus(); });
+  document.getElementById('trCheck').addEventListener('click',check);
+  document.getElementById('trShow').addEventListener('click',function(){ resEl.innerHTML=solHTML(); });
+  ansEl.addEventListener('keydown',function(e){ if(e.key==='Enter') check(); });
+  cur={type:'half',ab:120,u:'см',ans:60};             /* совпадает со стартовым условием */
+})();
+</script>
+<!--LESSON-NAV-BOT--><nav class="lnav lnav-bot"><a class="prev" href="./geo7-sravnenie-otrezkov.html"><span class="dir">← Предыдущая</span><span class="ttl">Сравнение и измерение отрезков</span></a><a class="to-cat" href="./catalog.html">📚 <span>Все темы</span></a><a class="next" href="./geo7-izmerenie-uglov.html"><span class="dir">Следующая →</span><span class="ttl">Измерение углов, градусная мера</span></a></nav><!--/LESSON-NAV-BOT-->
